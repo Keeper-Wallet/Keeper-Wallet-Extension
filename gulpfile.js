@@ -1,7 +1,6 @@
 const watchify = require('watchify')
 const browserify = require('browserify')
 const envify = require('envify/custom')
-//const disc = require('disc')
 const gulp = require('gulp')
 const source = require('vinyl-source-stream')
 const buffer = require('vinyl-buffer')
@@ -12,30 +11,13 @@ const jsoneditor = require('gulp-json-editor')
 const zip = require('gulp-zip')
 const livereload = require('gulp-livereload')
 const del = require('del')
-//const eslint = require('gulp-eslint')
 const fs = require('fs')
 const path = require('path')
 const manifest = require('./src/manifest.json')
-//const replace = require('gulp-replace')
 const mkdirp = require('mkdirp')
-//const asyncEach = require('async/each')
-const exec = require('child_process').exec
-//const sass = require('gulp-sass')
-//const autoprefixer = require('gulp-autoprefixer')
-//const gulpStylelint = require('gulp-stylelint')
-//const stylefmt = require('gulp-stylefmt')
 const uglify = require('gulp-uglify-es').default
-//const babel = require('gulp-babel')
-//const debug = require('gulp-debug')
 const pify = require('pify')
-const gulpMultiProcess = require('gulp-multi-process')
 const endOfStream = pify(require('end-of-stream'))
-
-// function gulpParallel (...args) {
-//   return function spawnGulpChildProcess(cb) {
-//     return gulpMultiProcess(args, cb, true)
-//   }
-// }
 
 const browserPlatforms = [
   'firefox',
@@ -63,15 +45,6 @@ createCopyTasks('copied', {
   destinations: browserPlatforms.map(platform => `./dist/${platform}`),
 })
 
-
-// createCopyTasks('reload', {
-//   devOnly: true,
-//   source: './src/',
-//   pattern: '/chromereload.js',
-//   destinations: commonPlatforms.map(platform => `./dist/${platform}`),
-// })
-
-// copy extension
 
 createCopyTasks('manifest', {
   source: './src/',
@@ -414,7 +387,7 @@ function bundleTask(opts) {
       buildStream = buildStream
       .pipe(uglify({
         mangle: {
-          reserved: [ 'MetamaskInpageProvider' ]
+          reserved: [ 'WavesInpageProvider' ]
         },
       }))
     }

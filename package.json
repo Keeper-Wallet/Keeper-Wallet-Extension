@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "start": "gulp dev:extension",
+    "dist": "gulp dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "browserify": {
@@ -24,20 +25,14 @@
     "browserify-unibabel": "^3.0.0",
     "del": "^3.0.0",
     "extensionizer": "^1.0.1",
-    "gulp": "github:gulpjs/gulp#4.0",
-    "gulp-autoprefixer": "^5.0.0",
-    "gulp-debug": "^3.2.0",
-    "gulp-eslint": "^4.0.0",
-    "gulp-sass": "^4.0.0"
+    "gulp": "github:gulpjs/gulp#4.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
-    "babel-eslint": "^8.0.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.7.2",
     "babelify": "^8.0.0",
