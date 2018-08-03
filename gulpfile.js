@@ -31,11 +31,11 @@ const pify = require('pify')
 const gulpMultiProcess = require('gulp-multi-process')
 const endOfStream = pify(require('end-of-stream'))
 
-function gulpParallel (...args) {
-  return function spawnGulpChildProcess(cb) {
-    return gulpMultiProcess(args, cb, true)
-  }
-}
+// function gulpParallel (...args) {
+//   return function spawnGulpChildProcess(cb) {
+//     return gulpMultiProcess(args, cb, true)
+//   }
+// }
 
 const browserPlatforms = [
   'firefox',
@@ -43,9 +43,7 @@ const browserPlatforms = [
   'edge',
   'opera',
 ]
-const commonPlatforms = [
-  ...browserPlatforms
-]
+
 
 // browser reload
 
@@ -62,16 +60,16 @@ const copyDevTaskNames = []
 
 createCopyTasks('copied', {
   source: './src/copied/',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}`),
+  destinations: browserPlatforms.map(platform => `./dist/${platform}`),
 })
 
 
-createCopyTasks('reload', {
-  devOnly: true,
-  source: './src/',
-  pattern: '/chromereload.js',
-  destinations: commonPlatforms.map(platform => `./dist/${platform}`),
-})
+// createCopyTasks('reload', {
+//   devOnly: true,
+//   source: './src/',
+//   pattern: '/chromereload.js',
+//   destinations: commonPlatforms.map(platform => `./dist/${platform}`),
+// })
 
 // copy extension
 
@@ -143,8 +141,7 @@ gulp.task('manifest:opera', function() {
       "storage",
       "tabs",
       "clipboardWrite",
-      "clipboardRead",
-      "http://localhost:8545/"
+      "clipboardRead"
     ]
     return json
   }))
@@ -193,8 +190,7 @@ gulp.task('dev:copy',
 const buildJsFiles = [
   'inpage',
   'contentscript',
-  'background',
-  'ui',
+  'background'
 ]
 
 // bundle tasks
@@ -204,7 +200,7 @@ createTasksForBuildJsExtension({ buildJsFiles, taskPrefix: 'build:extension:js' 
 
 function createTasksForBuildJsExtension({ buildJsFiles, taskPrefix, devMode, bundleTaskOpts = {} }) {
   // inpage must be built before all other scripts:
-  const rootDir = './app/scripts'
+  const rootDir = './src'
   const nonInpageFiles = buildJsFiles.filter(file => file !== 'inpage')
   const buildPhase1 = ['inpage']
   const buildPhase2 = nonInpageFiles
@@ -289,7 +285,7 @@ gulp.task('dev:extension',
 gulp.task('build',
   gulp.series(
     'clean',
-    gulpParallel(
+    gulp.parallel(
       'build:extension:js',
       'copy'
     )
@@ -319,7 +315,7 @@ gulp.task('dist',
 function zipTask(target) {
   return () => {
     return gulp.src(`dist/${target}/**`)
-    .pipe(zip(`metamask-${target}-${manifest.version}.zip`))
+    .pipe(zip(`waveskeeper-${target}-${manifest.version}.zip`))
     .pipe(gulp.dest('builds'))
   }
 }
@@ -329,19 +325,14 @@ function generateBundler(opts, performBundle) {
     entries: [opts.filepath],
     plugin: 'browserify-derequire',
     debug: opts.buildSourceMaps,
-    fullPaths: opts.buildWithFullPaths,
-    //temporary fix waves-api lib not supporting browserify
-    noParse: [
-      __dirname + '/node_modules/@waves/waves-api/dist/waves-api.min.js',
-      __dirname + '/node_modules/@waves/waves-signature-generator/dist/waves-signature-generator.js',
-    ]
+    fullPaths: opts.buildWithFullPaths
   })
 
   let bundler = browserify(browserifyOpts)
 
   // inject variables into bundle
   bundler.transform(envify({
-    METAMASK_DEBUG: opts.devMode,
+    WAVESKEEPER_DEBUG: opts.devMode,
     NODE_ENV: opts.devMode ? 'development' : 'production',
   }))
 
