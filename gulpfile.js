@@ -13,7 +13,7 @@ const livereload = require('gulp-livereload')
 const del = require('del')
 const fs = require('fs')
 const path = require('path')
-const manifest = require('./src/manifest.json')
+const manifest = require('./src/copied/manifest.json')
 const mkdirp = require('mkdirp')
 const uglify = require('gulp-uglify-es').default
 const pify = require('pify')
@@ -44,14 +44,6 @@ createCopyTasks('copied', {
   source: './src/copied/',
   destinations: browserPlatforms.map(platform => `./dist/${platform}`),
 })
-
-
-createCopyTasks('manifest', {
-  source: './src/',
-  pattern: '/*.json',
-  destinations: browserPlatforms.map(platform => `./dist/${platform}`),
-})
-
 
 
 function createCopyTasks(label, opts) {
@@ -208,14 +200,6 @@ function createTasksForBuildJs({ rootDir, taskPrefix, bundleTaskOpts, destinatio
 
   gulp.task(taskPrefix, gulp.series(subtasks))
 }
-
-// disc bundle analyzer tasks
-
-buildJsFiles.forEach((jsFile) => {
-  gulp.task(`disc:${jsFile}`, discTask({ label: jsFile, filename: `${jsFile}.js` }))
-})
-
-gulp.task('disc', gulp.parallel(buildJsFiles.map(jsFile => `disc:${jsFile}`)))
 
 // clean dist
 
