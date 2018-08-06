@@ -12,6 +12,7 @@ import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
 import {PreferencesController} from './controllers/PreferencesController'
+import {setupDnode} from './lib/util'
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -30,6 +31,11 @@ async function setupBackgroundService() {
         initState,
         initLangCode
     });
+
+    // global access to service
+    if (WAVESKEEPER_DEBUG) {
+        global.background = backgroundService
+    }
 
     // setup state persistence
     pump(
@@ -98,11 +104,15 @@ class BackgroundService extends EventEmitter {
 
 
     getState() {
-        throw 'Not Implemented'
+        return this.store.getFlatState()
     }
 
     getApi() {
-        throw 'Not Implemented'
+        const preferencesController = this.preferencesController;
+        return {
+            setCurrentLocale: preferencesController.setCurrentLocale.bind(preferencesController),
+            getState: (cb) => cb(null, this.getState()),
+        }
     }
 
     getInpageApi() {
@@ -110,27 +120,9 @@ class BackgroundService extends EventEmitter {
     }
 
     setupUiConnection(connectionStream, origin) {
-        // setup multiplexing
-        const mux = new ObjectMultiplex()
-        pump(
-            connectionStream,
-            mux,
-            connectionStream,
-            (err) => {
-                if (err) console.error(err)
-            }
-        );
-        const apiStream = mux.createStream('api')
         const api = this.getApi()
-        const dnode = Dnode(api)
-        pump(
-            apiStream,
-            dnode,
-            apiStream,
-            (err) => {
-                if (err) log.error(err)
-            }
-        )
+        const dnode = setupDnode(connectionStream, api, 'api')
+
         dnode.on('remote', (remote) => {
             // push updates to popup
             const sendUpdate = remote.sendUpdate.bind(remote)
@@ -140,26 +132,10 @@ class BackgroundService extends EventEmitter {
 
     setupPageConnection(connectionStream, origin) {
         //ToDo: check origin
-        const mux = new ObjectMultiplex();
-        pump(
-            connectionStream,
-            mux,
-            connectionStream,
-            (err) => {
-                if (err) console.error(err)
-            }
-        );
-        const apiStream = mux.createStream('inpageApi');
-        const api = this.getInpageApi();
-        const dnode = Dnode(api);
-        pump(
-            apiStream,
-            dnode,
-            apiStream,
-            (err) => {
-                if (err) log.error(err)
-            }
-        )
+
+        const inpageApi = this.getInpageApi();
+        const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
+
     }
 
 
