@@ -1,5 +1,5 @@
 const extension = require('extensionizer')
-//const log = require('loglevel')
+const log = require('loglevel')
 
 /**
  * A wrapper around the extension's storage local API
@@ -11,7 +11,7 @@ module.exports = class ExtensionStore {
   constructor() {
     this.isSupported = !!(extension.storage.local)
     if (!this.isSupported) {
-      //log.error('Storage local API not available.')
+      log.error('Storage local API not available.')
     }
   }
 
