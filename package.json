@@ -23,10 +23,13 @@
   "dependencies": {
     "browserify-derequire": "^0.9.4",
     "browserify-unibabel": "^3.0.0",
+    "debounce-stream": "^2.0.0",
     "del": "^3.0.0",
     "extensionizer": "^1.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
-    "obs-store": "^3.0.0"
+    "obs-store": "^3.0.0",
+    "pump": "^3.0.0",
+    "readable-stream": "^2.3.6"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
