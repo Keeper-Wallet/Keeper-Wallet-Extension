@@ -25,7 +25,8 @@
     "browserify-unibabel": "^3.0.0",
     "del": "^3.0.0",
     "extensionizer": "^1.0.1",
-    "gulp": "github:gulpjs/gulp#4.0"
+    "gulp": "github:gulpjs/gulp#4.0",
+    "obs-store": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
