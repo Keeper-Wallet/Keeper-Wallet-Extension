@@ -21,7 +21,7 @@ export class PreferencesController {
     addAccount(account) {
         const accounts = this.store.getState().accounts;
         if (!this._getAccountByPk(account.publicKey)) {
-            accounts.push(Object.assign({name: `Account ${accounts.length}`}, account));
+            accounts.push(Object.assign({name: `Account ${accounts.length + 1}`}, account));
             this.store.updateState({accounts})
         } else {
             log.log(`Account with public key ${account} already exists`)

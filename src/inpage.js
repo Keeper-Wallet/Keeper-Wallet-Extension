@@ -17,7 +17,7 @@ async function setupInpageApi() {
             resolve(inpageApi)
         })
     });
-    debugger
+
     global.Waves = inpageApi
 }
 
