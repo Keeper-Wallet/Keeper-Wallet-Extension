@@ -1,7 +1,7 @@
 import log from 'loglevel';
 import pump from 'pump';
 import Dnode from 'dnode';
-import EventEmitter from 'events'
+import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
@@ -12,7 +12,7 @@ import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
 import {PreferencesController} from './controllers/PreferencesController'
-import {setupDnode} from './lib/util'
+import {setupDnode} from './lib/util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -32,7 +32,7 @@ async function setupBackgroundService() {
         initLangCode
     });
 
-    // global access to service
+    // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService
     }
