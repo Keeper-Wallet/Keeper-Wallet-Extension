@@ -25,8 +25,8 @@ function injectBundle() {
 
 function setupConnection() {
     const pageStream = new LocalMessageDuplexStream({
-        name: 'contentscript',
-        target: 'inpage',
+        name: 'content',
+        target: 'page',
     });
 
     const pluginPort = extension.runtime.connect({name: 'contentscript'})
@@ -40,32 +40,32 @@ function setupConnection() {
         (err) => logStreamDisconnectWarning('Waveskeeper Contentscript Forwarding', err)
     );
 
-    // setup local multistream channels
-    const mux = new ObjectMultiplex();
-    mux.setMaxListeners(25)
+    // // setup local multistream channels
+    // const mux = new ObjectMultiplex();
+    // mux.setMaxListeners(25)
+    //
+    // pump(
+    //     mux,
+    //     pageStream,
+    //     mux,
+    //     (err) => logStreamDisconnectWarning('WavesKeeper Inpage', err)
+    // );
+    // pump(
+    //     mux,
+    //     pluginStream,
+    //     mux,
+    //     (err) => logStreamDisconnectWarning('WavesKeeper Background', err)
+    // );
 
-    pump(
-        mux,
-        pageStream,
-        mux,
-        (err) => logStreamDisconnectWarning('WavesKeeper Inpage', err)
-    );
-    pump(
-        mux,
-        pluginStream,
-        mux,
-        (err) => logStreamDisconnectWarning('WavesKeeper Background', err)
-    );
 
-
-    // connect phishing warning stream
-    const phishingStream = mux.createStream('phishing')
-    phishingStream.once('data', redirectToPhishingWarning)
-
-    // ignore unused channels (handled by background, inpage)
-    mux.ignoreStream('provider')
-    mux.ignoreStream('publicConfig')
-    mux.ignoreStream('waves')
+    // // connect phishing warning stream
+    // const phishingStream = mux.createStream('phishing')
+    // phishingStream.once('data', redirectToPhishingWarning)
+    //
+    // // ignore unused channels (handled by background, inpage)
+    //mux.ignoreStream('inpageApi')
+    // mux.ignoreStream('publicConfig')
+    // mux.ignoreStream('waves')
 }
 
 /**

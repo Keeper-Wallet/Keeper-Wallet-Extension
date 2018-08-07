@@ -116,7 +116,9 @@ class BackgroundService extends EventEmitter {
     }
 
     getInpageApi() {
-        throw 'Not Implemented'
+        return {
+            sayHello: cb => cb(null, 'hello')
+        }
     }
 
     setupUiConnection(connectionStream, origin) {
