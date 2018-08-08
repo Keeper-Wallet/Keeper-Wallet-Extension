@@ -11,7 +11,7 @@ import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
-import {PreferencesController, WalletController} from './controllers'
+import {PreferencesController, WalletController, NetworkController} from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -87,8 +87,8 @@ class BackgroundService extends EventEmitter {
         this.sendUpdate = debounce(this._privateSendUpdate.bind(this), 200);
 
         // observable state store
-        const initState = options.initState || {}
-        this.store = new ComposableObservableStore(initState)
+        const initState = options.initState || {};
+        this.store = new ComposableObservableStore(initState);
 
         // Controllers
         this.preferencesController = new PreferencesController({
@@ -98,10 +98,13 @@ class BackgroundService extends EventEmitter {
 
         this.walletController = new WalletController({initState: initState.WalletController});
 
+        this.networkContoller = new NetworkController({initState: initState.NetworkController});
+
         // Single state of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
-            WalletController: this.walletController.store
+            WalletController: this.walletController.store,
+            NetworkController: this.networkContoller.store
         });
         this.store.subscribe(this.sendUpdate.bind(this))
     }
@@ -128,7 +131,10 @@ class BackgroundService extends EventEmitter {
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
             exportAccount: async (publicKey) => this.walletController.exportAccount(publicKey),
-            sign: async (publicKey, data) => this.walletController.sign(publicKey, data)
+            sign: async (publicKey, data) => this.walletController.sign(publicKey, data),
+
+            // network
+            setNetwork: async (network) => this.networkContoller.setNetwork(network)
 
         }
     }
