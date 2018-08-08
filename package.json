@@ -21,6 +21,7 @@
     ]
   },
   "dependencies": {
+    "@waves/waves-signature-generator": "^0.14.0",
     "browserify-derequire": "^0.9.4",
     "browserify-unibabel": "^3.0.0",
     "debounce": "^1.1.0",
