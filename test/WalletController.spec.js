@@ -48,4 +48,12 @@ describe('WalletController', () => {
         expect(controller.wallets.length).to.eq(1)
     });
 
+    it('Should export account', () => {
+        const controller = new WalletController({initState: {vault: "U2FsdGVkX1+08/Eyk1Qqpl7VonI2m5XQ/QqWFFrE8RU="}});
+        controller.unlock(password);
+        controller.addWallet('seed', seed);
+
+        const exported = controller.exportAccount(controller.wallets[0].getAccount().publicKey);
+        expect(exported).to.eq(seed)
+    });
 });

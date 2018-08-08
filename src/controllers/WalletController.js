@@ -17,14 +17,14 @@ export class WalletController {
     addWallet(type, options) {
         const wallet = new WALLET_MAP[type](options);
 
-        this._checkForDuplicate(wallet.getAccount().publicKey)
+        this._checkForDuplicate(wallet.getAccount().publicKey);
 
         this.wallets.push(wallet);
         this._saveWallets()
     }
 
     removeWallet(publicKey) {
-        const index = this.wallets.findIndex(wallet => wallet.publicKey === publicKey);
+        const index = this.wallets.findIndex(wallet => wallet.getAccount().publicKey === publicKey);
         this.wallets.splice(index, 1);
         this._saveWallets();
     }
@@ -54,8 +54,13 @@ export class WalletController {
         this.store.updateState({locked: false})
     }
 
+    exportAccount(publicKey){
+         const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
+         return wallet.getSecret();
+    }
+
     sign(publicKey, data) {
-        const wallet = this.wallets.find(wallet => wallet.publicKey === publicKey);
+        const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
         return wallet.sign(data)
     }
 

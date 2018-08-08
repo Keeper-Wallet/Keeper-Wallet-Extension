@@ -11,4 +11,8 @@ export class TrezorWallet {
     serialize() {
         return this.publicKey
     }
+
+    getSecret() {
+
+    }
 }

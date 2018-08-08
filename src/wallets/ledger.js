@@ -11,4 +11,8 @@ export class LedgerWallet {
     serialize() {
         return this.publicKey
     }
+
+    getSecret(){
+
+    }
 }

@@ -10,7 +10,11 @@ export class SeedWallet {
         return {publicKey: this.seed.keyPair.publicKey, type: this.type}
     }
 
-    serialize(){
+    serialize() {
+        return this.seed.phrase
+    }
+
+    getSecret() {
         return this.seed.phrase
     }
 }
