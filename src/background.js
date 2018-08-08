@@ -84,9 +84,8 @@ async function setupBackgroundService() {
 class BackgroundService extends EventEmitter {
     constructor(options = {}) {
         super();
-        this.sendUpdate = debounce(this._privateSendUpdate.bind(this), 200);
 
-        // observable state store
+        // Observable state store
         const initState = options.initState || {};
         this.store = new ComposableObservableStore(initState);
 
@@ -97,15 +96,20 @@ class BackgroundService extends EventEmitter {
         });
 
         this.walletController = new WalletController({initState: initState.WalletController});
-
+        this.walletController.store.subscribe(state => {
+            // ToDo: sync accounts with wallets
+        });
         this.networkContoller = new NetworkController({initState: initState.NetworkController});
 
-        // Single state of all controllers
+        // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
             NetworkController: this.networkContoller.store
         });
+
+        // Call send update, which is bound to ui EventEmitter, on every store update
+        this.sendUpdate = debounce(this._privateSendUpdate.bind(this), 200);
         this.store.subscribe(this.sendUpdate.bind(this))
     }
 
@@ -115,8 +119,7 @@ class BackgroundService extends EventEmitter {
     }
 
     getApi() {
-        // const preferencesController = this.preferencesController;
-        // const walletController =  this.walletController;
+        // RPC API object. Only async functions allowed
         return {
             // state
             getState: async () => this.getState(),
