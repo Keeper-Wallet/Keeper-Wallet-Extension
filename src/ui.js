@@ -1,7 +1,7 @@
 import extension from 'extensionizer';
 import EventEmitter from 'events';
 import PortStream from './lib/port-stream.js';
-import {setupDnode} from './lib/util';
+import {cbToPromise, setupDnode, transformMethods} from './lib/dnode-util';
 import log from "loglevel";
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -17,21 +17,23 @@ async function startUi() {
     // This way every time background calls sendUpdate with its state we get event with new background state
     const eventEmitter = new EventEmitter();
     const emitterApi = {
-        sendUpdate: state => eventEmitter.emit('update', state)
+        sendUpdate: async state => eventEmitter.emit('update', state)
     };
     const dnode = setupDnode(connectionStream, emitterApi,  'api');
 
     const background = await new Promise(resolve => {
         dnode.once('remote', (background) => {
+            let backgroundWithPromises = transformMethods(cbToPromise, background);
             // Add event emitter api to background object
-            background.on = eventEmitter.on.bind(eventEmitter);
-            resolve(background)
+
+            backgroundWithPromises.on = eventEmitter.on.bind(eventEmitter);
+            resolve(backgroundWithPromises)
         })
     });
 
     // global access to background api on debug
     if (WAVESKEEPER_DEBUG) {
-        global.backgroundApi = background;
+        global.background = background;
     }
 
 

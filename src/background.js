@@ -12,7 +12,7 @@ import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
 import {PreferencesController, WalletController} from './controllers'
-import {setupDnode} from './lib/util';
+import {setupDnode} from './lib/dnode-util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -112,26 +112,40 @@ class BackgroundService extends EventEmitter {
     }
 
     getApi() {
-        const preferencesController = this.preferencesController;
+        // const preferencesController = this.preferencesController;
+        // const walletController =  this.walletController;
         return {
-            setCurrentLocale: preferencesController.setCurrentLocale.bind(preferencesController),
-            getState: (cb) => cb(null, this.getState()),
+            // state
+            getState: async () => this.getState(),
+
+            // preferences
+            setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
+
+            // wallets
+            addWallet: async (type, key) => this.walletController.addWallet(type, key),
+            removeWallet: async (publicKey) => this.walletController.removeWallet(publicKey),
+            lock: async () => this.walletController.lock(),
+            unlock: async (password) => this.walletController.unlock(password),
+            initVault: async (password) => this.walletController.initVault(password),
+            exportAccount: async (publicKey) => this.walletController.exportAccount(publicKey),
+            sign: async (publicKey, data) => this.walletController.sign(publicKey, data)
+
         }
     }
 
     getInpageApi() {
         return {
-            sayHello: cb => cb(null, 'hello')
+            sayHello: async () => 'hello'
         }
     }
 
     setupUiConnection(connectionStream, origin) {
         const api = this.getApi()
-        const dnode = setupDnode(connectionStream, api, 'api')
+        const dnode = setupDnode(connectionStream, api, 'api');
 
         dnode.on('remote', (remote) => {
             // push updates to popup
-            const sendUpdate = remote.sendUpdate.bind(remote)
+            const sendUpdate = remote.sendUpdate.bind(remote);
             this.on('update', sendUpdate)
         })
     }

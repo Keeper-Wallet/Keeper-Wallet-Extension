@@ -1,5 +1,5 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import {setupDnode} from './lib/util';
+import {setupDnode, transformMethods, cbToPromise} from './lib/dnode-util';
 import log from "loglevel";
 
 setupInpageApi().catch(e => log.error(e));
@@ -14,7 +14,7 @@ async function setupInpageApi() {
     const dnode = setupDnode(connectionStream, {}, 'inpageApi');
     const inpageApi = await new Promise(resolve => {
         dnode.once('remote', inpageApi => {
-            resolve(inpageApi)
+            resolve(transformMethods(cbToPromise,inpageApi))
         })
     });
 
