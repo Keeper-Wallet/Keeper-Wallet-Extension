@@ -283,7 +283,11 @@ function generateBundler(opts, performBundle) {
         entries: [opts.filepath],
         plugin: 'browserify-derequire',
         debug: opts.buildSourceMaps,
-        fullPaths: opts.buildWithFullPaths
+        fullPaths: opts.buildWithFullPaths,
+        //temporary fix waves-api lib not supporting browserify
+        noParse: [
+            __dirname + '/node_modules/@waves/waves-signature-generator/dist/waves-signature-generator.js',
+        ]
     })
 
     let bundler = browserify(browserifyOpts)

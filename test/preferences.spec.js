@@ -33,7 +33,7 @@ describe("Preferences Controller", () => {
         ])
     });
 
-    it('Should sync accounts from keyrings passed as array', () => {
+    it('Should sync accounts from wallets passed as array', () => {
         controller.addAccount({publicKey: '1', type: 'ledger'});
         controller.addAccount({publicKey: '2', type: 'ledger', name: 'yahoo'});
         controller.syncAccounts([{publicKey: '2', type: 'ledger'}, {publicKey: '3', type: 'ledger'}]);

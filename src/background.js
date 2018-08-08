@@ -11,7 +11,7 @@ import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
-import {PreferencesController} from './controllers/PreferencesController'
+import {PreferencesController, WalletController} from './controllers'
 import {setupDnode} from './lib/util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -90,14 +90,18 @@ class BackgroundService extends EventEmitter {
         const initState = options.initState || {}
         this.store = new ComposableObservableStore(initState)
 
+        // Controllers
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
         });
 
+        this.walletController = new WalletController({initState: initState.WalletController});
 
+        // Single state of all controllers
         this.store.updateStructure({
-            PreferencesController: this.preferencesController.store
+            PreferencesController: this.preferencesController.store,
+            WalletController: this.walletController.store
         });
         this.store.subscribe(this.sendUpdate.bind(this))
     }
