@@ -7,10 +7,7 @@ export class WalletController {
     constructor(options = {}) {
         const initState = options.initState || {};
         this.store = new ObservableStore(initState);
-        this.memStore = new ObservableStore({
-            locked: true,
-            wallets: [],
-        });
+        this.store.updateState({locked:true});
         this.password = null;
         this.wallets = []
         //this.getNetwork = opts.getNetwork
@@ -26,7 +23,7 @@ export class WalletController {
         this._saveWallets()
     }
 
-    removeWallet(publicKey){
+    removeWallet(publicKey) {
         const index = this.wallets.findIndex(wallet => wallet.publicKey === publicKey);
         this.wallets.splice(index, 1);
         this._saveWallets();
@@ -39,19 +36,29 @@ export class WalletController {
     lock() {
         this.password = null;
         this.wallets = [];
-        this.memStore.updateState({locked: true})
+        this.store.updateState({locked: true})
     }
 
     unlock(password) {
         this._restoreWallets(password);
         this.password = password;
-        this.memStore.updateState({locked: false})
+        this.store.updateState({locked: false})
     }
 
-    sign(publicKey, data){
+    initVault(password) {
+        if (!password || typeof password !== 'string') {
+            throw new Error('Password is required');
+        }
+        this.password = password;
+        this._saveWallets();
+        this.store.updateState({locked: false})
+    }
+
+    sign(publicKey, data) {
         const wallet = this.wallets.find(wallet => wallet.publicKey === publicKey);
         return wallet.sign(data)
     }
+
     // Private
     _checkForDuplicate(publicKey) {
         if (this.getAccounts().find(account => account.publicKey === publicKey)) {

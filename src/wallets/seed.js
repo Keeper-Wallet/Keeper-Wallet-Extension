@@ -1,15 +1,16 @@
+import {Seed} from '@waves/waves-signature-generator'
+
 export class SeedWallet {
-    constructor(seed) {
-        this.seed = seed;
-        this.publicKey = seed;
+    constructor(phrase) {
+        this.seed = new Seed(phrase);
         this.type = 'seed'
     }
 
     getAccount() {
-        return {publicKey: this.publicKey, type: this.type}
+        return {publicKey: this.seed.keyPair.publicKey, type: this.type}
     }
 
     serialize(){
-        return this.seed
+        return this.seed.phrase
     }
 }

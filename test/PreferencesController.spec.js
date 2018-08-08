@@ -1,5 +1,5 @@
 import {expect, assert} from 'chai';
-import {PreferencesController} from "../src/controllers/PreferencesController";
+import {PreferencesController} from "../src/controllers";
 
 describe("Preferences Controller", () => {
     let controller;
@@ -44,7 +44,7 @@ describe("Preferences Controller", () => {
         ])
     });
 
-    it('Should add label tp account', () => {
+    it('Should add label to account', () => {
         controller.addAccount({publicKey: '1', type: 'ledger'});
         controller.addLabel({publicKey: '1'}, 'yahoo');
         const account = controller._getAccountByPk('1');
