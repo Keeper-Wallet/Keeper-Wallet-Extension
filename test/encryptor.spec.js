@@ -21,5 +21,10 @@ describe('encryptor', () => {
 
     it('Should throw on invalid password', () => {
         expect(() => decrypt(encrypt(obj3, pass3), pass1)).to.throw('Invalid password')
+    });
+
+    // Previously had different error message for short password
+    it('Should throw on short invalid password', () => {
+        expect(() => decrypt(encrypt(obj3, pass3), 'asd')).to.throw('Invalid password')
     })
 });
