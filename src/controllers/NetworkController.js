@@ -7,8 +7,7 @@ export class NetworkController {
         const defaults = {
             currentNetwork: WAVESKEEPER_DEBUG ? 'testnet' : 'mainnet'
         };
-
-        this.store =  new ObservableStore(Object.assign(defaults,options.initState))
+        this.store =  new ObservableStore(Object.assign({}, defaults, options.initState))
     }
 
     setNetwork(network){

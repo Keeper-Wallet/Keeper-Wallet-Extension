@@ -36,7 +36,8 @@
     "obs-store": "^3.0.0",
     "post-message-stream": "^3.0.0",
     "pump": "^3.0.0",
-    "readable-stream": "^2.3.6"
+    "readable-stream": "^2.3.6",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

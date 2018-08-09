@@ -11,7 +11,7 @@ import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
-import {PreferencesController, WalletController, NetworkController} from './controllers'
+import {PreferencesController, WalletController, NetworkController, MessageController} from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -102,13 +102,20 @@ class BackgroundService extends EventEmitter {
                 this.preferencesController.syncAccounts(accounts);
             }
         });
+
         this.networkContoller = new NetworkController({initState: initState.NetworkController});
+
+        this.messageController = new MessageController({
+            initState: initState.MessageController,
+            sign: this.walletController.sign.bind(this.walletController)
+        })
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
-            NetworkController: this.networkContoller.store
+            NetworkController: this.networkContoller.store,
+            MessageController: this.messageController.store
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -138,7 +145,11 @@ class BackgroundService extends EventEmitter {
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
             exportAccount: async (publicKey) => this.walletController.exportAccount(publicKey),
-            sign: async (publicKey, data) => this.walletController.sign(publicKey, data),
+
+            // messages
+            clearMessages: async () => this.messageController.clearMessages(),
+            sign: async (messageId) => this.messageController.sign(messageId),
+            reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
             setNetwork: async (network) => this.networkContoller.setNetwork(network)
@@ -146,9 +157,10 @@ class BackgroundService extends EventEmitter {
         }
     }
 
-    getInpageApi() {
+    getInpageApi(origin) {
         return {
-            sayHello: async () => 'hello'
+            sayHello: async () => 'hello',
+            signMessage: async (from, message) => await this.messageController.newMessage(from, origin, message)
         }
     }
 
@@ -166,7 +178,7 @@ class BackgroundService extends EventEmitter {
     setupPageConnection(connectionStream, origin) {
         //ToDo: check origin
 
-        const inpageApi = this.getInpageApi();
+        const inpageApi = this.getInpageApi(origin);
         const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
 
     }
