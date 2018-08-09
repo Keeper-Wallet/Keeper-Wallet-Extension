@@ -6,8 +6,8 @@ function encrypt(object, password) {
 }
 
 function decrypt(ciphertext, password) {
-    const decryptedJson = utils.crypto.decryptSeed(ciphertext, password);
     try {
+        const decryptedJson = utils.crypto.decryptSeed(ciphertext, password);
         return JSON.parse(decryptedJson)
     } catch (e) {
         throw new Error('Invalid password')
