@@ -80,17 +80,18 @@ export class MessageController extends EventEmitter {
         this.store.updateState({messages});
     }
 
-    _getMessageById(id){
+    _getMessageById(id) {
         return this.store.getState().messages.find(message => message.id === id);
     }
 
     _generateMetadata(from, origin) {
         return {
-            id: uuid(),
-            time: Date.now(),
             account: from,
+            id: uuid(),
+            origin,
             status: 'unapproved',
-            origin
+            time: Date.now()
+
         }
     }
 }

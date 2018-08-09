@@ -1,6 +1,7 @@
 import log from 'loglevel';
 import pump from 'pump';
 import Dnode from 'dnode';
+import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
@@ -77,7 +78,8 @@ async function setupBackgroundService() {
 
     function connectExternal(remotePort) {
         const portStream = new PortStream(remotePort);
-        backgroundService.setupPageConnection(portStream, remotePort.sender.url);
+        const origin = url.parse(remotePort.sender.url).hostname;
+        backgroundService.setupPageConnection(portStream, origin);
     }
 }
 
