@@ -97,7 +97,10 @@ class BackgroundService extends EventEmitter {
 
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
-            // ToDo: sync accounts with wallets
+            if (!state.locked){
+                const accounts = this.walletController.getAccounts();
+                this.preferencesController.syncAccounts(accounts);
+            }
         });
         this.networkContoller = new NetworkController({initState: initState.NetworkController});
 
@@ -126,6 +129,7 @@ class BackgroundService extends EventEmitter {
 
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
+            selectAccount: async (publicKey) => this.preferencesController.selectAccount(publicKey),
 
             // wallets
             addWallet: async (type, key) => this.walletController.addWallet(type, key),

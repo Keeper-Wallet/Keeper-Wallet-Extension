@@ -37,7 +37,14 @@ export class PreferencesController {
                 oldAccounts.find(oldAcc => oldAcc.publicKey === account.publicKey)
             )
         });
-        this.store.updateState({accounts})
+        this.store.updateState({accounts});
+
+        // Ensure we have selected account
+        let selectedAccount = this.store.getState().selectedAccount;
+        if (!selectedAccount || !accounts.find(account => account.publicKey === selectedAccount)){
+            selectedAccount = accounts.length > 0 ? accounts[0].publicKey : undefined;
+            this.store.updateState({selectedAccount})
+        }
     }
 
     addLabel(account, label) {
@@ -47,9 +54,9 @@ export class PreferencesController {
         this.store.updateState({accounts})
     }
 
-    selectAccount(account) {
+    selectAccount(publicKey) {
         //const selectedAccount = this._getAccountByPk(publicKey);
-        this.store.updateState({selectedAccount: account.publicKey})
+        this.store.updateState({selectedAccount: publicKey})
     }
 
     _getAccountByPk(publicKey) {
