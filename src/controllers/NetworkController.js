@@ -13,4 +13,8 @@ export class NetworkController {
     setNetwork(network){
         this.store.updateState({currentNetwork:network})
     }
+
+    getNetwork(){
+        return this.store.getState().currentNetwork
+    }
 }

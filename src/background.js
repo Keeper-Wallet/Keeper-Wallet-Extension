@@ -12,7 +12,13 @@ import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import ComposableObservableStore from './lib/ComposableObservableStore';
 import ExtensionStore from './lib/local-store';
-import {PreferencesController, WalletController, NetworkController, MessageController} from './controllers'
+import {
+    PreferencesController,
+    WalletController,
+    NetworkController,
+    MessageController,
+    BalanceController
+} from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -107,17 +113,25 @@ class BackgroundService extends EventEmitter {
 
         this.networkContoller = new NetworkController({initState: initState.NetworkController});
 
+        this.balanceController = new BalanceController({
+            initState: initState.BalanceController,
+            getNetwork: this.networkContoller.getNetwork.bind(this.networkContoller),
+            getAccounts: this.walletController.getAccounts.bind(this.walletController)
+        });
+        this.networkContoller.store.subscribe(() => this.balanceController.updateBalances());
+
         this.messageController = new MessageController({
             initState: initState.MessageController,
             sign: this.walletController.sign.bind(this.walletController)
-        })
+        });
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
             NetworkController: this.networkContoller.store,
-            MessageController: this.messageController.store
+            MessageController: this.messageController.store,
+            BalanceController: this.balanceController.store
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
