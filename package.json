@@ -21,6 +21,12 @@
     ]
   },
   "dependencies": {
+    "@types/react": "^16.4.11",
+    "@types/react-dom": "^16.0.7",
+    "@types/react-redux": "^6.0.6",
+    "@types/react-router": "^4.0.30",
+    "@types/react-router-dom": "^4.3.0",
+    "@types/redux": "^3.6.0",
     "@waves/waves-signature-generator": "^0.14.0",
     "browserify-derequire": "^0.9.4",
     "browserify-unibabel": "^3.0.0",
@@ -36,7 +42,12 @@
     "obs-store": "^3.0.0",
     "post-message-stream": "^3.0.0",
     "pump": "^3.0.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
     "readable-stream": "^2.3.6",
+    "redux": "^4.0.0",
     "url": "^0.11.0",
     "uuid": "^3.3.2"
   },
@@ -67,6 +78,8 @@
     "gulp-watch": "^5.0.0",
     "gulp-zip": "^4.0.0",
     "mocha": "^5.2.0",
+    "redux-devtools": "^3.4.1",
+    "typescript": "^3.0.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.9.0"

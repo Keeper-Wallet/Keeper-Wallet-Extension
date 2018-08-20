@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import PortStream from './lib/port-stream.js';
 import {cbToPromise, setupDnode, transformMethods} from './lib/dnode-util';
 import log from "loglevel";
+import {initApp} from './ui/index';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -31,6 +32,7 @@ async function startUi() {
         })
     });
 
+    initApp(background);
     // global access to background api on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = background;
