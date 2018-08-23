@@ -160,6 +160,7 @@ class BackgroundService extends EventEmitter {
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
+            newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
             exportAccount: async (publicKey) => this.walletController.exportAccount(publicKey),
 
             // messages
