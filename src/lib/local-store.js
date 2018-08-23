@@ -1,5 +1,5 @@
-const extension = require('extensionizer')
-const log = require('loglevel')
+const extension = require('extensionizer');
+const log = require('loglevel');
 
 /**
  * A wrapper around the extension's storage local API

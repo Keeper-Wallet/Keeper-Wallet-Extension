@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
-import { libs, utils, TX_TYPE_MAP } from '@waves/waves-signature-generator';
+import { libs, utils, TX_TYPE_MAP } from '@waves/signature-generator';
 import {addressFromPublicKey} from '../lib/cryptoUtil'
 
 export class BalanceController {

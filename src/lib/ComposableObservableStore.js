@@ -1,4 +1,4 @@
-const ObservableStore = require('obs-store')
+const ObservableStore = require('obs-store');
 
 /**
  * An ObservableStore that can composes a flat
@@ -51,4 +51,6 @@ class ComposableObservableStore extends ObservableStore {
   }
 }
 
-module.exports = ComposableObservableStore
+module.exports = {
+    ComposableObservableStore,
+};

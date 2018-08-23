@@ -1,6 +1,6 @@
 import log from 'loglevel';
 import pump from 'pump';
-import Dnode from 'dnode';
+import Dnode from 'dnode/browser';
 import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
@@ -10,8 +10,8 @@ import extension from 'extensionizer';
 import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
-import ComposableObservableStore from './lib/ComposableObservableStore';
-import ExtensionStore from './lib/local-store';
+import { ComposableObservableStore } from './lib/ComposableObservableStore';
+import * as LocalStore from './lib/local-store';
 import {
     PreferencesController,
     WalletController,
@@ -28,7 +28,7 @@ setupBackgroundService().catch(e => log.error(e));
 
 
 async function setupBackgroundService() {
-    const localStore = new ExtensionStore();
+    const localStore = new LocalStore.default();
 
     // create background service
     const initState = await localStore.get();

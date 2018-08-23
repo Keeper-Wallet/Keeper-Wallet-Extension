@@ -1,10 +1,23 @@
-import { createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
+import { updateState } from './reducers/updateState'
+import { routerReducer } from 'react-router-redux';
 
-const storeData = { state: {}, app: {} };
+const reducers = combineReducers({
+    routing: routerReducer,
+    state: updateState,
+    app: (state) => state || {}
+});
+export const store = createStore(reducers);
 
-export const store = createStore(updateState);
+export interface IState {
+    locked: boolean;
+    hasAccount: boolean;
+    currentLocale: string;
+    accounts: Array<any>;
+    currentNetwork: string;
+    messages: Array<any>;
+    balances: any;
+}
 
-interface IState extends Object {
-    type: string,
-    state: any;
+export interface IApp {
 }

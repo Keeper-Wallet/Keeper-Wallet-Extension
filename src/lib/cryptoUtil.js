@@ -1,4 +1,6 @@
-import * as SG from '@waves/waves-signature-generator'
+import * as SG from '@waves/signature-generator';
+import * as SA from '@waves/signature-adapter'
+
 
 function blake2b(input) {
     return SG.libs.blake2b.blake2b(input, null, 32);

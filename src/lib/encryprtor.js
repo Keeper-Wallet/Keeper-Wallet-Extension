@@ -1,11 +1,11 @@
-import {utils} from '@waves/waves-signature-generator'
+import {utils} from '@waves/signature-generator'
 
-function encrypt(object, password) {
+export function encrypt(object, password) {
     const jsonObj = JSON.stringify(object);
     return utils.crypto.encryptSeed(jsonObj, password)
 }
 
-function decrypt(ciphertext, password) {
+export function decrypt(ciphertext, password) {
     try {
         const decryptedJson = utils.crypto.decryptSeed(ciphertext, password);
         return JSON.parse(decryptedJson)
@@ -13,8 +13,3 @@ function decrypt(ciphertext, password) {
         throw new Error('Invalid password')
     }
 }
-
-module.exports = {
-    encrypt,
-    decrypt
-};

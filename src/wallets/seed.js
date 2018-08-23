@@ -1,4 +1,4 @@
-import {Seed} from '@waves/waves-signature-generator'
+import {Seed} from '@waves/signature-adapter'
 
 export class SeedWallet {
     constructor(phrase) {

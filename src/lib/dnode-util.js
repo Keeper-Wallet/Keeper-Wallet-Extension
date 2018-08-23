@@ -1,4 +1,4 @@
-import Dnode from "dnode";
+import Dnode from "dnode/browser";
 import log from "loglevel";
 import pump from "pump";
 import ObjectMultiplex from 'obj-multiplex';

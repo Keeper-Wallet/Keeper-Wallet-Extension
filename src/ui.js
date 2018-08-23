@@ -33,11 +33,4 @@ async function startUi() {
     });
 
     initApp(background);
-    // global access to background api on debug
-    if (WAVESKEEPER_DEBUG) {
-        global.background = background;
-        background.on('update', console.log)
-    }
-
-
 }
