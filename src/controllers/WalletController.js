@@ -5,9 +5,12 @@ import {WALLET_MAP} from "../wallets";
 
 export class WalletController {
     constructor(options = {}) {
-        const initState = options.initState || {};
+        const defaults = {
+            initialized: false
+        };
+        const initState = Object.assign({}, defaults, options.initState);
         this.store = new ObservableStore(initState);
-        this.store.updateState({locked:true});
+        this.store.updateState({locked: true});
         this.password = null;
         this.wallets = []
         //this.getNetwork = opts.getNetwork
@@ -51,12 +54,21 @@ export class WalletController {
         }
         this.password = password;
         this._saveWallets();
-        this.store.updateState({locked: false})
+        this.store.updateState({locked: false, initialized:true})
     }
 
-    exportAccount(publicKey){
-         const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
-         return wallet.getSecret();
+    newPassword(oldPassword, newPassword) {
+        if (!oldPassword || !newPassword || typeof oldPassword !== 'string' || typeof newPassword !== 'string') {
+            throw new Error('Password is required');
+        }
+        this._restoreWallets(oldPassword);
+        this.password = newPassword;
+        this._saveWallets()
+    }
+
+    exportAccount(publicKey) {
+        const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
+        return wallet.getSecret();
     }
 
     sign(publicKey, data) {

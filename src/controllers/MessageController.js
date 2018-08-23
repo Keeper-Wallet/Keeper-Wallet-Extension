@@ -50,7 +50,14 @@ export class MessageController extends EventEmitter {
             message.status = 'failed'
         }
         this._updateMessage(message);
-        this.emit(`${message.id}:finished`, message)
+        this.emit(`${message.id}:finished`, message);
+        if (message.status === 'signed'){
+            return Promise.resolve()
+        }else if (message.status === 'failed'){
+            return Promise.reject(message.err)
+        }else {
+            return Promise.reject('Unknown error')
+        }
     }
 
     reject(id) {
