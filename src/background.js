@@ -17,7 +17,8 @@ import {
     WalletController,
     NetworkController,
     MessageController,
-    BalanceController
+    BalanceController,
+    UiStateController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
@@ -103,6 +104,8 @@ class BackgroundService extends EventEmitter {
             initLangCode: options.langCode,
         });
 
+        this.uiStateController =  new UiStateController({initState: initState.UiStateController});
+
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
             if (!state.locked){
@@ -131,7 +134,8 @@ class BackgroundService extends EventEmitter {
             WalletController: this.walletController.store,
             NetworkController: this.networkContoller.store,
             MessageController: this.messageController.store,
-            BalanceController: this.balanceController.store
+            BalanceController: this.balanceController.store,
+            UiStateController: this.uiStateController.store
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -153,6 +157,9 @@ class BackgroundService extends EventEmitter {
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (publicKey) => this.preferencesController.selectAccount(publicKey),
+
+            // ui state
+            setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
             addWallet: async (type, key) => this.walletController.addWallet(type, key),
