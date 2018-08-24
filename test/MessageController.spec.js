@@ -7,7 +7,7 @@ describe("MessageController", () => {
     const origin = 'SomeOrigin';
 
     beforeEach(() => {
-        controller = new MessageController({sign: () => 'placeholder'});
+        controller = new MessageController({sign: async() => 'placeholder'});
     });
 
 
@@ -29,7 +29,7 @@ describe("MessageController", () => {
         const messagePromise = controller.newMessage(address, origin, 'message');
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
-        controller.sign(msgId);
+        await controller.sign(msgId);
         expect(controller._getMessageById(msgId).status).to.eql('signed');
         const signedMessage = await messagePromise;
         expect(signedMessage).to.eql('placeholder');

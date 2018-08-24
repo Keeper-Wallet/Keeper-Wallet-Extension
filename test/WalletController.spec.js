@@ -42,12 +42,12 @@ describe('WalletController', () => {
 
     it('Should not set new password with invalid old pass', () => {
         const controller = new WalletController({initState});
-        expect(()=>controller.newPassword('bad pass', 'newPassword')).to.throw('Invalid password')
+        expect(() => controller.newPassword('bad pass', 'newPassword')).to.throw('Invalid password')
     });
 
     it('Should not set new password with no new password', () => {
         const controller = new WalletController({initState});
-        expect(()=>controller.newPassword(undefined, 'newPassword')).to.throw('Password is required')
+        expect(() => controller.newPassword(undefined, 'newPassword')).to.throw('Password is required')
     });
 
     it('Should add wallets', () => {
@@ -62,7 +62,7 @@ describe('WalletController', () => {
         controller.lock();
         try {
             controller.addWallet({type: 'seed', networkCode: 'T', seed});
-        }catch (e) {
+        } catch (e) {
             expect(e.message).to.eql('App is locked')
         }
         expect(controller.wallets.length).to.eq(0)
@@ -87,7 +87,7 @@ describe('WalletController', () => {
         const controller = new WalletController({initState});
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
-        controller.addWallet({type: 'seed', networkCode: 'T', seed:seed + '1'});
+        controller.addWallet({type: 'seed', networkCode: 'T', seed: seed + '1'});
 
         controller.removeWallet(controller.wallets[0].getAccount().address);
         expect(controller.wallets.length).to.eq(1)
@@ -100,5 +100,24 @@ describe('WalletController', () => {
 
         const exported = controller.exportAccount(controller.wallets[0].getAccount().address);
         expect(exported).to.eq(seed)
+    });
+
+    it('Should sign tx', async () => {
+        const controller = new WalletController({initState});
+        controller.unlock(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+        const tx = {
+            type: 4,
+            data: {
+                assetId: 'WAVES',
+                feeAssetId: 'WAVES',
+                amount: 100000,
+                attachment: '',
+                recipient: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'
+            }
+        }
+        const address = controller.wallets[0].getAccount().address
+        await controller.sign(address, tx)
+
     });
 });

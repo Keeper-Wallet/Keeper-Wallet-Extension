@@ -52,7 +52,7 @@ export class MessageController extends EventEmitter {
         this._updateMessage(message);
         this.emit(`${message.id}:finished`, message);
         if (message.status === 'signed'){
-            return 'Ok'
+            return message.data
         }else if (message.status === 'failed'){
             throw message.err
         }else {
