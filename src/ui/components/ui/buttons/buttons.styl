@@ -5,8 +5,20 @@
     height: 40px;
     border-radius: 4px;
     background-color: $white;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .submit {
     background-color: $submit;
+    color: $white;
+
+    &.disabled {
+        background-color: $submit-disabled;
+    }
+    
+    &:hover {
+        background: $submit-hover;
+    }
 }
