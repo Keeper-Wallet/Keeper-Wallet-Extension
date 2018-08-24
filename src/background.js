@@ -173,7 +173,7 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            sign: async (messageId) => this.messageController.sign(messageId),
+            sign: async (messageId) => await this.messageController.sign(messageId),
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network

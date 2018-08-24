@@ -1,7 +1,7 @@
 import ObservableStore from 'obs-store';
-import log from 'loglevel';
+import *  as SG from '@waves/signature-generator'
 import {encrypt, decrypt} from '../lib/encryprtor';
-import {WALLET_MAP} from "../wallets";
+import {Wallet} from "../lib/wallet";
 
 export class WalletController {
     constructor(options = {}) {
@@ -17,17 +17,33 @@ export class WalletController {
     }
 
     // Public
-    addWallet(type, options) {
-        const wallet = new WALLET_MAP[type](options);
+    addWallet(options) {
+        let user;
+        switch (options.type){
+            case 'seed':
+                SG.config.set({networkByte: options.networkCode.charCodeAt(0)});
+                const seed = new SG.Seed(options.seed);
+                user = {
+                    seed: seed.phrase,
+                    publicKey: seed.keyPair.publicKey,
+                    address: seed.address,
+                    networkCode: options.networkCode
+                };
+                break;
+            default:
+                throw new Error(`Unsupported type: ${options.type}`)
+        }
 
-        this._checkForDuplicate(wallet.getAccount().publicKey);
+        const wallet = new Wallet(user);
+
+        this._checkForDuplicate(wallet.getAccount().address);
 
         this.wallets.push(wallet);
         this._saveWallets()
     }
 
-    removeWallet(publicKey) {
-        const index = this.wallets.findIndex(wallet => wallet.getAccount().publicKey === publicKey);
+    removeWallet(address) {
+        const index = this.wallets.findIndex(wallet => wallet.getAccount().address === address);
         this.wallets.splice(index, 1);
         this._saveWallets();
     }
@@ -66,35 +82,30 @@ export class WalletController {
         this._saveWallets()
     }
 
-    exportAccount(publicKey) {
-        const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
+    exportAccount(address) {
+        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
         return wallet.getSecret();
     }
 
-    sign(publicKey, data) {
-        const wallet = this.wallets.find(wallet => wallet.getAccount().publicKey === publicKey);
-        return wallet.sign(data)
+    async sign(address, data) {
+        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
+        return await wallet.sign(data)
     }
 
     // Private
-    _checkForDuplicate(publicKey) {
-        if (this.getAccounts().find(account => account.publicKey === publicKey)) {
-            throw new Error(`Account with public key ${publicKey} already exists`)
+    _checkForDuplicate(address) {
+        if (this.getAccounts().find(account => account.address === address)) {
+            throw new Error(`Account with address ${address} already exists`)
         }
     }
 
     _saveWallets() {
-        const walletsData = this.wallets.map(wallet => {
-            return {
-                type: wallet.type,
-                data: wallet.serialize()
-            }
-        });
+        const walletsData = this.wallets.map(wallet => wallet.serialize());
         this.store.updateState({vault: encrypt(walletsData, this.password)})
     }
 
     _restoreWallets(password) {
         const decryptedData = decrypt(this.store.getState().vault, password);
-        this.wallets = decryptedData.map(walletData => new WALLET_MAP[walletData.type](walletData.data));
+        this.wallets = decryptedData.map(user => new Wallet(user));
     }
 }
