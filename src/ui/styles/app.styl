@@ -1,3 +1,35 @@
+@import "./colors.styl";
+
+:global * {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
 :global body {
-  background: bisque;
+  width: 364px;
+  height: 584px;
+}
+
+:global .disabled400 {
+  color: $disabled400;
+}
+
+:global .text {
+  font-family: Roboto;
+}
+
+:global .plainText {
+  font-family: Roboto;
+  font-size: 14px;
+  color: $black;
+}
+
+:global .infoText {
+  font-family: Roboto;
+  font-size: 14px;
+}
+
+:global .textCenter {
+  text-align: center;
 }

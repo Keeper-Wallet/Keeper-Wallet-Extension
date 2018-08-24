@@ -125,12 +125,16 @@ module.exports = env => {
         devtool: "source-map",
 
         resolve: {
-            extensions: [".ts", ".tsx", ".js", ".json", ".styl"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".svg"]
         },
 
         module: {
             //noParse: /fs/,
             rules: [
+                {
+                    test: /\.(png|jpg|svg)$/,
+                    loader: "url-loader?limit=1000&name=assets/img/[name].[ext]",
+                },
                 {
                     test: /\.tsx?$/,
                     loader: "babel-loader!awesome-typescript-loader",

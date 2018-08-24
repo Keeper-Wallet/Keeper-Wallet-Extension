@@ -1,8 +1,18 @@
-export const updateState = (store = {} as any, action: any) => {
+import { IState } from '../store';
 
-    if (action.type === 'updateState') {
-        return {...store, ...action.state};
+export const updateState = (store = {} as IState, action: any) => {
+
+    if (action.type === 'UPDATE_STATE') {
+        return { ...store, ...action.payload };
+    }
+
+    if (action.type === 'SET_TAB') {
+        const tab = action.payload;
+        const uiState = { ...store.uiState, tab };
+        return { ...store, uiState };
     }
 
     return store;
 };
+
+

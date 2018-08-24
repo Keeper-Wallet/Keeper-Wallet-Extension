@@ -24,6 +24,11 @@ class Background {
         return Background.background.setCurrentLocale(lng);
     }
 
+    async setUiState(newUiState) {
+        const { state } = store.getState();
+        return Background.background.setUiState({ ...state.uiState, ...newUiState });
+    }
+
     async selectAccount(address): Promise<void> {
         return Background.background.selectAccount(address);
     }
@@ -72,7 +77,7 @@ class Background {
     _onUpdate(state: IState) {
         i18n.changeLanguage(state.currentLocale);
         console.log('store', state);
-        store.dispatch({state, type: 'updateState'});
+        store.dispatch({payload: state, type: 'UPDATE_STATE'});
     }
 }
 

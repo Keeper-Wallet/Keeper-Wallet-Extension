@@ -1,12 +1,10 @@
 import { createStore, combineReducers } from 'redux';
 import { updateState } from './reducers/updateState'
-import { routerReducer } from 'react-router-redux';
 
 const reducers = combineReducers({
-    routing: routerReducer,
-    state: updateState,
-    app: (state) => state || {}
+    state: updateState
 });
+
 export const store = createStore(reducers);
 
 export interface IState {
@@ -17,7 +15,9 @@ export interface IState {
     currentNetwork: string;
     messages: Array<any>;
     balances: any;
+    uiState: IUiState;
 }
 
-export interface IApp {
+export interface IUiState {
+    tab: string;
 }
