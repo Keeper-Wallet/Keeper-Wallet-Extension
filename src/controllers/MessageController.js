@@ -40,10 +40,10 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    sign(id) {
+    async sign(id) {
         const message = this._getMessageById(id);
         try {
-            message.data = this.signWavesMessage(message.account, message.data);
+            message.data = await this.signWavesMessage(message.account, message.data);
             message.status = 'signed'
         } catch (e) {
             message.err = e;
@@ -52,11 +52,11 @@ export class MessageController extends EventEmitter {
         this._updateMessage(message);
         this.emit(`${message.id}:finished`, message);
         if (message.status === 'signed'){
-            return Promise.resolve()
+            return 'Ok'
         }else if (message.status === 'failed'){
-            return Promise.reject(message.err)
+            throw message.err
         }else {
-            return Promise.reject('Unknown error')
+            throw new Error('Unknown error')
         }
     }
 

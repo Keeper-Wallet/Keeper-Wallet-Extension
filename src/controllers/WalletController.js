@@ -18,6 +18,7 @@ export class WalletController {
 
     // Public
     addWallet(options) {
+        if (this.store.getState().locked) throw new Error('App is locked');
         let user;
         switch (options.type){
             case 'seed':
@@ -27,7 +28,8 @@ export class WalletController {
                     seed: seed.phrase,
                     publicKey: seed.keyPair.publicKey,
                     address: seed.address,
-                    networkCode: options.networkCode
+                    networkCode: options.networkCode,
+                    type: options.type
                 };
                 break;
             default:
@@ -43,6 +45,7 @@ export class WalletController {
     }
 
     removeWallet(address) {
+        if (this.store.getState().locked) throw new Error('App is locked');
         const index = this.wallets.findIndex(wallet => wallet.getAccount().address === address);
         this.wallets.splice(index, 1);
         this._saveWallets();
@@ -69,6 +72,7 @@ export class WalletController {
             throw new Error('Password is required');
         }
         this.password = password;
+        this.wallets = [];
         this._saveWallets();
         this.store.updateState({locked: false, initialized:true})
     }

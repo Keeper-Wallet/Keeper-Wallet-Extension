@@ -24,7 +24,8 @@ export class Wallet {
     async sign(tx){
         const Adapter = getAdapterByType(this.user.type);
         Adapter.initOptions({networkCode: this.user.networkCode});
-        const adapter = new Adapter(this.user);
+        //Todo: temporary for seed
+        const adapter = new Adapter(this.user.seed);
         const signable = adapter.makeSignable(tx);
         return await signable.getDataForApi()
     }

@@ -12,6 +12,14 @@ describe('WalletController', () => {
         expect(controller.store.getState().vault).to.be.a('string')
     });
 
+    it('Initialized vault should be empty', () => {
+        const controller = new WalletController();
+        controller.initVault(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+        controller.initVault(password);
+        expect(controller.wallets.length).to.eq(0)
+    });
+
     it('Should not init vault without password', () => {
         const controller = new WalletController();
         expect(() => controller.initVault()).to.throw('Password is required')
@@ -47,6 +55,17 @@ describe('WalletController', () => {
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
         expect(controller.wallets.length).to.eq(1)
+    });
+
+    it('Should not add wallets to locked vault', () => {
+        const controller = new WalletController({initState});
+        controller.lock();
+        try {
+            controller.addWallet({type: 'seed', networkCode: 'T', seed});
+        }catch (e) {
+            expect(e.message).to.eql('App is locked')
+        }
+        expect(controller.wallets.length).to.eq(0)
     });
 
     it('Should not add duplicate wallets', () => {
