@@ -1,2 +1,3 @@
 export * from './buttons';
-export * from './loader/Loader';
+export * from './input';
+export {default as Loader} from './loader';

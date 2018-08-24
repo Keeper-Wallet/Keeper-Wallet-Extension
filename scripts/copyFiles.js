@@ -44,6 +44,8 @@ function updateManifest(path, options = {}, to) {
 
         currentData[key] = jsonObject;
     });
-
+    if(fs.existsSync(to)) {
+        fs.unlinkSync(to);
+    }
     fs.writeFileSync(to, JSON.stringify(data, null, 4));
 }

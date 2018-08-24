@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as styles from './buttons.styl'
 
-export function Button({ className, children, ...props }: IProps ) {
+export function Button({ className, children, submit, ...props }: IProps ) {
     return (
         <button
-            className={`${className || ''} ${styles.button} ${props.submit ? styles.submit : ''}`}
+            className={`${className || ''} ${styles.button} ${submit ? styles.submit : ''}`}
             {...props}
         >
             {children}
@@ -16,5 +16,6 @@ interface IProps {
     children?: any;
     className?: string;
     onClick?: any;
-    submit?: boolean;
+    submit?: any;
+    disabled?: any;
 }
