@@ -41,9 +41,10 @@ async function setupBackgroundService() {
     });
 
     // global access to service on debug
-    if (WAVESKEEPER_DEBUG) {
-        global.background = backgroundService
-    }
+    // if (WAVESKEEPER_DEBUG) {
+    //     global.background = backgroundService
+    // }
+    global.background = backgroundService
 
     // setup state persistence
     pump(

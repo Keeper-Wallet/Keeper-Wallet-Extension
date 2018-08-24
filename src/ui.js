@@ -32,5 +32,7 @@ async function startUi() {
         })
     });
 
+    global.background = background
+
     initApp(background);
 }

@@ -1,22 +1,23 @@
-import {Seed} from '@waves/waves-signature-generator'
+import {Seed} from '@waves/signature-generator'
 import {getAdapterByType} from '@waves/signature-adapter'
 
-export class SeedWallet {
-    constructor(options = {}) {
-        this.data = options.data;
-        this.type = options.type;
-        this.networkCode = options.networkCode
+export class Wallet {
+    constructor(user) {
+        this.user = user
     }
 
     getAccount() {
-        return {publicKey: this.seed.keyPair.publicKey, type: this.type}
+        let account = Object.assign({}, this.user)
+        delete account['id'];
+        delete account['seed'];
+        return account;
     }
 
     serialize() {
-        return this.seed.phrase
+        return this.user
     }
 
     getSecret() {
-        return this.seed.phrase
+        return this.user.seed
     }
 }
