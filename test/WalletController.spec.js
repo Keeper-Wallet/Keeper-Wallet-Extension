@@ -1,6 +1,7 @@
 import {expect, assert} from 'chai';
 import {WalletController} from "../src/controllers";
 import {encrypt} from "../src/lib/encryprtor";
+import {Money} from "@waves/data-entities";
 
 describe('WalletController', () => {
     const password = 'example';
@@ -106,18 +107,33 @@ describe('WalletController', () => {
         const controller = new WalletController({initState});
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
+
+        // todo: request assset props from service by asset id
+        const money = new Money(100000, {
+            id: 'WAVES',
+            name: 'Default Name',
+            precision: 8,
+            description: 'Default description',
+            height: 10,
+            timestamp: new Date('2016-04-12'),
+            sender: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1',
+            quantity: 1000,
+            reissuable: false
+        })
         const tx = {
             type: 4,
             data: {
                 assetId: 'WAVES',
                 feeAssetId: 'WAVES',
-                amount: 100000,
+                amount: money,
+                fee: money,
                 attachment: '',
                 recipient: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'
             }
         }
         const address = controller.wallets[0].getAccount().address
-        await controller.sign(address, tx)
+        const signed = await controller.sign(address, tx)
+        let a = 2
 
     });
 });

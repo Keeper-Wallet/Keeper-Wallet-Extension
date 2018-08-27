@@ -1,4 +1,6 @@
 import {getAdapterByType} from '@waves/signature-adapter'
+import * as SG from "@waves/signature-generator"
+
 
 export class Wallet {
     constructor(user) {
