@@ -2,9 +2,23 @@ import {expect, assert} from 'chai';
 import {MessageController} from "../src/controllers";
 
 describe("MessageController", () => {
+    require('isomorphic-fetch');
+
     let controller;
     const address = 'SomeAddress';
     const origin = 'SomeOrigin';
+
+    const tx = {
+        type: 4,
+        data: {
+            assetId: 'WAVES',
+            feeAssetId: 'WAVES',
+            amount: 10000,
+            fee: 1000,
+            attachment: '',
+            recipient: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'
+        }
+    }
 
     beforeEach(() => {
         controller = new MessageController({sign: async() => 'placeholder'});
@@ -12,8 +26,8 @@ describe("MessageController", () => {
 
 
     it('Should add new messages and generate correct metadata', () => {
-        controller.newMessage(address, origin, 'message');
-        controller.newMessage(address, origin, 'message');
+        controller.newTx(address, origin, tx);
+        controller.newTx(address, origin, tx);
         const state = controller.store.getState();
         expect(state.messages.length).to.eql(2);
         expect(state.messages[0].id).to.be.a('string');
@@ -26,7 +40,7 @@ describe("MessageController", () => {
     });
 
     it('Should sign message using sign method passed with options', async () => {
-        const messagePromise = controller.newMessage(address, origin, 'message');
+        const messagePromise = controller.newTx(address, origin, tx);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
         await controller.sign(msgId);
@@ -36,7 +50,7 @@ describe("MessageController", () => {
     });
 
     it('Should reject messages', async () => {
-        const messagePromise = controller.newMessage(address, origin, 'message');
+        const messagePromise = controller.newTx(address, origin, tx);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
         controller.reject(msgId);
@@ -44,7 +58,7 @@ describe("MessageController", () => {
         let err;
         try {
             await messagePromise;
-        }catch (e) {
+        } catch (e) {
             err = e
         }
         expect(err).to.be.a('Error');

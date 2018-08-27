@@ -185,7 +185,7 @@ class BackgroundService extends EventEmitter {
     getInpageApi(origin) {
         return {
             sayHello: async () => 'hello',
-            signMessage: async (from, message) => await this.messageController.newMessage(from, origin, message)
+            signMessage: async (from, message) => await this.messageController.newTx(from, origin, message)
         }
     }
 

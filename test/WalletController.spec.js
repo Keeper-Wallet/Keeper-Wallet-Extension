@@ -133,7 +133,6 @@ describe('WalletController', () => {
         }
         const address = controller.wallets[0].getAccount().address
         const signed = await controller.sign(address, tx)
-        let a = 2
-
+        expect(signed.signature).to.be.a('string')
     });
 });

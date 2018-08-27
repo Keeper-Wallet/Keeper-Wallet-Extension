@@ -14,13 +14,13 @@ export class MessageController extends EventEmitter {
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
 
         // Signing method from WalletController
-        this.signWavesMessage = options.sign
+        this.signWavesTx = options.sign
     }
 
-    newMessage(from, origin, data) {
-        log.debug(`New message ${JSON.stringify(data)}`);
+    newTx(from, origin, tx) {
+        log.debug(`New tx ${JSON.stringify(tx)}`);
         let meta = this._generateMetadata(from, origin);
-        meta.data = data;
+        meta.tx = tx;
         let messages = this.store.getState().messages;
         messages.push(meta);
         this.store.updateState({messages});
@@ -28,7 +28,7 @@ export class MessageController extends EventEmitter {
             this.once(`${meta.id}:finished`, finishedMeta => {
                 switch (finishedMeta.status) {
                     case 'signed':
-                        return resolve(finishedMeta.data);
+                        return resolve(finishedMeta.tx);
                     case 'rejected':
                         return reject(new Error('User denied message'));
                     case 'failed':
@@ -43,7 +43,7 @@ export class MessageController extends EventEmitter {
     async sign(id) {
         const message = this._getMessageById(id);
         try {
-            message.data = await this.signWavesMessage(message.account, message.data);
+            message.tx = await this.signWavesTx(message.account, message.tx);
             message.status = 'signed'
         } catch (e) {
             message.err = e;
@@ -52,7 +52,7 @@ export class MessageController extends EventEmitter {
         this._updateMessage(message);
         this.emit(`${message.id}:finished`, message);
         if (message.status === 'signed'){
-            return message.data
+            return message.tx
         }else if (message.status === 'failed'){
             throw message.err
         }else {
