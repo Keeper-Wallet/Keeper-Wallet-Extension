@@ -18,7 +18,7 @@ import {
     NetworkController,
     MessageController,
     BalanceController,
-    UiStateController
+    UiStateController, AssetInfoController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
@@ -129,6 +129,8 @@ class BackgroundService extends EventEmitter {
             sign: this.walletController.sign.bind(this.walletController)
         });
 
+        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
+
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
@@ -136,7 +138,8 @@ class BackgroundService extends EventEmitter {
             NetworkController: this.networkContoller.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
-            UiStateController: this.uiStateController.store
+            UiStateController: this.uiStateController.store,
+            AssetInfoController: this.assetInfoController.store
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -185,7 +188,10 @@ class BackgroundService extends EventEmitter {
     getInpageApi(origin) {
         return {
             sayHello: async () => 'hello',
-            signMessage: async (from, message) => await this.messageController.newTx(from, origin, message)
+            signMessage: async (from, message) => {
+                const convertedTx = await this.assetInfoController.addAssetInfo(message);
+                return await this.messageController.newTx(from, origin, convertedTx)
+            }
         }
     }
 

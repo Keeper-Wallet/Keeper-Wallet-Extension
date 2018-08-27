@@ -93,6 +93,7 @@ export class WalletController {
 
     async sign(address, data) {
         const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
+        if (!wallet) throw new Error(`Wallet not found for address ${address}`);
         return await wallet.sign(data)
     }
 
