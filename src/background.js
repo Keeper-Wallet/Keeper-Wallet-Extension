@@ -1,6 +1,5 @@
 import log from 'loglevel';
 import pump from 'pump';
-import Dnode from 'dnode/browser';
 import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
@@ -11,7 +10,7 @@ import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import { ComposableObservableStore } from './lib/ComposableObservableStore';
-import * as LocalStore from './lib/local-store';
+import LocalStore from './lib/local-store';
 import {
     PreferencesController,
     WalletController,
@@ -22,14 +21,14 @@ import {
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
-const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
+const WAVESKEEPER_DEBUG = true;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
 
 
 async function setupBackgroundService() {
-    const localStore = new LocalStore.default();
+    const localStore = new LocalStore();
 
     // create background service
     const initState = await localStore.get();
@@ -41,10 +40,9 @@ async function setupBackgroundService() {
     });
 
     // global access to service on debug
-    // if (WAVESKEEPER_DEBUG) {
-    //     global.background = backgroundService
-    // }
-    global.background = backgroundService
+    if (WAVESKEEPER_DEBUG) {
+        global.background = backgroundService
+    }
 
     // setup state persistence
     pump(
