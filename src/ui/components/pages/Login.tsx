@@ -3,6 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 
+@translate('login')
 class LoginComponent extends React.Component {
 
     render () {
@@ -20,4 +21,4 @@ const mapStateToProps = function(store: any) {
     };
 };
 
-export const Login = translate('intro')(connect(mapStateToProps)(LoginComponent));
+export const Login = connect(mapStateToProps)(LoginComponent);

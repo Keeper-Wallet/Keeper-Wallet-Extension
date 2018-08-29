@@ -1,15 +1,20 @@
 import * as styles from './styles/conditions.styl';
 import * as React from 'react'
-import service from '../../services/Background';
+import { setTab } from '../../actions';
 import { translate, Trans } from 'react-i18next';
+import { connect } from 'react-redux';
 import { Button } from '../ui/buttons';
 import { HeadLogo } from '../head/HeadLogo';
 
-
+@translate('conditions')
 class ConditionsComponent extends React.Component {
 
+    props: {
+        setTab: (tab) => void
+    };
+
     onClick() {
-        service.setUiState({ tab: 'new' });
+        this.props.setTab('new');
     }
 
     render () {
@@ -66,4 +71,8 @@ class ConditionsComponent extends React.Component {
     }
 }
 
-export const Conditions = translate('conditions')(ConditionsComponent);
+const mapStateToProps = function () {
+    return {};
+};
+
+export const Conditions = connect(mapStateToProps, { setTab })(ConditionsComponent);

@@ -1,18 +1,39 @@
-import { IState } from '../store';
+import { ACTION } from '../actions/constants';
 
-export const updateState = (store = {} as IState, action: any) => {
 
-    if (action.type === 'UPDATE_STATE') {
-        return { ...store, ...action.payload };
-    }
-
-    if (action.type === 'SET_TAB') {
-        const tab = action.payload;
-        const uiState = { ...store.uiState, tab };
-        return { ...store, uiState };
-    }
-
-    return store;
+export const locked = (store = null, action: any) => {
+    return action.type === ACTION.UPDATE_LOCK ? action.payload : store;
 };
 
+export const initialized = (store = null, action: any) => {
+    return action.type === ACTION.UPDATE_HAS_ACCOUNT ? action.payload : store;
+};
+
+export const tab = (store = '', action: any) => {
+    return action.type === ACTION.UPDATE_FROM_TAB ? action.payload : store;
+};
+
+export const uiState = (store = {}, action: any) => {
+    return action.type === ACTION.UPDATE_UI_STATE ? action.payload : store;
+};
+
+export const accounts = (store = [], action: any) => {
+    return action.type === ACTION.UPDATE_ACCOUNTS ? action.payload : store;
+};
+
+export const currentNetwork = (store = '', action: any) => {
+    return action.type === ACTION.UPDATE_CURRENT_NETWORK ? action.payload : store;
+};
+
+export const messages = (store = [], action: any) => {
+    return action.type === ACTION.UPDATE_MESSAGES ? action.payload : store;
+};
+
+export const balances = (store = [], action: any) => {
+    return action.type === ACTION.UPDATE_BALANCES ? action.payload : store;
+};
+
+export const currentLocale = (store = [], action: any) => {
+    return action.type === ACTION.UPDATE_FROM_LNG ? action.payload : store;
+};
 

@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IUiState } from '../store';
-import { setTab } from '../actions/setTab';
-import service from '../services/Background';
-import { Login } from './pages/Login';
-import { Intro } from './pages/Intro';
-import { Conditions } from './pages/Conditions';
-import { NewAccount } from './pages/NewAccount';
+import { setTab } from '../actions';
+import { Login, Intro, Conditions, NewAccount, Import, Assets } from './pages';
 
 
 
@@ -16,16 +11,16 @@ class RootComponent extends React.Component<any, any> {
 
     render() {
 
-        let storyTab = this.props.uiState.tab;
+        let storyTab = this.props.tab;
 
         if (this.props.locked == null) {
-            storyTab = '';
+            storyTab = 'intro';
         } else if (!storyTab) {
             storyTab = 'conditions';
         }
 
         if (storyTab && !this.canUseTab(storyTab)) {
-            service.setUiState({ tab : this.getStateTab() });
+            this.props.setTab(this.getStateTab());
             storyTab = '';
         }
 
@@ -36,8 +31,10 @@ class RootComponent extends React.Component<any, any> {
                 return <Login/>;
             case 'new':
                 return <NewAccount/>;
-            case 'assets':
             case 'import':
+                return <Import/>;
+            case 'assets':
+                return <Assets/>;
             case 'intro':
             default:
                 return <Intro/>;
@@ -46,7 +43,7 @@ class RootComponent extends React.Component<any, any> {
 
     getStateTab() {
         if (this.props.locked) {
-            return this.props.hasAccount ? 'login' : 'conditions';
+            return this.props.initialized ? 'login' : 'conditions';
         }
 
         return this.props.accounts.length ? 'assets' : 'import';
@@ -56,9 +53,9 @@ class RootComponent extends React.Component<any, any> {
         switch (tab) {
             case 'new':
             case 'conditions':
-                return !this.props.hasAccount;
+                return !this.props.initialized;
             case 'login':
-                return this.props.hasAccount;
+                return this.props.initialized && this.props.locked;
             default:
                 return !this.props.locked;
         }
@@ -67,10 +64,10 @@ class RootComponent extends React.Component<any, any> {
 
 const mapStateToProps = function (store: any) {
     return {
-        locked: store.state.locked,
-        hasAccount: store.state.hasAccount,
-        accounts: store.state.accounts || [],
-        uiState: store.state.uiState || {}
+        locked: store.locked,
+        initialized: store.initialized,
+        accounts: store.accounts || [],
+        tab: store.tab || ''
     };
 };
 
@@ -79,8 +76,8 @@ export const Root = connect(mapStateToProps, { setTab })(RootComponent);
 
 interface IProps {
     locked: boolean;
-    hasAccount: boolean;
+    initialized: boolean;
     accounts: Array<any>;
-    uiState: IUiState;
     setTab: (tab: string) => void;
+    tab: string;
 }

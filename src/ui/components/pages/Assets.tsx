@@ -3,13 +3,13 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 
-@translate('restore')
-class RestoreComponent extends React.Component {
+@translate('assets')
+class AssetsComponent extends React.Component {
 
     render () {
         return <div className={styles.login}>
             <Trans>
-                Confirm page
+                Assets page
             </Trans>
         </div>
     }
@@ -21,4 +21,4 @@ const mapStateToProps = function(store: any) {
     };
 };
 
-export const Restore = connect(mapStateToProps)(RestoreComponent);
+export const Assets = connect(mapStateToProps)(AssetsComponent);
