@@ -44,7 +44,6 @@ export class NewAccountComponent extends React.Component {
 
     render() {
         return <div className={styles.account}>
-                <HeadLogo/>
                 <div className={styles.content}>
                     <h2>
                         <Trans i18nKey='protect'>Protect Your Account</Trans>

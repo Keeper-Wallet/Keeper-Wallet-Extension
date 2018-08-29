@@ -31,6 +31,27 @@ export function updateState(state) {
         });
     }
 
+    if (messages.length !== currentState.messages.length) {
+        actions.push({
+            type: ACTION.UPDATE_MESSAGES,
+            payload: messages
+        });
+    }
+
+    if (accounts.length !== currentState.accounts.length) {
+        actions.push({
+            type: ACTION.UPDATE_ACCOUNTS,
+            payload: accounts
+        });
+    }
+
+    if (initialized !== currentState.initialized) {
+        actions.push({
+            type: ACTION.UPDATE_HAS_ACCOUNT,
+            payload: initialized
+        });
+    }
+
     if (locked !== currentState.locked) {
         actions.push({
             type: ACTION.UPDATE_LOCK,
@@ -45,31 +66,10 @@ export function updateState(state) {
         });
     }
 
-    if (initialized !== currentState.initialized) {
-        actions.push({
-            type: ACTION.UPDATE_HAS_ACCOUNT,
-            payload: initialized
-        });
-    }
-
-    if (accounts.length !== currentState.accounts.length) {
-        actions.push({
-            type: ACTION.UPDATE_ACCOUNTS,
-            payload: accounts
-        });
-    }
-
     if (balances.length !== currentState.balances.length) {
         actions.push({
             type: ACTION.UPDATE_BALANCES,
             payload: balances
-        });
-    }
-
-    if (messages.length !== currentState.messages.length) {
-        actions.push({
-            type: ACTION.UPDATE_MESSAGES,
-            payload: messages
         });
     }
 

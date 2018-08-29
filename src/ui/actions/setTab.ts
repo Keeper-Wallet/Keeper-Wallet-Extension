@@ -6,3 +6,10 @@ export function setTab(tab) {
         payload: tab,
     };
 }
+
+export function setTmpTab(tab) {
+    return {
+        type: ACTION.CHANGE_TMP_TAB,
+        payload: tab,
+    };
+}

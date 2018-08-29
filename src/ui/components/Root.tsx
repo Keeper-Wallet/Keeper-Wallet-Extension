@@ -24,6 +24,17 @@ class RootComponent extends React.Component<any, any> {
             storyTab = '';
         }
 
+        if (!this.props.locked && this.props.tmpTab) {
+            switch (this.props.tmpTab) {
+                case 'settings':
+                    return <div>settings</div>;
+                case 'info':
+                    return <div>info</div>;
+                default:
+                    return <div>Wrong page</div>;
+            }
+        }
+
         switch (storyTab) {
             case 'conditions':
                 return <Conditions/>;
@@ -67,7 +78,8 @@ const mapStateToProps = function (store: any) {
         locked: store.locked,
         initialized: store.initialized,
         accounts: store.accounts || [],
-        tab: store.tab || ''
+        tab: store.tab || '',
+        tmpTab: store.tmpTab
     };
 };
 
@@ -80,4 +92,5 @@ interface IProps {
     accounts: Array<any>;
     setTab: (tab: string) => void;
     tab: string;
+    tmpTab: string;
 }

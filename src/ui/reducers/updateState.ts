@@ -1,5 +1,8 @@
 import { ACTION } from '../actions/constants';
 
+export const tmpTab = (store = null, action: any) => {
+    return action.type === ACTION.CHANGE_TMP_TAB ? action.payload : store;
+};
 
 export const locked = (store = null, action: any) => {
     return action.type === ACTION.UPDATE_LOCK ? action.payload : store;

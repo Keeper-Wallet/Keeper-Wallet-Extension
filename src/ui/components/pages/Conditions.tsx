@@ -4,7 +4,6 @@ import { setTab } from '../../actions';
 import { translate, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Button } from '../ui/buttons';
-import { HeadLogo } from '../head/HeadLogo';
 
 @translate('conditions')
 class ConditionsComponent extends React.Component {
@@ -19,9 +18,6 @@ class ConditionsComponent extends React.Component {
 
     render () {
         return <div className={styles.conditions}>
-
-            <HeadLogo/>
-
             <div className={styles.contentWrapper}>
 
                 <h3 className={`${styles.title} text`}>
