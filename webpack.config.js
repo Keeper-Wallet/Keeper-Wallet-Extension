@@ -125,7 +125,7 @@ module.exports = env => {
         devtool: "source-map",
 
         resolve: {
-            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".svg"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
         },
 
         module: {
@@ -134,6 +134,10 @@ module.exports = env => {
                 {
                     test: /\.(png|jpg|svg)$/,
                     loader: "url-loader?limit=1000&name=assets/img/[name].[ext]",
+                },
+                {
+                    test: /\.(woff|woff2|ttf|otf)$/,
+                    loader: "url-loader?limit=1000&name=assets/fonts/[name].[ext]",
                 },
                 {
                     test: /\.tsx?$/,
