@@ -1,5 +1,11 @@
 @import '../../../styles/colors.styl';
 
+.buttons-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .button {
     width: 236px;
     height: 40px;
@@ -8,10 +14,14 @@
     font-family: Roboto;
     font-size: 14px;
     font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .submit {
-    background-color: $submit;
+    background-color: $submit-400;
+    font-family: Roboto-Medium;
     color: $white;
 
     &.disabled {

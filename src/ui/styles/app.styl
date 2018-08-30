@@ -5,6 +5,7 @@
   border: 0;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 :global body {
@@ -13,22 +14,51 @@
   font-family: Roboto;
 }
 
-:global .disabled400 {
-  color: $disabled400;
-}
-
-:global .text {
-}
-
-:global .plainText {
-  font-size: 14px;
-  color: $black;
-}
-
-:global .infoText {
-  font-size: 14px;
-}
-
-:global .textCenter {
+:global .center {
   text-align: center;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+}
+
+// typography
+:global .title-1 {
+  font-size: 24px;
+}
+
+:global .headline-1 {
+  font-size: 18px;
+}
+
+:global .headline-2 {
+  font-size: 18px;
+  font-family: Roboto-Medium;
+}
+
+:global .headline-3 {
+  font-size: 16px;
+}
+
+:global .headline-4 {
+  font-size: 16px;
+  font-family: Roboto-Medium;
+}
+
+:global .body-1 {
+  font-size: 16px;
+}
+
+:global .body-2 {
+  font-size: 16px;
+  font-family: Roboto-Medium;
+}
+
+:global .body-3 {
+  font-size: 12px;
+}
+
+:global .tag-1 {
+  font-size: 11px;
 }

@@ -24,7 +24,7 @@ class ConditionsComponent extends React.Component {
                     <Trans i18nKey="title">TERMS AND CONDITIONS</Trans>
                 </h3>
 
-                <div className={`disabled400 infoText ${styles.attention}`}>
+                <div className={`disabled-400 infoText ${styles.attention}`}>
                     <Trans i18nKey="attention">
                         ATTENTION: PLEASE READ CAREFULLY THESE TERMS AND CONDITIONS AS THEY AFFECT
                         YOUR OBLIGATIONS AND LEGAL RIGHTS, INCLUDING, BUT NOT LIMITED TO WAIVERS OF
@@ -33,7 +33,7 @@ class ConditionsComponent extends React.Component {
                     </Trans>
                 </div>
 
-                <div className={`disabled400 infoText ${styles.attention}`}>
+                <div className={`disabled-400 infoText ${styles.attention}`}>
                     <Trans i18nKey="updated">
                         This version was last updated on 22/06/2018.
                     </Trans>
