@@ -45,17 +45,10 @@ export function updateState(state) {
         });
     }
 
-    if (initialized !== currentState.initialized) {
+    if (initialized !== currentState.state.initialized || locked !== currentState.state.locked) {
         actions.push({
-            type: ACTION.UPDATE_HAS_ACCOUNT,
-            payload: initialized
-        });
-    }
-
-    if (locked !== currentState.locked) {
-        actions.push({
-            type: ACTION.UPDATE_LOCK,
-            payload: locked
+            type: ACTION.UPDATE_APP_STATE,
+            payload: { initialized, locked }
         });
     }
 
