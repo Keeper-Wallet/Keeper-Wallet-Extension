@@ -27,5 +27,6 @@ export const setPassword = store => next => action => {
     if (action.type === ACTION.SET_PASSWORD) {
         background.initVault(action.payload);
     }
+    
     return next(action);
 };

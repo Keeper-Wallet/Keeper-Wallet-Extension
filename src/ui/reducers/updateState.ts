@@ -4,12 +4,8 @@ export const tmpTab = (store = null, action: any) => {
     return action.type === ACTION.CHANGE_TMP_TAB ? action.payload : store;
 };
 
-export const locked = (store = null, action: any) => {
-    return action.type === ACTION.UPDATE_LOCK ? action.payload : store;
-};
-
-export const initialized = (store = null, action: any) => {
-    return action.type === ACTION.UPDATE_HAS_ACCOUNT ? action.payload : store;
+export const state = (store = null, action: any) => {
+    return action.type === ACTION.UPDATE_APP_STATE ? action.payload : store;
 };
 
 export const tab = (store = '', action: any) => {
