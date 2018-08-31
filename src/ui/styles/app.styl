@@ -1,64 +1,70 @@
 @import "./colors.styl";
 @import "./fonts.styl";
 
-:global * {
+:global *
   border: 0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
 
-:global body {
-  width: 364px;
-  height: 584px;
+:global body
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 14px;
+  line-height: 1.1em;
   font-family: Roboto;
-}
+  position: relative;
 
-:global .center {
+  &::before {
+    height: 40px;
+    width: 100%;
+    content: '';
+    display: block;
+    background: red;
+    margin: -14px;
+    z-index: 1;
+    position: absolute;
+  }
+
+:global #app-content,
+:global .app
+  height: 100%;
+
+:global .center
   text-align: center;
-}
 
-.flex {
+.flex
   display: flex;
   justify-content: center;
-}
 
 // typography
-:global .title-1 {
+:global .title1
   font-size: 24px;
-}
 
-:global .headline-1 {
+:global .headline1
   font-size: 18px;
-}
 
-:global .headline-2 {
+:global .headline2
   font-size: 18px;
   font-family: Roboto-Medium;
-}
 
-:global .headline-3 {
+:global .headline3
   font-size: 16px;
-}
 
-:global .headline-4 {
+:global .headline4
   font-size: 16px;
-  font-family: Roboto-Medium;
-}
+  font-family: Roboto;
 
-:global .body-1 {
-  font-size: 16px;
-}
+:global .body1
+  font-size: 14px;
 
-:global .body-2 {
+:global .body2
   font-size: 16px;
   font-family: Roboto-Medium;
-}
 
-:global .body-3 {
+:global .body3
   font-size: 12px;
-}
 
-:global .tag-1 {
+:global .tag1
   font-size: 11px;
-}

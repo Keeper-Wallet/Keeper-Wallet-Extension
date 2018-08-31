@@ -20,11 +20,11 @@ class ConditionsComponent extends React.Component {
         return <div className={styles.conditions}>
             <div className={styles.contentWrapper}>
 
-                <h3 className={`${styles.title} text`}>
+                <h3 className={`${styles.title} headline3`}>
                     <Trans i18nKey="title">TERMS AND CONDITIONS</Trans>
                 </h3>
 
-                <div className={`disabled-400 infoText ${styles.attention}`}>
+                <div className={`basic500 ${styles.attention}`}>
                     <Trans i18nKey="attention">
                         ATTENTION: PLEASE READ CAREFULLY THESE TERMS AND CONDITIONS AS THEY AFFECT
                         YOUR OBLIGATIONS AND LEGAL RIGHTS, INCLUDING, BUT NOT LIMITED TO WAIVERS OF
@@ -33,19 +33,17 @@ class ConditionsComponent extends React.Component {
                     </Trans>
                 </div>
 
-                <div className={`disabled-400 infoText ${styles.attention}`}>
+                <div className={`basic500 ${styles.attention}`}>
                     <Trans i18nKey="updated">
                         This version was last updated on 22/06/2018.
                     </Trans>
                 </div>
 
-                <div className={`${styles.mark} infoText`}>
-                    <h3>
-                        1. <Trans i18nKey='agreement'>Agreement</Trans>
-                    </h3>
+                <div className={`${styles.mark} headline4`}>
+                    1. <Trans i18nKey='agreement'>Agreement</Trans>
                 </div>
 
-                <div className={`${styles.mark} plainText`}>
+                <div className={`${styles.mark} body1`}>
                     <Trans i18nkey='agreementsText'>
                         This is a contract between you and Waves Platform AG, a joint stock company
                         incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
@@ -57,11 +55,9 @@ class ConditionsComponent extends React.Component {
                 </div>
             </div>
 
-            <div className={`${styles.mark} textCenter`}>
-                <Button onClick={this.onClick.bind(this)} submit={true}>
-                    <Trans className="text" i18nKey='accept'>Accept</Trans>
-                </Button>
-            </div>
+            <Button onClick={this.onClick.bind(this)} submit={true}>
+                <Trans className="text" i18nKey='accept'>Accept</Trans>
+            </Button>
 
         </div>
     }

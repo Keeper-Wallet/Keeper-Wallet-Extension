@@ -1,34 +1,29 @@
 @import '../../../styles/colors.styl';
 
-.buttons-wrapper {
+.buttons-wrapper
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
 
-.button {
+.button
     width: 236px;
     height: 40px;
+    display: block;
     border-radius: 4px;
-    background-color: $white;
-    font-family: Roboto;
+    font-family: Roboto-Medium;
     font-size: 14px;
-    font-weight: bold;
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-}
+    margin: 0 auto;
 
-.submit {
-    background-color: $submit-400;
-    font-family: Roboto-Medium;
+.submit
+    background-color: $submit400;
     color: $white;
 
-    &.disabled {
-        background-color: $submit-disabled;
-    }
-    
-    &:hover {
-        background: $submit-hover;
-    }
-}
+    &.disabled
+        background-color: $submit200;
+        cursor: default;
+
+    &:hover
+        background: $submit300;
