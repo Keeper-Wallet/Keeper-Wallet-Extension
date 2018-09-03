@@ -2,7 +2,6 @@ import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
 import { createNew } from '../../actions';
 import * as React from 'react'
-import {HeadLogo} from '../head';
 import {Input, Button} from '../ui';
 import { translate, Trans } from 'react-i18next';
 

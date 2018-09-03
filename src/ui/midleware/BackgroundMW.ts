@@ -1,5 +1,6 @@
 import { ACTION } from '../actions/constants';
 import background from '../services/Background';
+export * from './setPassword';
 import { i18n } from '../i18n';
 
 export const changeLang = store => next => action => {
@@ -23,10 +24,3 @@ export const changeTab = store => next => action => {
     return next(action);
 };
 
-export const setPassword = store => next => action => {
-    if (action.type === ACTION.SET_PASSWORD) {
-        background.initVault(action.payload);
-    }
-    
-    return next(action);
-};
