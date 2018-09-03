@@ -1,4 +1,5 @@
 import { ACTION } from '../actions/constants';
+export * from './localState';
 
 export const tmpTab = (store = null, action: any) => {
     return action.type === ACTION.CHANGE_TMP_TAB ? action.payload : store;

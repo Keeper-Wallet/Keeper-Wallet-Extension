@@ -7,6 +7,7 @@ import { translate, Trans } from 'react-i18next';
 
 
 const mapStateToProps = function (store: any) {
+    debugger;
     return {};
 };
 

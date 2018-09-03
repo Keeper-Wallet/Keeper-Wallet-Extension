@@ -4,7 +4,7 @@ import * as middleware from './midleware/BackgroundMW';
 
 export const store = createStore(
     combineReducers(reducers),
-    { state: {} },
+    {},
     applyMiddleware(
         ...Object.values(middleware)
     )

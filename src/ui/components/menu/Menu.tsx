@@ -60,7 +60,7 @@ class MenuComponent extends React.Component {
 const mapStateToProps = function(store: any) {
     return {
         onMenu: store.tmpTab,
-        locked: store.state.locked,
+        locked: store.state && store.state.locked || null,
         tab: store.tab,
     };
 };

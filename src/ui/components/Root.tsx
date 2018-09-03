@@ -75,8 +75,8 @@ class RootComponent extends React.Component<any, any> {
 
 const mapStateToProps = function (store: any) {
     return {
-        locked: store.state.locked,
-        initialized: store.state.initialized,
+        locked: store.state && store.state.locked,
+        initialized: store.state && store.state.initialized,
         accounts: store.accounts || [],
         tab: store.tab || '',
         tmpTab: store.tmpTab

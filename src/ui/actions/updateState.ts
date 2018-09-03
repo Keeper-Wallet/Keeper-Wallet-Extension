@@ -45,7 +45,7 @@ export function updateState(state) {
         });
     }
 
-    if (initialized !== currentState.state.initialized || locked !== currentState.state.locked) {
+    if (!currentState.state || initialized !== currentState.state.initialized || locked !== currentState.state.locked) {
         actions.push({
             type: ACTION.UPDATE_APP_STATE,
             payload: { initialized, locked }

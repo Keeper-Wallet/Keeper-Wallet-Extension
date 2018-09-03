@@ -9,6 +9,8 @@ function newUser(state = {}, action) {
          case ACTION.SET_PASSWORD_UPDATE:
              return {...state, ...action.payload };
     }
+
+    return state;
 }
 
 
