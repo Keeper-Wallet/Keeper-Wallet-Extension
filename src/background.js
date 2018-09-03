@@ -17,7 +17,7 @@ import {
     NetworkController,
     MessageController,
     BalanceController,
-    UiStateController, AssetInfoController
+    UiStateController, AssetInfoController, ExternalDeviceController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
@@ -178,8 +178,10 @@ class BackgroundService extends EventEmitter {
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
-            setNetwork: async (network) => this.networkContoller.setNetwork(network)
+            setNetwork: async (network) => this.networkContoller.setNetwork(network),
 
+            // external devices
+            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)
         }
     }
 
