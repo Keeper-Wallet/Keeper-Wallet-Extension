@@ -1,22 +1,68 @@
-import {Seed} from '@waves/waves-signature-generator'
 import {getAdapterByType} from '@waves/signature-adapter'
+import * as SG from "@waves/signature-generator"
 
-export class SeedWallet {
-    constructor(options = {}) {
-        this.data = options.data;
-        this.type = options.type;
-        this.networkCode = options.networkCode
+
+export class Wallet {
+    constructor(user) {
+        if (!user) throw new Error('user required')
+        this.user = user
     }
 
     getAccount() {
-        return {publicKey: this.seed.keyPair.publicKey, type: this.type}
+        let account = Object.assign({}, this.user)
+        delete account['id'];
+        delete account['seed'];
+        return account;
     }
 
     serialize() {
-        return this.seed.phrase
+        return this.user
     }
 
     getSecret() {
-        return this.seed.phrase
+        return this.user.seed
+    }
+
+    async sign(tx){
+        const Adapter = getAdapterByType(this.user.type);
+        Adapter.initOptions({networkCode: this.user.networkCode});
+        //Todo: temporary for seed
+        const adapter = new Adapter(this.user.seed);
+        const signable = adapter.makeSignable(tx);
+        return await signable.getDataForApi()
     }
 }
+//
+// export class Wallet {
+//     constructor(options = {}) {
+//         this.networkCode = options.networkCode;
+//         const Adapter = getAdapterByType(options.type);
+//         Adapter.initOptions({networkCode: this.networkCode});
+//         this._adapter = new Adapter(options.data);
+//         this.type = options.type
+//     }
+//
+//     async getAccount() {
+//         return {
+//             networkCode: this.networkCode,
+//             publicKey: await this._adapter.getPublicKey(),
+//             type: this.type,
+//         }
+//     }
+//
+//     async serialize() {
+//         return {
+//             data: await this._adapter.getSeed(),
+//             networkCode: this.networkCode,
+//         }
+//     }
+//
+//     async getSecret() {
+//         return await this._adapter.getSeed()
+//     }
+//
+//     async sign(tx) {
+//         const signable = this._adapter.makeSignable(tx);
+//         return await signable.getDataForApi()
+//     }
+// }

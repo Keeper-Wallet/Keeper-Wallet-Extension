@@ -5,7 +5,7 @@ import {cbToPromise, setupDnode, transformMethods} from './lib/dnode-util';
 import log from "loglevel";
 import {initApp} from './ui/index';
 
-const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
+const WAVESKEEPER_DEBUG = true;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 startUi().catch(log.error);
@@ -31,6 +31,12 @@ async function startUi() {
             resolve(backgroundWithPromises)
         })
     });
+
+    // global access to service on debug
+    if (WAVESKEEPER_DEBUG) {
+        global.background = background
+    }
+
 
     initApp(background);
 }

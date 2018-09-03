@@ -1,6 +1,5 @@
 import log from 'loglevel';
 import pump from 'pump';
-import Dnode from 'dnode/browser';
 import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
@@ -11,25 +10,25 @@ import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import { ComposableObservableStore } from './lib/ComposableObservableStore';
-import * as LocalStore from './lib/local-store';
+import LocalStore from './lib/local-store';
 import {
     PreferencesController,
     WalletController,
     NetworkController,
     MessageController,
     BalanceController,
-    UiStateController
+    UiStateController, AssetInfoController, ExternalDeviceController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
 
-const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
+const WAVESKEEPER_DEBUG = true;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
 
 
 async function setupBackgroundService() {
-    const localStore = new LocalStore.default();
+    const localStore = new LocalStore();
 
     // create background service
     const initState = await localStore.get();
@@ -128,6 +127,8 @@ class BackgroundService extends EventEmitter {
             sign: this.walletController.sign.bind(this.walletController)
         });
 
+        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
+
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
@@ -135,7 +136,8 @@ class BackgroundService extends EventEmitter {
             NetworkController: this.networkContoller.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
-            UiStateController: this.uiStateController.store
+            UiStateController: this.uiStateController.store,
+            AssetInfoController: this.assetInfoController.store
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -172,19 +174,24 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            sign: async (messageId) => this.messageController.sign(messageId),
+            sign: async (messageId) => await this.messageController.sign(messageId),
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
-            setNetwork: async (network) => this.networkContoller.setNetwork(network)
+            setNetwork: async (network) => this.networkContoller.setNetwork(network),
 
+            // external devices
+            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)
         }
     }
 
     getInpageApi(origin) {
         return {
             sayHello: async () => 'hello',
-            signMessage: async (from, message) => await this.messageController.newMessage(from, origin, message)
+            signMessage: async (from, message) => {
+                const convertedTx = await this.assetInfoController.addAssetInfo(message);
+                return await this.messageController.newTx(from, origin, convertedTx)
+            }
         }
     }
 

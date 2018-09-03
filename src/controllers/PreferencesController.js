@@ -20,11 +20,11 @@ export class PreferencesController {
 
     addAccount(account) {
         const accounts = this.store.getState().accounts;
-        if (!this._getAccountByPk(account.publicKey)) {
+        if (!this._getAccountByAddress(account.address)) {
             accounts.push(Object.assign({name: `Account ${accounts.length + 1}`}, account));
             this.store.updateState({accounts})
         } else {
-            log.log(`Account with public key ${account} already exists`)
+            log.log(`Account with address key ${account.address} already exists`)
         }
     }
 
@@ -34,33 +34,33 @@ export class PreferencesController {
             return Object.assign(
                 {name: `Account ${i + 1}`},
                 account,
-                oldAccounts.find(oldAcc => oldAcc.publicKey === account.publicKey)
+                oldAccounts.find(oldAcc => oldAcc.address === account.address)
             )
         });
         this.store.updateState({accounts});
 
         // Ensure we have selected account
         let selectedAccount = this.store.getState().selectedAccount;
-        if (!selectedAccount || !accounts.find(account => account.publicKey === selectedAccount)){
-            selectedAccount = accounts.length > 0 ? accounts[0].publicKey : undefined;
+        if (!selectedAccount || !accounts.find(account => account.address === selectedAccount)){
+            selectedAccount = accounts.length > 0 ? accounts[0].address : undefined;
             this.store.updateState({selectedAccount})
         }
     }
 
     addLabel(account, label) {
         const accounts = this.store.getState().accounts;
-        const index = accounts.findIndex(current => current.publicKey === account.publicKey);
+        const index = accounts.findIndex(current => current.address === account.address);
         accounts[index].name = label;
         this.store.updateState({accounts})
     }
 
-    selectAccount(publicKey) {
-        //const selectedAccount = this._getAccountByPk(publicKey);
-        this.store.updateState({selectedAccount: publicKey})
+    selectAccount(address) {
+        //const selectedAccount = this._getAccountByAddress(publicKey);
+        this.store.updateState({selectedAccount: address})
     }
 
-    _getAccountByPk(publicKey) {
+    _getAccountByAddress(address) {
         const accounts = this.store.getState().accounts;
-        return accounts.find(account => account.publicKey === publicKey)
+        return accounts.find(account => account.address === address)
     }
 }
