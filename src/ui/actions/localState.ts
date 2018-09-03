@@ -1,49 +1,22 @@
 import { ACTION } from './constants';
 
+const createCommonAction = (type, pending) => (error = false) => ({
+    type,
+    payload: {
+        pending,
+        error
+    }
+});
 
-export function newUser() {
-   return {
-       type: ACTION.SET_PASSWORD_PENDING,
-       payload: {
-           pending: true,
-           error: false
-       }
-   };
-}
+const createMVAction = type => payload => ({
+    type,
+    payload
+});
 
-export function newUserUpdate(error) {
-    return {
-        type: ACTION.SET_PASSWORD_UPDATE,
-        payload: {
-            pending: false,
-            error: error
-        }
-    };
-}
+export const createNew = createMVAction(ACTION.SET_PASSWORD);
+export const newUser = createCommonAction(ACTION.SET_PASSWORD_PENDING, true);
+export const newUserUpdate = createCommonAction(ACTION.SET_PASSWORD_UPDATE, false);
 
-export function login(password) {
-    return {
-        type: ACTION.LOGIN,
-        payload: password
-    };
-}
-
-export function loginPending() {
-    return {
-        type: ACTION.LOGIN_PENDING,
-        payload: {
-            pending: true,
-            error: false
-        }
-    };
-}
-
-export function loginUpdate(error) {
-    return {
-        type: ACTION.LOGIN_UPDATE,
-        payload: {
-            pending: false,
-            error
-        }
-    };
-}
+export const login = createMVAction(ACTION.LOGIN);
+export const loginPending = createCommonAction(ACTION.LOGIN_PENDING, true);
+export const loginUpdate = createCommonAction(ACTION.LOGIN_UPDATE, false);

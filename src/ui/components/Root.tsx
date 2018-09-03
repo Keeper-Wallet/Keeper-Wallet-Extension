@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { setTab } from '../actions';
-import { Login, Intro, Conditions, NewAccount, Import, Assets } from './pages';
+import { Login, Intro, Conditions, NewAccount, Import, Assets, NewWallet } from './pages';
 
 
 
@@ -44,6 +44,8 @@ class RootComponent extends React.Component<any, any> {
                 return <NewAccount/>;
             case 'import':
                 return <Import/>;
+            case 'new_account':
+                return <NewWallet/>;
             case 'assets':
                 return <Assets/>;
             case 'intro':

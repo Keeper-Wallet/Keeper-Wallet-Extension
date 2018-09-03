@@ -36,7 +36,7 @@ class LoginComponent extends React.Component {
             </div>
             <div>
                 <Button onClick={this.onSubmit}
-                        submit={true}
+                        type='submit'
                         disabled={!this.state.password}>
                     <Trans i18nKey="enter">Enter</Trans>
                 </Button>

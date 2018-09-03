@@ -12,7 +12,7 @@ const mapStateToProps = function (store: any) {
 };
 
 @translate('newAccount')
-export class NewAccountComponent extends React.Component {
+class NewAccountComponent extends React.Component {
 
     inputEl: Input;
     state = {
@@ -64,7 +64,7 @@ export class NewAccountComponent extends React.Component {
                                error={!!this.state.secondError}
                         />
                     </div>
-                    <Button onClick={this.onSubmit} submit={true} disabled={this.state.buttonDisabled}>
+                    <Button onClick={this.onSubmit} type='submit' disabled={this.state.buttonDisabled}>
                         <Trans i18nKey='create'>Create</Trans>
                     </Button>
                 </div>

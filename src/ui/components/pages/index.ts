@@ -1,5 +1,5 @@
 export * from  './Conditions';
-export * from  './Confirm';
+export * from  './NewWalet';
 export * from  './Import';
 export * from  './Intro';
 export * from  './Login';

@@ -55,7 +55,7 @@ class ConditionsComponent extends React.Component {
                 </div>
             </div>
 
-            <Button onClick={this.onClick.bind(this)} submit={true}>
+            <Button onClick={this.onClick.bind(this)} type='submit'>
                 <Trans className="text" i18nKey='accept'>Accept</Trans>
             </Button>
 
