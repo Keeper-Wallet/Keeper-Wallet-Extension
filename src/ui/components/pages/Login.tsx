@@ -2,8 +2,9 @@ import * as styles from './styles/login.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { BigLogo } from '../head'
-import {Button, Input} from "../ui";
+import { BigLogo } from '../head';
+import {Button, Input, Error} from '../ui';
+import { login } from '../../actions';
 
 @translate('login')
 class LoginComponent extends React.Component {
@@ -12,6 +13,8 @@ class LoginComponent extends React.Component {
         passwordError: false,
         password: ''
     };
+
+    props: { login: (password) => void; error: any, pending: boolean};
 
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
@@ -34,9 +37,14 @@ class LoginComponent extends React.Component {
             <div>
                 <Button onClick={this.onSubmit}
                         submit={true}
-                        disabled={this.state.password}>
+                        disabled={!this.state.password}>
                     <Trans i18nKey="enter">Enter</Trans>
                 </Button>
+            </div>
+            <div>
+                <Error hide={!this.state.passwordError}>
+                    <Trans i18nkey='wrongPassword'>Wrong password</Trans>
+                </Error>
             </div>
         </div>
     }
@@ -47,12 +55,29 @@ class LoginComponent extends React.Component {
     }
 
     _onSubmit() {
-        
+        this.props.login(this.state.password);
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        const { passwordError } = state;
+        const { error } = props;
+
+        if (!passwordError && !!error) {
+            return { ...state, passwordError: true };
+        }
+
+        return null;
     }
 }
 
-const mapStateToProps = function(store: any) {
-    return {};
+const actions = {
+    login
 };
 
-export const Login = connect(mapStateToProps)(LoginComponent);
+const mapStateToProps = function({ localState }) {
+    return {
+        ...localState.login
+    };
+};
+
+export const Login = connect(mapStateToProps, actions)(LoginComponent);

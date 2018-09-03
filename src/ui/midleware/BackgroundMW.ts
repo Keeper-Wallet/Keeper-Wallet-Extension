@@ -1,6 +1,7 @@
 import { ACTION } from '../actions/constants';
 import background from '../services/Background';
 export * from './setPassword';
+export * from './login';
 import { i18n } from '../i18n';
 
 export const changeLang = store => next => action => {

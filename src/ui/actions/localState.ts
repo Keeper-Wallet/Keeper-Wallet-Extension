@@ -21,3 +21,29 @@ export function newUserUpdate(error) {
     };
 }
 
+export function login(password) {
+    return {
+        type: ACTION.LOGIN,
+        payload: password
+    };
+}
+
+export function loginPending() {
+    return {
+        type: ACTION.LOGIN_PENDING,
+        payload: {
+            pending: true,
+            error: false
+        }
+    };
+}
+
+export function loginUpdate(error) {
+    return {
+        type: ACTION.LOGIN_UPDATE,
+        payload: {
+            pending: false,
+            error
+        }
+    };
+}
