@@ -1,0 +1,20 @@
+@import '../../../styles/colors.styl';
+
+.avatar {
+  display: inline-block;
+  overflow: hidden;
+  margin: auto;
+  cursor: pointer;
+
+  &.selected {
+    background-color: $submit300;
+  }
+
+  img {
+    border-radius: 50%;
+  }
+}
+
+.avatarList {
+  display: block;
+}

@@ -37,6 +37,7 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "i18next": "^11.6.0",
     "i18next-locize-backend": "^1.6.0",
+    "identity-img": "^1.0.0",
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^3.0.0",

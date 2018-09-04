@@ -20,20 +20,7 @@ class RootComponent extends React.Component<any, any> {
         }
 
         if (storyTab && !this.canUseTab(storyTab)) {
-            this.props.setTab(this.getStateTab());
-            storyTab = '';
-            return null;
-        }
-
-        if (!this.props.locked && this.props.tmpTab) {
-            switch (this.props.tmpTab) {
-                case 'settings':
-                    return <div>settings</div>;
-                case 'info':
-                    return <div>info</div>;
-                default:
-                    return <div>Wrong page</div>;
-            }
+            storyTab = this.getStateTab();
         }
 
         switch (storyTab) {
@@ -49,6 +36,10 @@ class RootComponent extends React.Component<any, any> {
                 return <NewWallet/>;
             case 'assets':
                 return <Assets/>;
+            case 'settings':
+                return <div>settings</div>;
+            case 'info':
+                return <div>info</div>;
             case 'intro':
             default:
                 return <Intro/>;
