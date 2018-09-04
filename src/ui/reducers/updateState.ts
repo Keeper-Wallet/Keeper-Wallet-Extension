@@ -1,16 +1,12 @@
 import { ACTION } from '../actions/constants';
 export * from './localState';
 
-export const tmpTab = (store = null, action: any) => {
-    return action.type === ACTION.CHANGE_TMP_TAB ? action.payload : store;
-};
-
 export const state = (store = null, action: any) => {
     return action.type === ACTION.UPDATE_APP_STATE ? action.payload : store;
 };
 
 export const tab = (store = '', action: any) => {
-    return action.type === ACTION.UPDATE_FROM_TAB ? action.payload : store;
+    return action.type === ACTION.CHANGE_TAB ? action.payload : store;
 };
 
 export const uiState = (store = {}, action: any) => {
@@ -37,3 +33,4 @@ export const currentLocale = (store = [], action: any) => {
     return action.type === ACTION.UPDATE_FROM_LNG ? action.payload : store;
 };
 
+export const version = (store = '') => store;

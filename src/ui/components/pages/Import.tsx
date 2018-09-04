@@ -5,10 +5,11 @@ import { translate, Trans } from 'react-i18next';
 import { setTab } from '../../actions';
 
 import { BigLogo } from '../head';
-import {Button} from "../ui/buttons";
+import { Button } from '../ui/buttons';
+
 
 @translate('import')
-class ImportComponent extends React.Component {
+class ImportComponent extends React.PureComponent {
 
     props: any;
 
@@ -53,10 +54,8 @@ const actions = {
 };
 
 
-const mapStateToProps = function(store: any) {
-    return {
-        state: store.state
-    };
+const mapStateToProps = function() {
+    return {};
 };
 
 export const Import = connect(mapStateToProps, actions)(ImportComponent);

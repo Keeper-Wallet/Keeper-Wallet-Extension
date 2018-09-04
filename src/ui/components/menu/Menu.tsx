@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './menu.styl';
 import { connect } from 'react-redux';
-import { setTmpTab } from '../../actions';
+import { setTab } from '../../actions';
 import { HeadLogo } from  '../head'
 import { translate, Trans } from 'react-i18next';
 
@@ -12,7 +12,7 @@ class MenuComponent extends React.Component {
         onMenu: boolean;
         locked: boolean;
         tab: string;
-        setTmpTab: (tmp: string) => void;
+        setTab: (tmp: string) => void;
     };
 
     onLeftClick = () => this._onLeftClick();
@@ -45,15 +45,15 @@ class MenuComponent extends React.Component {
     }
 
     _onLeftClick() {
-        this.props.setTmpTab('settings');
+        this.props.setTab('settings');
     }
 
     _onRightClick() {
-        this.props.setTmpTab('info');
+        this.props.setTab('info');
     }
 
     _onBackClick() {
-        this.props.setTmpTab(null);
+        this.props.setTab('');
     }
 }
 
@@ -65,4 +65,4 @@ const mapStateToProps = function(store: any) {
     };
 };
 
-export const Menu = connect(mapStateToProps, { setTmpTab })(MenuComponent);
+export const Menu = connect(mapStateToProps, { setTab })(MenuComponent);

@@ -16,14 +16,6 @@ export function updateState(state) {
     } = state;
     const currentState = store.getState();
 
-
-    if (uiState.tab !== currentState.tab) {
-        actions.push({
-            type: ACTION.UPDATE_FROM_TAB,
-            payload: uiState.tab || ''
-        });
-    }
-
     if (currentNetwork !== currentState.currentNetwork) {
         actions.push({
             type: ACTION.UPDATE_CURRENT_NETWORK,

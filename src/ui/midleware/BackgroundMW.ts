@@ -18,10 +18,4 @@ export const updateLang = store => next => action => {
     return next(action);
 };
 
-export const changeTab = store => next => action => {
-    if (action.type === ACTION.CHANGE_TAB && action.payload !== store.tab) {
-        background.setUiState({...store.uiState, tab: action.payload });
-    }
-    return next(action);
-};
 

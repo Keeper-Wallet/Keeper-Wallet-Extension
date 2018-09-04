@@ -22,6 +22,7 @@ class RootComponent extends React.Component<any, any> {
         if (storyTab && !this.canUseTab(storyTab)) {
             this.props.setTab(this.getStateTab());
             storyTab = '';
+            return null;
         }
 
         if (!this.props.locked && this.props.tmpTab) {
