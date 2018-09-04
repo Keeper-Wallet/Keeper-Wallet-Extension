@@ -20,6 +20,8 @@ import {
     UiStateController, AssetInfoController, ExternalDeviceController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
+import * as uiHelper from './lib/uiHelper'
+
 
 const WAVESKEEPER_DEBUG = true;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -42,6 +44,7 @@ async function setupBackgroundService() {
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService
+        global.uiHelper = uiHelper
     }
 
     // setup state persistence
@@ -187,6 +190,9 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         return {
+            sing: undefined,
+            signAndBroadCast: undefined,
+
             sayHello: async () => 'hello',
             signMessage: async (from, message) => {
                 const convertedTx = await this.assetInfoController.addAssetInfo(message);
