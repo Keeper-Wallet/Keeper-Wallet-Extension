@@ -2,6 +2,8 @@ import LocalMessageDuplexStream from 'post-message-stream';
 import {setupDnode, transformMethods, cbToPromise} from './lib/dnode-util';
 import log from "loglevel";
 
+
+setupClickInterceptor();
 setupInpageApi().catch(e => log.error(e));
 
 async function setupInpageApi() {
@@ -21,3 +23,21 @@ async function setupInpageApi() {
     global.Waves = inpageApi
 }
 
+function setupClickInterceptor(){
+    const defaultOnClick = global.onclick || (() => {})
+    global.onclick = function(e) {
+        const paymentApiLink = checkForPaymentApiLink(e)
+        if (paymentApiLink) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(e)
+        }else {
+            defaultOnClick(e)
+        }
+    }
+}
+
+
+function checkForPaymentApiLink(e) {
+    return undefined
+}
