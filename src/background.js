@@ -20,6 +20,8 @@ import {
     UiStateController, AssetInfoController, ExternalDeviceController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
+import * as uiHelper from './lib/uiHelper'
+
 
 const WAVESKEEPER_DEBUG = true;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -42,6 +44,7 @@ async function setupBackgroundService() {
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService
+        global.uiHelper = uiHelper
     }
 
     // setup state persistence
@@ -187,6 +190,10 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         return {
+            sing: undefined,
+            signAndBroadCast: undefined,
+            publicKey: undefined,
+
             sayHello: async () => 'hello',
             signMessage: async (from, message) => {
                 const convertedTx = await this.assetInfoController.addAssetInfo(message);
@@ -196,7 +203,7 @@ class BackgroundService extends EventEmitter {
     }
 
     setupUiConnection(connectionStream, origin) {
-        const api = this.getApi()
+        const api = this.getApi();
         const dnode = setupDnode(connectionStream, api, 'api');
 
         dnode.on('remote', (remote) => {
@@ -212,10 +219,31 @@ class BackgroundService extends EventEmitter {
         const inpageApi = this.getInpageApi(origin);
         const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
 
+        const self = this;
+        // Select public state from app state
+        let publicState = this._publicState(this.getState());
+        dnode.on('remote', (remote) => {
+           // push account change event to the page
+           const sendUpdate = remote.sendUpdate.bind(remote);
+           this.on('update', function (state) {
+               const updatedPublicState = self._publicState(state);
+               // If public state changed call remote with new public state
+               if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account){
+                   publicState = updatedPublicState;
+                   sendUpdate(publicState)
+               }
+           })
+        })
     }
-
 
     _privateSendUpdate() {
         this.emit('update', this.getState())
+    }
+
+    _publicState(state){
+        return {
+            locked: state.locked,
+            account: state.locked ? undefined : state.accounts.find(acc => acc.address = state.selectedAccount)
+        }
     }
 }

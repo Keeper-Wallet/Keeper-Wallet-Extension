@@ -1,8 +1,11 @@
 import ObservableStore from 'obs-store';
 import log from 'loglevel'
+import EventEmitter from 'events';
 
-export class PreferencesController {
+export class PreferencesController extends EventEmitter{
     constructor(options = {}) {
+        super();
+
         const defaults = {
             currentLocale: options.initLangCode || 'en',
             accounts: [],
@@ -43,7 +46,7 @@ export class PreferencesController {
         let selectedAccount = this.store.getState().selectedAccount;
         if (!selectedAccount || !accounts.find(account => account.address === selectedAccount)){
             selectedAccount = accounts.length > 0 ? accounts[0].address : undefined;
-            this.store.updateState({selectedAccount})
+            this.selectAccount(selectedAccount)
         }
     }
 
@@ -55,8 +58,11 @@ export class PreferencesController {
     }
 
     selectAccount(address) {
-        //const selectedAccount = this._getAccountByAddress(publicKey);
-        this.store.updateState({selectedAccount: address})
+        const selectedAccount = this.store.getState().selectedAccount;
+        if (selectedAccount !== address) {
+            this.store.updateState({selectedAccount: address});
+            this.emit('accountChange');
+        }
     }
 
     _getAccountByAddress(address) {
