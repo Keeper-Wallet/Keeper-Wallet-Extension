@@ -39,6 +39,7 @@
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^3.0.0",
+    "parse-json-bignumber": "^0.1.1",
     "post-message-stream": "^3.0.0",
     "pump": "^3.0.0",
     "react": "^16.4.2",

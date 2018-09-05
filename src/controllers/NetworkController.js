@@ -17,4 +17,8 @@ export class NetworkController {
     getNetwork(){
         return this.store.getState().currentNetwork
     }
+
+    async broadcast(tx){
+
+    }
 }

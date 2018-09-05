@@ -101,13 +101,17 @@ class BackgroundService extends EventEmitter {
         this.store = new ComposableObservableStore(initState);
 
         // Controllers
+
+        // Preferences. Contains accounts, available accounts, selected language etc.
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
         });
 
+        // Ui State. Provides storage for ui application
         this.uiStateController =  new UiStateController({initState: initState.UiStateController});
 
+        // Wallet. Wallet creation, app locking, signing methond
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
             if (!state.locked){
@@ -116,27 +120,35 @@ class BackgroundService extends EventEmitter {
             }
         });
 
-        this.networkContoller = new NetworkController({initState: initState.NetworkController});
+        // Network. Works with blockchain
+        this.networkController = new NetworkController({initState: initState.NetworkController});
 
+        // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
-            getNetwork: this.networkContoller.getNetwork.bind(this.networkContoller),
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
-        this.networkContoller.store.subscribe(() => this.balanceController.updateBalances());
+        this.networkController.store.subscribe(() => this.balanceController.updateBalances());
 
+        // AssetInfo. Provides information about assets
+        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
+
+        // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
+        // Delegates sign to walletController, broadcast to networkController and assetInfo for assetInfoController
         this.messageController = new MessageController({
             initState: initState.MessageController,
-            sign: this.walletController.sign.bind(this.walletController)
+            sign: this.walletController.sign.bind(this.walletController),
+            broadcast: this.networkController.broadcast.bind(this.networkController),
+            assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
 
-        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
-            NetworkController: this.networkContoller.store,
+            NetworkController: this.networkController.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
             UiStateController: this.uiStateController.store,
@@ -177,11 +189,11 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            sign: async (messageId) => await this.messageController.sign(messageId),
+            sign: async (messageId, address) => await this.messageController.sign(messageId, address),
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
-            setNetwork: async (network) => this.networkContoller.setNetwork(network),
+            setNetwork: async (network) => this.networkController.setNetwork(network),
 
             // external devices
             getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)
@@ -194,7 +206,10 @@ class BackgroundService extends EventEmitter {
                 //const convertedTx = await this.assetInfoController.addAssetInfo(message);
                 return await this.messageController.newTx(tx, origin, from)
             },
-            signAndBroadCast: undefined,
+            signAndBroadcast:async (tx, from) => {
+                //const convertedTx = await this.assetInfoController.addAssetInfo(message);
+                return await this.messageController.newTx(tx, origin, from, true)
+            },
             publicState: async () => this._publicState(this.getState()),
         }
     }
