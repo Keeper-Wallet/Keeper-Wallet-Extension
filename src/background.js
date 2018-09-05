@@ -190,15 +190,12 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         return {
-            sing: undefined,
+            sign: async (tx, from) => {
+                //const convertedTx = await this.assetInfoController.addAssetInfo(message);
+                return await this.messageController.newTx(tx, origin, from)
+            },
             signAndBroadCast: undefined,
-            publicKey: undefined,
-
-            sayHello: async () => 'hello',
-            signMessage: async (from, message) => {
-                const convertedTx = await this.assetInfoController.addAssetInfo(message);
-                return await this.messageController.newTx(from, origin, convertedTx)
-            }
+            publicState: async () => this._publicState(this.getState()),
         }
     }
 

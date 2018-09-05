@@ -5,7 +5,7 @@ describe("MessageController", () => {
     require('isomorphic-fetch');
 
     let controller;
-    const address = 'SomeAddress';
+    const account = { address: 'someAddress', publicKey: 'somePublicKey'};
     const origin = 'SomeOrigin';
 
     const tx = {
@@ -26,21 +26,21 @@ describe("MessageController", () => {
 
 
     it('Should add new messages and generate correct metadata', () => {
-        controller.newTx(address, origin, tx);
-        controller.newTx(address, origin, tx);
+        controller.newTx(tx, origin, account);
+        controller.newTx(tx, origin, account);
         const state = controller.store.getState();
         expect(state.messages.length).to.eql(2);
         expect(state.messages[0].id).to.be.a('string');
         expect(state.messages[0].id).to.be.not.eql(state.messages[1].id);
         expect(state.messages[0].origin).to.eql(origin);
-        expect(state.messages[0].account).to.eql(address);
+        expect(state.messages[0].account).to.eql(account);
         expect(state.messages[0].status).to.eql('unapproved');
         expect(state.messages[0].time).to.be.a('number');
         expect(state.messages[0].time).to.be.lt(Date.now());
     });
 
-    it('Should sign message using sign method passed with options', async () => {
-        const messagePromise = controller.newTx(address, origin, tx);
+    it('Should sign message that has sender', async () => {
+        const messagePromise = controller.newTx(tx, origin, account);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
         await controller.sign(msgId);
@@ -49,8 +49,31 @@ describe("MessageController", () => {
         expect(signedMessage).to.eql('placeholder');
     });
 
+    it('Should sign message that don\'t have sender. Sender is passed as param', async () => {
+        const messagePromise = controller.newTx(tx, origin);
+        const state = controller.store.getState();
+        const msgId = state.messages[0].id;
+        await controller.sign(msgId, account);
+        expect(controller._getMessageById(msgId).status).to.eql('signed');
+        const signedMessage = await messagePromise;
+        expect(signedMessage).to.eql('placeholder');
+    });
+
+    it('Shouldn\'t sign message that don\'t have sender. Sender not passed as param', async () => {
+        controller.newTx(tx, origin).catch(()=>{});
+        const state = controller.store.getState();
+        const msgId = state.messages[0].id;
+        let msg = ''
+        try {
+            await controller.sign(msgId);
+        }catch (e) {
+            msg = e.message
+        }
+        expect(msg).to.eql('Orphaned tx. No account public key')
+    });
+
     it('Should reject messages', async () => {
-        const messagePromise = controller.newTx(address, origin, tx);
+        const messagePromise = controller.newTx(tx, origin, account);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
         controller.reject(msgId);

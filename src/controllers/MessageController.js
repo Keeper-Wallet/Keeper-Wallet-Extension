@@ -17,9 +17,9 @@ export class MessageController extends EventEmitter {
         this.signWavesTx = options.sign
     }
 
-    newTx(from, origin, tx) {
+    newTx(tx, origin, from) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
-        let meta = this._generateMetadata(from, origin);
+        let meta = this._generateMetadata(origin, from);
         meta.tx = tx;
         let messages = this.store.getState().messages;
         messages.push(meta);
@@ -40,10 +40,14 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    async sign(id) {
+    async sign(id, account) {
         const message = this._getMessageById(id);
+        if (account){
+            message.account = account
+        }
         try {
-            message.tx = await this.signWavesTx(message.account, message.tx);
+            if (!message.account || !message.account.publicKey) throw new Error('Orphaned tx. No account public key');
+            message.tx = await this.signWavesTx(message.account.publicKey, message.tx);
             message.status = 'signed'
         } catch (e) {
             message.err = e;
@@ -91,7 +95,7 @@ export class MessageController extends EventEmitter {
         return this.store.getState().messages.find(message => message.id === id);
     }
 
-    _generateMetadata(from, origin) {
+    _generateMetadata(origin, from) {
         return {
             account: from,
             id: uuid(),
