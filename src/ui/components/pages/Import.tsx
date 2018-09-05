@@ -17,9 +17,11 @@ class ImportComponent extends React.PureComponent {
         return <div className={styles.login}>
             <BigLogo/>
             <div>
-                <Button type='submit' onClick={this.onClick.bind(this, 'new_account')}>
-                    <Trans i18nKey='createNew'>Create a new account</Trans>
-                </Button>
+                <form onSubmit={this.onClick.bind(this, 'new_account')}>
+                    <Button type='submit'>
+                        <Trans i18nKey='createNew'>Create a new account</Trans>
+                    </Button>
+                </form>
             </div>
             <div>
                 <Button type='transparent' onClick={this.onClick.bind(this, 'import_seed')}>

@@ -15,6 +15,7 @@ export function Button({ className, type, children, ...props }: IProps ) {
 
     return (
         <button
+            type={type}
             className={btnClassName}
             {...props}
         >

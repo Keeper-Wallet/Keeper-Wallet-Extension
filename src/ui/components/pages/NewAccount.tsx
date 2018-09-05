@@ -5,6 +5,7 @@ import * as React from 'react'
 import {Input, Button} from '../ui';
 import { translate, Trans } from 'react-i18next';
 
+const MIN_LINGTH = 6;
 
 const mapStateToProps = function (store: any) {
     debugger;
@@ -48,25 +49,26 @@ class NewAccountComponent extends React.Component {
                     <h2>
                         <Trans i18nKey='protect'>Protect Your Account</Trans>
                     </h2>
-
-                    <div>
-                        <Input id='first'
-                               type="password"
-                               ref={this.getRef}
-                               onBlur={this.onFirstBlur}
-                               onChange={this.onChangeFist}
-                               error={!!this.state.firstError}
-                        />
-                        <Input id='second'
-                               type="password"
-                               onBlur={this.onSecondBlur}
-                               onChange={this.onChangeSecond}
-                               error={!!this.state.secondError}
-                        />
-                    </div>
-                    <Button onClick={this.onSubmit} type='submit' disabled={this.state.buttonDisabled}>
-                        <Trans i18nKey='create'>Create</Trans>
-                    </Button>
+                    <form onSubmit={this.onSubmit} >
+                        <div>
+                            <Input id='first'
+                                   type="password"
+                                   ref={this.getRef}
+                                   onBlur={this.onFirstBlur}
+                                   onChange={this.onChangeFist}
+                                   error={!!this.state.firstError}
+                            />
+                            <Input id='second'
+                                   type="password"
+                                   onBlur={this.onSecondBlur}
+                                   onChange={this.onChangeSecond}
+                                   error={!!this.state.secondError}
+                            />
+                        </div>
+                        <Button type='submit' disabled={this.state.buttonDisabled}>
+                            <Trans i18nKey='create'>Create</Trans>
+                        </Button>
+                    </form>
                 </div>
             </div>
     }
@@ -80,20 +82,30 @@ class NewAccountComponent extends React.Component {
     }
 
     _onChangeFist(e) {
+        const buttonDisabled = this._isDisabledButton();
         const firstValue = e.target.value;
-        this.setState({ firstValue });
+        this.setState({ firstValue, buttonDisabled });
     }
 
     _onChangeSecond(e) {
+        const buttonDisabled = this._isDisabledButton();
         const secondValue = e.target.value;
-        this.setState({ secondValue });
+        this.setState({ secondValue, buttonDisabled });
+    }
+
+    _isDisabledButton() {
+        if (!this.state.firstValue || !this.state.secondValue) {
+            return true;
+        }
+
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LINGTH;
     }
 
     _checkValues() {
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = passwordError || !(this.state.firstValue && this.state.secondValue);
+        const buttonDisabled = this._isDisabledButton();
         this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
 
@@ -102,7 +114,7 @@ class NewAccountComponent extends React.Component {
             return null;
         }
 
-        if (this.state.firstValue.length <= 6) {
+        if (this.state.firstValue.length <= MIN_LINGTH) {
             return { error: 'isSmall' };
         }
     }

@@ -25,22 +25,23 @@ class LoginComponent extends React.Component {
             <div>
                 <BigLogo/>
             </div>
-            <div>
-                <Trans i18nKey="password">Password</Trans>
-            </div>
-            <div>
-                <Input type="password"
-                       onChange={this.onChange}
-                       error={this.state.passwordError}
-                />
-            </div>
-            <div>
-                <Button onClick={this.onSubmit}
-                        type='submit'
-                        disabled={!this.state.password}>
-                    <Trans i18nKey="enter">Enter</Trans>
-                </Button>
-            </div>
+            <form onSubmit={this.onSubmit}>
+                <div>
+                    <Trans i18nKey="password">Password</Trans>
+                </div>
+                <div>
+                    <Input type="password"
+                           onChange={this.onChange}
+                           error={this.state.passwordError}
+                    />
+                </div>
+                <div>
+                    <Button type='submit'
+                            disabled={!this.state.password}>
+                        <Trans i18nKey="enter">Enter</Trans>
+                    </Button>
+                </div>
+            </form>
             <div>
                 <Error hide={!this.state.passwordError}>
                     <Trans i18nkey='wrongPassword'>Wrong password</Trans>
