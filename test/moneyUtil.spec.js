@@ -1,6 +1,6 @@
 import {expect, assert} from 'chai';
 import {Money} from "@waves/data-entities";
-import {moneylikeToMoney, moneyToMoneylike} from '../src/lib/moneyUtil';
+import {moneyFromJson} from '../src/lib/moneyUtil';
 
 describe('moneyUtil', () => {
     const amount = 15000
@@ -19,17 +19,18 @@ describe('moneyUtil', () => {
     }
 
     it('Should convert moneylike to money', () => {
-        const money = moneylikeToMoney({assetId: 'WAVES', value: amountStr}, asset)
+        const money = moneyFromJson({assetId: 'WAVES', tokens: "0.00015000"})
         expect(money.asset.id).to.eql('WAVES')
         expect(money.getCoins().toString()).to.eql(amountStr)
+        expect(money.toTokens().toString()).to.eql("0.00015000")
     })
 
     it('Should convert money to moneylike. Amount could be number or string', () => {
         const moneyFromNumber = new Money(amount, asset)
         const moneyFromStr = new Money(amountStr, asset)
-        const moneylike1 = moneyToMoneylike(moneyFromNumber);
-        const moneylike2 = moneyToMoneylike(moneyFromStr);
-        expect(moneylike1).to.eql({assetId: 'WAVES', value: "15000"})
-        expect(moneylike2).to.eql({assetId: 'WAVES', value: "15000"})
+        const moneylike1 = moneyFromNumber.toJSON()
+        const moneylike2 = moneyFromStr.toJSON()
+        expect(moneylike1).to.eql({assetId: 'WAVES', tokens: "0.00015000"})
+        expect(moneylike2).to.eql({assetId: 'WAVES', tokens: "0.00015000"})
     })
 });

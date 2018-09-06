@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
 import {Money} from '@waves/data-entities';
+import {moneyFromJson} from '../lib/moneyUtil';
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -56,7 +57,6 @@ export class MessageController extends EventEmitter {
         try {
             if (!message.account) throw new Error('Orphaned tx. No account public key');
             const txDataWithMoney = await this._convertMoneylikeFieldsToMoney(message.tx.data);
-            debugger
             message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
             message.status = 'signed';
             if (message.broadcast) {
@@ -123,14 +123,21 @@ export class MessageController extends EventEmitter {
     }
 
     async _convertMoneylikeFieldsToMoney(txData) {
-        let result = Object.assign({}, txData)
-        for (let key in txData){
-            const field = txData[key];
-            if (field.hasOwnProperty('value') && field.hasOwnProperty('assetId')){
-                const asset = await this.assetInfo(txData[key].assetId)
-                result[key] = new Money(field.value, asset)
+        return Object.entries(txData).map(([key, value]) => {
+            if (value.hasOwnProperty('tokens') && value.hasOwnProperty('assetId')){
+                return [key, moneyFromJson(value)]
+            }else {
+                return [key, value]
             }
-        }
-        return result
+        }).reduce((acc, [key,val]) => Object.assign(acc,{[key]:val}),{})
+        // let result = Object.assign({}, txData)
+        // for (let key in txData){
+        //     const field = txData[key];
+        //     if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')){
+        //         const asset = await this.assetInfo(txData[key].assetId)
+        //         result[key] = moneyFromJson(field)
+        //     }
+        // }
+        // return result
     }
 }

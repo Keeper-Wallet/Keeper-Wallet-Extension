@@ -33,7 +33,11 @@ export class Wallet {
 
         Adapter.initOptions({networkCode: this.user.networkCode});
         //Todo: temporary for seed
-        const adapter = new Adapter(this.user.seed);
+        let params = this.user
+        if (this.user.type === 'seed'){
+            params = this.user.seed
+        }
+        const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
         return await signable.getDataForApi()
     }
