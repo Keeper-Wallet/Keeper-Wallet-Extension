@@ -1,10 +1,10 @@
 import {getAdapterByType} from '@waves/signature-adapter'
-// import {BigNumber} from '@waves/data-entities';
+import {BigNumber} from '@waves/data-entities';
 // import {moneylikeToMoney} from '../lib/moneyUtil';
 //
 // import * as SG from "@waves/signature-generator"
-// import create from 'parse-json-bignumber';
-// const {stringify, parse} = create({BigNumber});
+import create from 'parse-json-bignumber';
+const {stringify, parse} = create({BigNumber});
 
 
 export class Wallet {
@@ -39,6 +39,15 @@ export class Wallet {
         }
         const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
-        return await signable.getDataForApi()
+        const dataWithBignumbers = await signable.getDataForApi();
+        const dataWithoutBignumbers = Object.entries(dataWithBignumbers).reduce((acc, [key, value]) => {
+            if (value instanceof BigNumber) {
+                acc[key] = value.toString()
+            }else {
+                acc[key] = value
+            }
+            return acc
+        }, {})
+        return dataWithoutBignumbers
     }
 }

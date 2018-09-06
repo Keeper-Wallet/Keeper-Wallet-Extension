@@ -25,6 +25,14 @@ export class MessageController extends EventEmitter {
         this.assetInfo = options.assetInfo
     }
 
+    /**
+     * Generates metadata for tx. Add tx to pipeline
+     * @param {tx} tx - Transaction to sign
+     * @param {string} origin - Domain, which has sent this tx
+     * @param {string | undefined} from - Address of the account, that should sign tx. Can be undefined
+     * @param {boolean} broadcast - Should this tx be sent to node
+     * @returns {Promise<tx>}
+     */
     newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
         let meta = this._generateMetadata(origin, from, broadcast);
