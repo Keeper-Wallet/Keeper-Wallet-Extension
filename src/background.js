@@ -132,7 +132,10 @@ class BackgroundService extends EventEmitter {
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
 
         // AssetInfo. Provides information about assets
-        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
+        this.assetInfoController = new AssetInfoController({
+            initState: initState.AssetInfoController,
+            getNetwork: this.networkController.getNetwork.bind(this.networkController)
+        });
 
         // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
         // Delegates sign to walletController, broadcast to networkController and assetInfo for assetInfoController
@@ -196,19 +199,25 @@ class BackgroundService extends EventEmitter {
             setNetwork: async (network) => this.networkController.setNetwork(network),
 
             // external devices
-            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)
+            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to),
+
+            // asset information
+            assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId)
         }
     }
 
     getInpageApi(origin) {
+        const sign = async (tx, from, broadcast = false) => {
+            this._validateTx(tx, from)
+            return await this.messageController.newTx(tx, origin, from, broadcast)
+        }
+
         return {
             sign: async (tx, from) => {
-                //const convertedTx = await this.assetInfoController.addAssetInfo(message);
-                return await this.messageController.newTx(tx, origin, from)
+                return await sign(tx, from, false)
             },
-            signAndBroadcast:async (tx, from) => {
-                //const convertedTx = await this.assetInfoController.addAssetInfo(message);
-                return await this.messageController.newTx(tx, origin, from, true)
+            signAndPublish: async (tx, from) => {
+                return await sign(tx, from, true)
             },
             publicState: async () => this._publicState(this.getState()),
         }
@@ -255,7 +264,22 @@ class BackgroundService extends EventEmitter {
     _publicState(state){
         return {
             locked: state.locked,
-            account: state.locked ? undefined : state.accounts.find(acc => acc.address = state.selectedAccount)
+            account: state.locked ? undefined : state.selectedAccount
         }
     }
+
+    _validateTx(tx, from){
+        // Fields check
+        if (!tx.type || !tx.data){
+            throw new Error('Invalid tx. Tx should contain type and data fields');
+        }
+
+        // Proper public key check
+        const selectedAccount = this.getState().selectedAccount;
+        const selectedAccountAddress = selectedAccount ? selectedAccount.address : undefined
+        if (from && from !== selectedAccountAddress) {
+            throw new Error('From address should match selected account address or be blank');
+        }
+    }
+
 }

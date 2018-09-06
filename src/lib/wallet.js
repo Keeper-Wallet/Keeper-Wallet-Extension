@@ -1,10 +1,10 @@
 import {getAdapterByType} from '@waves/signature-adapter'
-import {BigNumber} from '@waves/data-entities';
-import {moneylikeToMoney} from '../lib/moneyUtil';
-
-import * as SG from "@waves/signature-generator"
-import create from 'parse-json-bignumber';
-const {stringify, parse} = create({BigNumber});
+// import {BigNumber} from '@waves/data-entities';
+// import {moneylikeToMoney} from '../lib/moneyUtil';
+//
+// import * as SG from "@waves/signature-generator"
+// import create from 'parse-json-bignumber';
+// const {stringify, parse} = create({BigNumber});
 
 
 export class Wallet {

@@ -2,8 +2,8 @@ import ObservableStore from 'obs-store';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
-import {Money} from '@waves/data-entities';
-import {moneyFromJson} from '../lib/moneyUtil';
+import {Money, BigNumber} from '@waves/data-entities';
+import {moneylikeToMoney} from '../lib/moneyUtil';
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -123,21 +123,15 @@ export class MessageController extends EventEmitter {
     }
 
     async _convertMoneylikeFieldsToMoney(txData) {
-        return Object.entries(txData).map(([key, value]) => {
-            if (value.hasOwnProperty('tokens') && value.hasOwnProperty('assetId')){
-                return [key, moneyFromJson(value)]
-            }else {
-                return [key, value]
+        let result = Object.assign({}, txData);
+        for (let key in txData){
+            const field = txData[key];
+            if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')){
+                const asset = await this.assetInfo(txData[key].assetId);
+                let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
+                result[key] = new Money(amount, asset)
             }
-        }).reduce((acc, [key,val]) => Object.assign(acc,{[key]:val}),{})
-        // let result = Object.assign({}, txData)
-        // for (let key in txData){
-        //     const field = txData[key];
-        //     if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')){
-        //         const asset = await this.assetInfo(txData[key].assetId)
-        //         result[key] = moneyFromJson(field)
-        //     }
-        // }
-        // return result
+        }
+        return result
     }
 }
