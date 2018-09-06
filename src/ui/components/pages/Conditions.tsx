@@ -17,14 +17,14 @@ class ConditionsComponent extends React.Component {
     }
 
     render () {
-        return <div className={styles.conditions}>
-            <div className={styles.contentWrapper}>
+        return <div className={`body1 height ${styles.contentWrapper}`}>
+            <div className={`${styles.conditionsContent} height`}>
 
-                <h3 className={`${styles.title} headline3`}>
+                <h3 className={`${styles.title} headline3 margin3`}>
                     <Trans i18nKey="title">TERMS AND CONDITIONS</Trans>
                 </h3>
 
-                <div className={`basic500 ${styles.attention}`}>
+                <div className={`basic500 margin2 font300`}>
                     <Trans i18nKey="attention">
                         ATTENTION: PLEASE READ CAREFULLY THESE TERMS AND CONDITIONS AS THEY AFFECT
                         YOUR OBLIGATIONS AND LEGAL RIGHTS, INCLUDING, BUT NOT LIMITED TO WAIVERS OF
@@ -33,18 +33,60 @@ class ConditionsComponent extends React.Component {
                     </Trans>
                 </div>
 
-                <div className={`basic500 ${styles.attention}`}>
+                <div className={`basic500 margin3 font300`}>
                     <Trans i18nKey="updated">
                         This version was last updated on 22/06/2018.
                     </Trans>
                 </div>
 
-                <div className={`${styles.mark} headline4`}>
+                <div className={`headline3 margin2 font500`}>
                     1. <Trans i18nKey='agreement'>Agreement</Trans>
                 </div>
 
-                <div className={`${styles.mark} body1`}>
+                <div>
                     <Trans i18nkey='agreementsText'>
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
+                        This is a contract between you and Waves Platform AG, a joint stock company
+                        incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
+                        or may be further incorporated (“Company”) and that holds the rights to Waves platform
+                        protocol (“Protocol”), website www.wavesplatform.com or any associated websites or
+                        mobile applications (“Platform”). By signing up to use an account at the Platform
+                        (“Waves Account”), you agree that you are eligible for trololo and tralala.
+
                         This is a contract between you and Waves Platform AG, a joint stock company
                         incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
                         or may be further incorporated (“Company”) and that holds the rights to Waves platform

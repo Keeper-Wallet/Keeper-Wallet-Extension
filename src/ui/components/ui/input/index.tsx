@@ -23,4 +23,3 @@ export class Input extends React.Component {
         return <input className={className} {...props} ref={this.getRef}/>
     }
 }
-

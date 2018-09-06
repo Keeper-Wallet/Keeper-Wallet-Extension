@@ -28,31 +28,32 @@ class LoginComponent extends React.Component {
 
     render () {
         return <div className={styles.login}>
-            <div>
-                <BigLogo/>
-            </div>
-            <form onSubmit={this.onSubmit}>
-                <div>
-                    <Trans i18nKey="password">Password</Trans>
+            <div className={`content`}>
+                <div className={`logoMargin`}>
+                    <BigLogo/>
                 </div>
+                <form onSubmit={this.onSubmit}>
+                    <div className={`left label tag1`}>
+                        <Trans i18nKey="password">Password</Trans>
+                    </div>
+                    <div className={`margin3`}>
+                        <Input type="password"
+                               onChange={this.onChange}
+                               error={this.state.passwordError}
+                        />
+                    </div>
+                    <div>
+                        <Button type='submit'
+                                disabled={!this.state.password}>
+                            <Trans i18nKey="enter">Enter</Trans>
+                        </Button>
+                    </div>
+                </form>
                 <div>
-                    <Input type="password"
-                           ref={this.getRef}
-                           onChange={this.onChange}
-                           error={this.state.passwordError}
-                    />
+                    <Error hide={!this.state.passwordError}>
+                        <Trans i18nkey='wrongPassword'>Wrong password</Trans>
+                    </Error>
                 </div>
-                <div>
-                    <Button type='submit'
-                            disabled={!this.state.password}>
-                        <Trans i18nKey="enter">Enter</Trans>
-                    </Button>
-                </div>
-            </form>
-            <div>
-                <Error hide={!this.state.passwordError}>
-                    <Trans i18nkey='wrongPassword'>Wrong password</Trans>
-                </Error>
             </div>
         </div>
     }

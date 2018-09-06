@@ -11,25 +11,34 @@
   width: 100%;
   height: 100%;
   display: block;
-  padding: 14px;
-  line-height: 1.1em;
+  line-height: normal;
   font-family: Roboto;
+  padding-top: 48px;
   position: relative;
+  font-weight: 300;
 
   &::before {
-    height: 40px;
+    height: 47px;
     width: 100%;
     content: '';
     display: block;
-    background: red;
-    margin: -14px;
+    background: url(./../assets/img/waveskeeper-16.svg) center no-repeat;
+    border-bottom: 1px solid $basic100;
     z-index: 1;
     position: absolute;
+    top: 0;
   }
 
+// align
 :global #app-content,
 :global .app
   height: 100%;
+
+:global .left
+  text-align: left;
+
+:global .right
+  text-align: right;
 
 :global .center
   text-align: center;
@@ -41,13 +50,14 @@
 // typography
 :global .title1
   font-size: 24px;
+  font-weight: 400;
 
 :global .headline1
   font-size: 18px;
 
 :global .headline2
   font-size: 18px;
-  font-family: Roboto-Medium;
+  font-family: Roboto-Medium, Arial, Tahoma;
 
 :global .headline3
   font-size: 16px;
@@ -61,10 +71,54 @@
 
 :global .body2
   font-size: 16px;
-  font-family: Roboto-Medium;
+  font-family: Roboto-Medium, Arial, Tahoma;
 
 :global .body3
   font-size: 12px;
 
 :global .tag1
   font-size: 11px;
+
+// layout
+$layout-10 = 10px;
+
+:global .margin1
+  margin-bottom: $layout-10;
+
+:global .margin2
+  margin-bottom: $layout-10 * 2;
+
+:global .margin3
+  margin-bottom: $layout-10 * 3;
+
+:global .margin4
+  margin-bottom: $layout-10 * 4;
+
+:global .marginTop1
+  margin-top: $layout-10;
+
+:global .marginTop2
+  margin-top: $layout-10 * 2;
+
+:global .marginTop3
+  margin-top: $layout-10 * 3;
+
+:global .marginTop4
+  margin-top: $layout-10 * 4;
+
+:global .height
+  height: 100%;
+  display: block;
+
+// font-weights
+:global .font300
+  font-weight: 300;
+
+:global .font400
+  font-weight: 400;
+
+:global .font500
+  font-weight: 500;
+
+:global .font600
+  font-weight: 600;

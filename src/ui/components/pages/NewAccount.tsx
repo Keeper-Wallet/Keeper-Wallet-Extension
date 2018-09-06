@@ -45,29 +45,43 @@ class NewAccountComponent extends React.Component {
 
     render() {
         return <div className={styles.account}>
-                <div className={styles.content}>
-                    <h2>
+                <form className={styles.content}>
+                    <h2 className={`title1 margin3 left`}>
                         <Trans i18nKey='protect'>Protect Your Account</Trans>
                     </h2>
                     <form onSubmit={this.onSubmit} >
                         <div>
+                            <div className={`basic500 tag1 left label`}>
+                                <Trans i18nKey='createPassword'>Create a password</Trans>
+                            </div>
                             <Input id='first'
+                                   className={`margin3`}
                                    type="password"
                                    ref={this.getRef}
                                    onBlur={this.onFirstBlur}
                                    onChange={this.onChangeFist}
                                    error={!!this.state.firstError}
                             />
+                            <div className={`basic500 tag1 left label`}>
+                                <Trans i18nKey='confirmPassword'>Confirm password</Trans>
+                            </div>
                             <Input id='second'
+                                   className={`margin3`}
                                    type="password"
                                    onBlur={this.onSecondBlur}
                                    onChange={this.onChangeSecond}
                                    error={!!this.state.secondError}
                             />
                         </div>
-                        <Button type='submit' disabled={this.state.buttonDisabled}>
-                            <Trans i18nKey='create'>Create</Trans>
+                        <Button onClick={this.onSubmit} type='submit' disabled={this.state.buttonDisabled}>
+                            <Trans i18nKey='create'>Continue</Trans>
                         </Button>
+                        <div className={`tag1 left basic500 marginTop3`}>
+                            The password you entered will be stored locally.
+                            If you change device or lose your password,
+                            you will have to repeat the process of adding accounts to Waves Keeper.
+                            Waves does not store your passwords.
+                        </div>
                     </form>
                 </div>
             </div>
