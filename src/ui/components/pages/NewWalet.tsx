@@ -7,7 +7,7 @@ import { AvatarList } from '../ui/avatar/AvatarList';
 import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
 
-@translate('extension.newWallet')
+@translate('extension:newWallet')
 class NewWalletComponent extends React.Component {
     props;
     state;

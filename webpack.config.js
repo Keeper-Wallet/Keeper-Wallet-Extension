@@ -101,13 +101,13 @@ module.exports = env => {
         excludeChunks: ['background', 'contentscript', 'inpage'],
     }));
 
-    if (!isProduction) {
-        plugins.push(
-            new LiveReloadPlugin({
-                port: 35729,
-            })
-        );
-    }
+    // if (!isProduction) {
+    //     plugins.push(
+    //         new LiveReloadPlugin({
+    //             port: 35729,
+    //         })
+    //     );
+    // }
 
     return {
         entry: {
@@ -176,10 +176,10 @@ module.exports = env => {
     };
 
     function onCompileEnd() {
-        console.log('Compiled build');
         Object.entries(browserPlatforms).forEach(([platform, options]) => {
             copyFiles(platform, options);
         });
+        console.log('Compiled build');
     }
 
 };

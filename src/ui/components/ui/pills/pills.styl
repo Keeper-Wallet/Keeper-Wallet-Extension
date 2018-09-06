@@ -1,0 +1,69 @@
+@import '../../../styles/colors.styl';
+
+.pill
+    display: inline-block;
+    box-sizing: border-box;
+    position: relative;
+    border: 1px dashed transparent;
+    background-color: transparent;
+    color: transparent;
+    margin: 5px;
+    padding: 5px;
+    transition all 0.3s;
+    border-radius: 3px
+
+    &.selectedPill
+
+        &.hiddenPill
+            //border-color: $disabled400;
+
+        .text
+            background-color: $submit400;
+            color: $white;
+
+    &.hiddenPill
+        background-color: transparent;
+
+        .text
+            opacity: 0;
+            transform: scale3d(0.01, 0.01, 1);
+
+    .text
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+        text-align: center;
+        line-height: 21px;
+        transition: transform 0.2s linear, opacity 0.2s linear;
+        background-color: $white;
+        color: $basic500;
+        border-radius: 3px;
+
+:global .animated-enter
+    :local .text
+            opacity: 0;
+            transform: scale3d(0.01, 0.01, 1);
+
+:global .animated-enter.animated-enter-active
+    :local .text
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+        transition: transform 0.2s linear, opacity 0.2s linear;
+
+:global .animated-leave
+    :local .text
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+
+:global .animated-leave.animated-leave-active
+    :local .text
+        opacity: 0;
+        transform: scale3d(0.01, 0.01, 0.01);
+        transition: transform 0.2s linear, opacity 0.2s linear;
+
+.pills
+    display: block;

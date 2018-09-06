@@ -9,6 +9,7 @@ import { login } from '../../actions';
 @translate('login')
 class LoginComponent extends React.Component {
 
+    inputEl: Input;
     state = {
         passwordError: false,
         password: ''
@@ -19,6 +20,11 @@ class LoginComponent extends React.Component {
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
     onSubmit = () => this._onSubmit();
+    getRef = input => this.inputEl = input;
+
+    componentDidMount(){
+        this.inputEl.focus();
+    }
 
     render () {
         return <div className={styles.login}>
@@ -31,6 +37,7 @@ class LoginComponent extends React.Component {
                 </div>
                 <div>
                     <Input type="password"
+                           ref={this.getRef}
                            onChange={this.onChange}
                            error={this.state.passwordError}
                     />
