@@ -21,15 +21,15 @@ export class PreferencesController extends EventEmitter{
         this.store.updateState({currentLocale: key})
     }
 
-    addAccount(account) {
-        const accounts = this.store.getState().accounts;
-        if (!this._getAccountByAddress(account.address)) {
-            accounts.push(Object.assign({name: `Account ${accounts.length + 1}`}, account));
-            this.store.updateState({accounts})
-        } else {
-            log.log(`Account with address key ${account.address} already exists`)
-        }
-    }
+    // addAccount(account) {
+    //     const accounts = this.store.getState().accounts;
+    //     if (!this._getAccountByAddress(account.address)) {
+    //         accounts.push(Object.assign({name: `Account ${accounts.length + 1}`}, account));
+    //         this.store.updateState({accounts})
+    //     } else {
+    //         log.log(`Account with address key ${account.address} already exists`)
+    //     }
+    // }
 
     syncAccounts(fromKeyrings) {
         const oldAccounts = this.store.getState().accounts;
@@ -44,9 +44,9 @@ export class PreferencesController extends EventEmitter{
 
         // Ensure we have selected account
         let selectedAccount = this.store.getState().selectedAccount;
-        if (!selectedAccount || !accounts.find(account => account.address === selectedAccount)){
-            selectedAccount = accounts.length > 0 ? accounts[0].address : undefined;
-            this.selectAccount(selectedAccount)
+        if (!selectedAccount || !accounts.find(account => account.address === selectedAccount.address)){
+            const addressToSelect = accounts.length > 0 ? accounts[0].address : undefined;
+            this.selectAccount(addressToSelect)
         }
     }
 
@@ -58,9 +58,10 @@ export class PreferencesController extends EventEmitter{
     }
 
     selectAccount(address) {
-        const selectedAccount = this.store.getState().selectedAccount;
-        if (selectedAccount !== address) {
-            this.store.updateState({selectedAccount: address});
+        let selectedAccount = this.store.getState().selectedAccount;
+        if (!selectedAccount || selectedAccount.address !== address) {
+            selectedAccount = this._getAccountByAddress(address)
+            this.store.updateState({selectedAccount});
             this.emit('accountChange');
         }
     }

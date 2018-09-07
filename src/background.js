@@ -101,13 +101,17 @@ class BackgroundService extends EventEmitter {
         this.store = new ComposableObservableStore(initState);
 
         // Controllers
+
+        // Preferences. Contains accounts, available accounts, selected language etc.
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
         });
 
+        // Ui State. Provides storage for ui application
         this.uiStateController =  new UiStateController({initState: initState.UiStateController});
 
+        // Wallet. Wallet creation, app locking, signing methond
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
             if (!state.locked){
@@ -116,27 +120,38 @@ class BackgroundService extends EventEmitter {
             }
         });
 
-        this.networkContoller = new NetworkController({initState: initState.NetworkController});
+        // Network. Works with blockchain
+        this.networkController = new NetworkController({initState: initState.NetworkController});
 
+        // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
-            getNetwork: this.networkContoller.getNetwork.bind(this.networkContoller),
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
-        this.networkContoller.store.subscribe(() => this.balanceController.updateBalances());
+        this.networkController.store.subscribe(() => this.balanceController.updateBalances());
 
-        this.messageController = new MessageController({
-            initState: initState.MessageController,
-            sign: this.walletController.sign.bind(this.walletController)
+        // AssetInfo. Provides information about assets
+        this.assetInfoController = new AssetInfoController({
+            initState: initState.AssetInfoController,
+            getNetwork: this.networkController.getNetwork.bind(this.networkController)
         });
 
-        this.assetInfoController = new AssetInfoController({initState: initState.AssetInfoController});
+        // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
+        // Delegates approve to walletController, broadcast to networkController and assetInfo for assetInfoController
+        this.messageController = new MessageController({
+            initState: initState.MessageController,
+            sign: this.walletController.sign.bind(this.walletController),
+            broadcast: this.networkController.broadcast.bind(this.networkController),
+            assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
+        });
+
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
-            NetworkController: this.networkContoller.store,
+            NetworkController: this.networkController.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
             UiStateController: this.uiStateController.store,
@@ -177,29 +192,35 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            sign: async (messageId) => await this.messageController.sign(messageId),
+            approve: async (messageId, address) => await this.messageController.approve(messageId, address),
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
-            setNetwork: async (network) => this.networkContoller.setNetwork(network),
-            getNetworks: async () => this.networkContoller.getNetworks(),
+            setNetwork: async (network) => this.networkController.setNetwork(network),
+            getNetworks: async () => this.networkController.getNetworks(),
 
             // external devices
-            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)
+            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to),
+
+            // asset information
+            assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId)
         }
     }
 
     getInpageApi(origin) {
-        return {
-            sing: undefined,
-            signAndBroadCast: undefined,
-            publicKey: undefined,
+        const sign = async (tx, from, broadcast = false) => {
+            this._validateTx(tx, from)
+            return await this.messageController.newTx(tx, origin, from, broadcast)
+        };
 
-            sayHello: async () => 'hello',
-            signMessage: async (from, message) => {
-                const convertedTx = await this.assetInfoController.addAssetInfo(message);
-                return await this.messageController.newTx(from, origin, convertedTx)
-            }
+        return {
+            sign: async (tx, from) => {
+                return await sign(tx, from, false)
+            },
+            signAndPublish: async (tx, from) => {
+                return await sign(tx, from, true)
+            },
+            publicState: async () => this._publicState(this.getState()),
         }
     }
 
@@ -244,7 +265,22 @@ class BackgroundService extends EventEmitter {
     _publicState(state){
         return {
             locked: state.locked,
-            account: state.locked ? undefined : state.accounts.find(acc => acc.address = state.selectedAccount)
+            account: state.locked ? undefined : state.selectedAccount
         }
     }
+
+    _validateTx(tx, from){
+        // Fields check
+        if (!tx.type || !tx.data){
+            throw new Error('Invalid tx. Tx should contain type and data fields');
+        }
+
+        // Proper public key check
+        const selectedAccount = this.getState().selectedAccount;
+        const selectedAccountAddress = selectedAccount ? selectedAccount.address : undefined
+        if (from && from !== selectedAccountAddress) {
+            throw new Error('From address should match selected account address or be blank');
+        }
+    }
+
 }

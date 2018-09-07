@@ -23,19 +23,18 @@ describe("Preferences Controller", () => {
         expect(state.currentLocale).to.eql('ru')
     });
 
-    it('Should add new accounts', () => {
-        controller.addAccount({address: '1', type: 'ledger'});
-        controller.addAccount({address: '2', type: 'ledger'});
-        const state = controller.store.getState();
-        expect(state.accounts).to.eql([
-            {address: '1', type: 'ledger', name: 'Account 1'},
-            {address: '2', type: 'ledger', name: 'Account 2'},
-        ])
-    });
+    // it('Should add new accounts', () => {
+    //     controller.addAccount({address: '1', type: 'ledger'});
+    //     controller.addAccount({address: '2', type: 'ledger'});
+    //     const state = controller.store.getState();
+    //     expect(state.accounts).to.eql([
+    //         {address: '1', type: 'ledger', name: 'Account 1'},
+    //         {address: '2', type: 'ledger', name: 'Account 2'},
+    //     ])
+    // });
 
     it('Should sync accounts from wallets passed as array', () => {
-        controller.addAccount({address: '1', type: 'ledger'});
-        controller.addAccount({address: '2', type: 'ledger', name: 'yahoo'});
+        controller.syncAccounts([{address: '1', type: 'ledger'},{address: '2', type: 'ledger', name: 'yahoo'}]);
         controller.syncAccounts([{address: '2', type: 'ledger'}, {address: '3', type: 'ledger'}]);
         const state = controller.store.getState();
         expect(state.accounts).to.eql([
@@ -45,16 +44,16 @@ describe("Preferences Controller", () => {
     });
 
     it('Should add label to account', () => {
-        controller.addAccount({address: '1', type: 'ledger'});
+        controller.syncAccounts([{address: '1', type: 'ledger'}]);
         controller.addLabel({address: '1'}, 'yahoo');
         const account = controller._getAccountByAddress('1');
         expect(account.name).to.eql('yahoo')
     });
 
     it('Should select account', () => {
-        controller.addAccount({address: '1', type: 'ledger'});
-        controller.selectAccount('1');
+        controller.syncAccounts([{address: '1', type: 'ledger'}]);
+        //controller.selectAccount('1');
         const state = controller.store.getState();
-        expect(state.selectedAccount).to.eql('1')
+        expect(state.selectedAccount).to.eql({address: '1', type: 'ledger', name: 'Account 1'})
     })
 });
