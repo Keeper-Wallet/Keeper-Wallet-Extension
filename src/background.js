@@ -167,7 +167,7 @@ class BackgroundService extends EventEmitter {
             setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
-            addWallet: async (type, key) => this.walletController.addWallet(type, key),
+            addWallet: async (account) => this.walletController.addWallet(account),
             removeWallet: async (publicKey) => this.walletController.removeWallet(publicKey),
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
@@ -182,6 +182,7 @@ class BackgroundService extends EventEmitter {
 
             // network
             setNetwork: async (network) => this.networkContoller.setNetwork(network),
+            getNetworks: async () => this.networkContoller.getNetworks(),
 
             // external devices
             getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to)

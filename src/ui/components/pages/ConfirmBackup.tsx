@@ -2,7 +2,8 @@ import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { Pills } from '../ui';
+import { Button, Pills } from '../ui';
+import { addUser } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
@@ -13,10 +14,13 @@ class ConfirmBackupComponent extends React.Component {
     state = { seed: null, list: [], selectedList: [], wrongSeed: false, complete: false };
     onSelect = (list) => this._onSelect(list);
     onUnSelect = (list) => this._onUnSelect(list);
+    onClear = () => this._onClear();
+    onSubmit = () => this._onSubmit();
 
     render () {
         const { selectedList, list, complete, wrongSeed } = this.state;
         const showButton = complete && !wrongSeed;
+        const showClear = complete && wrongSeed;
 
         return <div className={styles.confirmBackUp}>
             <Trans>
@@ -28,14 +32,36 @@ class ConfirmBackupComponent extends React.Component {
                    selected={false}
                    onSelect={this.onUnSelect}/>
             <div>
-                <Trans i18nKey='selectWord'>
+                {complete ? null : <Trans i18nKey='selectWord'>
                     Please, tap each word in the correct order
-                </Trans>
+                </Trans>}
             </div>
             <Pills className={styles.writeSeed}
                    list={list} selected={true} onSelect={this.onSelect}/>
-            {complete && wrongSeed}
+            {showButton ?
+                <Button type='submit'
+                        onClick={this.onSubmit}>
+                    <Trans i18nKey='confirm'>Confirm</Trans>
+                </Button>
+                : null}
+            {showClear ? (
+                <div>
+                    <div>
+                        <Trans i18nKey="wrongSeed">Wrong order, try again</Trans>
+                    </div>
+                    <div>
+                        <Button type='transparent' onClick={this.onClear}>
+                            <Trans i18nKey='clear'>Clear</Trans>
+                            <Trans i18nKey='selectAgain'>and tap again</Trans>
+                        </Button>
+                    </div>
+                </div>
+            ) : null}
         </div>
+    }
+
+    private _onSubmit() {
+        this.props.addUser(this.props.account);
     }
 
     private _onSelect({ text, id }) {
@@ -54,7 +80,7 @@ class ConfirmBackupComponent extends React.Component {
 
         const state = {
             selectedList: selected,
-            wrongSeed: this.state.seed !== selectedTextsList.join(),
+            wrongSeed: this.state.seed !== selectedTextsList.join(' '),
             complete: selected.length === list.length,
             list: this.state.list.map(item => {
                 item.hidden = selectedTextsList.includes(item.text);
@@ -63,6 +89,10 @@ class ConfirmBackupComponent extends React.Component {
         };
 
         this.setState(state);
+    }
+
+    private _onClear() {
+        this._setSelected([]);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -87,8 +117,9 @@ class ConfirmBackupComponent extends React.Component {
 
 const mapStateToProps = function(store: any) {
     return {
-        account: store.localState.newAccount
+        account: store.localState.newAccount,
+        ...store.localState.addNewAccount
     };
 };
 
-export const ConfirmBackup = connect(mapStateToProps)(ConfirmBackupComponent);
+export const ConfirmBackup = connect(mapStateToProps, { addUser })(ConfirmBackupComponent);

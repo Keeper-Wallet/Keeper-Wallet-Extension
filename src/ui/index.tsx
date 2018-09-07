@@ -13,6 +13,7 @@ import { Bottom } from './components/bottom';
 export async function initApp(background: any) {
     backgroundService.init(background);
     backgroundService.on(updateState);
+    backgroundService.getNetworks();
     backgroundService.getState();
 }
 

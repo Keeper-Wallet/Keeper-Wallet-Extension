@@ -29,7 +29,8 @@ export class WalletController {
                     publicKey: seed.keyPair.publicKey,
                     address: seed.address,
                     networkCode: options.networkCode,
-                    type: options.type
+                    type: options.type,
+                    name: options.name
                 };
                 break;
             default:

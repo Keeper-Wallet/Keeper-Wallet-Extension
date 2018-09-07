@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import { NETWORKS, NETWORK_CODES } from '../constants';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
 
@@ -8,6 +9,10 @@ export class NetworkController {
             currentNetwork: WAVESKEEPER_DEBUG ? 'testnet' : 'mainnet'
         };
         this.store =  new ObservableStore(Object.assign({}, defaults, options.initState))
+    }
+
+    getNetworks() {
+        return NETWORKS.map(name => ({ name, code: NETWORK_CODES[name] }));
     }
 
     setNetwork(network){

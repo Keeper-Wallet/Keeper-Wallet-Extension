@@ -8,13 +8,21 @@ export function updateState(state) {
         accounts = [],
         initialized,
         locked,
-        currentNetwork,
+        networks = [],
+        currentNetwork = '',
         messages = [],
         balances = [],
         pollInterval,
-        uiState = {}
+        uiState = {},
     } = state;
     const currentState = store.getState();
+
+    if (state.networks && state.networks.length) {
+        actions.push({
+            type: ACTION.UPDATE_NETWORKS,
+            payload: state.networks
+        });
+    }
 
     if (currentNetwork !== currentState.currentNetwork) {
         actions.push({
@@ -44,7 +52,7 @@ export function updateState(state) {
         });
     }
 
-    if (currentLocale !== currentState.currentLocale) {
+    if (currentLocale && currentLocale !== currentState.currentLocale) {
         actions.push({
             type: ACTION.UPDATE_FROM_LNG,
             payload: currentLocale

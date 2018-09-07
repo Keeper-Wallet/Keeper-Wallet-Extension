@@ -48,7 +48,7 @@ class BackUpSeedComponent extends React.Component {
     }
 
     _onCopy(result?) {
-        debugger;
+        //oncopy
     }
 
     _onClick() {
