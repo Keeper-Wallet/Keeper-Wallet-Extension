@@ -39,7 +39,7 @@ describe("MessageController", () => {
         expect(state.messages[0].time).to.be.lt(Date.now());
     });
 
-    it('Should sign message that has sender', async () => {
+    it('Should approve message that has sender', async () => {
         const messagePromise = controller.newTx(tx, origin, address);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
@@ -49,7 +49,7 @@ describe("MessageController", () => {
         expect(signedMessage).to.eql('placeholder');
     });
 
-    it('Should sign message that don\'t have sender. Sender is passed as param', async () => {
+    it('Should approve message that don\'t have sender. Sender is passed as param', async () => {
         const messagePromise = controller.newTx(tx, origin);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
@@ -59,7 +59,7 @@ describe("MessageController", () => {
         expect(signedMessage).to.eql('placeholder');
     });
 
-    it('Shouldn\'t sign message that don\'t have sender. Sender not passed as param', async () => {
+    it('Shouldn\'t approve message that don\'t have sender. Sender not passed as param', async () => {
         controller.newTx(tx, origin).catch(()=>{});
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
@@ -72,7 +72,7 @@ describe("MessageController", () => {
         expect(msg).to.eql('Orphaned tx. No account public key')
     });
 
-    it('Should sign and broadcast message if broadcast = true', async () => {
+    it('Should approve and broadcast message if broadcast = true', async () => {
         const messagePromise = controller.newTx(tx, origin, address, true);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;

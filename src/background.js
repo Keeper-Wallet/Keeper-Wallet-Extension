@@ -138,7 +138,7 @@ class BackgroundService extends EventEmitter {
         });
 
         // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
-        // Delegates sign to walletController, broadcast to networkController and assetInfo for assetInfoController
+        // Delegates approve to walletController, broadcast to networkController and assetInfo for assetInfoController
         this.messageController = new MessageController({
             initState: initState.MessageController,
             sign: this.walletController.sign.bind(this.walletController),
@@ -192,7 +192,7 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            sign: async (messageId, address) => await this.messageController.sign(messageId, address),
+            approve: async (messageId, address) => await this.messageController.approve(messageId, address),
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // network
@@ -210,7 +210,7 @@ class BackgroundService extends EventEmitter {
         const sign = async (tx, from, broadcast = false) => {
             this._validateTx(tx, from)
             return await this.messageController.newTx(tx, origin, from, broadcast)
-        }
+        };
 
         return {
             sign: async (tx, from) => {

@@ -27,9 +27,9 @@ export class MessageController extends EventEmitter {
 
     /**
      * Generates metadata for tx. Add tx to pipeline
-     * @param {tx} tx - Transaction to sign
+     * @param {tx} tx - Transaction to approve
      * @param {string} origin - Domain, which has sent this tx
-     * @param {string | undefined} from - Address of the account, that should sign tx. Can be undefined
+     * @param {string | undefined} from - Address of the account, that should approve tx. Can be undefined
      * @param {boolean} broadcast - Should this tx be sent to node
      * @returns {Promise<tx>}
      */
@@ -57,7 +57,7 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    async sign(id, address) {
+    async approve(id, address) {
         const message = this._getMessageById(id);
         if (address) {
             message.account = address
@@ -68,7 +68,7 @@ export class MessageController extends EventEmitter {
             message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
             message.status = 'signed';
             if (message.broadcast) {
-                await this.broadcast(message.tx);
+                message.tx = await this.broadcast(message.tx);
                 message.status = 'published'
             }
         } catch (e) {

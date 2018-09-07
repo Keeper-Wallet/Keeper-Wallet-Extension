@@ -39,15 +39,6 @@ export class Wallet {
         }
         const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
-        const dataWithBignumbers = await signable.getDataForApi();
-        const dataWithoutBignumbers = Object.entries(dataWithBignumbers).reduce((acc, [key, value]) => {
-            if (value instanceof BigNumber) {
-                acc[key] = value.toString()
-            }else {
-                acc[key] = value
-            }
-            return acc
-        }, {})
-        return dataWithoutBignumbers
+        return await signable.getDataForApi()
     }
 }
