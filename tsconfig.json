@@ -5,7 +5,11 @@
     "module": "commonjs",
     "target": "es6",
     "experimentalDecorators": true,
-    "jsx": "react"
+    "jsx": "react",
+    "lib": [
+      "ES2017",
+      "DOM"
+    ]
   },
   "include": [
     "./src/**/*"

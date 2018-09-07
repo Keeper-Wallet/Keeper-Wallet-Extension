@@ -1,10 +1,19 @@
 import * as styles from './styles/newaccount.styl';
+import { connect } from 'react-redux';
+import { createNew } from '../../actions';
 import * as React from 'react'
-import {HeadLogo} from '../head';
 import {Input, Button} from '../ui';
+import { translate, Trans } from 'react-i18next';
 
+const MIN_LINGTH = 6;
 
-export class NewAccount extends React.Component {
+const mapStateToProps = function (store: any) {
+    debugger;
+    return {};
+};
+
+@translate('newAccount')
+class NewAccountComponent extends React.Component {
 
     inputEl: Input;
     state = {
@@ -13,6 +22,10 @@ export class NewAccount extends React.Component {
         firstError: null,
         secondError: null,
         buttonDisabled: true,
+        passwordError: false,
+    };
+    props: {
+        createNew: (pass: string) => void;
     };
 
     getRef = input => this.inputEl = input;
@@ -20,6 +33,11 @@ export class NewAccount extends React.Component {
     onSecondBlur = () => this._onSecondBlur();
     onChangeFist = e => this._onChangeFist(e);
     onChangeSecond = e => this._onChangeSecond(e);
+    onSubmit = () => {
+        if(!this.state.passwordError && this.state.firstValue) {
+            this.props.createNew(this.state.firstValue);
+        }
+    };
 
     componentDidMount(){
         this.inputEl.focus();
@@ -27,26 +45,30 @@ export class NewAccount extends React.Component {
 
     render() {
         return <div className={styles.account}>
-                <HeadLogo/>
                 <div className={styles.content}>
-                    <h2>Protect Your Account</h2>
-
-                    <div>
-                        <Input id='first'
-                               type="password"
-                               ref={this.getRef}
-                               onBlur={this.onFirstBlur}
-                               onChange={this.onChangeFist}
-                               error={!!this.state.firstError}
-                        />
-                        <Input id='second'
-                               type="password"
-                               onBlur={this.onSecondBlur}
-                               onChange={this.onChangeSecond}
-                               error={!!this.state.secondError}
-                        />
-                    </div>
-                    <Button submit={true} disabled={this.state.buttonDisabled}>Create</Button>
+                    <h2>
+                        <Trans i18nKey='protect'>Protect Your Account</Trans>
+                    </h2>
+                    <form onSubmit={this.onSubmit} >
+                        <div>
+                            <Input id='first'
+                                   type="password"
+                                   ref={this.getRef}
+                                   onBlur={this.onFirstBlur}
+                                   onChange={this.onChangeFist}
+                                   error={!!this.state.firstError}
+                            />
+                            <Input id='second'
+                                   type="password"
+                                   onBlur={this.onSecondBlur}
+                                   onChange={this.onChangeSecond}
+                                   error={!!this.state.secondError}
+                            />
+                        </div>
+                        <Button type='submit' disabled={this.state.buttonDisabled}>
+                            <Trans i18nKey='create'>Create</Trans>
+                        </Button>
+                    </form>
                 </div>
             </div>
     }
@@ -60,20 +82,30 @@ export class NewAccount extends React.Component {
     }
 
     _onChangeFist(e) {
+        const buttonDisabled = this._isDisabledButton();
         const firstValue = e.target.value;
-        this.setState({ firstValue });
+        this.setState({ firstValue, buttonDisabled });
     }
 
     _onChangeSecond(e) {
+        const buttonDisabled = this._isDisabledButton();
         const secondValue = e.target.value;
-        this.setState({ secondValue });
+        this.setState({ secondValue, buttonDisabled });
+    }
+
+    _isDisabledButton() {
+        if (!this.state.firstValue || !this.state.secondValue) {
+            return true;
+        }
+
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LINGTH;
     }
 
     _checkValues() {
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = passwordError || !(this.state.firstValue && this.state.secondValue);
+        const buttonDisabled = this._isDisabledButton();
         this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
 
@@ -82,7 +114,7 @@ export class NewAccount extends React.Component {
             return null;
         }
 
-        if (this.state.firstValue.length <= 6) {
+        if (this.state.firstValue.length <= MIN_LINGTH) {
             return { error: 'isSmall' };
         }
     }
@@ -99,3 +131,5 @@ export class NewAccount extends React.Component {
         return { error: 'noMatch' }
     }
 }
+
+export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);

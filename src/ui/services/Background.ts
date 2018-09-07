@@ -1,85 +1,130 @@
-import { store, IState } from '../store';
-import { i18n } from '../i18n';
-
 class Background {
 
     static instance: Background;
-    static background: any;
+    background: any;
+    initPromise: Promise<void>;
+    onUpdateCb: Array<(state) => void> = [];
+    _defer;
 
-    async updateState(): Promise<void> {
-        const state = await Background.background.getState();
-        this._onUpdate(state);
+    constructor() {
+        this._defer = {};
+        this.initPromise = new Promise((res, rej) => {
+            this._defer.resolve = res;
+            this._defer.reject = rej;
+        });
+        this._defer.promise = this.initPromise;
+    }
+
+    on(cb: (state) => void) {
+        if(this.onUpdateCb.indexOf(cb) > -1) {
+            return null;
+        }
+
+        this.onUpdateCb.push(cb);
+    }
+
+    off(cb) {
+        this.onUpdateCb = this.onUpdateCb.filter((cb2) => cb2 !== cb);
     }
 
     init(background) {
-        if (Background.background) {
-            return;
-        }
-
         background.on('update', this._onUpdate.bind(this));
-        Background.background = background;
+        this.background = background;
+        this._defer.resolve();
     }
 
-    setCurrentLocale(lng): Promise<void> {
-        return Background.background.setCurrentLocale(lng);
+    async getState() {
+        await this.initPromise;
+        const data = await this.background.getState();
+        this._onUpdate(data);
+        return data;
+    }
+
+    async setCurrentLocale(lng): Promise<void> {
+        await this.initPromise;
+        return this.background.setCurrentLocale(lng);
     }
 
     async setUiState(newUiState) {
-        const { state } = store.getState();
-        return Background.background.setUiState({ ...state.uiState, ...newUiState });
+        await this.initPromise;
+        return this.background.setUiState(newUiState);
     }
 
     async selectAccount(address): Promise<void> {
-        return Background.background.selectAccount(address);
+        await this.initPromise;
+        return this.background.selectAccount(address);
     }
 
     async addWallet(data): Promise<void> {
-        return Background.background.addWallet(data);
+        await this.initPromise;
+        return this.background.addWallet(data);
     }
 
     async removeWallet(address): Promise<void> {
-        return Background.background.removeWallet(address);
+        await this.initPromise;
+        return this.background.removeWallet(address);
     }
 
     async lock(): Promise<void> {
-        return Background.background.lock();
+        await this.initPromise;
+        return this.background.lock();
     }
 
     async unlock(password): Promise<void> {
-        return Background.background.unlock(password);
+        await this.initPromise;
+        return this.background.unlock(password);
     }
 
-    async initVault(): Promise<void> {
-        return Background.background.initVault();
+    async initVault(password): Promise<void> {
+        await this.initPromise;
+        return this.background.initVault(password);
     }
 
     async exportAccount(): Promise<void> {
-        return Background.background.exportAccount();
+        await this.initPromise;
+        return this.background.exportAccount();
     }
 
     async clearMessages(): Promise<void> {
-        return Background.background.clearMessages();
+        await this.initPromise;
+        return this.background.clearMessages();
     }
 
     async sign(): Promise<void> {
-        return Background.background.sign();
+        await this.initPromise;
+        return this.background.sign();
     }
 
     async reject(): Promise<void> {
-        return Background.background.reject();
+        await this.initPromise;
+        return this.background.reject();
     }
 
     async setNetwork(network): Promise<void> {
-        return Background.background.setNetwork(network);
+        await this.initPromise;
+        return this.background.setNetwork(network);
     }
 
-
     _onUpdate(state: IState) {
-        i18n.changeLanguage(state.currentLocale);
-        console.log('store', state);
-        store.dispatch({payload: state, type: 'UPDATE_STATE'});
+        for (const cb of this.onUpdateCb) {
+            cb(state);
+        }
     }
 }
 
 export default new Background();
 
+export interface IState {
+    locked: boolean;
+    hasAccount: boolean;
+    currentLocale: string;
+    accounts: Array<any>;
+    currentNetwork: string;
+    messages: Array<any>;
+    balances: any;
+    uiState: IUiState;
+}
+
+export interface IUiState {
+    tab: string;
+}

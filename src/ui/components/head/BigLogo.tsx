@@ -12,7 +12,7 @@ export class BigLogo extends React.PureComponent {
     }
 
     render() {
-        return <div className={`${styles.bigLogo} textCenter ${this.props.className || ''}`}>
+        return <div className={`${styles.bigLogo} center ${this.props.className || ''}`}>
             <div className={styles.bigLogoImg}></div>
             <div className={styles.bigLogoTitle}>
                 <Trans i18nKey='logo-title'>your keys manager</Trans>
