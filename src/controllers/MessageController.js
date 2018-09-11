@@ -2,8 +2,10 @@ import ObservableStore from 'obs-store';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
+import {Money, BigNumber} from '@waves/data-entities';
+import {moneylikeToMoney} from '../lib/moneyUtil';
 
-// msg statuses: unapproved, signed, rejected, failed
+// msg statuses: unapproved, signed, published, rejected, failed
 
 export class MessageController extends EventEmitter {
     constructor(options = {}) {
@@ -15,11 +17,25 @@ export class MessageController extends EventEmitter {
 
         // Signing method from WalletController
         this.signWavesTx = options.sign
+
+        // Broadcast method from NetworkController
+        this.broadcast = options.broadcast
+
+        // Get assetInfo methid from AssetInfoController
+        this.assetInfo = options.assetInfo
     }
 
-    newTx(from, origin, tx) {
+    /**
+     * Generates metadata for tx. Add tx to pipeline
+     * @param {tx} tx - Transaction to approve
+     * @param {string} origin - Domain, which has sent this tx
+     * @param {string | undefined} from - Address of the account, that should approve tx. Can be undefined
+     * @param {boolean} broadcast - Should this tx be sent to node
+     * @returns {Promise<tx>}
+     */
+    newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
-        let meta = this._generateMetadata(from, origin);
+        let meta = this._generateMetadata(origin, from, broadcast);
         meta.tx = tx;
         let messages = this.store.getState().messages;
         messages.push(meta);
@@ -28,6 +44,7 @@ export class MessageController extends EventEmitter {
             this.once(`${meta.id}:finished`, finishedMeta => {
                 switch (finishedMeta.status) {
                     case 'signed':
+                    case 'published':
                         return resolve(finishedMeta.tx);
                     case 'rejected':
                         return reject(new Error('User denied message'));
@@ -40,22 +57,32 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    async sign(id) {
+    async approve(id, address) {
         const message = this._getMessageById(id);
+        if (address) {
+            message.account = address
+        }
         try {
-            message.tx = await this.signWavesTx(message.account, message.tx);
-            message.status = 'signed'
+            if (!message.account) throw new Error('Orphaned tx. No account public key');
+            const txDataWithMoney = await this._convertMoneylikeFieldsToMoney(message.tx.data);
+            message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
+            message.status = 'signed';
+            if (message.broadcast) {
+                message.tx = await this.broadcast(message.tx);
+                message.status = 'published'
+            }
         } catch (e) {
             message.err = e;
             message.status = 'failed'
         }
         this._updateMessage(message);
+
         this.emit(`${message.id}:finished`, message);
-        if (message.status === 'signed'){
+        if (message.status === 'signed' || message.status === 'published') {
             return message.tx
-        }else if (message.status === 'failed'){
+        } else if (message.status === 'failed') {
             throw message.err
-        }else {
+        } else {
             throw new Error('Unknown error')
         }
     }
@@ -91,14 +118,28 @@ export class MessageController extends EventEmitter {
         return this.store.getState().messages.find(message => message.id === id);
     }
 
-    _generateMetadata(from, origin) {
+    _generateMetadata(origin, from, broadcast) {
         return {
             account: from,
+            broadcast,
             id: uuid(),
             origin,
             status: 'unapproved',
             time: Date.now()
 
         }
+    }
+
+    async _convertMoneylikeFieldsToMoney(txData) {
+        let result = Object.assign({}, txData);
+        for (let key in txData){
+            const field = txData[key];
+            if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')){
+                const asset = await this.assetInfo(txData[key].assetId);
+                let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
+                result[key] = new Money(amount, asset)
+            }
+        }
+        return result
     }
 }

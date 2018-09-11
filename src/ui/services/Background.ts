@@ -80,9 +80,9 @@ class Background {
         return this.background.initVault(password);
     }
 
-    async exportAccount(): Promise<void> {
+    async exportAccount(account): Promise<void> {
         await this.initPromise;
-        return this.background.exportAccount();
+        return this.background.exportAccount(account);
     }
 
     async clearMessages(): Promise<void> {
@@ -105,6 +105,13 @@ class Background {
         return this.background.setNetwork(network);
     }
 
+    async getNetworks(): Promise<void> {
+        await this.initPromise;
+        const networks = await this.background.getNetworks();
+        this._onUpdate({ networks });
+        return networks;
+    }
+
     _onUpdate(state: IState) {
         for (const cb of this.onUpdateCb) {
             cb(state);
@@ -115,14 +122,15 @@ class Background {
 export default new Background();
 
 export interface IState {
-    locked: boolean;
-    hasAccount: boolean;
-    currentLocale: string;
-    accounts: Array<any>;
-    currentNetwork: string;
-    messages: Array<any>;
-    balances: any;
-    uiState: IUiState;
+    locked?: boolean;
+    hasAccount?: boolean;
+    currentLocale?: string;
+    accounts?: Array<any>;
+    currentNetwork?: string;
+    messages?: Array<any>;
+    balances?: any;
+    uiState?: IUiState;
+    networks?: Array<{ name; code; }>;
 }
 
 export interface IUiState {

@@ -1,5 +1,10 @@
 import {getAdapterByType} from '@waves/signature-adapter'
-import * as SG from "@waves/signature-generator"
+import {BigNumber} from '@waves/data-entities';
+// import {moneylikeToMoney} from '../lib/moneyUtil';
+//
+// import * as SG from "@waves/signature-generator"
+import create from 'parse-json-bignumber';
+const {stringify, parse} = create({BigNumber});
 
 
 export class Wallet {
@@ -25,44 +30,15 @@ export class Wallet {
 
     async sign(tx){
         const Adapter = getAdapterByType(this.user.type);
+
         Adapter.initOptions({networkCode: this.user.networkCode});
         //Todo: temporary for seed
-        const adapter = new Adapter(this.user.seed);
+        let params = this.user
+        if (this.user.type === 'seed'){
+            params = this.user.seed
+        }
+        const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
         return await signable.getDataForApi()
     }
 }
-//
-// export class Wallet {
-//     constructor(options = {}) {
-//         this.networkCode = options.networkCode;
-//         const Adapter = getAdapterByType(options.type);
-//         Adapter.initOptions({networkCode: this.networkCode});
-//         this._adapter = new Adapter(options.data);
-//         this.type = options.type
-//     }
-//
-//     async getAccount() {
-//         return {
-//             networkCode: this.networkCode,
-//             publicKey: await this._adapter.getPublicKey(),
-//             type: this.type,
-//         }
-//     }
-//
-//     async serialize() {
-//         return {
-//             data: await this._adapter.getSeed(),
-//             networkCode: this.networkCode,
-//         }
-//     }
-//
-//     async getSecret() {
-//         return await this._adapter.getSeed()
-//     }
-//
-//     async sign(tx) {
-//         const signable = this._adapter.makeSignable(tx);
-//         return await signable.getDataForApi()
-//     }
-// }

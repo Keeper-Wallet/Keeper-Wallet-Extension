@@ -23,7 +23,7 @@ function login(state = {}, action) {
     return state;
 }
 
-function newAccount(state = { name: '', address: '', type: 'seed' }, action) {
+function newAccount(state = { name: '', address: '', type: 'seed', seed: '' }, action) {
     switch (action.type) {
         case ACTION.NEW_ACCOUNT_NAME:
             const name = action.payload || state.name;
@@ -35,10 +35,20 @@ function newAccount(state = { name: '', address: '', type: 'seed' }, action) {
     return state;
 }
 
+function addNewAccount(state = { pending: false, error: false }, { type, payload }) {
+     switch (type) {
+         case ACTION.SAVE_NEW_ACCOUNT_SEND:
+         case ACTION.SAVE_NEW_ACCOUNT_RECEIVE:
+             return payload;
+     }
+
+     return state;
+}
 
 
 export const localState = combineReducers({
     newUser,
     login,
-    newAccount
+    newAccount,
+    addNewAccount
 });

@@ -29,7 +29,8 @@ export class WalletController {
                     publicKey: seed.keyPair.publicKey,
                     address: seed.address,
                     networkCode: options.networkCode,
-                    type: options.type
+                    type: options.type,
+                    name: options.name
                 };
                 break;
             default:
@@ -92,11 +93,11 @@ export class WalletController {
         return wallet.getSecret();
     }
 
-    async sign(address, data) {
+    async sign(address, tx) {
         if (this.store.getState().locked) throw new Error('App is locked');
         const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
         if (!wallet) throw new Error(`Wallet not found for address ${address}`);
-        return await wallet.sign(data)
+        return await wallet.sign(tx)
     }
 
     // Private

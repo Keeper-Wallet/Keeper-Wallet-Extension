@@ -6,7 +6,7 @@ import {Money} from "@waves/data-entities";
 describe('WalletController', () => {
     const password = 'example';
     const initState = {vault: encrypt([], password)}
-    const seed = 'some useful example seed with needed length of twenty bytes'
+    const seed = 'talk lottery wasp evolve humble staff magnet unlock agent inner frequent assist elevator critic rice'
     it('Should init vault', () => {
         const controller = new WalletController();
         controller.initVault(password);
@@ -103,7 +103,7 @@ describe('WalletController', () => {
         expect(exported).to.eq(seed)
     });
 
-    it('Should sign tx', async () => {
+    it('Should approve tx', async () => {
         const controller = new WalletController({initState});
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
