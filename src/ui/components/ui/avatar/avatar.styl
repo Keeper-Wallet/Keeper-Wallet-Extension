@@ -7,14 +7,23 @@
   cursor: pointer;
 
   &.selected {
-    background-color: $submit300;
+    background-color: rgba(31, 90, 246, 0.1);
+    border-radius: 2px;
+    border: 1px solid $submit400;
+    padding: 4px;
   }
 
   img {
     border-radius: 50%;
+    margin: 4px;
+    width: 38px !important;
+    height: 38px !important;
   }
 }
 
 .avatarList {
-  display: block;
+  display: flex;
+  width: 100%;
+  justify-content space-between;
+  align-items: center;
 }

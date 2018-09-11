@@ -1,4 +1,4 @@
-import * as styles from './styles/login.styl';
+import * as styles from './styles/newwallet.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
@@ -32,26 +32,27 @@ class NewWalletComponent extends React.Component {
     }
 
     render () {
-        return <div className={styles.login}>
+        return <div className={styles.content}>
             <div>
-                <Trans i18nKey='createNew'>
-                    Create New Account
-                </Trans>
+                <h2 className={`title1 margin3 left`}>
+                    <Trans i18nKey='createNew'>Create New Account</Trans>
+                </h2>
             </div>
 
-            <div>
-                <Trans i18nKey='select'>Choose your address avatar</Trans>
-                <Trans i18nKey='selectInfo'>This avatar is unique. You cannot change it later.</Trans>
+            <div className={`margin3`}>
+                <div className={`body3`}><Trans i18nKey='select'>Choose your address avatar</Trans></div>
+                <div className={`tag1 basic500`}><Trans i18nKey='selectInfo'>This avatar is unique. You cannot change it later.</Trans></div>
             </div>
 
-            <div>
-                <AvatarList size={38} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
+            <div className={`margin4 avatar-list`}>
+                <AvatarList size={46} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
             </div>
 
-            <div>
+            <div className={`tag1 basic500`}>
                 <Trans i18nkey='address'>Account address</Trans>:
-                <div>{this.props.account.address}</div>
             </div>
+
+            <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>
 
             <form onSubmit={this.onSubmit}>
                 <Button type="submit">

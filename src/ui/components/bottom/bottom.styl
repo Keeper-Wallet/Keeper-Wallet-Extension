@@ -1,13 +1,27 @@
-.bottom {
+@import '../../styles/colors.styl'
 
+.bottom {
   position: absolute;
-  bottom: 0;
+  bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  white-space: nowrap;
+  width: 100%;
+  padding: 0 14px;
 
   &.hidden {
     display: none;
   }
+
+  .network {
+    background: url(../../assets/img/network-14-basic-500.svg) left center no-repeat;
+    padding-left: 22px;
+    flex-grow: 1;
+    cursor: pointer;
+    span {
+      border-bottom: 1px dotted $basic500;
+    }
+  }
 }
 
-.network {
 
-}

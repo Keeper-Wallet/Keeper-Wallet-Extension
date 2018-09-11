@@ -9,10 +9,6 @@ export const tab = (store = '', action: any) => {
     return action.type === ACTION.CHANGE_TAB ? action.payload : store;
 };
 
-export const networks = (store = '', action: any) => {
-    return action.type === ACTION.UPDATE_NETWORKS ? action.payload : store;
-};
-
 export const uiState = (store = {}, action: any) => {
     return action.type === ACTION.UPDATE_UI_STATE ? action.payload : store;
 };

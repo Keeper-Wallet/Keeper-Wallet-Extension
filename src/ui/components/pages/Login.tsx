@@ -38,6 +38,7 @@ class LoginComponent extends React.Component {
                     </div>
                     <div className={`margin3`}>
                         <Input type="password"
+                               ref={this.getRef}
                                onChange={this.onChange}
                                error={this.state.passwordError}
                         />

@@ -19,10 +19,12 @@ class BottomComponent extends React.PureComponent {
             });
 
         return <div className={className}>
-            <div className={styles.network}>
-                <Trans i18nKey={this.props.currentNetwork}>{this.props.currentNetwork}</Trans>
+            <div className={`${styles.network} basic500`}>
+                <span>
+                    <Trans i18nKey={this.props.currentNetwork}>{this.props.currentNetwork}</Trans>
+                </span>
             </div>
-            <div>
+            <div className={'basic500'}>
                 v {this.props.version}
             </div>
         </div>

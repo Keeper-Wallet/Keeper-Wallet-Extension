@@ -45,13 +45,12 @@ class NewAccountComponent extends React.Component {
 
     render() {
         return <div className={styles.account}>
-                <form className={styles.content}>
+                <form className={styles.content} onSubmit={this.onSubmit}>
                     <h2 className={`title1 margin3 left`}>
                         <Trans i18nKey='protect'>Protect Your Account</Trans>
                     </h2>
-                    <form onSubmit={this.onSubmit} >
                         <div>
-                            <div className={`basic500 tag1 left label`}>
+                            <div className={`basic500 tag1 left input-title`}>
                                 <Trans i18nKey='createPassword'>Create a password</Trans>
                             </div>
                             <Input id='first'
@@ -62,7 +61,7 @@ class NewAccountComponent extends React.Component {
                                    onChange={this.onChangeFist}
                                    error={!!this.state.firstError}
                             />
-                            <div className={`basic500 tag1 left label`}>
+                            <div className={`basic500 tag1 left input-title`}>
                                 <Trans i18nKey='confirmPassword'>Confirm password</Trans>
                             </div>
                             <Input id='second'
@@ -73,7 +72,7 @@ class NewAccountComponent extends React.Component {
                                    error={!!this.state.secondError}
                             />
                         </div>
-                        <Button onClick={this.onSubmit} type='submit' disabled={this.state.buttonDisabled}>
+                        <Button type='submit' disabled={this.state.buttonDisabled}>
                             <Trans i18nKey='create'>Continue</Trans>
                         </Button>
                         <div className={`tag1 left basic500 marginTop3`}>
@@ -82,9 +81,10 @@ class NewAccountComponent extends React.Component {
                             you will have to repeat the process of adding accounts to Waves Keeper.
                             Waves does not store your passwords.
                         </div>
-                    </form>
-                </div>
-            </div>
+
+        </form>
+
+    </div>
     }
 
     _onFirstBlur () {

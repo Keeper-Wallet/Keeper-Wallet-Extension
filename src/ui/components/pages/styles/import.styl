@@ -1,0 +1,46 @@
+@import './../../../styles/colors.styl';
+
+.import
+  width: 100%;
+  position: relative;
+
+.logoMargin {
+  margin-top: 100px;
+  margin-bottom: 44px;
+}
+
+.forgotPasswordLink {
+
+}
+
+.label {
+  margin-bottom: 7px;
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  display: inline-block;
+  height: 60%;
+  width: 240px;
+  margin: auto;
+
+  .importChooser {
+    border-bottom: 1px solid $accent50;
+    &:last-child {
+      border-bottom: 0 none;
+    }
+
+    button {
+      display: flex;
+      flex-direction: column;
+      font-family: Roboto;
+      background: url(../../../assets/img/arrow-left-14-basic-200.svg) right center no-repeat;
+      padding: 5px;
+    }
+  }
+}
