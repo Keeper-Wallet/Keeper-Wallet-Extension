@@ -1,9 +1,9 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
-import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { setTab, newAccountName } from '../../actions';
-import { Input, Button } from '../ui';
+import {connect} from 'react-redux';
+import {translate, Trans} from 'react-i18next';
+import {setTab, newAccountName} from '../../actions';
+import {Input, Button} from '../ui';
 
 @translate('newAccountName')
 class NewWalletNameComponent extends React.Component {
@@ -16,31 +16,31 @@ class NewWalletNameComponent extends React.Component {
     onSubmit = () => this._onSubmit();
     getRef = input => this.inputEl = input;
 
-    render () {
-        return <div className={styles.newAccountName}>
-            <Trans i18nKey="title">
-                Account name
-            </Trans>
+    render() {
+        return <div className={styles.content}>
+            <h2 className={`title1 margin1`}>
+                <Trans i18nKey='accountName'>Account name</Trans>
+            </h2>
 
-            <div className={styles.content}>
+
                 <form onSubmit={this.onSubmit}>
-                    <div>
+                    <div className={`margin2`}>
                         <Input ref={this.getRef}
                                onChange={this.onChange}
                         />
                     </div>
 
-                    <Trans i18nKey="nameInfo">
-                        The account name will be known only to you
-                    </Trans>
+                    <div className={`basic500 tag1 margin2`}>
+                        <Trans i18nKey="nameInfo">
+                            The account name will be known only to you
+                        </Trans>
+                    </div>
 
-                    <div>
                         <Button type='submit'>
                             <Trans i18nKey="continue">Continue</Trans>
                         </Button>
-                    </div>
                 </form>
-            </div>
+
         </div>
     }
 
@@ -57,7 +57,7 @@ class NewWalletNameComponent extends React.Component {
     }
 }
 
-const mapStateToProps = function(store: any) {
+const mapStateToProps = function (store: any) {
     return {
         account: store.localState.newAccount
     };

@@ -21,18 +21,6 @@
   position: relative;
   font-weight: 300;
 
-  &::before {
-    //height: 47px;
-    //width: 100%;
-    //content: '';
-    //display: block;
-    //background: url(./../assets/img/waveskeeper-16.svg) center no-repeat;
-    //border-bottom: 1px solid $basic100;
-    //z-index: 1;
-    //position: absolute;
-    //top: 0;
-  }
-
 // align
 :global #app-content,
 :global .app
@@ -47,9 +35,19 @@
 :global .center
   text-align: center;
 
-.flex
+:global .relative {
+  position: relative;
+}
+
+:global .absolute {
+  position: absolute;
+}
+
+:global .flex {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
 
 // typography
 :global .title1
@@ -85,6 +83,14 @@
 
 // layout
 $layout-10 = 10px;
+$layout-14 = 14px;
+$layout-24 = 24px;
+
+:global .margin-main
+  margin-bottom: $layout-14;
+
+:global .margin-main-big
+  margin-bottom: $layout-24;
 
 :global .margin1
   margin-bottom: $layout-10;
@@ -142,4 +148,19 @@ $layout-10 = 10px;
   height: 42px;
   align-items: center;
   justify-content: center;
+}
+
+:global .plate {
+  background: $basic50;
+  border: 1px dashed $basic200;
+  padding: $layout-14;
+  border-radius: 2px;
+}
+
+// global icons
+:global .copy-icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: url(../assets/img/copy-14-submit-400.svg) center no-repeat;
 }
