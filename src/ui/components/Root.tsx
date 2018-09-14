@@ -16,7 +16,7 @@ class RootComponent extends React.Component<any, any> {
     static getDerivedStateFromProps(nextProps: IProps) {
         let tab = nextProps.tab;
 
-        if (nextProps.locked) {
+        if (!tab && nextProps.locked) {
             tab = PAGES.INTRO;
         } else if (!tab) {
             tab = PAGES.CONDITIONS;
@@ -32,7 +32,7 @@ class RootComponent extends React.Component<any, any> {
     render() {
         const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
         const Component = pageConf.component;
-        return <div>
+        return <div className="height">
             <Menu {...pageConf.menu} setTab={this.props.setTab}/>
             <Component {...pageConf.props}/>
             <Bottom/>

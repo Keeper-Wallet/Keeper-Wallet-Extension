@@ -7,7 +7,7 @@ import { translate, Trans } from 'react-i18next';
 class RestoreComponent extends React.Component {
 
     render () {
-        return <div className={styles.login}>
+        return <div className={styles.restore}>
             <Trans>
                 Confirm page
             </Trans>

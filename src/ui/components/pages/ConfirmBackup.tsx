@@ -32,7 +32,7 @@ class ConfirmBackupComponent extends React.Component {
                    list={selectedList}
                    selected={false}
                    onSelect={this.onUnSelect}/>
-            <div>
+            <div className="center">
                 {complete ? null : <Trans i18nKey='selectWord'>
                     Please, tap each word in the correct order
                 </Trans>}
