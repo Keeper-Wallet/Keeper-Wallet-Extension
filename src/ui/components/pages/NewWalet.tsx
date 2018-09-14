@@ -6,6 +6,7 @@ import { setTab, newAccountSelect } from '../../actions';
 import { AvatarList } from '../ui/avatar/AvatarList';
 import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
+import { Input } from '../ui/input';
 
 @translate('extension:newWallet')
 class NewWalletComponent extends React.Component {
@@ -68,7 +69,7 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSelect(account) {
-        this.props.newAccountSelect( { ...account, type: 'seed', name: '' });
+        this.props.newAccountSelect({ ...account, type: 'seed', name: '' });
     }
 
     _onSubmit() {
