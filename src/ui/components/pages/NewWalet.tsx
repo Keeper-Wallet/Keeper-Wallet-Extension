@@ -9,16 +9,21 @@ import { Button } from '../ui/buttons';
 
 @translate('extension:newWallet')
 class NewWalletComponent extends React.Component {
+    static list = [];
     props;
     state;
     onSelect = (account) => this._onSelect(account);
     onSubmit = () => this._onSubmit();
 
-    constructor(props) {
+    constructor({ isGenerateNew, ...props }) {
         super(props);
+        if (isGenerateNew) {
+            NewWalletComponent.list = NewWalletComponent.getNewWallets();
+        }
 
-        const list = NewWalletComponent.getNewWallets();
-        this._onSelect(list[0] || {});
+        const list  = NewWalletComponent.list;
+        const selected = list.find(item => props.account && item.address === props.account.address) || list[0];
+        this._onSelect(selected);
         this.state = { list };
     }
 
@@ -63,7 +68,7 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSelect(account) {
-        this.props.newAccountSelect( { ...account, type: 'seed' });
+        this.props.newAccountSelect( { ...account, type: 'seed', name: '' });
     }
 
     _onSubmit() {

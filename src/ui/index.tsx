@@ -7,8 +7,6 @@ import { updateState } from './actions/updateState';
 import { Root } from './components/Root';
 import { Provider } from 'react-redux';
 import backgroundService from './services/Background';
-import { Menu } from './components/menu';
-import { Bottom } from './components/bottom';
 
 export async function initApp(background: any) {
     backgroundService.init(background);
@@ -20,9 +18,7 @@ export async function initApp(background: any) {
 ReactDOM.render(
     <Provider store={store}>
         <div className='app'>
-            <Menu/>
             <Root/>
-            <Bottom/>
         </div>
     </Provider>,
     document.getElementById('app-content'));

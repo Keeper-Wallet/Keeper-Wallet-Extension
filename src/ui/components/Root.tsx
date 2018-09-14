@@ -1,85 +1,61 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { setTab } from '../actions';
-import {
-    Login,
-    Intro,
-    Conditions,
-    NewAccount,
-    Import,
-    Assets,
-    NewWallet,
-    NewWalletName,
-    BackUpSeed,
-    ConfirmBackup
-} from './pages';
+import { Menu } from './menu';
+import { Bottom } from './bottom';
+
+import { PAGES, PAGES_CONF } from '../pageConfig';
 
 
 
 class RootComponent extends React.Component<any, any> {
 
     props: IProps;
+    state = { tab: null };
+
+    static getDerivedStateFromProps(nextProps: IProps) {
+        let tab = nextProps.tab;
+
+        if (nextProps.locked) {
+            tab = PAGES.INTRO;
+        } else if (!tab) {
+            tab = PAGES.CONDITIONS;
+        }
+
+        if (tab && !RootComponent.canUseTab(nextProps, tab)) {
+            tab = RootComponent.getStateTab(nextProps);
+        }
+
+        return { tab };
+    }
 
     render() {
-
-        let storyTab = this.props.tab;
-
-        if (this.props.locked == null) {
-            storyTab = 'intro';
-        } else if (!storyTab) {
-            storyTab = 'conditions';
-        }
-
-        if (storyTab && !this.canUseTab(storyTab)) {
-            storyTab = this.getStateTab();
-        }
-
-        switch (storyTab) {
-            case 'conditions':
-                return <Conditions/>;
-            case 'login':
-                return <Login/>;
-            case 'new':
-                return <NewAccount/>;
-            case 'import':
-                return <Import/>;
-            case 'new_account':
-                return <NewWallet/>;
-            case 'accountName':
-                return <NewWalletName/>;
-            case 'safeBackup':
-                return <BackUpSeed/>;
-            case 'confirmBackup':
-                return <ConfirmBackup/>;
-            case 'assets':
-                return <Assets/>;
-            case 'settings':
-                return <div>settings</div>;
-            case 'info':
-                return <div>info</div>;
-            case 'intro':
-            default:
-                return <Intro/>;
-        }
+        const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
+        const Component = pageConf.component;
+        return <div>
+            <Menu {...pageConf.menu} setTab={this.props.setTab}/>
+            <Component {...pageConf.props}/>
+            <Bottom/>
+        </div>;
     }
 
-    getStateTab() {
-        if (this.props.locked) {
-            return this.props.initialized ? 'login' : 'conditions';
+    static getStateTab(props) {
+        if (props.locked) {
+            return props.initialized ? PAGES.LOGIN : PAGES.CONDITIONS;
         }
 
-        return this.props.accounts.length ? 'assets' : 'import';
+        return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT;
     }
 
-    canUseTab(tab) {
+    static canUseTab(props, tab) {
         switch (tab) {
-            case 'new':
-            case 'conditions':
-                return !this.props.initialized;
-            case 'login':
-                return this.props.initialized && this.props.locked;
+            case PAGES.NEW:
+            case PAGES.CONDITIONS:
+                return !props.initialized;
+            case PAGES.LOGIN:
+                return props.initialized && props.locked;
             default:
-                return !this.props.locked;
+                return !props.locked;
         }
     }
 }

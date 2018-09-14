@@ -11,12 +11,14 @@ const SHUFFLE_COUNT = 500;
 class ConfirmBackupComponent extends React.Component {
 
     props;
-    state = {seed: null, list: [], selectedList: [], wrongSeed: false, complete: false};
+    state = { seed: null, list: [], selectedList: [], wrongSeed: false, complete: false };
     onSelect = (list) => this._onSelect(list);
     onUnSelect = (list) => this._onUnSelect(list);
+    onClear = () => this._onClear();
+    onSubmit = () => this._onSubmit();
 
-    render() {
-        const {selectedList, list, complete, wrongSeed} = this.state;
+    render () {
+        const { selectedList, list, complete, wrongSeed } = this.state;
         const showButton = complete && !wrongSeed;
         const showClear = complete && wrongSeed;
 

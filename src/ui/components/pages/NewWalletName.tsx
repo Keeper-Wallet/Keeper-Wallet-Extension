@@ -22,11 +22,10 @@ class NewWalletNameComponent extends React.Component {
                 <Trans i18nKey='accountName'>Account name</Trans>
             </h2>
 
-
                 <form onSubmit={this.onSubmit}>
                     <div className={`margin2`}>
                         <Input ref={this.getRef}
-                               onChange={this.onChange}
+                               onChange={this.onChange} value={this.props.account.name || ''}
                         />
                     </div>
 

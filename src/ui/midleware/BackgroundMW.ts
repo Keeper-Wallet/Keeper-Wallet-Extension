@@ -37,7 +37,7 @@ export const updateNetworkCode = store => next => action => {
         if (currentNetwork && networks && networks.length) {
             const netCode = networks.filter(({ name }) => name === currentNetwork)[0] || networks[0];
             if (netCode) {
-                config.set({networkByte: netCode.code.charCodeAt(0)})
+                config.set({networkByte: netCode.code.charCodeAt(0)});
             }
         }
     }

@@ -5,15 +5,16 @@ import * as React from 'react'
 import {Input, Button} from '../ui';
 import { translate, Trans } from 'react-i18next';
 
-const MIN_LINGTH = 6;
+const MIN_LENGTH = 6;
 
 const mapStateToProps = function (store: any) {
-    debugger;
-    return {};
+    return {
+        account: store.localState.newAccount
+    };
 };
 
 @translate('newAccount')
-class NewAccountComponent extends React.Component {
+class NewAccountComponent extends React.PureComponent {
 
     inputEl: Input;
     state = {
@@ -112,7 +113,7 @@ class NewAccountComponent extends React.Component {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LINGTH;
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LENGTH;
     }
 
     _checkValues() {
@@ -128,7 +129,7 @@ class NewAccountComponent extends React.Component {
             return null;
         }
 
-        if (this.state.firstValue.length <= MIN_LINGTH) {
+        if (this.state.firstValue.length <= MIN_LENGTH) {
             return { error: 'isSmall' };
         }
     }
