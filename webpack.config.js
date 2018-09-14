@@ -135,9 +135,10 @@ module.exports = env => {
                     test: /\.(png|jpg|svg)$/,
                     loader: "url-loader?limit=1000&name=assets/img/[name].[ext]",
                 },
+
                 {
                     test: /\.(woff|woff2|ttf|otf)$/,
-                    loader: "url-loader?limit=1000&name=assets/fonts/[name].[ext]",
+                    loader: "file-loader?name=assets/fonts/[name].[ext]",
                 },
                 {
                     test: /\.tsx?$/,
