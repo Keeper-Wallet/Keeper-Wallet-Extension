@@ -31,6 +31,12 @@
 
   .importChooser {
     border-bottom: 1px solid $accent50;
+    padding: 14px 0;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
     &:last-child {
       border-bottom: 0 none;
     }
@@ -40,7 +46,11 @@
       flex-direction: column;
       font-family: Roboto;
       background: url(../../../assets/img/arrow-left-14-basic-200.svg) right center no-repeat;
-      padding: 5px;
+      padding: 0;
+      height: 42px;
+      div {
+        margin: 3px 0;
+      }
     }
   }
 }

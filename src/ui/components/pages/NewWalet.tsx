@@ -53,7 +53,7 @@ class NewWalletComponent extends React.Component {
                 <AvatarList size={48} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
             </div>
 
-            <div className={`tag1 basic500`}>
+            <div className={`tag1 basic500 input-title`}>
                 <Trans i18nkey='address'>Account address</Trans>:
             </div>
 

@@ -26,7 +26,7 @@ class BackUpSeedComponent extends React.Component {
                     </Trans>
                 </div>
                 <Copy text={this.props.account.seed} onCopy={this.onCopy}>
-                    <div className={`copy-icon`}></div>
+                    <div className={`copy-icon ${styles.copyIcon}`}></div>
                 </Copy>
             </div>
 
