@@ -26,7 +26,7 @@ export const Menu = ({ setTab, ...props }: IProps) => {
                 <Settings {...props}
                     leftClick={setTab.bind(null, 'info')}
                     rightClick={setTab.bind(null, 'settings')}/>
-                <Navigation hasBack={!!props.back} onClick={setTab.bind(null, props.back)}/>
+                <Navigation hasBack={props.back != null} onClick={setTab.bind(null, props.back)}/>
             </div>
         );
 };

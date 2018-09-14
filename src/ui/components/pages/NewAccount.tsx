@@ -1,15 +1,16 @@
 import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
-import { createNew, setMenu } from '../../actions';
+import { createNew } from '../../actions';
 import * as React from 'react'
 import {Input, Button} from '../ui';
 import { translate, Trans } from 'react-i18next';
 
-const MIN_LINGTH = 6;
+const MIN_LENGTH = 6;
 
 const mapStateToProps = function (store: any) {
-    debugger;
-    return {};
+    return {
+        account: store.localState.newAccount
+    };
 };
 
 @translate('newAccount')
@@ -26,7 +27,6 @@ class NewAccountComponent extends React.PureComponent {
     };
     props: {
         createNew: (pass: string) => void;
-        setMenu: (menu: any) => void;
     };
 
     getRef = input => this.inputEl = input;
@@ -39,16 +39,6 @@ class NewAccountComponent extends React.PureComponent {
             this.props.createNew(this.state.firstValue);
         }
     };
-
-    constructor(props) {
-        super(props);
-
-        this.props.setMenu({
-            logo: false,
-            settings: false,
-            back: null
-        });
-    }
 
     componentDidMount(){
         this.inputEl.focus();
@@ -123,7 +113,7 @@ class NewAccountComponent extends React.PureComponent {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LINGTH;
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LENGTH;
     }
 
     _checkValues() {
@@ -139,7 +129,7 @@ class NewAccountComponent extends React.PureComponent {
             return null;
         }
 
-        if (this.state.firstValue.length <= MIN_LINGTH) {
+        if (this.state.firstValue.length <= MIN_LENGTH) {
             return { error: 'isSmall' };
         }
     }
@@ -157,4 +147,4 @@ class NewAccountComponent extends React.PureComponent {
     }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew, setMenu })(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);

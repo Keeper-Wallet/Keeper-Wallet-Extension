@@ -19,6 +19,7 @@ export const PAGES = {
     NEW: 'new',
     IMPORT: 'import',
     NEW_ACCOUNT: 'new_account',
+    NEW_ACCOUNT_BACK: 'new_account_back',
     ACCOUNTNAME: 'accountName',
     SAFEBACKUP: 'safeBackup',
     CONFIRMBACKUP: 'confirmBackup',
@@ -64,10 +65,21 @@ export const PAGES_CONF = {
     },
     [PAGES.NEW_ACCOUNT]: {
         component: NewWallet,
+        props: {
+            isGenerateNew: true
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: null,
+            back: '',
+        }
+    },
+    [PAGES.NEW_ACCOUNT_BACK]: {
+        component: NewWallet,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: '',
         }
     },
     [PAGES.ACCOUNTNAME]: {
@@ -75,7 +87,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: 'new_account',
+            back: PAGES.NEW_ACCOUNT_BACK,
         }
     },
     [PAGES.SAFEBACKUP]: {
@@ -83,7 +95,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: 'accountName',
+            back: PAGES.ACCOUNTNAME,
         }
     },
     [PAGES.CONFIRMBACKUP]: {
@@ -91,7 +103,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: 'safeBackup',
+            back: PAGES.SAFEBACKUP,
         }
     },
     [PAGES.ASSETS]: {

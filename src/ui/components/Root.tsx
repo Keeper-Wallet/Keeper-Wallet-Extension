@@ -34,7 +34,7 @@ class RootComponent extends React.Component<any, any> {
         const Component = pageConf.component;
         return <div>
             <Menu {...pageConf.menu} setTab={this.props.setTab}/>
-            <Component/>
+            <Component {...pageConf.props}/>
             <Bottom/>
         </div>;
     }
