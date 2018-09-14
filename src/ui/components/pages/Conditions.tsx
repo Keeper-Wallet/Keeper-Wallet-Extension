@@ -8,16 +8,33 @@ import { Button } from '../ui/buttons';
 @translate('conditions')
 class ConditionsComponent extends React.Component {
 
+    onScroll = e => this._onScroll(e);
+
     props: {
         setTab: (tab) => void
     };
+
+    state = { confirmDisabled: true };
 
     onClick() {
         this.props.setTab('new');
     }
 
+    _onScroll(e) {
+        if (!this.state.confirmDisabled ) {
+            return null;
+        }
+
+        const height = e.target.scrollHeight - e.target.scrollTop - e.target.offsetHeight;
+        const confirmDisabled = height > 5;
+
+        if (this.state.confirmDisabled !== confirmDisabled) {
+            this.setState({confirmDisabled});
+        }
+    }
+
     render () {
-        return <div className={`body1 height ${styles.contentWrapper}`}>
+        return <div className={`body1 height ${styles.contentWrapper}`} onScroll={this.onScroll}>
             <div className={`${styles.conditionsContent} height`}>
 
                 <h3 className={`${styles.title} headline3 margin3`}>
@@ -97,7 +114,7 @@ class ConditionsComponent extends React.Component {
                 </div>
             </div>
 
-            <Button onClick={this.onClick.bind(this)} type='submit'>
+            <Button onClick={this.onClick.bind(this)} type='submit' disabled={this.state.confirmDisabled}>
                 <Trans className="text" i18nKey='accept'>Accept</Trans>
             </Button>
 

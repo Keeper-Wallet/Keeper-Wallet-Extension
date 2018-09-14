@@ -12,6 +12,7 @@ class MenuComponent extends React.Component {
         onMenu: boolean;
         locked: boolean;
         tab: string;
+        menu: any;
         setTab: (tmp: string) => void;
     };
 
@@ -20,11 +21,7 @@ class MenuComponent extends React.Component {
     onBackClick = () => this._onBackClick();
 
     render() {
-        if (!this.props.tab || this.props.tab === 'login') {
-            return null;
-        }
-
-        if (this.props.locked) {
+        if (this.props.menu.logo || this.props.locked) {
             return <HeadLogo/>;
         }
 
@@ -62,6 +59,7 @@ const mapStateToProps = function(store: any) {
         onMenu: store.tmpTab,
         locked: store.state && store.state.locked || null,
         tab: store.tab,
+        menu: store.menu || {}
     };
 };
 

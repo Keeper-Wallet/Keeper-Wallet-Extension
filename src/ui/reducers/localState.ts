@@ -45,10 +45,15 @@ function addNewAccount(state = { pending: false, error: false }, { type, payload
      return state;
 }
 
+function menu(state = { logo: false }, { type, payload }) {
+    return state;
+}
+
 
 export const localState = combineReducers({
     newUser,
     login,
     newAccount,
-    addNewAccount
+    addNewAccount,
+    menu,
 });
