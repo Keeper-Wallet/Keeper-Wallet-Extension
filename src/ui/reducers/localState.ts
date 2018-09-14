@@ -46,6 +46,9 @@ function addNewAccount(state = { pending: false, error: false }, { type, payload
 }
 
 function menu(state = { logo: false }, { type, payload }) {
+    if (type === ACTION.CHANGE_MENU) {
+        return { ...state, ...payload };
+    }
     return state;
 }
 

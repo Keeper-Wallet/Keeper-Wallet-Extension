@@ -1,6 +1,6 @@
 import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
-import { createNew } from '../../actions';
+import { createNew, setMenu } from '../../actions';
 import * as React from 'react'
 import {Input, Button} from '../ui';
 import { translate, Trans } from 'react-i18next';
@@ -13,7 +13,7 @@ const mapStateToProps = function (store: any) {
 };
 
 @translate('newAccount')
-class NewAccountComponent extends React.Component {
+class NewAccountComponent extends React.PureComponent {
 
     inputEl: Input;
     state = {
@@ -26,6 +26,7 @@ class NewAccountComponent extends React.Component {
     };
     props: {
         createNew: (pass: string) => void;
+        setMenu: (menu: any) => void;
     };
 
     getRef = input => this.inputEl = input;
@@ -38,6 +39,16 @@ class NewAccountComponent extends React.Component {
             this.props.createNew(this.state.firstValue);
         }
     };
+
+    constructor(props) {
+        super(props);
+
+        this.props.setMenu({
+            logo: false,
+            settings: false,
+            back: null
+        });
+    }
 
     componentDidMount(){
         this.inputEl.focus();
@@ -146,4 +157,4 @@ class NewAccountComponent extends React.Component {
     }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, { createNew, setMenu })(NewAccountComponent);
