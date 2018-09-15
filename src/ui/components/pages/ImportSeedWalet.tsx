@@ -89,7 +89,7 @@ class ImportSeedComponent extends React.Component {
 
         this.setState({ value: phrase });
         this._validate(phrase);
-        this.props.newAccountSelect({ ...seed, type: 'seed', name: '' });
+        this.props.newAccountSelect({ ...seed, type: 'seed', name: '', hasBackup: true});
     }
 
     _showError(isShow) {

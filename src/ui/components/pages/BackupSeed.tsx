@@ -10,7 +10,6 @@ import {setTab} from '../../actions';
 class BackUpSeedComponent extends React.Component {
 
     props;
-    onCopy = (result) => this._onCopy(result);
     onClick = () => this._onClick();
 
     render() {
@@ -25,7 +24,7 @@ class BackUpSeedComponent extends React.Component {
                         Please carefully write down these 15 words or copy them
                     </Trans>
                 </div>
-                <Copy text={this.props.account.seed} onCopy={this.onCopy}>
+                <Copy text={this.props.account.seed}>
                     <div className={`copy-icon`}></div>
                 </Copy>
             </div>
@@ -44,10 +43,6 @@ class BackUpSeedComponent extends React.Component {
                 </Trans>
             </div>
         </div>
-    }
-
-    _onCopy(result?) {
-        debugger;
     }
 
     _onClick() {

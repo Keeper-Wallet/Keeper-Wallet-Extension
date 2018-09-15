@@ -102,7 +102,7 @@ export const PAGES_CONF = {
         component: NewWalletName,
         props: {
             isCreate: true,
-            next: PAGES.ROOT
+            next: PAGES.SAVE_BACKUP
         },
         menu: {
             hasLogo: true,
