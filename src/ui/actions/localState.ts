@@ -23,3 +23,4 @@ export const loginUpdate = createCommonAction(ACTION.LOGIN_UPDATE, false);
 
 export const newAccountName = createMVAction(ACTION.NEW_ACCOUNT_NAME);
 export const newAccountSelect = createMVAction(ACTION.NEW_ACCOUNT_SELECT);
+export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);

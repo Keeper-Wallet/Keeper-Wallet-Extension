@@ -5,9 +5,10 @@ import cn from 'classnames';
 import * as styles from './wallet.styl';
 
 
-export const WalletItem = ({className='', account=null, active=false, balance=null, children=[], ...props}) => {
+export const WalletItem = ({className='', onSelect=null, account=null, active=false, balance=null, children=[], ...props}) => {
 
     className = cn(styles.wallet, className, {[styles.activeWallet]: active});
+
     const iconClass = cn(
         styles.accountIcon,
         {
@@ -15,6 +16,12 @@ export const WalletItem = ({className='', account=null, active=false, balance=nu
             'inactive-account-icon': !active,
             [styles.inactive]: !active,
         });
+
+    const clickHandler = () => {
+        if (onSelect) {
+            onSelect(account);
+        }
+    };
 
     return <div className={`${className} test`} {...props}>
         <div>
@@ -32,6 +39,6 @@ export const WalletItem = ({className='', account=null, active=false, balance=nu
             {children}
             <div className={iconClass}></div>s
         </div>
-    </div>
+    </div>;
 
 };

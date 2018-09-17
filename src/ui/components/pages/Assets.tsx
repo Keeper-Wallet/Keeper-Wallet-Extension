@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { WalletItem, ActiveWallet } from '../wallets';
 import { translate, Trans } from 'react-i18next';
-import {setTab, getBalances} from '../../actions';
+import { setTab, getBalances, selectAccount } from '../../actions';
 import { PAGES } from '../../pageConfig';
 
 @translate('extension')
@@ -12,6 +12,8 @@ class AssetsComponent extends React.Component {
     props;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT);
     getBalancesHandler = () => this.props.getBalances();
+    onSelectHandler = account => this.props.selectAccount(account);
+
 
     render () {
 
@@ -20,12 +22,15 @@ class AssetsComponent extends React.Component {
             account: this.props.selectedAccount,
             balance: this.props.balances[selectedAddress],
         };
+
         const wallets = this.props.accounts
             .filter(account => account.address !== selectedAddress)
-            .map((account) => <WalletItem
-                account={account}
-                balance={this.getBalance(account.address)}
-                key={account.address}/>
+            .map((account) => (
+                <WalletItem
+                    account={account}
+                    balance={this.getBalance(account.address)}
+                    key={`${account.address}_${account.name}_${account.type}`}
+                    onSelect={this.onSelectHandler}/>)
             );
 
         return <div className={styles.assets}>
@@ -72,7 +77,8 @@ const mapStateToProps = function(store: any) {
 
 const actions = {
     setTab,
-    getBalances
+    getBalances,
+    selectAccount,
 };
 
 export const Assets = connect(mapStateToProps, actions)(AssetsComponent);

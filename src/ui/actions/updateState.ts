@@ -67,7 +67,9 @@ export function updateState(state) {
         });
     }
 
-    if (balances.length !== currentState.balances.length) {
+    const hasNewBalance = Object.keys(balances).filter(key => balances[key] !== currentState.balances[key]).length;
+
+    if (hasNewBalance) {
         actions.push({
             type: ACTION.UPDATE_BALANCES,
             payload: balances

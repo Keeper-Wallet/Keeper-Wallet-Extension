@@ -21,7 +21,7 @@ export const selectedAccount = (store = {}, action: any) => {
     return action.type === ACTION.UPDATE_SELECTED_ACCOUNT ? action.payload : store;
 };
 
-export const networks = (store = '', action: any) => {
+export const networks = (store = [], action: any) => {
     return action.type === ACTION.UPDATE_NETWORKS ? action.payload : store;
 };
 
@@ -37,7 +37,7 @@ export const balances = (store = {}, action: any) => {
     return action.type === ACTION.UPDATE_BALANCES ? action.payload : store;
 };
 
-export const currentLocale = (store = [], action: any) => {
+export const currentLocale = (store = 'en', action: any) => {
     return action.type === ACTION.UPDATE_FROM_LNG ? action.payload : store;
 };
 

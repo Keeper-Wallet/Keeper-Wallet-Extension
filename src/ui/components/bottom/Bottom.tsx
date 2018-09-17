@@ -20,10 +20,12 @@ class BottomComponent extends React.PureComponent {
                 [styles.hidden]: this.props.locked || !this.props.initialized
             });
 
+        const currentNetwork = this.props.currentNetwork || 'mainnet';
+
         return <div className={className}>
             <div className={`${styles.network} basic500`}>
                 <span>
-                    <Trans i18nKey={key(this.props.currentNetwork)}>{this.props.currentNetwork}</Trans>
+                    <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                 </span>
             </div>
             <div className={'basic500'}>
