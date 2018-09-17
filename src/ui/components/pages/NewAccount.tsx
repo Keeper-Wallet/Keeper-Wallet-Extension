@@ -2,7 +2,7 @@ import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
 import { createNew } from '../../actions';
 import * as React from 'react'
-import {Input, Button} from '../ui';
+import { Input, Button } from '../ui';
 import { translate, Trans } from 'react-i18next';
 
 const MIN_LENGTH = 6;
@@ -13,7 +13,7 @@ const mapStateToProps = function (store: any) {
     };
 };
 
-@translate('newAccount')
+@translate('extension')
 class NewAccountComponent extends React.PureComponent {
 
     inputEl: Input;
@@ -35,60 +35,62 @@ class NewAccountComponent extends React.PureComponent {
     onChangeFist = e => this._onChangeFist(e);
     onChangeSecond = e => this._onChangeSecond(e);
     onSubmit = () => {
-        if(!this.state.passwordError && this.state.firstValue) {
+        if (!this.state.passwordError && this.state.firstValue) {
             this.props.createNew(this.state.firstValue);
         }
     };
 
-    componentDidMount(){
+    componentDidMount() {
         this.inputEl.focus();
     }
 
     render() {
         return <div className={styles.account}>
-                <form className={styles.content} onSubmit={this.onSubmit}>
-                    <h2 className={`title1 margin3 left`}>
-                        <Trans i18nKey='protect'>Protect Your Account</Trans>
-                    </h2>
-                        <div>
-                            <div className={`basic500 tag1 left input-title`}>
-                                <Trans i18nKey='createPassword'>Create a password</Trans>
-                            </div>
-                            <Input id='first'
-                                   className={`margin3`}
-                                   type="password"
-                                   ref={this.getRef}
-                                   onBlur={this.onFirstBlur}
-                                   onChange={this.onChangeFist}
-                                   error={!!this.state.firstError}
-                            />
-                            <div className={`basic500 tag1 left input-title`}>
-                                <Trans i18nKey='confirmPassword'>Confirm password</Trans>
-                            </div>
-                            <Input id='second'
-                                   className={`margin3`}
-                                   type="password"
-                                   onBlur={this.onSecondBlur}
-                                   onChange={this.onChangeSecond}
-                                   error={!!this.state.secondError}
-                            />
-                        </div>
-                        <Button type='submit' disabled={this.state.buttonDisabled}>
-                            <Trans i18nKey='create'>Continue</Trans>
-                        </Button>
-                        <div className={`tag1 left basic500 marginTop3`}>
-                            The password you entered will be stored locally.
-                            If you change device or lose your password,
-                            you will have to repeat the process of adding accounts to Waves Keeper.
-                            Waves does not store your passwords.
-                        </div>
+            <form className={styles.content} onSubmit={this.onSubmit}>
+                <h2 className={`title1 margin3 left`}>
+                    <Trans i18nKey='newAccount.protect'>Protect Your Account</Trans>
+                </h2>
+                <div>
+                    <div className={`basic500 tag1 left input-title`}>
+                        <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
+                    </div>
+                    <Input id='first'
+                           className={`margin3`}
+                           type="password"
+                           ref={this.getRef}
+                           onBlur={this.onFirstBlur}
+                           onChange={this.onChangeFist}
+                           error={!!this.state.firstError}
+                    />
+                    <div className={`basic500 tag1 left input-title`}>
+                        <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
+                    </div>
+                    <Input id='second'
+                           className={`margin3`}
+                           type="password"
+                           onBlur={this.onSecondBlur}
+                           onChange={this.onChangeSecond}
+                           error={!!this.state.secondError}
+                    />
+                </div>
+                <Button type='submit' disabled={this.state.buttonDisabled}>
+                    <Trans i18nKey='newAccount.create'>Continue</Trans>
+                </Button>
+                <div className={`tag1 left basic500 marginTop3`}>
+                    <Trans i18nKey='newAccount.passinfo'>
+                        The password you entered will be stored locally.
+                        If you change device or lose your password,
+                        you will have to repeat the process of adding accounts to Waves Keeper.
+                        Waves does not store your passwords.
+                    </Trans>
+                </div>
 
-        </form>
+            </form>
 
-    </div>
+        </div>
     }
 
-    _onFirstBlur () {
+    _onFirstBlur() {
         this._checkValues();
     }
 
@@ -99,13 +101,13 @@ class NewAccountComponent extends React.PureComponent {
     _onChangeFist(e) {
         const buttonDisabled = this._isDisabledButton();
         const firstValue = e.target.value;
-        this.setState({ firstValue, buttonDisabled });
+        this.setState({firstValue, buttonDisabled});
     }
 
     _onChangeSecond(e) {
         const buttonDisabled = this._isDisabledButton();
         const secondValue = e.target.value;
-        this.setState({ secondValue, buttonDisabled });
+        this.setState({secondValue, buttonDisabled});
     }
 
     _isDisabledButton() {
@@ -121,7 +123,7 @@ class NewAccountComponent extends React.PureComponent {
         const secondError = this._validateSecond();
         const passwordError = !!(firstError || secondError);
         const buttonDisabled = this._isDisabledButton();
-        this.setState({ passwordError, firstError, secondError, buttonDisabled });
+        this.setState({passwordError, firstError, secondError, buttonDisabled});
     }
 
     _validateFirst() {
@@ -130,7 +132,7 @@ class NewAccountComponent extends React.PureComponent {
         }
 
         if (this.state.firstValue.length <= MIN_LENGTH) {
-            return { error: 'isSmall' };
+            return {error: 'isSmall'};
         }
     }
 
@@ -143,8 +145,8 @@ class NewAccountComponent extends React.PureComponent {
             return null;
         }
 
-        return { error: 'noMatch' }
+        return {error: 'noMatch'}
     }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, {createNew})(NewAccountComponent);

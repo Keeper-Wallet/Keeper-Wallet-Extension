@@ -6,7 +6,7 @@ import {Copy, Button} from '../ui';
 import {setTab} from '../../actions';
 
 
-@translate('backupSeed')
+@translate('extension')
 class BackUpSeedComponent extends React.Component {
 
     props;
@@ -15,12 +15,12 @@ class BackUpSeedComponent extends React.Component {
     render() {
         return <div className={styles.content}>
             <h2 className={`title1 margin2`}>
-                <Trans i18nKey='saveBackup'>Save backup phrase</Trans>
+                <Trans i18nKey='backupSeed.saveBackup'>Save backup phrase</Trans>
             </h2>
 
             <div className="flex margin-main">
                 <div className={`basic500`}>
-                    <Trans i18nKey="backupCarefully">
+                    <Trans i18nKey="backupSeed.backupCarefully">
                         Please carefully write down these 15 words or copy them
                     </Trans>
                 </div>
@@ -34,11 +34,11 @@ class BackUpSeedComponent extends React.Component {
             </div>
 
             <Button type='submit' onClick={this.onClick}>
-                <Trans i18nKey='continue'>Continue</Trans>
+                <Trans i18nKey='backupSeed.continue'>Continue</Trans>
             </Button>
 
             <div className={`basic500 tag1 center ${styles.bottomText}`}>
-                <Trans i18nKey="confirmBackupInfo">
+                <Trans i18nKey="backupSeed.confirmBackupInfo">
                     You will confirm this phrase on the next screen
                 </Trans>
             </div>

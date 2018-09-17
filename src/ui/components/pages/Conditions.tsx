@@ -5,7 +5,7 @@ import { translate, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Button } from '../ui/buttons';
 
-@translate('conditions')
+@translate('extension')
 class ConditionsComponent extends React.Component {
 
     onScroll = e => this._onScroll(e);
@@ -38,11 +38,11 @@ class ConditionsComponent extends React.Component {
             <div className={`${styles.conditionsContent} height`}>
 
                 <h3 className={`${styles.title} headline3 margin3`}>
-                    <Trans i18nKey="title">TERMS AND CONDITIONS</Trans>
+                    <Trans i18nKey="conditions.title">TERMS AND CONDITIONS</Trans>
                 </h3>
 
                 <div className={`basic500 margin2 font300`}>
-                    <Trans i18nKey="attention">
+                    <Trans i18nKey="conditions.attention">
                         ATTENTION: PLEASE READ CAREFULLY THESE TERMS AND CONDITIONS AS THEY AFFECT
                         YOUR OBLIGATIONS AND LEGAL RIGHTS, INCLUDING, BUT NOT LIMITED TO WAIVERS OF
                         RIGHTS AND LIMITATION OF LIABILITY. IF YOU DO NOT AGREE WITH THESE TERMS AND
@@ -51,17 +51,17 @@ class ConditionsComponent extends React.Component {
                 </div>
 
                 <div className={`basic500 margin3 font300`}>
-                    <Trans i18nKey="updated">
+                    <Trans i18nKey="conditions.updated">
                         This version was last updated on 22/06/2018.
                     </Trans>
                 </div>
 
                 <div className={`headline3 margin2 font500`}>
-                    1. <Trans i18nKey='agreement'>Agreement</Trans>
+                    1. <Trans i18nKey='conditions.agreement'>Agreement</Trans>
                 </div>
 
                 <div>
-                    <Trans i18nkey='agreementsText'>
+                    <Trans i18nkey='conditions.agreementsText'>
                         This is a contract between you and Waves Platform AG, a joint stock company
                         incorporated in Switzerland or any other legal entity that succeeds Waves Platform Ltd
                         or may be further incorporated (“Company”) and that holds the rights to Waves platform
@@ -115,7 +115,7 @@ class ConditionsComponent extends React.Component {
             </div>
 
             <Button onClick={this.onClick.bind(this)} type='submit' disabled={this.state.confirmDisabled}>
-                <Trans className="text" i18nKey='accept'>Accept</Trans>
+                <Trans className="text" i18nKey='conditions.accept'>Accept</Trans>
             </Button>
 
         </div>

@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 
-@translate('restore')
+@translate('extension|restore')
 class RestoreComponent extends React.Component {
 
     render () {

@@ -6,6 +6,7 @@ export function updateState(state) {
     const {
         currentLocale,
         accounts = [],
+        selectedAccount = {},
         initialized,
         locked,
         networks = [],
@@ -24,6 +25,13 @@ export function updateState(state) {
         });
     }
 
+    if (currentLocale && currentLocale !== currentState.currentLocale) {
+        actions.push({
+            type: ACTION.UPDATE_FROM_LNG,
+            payload: currentLocale
+        });
+    }
+
     if (currentNetwork !== currentState.currentNetwork) {
         actions.push({
             type: ACTION.UPDATE_CURRENT_NETWORK,
@@ -38,6 +46,13 @@ export function updateState(state) {
         });
     }
 
+    if (selectedAccount.address !== currentState.selectedAccount.address ) {
+        actions.push({
+            type: ACTION.UPDATE_SELECTED_ACCOUNT,
+            payload: selectedAccount
+        });
+    }
+
     if (accounts.length !== currentState.accounts.length) {
         actions.push({
             type: ACTION.UPDATE_ACCOUNTS,
@@ -49,13 +64,6 @@ export function updateState(state) {
         actions.push({
             type: ACTION.UPDATE_APP_STATE,
             payload: { initialized, locked }
-        });
-    }
-
-    if (currentLocale && currentLocale !== currentState.currentLocale) {
-        actions.push({
-            type: ACTION.UPDATE_FROM_LNG,
-            payload: currentLocale
         });
     }
 

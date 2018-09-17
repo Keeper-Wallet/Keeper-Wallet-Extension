@@ -8,7 +8,7 @@ import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 
-@translate('extension:newWallet')
+@translate('extension')
 class NewWalletComponent extends React.Component {
     static list = [];
     props;
@@ -41,13 +41,13 @@ class NewWalletComponent extends React.Component {
         return <div className={styles.content}>
             <div>
                 <h2 className={`title1 margin3 left`}>
-                    <Trans i18nKey='createNew'>Create New Account</Trans>
+                    <Trans i18nKey='newWallet.createNew'>Create New Account</Trans>
                 </h2>
             </div>
 
             <div className={`margin3`}>
-                <div className={`body3`}><Trans i18nKey='select'>Choose your address avatar</Trans></div>
-                <div className={`tag1 basic500`}><Trans i18nKey='selectInfo'>This avatar is unique. You cannot change it later.</Trans></div>
+                <div className={`body3`}><Trans i18nKey='newWallet.select'>Choose your address avatar</Trans></div>
+                <div className={`tag1 basic500`}><Trans i18nKey='newWallet.selectInfo'>This avatar is unique. You cannot change it later.</Trans></div>
             </div>
 
             <div className={`margin4 avatar-list`}>
@@ -55,14 +55,14 @@ class NewWalletComponent extends React.Component {
             </div>
 
             <div className={`tag1 basic500`}>
-                <Trans i18nkey='address'>Account address</Trans>:
+                <Trans i18nkey='newWallet.address'>Account address</Trans>:
             </div>
 
             <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>
 
             <form onSubmit={this.onSubmit}>
                 <Button type="submit">
-                    <Trans i18nKey="continue">Continue</Trans>
+                    <Trans i18nKey="newWallet.continue">Continue</Trans>
                 </Button>
             </form>
         </div>

@@ -2,6 +2,7 @@ import * as i18n from 'i18next';
 import { reactI18nextModule } from 'react-i18next';
 import { default as Locize } from 'i18next-locize-backend';
 
+
 i18n
     .use(reactI18nextModule)
     .use(Locize)
@@ -17,8 +18,8 @@ i18n
         nsSeparator: '.', // we use content as keys
 
         backend: {
-            projectId: 'b742d94e-2234-40a1-8b11-979e709e65f3', // <-- replace with your projectId
-            apiKey: '6c0ca2b9-b28e-481f-8e65-f8d2fa1ea6d3',
+            projectId: '30ffe655-de56-4196-b274-5edc3080c724', // <-- replace with your projectId
+            apiKey: '5af41ced-a862-4947-a079-2c7999367925',
             referenceLng: 'en',
             // loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
             // privatePath: 'https://locize.wvservices.com/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',

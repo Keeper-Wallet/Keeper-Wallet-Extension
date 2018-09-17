@@ -7,7 +7,7 @@ import {setTab} from '../../actions';
 import {BigLogo} from '../head';
 import {Button} from '../ui/buttons';
 
-@translate('import')
+@translate('extension')
 class ImportComponent extends React.PureComponent {
 
     props: any;
@@ -19,7 +19,7 @@ class ImportComponent extends React.PureComponent {
                 <div className='margin4'>
                     <form onSubmit={this.onClick.bind(this, 'new_account')}>
                         <Button type='submit'>
-                            <Trans i18nKey='createNew'>Create a new account</Trans>
+                            <Trans i18nKey='import.createNew'>Create a new account</Trans>
                         </Button>
                     </form>
                 </div>
@@ -27,20 +27,20 @@ class ImportComponent extends React.PureComponent {
                     <div className={`left border-bottom ${styles.importChooser}`}>
                         <Button type='transparent' onClick={this.onClick.bind(this, 'import_seed')}>
                             <div className='body1'>
-                                <Trans i18nKey='importAccount'>Import Account</Trans>
+                                <Trans i18nKey='import.importAccount'>Import Account</Trans>
                             </div>
                             <div className='body3 disabled500 font300'>
-                                <Trans i18nKey='viaSeed'>Via SEED or Encoded</Trans>
+                                <Trans i18nKey='import.viaSeed'>Via SEED or Encoded</Trans>
                             </div>
                         </Button>
                     </div>
                     <div className={`left ${styles.importChooser}`}>
                         <Button type='transparent' onClick={this.onClick.bind(this, 'import_device')}>
                             <div className='body1'>
-                                <Trans i18nKey='useHardware'>Use secure hardware</Trans>
+                                <Trans i18nKey='import.useHardware'>Use secure hardware</Trans>
                             </div>
                             <div className='body3 disabled500 font300'>
-                                <Trans i18nKey='viaDevices'>Via Ledger</Trans>
+                                <Trans i18nKey='import.viaDevices'>Via Ledger</Trans>
                             </div>
                         </Button>
                     </div>

@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 
-@translate('sign')
+@translate('extension|sign')
 class SignComponent extends React.Component {
 
     render () {

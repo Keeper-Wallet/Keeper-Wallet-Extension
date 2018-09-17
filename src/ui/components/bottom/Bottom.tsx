@@ -4,7 +4,9 @@ import * as styles from './bottom.styl';
 import { translate, Trans } from 'react-i18next';
 import cn from 'classnames';
 
-@translate('bottom')
+const key = (key) => `bottom.${key}`;
+
+@translate('extension')
 class BottomComponent extends React.PureComponent {
 
     props: IProps;
@@ -21,7 +23,7 @@ class BottomComponent extends React.PureComponent {
         return <div className={className}>
             <div className={`${styles.network} basic500`}>
                 <span>
-                    <Trans i18nKey={this.props.currentNetwork}>{this.props.currentNetwork}</Trans>
+                    <Trans i18nKey={key(this.props.currentNetwork)}>{this.props.currentNetwork}</Trans>
                 </span>
             </div>
             <div className={'basic500'}>

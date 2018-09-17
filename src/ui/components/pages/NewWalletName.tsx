@@ -5,7 +5,7 @@ import { translate, Trans } from 'react-i18next';
 import { setTab, newAccountName, addUser } from '../../actions';
 import { Input, Button } from '../ui';
 
-@translate('newAccountName')
+@translate('extension')
 class NewWalletNameComponent extends React.Component {
 
     inputEl: Input;
@@ -19,7 +19,7 @@ class NewWalletNameComponent extends React.Component {
     render() {
         return <div className={styles.content}>
             <h2 className={`title1 margin1`}>
-                <Trans i18nKey='accountName'>Account name</Trans>
+                <Trans i18nKey='newAccountName.accountName'>Account name</Trans>
             </h2>
 
                 <form onSubmit={this.onSubmit}>
@@ -30,13 +30,13 @@ class NewWalletNameComponent extends React.Component {
                     </div>
 
                     <div className={`basic500 tag1 margin2`}>
-                        <Trans i18nKey="nameInfo">
+                        <Trans i18nKey="newAccountName.nameInfo">
                             The account name will be known only to you
                         </Trans>
                     </div>
 
                         <Button type='submit'>
-                            <Trans i18nKey="continue">Continue</Trans>
+                            <Trans i18nKey="newAccountName.continue">Continue</Trans>
                         </Button>
                 </form>
 
