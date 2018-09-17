@@ -1,26 +1,16 @@
 import * as React from 'react';
 import * as styles from './head.styl';
-import { translate, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
+import cn from 'classnames';
 
-@translate('ui')
-export class BigLogo extends React.PureComponent {
+export const BigLogo = ({ className='' }) => {
 
-    readonly props: IProps;
+    className = cn(styles.bigLogo, className, 'center');
 
-    constructor(params) {
-        super(params);
-    }
-
-    render() {
-        return <div className={`${styles.bigLogo} center ${this.props.className || ''}`}>
-            <div className={styles.bigLogoImg}></div>
-            <div className={styles.bigLogoTitle}>
-                <Trans i18nKey='logo-title'>your keys manager</Trans>
-            </div>
+    return <div className={className}>
+        <div className={styles.bigLogoImg}></div>
+        <div className={styles.bigLogoTitle}>
+            <Trans i18nKey='ui.logo-title'>your keys manager</Trans>
         </div>
-    }
-}
-
-interface IProps {
-    className?: string;
+    </div>
 }

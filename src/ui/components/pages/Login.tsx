@@ -6,7 +6,7 @@ import { BigLogo } from '../head';
 import {Button, Input, Error} from '../ui';
 import { login } from '../../actions';
 
-@translate('login')
+@translate('extension')
 class LoginComponent extends React.Component {
 
     inputEl: Input;
@@ -34,7 +34,7 @@ class LoginComponent extends React.Component {
                 </div>
                 <form onSubmit={this.onSubmit}>
                     <div className={`left label tag1`}>
-                        <Trans i18nKey="password">Password</Trans>
+                        <Trans i18nKey="login.password">Password</Trans>
                     </div>
                     <div className={`margin3`}>
                         <Input type="password"
@@ -46,13 +46,13 @@ class LoginComponent extends React.Component {
                     <div>
                         <Button type='submit'
                                 disabled={!this.state.password}>
-                            <Trans i18nKey="enter">Enter</Trans>
+                            <Trans i18nKey="login.enter">Enter</Trans>
                         </Button>
                     </div>
                 </form>
                 <div>
                     <Error hide={!this.state.passwordError}>
-                        <Trans i18nkey='wrongPassword'>Wrong password</Trans>
+                        <Trans i18nkey='login.wrongPassword'>Wrong password</Trans>
                     </Error>
                 </div>
             </div>

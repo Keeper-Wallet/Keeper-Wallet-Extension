@@ -17,6 +17,14 @@ export const accounts = (store = [], action: any) => {
     return action.type === ACTION.UPDATE_ACCOUNTS ? action.payload : store;
 };
 
+export const selectedAccount = (store = {}, action: any) => {
+    return action.type === ACTION.UPDATE_SELECTED_ACCOUNT ? action.payload : store;
+};
+
+export const networks = (store = '', action: any) => {
+    return action.type === ACTION.UPDATE_NETWORKS ? action.payload : store;
+};
+
 export const currentNetwork = (store = '', action: any) => {
     return action.type === ACTION.UPDATE_CURRENT_NETWORK ? action.payload : store;
 };
@@ -25,7 +33,7 @@ export const messages = (store = [], action: any) => {
     return action.type === ACTION.UPDATE_MESSAGES ? action.payload : store;
 };
 
-export const balances = (store = [], action: any) => {
+export const balances = (store = {}, action: any) => {
     return action.type === ACTION.UPDATE_BALANCES ? action.payload : store;
 };
 

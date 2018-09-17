@@ -7,7 +7,7 @@ import { setTab, newAccountSelect } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 
-@translate('extension importSeed')
+@translate('extension')
 class ImportSeedComponent extends React.Component {
     props;
     state;
@@ -35,13 +35,13 @@ class ImportSeedComponent extends React.Component {
         return <div className={styles.content}>
             <div>
                 <h2 className={'title1 margin3 left'}>
-                    <Trans i18nKey='importSeed'>Welcome Back</Trans>
+                    <Trans i18nKey='importSeed.importSeed'>Welcome Back</Trans>
                 </h2>
             </div>
 
             <form onSubmit={this.onSubmit}>
                 <div className={'tag1 basic500'}>
-                    <Trans i18nkey='newSeed'>Wallet Seed</Trans>:
+                    <Trans i18nkey='importSeed.newSeed'>Wallet Seed</Trans>:
                 </div>
 
                 <Input error={this.state.error && this.state.showError}
@@ -52,18 +52,18 @@ class ImportSeedComponent extends React.Component {
                     multiLine={true}
                     value={this.state.value}
                     placeholder={
-                        this.props.t('inputSeed', 'Your seed is the 15 words you saved when creating your account')
+                        this.props.t('importSeed.inputSeed', 'Your seed is the 15 words you saved when creating your account')
                     }/>
 
 
                 <div className={'tag1 basic500'}>
-                    <Trans i18nkey='address'>Account address</Trans>:
+                    <Trans i18nkey='importSeed.address'>Account address</Trans>:
                 </div>
 
                 <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
                 <Button type="submit" disabled={this.state.error}>
-                    <Trans i18nKey="importAccount">Import Account</Trans>
+                    <Trans i18nKey="importSeed.importAccount">Import Account</Trans>
                 </Button>
             </form>
         </div>
@@ -89,7 +89,7 @@ class ImportSeedComponent extends React.Component {
 
         this.setState({ value: phrase });
         this._validate(phrase);
-        this.props.newAccountSelect({ ...seed, type: 'seed', name: '', hasBackup: true});
+        this.props.newAccountSelect({ ...seed, seed: seed.phrase, type: 'seed', name: '', hasBackup: true});
     }
 
     _showError(isShow) {

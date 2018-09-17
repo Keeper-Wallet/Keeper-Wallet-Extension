@@ -1,0 +1,33 @@
+@import '../../styles/colors.styl';
+
+
+.activeWallet
+  width: 100%;
+  height: 150px;
+
+  .walletBackground
+    height: 112px;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+.wallet
+  width: 336px;
+  height: 68px;
+
+  &.active
+    height: 112px;
+    
+
+.accountIcon
+  width: 28px;
+  height: 26px;
+
+  .inactive
+    border $disabled200 dashed 0.5px;
+
+.balance
+  font-weight: 600;
+
+.title
+  color: $disabled200;

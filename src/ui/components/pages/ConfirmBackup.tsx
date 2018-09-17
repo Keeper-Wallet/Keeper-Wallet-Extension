@@ -7,7 +7,7 @@ import { addUser } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
-@translate('confirmBackup')
+@translate('extension')
 class ConfirmBackupComponent extends React.Component {
 
     props;
@@ -24,7 +24,7 @@ class ConfirmBackupComponent extends React.Component {
 
         return <div className={styles.content}>
             <h2 className={`title1 margin1`}>
-                <Trans i18nKey='confirmBackup'>Confirm backup</Trans>
+                <Trans i18nKey='confirmBackup.confirmBackup'>Confirm backup</Trans>
             </h2>
 
             <Pills animated={true}
@@ -33,7 +33,7 @@ class ConfirmBackupComponent extends React.Component {
                    selected={false}
                    onSelect={this.onUnSelect}/>
             <div className="center">
-                {complete ? null : <Trans i18nKey='selectWord'>
+                {complete ? null : <Trans i18nKey='confirmBackup.selectWord'>
                     Please, tap each word in the correct order
                 </Trans>}
             </div>
@@ -43,18 +43,18 @@ class ConfirmBackupComponent extends React.Component {
             {showButton ?
                 <Button type='submit'
                         onClick={this.onSubmit}>
-                    <Trans i18nKey='confirm'>Confirm</Trans>
+                    <Trans i18nKey='confirmBackup.confirm'>Confirm</Trans>
                 </Button>
                 : null}
             {showClear ? (
                 <div>
                     <div>
-                        <Trans i18nKey="wrongSeed">Wrong order, try again</Trans>
+                        <Trans i18nKey="confirmBackup.wrongSeed">Wrong order, try again</Trans>
                     </div>
                     <div>
                         <Button type='transparent' onClick={this.onClear}>
-                            <Trans i18nKey='clear'>Clear</Trans>
-                            <Trans i18nKey='selectAgain'>and tap again</Trans>
+                            <Trans i18nKey='confirmBackup.clear'>Clear</Trans>
+                            <Trans i18nKey='confirmBackup.selectAgain'>and tap again</Trans>
                         </Button>
                     </div>
                 </div>

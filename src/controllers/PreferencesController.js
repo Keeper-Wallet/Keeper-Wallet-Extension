@@ -60,7 +60,7 @@ export class PreferencesController extends EventEmitter{
     selectAccount(address) {
         let selectedAccount = this.store.getState().selectedAccount;
         if (!selectedAccount || selectedAccount.address !== address) {
-            selectedAccount = this._getAccountByAddress(address)
+            selectedAccount = this._getAccountByAddress(address);
             this.store.updateState({selectedAccount});
             this.emit('accountChange');
         }

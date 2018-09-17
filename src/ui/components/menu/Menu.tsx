@@ -1,12 +1,13 @@
 import * as React from 'react';
 import * as styles from './menu.styl';
-import { HeadLogo } from  '../head'
+import { HeadLogo } from '../head';
+import { PAGES } from '../../pageConfig';
 
-const Logo = ({ hasLogo }) => {
+const Logo = ({hasLogo}) => {
     return !hasLogo ? null : <HeadLogo/>;
 };
 
-const Settings = ({ hasSettings, leftClick, rightClick }) => {
+const Settings = ({hasSettings, leftClick, rightClick}) => {
     return !hasSettings ? null : (
         <div>
             <div className={styles.left} onClick={leftClick}>#</div>
@@ -15,20 +16,22 @@ const Settings = ({ hasSettings, leftClick, rightClick }) => {
     );
 };
 
-const Navigation = ({ hasBack, onClick }) => {
+const Navigation = ({hasBack, onClick}) => {
     return hasBack ? <div className={styles.back} onClick={onClick}>=</div> : null;
 };
 
-export const Menu = ({ setTab, ...props }: IProps) => {
-        return (
-            <div className={styles.menu}>
-                <Logo {...props}/>
-                <Settings {...props}
-                    leftClick={setTab.bind(null, 'info')}
-                    rightClick={setTab.bind(null, 'settings')}/>
-                <Navigation hasBack={props.back != null} onClick={setTab.bind(null, props.back)}/>
-            </div>
-        );
+export const Menu = ({setTab, ...props}: IProps) => {
+    const leftClick = () => setTab(PAGES.INFO);
+    const rightClick = () => setTab(PAGES.SETTINGS);
+    const navBack = () => setTab(props.back);
+    const hasBack = props.back != null;
+    return (
+        <div className={styles.menu}>
+            <Logo {...props}/>
+            <Settings leftClick={leftClick} rightClick={rightClick} {...props}/>
+            <Navigation hasBack={hasBack} onClick={navBack}/>
+        </div>
+    );
 };
 
 interface IProps {
