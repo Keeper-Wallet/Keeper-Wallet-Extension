@@ -5,7 +5,6 @@ import * as styles from './wallet.styl';
 import { WalletItem } from './';
 import cn from 'classnames';
 
-
 export function ActiveWallet({className = '', account, balance, ...props}) {
 
     className = cn(styles.activeWallet, className);
@@ -22,7 +21,7 @@ export function ActiveWallet({className = '', account, balance, ...props}) {
     };
 
     return <div className={className} {...props}>
-        <div>
+        <div className={styles.activeAccountHeader}>
             <Trans i18nKey='ui.activeAccount'>Active account</Trans>
         </div>
         <WalletItem {...walletItemProps}>
@@ -31,11 +30,9 @@ export function ActiveWallet({className = '', account, balance, ...props}) {
                     <Trans i18nKey='ur.copyAddress'>Copy address</Trans>
                 </div>
             </Copy>
-
-            <Trans i18nKey='ui.showQR'>Show QR</Trans>
+            <div className={styles.showQrIcon}>
+                <Trans i18nKey='ui.showQR'>Show QR</Trans>
+            </div>
         </WalletItem>
     </div>;
 }
-
-
-

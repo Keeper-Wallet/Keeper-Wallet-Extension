@@ -35,25 +35,24 @@ class AssetsComponent extends React.Component {
             );
 
         return <div className={styles.assets}>
-            <div className={styles.walletBackground}></div>
 
             <ActiveWallet {...activeProps}/>
 
-            <div className="flex">
+            <div className="flex margin4 body1">
                 <div>
                     <div className='refresh-icon' onClick={this.getBalancesHandler}></div>
-                    <div>
+                    <div className="basic500 body3">
                         <Trans i18nKey='assets.lastUpdate'>Last update:</Trans>
                     </div>
-                    <div>time parser</div>
+                    <div className="basic500 body3">time parser</div>
                 </div>
-                <div className={`${styles.addAccount} border-dashed`} onClick={this.addWalletHandler}>
-                    <Trans i18nKey='assets.addAccount'>Add account</Trans>
+                <div className={`${styles.addAccount} basic500 border-dashed`} onClick={this.addWalletHandler}>
+                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
             </div>
 
             <div>
-                <div>
+                <div className="basic500 margin1 body1">
                     <Trans i18nKey='assets.inStorage'>In storage</Trans>
                 </div>
                 <div>

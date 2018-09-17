@@ -23,11 +23,12 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
         }
     };
 
-    return <div className={`${className} test`} {...props}>
-        <div>
+    return <div className={`${className} ${styles.inner} flex`} {...props}>
+        <div className={styles.avatar}>
             <Avatar size={48} address={account.address}/>
         </div>
-        <div>
+
+        <div className={`body1 ${styles.accountData}`}>
             <div className="basic500">
                 {account.name}
             </div>
@@ -35,9 +36,10 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
                 {balance} Waves
             </div>
         </div>
-        <div>
+
+        <div className={styles.controls}>
             {children}
-            <div className={iconClass}></div>s
+            <div className={iconClass}></div>
         </div>
     </div>;
 
