@@ -1,9 +1,9 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
-import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
-import {setTab, newAccountName} from '../../actions';
-import {Input, Button} from '../ui';
+import { connect } from 'react-redux';
+import { translate, Trans } from 'react-i18next';
+import { setTab, newAccountName, addUser } from '../../actions';
+import { Input, Button } from '../ui';
 
 @translate('newAccountName')
 class NewWalletNameComponent extends React.Component {
@@ -48,6 +48,11 @@ class NewWalletNameComponent extends React.Component {
     }
 
     _onSubmit() {
+        if (this.props.account.hasBackup) {
+            this.props.addUser(this.props.account);
+            return null;
+        }
+
         this.props.setTab(this.props.next);
     }
 }
@@ -60,7 +65,8 @@ const mapStateToProps = function (store: any) {
 
 const actions = {
     setTab,
-    newAccountName
+    newAccountName,
+    addUser,
 };
 
 export const NewWalletName = connect(mapStateToProps, actions)(NewWalletNameComponent);

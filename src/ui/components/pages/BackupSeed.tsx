@@ -10,7 +10,6 @@ import {setTab} from '../../actions';
 class BackUpSeedComponent extends React.Component {
 
     props;
-    onCopy = (result) => this._onCopy(result);
     onClick = () => this._onClick();
 
     render() {
@@ -44,10 +43,6 @@ class BackUpSeedComponent extends React.Component {
                 </Trans>
             </div>
         </div>
-    }
-
-    _onCopy(result?) {
-        debugger;
     }
 
     _onClick() {
