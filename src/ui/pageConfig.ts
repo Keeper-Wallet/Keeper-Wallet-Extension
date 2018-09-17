@@ -12,7 +12,7 @@ import {
     BackUpSeed,
     ConfirmBackup,
     Settings,
-    Info
+    Info, AccountInfo
 } from './components/pages';
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -33,6 +33,7 @@ export const PAGES = {
     ASSETS: 'assets',
     SETTINGS: 'settings',
     INFO: 'info',
+    ACOOUNT_INFO: 'accountInfo',
     INTRO: 'intro',
     ROOT: '',
 };
@@ -87,7 +88,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.ROOT,
+            back: true,
         }
     },
     [PAGES.NEW_ACCOUNT_BACK]: {
@@ -95,7 +96,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.ROOT,
+            back: true,
         }
     },
     [PAGES.ACCOUNT_NAME]: {
@@ -106,7 +107,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.NEW_ACCOUNT_BACK,
+            back: true,
         }
     },
     [PAGES.ACCOUNT_NAME_SEED]: {
@@ -118,7 +119,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.IMPORT_SEED_BACK,
+            back: true,
         }
     },
     [PAGES.SAVE_BACKUP]: {
@@ -126,7 +127,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.ACCOUNT_NAME,
+            back: true,
         }
     },
     [PAGES.CONFIRM_BACKUP]: {
@@ -134,7 +135,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.SAVE_BACKUP,
+            back: true,
         }
     },
     [PAGES.IMPORT_SEED]: {
@@ -145,7 +146,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: '',
+            back: true,
         }
     },
     [PAGES.IMPORT_SEED_BACK]: {
@@ -153,7 +154,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: '',
+            back: true,
         }
     },
     [PAGES.ASSETS]: {
@@ -178,6 +179,15 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
+        }
+    },
+    [PAGES.ACOOUNT_INFO]: {
+        component: AccountInfo,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+            deleteAccount: true,
         }
     },
     [PAGES.INTRO]: {

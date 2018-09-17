@@ -6,6 +6,7 @@ export * from  './ConfirmBackup';
 export * from  './Import';
 export * from  './Intro';
 export * from  './Info';
+export * from  './AccountInfo';
 export * from  './Login';
 export * from  './NewAccount';
 export * from  './Settings';

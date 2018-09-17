@@ -32,6 +32,13 @@ export function updateState(state) {
         });
     }
 
+    if (uiState) {
+        actions.push({
+            type: ACTION.UPDATE_UI_STATE,
+            payload: uiState
+        });
+    }
+
     if (currentNetwork !== currentState.currentNetwork) {
         actions.push({
             type: ACTION.UPDATE_CURRENT_NETWORK,

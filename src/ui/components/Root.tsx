@@ -40,15 +40,19 @@ class RootComponent extends React.Component<any, any> {
         };
 
         const onBack = () => {
-            const tab = backTabs[backTabs.length - 1];
+            const tab = backTabs[backTabs.length - 1] || PAGES.ROOT;
             this.props.removeBackTab();
             this.props.setTab(tab);
+        };
+
+        const onDelete = () => {
+
         };
 
         const pageProps = { ...pageConf.props, setTab, onBack };
 
         return <div className="height">
-            <Menu {...pageConf.menu} setTab={setTab} onBack={onBack}/>
+            <Menu {...pageConf.menu} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
             <Component {...pageProps}/>
             <Bottom/>
         </div>;
@@ -57,6 +61,10 @@ class RootComponent extends React.Component<any, any> {
     static getStateTab(props) {
         if (props.locked) {
             return props.initialized ? PAGES.LOGIN : PAGES.CONDITIONS;
+        }
+
+        if (props.ui && props.ui.account) {
+            return PAGES.NEW_ACCOUNT;
         }
 
         return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT;
@@ -82,7 +90,8 @@ const mapStateToProps = function (store: any) {
         accounts: store.accounts || [],
         tab: store.tab || '',
         tmpTab: store.tmpTab,
-        backTabs: store.backTabs
+        backTabs: store.backTabs,
+        ui: store.uiState
     };
 };
 
