@@ -4,8 +4,10 @@
   width: 100%;
   position: relative;
   padding: 14px;
-  height: 100%;
+  height: 552px;
+  overflow: auto;
   background: $basic50;
+  padding-bottom: 30px;
 
   &::after {
     display: block;
@@ -19,6 +21,19 @@
     background: -moz-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
     background: -webkit-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
+  }
+}
+.addAccount {
+  display: flex;
+  justify-content: center;
+  padding: 0 14px;
+  height: 26px;
+  line-height: 26px;
+  cursor: pointet;
+
+  i {
+    margin-right: 10px;
+
   }
 }
 

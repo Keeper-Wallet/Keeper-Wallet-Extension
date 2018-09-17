@@ -39,13 +39,12 @@ class AssetsComponent extends React.Component {
 
             <div className="flex margin4 body1">
                 <div>
-                    <div className='refresh-icon' onClick={this.getBalancesHandler}></div>
                     <div className="basic500 body3">
                         <Trans i18nKey='assets.lastUpdate'>Last update:</Trans>
                     </div>
                     <div className="basic500 body3">time parser</div>
                 </div>
-                <div className={`${styles.addAccount} basic500 border-dashed`} onClick={this.addWalletHandler}>
+                <div className={`basic500 border-dashed ${styles.addAccount}`} onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
             </div>
