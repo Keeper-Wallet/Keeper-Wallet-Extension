@@ -34,6 +34,7 @@ export const PAGES = {
     SETTINGS: 'settings',
     INFO: 'info',
     ACOOUNT_INFO: 'accountInfo',
+    QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     ROOT: '',
 };
@@ -190,6 +191,14 @@ export const PAGES_CONF = {
             deleteAccount: true,
         }
     },
+    [PAGES.QR_CODE_SELECTED]: {
+        component: () => 'QrCode',
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
     [PAGES.INTRO]: {
         component: Intro,
         menu: {
@@ -198,5 +207,4 @@ export const PAGES_CONF = {
             back: null,
         }
     },
-
 };

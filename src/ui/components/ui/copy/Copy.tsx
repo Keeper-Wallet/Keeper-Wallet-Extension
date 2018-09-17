@@ -19,6 +19,8 @@ export class Copy extends React.PureComponent {
             options
         } = this.props;
 
+        event.stopPropagation();
+
         const elem = React.Children.only(children);
 
         const result = copy(text, options);
