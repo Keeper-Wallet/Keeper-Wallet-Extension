@@ -11,18 +11,13 @@ export class Avatar extends React.Component {
     state: { address?: string, src?: string } = {};
     props: { size?: number, address: string, type?: string, className?: string, selected?: boolean, onClick? };
 
-    static componentWillReceiveProps(props, state) {
-        return { address: props.address };
-    }
-
-    shouldComponentUpdate(props, state) {
-        const { address, size = SIZE } = props;
-        if (this.state.address !== props.address && props.address) {
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const { address, size = SIZE } = nextProps;
+        if (prevState.address !== address) {
             avatar.config({ rows: 8, cells: 8 });
-            const src = avatar.create(address, { size: size * 3 });
-            this.setState( { address, src });
+            const src = address ? avatar.create(address, { size: size * 3 }) : '';
+            return { address, src };
         }
-        return true;
     }
 
     render() {

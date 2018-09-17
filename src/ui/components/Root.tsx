@@ -16,13 +16,13 @@ class RootComponent extends React.Component<any, any> {
     static getDerivedStateFromProps(nextProps: IProps) {
         let tab = nextProps.tab;
 
-        if (!tab && nextProps.locked) {
+        if (!tab && nextProps.locked == null) {
             tab = PAGES.INTRO;
-        } else if (!tab) {
+        } else if (!tab && nextProps.locked) {
             tab = PAGES.CONDITIONS;
         }
 
-        if (tab && !RootComponent.canUseTab(nextProps, tab)) {
+        if (!tab || tab && !RootComponent.canUseTab(nextProps, tab)) {
             tab = RootComponent.getStateTab(nextProps);
         }
 
