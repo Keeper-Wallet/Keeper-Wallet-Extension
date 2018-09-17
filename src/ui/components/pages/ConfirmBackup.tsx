@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Button, Pills } from '../ui';
-import { addUser } from '../../actions';
+import { addUser, setUiState } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
@@ -63,6 +63,9 @@ class ConfirmBackupComponent extends React.Component {
     }
 
     private _onSubmit() {
+        this.props.setUiState({
+            account: null
+        });
         this.props.addUser(this.props.account);
     }
 
@@ -124,4 +127,4 @@ const mapStateToProps = function(store: any) {
     };
 };
 
-export const ConfirmBackup = connect(mapStateToProps, { addUser })(ConfirmBackupComponent);
+export const ConfirmBackup = connect(mapStateToProps, { addUser, setUiState })(ConfirmBackupComponent);

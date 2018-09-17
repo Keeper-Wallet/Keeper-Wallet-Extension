@@ -5,7 +5,7 @@ import * as styles from './wallet.styl';
 import { WalletItem } from './';
 import cn from 'classnames';
 
-export function ActiveWallet({className = '', account, balance, ...props}) {
+export function ActiveWallet({className = '', onShowQr=null, account, balance, ...props}) {
 
     className = cn(styles.activeWallet, className);
 
@@ -30,7 +30,7 @@ export function ActiveWallet({className = '', account, balance, ...props}) {
                     <Trans i18nKey='ur.copyAddress'>Copy address</Trans>
                 </div>
             </Copy>
-            <div className={styles.showQrIcon}>
+            <div className={styles.showQrIcon} onClick={onShowQr}>
                 <Trans i18nKey='ui.showQR'>Show QR</Trans>
             </div>
         </WalletItem>

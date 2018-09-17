@@ -13,6 +13,10 @@ class AssetsComponent extends React.Component {
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     getBalancesHandler = () => this.props.getBalances();
     onSelectHandler = account => this.props.selectAccount(account);
+    showQrHandler = (event) => {
+        event.stopPropagation();
+        this.props.setTab(PAGES.QR_CODE_SELECTED);
+    };
 
 
     render () {
@@ -21,6 +25,8 @@ class AssetsComponent extends React.Component {
         const activeProps = {
             account: this.props.selectedAccount,
             balance: this.props.balances[selectedAddress],
+            onClick: () => this.props.setTab(PAGES.ACOOUNT_INFO),
+            onShowQr: this.showQrHandler
         };
 
         const wallets = this.props.accounts

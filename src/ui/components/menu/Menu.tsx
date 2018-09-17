@@ -16,11 +16,17 @@ const Settings = ({hasSettings, leftClick, rightClick}) => {
     );
 };
 
+const Buttons = (props) => {
+    return <div>
+        {!props.deleteAccount ? null : <div className={`${styles.deleteBtn} trash-icon`} onClick={props.onDelete}></div>}
+    </div>;
+}
+
 const Navigation = ({hasBack, onClick}) => {
     return hasBack ? <div className={styles.back} onClick={onClick}>=</div> : null;
 };
 
-export const Menu = ({setTab, onBack, ...props}: IProps) => {
+export const Menu = ({setTab, onBack, onDelete, ...props}: IProps) => {
     const leftClick = () => setTab(PAGES.SETTINGS);
     const rightClick = () => setTab(PAGES.INFO);
     const navBack = () => onBack();
@@ -30,6 +36,7 @@ export const Menu = ({setTab, onBack, ...props}: IProps) => {
             <Logo {...props}/>
             <Settings leftClick={leftClick} rightClick={rightClick} {...props}/>
             <Navigation hasBack={hasBack} onClick={navBack}/>
+            <Buttons onDelete={onDelete} {...props}/>
         </div>
     );
 };
@@ -37,8 +44,10 @@ export const Menu = ({setTab, onBack, ...props}: IProps) => {
 interface IProps {
     hasLogo: boolean;
     hasSettings: boolean;
-    back: string;
+    back: boolean;
+    deleteAccount?: boolean;
     setTab: (tab: string) => void;
     onBack: () => void;
+    onDelete: () => void;
 
 }

@@ -6,8 +6,6 @@ import { BigLogo } from '../head';
 export class Info extends React.Component {
 
     render () {
-        const props = this.props;
-
         return <div>
             <BigLogo noTitle={true}/>
             <Trans i18nKey='info.keepUp'>
@@ -22,4 +20,4 @@ export class Info extends React.Component {
             <div>© Waves Platform</div>
         </div>;
     }
-};
+}

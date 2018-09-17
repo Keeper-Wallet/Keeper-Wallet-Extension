@@ -6,7 +6,7 @@ import { newAccountSelect } from '../../actions';
 import { AvatarList } from '../ui/avatar/AvatarList';
 import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
-import { Input } from '../ui/input';
+import { PAGES } from '../../pageConfig';
 
 @translate('extension')
 class NewWalletComponent extends React.Component {
@@ -23,8 +23,15 @@ class NewWalletComponent extends React.Component {
         }
 
         const list  = NewWalletComponent.list;
-        const selected = list.find(item => props.account && item.address === props.account.address) || list[0];
-        this._onSelect(selected);
+
+        if (props.notSaveAccount) {
+            this._onSelect(props.notSaveAccount);
+            this.props.setTab(PAGES.SAVE_BACKUP);
+        } else {
+            const selected = list.find(item => props.account && item.address === props.account.address) || list[0];
+            this._onSelect(selected);
+        }
+
         this.state = { list };
     }
 
@@ -83,7 +90,8 @@ const actions = {
 
 const mapStateToProps = function(store: any) {
     return {
-        account: store.localState.newAccount
+        account: store.localState.newAccount,
+        notSaveAccount: store.uiState.account
     };
 };
 
