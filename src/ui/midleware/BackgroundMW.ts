@@ -1,11 +1,7 @@
 import { ACTION } from '../actions/constants';
 import { config } from '@waves/signature-generator';
 import background from '../services/Background';
-export * from './setPassword';
-export * from './login';
-export * from './addAccount';
 import { i18n } from '../i18n';
-import { store } from '../store';
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {

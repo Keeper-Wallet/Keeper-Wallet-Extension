@@ -10,7 +10,9 @@ import {
     NewWallet,
     NewWalletName,
     BackUpSeed,
-    ConfirmBackup
+    ConfirmBackup,
+    Settings,
+    Info
 } from './components/pages';
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -19,6 +21,7 @@ export const PAGES = {
     LOGIN: 'login',
     NEW: 'new',
     IMPORT: 'import',
+    IMPORT_FROM_ASSETS: 'importAndBackToAssets',
     NEW_ACCOUNT: 'new_account',
     NEW_ACCOUNT_BACK: 'new_account_back',
     ACCOUNT_NAME: 'accountName',
@@ -66,6 +69,14 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: null,
+        }
+    },
+    [PAGES.IMPORT_FROM_ASSETS]: {
+        component: Import,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
         }
     },
     [PAGES.NEW_ACCOUNT]: {
@@ -154,19 +165,19 @@ export const PAGES_CONF = {
         }
     },
     [PAGES.SETTINGS]: {
-        component: () => 'settings',
+        component: Settings,
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: null,
+            back: true,
         }
     },
     [PAGES.INFO]: {
-        component: () => 'info',
+        component: Info,
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: null,
+            back: true,
         }
     },
     [PAGES.INTRO]: {

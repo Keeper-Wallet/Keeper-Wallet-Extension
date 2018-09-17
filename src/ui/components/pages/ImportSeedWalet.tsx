@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Seed } from '@waves/signature-generator';
-import { setTab, newAccountSelect } from '../../actions';
+import { newAccountSelect } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 
@@ -63,7 +63,7 @@ class ImportSeedComponent extends React.Component {
                 <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
                 <Button type="submit" disabled={this.state.error}>
-                    <Trans i18nKey="importSeed.importAccount">Import Account</Trans>
+                    <Trans i18nKey='importSeed.importAccount'>Import Account</Trans>
                 </Button>
             </form>
         </div>
@@ -98,7 +98,6 @@ class ImportSeedComponent extends React.Component {
 }
 
 const actions = {
-    setTab,
     newAccountSelect,
 };
 

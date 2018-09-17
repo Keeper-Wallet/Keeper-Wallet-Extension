@@ -20,10 +20,10 @@ const Navigation = ({hasBack, onClick}) => {
     return hasBack ? <div className={styles.back} onClick={onClick}>=</div> : null;
 };
 
-export const Menu = ({setTab, ...props}: IProps) => {
-    const leftClick = () => setTab(PAGES.INFO);
-    const rightClick = () => setTab(PAGES.SETTINGS);
-    const navBack = () => setTab(props.back);
+export const Menu = ({setTab, onBack, ...props}: IProps) => {
+    const leftClick = () => setTab(PAGES.SETTINGS);
+    const rightClick = () => setTab(PAGES.INFO);
+    const navBack = () => onBack();
     const hasBack = props.back != null;
     return (
         <div className={`${styles.menu}`}>
@@ -39,5 +39,6 @@ interface IProps {
     hasSettings: boolean;
     back: string;
     setTab: (tab: string) => void;
+    onBack: () => void;
 
 }

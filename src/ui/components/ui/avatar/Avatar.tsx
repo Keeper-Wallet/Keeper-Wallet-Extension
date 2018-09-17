@@ -13,11 +13,14 @@ export class Avatar extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         const { address, size = SIZE } = nextProps;
+
         if (prevState.address !== address) {
             avatar.config({ rows: 8, cells: 8 });
             const src = address ? avatar.create(address, { size: size * 3 }) : '';
             return { address, src };
         }
+
+        return {};
     }
 
     render() {
