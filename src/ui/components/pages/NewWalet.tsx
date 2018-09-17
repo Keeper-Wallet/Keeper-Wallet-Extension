@@ -2,7 +2,7 @@ import * as styles from './styles/newwallet.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { setTab, newAccountSelect } from '../../actions';
+import { newAccountSelect } from '../../actions';
 import { AvatarList } from '../ui/avatar/AvatarList';
 import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
@@ -78,7 +78,6 @@ class NewWalletComponent extends React.Component {
 }
 
 const actions = {
-    setTab,
     newAccountSelect
 };
 

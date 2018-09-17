@@ -1,6 +1,6 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import * as reducers from './reducers/updateState';
-import * as middleware from './midleware/BackgroundMW';
+import * as middleware from './midleware';
 import * as extension from 'extensionizer';
 
 

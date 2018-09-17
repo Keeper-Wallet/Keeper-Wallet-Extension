@@ -2,7 +2,7 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { setTab, newAccountName, addUser } from '../../actions';
+import { newAccountName, addUser } from '../../actions';
 import { Input, Button } from '../ui';
 
 @translate('extension')
@@ -64,7 +64,6 @@ const mapStateToProps = function (store: any) {
 };
 
 const actions = {
-    setTab,
     newAccountName,
     addUser,
 };

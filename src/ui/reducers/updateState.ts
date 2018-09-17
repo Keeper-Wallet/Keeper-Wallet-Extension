@@ -1,6 +1,8 @@
 import { ACTION } from '../actions/constants';
 export * from './localState';
 
+const MAX_HISTORY = 10;
+
 export const state = (store = null, action: any) => {
     return action.type === ACTION.UPDATE_APP_STATE ? action.payload : store;
 };
@@ -39,6 +41,16 @@ export const balances = (store = {}, action: any) => {
 
 export const currentLocale = (store = 'en', action: any) => {
     return action.type === ACTION.UPDATE_FROM_LNG ? action.payload : store;
+};
+
+
+export const backTabs = (state = [], { type, payload }) => {
+    if (type === ACTION.ADD_BACK_TAB) {
+        state = [...state, payload].slice(-MAX_HISTORY);
+    }  else if (type === ACTION.REMOVE_BACK_TAB) {
+        state = state.slice(0, -1);
+    }
+    return state;
 };
 
 export const version = (store = '') => store;

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { setTab } from '../actions';
+import { setTab, addBackTab, removeBackTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
-
 import { PAGES, PAGES_CONF } from '../pageConfig';
 
 
@@ -32,9 +31,25 @@ class RootComponent extends React.Component<any, any> {
     render() {
         const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
         const Component = pageConf.component;
+        const currentTab = this.state.tab;
+        const { backTabs } = this.props;
+
+        const setTab = (tab) => {
+            this.props.addBackTab(currentTab);
+            this.props.setTab(tab);
+        };
+
+        const onBack = () => {
+            const tab = backTabs[backTabs.length - 1];
+            this.props.removeBackTab();
+            this.props.setTab(tab);
+        };
+
+        const pageProps = { ...pageConf.props, setTab, onBack };
+
         return <div className="height">
-            <Menu {...pageConf.menu} setTab={this.props.setTab}/>
-            <Component {...pageConf.props}/>
+            <Menu {...pageConf.menu} setTab={setTab} onBack={onBack}/>
+            <Component {...pageProps}/>
             <Bottom/>
         </div>;
     }
@@ -66,11 +81,12 @@ const mapStateToProps = function (store: any) {
         initialized: store.state && store.state.initialized,
         accounts: store.accounts || [],
         tab: store.tab || '',
-        tmpTab: store.tmpTab
+        tmpTab: store.tmpTab,
+        backTabs: store.backTabs
     };
 };
 
-export const Root = connect(mapStateToProps, { setTab })(RootComponent);
+export const Root = connect(mapStateToProps, { setTab, addBackTab, removeBackTab })(RootComponent);
 
 
 interface IProps {
@@ -78,6 +94,8 @@ interface IProps {
     initialized: boolean;
     accounts: Array<any>;
     setTab: (tab: string) => void;
+    addBackTab: (tab: string) => void;
+    removeBackTab: () => void;
     tab: string;
-    tmpTab: string;
+    backTabs: Array<string>;
 }

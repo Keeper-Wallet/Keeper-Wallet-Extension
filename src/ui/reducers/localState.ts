@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 import { ACTION } from '../actions/constants';
 import { store } from '../store';
 
-
 function newUser(state = {}, action) {
      switch (action.type) {
          case ACTION.SET_PASSWORD_PENDING:
@@ -51,7 +50,6 @@ function menu(state = { logo: false }, { type, payload }) {
     }
     return state;
 }
-
 
 export const localState = combineReducers({
     newUser,
