@@ -17,7 +17,6 @@
   display: block;
   line-height: normal;
   font-family: Roboto;
-  //padding-top: 48px;
   position: relative;
   font-weight: 300;
 
@@ -141,6 +140,10 @@ $layout-24 = 24px;
   border-bottom: 1px solid $accent50;
 }
 
+:global .border-dashed {
+  border: 1px solid $basic200;
+}
+
 :global .grey-line {
   background: $basic50;
   border: 1px dashed $basic200;
@@ -162,5 +165,6 @@ $layout-24 = 24px;
   display: block;
   width: 14px;
   height: 14px;
+  cursor: pointer;
   background: url(../assets/img/copy-14-submit-400.svg) center no-repeat;
 }

@@ -1,23 +1,33 @@
 @import '../../styles/colors.styl';
 
+.content {
+  background: $basic500;
+  padding: 14px;
+}
+
+.walletBackground {
+  height: 112px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 .activeWallet
   width: 100%;
   height: 150px;
 
-  .walletBackground
-    height: 112px;
-    position: absolute;
-    top: 0;
-    left: 0;
 
 .wallet
-  width: 336px;
-  height: 68px;
+  width: calc(100% - 28px);
+  margin: 0 14px;
+  background: $white;
+  display: flex;
+  box-shadow: 0 2px 4px 0 #9ba6b2;
+  border-radius: 4px;
+  padding: 4px;
 
   &.active
     height: 112px;
-    
 
 .accountIcon
   width: 28px;
@@ -31,3 +41,11 @@
 
 .title
   color: $disabled200;
+
+.addAccount {
+  display: block;
+  width: 148px;
+  height: 32px;
+  color: $basic200;
+  background: url(../../assets/img/add-14-basic-500.svg) 20px center no-repeat;
+}

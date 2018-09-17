@@ -16,12 +16,12 @@ export const WalletItem = ({className='', account=null, active=false, balance=nu
             [styles.inactive]: !active,
         });
 
-    return <div className={className} {...props}>
+    return <div className={`${className} test`} {...props}>
         <div>
             <Avatar size={48} address={account.address}/>
         </div>
         <div>
-            <div>
+            <div className="basic500">
                 {account.name}
             </div>
             <div className={styles.balance}>
@@ -30,7 +30,7 @@ export const WalletItem = ({className='', account=null, active=false, balance=nu
         </div>
         <div>
             {children}
-            <div className={iconClass}></div>
+            <div className={iconClass}></div>s
         </div>
     </div>
 

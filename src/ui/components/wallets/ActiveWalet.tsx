@@ -27,7 +27,7 @@ export function ActiveWallet({className = '', account, balance, ...props}) {
         </div>
         <WalletItem {...walletItemProps}>
             <Copy text={account.address}>
-                <div  className='copy-icon'>
+                <div className='copy-icon-black'>
                     <Trans i18nKey='ur.copyAddress'>Copy address</Trans>
                 </div>
             </Copy>

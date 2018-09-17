@@ -10,8 +10,8 @@ const Logo = ({hasLogo}) => {
 const Settings = ({hasSettings, leftClick, rightClick}) => {
     return !hasSettings ? null : (
         <div>
-            <div className={styles.left} onClick={leftClick}>#</div>
-            <div className={styles.right} onClick={rightClick}>*</div>
+            <div className={styles.settingsBtn} onClick={leftClick}></div>
+            <div className={styles.navigationBtn} onClick={rightClick}></div>
         </div>
     );
 };
@@ -26,7 +26,7 @@ export const Menu = ({setTab, ...props}: IProps) => {
     const navBack = () => setTab(props.back);
     const hasBack = props.back != null;
     return (
-        <div className={styles.menu}>
+        <div className={`${styles.menu}`}>
             <Logo {...props}/>
             <Settings leftClick={leftClick} rightClick={rightClick} {...props}/>
             <Navigation hasBack={hasBack} onClick={navBack}/>

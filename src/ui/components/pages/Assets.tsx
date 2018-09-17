@@ -28,11 +28,12 @@ class AssetsComponent extends React.Component {
                 key={account.address}/>
             );
 
-
         return <div className={styles.assets}>
+            <div className={styles.walletBackground}></div>
+
             <ActiveWallet {...activeProps}/>
 
-            <div>
+            <div className="flex">
                 <div>
                     <div className='refresh-icon' onClick={this.getBalancesHandler}></div>
                     <div>
@@ -40,7 +41,7 @@ class AssetsComponent extends React.Component {
                     </div>
                     <div>time parser</div>
                 </div>
-                <div onClick={this.addWalletHandler}>
+                <div className={`${styles.addAccount} border-dashed`} onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add account</Trans>
                 </div>
             </div>
