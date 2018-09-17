@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as styles from './input.styl';
+import cn from 'classnames';
 
 export class Input extends React.Component {
 
@@ -17,9 +18,14 @@ export class Input extends React.Component {
     }
 
     render() {
-        let { className, error, ...props } = this.props;
-        className = !className ? styles.input : `${styles.input} ${className}`;
-        className += error ? ` ${styles.error}` : '';
-        return <input className={className} {...props} ref={this.getRef}/>
+        let { className, error, multiLine, ...props } = this.props;
+        className = cn(
+            styles.input, className, {
+                [styles.error]: error
+            }
+        );
+        return multiLine ?
+            <textarea className={className} {...props} ref={this.getRef}/>:
+            <input className={className} {...props} ref={this.getRef}/>;
     }
 }

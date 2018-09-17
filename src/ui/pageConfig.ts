@@ -12,6 +12,7 @@ import {
     BackUpSeed,
     ConfirmBackup
 } from './components/pages';
+import { ImportSeed } from './components/pages/ImportSeedWalet';
 
 export const PAGES = {
     CONDITIONS: 'conditions',
@@ -20,13 +21,17 @@ export const PAGES = {
     IMPORT: 'import',
     NEW_ACCOUNT: 'new_account',
     NEW_ACCOUNT_BACK: 'new_account_back',
-    ACCOUNTNAME: 'accountName',
-    SAFEBACKUP: 'safeBackup',
-    CONFIRMBACKUP: 'confirmBackup',
+    ACCOUNT_NAME: 'accountName',
+    ACCOUNT_NAME_SEED: 'accountNameSeed',
+    SAVE_BACKUP: 'safeBackup',
+    CONFIRM_BACKUP: 'confirmBackup',
+    IMPORT_SEED: 'import_seed',
+    IMPORT_SEED_BACK: 'import_seed_back',
     ASSETS: 'assets',
     SETTINGS: 'settings',
     INFO: 'info',
     INTRO: 'intro',
+    ROOT: '',
 };
 
 export const PAGES_CONF = {
@@ -71,7 +76,7 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: '',
+            back: PAGES.ROOT,
         }
     },
     [PAGES.NEW_ACCOUNT_BACK]: {
@@ -79,31 +84,65 @@ export const PAGES_CONF = {
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: '',
+            back: PAGES.ROOT,
         }
     },
-    [PAGES.ACCOUNTNAME]: {
+    [PAGES.ACCOUNT_NAME]: {
         component: NewWalletName,
+        props: {
+            next: PAGES.SAVE_BACKUP
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.NEW_ACCOUNT_BACK,
         }
     },
-    [PAGES.SAFEBACKUP]: {
+    [PAGES.ACCOUNT_NAME_SEED]: {
+        component: NewWalletName,
+        props: {
+            isCreate: true,
+            next: PAGES.ROOT
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: PAGES.IMPORT_SEED_BACK,
+        }
+    },
+    [PAGES.SAVE_BACKUP]: {
         component: BackUpSeed,
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.ACCOUNTNAME,
+            back: PAGES.ACCOUNT_NAME,
         }
     },
-    [PAGES.CONFIRMBACKUP]: {
+    [PAGES.CONFIRM_BACKUP]: {
         component: ConfirmBackup,
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: PAGES.SAFEBACKUP,
+            back: PAGES.SAVE_BACKUP,
+        }
+    },
+    [PAGES.IMPORT_SEED]: {
+        component: ImportSeed,
+        props: {
+            isNew: true
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: '',
+        }
+    },
+    [PAGES.IMPORT_SEED_BACK]: {
+        component: ImportSeed,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: '',
         }
     },
     [PAGES.ASSETS]: {

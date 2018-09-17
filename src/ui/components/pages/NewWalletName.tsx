@@ -48,11 +48,7 @@ class NewWalletNameComponent extends React.Component {
     }
 
     _onSubmit() {
-        if (this.props.account.type === 'seed') {
-            this.props.setTab('safeBackup');
-        } else {
-            this.props.setTab('assets');
-        }
+        this.props.setTab(this.props.next);
     }
 }
 
