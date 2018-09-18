@@ -80,9 +80,14 @@ class Background {
         return this.background.initVault(password);
     }
 
-    async exportAccount(account): Promise<void> {
+    async exportAccount(address, password): Promise<void> {
         await this.initPromise;
-        return this.background.exportAccount(account);
+        return this.background.exportAccount(address, password);
+    }
+
+    async newPassword(oldPassword, newPassword): Promise<void> {
+        await this.initPromise;
+        return this.background.newPassword(oldPassword, newPassword);
     }
 
     async clearMessages(): Promise<void> {
@@ -90,14 +95,14 @@ class Background {
         return this.background.clearMessages();
     }
 
-    async sign(): Promise<void> {
+    async approve(messageId, address): Promise<any> {
         await this.initPromise;
-        return this.background.sign();
+        return this.background.approve(messageId, address);
     }
 
-    async reject(): Promise<void> {
+    async reject(messageId): Promise<void> {
         await this.initPromise;
-        return this.background.reject();
+        return this.background.reject(messageId);
     }
 
     async setNetwork(network): Promise<void> {
@@ -110,6 +115,16 @@ class Background {
         const networks = await this.background.getNetworks();
         this._onUpdate({ networks });
         return networks;
+    }
+
+    async assetInfo(assetId: string): Promise<any> {
+        await this.initPromise;
+        return this.background.assetInfo(assetId);
+    }
+
+    async getUserList(type: string, from: number, to: number): Promise<any> {
+        await this.initPromise;
+        return this.background.getUserList(type, from, to);
     }
 
     _onUpdate(state: IState) {

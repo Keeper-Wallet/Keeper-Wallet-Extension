@@ -4,4 +4,5 @@ export * from './avatar';
 export * from './error';
 export * from './copy';
 export * from './pills';
+export * from './modal/Modal';
 export {default as Loader} from './loader';

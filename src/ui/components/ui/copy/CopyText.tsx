@@ -43,7 +43,9 @@ export class CopyText extends React.PureComponent {
            this.props.getText().then(
                text => {
                    const result = copy(text, this.props.copyOptions);
-                   this.props.onCopy(text, result);
+                   if (this.props) {
+                       this.props.onCopy(text, result);
+                   }
                }
            );
             return null;
