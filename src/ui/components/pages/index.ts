@@ -7,6 +7,7 @@ export * from  './Import';
 export * from  './Intro';
 export * from  './Info';
 export * from  './AccountInfo';
+export * from  './DeleteActiveAccount';
 export * from  './Login';
 export * from  './NewAccount';
 export * from  './Settings';

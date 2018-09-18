@@ -18,9 +18,9 @@ const Settings = ({hasSettings, leftClick, rightClick}) => {
 
 const Buttons = (props) => {
     return <div>
-        {!props.deleteAccount ? null : <div className={`${styles.deleteBtn} trash-icon`} onClick={props.onDelete}></div>}
+        {!props.deleteAccount ? null : <div className={`${styles.deleteBtn} trash-icon`} onClick={props.onDelete}>DEL</div>}
     </div>;
-}
+};
 
 const Navigation = ({hasBack, onClick}) => {
     return hasBack ? <div className={styles.back} onClick={onClick}>=</div> : null;

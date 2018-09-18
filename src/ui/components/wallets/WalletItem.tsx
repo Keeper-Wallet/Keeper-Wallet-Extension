@@ -23,7 +23,7 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
         }
     };
 
-    return <div className={`${className} ${styles.inner} flex`} {...props}>
+    return <div className={`${className} ${styles.inner} flex`} onClick={clickHandler} {...props}>
         <div className={styles.avatar}>
             <Avatar size={48} address={account.address}/>
         </div>

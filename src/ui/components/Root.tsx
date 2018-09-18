@@ -46,7 +46,7 @@ class RootComponent extends React.Component<any, any> {
         };
 
         const onDelete = () => {
-
+            setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
         };
 
         const pageProps = { ...pageConf.props, setTab, onBack };

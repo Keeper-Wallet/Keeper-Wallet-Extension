@@ -12,7 +12,9 @@ import {
     BackUpSeed,
     ConfirmBackup,
     Settings,
-    Info, AccountInfo
+    Info,
+    AccountInfo,
+    DeleteActiveAccount,
 } from './components/pages';
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -33,7 +35,8 @@ export const PAGES = {
     ASSETS: 'assets',
     SETTINGS: 'settings',
     INFO: 'info',
-    ACOOUNT_INFO: 'accountInfo',
+    ACCOUNT_INFO: 'accountInfo',
+    DELETE_ACTIVE_ACCOUNT: 'deleteActiveAccount',
     QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     ROOT: '',
@@ -182,13 +185,21 @@ export const PAGES_CONF = {
             back: true,
         }
     },
-    [PAGES.ACOOUNT_INFO]: {
+    [PAGES.ACCOUNT_INFO]: {
         component: AccountInfo,
         menu: {
             hasLogo: true,
             hasSettings: false,
             back: true,
             deleteAccount: true,
+        }
+    },
+    [PAGES.DELETE_ACTIVE_ACCOUNT]: {
+        component: DeleteActiveAccount,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
         }
     },
     [PAGES.QR_CODE_SELECTED]: {

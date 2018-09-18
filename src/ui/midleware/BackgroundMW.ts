@@ -3,6 +3,7 @@ import { config } from '@waves/signature-generator';
 import background from '../services/Background';
 import { i18n } from '../i18n';
 import { setTab } from '../actions';
+import { PAGES } from '../pageConfig';
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {
@@ -21,6 +22,18 @@ export const updateLang = store => next => action => {
 export const selectAccount = store => next => action => {
     if (action.type === ACTION.SELECT_ACCOUNT && store.getState().selectedAccount.address !== action.payload.address) {
         background.selectAccount(action.payload.address);
+        return null;
+    }
+
+    return next(action);
+};
+
+export const deleteActiveAccount = store => next => action => {
+    if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
+        const { selectedAccount } = store.getState();
+        background.removeWallet(selectedAccount.address).then(
+            () => store.dispatch(setTab(PAGES.ROOT))
+        );
         return null;
     }
 
