@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans, translate } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
-import { Avatar } from '../ui/avatar/Avatar';
+import { Avatar, CopyText } from '../ui';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -26,10 +26,25 @@ class AccountInfoComponent extends React.Component {
                 Buttons
             </div>
             <div>
-                <div>address</div>
-                <div>pubKey</div>
-                <div>privKey</div>
-                <div>backUp</div>
+                <div>
+                    <Trans i18nKey='accountInfo.address'>Address</Trans>
+                    <CopyText text={selectedAccount.address} showCopy={true} showText={true}/>
+                </div>
+
+                <div>
+                    <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
+                    <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true}/>
+                </div>
+
+                { selectedAccount.prvateKey ? <div>
+                    <Trans i18nKey='accountInfo.privKey'>Private key</Trans>
+                    <CopyText text={selectedAccount.prvateKey} showCopy={true}/>
+                </div> : null}
+
+                {selectedAccount.phrase ? <div>
+                    <Trans i18nKey='accountInfo.seed'>Backup phrase</Trans>
+                    <CopyText text={selectedAccount.phrase} showCopy={true}/>
+                </div> : null}
             </div>
         </div>;
     }
