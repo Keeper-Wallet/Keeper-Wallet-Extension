@@ -11,6 +11,7 @@ export function Button({ className, type, children, ...props }: IProps ) {
             [styles.submit]: type === 'submit',
             [styles.transparent]: type === 'transparent',
             [styles.warning]: type === 'warning',
+            [styles.default]: !type
         }
     );
 

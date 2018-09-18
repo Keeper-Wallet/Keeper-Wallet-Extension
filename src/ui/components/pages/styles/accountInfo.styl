@@ -1,11 +1,58 @@
+@import '../../../styles/colors.styl';
+
 .content
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
+  padding: 14px;
+  height: 100%;
+  width: 100%;
   display: inline-block;
-  height: 60%;
-  width: 240px;
   margin: auto;
+  background-color: $basic50;
+
+.editIcon {
+  background: url(../../../assets/img/edit-14-basic-500.svg) center no-repeat;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.accountName {
+  border-bottom: 1px dotted $basic500;
+}
+
+.balance {
+  font-weight: 500;
+}
+
+.avatar {
+  margin: 0 14px 0 0;
+}
+
+.accountDetails {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.buttonsWrapper {
+  border-bottom: 1px dashed $basic200;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-bottom: 24px;
+}
+
+.activeAccount {
+  background: url(../../../assets/img/activeasset-18-submit-400.svg) 14px center no-repeat;
+}
+
+.showQrIcon {
+  background: url(../../../assets/img/qr-14-basic-500.svg) 14px center no-repeat;
+}
+
+.copyIcon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translate(0, -50%);
+}

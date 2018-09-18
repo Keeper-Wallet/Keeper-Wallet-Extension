@@ -10,20 +10,20 @@ const Logo = ({hasLogo}) => {
 const Settings = ({hasSettings, leftClick, rightClick}) => {
     return !hasSettings ? null : (
         <div>
-            <div className={styles.settingsBtn} onClick={leftClick}></div>
-            <div className={styles.navigationBtn} onClick={rightClick}></div>
+            <div className={styles.settingsIcon} onClick={leftClick}></div>
+            <div className={styles.navigationIcon} onClick={rightClick}></div>
         </div>
     );
 };
 
 const Buttons = (props) => {
     return <div>
-        {!props.deleteAccount ? null : <div className={`${styles.deleteBtn} trash-icon`} onClick={props.onDelete}>DEL</div>}
+        {!props.deleteAccount ? null : <div className={`${styles.deleteIcon} delete-icon`} onClick={props.onDelete}></div>}
     </div>;
 };
 
 const Navigation = ({hasBack, onClick}) => {
-    return hasBack ? <div className={styles.back} onClick={onClick}>=</div> : null;
+    return hasBack ? <div className={`${styles.arrowBackIcon} arrow-back-icon`} onClick={onClick}></div> : null;
 };
 
 export const Menu = ({setTab, onBack, onDelete, ...props}: IProps) => {
@@ -49,5 +49,4 @@ interface IProps {
     setTab: (tab: string) => void;
     onBack: () => void;
     onDelete: () => void;
-
 }

@@ -30,21 +30,21 @@ class BackUpSeedComponent extends React.Component {
                 </Copy>
             </div>
 
-            <div className='plate center'>
+            <div className={`plate center ${styles.plateMargin}`}>
                 {this.props.account.seed}
             </div>
 
-            <div className={`basic500 tag1 center ${styles.bottomText}`}>
+            <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
                 <Trans i18nKey='backupSeed.confirmBackupInfo'>
                     You will confirm this phrase on the next screen
                 </Trans>
             </div>
 
-            <Button type='submit' onClick={this.onClick}>
+            <Button className="submit margin-main-big" type='submit' onClick={this.onClick}>
                 <Trans i18nKey='backupSeed.continue'>Continue</Trans>
             </Button>
 
-            <Button onClick={this.cancelHandler}>
+            <Button className="button default" onClick={this.cancelHandler}>
                 <Trans i18nKey='backupSeed.cancel'>Cancel creation</Trans>
             </Button>
         </div>

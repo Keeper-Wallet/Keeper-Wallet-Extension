@@ -40,7 +40,7 @@ class ImportSeedComponent extends React.Component {
             </div>
 
             <form onSubmit={this.onSubmit}>
-                <div className={'tag1 basic500'}>
+                <div className={'tag1 basic500 input-title'}>
                     <Trans i18nkey='importSeed.newSeed'>Wallet Seed</Trans>:
                 </div>
 
@@ -51,12 +51,13 @@ class ImportSeedComponent extends React.Component {
                     onFocus={this.inputFocusHandler}
                     multiLine={true}
                     value={this.state.value}
+                    className="margin5"
                     placeholder={
                         this.props.t('importSeed.inputSeed', 'Your seed is the 15 words you saved when creating your account')
                     }/>
 
 
-                <div className={'tag1 basic500'}>
+                <div className={'tag1 basic500 input-title'}>
                     <Trans i18nkey='importSeed.address'>Account address</Trans>:
                 </div>
 

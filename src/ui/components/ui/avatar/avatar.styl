@@ -5,19 +5,9 @@
   overflow: hidden;
   margin: auto;
   cursor: pointer;
-  border: 1px solid transparent;
-
-  &.selected {
-    background-color: rgba(31, 90, 246, 0.1);
-    border-radius: 2px;
-    border: 1px solid $submit400;
-  }
 
   img {
     border-radius: 50%;
-    margin: 4px;
-    width: 38px !important;
-    height: 38px !important;
   }
 }
 
@@ -26,4 +16,18 @@
   width: 100%;
   justify-content space-between;
   align-items: center;
+
+  avatar {
+    .selected {
+      background-color: rgba(31, 90, 246, 0.1);
+      border-radius: 2px;
+      border: 1px solid transparent;
+
+      img {
+       border-radius: 50%;
+       border: 1px solid $submit400;
+       margin: 4px;
+      }
+    }
+  }
 }

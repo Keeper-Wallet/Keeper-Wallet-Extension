@@ -1,51 +1,74 @@
 @import '../../../styles/colors.styl';
 
-.buttons-wrapper
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+:global .buttons-wrapper
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
 .button
-    width: 236px;
-    height: 40px;
-    display: block;
-    border-radius: 4px;
-    font-family: Roboto-Medium;
-    font-size: 14px;
-    text-align: center;
-    white-space: nowrap;
-    cursor: pointer;
-    margin: 0 auto;
-    &:focus {
-        outline: none;
-    }
+  width: 236px;
+  height: 40px;
+  display: block;
+  border-radius: 4px;
+  font-family: Roboto-Medium;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
 
-    &.disabled,
-    &:disabled,
-    &[disabled]
-        cursor: default;
-        background-color: $disabled200;
+  &.default
+    background: $white;
+    border: 1px solid $basic200;
 
-    &.submit
-        background-color: $submit400;
-        color: $white;
+  &:focus
+    outline: none;
 
-        &.disabled
-            background-color: $submit200;
-            cursor: default;
+  &.disabled,
+  &:disabled,
+  &[disabled]
+    cursor: default;
+    background-color: $disabled200;
 
-        &:hover
-            background: $submit300;
+  &.submit
+    background-color: $submit400;
+    color: $white;
 
-    &.transparent
-        background-color: transparent;
+    &.disabled
+      background-color: $submit200;
+      cursor: default;
 
-        &.disabled
-            background-color: transparent;
+    &:hover
+      background: $submit300;
 
-        &:hover
-            background: transparent;
+  &.transparent
+    background-color: transparent;
 
-    &.warning
-        background-color: $error400;
-        color: $white;
+    &.disabled
+      background-color: transparent;
+
+    &:hover
+      background: transparent;
+
+  &.warning
+    background-color: $error400;
+    color: $white;
+
+  &.interface
+    background-color: $white;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 14px 0 40px;
+    box-shadow: 0 2px 4px 0 #9ba6b2 66;
+    font-family: Roboto;
+    font-weight: 400;
+    width: auto;
+    margin: 0;
+
+    &:not(:last-child)
+      margin-right: 14px;
+
+    &.disabled
+      background-color: transparent;
+      border: 0.5px solid $basic200;
+      box-shadow: none;
+      height: 33px;
