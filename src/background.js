@@ -9,7 +9,7 @@ import extension from 'extensionizer';
 import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
-import { ComposableObservableStore } from './lib/ComposableObservableStore';
+import {ComposableObservableStore} from './lib/ComposableObservableStore';
 import LocalStore from './lib/local-store';
 import {
     PreferencesController,
@@ -102,26 +102,31 @@ class BackgroundService extends EventEmitter {
 
         // Controllers
 
+        // Network. Works with blockchain
+        this.networkController = new NetworkController({initState: initState.NetworkController});
+
         // Preferences. Contains accounts, available accounts, selected language etc.
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
+            getNetwork: this.networkController.getNetwork.bind(this.networkController)
         });
 
+        // On network change select accounts of this network
+        this.networkController.store.subscribe(() => this.preferencesController.syncCurrentNetworkAccounts());
+
+
         // Ui State. Provides storage for ui application
-        this.uiStateController =  new UiStateController({initState: initState.UiStateController});
+        this.uiStateController = new UiStateController({initState: initState.UiStateController});
 
         // Wallet. Wallet creation, app locking, signing methond
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
-            if (!state.locked){
+            if (!state.locked) {
                 const accounts = this.walletController.getAccounts();
                 this.preferencesController.syncAccounts(accounts);
             }
         });
-
-        // Network. Works with blockchain
-        this.networkController = new NetworkController({initState: initState.NetworkController});
 
         // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
@@ -188,7 +193,7 @@ class BackgroundService extends EventEmitter {
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
             newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
-            exportAccount: async (publicKey) => this.walletController.exportAccount(publicKey),
+            exportAccount: async (address, password) => this.walletController.exportAccount(address, password),
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
@@ -200,7 +205,7 @@ class BackgroundService extends EventEmitter {
             getNetworks: async () => this.networkController.getNetworks(),
 
             // external devices
-            getUserList: async (type, from, to) =>await ExternalDeviceController.getUserList(type, from, to),
+            getUserList: async (type, from, to) => await ExternalDeviceController.getUserList(type, from, to),
 
             // asset information
             assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId)
@@ -245,16 +250,16 @@ class BackgroundService extends EventEmitter {
         // Select public state from app state
         let publicState = this._publicState(this.getState());
         dnode.on('remote', (remote) => {
-           // push account change event to the page
-           const sendUpdate = remote.sendUpdate.bind(remote);
-           this.on('update', function (state) {
-               const updatedPublicState = self._publicState(state);
-               // If public state changed call remote with new public state
-               if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account){
-                   publicState = updatedPublicState;
-                   sendUpdate(publicState)
-               }
-           })
+            // push account change event to the page
+            const sendUpdate = remote.sendUpdate.bind(remote);
+            this.on('update', function (state) {
+                const updatedPublicState = self._publicState(state);
+                // If public state changed call remote with new public state
+                if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
+                    publicState = updatedPublicState;
+                    sendUpdate(publicState)
+                }
+            })
         })
     }
 
@@ -262,16 +267,16 @@ class BackgroundService extends EventEmitter {
         this.emit('update', this.getState())
     }
 
-    _publicState(state){
+    _publicState(state) {
         return {
             locked: state.locked,
             account: state.locked ? undefined : state.selectedAccount
         }
     }
 
-    _validateTx(tx, from){
+    _validateTx(tx, from) {
         // Fields check
-        if (!tx.type || !tx.data){
+        if (!tx.type || !tx.data) {
             throw new Error('Invalid tx. Tx should contain type and data fields');
         }
 
