@@ -65,6 +65,17 @@ export const uiState = store => next => action => {
     return next(action);
 };
 
+export const changeNetwork = store => next => action => {
+    if (action.type === ACTION.CHANGE_NETWORK) {
+        background.setNetwork(action.payload).then(
+            () => setTab(PAGES.ROOT)
+        );
+        return null;
+    }
+
+    return next(action);
+};
+
 export const updateNetworkCode = store => next => action => {
     if (action.type === ACTION.UPDATE_CURRENT_NETWORK || action.type === ACTION.UPDATE_NETWORKS) {
         const { payload, type } = action;
