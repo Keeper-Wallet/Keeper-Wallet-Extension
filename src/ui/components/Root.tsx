@@ -31,8 +31,13 @@ class RootComponent extends React.Component<any, any> {
     render() {
         const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
         const Component = pageConf.component;
+        const backTabFromConf = typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
         const currentTab = this.state.tab;
         const { backTabs } = this.props;
+        const menuProps = {
+            ...pageConf.menu,
+            back: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+        };
 
         const setTab = (tab) => {
             this.props.addBackTab(currentTab);
@@ -40,7 +45,7 @@ class RootComponent extends React.Component<any, any> {
         };
 
         const onBack = () => {
-            const tab = backTabs[backTabs.length - 1] || PAGES.ROOT;
+            const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
             this.props.removeBackTab();
             this.props.setTab(tab);
         };
@@ -52,9 +57,9 @@ class RootComponent extends React.Component<any, any> {
         const pageProps = { ...pageConf.props, setTab, onBack };
 
         return <div className="height">
-            <Menu {...pageConf.menu} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
+            <Menu {...menuProps} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
             <Component {...pageProps}/>
-            <Bottom/>
+            <Bottom {...pageConf.bottom}/>
         </div>;
     }
 

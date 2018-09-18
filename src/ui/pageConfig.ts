@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {
     Login,
     Intro,
@@ -16,7 +14,9 @@ import {
     AccountInfo,
     DeleteActiveAccount,
 } from './components/pages';
+
 import { ImportSeed } from './components/pages/ImportSeedWalet';
+
 
 export const PAGES = {
     CONDITIONS: 'conditions',
@@ -87,7 +87,10 @@ export const PAGES_CONF = {
     [PAGES.NEW_ACCOUNT]: {
         component: NewWallet,
         props: {
-            isGenerateNew: true
+            isGenerateNew: true,
+        },
+        bottom: {
+            noChangeNetwork: true,
         },
         menu: {
             hasLogo: true,
@@ -97,6 +100,9 @@ export const PAGES_CONF = {
     },
     [PAGES.NEW_ACCOUNT_BACK]: {
         component: NewWallet,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -108,10 +114,13 @@ export const PAGES_CONF = {
         props: {
             next: PAGES.SAVE_BACKUP
         },
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: true,
+            back: PAGES.NEW_ACCOUNT_BACK,
         }
     },
     [PAGES.ACCOUNT_NAME_SEED]: {
@@ -120,32 +129,44 @@ export const PAGES_CONF = {
             isCreate: true,
             next: PAGES.SAVE_BACKUP
         },
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: true,
+            back: PAGES.IMPORT_SEED_BACK,
         }
     },
     [PAGES.SAVE_BACKUP]: {
         component: BackUpSeed,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: true,
+            back: PAGES.ACCOUNT_NAME,
         }
     },
     [PAGES.CONFIRM_BACKUP]: {
         component: ConfirmBackup,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
-            back: true,
+            back: PAGES.SAVE_BACKUP,
         }
     },
     [PAGES.IMPORT_SEED]: {
         component: ImportSeed,
         props: {
             isNew: true
+        },
+        bottom: {
+            noChangeNetwork: true,
         },
         menu: {
             hasLogo: true,
@@ -155,6 +176,9 @@ export const PAGES_CONF = {
     },
     [PAGES.IMPORT_SEED_BACK]: {
         component: ImportSeed,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -187,6 +211,9 @@ export const PAGES_CONF = {
     },
     [PAGES.ACCOUNT_INFO]: {
         component: AccountInfo,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -196,6 +223,9 @@ export const PAGES_CONF = {
     },
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {
         component: DeleteActiveAccount,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
