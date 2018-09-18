@@ -49,7 +49,10 @@ class BottomComponent extends React.PureComponent {
         }
         this.clickOutHandler();
     };
-    clickOutHandler = () => this.setState({showNetworks: false});
+    clickOutHandler = () => {
+        this.removeClickOutHandler();
+        this.setState({showNetworks: false});
+    };
 
     render() {
 
@@ -81,6 +84,10 @@ class BottomComponent extends React.PureComponent {
     }
 
     componentWillUnmount() {
+        this.removeClickOutHandler();
+    }
+
+    removeClickOutHandler() {
         document.removeEventListener('click', this.clickOutHandler);
     }
 
