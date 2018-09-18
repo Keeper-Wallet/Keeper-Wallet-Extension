@@ -25,7 +25,7 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
 
     return <div className={`${className} ${styles.inner} flex`} {...props}>
         <div className={styles.avatar}>
-            <Avatar size={48} address={account.address}/>
+            <Avatar size={40} address={account.address}/>
         </div>
 
         <div className={`body1 ${styles.accountData}`}>
