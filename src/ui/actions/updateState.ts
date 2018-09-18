@@ -9,11 +9,9 @@ export function updateState(state) {
         selectedAccount = {},
         initialized,
         locked,
-        networks = [],
         currentNetwork = '',
         messages = [],
         balances = [],
-        pollInterval,
         uiState = {},
     } = state;
     const currentState = store.getState();
@@ -60,7 +58,9 @@ export function updateState(state) {
         });
     }
 
-    if (accounts.length !== currentState.accounts.length) {
+    const hasChangesInAccounts = JSON.stringify(accounts) !== JSON.stringify(currentState.accounts);
+
+    if (hasChangesInAccounts) {
         actions.push({
             type: ACTION.UPDATE_ACCOUNTS,
             payload: accounts

@@ -25,7 +25,9 @@ class NewWalletNameComponent extends React.Component {
                 <form onSubmit={this.onSubmit}>
                     <div className={`margin2`}>
                         <Input ref={this.getRef}
-                               onChange={this.onChange} value={this.props.account.name || ''}
+                               onChange={this.onChange}
+                               value={this.props.account.name || ''}
+                               maxlength='32'
                         />
                     </div>
 

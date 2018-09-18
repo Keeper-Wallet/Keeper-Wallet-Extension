@@ -25,7 +25,7 @@ class AssetsComponent extends React.Component {
         const activeProps = {
             account: this.props.selectedAccount,
             balance: this.props.balances[selectedAddress],
-            onClick: () => this.props.setTab(PAGES.ACOOUNT_INFO),
+            onClick: () => this.props.setTab(PAGES.ACCOUNT_INFO),
             onShowQr: this.showQrHandler
         };
 
