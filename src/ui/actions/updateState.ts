@@ -5,7 +5,7 @@ export function updateState(state) {
     const actions = [];
     const {
         currentLocale,
-        accounts = [],
+        currentNetworkAccounts: accounts = [],
         selectedAccount = {},
         initialized,
         locked,

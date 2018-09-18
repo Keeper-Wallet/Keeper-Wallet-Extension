@@ -87,9 +87,13 @@ export class WalletController {
         this._saveWallets()
     }
 
-    exportAccount(address) {
-        if (this.store.getState().locked) throw new Error('App is locked');
+    exportAccount(address, password) {
+        if (!password) throw new Error('Password is required');
+        this._restoreWallets(password);
+
         const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
+        if (!wallet) throw new Error(`Wallet not found for address: ${address}`);
+
         return wallet.getSecret();
     }
 

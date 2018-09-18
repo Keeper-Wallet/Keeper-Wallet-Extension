@@ -1,6 +1,7 @@
 import ObservableStore from 'obs-store';
 import log from 'loglevel'
 import EventEmitter from 'events';
+import {NETWORK_CONFIG} from '../constants'
 
 export class PreferencesController extends EventEmitter{
     constructor(options = {}) {
@@ -9,11 +10,14 @@ export class PreferencesController extends EventEmitter{
         const defaults = {
             currentLocale: options.initLangCode || 'en',
             accounts: [],
+            currentNetworkAccounts: [],
             selectedAccount: undefined
         };
 
         const initState = Object.assign({}, defaults, options.initState);
-        this.store = new ObservableStore(initState)
+        this.store = new ObservableStore(initState);
+
+        this.getNetwork = options.getNetwork
     }
 
 
@@ -42,10 +46,18 @@ export class PreferencesController extends EventEmitter{
         });
         this.store.updateState({accounts});
 
-        // Ensure we have selected account
+        this.syncCurrentNetworkAccounts();
+    }
+
+    syncCurrentNetworkAccounts(){
+        const accounts = this.store.getState().accounts;
+        const currentNetworkAccounts = accounts.filter(account => account.networkCode === NETWORK_CONFIG[this.getNetwork()].code);
+        this.store.updateState({currentNetworkAccounts});
+
+        // Ensure we have selected account from current network
         let selectedAccount = this.store.getState().selectedAccount;
-        if (!selectedAccount || !accounts.find(account => account.address === selectedAccount.address)){
-            const addressToSelect = accounts.length > 0 ? accounts[0].address : undefined;
+        if (!selectedAccount || !currentNetworkAccounts.find(account => account.address === selectedAccount.address)){
+            const addressToSelect = currentNetworkAccounts.length > 0 ? currentNetworkAccounts[0].address : undefined;
             this.selectAccount(addressToSelect)
         }
     }
