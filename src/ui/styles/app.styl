@@ -162,11 +162,16 @@ $layout-24 = 24px;
 
 // global icons
 :global .copy-icon {
-  display: block;
   width: 14px;
   height: 14px;
   cursor: pointer;
   background: url(../assets/img/copy-14-submit-400.svg) center no-repeat;
+}
+
+:global .password-icon {
+  background: url(../assets/img/password-14-basic-200.svg) center no-repeat;
+  width: 14px;
+  height: 14px;
 }
 
 :global .active-account-icon {
@@ -175,4 +180,13 @@ $layout-24 = 24px;
 
 :global .inactive-account-icon {
   background: url(../assets/img/activeasset-18-basic-500.svg) center no-repeat;
+}
+
+// modal
+:global .modal {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }

@@ -3,7 +3,6 @@
 .avatar {
   display: inline-block;
   overflow: hidden;
-  margin: auto;
   cursor: pointer;
 
   img {
@@ -11,23 +10,19 @@
   }
 }
 
-.avatarList {
+.avatarList
   display: flex;
   width: 100%;
   justify-content space-between;
   align-items: center;
 
-  avatar {
-    .selected {
+  .avatar
+    border: 1px solid transparent;
+    padding: 4px;
+    width: 48px !important;
+    height: 48px !important;
+
+    &.selected
       background-color: rgba(31, 90, 246, 0.1);
       border-radius: 2px;
-      border: 1px solid transparent;
-
-      img {
-       border-radius: 50%;
-       border: 1px solid $submit400;
-       margin: 4px;
-      }
-    }
-  }
-}
+      border: 1px solid $submit400;

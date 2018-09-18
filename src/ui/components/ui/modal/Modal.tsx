@@ -9,7 +9,7 @@ const ModalWrapper = (props) => {
         return props.showModal ? props.children : null;
     }
 
-    const className = cn(styles.modal, {
+    const className = cn(styles.modal, 'modal', {
         [styles.hidden]: !props.showModal
     });
 

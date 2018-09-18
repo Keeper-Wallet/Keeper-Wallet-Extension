@@ -1,10 +1,10 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { WalletItem, ActiveWallet } from '../wallets';
-import { translate, Trans } from 'react-i18next';
-import { getBalances, selectAccount } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import {connect} from 'react-redux';
+import {WalletItem, ActiveWallet} from '../wallets';
+import {translate, Trans} from 'react-i18next';
+import {getBalances, selectAccount} from '../../actions';
+import {PAGES} from '../../pageConfig';
 
 @translate('extension')
 class AssetsComponent extends React.Component {
@@ -19,9 +19,9 @@ class AssetsComponent extends React.Component {
     };
 
 
-    render () {
+    render() {
 
-        const { address: selectedAddress} = this.props.selectedAccount;
+        const {address: selectedAddress} = this.props.selectedAccount;
         const activeProps = {
             account: this.props.selectedAccount,
             balance: this.props.balances[selectedAddress],
@@ -43,16 +43,9 @@ class AssetsComponent extends React.Component {
 
             <ActiveWallet {...activeProps}/>
 
-            <div className="flex margin4 body1">
-                <div>
-                    <div className="basic500 body3">
-                        <Trans i18nKey='assets.lastUpdate'>Last update:</Trans>
-                    </div>
-                    <div className="basic500 body3">time parser</div>
-                </div>
-                <div className={`basic500 border-dashed ${styles.addAccount}`} onClick={this.addWalletHandler}>
-                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
-                </div>
+            <div className={`margin4 body1 basic500 border-dashed ${styles.addAccount}`}
+                 onClick={this.addWalletHandler}>
+                <Trans i18nKey='assets.addAccount'>Add an account</Trans>
             </div>
 
             <div>
@@ -71,7 +64,7 @@ class AssetsComponent extends React.Component {
     }
 }
 
-const mapStateToProps = function(store: any) {
+const mapStateToProps = function (store: any) {
     return {
         selectedAccount: store.selectedAccount,
         accounts: store.accounts,

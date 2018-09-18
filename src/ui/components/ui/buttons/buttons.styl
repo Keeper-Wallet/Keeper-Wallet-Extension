@@ -58,7 +58,7 @@
     height: 32px;
     line-height: 32px;
     padding: 0 14px 0 40px;
-    box-shadow: 0 2px 4px 0 #9ba6b2 66;
+    box-shadow: 0 2px 4px 0 #9ba6b266;
     font-family: Roboto;
     font-weight: 400;
     width: auto;
@@ -67,7 +67,9 @@
     &:not(:last-child)
       margin-right: 14px;
 
-    &.disabled
+    &.disabled,
+    &:disabled,
+    &[disabled]
       background-color: transparent;
       border: 0.5px solid $basic200;
       box-shadow: none;

@@ -16,17 +16,20 @@ export class CopyText extends React.PureComponent {
     onCopyHandler = (event) => this._copyText(event);
 
     render() {
-        const iconClass = cn(styles.icon, {
-            [styles.key]: this.props.type === 'key'
+        const iconClass = cn(styles.firstIcon, {
+            'password-icon': this.props.type === 'key'
         });
+
+        const copyIcon = cn(styles.lastIcon, 'copy-icon');
+
         const toggleHandler = this.props.toggleText ? this.showTextHandler : null;
         const showText = this.props.toggleText ? this.state.showText : this.props.showText;
 
         return <div onClick={toggleHandler}>
            <div>
-               {this.props.type ? <div className={iconClass}>ICON</div> : null}
+               {this.props.type ? <div className={iconClass}></div> : null}
                <div>{showText ? this.props.text : DEFAULT_HIDDEN_CONTENT}</div>
-               {this.props.showCopy ? <div onClick={this.onCopyHandler}>Copy</div> : null}
+               {this.props.showCopy ? <div className={copyIcon} onClick={this.onCopyHandler}/> : null}
                {this.props.showConfirmed ? <div>Confirm</div> : null}
                {this.props.showNotAccess ? <div>N/A</div> : null}
            </div>

@@ -24,9 +24,9 @@ class AccountInfoComponent extends React.Component {
 
         return <div className={styles.content}>
 
-            <div className={`flex margin-main-big ${styles.accountDetails}`}>
-                <Avatar address={selectedAccount.address} size={48}/>
-                <div>
+            <div className={`flex margin-main-big ${styles.wallet}`}>
+                <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
+                <div className={styles.accountData}>
                     <div>
                         <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
                         <i className={styles.editIcon}></i>
@@ -37,7 +37,7 @@ class AccountInfoComponent extends React.Component {
 
 
             <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
-                <Button className={`disabled margin-main-big ${styles.activeAccount}`} type="interface">
+                <Button disabled={true} className={`margin-main-big ${styles.activeAccount}`} type="interface">
                     <Trans i18nKey='ur.activeNow'>Active</Trans>
                 </Button>
                 <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface">
@@ -51,7 +51,6 @@ class AccountInfoComponent extends React.Component {
                 </div>
                 <div className="input-like tag1">
                     <CopyText text={selectedAccount.address} showCopy={true} showText={true}/>
-                    <span className={`copy-icon ${styles.copyIcon}`}></span>
                 </div>
             </div>
 
@@ -61,7 +60,6 @@ class AccountInfoComponent extends React.Component {
                 </div>
                 <div className="input-like tag1">
                     <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true}/>
-                    <span className={`copy-icon ${styles.copyIcon}`}></span>
                 </div>
             </div>
 
@@ -69,9 +67,8 @@ class AccountInfoComponent extends React.Component {
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.privKey'>privKey</Trans>
                 </div>
-                <div className="input-like password-icon tag1">
-                    <CopyText getText={this.getPrivate} showCopy={true}/>
-                    <span className={`copy-icon ${styles.copyIcon}`}></span>
+                <div className="input-like password-input tag1">
+                    <CopyText type='key' getText={this.getPrivate} showCopy={true}/>
                 </div>
             </div>
 
@@ -79,14 +76,13 @@ class AccountInfoComponent extends React.Component {
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.backUp'>backUp</Trans>
                 </div>
-                <div className="input-like password-icon tag1">
-                    <CopyText getText={this.getSeed} showCopy={true}/>
-                    <span className={`copy-icon ${styles.copyIcon}`}></span>
+                <div className="input-like password-input tag1">
+                    <CopyText type='key' getText={this.getSeed} showCopy={true}/>
                 </div>
             </div>
 
             <Modal showModal={this.state.showPassword} showChildrenOnly={true}>
-                <div>
+                <div className="modal">
                     <Input onChange={this.inputPassword}/>
                     <Button onClick={this.confirmPassword}>Enter</Button>
                     <Button onClick={this.rejectPassword}>Cancel</Button>

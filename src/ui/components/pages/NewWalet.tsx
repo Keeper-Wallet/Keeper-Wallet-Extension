@@ -58,7 +58,7 @@ class NewWalletComponent extends React.Component {
             </div>
 
             <div className={`margin4 avatar-list`}>
-                <AvatarList size={48} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
+                <AvatarList size={38} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
             </div>
 
             <div className={`tag1 basic500 input-title`}>
