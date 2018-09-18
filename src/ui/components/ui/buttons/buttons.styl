@@ -26,25 +26,26 @@
         cursor: default;
         background-color: $disabled200;
 
-.submit
-    background-color: $submit400;
-    color: $white;
+    &.submit
+        background-color: $submit400;
+        color: $white;
 
-    &.disabled
-        background-color: $submit200;
-        cursor: default;
+        &.disabled
+            background-color: $submit200;
+            cursor: default;
 
-    &:hover
-        background: $submit300;
+        &:hover
+            background: $submit300;
 
-.transparent
-    background-color: transparent;
-
-    &.disabled
+    &.transparent
         background-color: transparent;
 
-    &:hover
-        background: transparent;
+        &.disabled
+            background-color: transparent;
 
-.warning
-    background-color: $error400;
+        &:hover
+            background: transparent;
+
+    &.warning
+        background-color: $error400;
+        color: $white;
