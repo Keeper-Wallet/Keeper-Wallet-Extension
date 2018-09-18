@@ -30,7 +30,7 @@ export const Menu = ({setTab, onBack, onDelete, ...props}: IProps) => {
     const leftClick = () => setTab(PAGES.SETTINGS);
     const rightClick = () => setTab(PAGES.INFO);
     const navBack = () => onBack();
-    const hasBack = props.back != null;
+    const hasBack = props.back;
     return (
         <div className={`${styles.menu}`}>
             <Logo {...props}/>
