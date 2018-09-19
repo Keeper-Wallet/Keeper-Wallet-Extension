@@ -1,7 +1,7 @@
 @import '../../../styles/colors.styl';
 
 .content
-  padding: 14px;
+  padding: 24px 14px 0;
   height: 100%;
   width: 100%;
   display: inline-block;
@@ -28,11 +28,20 @@
   margin: 0 14px 0 0;
 }
 
-.accountDetails {
+.wallet {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
   position: relative;
+}
+
+.accountData {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+
+  div {
+    flex-basis: 100%;
+  }
 }
 
 .buttonsWrapper {
@@ -48,11 +57,4 @@
 
 .showQrIcon {
   background: url(../../../assets/img/qr-14-basic-500.svg) 14px center no-repeat;
-}
-
-.copyIcon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translate(0, -50%);
 }
