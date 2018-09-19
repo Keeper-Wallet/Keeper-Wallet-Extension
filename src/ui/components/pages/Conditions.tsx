@@ -114,7 +114,7 @@ class ConditionsComponent extends React.Component {
                 </div>
             </div>
 
-            <Button onClick={this.onClick.bind(this)} type='submit' disabled={this.state.confirmDisabled}>
+            <Button className="centered" onClick={this.onClick.bind(this)} type='submit' disabled={this.state.confirmDisabled}>
                 <Trans className="text" i18nKey='conditions.accept'>Accept</Trans>
             </Button>
 
