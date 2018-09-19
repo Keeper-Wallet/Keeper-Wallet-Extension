@@ -49,10 +49,10 @@ class AssetsComponent extends React.Component {
             </div>
 
             <div>
-                <div className="basic500 margin1 body1">
+                <div className="basic500 body1">
                     <Trans i18nKey='assets.inStorage'>In storage</Trans>
                 </div>
-                <div>
+                <div className={styles.walletsList}>
                     {wallets}
                 </div>
             </div>

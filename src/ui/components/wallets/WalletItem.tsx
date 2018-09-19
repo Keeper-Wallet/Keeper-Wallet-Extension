@@ -29,7 +29,7 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
         </div>
 
         <div className={`body1 ${styles.accountData}`}>
-            <div className="basic500">
+            <div className={`basic500 ${styles.accountName}`}>
                 {account.name}
             </div>
             <div className={styles.balance}>
