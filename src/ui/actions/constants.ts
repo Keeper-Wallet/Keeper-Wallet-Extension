@@ -39,4 +39,9 @@ export const ACTION = {
     UPDATE_BALANCES: 'UPDATE_BALANCES',
     UPDATE_CURRENT_NETWORK: 'UPDATE_CURRENT_NETWORK',
     UPDATE_NETWORKS: 'UPDATE_NETWORKS',
+    UPDATE_ASSETS: 'UPDATE_ASSETS',
+    UPDATE_ASSET: 'UPDATE_ASSET',
+    GET_ASSETS: 'GET_ASSETS',
 };
+
+export const createAction = type => payload => ({ type, payload });

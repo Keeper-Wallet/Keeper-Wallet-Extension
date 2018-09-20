@@ -4,6 +4,9 @@ import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, CopyText, Modal, Input, Button } from '../ui';
 import background from '../../services/Background';
+import { getAsset } from '../../actions';
+import { Money, Asset } from '@waves/data-entities';
+import { Balance } from '../ui/Balance';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -18,7 +21,6 @@ class AccountInfoComponent extends React.Component {
     inputPassword = (event) => this.setState({ password: event.target.value });
 
     render() {
-
         const {selectedAccount} = this.props;
         const balance = this.props.balances[selectedAccount.address];
 
@@ -29,9 +31,11 @@ class AccountInfoComponent extends React.Component {
                 <div className={styles.accountData}>
                     <div>
                         <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
-                        <i className={styles.editIcon}></i>
+                        <Button type='transparent' className={styles.editIconBtn}>
+                            <i className={styles.editIcon}></i>
+                        </Button>
                     </div>
-                    <div className={`headline1 ${styles.balance}`}>{balance} Waves</div>
+                    <div className={`headline1 ${styles.balance}`}><Balance balance={this.state.balance}/></div>
                 </div>
             </div>
 
@@ -111,14 +115,30 @@ class AccountInfoComponent extends React.Component {
             });
     }
 
+    static getDerivedStateFromProps(props, state) {
+        const { selectedAccount, assets } = props;
+        const asset = assets['WAVES'];
 
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balance: null };
+        }
+
+        const balance = new Money(props.balances[selectedAccount.address] || 0, new Asset(asset));
+        return { balance };
+    }
 }
 
 const mapStateToProps = function (store: any) {
     return {
         selectedAccount: store.selectedAccount,
         balances: store.balances,
+        assets: store.assets,
     };
 };
 
-export const AccountInfo = connect(mapStateToProps)(AccountInfoComponent);
+const actions = {
+    getAsset
+};
+
+export const AccountInfo = connect(mapStateToProps, actions)(AccountInfoComponent);

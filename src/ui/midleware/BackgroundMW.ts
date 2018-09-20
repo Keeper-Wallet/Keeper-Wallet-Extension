@@ -2,7 +2,7 @@ import { ACTION } from '../actions/constants';
 import { config } from '@waves/signature-generator';
 import background from '../services/Background';
 import { i18n } from '../i18n';
-import { setTab } from '../actions';
+import { setTab, updateAsset } from '../actions';
 import { PAGES } from '../pageConfig';
 
 export const changeLang = store => next => action => {
@@ -56,7 +56,7 @@ export const uiState = store => next => action => {
         );
         store.dispatch({
             type: ACTION.UPDATE_UI_STATE,
-            payload: uiState
+            payload: newState
         });
 
         return setTab(action.payload.tab);
@@ -69,6 +69,19 @@ export const changeNetwork = store => next => action => {
     if (action.type === ACTION.CHANGE_NETWORK) {
         background.setNetwork(action.payload).then(
             () => setTab(PAGES.ROOT)
+        );
+        return null;
+    }
+
+    return next(action);
+};
+
+export const getAsset = store => next => action => {
+    if (action.type === ACTION.GET_ASSETS) {
+        background.assetInfo(action.payload).then(
+            (data) => {
+                store.dispatch(updateAsset({[data.id]: data}))
+            }
         );
         return null;
     }

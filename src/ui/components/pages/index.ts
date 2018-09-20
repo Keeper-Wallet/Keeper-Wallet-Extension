@@ -1,6 +1,7 @@
 export * from  './Conditions';
 export * from  './NewWalet';
 export * from  './NewWalletName';
+export * from  './ChangeName';
 export * from  './BackupSeed';
 export * from  './ConfirmBackup';
 export * from  './Import';
