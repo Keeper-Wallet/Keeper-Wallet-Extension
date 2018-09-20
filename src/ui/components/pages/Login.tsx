@@ -1,10 +1,10 @@
 import * as styles from './styles/login.styl';
 import * as React from 'react'
-import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { BigLogo } from '../head';
+import {connect} from 'react-redux';
+import {translate, Trans} from 'react-i18next';
+import {BigLogo} from '../head';
 import {Button, Input, Error} from '../ui';
-import { login } from '../../actions';
+import {login} from '../../actions';
 
 @translate('extension')
 class LoginComponent extends React.Component {
@@ -15,53 +15,53 @@ class LoginComponent extends React.Component {
         password: ''
     };
 
-    props: { login: (password) => void; error: any, pending: boolean};
+    props: { login: (password) => void; error: any, pending: boolean };
 
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
     onSubmit = () => this._onSubmit();
     getRef = input => this.inputEl = input;
 
-    componentDidMount(){
+    componentDidMount() {
         this.inputEl.focus();
     }
 
-    render () {
-        return <div className={styles.login}>
-            <div className={`content`}>
-                <div className={`logoMargin`}>
-                    <BigLogo/>
+    render() {
+        return <div className={styles.content}>
+            <div className={styles.logoMargin}>
+                <BigLogo/>
+            </div>
+            <form onSubmit={this.onSubmit}>
+                <div className={`left input-title basic500 tag1`}>
+                    <Trans i18nKey="login.password">Password</Trans>
                 </div>
-                <form onSubmit={this.onSubmit}>
-                    <div className={`left label tag1`}>
-                        <Trans i18nKey="login.password">Password</Trans>
-                    </div>
-                    <div className={`margin3`}>
-                        <Input type="password"
-                               ref={this.getRef}
-                               onChange={this.onChange}
-                               error={this.state.passwordError}
-                        />
-                    </div>
-                    <div>
-                        <Button type='submit'
-                                disabled={!this.state.password}>
-                            <Trans i18nKey="login.enter">Enter</Trans>
-                        </Button>
-                    </div>
-                </form>
-                <div>
-                    <Error hide={!this.state.passwordError}>
-                        <Trans i18nkey='login.wrongPassword'>Wrong password</Trans>
-                    </Error>
+                <div className={`margin3`}>
+                    <Input type="password"
+                           ref={this.getRef}
+                           onChange={this.onChange}
+                           error={this.state.passwordError}
+                    />
                 </div>
+                <Button type='submit'
+                        className="margin4"
+                        disabled={!this.state.password}>
+                    <Trans i18nKey="login.enter">Enter</Trans>
+                </Button>
+            </form>
+            <Error hide={!this.state.passwordError}>
+                <Trans i18nKey="login.password">Wrong password</Trans>
+            </Error>
+            <div>
+                <a href="#" className={`${styles.forgotLnk} link`}>
+                    <Trans i18nKey="login.passwordforgot">I forgot password</Trans>
+                </a>
             </div>
         </div>
     }
 
     _onChange(e) {
         const password = e.target.value;
-        this.setState({ password, passwordError: false });
+        this.setState({password, passwordError: false});
     }
 
     _onSubmit() {
@@ -69,11 +69,11 @@ class LoginComponent extends React.Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { passwordError } = state;
-        const { error } = props;
+        const {passwordError} = state;
+        const {error} = props;
 
         if (!passwordError && !!error) {
-            return { ...state, passwordError: true };
+            return {...state, passwordError: true};
         }
 
         return null;
@@ -84,7 +84,7 @@ const actions = {
     login
 };
 
-const mapStateToProps = function({ localState }) {
+const mapStateToProps = function ({localState}) {
     return {
         ...localState.login
     };

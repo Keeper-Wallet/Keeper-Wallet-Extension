@@ -1,29 +1,25 @@
-.import {
-  width: 100%;
+@import '../../../styles/colors.styl';
+
+.content {
+  height: 100%;
+  margin: 0 60px 0 60px;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .logoMargin {
-  margin-top: 100px;
+  margin-top: 164px;
   margin-bottom: 44px;
-}
-
-.forgotPasswordLink {
-
 }
 
 .label {
   margin-bottom: 7px;
 }
 
-.content
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
-  display: inline-block;
-  height: 60%;
-  width: 240px;
-  margin: auto;
+.forgotLnk {
+  background: url(../../../assets/img/arrow-left-14-basic-200.svg) right center no-repeat;
+  padding-right: 22px;
+  float: right;
+  color: $black;
+}

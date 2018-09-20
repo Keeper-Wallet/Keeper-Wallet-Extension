@@ -49,7 +49,8 @@ class AccountInfoComponent extends React.Component {
                         disabled={isActive} 
                         className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
                         type="interface">
-                    <Trans i18nKey='ur.activeNow'>Active now</Trans>
+                    {isActive ? <Trans i18nKey='ur.activeNow'>Active now</Trans> :
+                    <Trans i18nKey='ur.unactive'>Make active</Trans>}
                 </Button>
                 <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface">
                     <Trans i18nKey='ui.showQR'>Show QR</Trans>

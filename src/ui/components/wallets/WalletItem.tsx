@@ -42,7 +42,7 @@ export const WalletItem = ({
                 {account.name}
             </div>
             <div className={styles.balance}>
-                <Balance isShortFormat={false} showAsset={true} balance={balance}/>
+                <Balance isShortFormat={false} split={true} showAsset={true} balance={balance}/>
             </div>
         </div>
 
