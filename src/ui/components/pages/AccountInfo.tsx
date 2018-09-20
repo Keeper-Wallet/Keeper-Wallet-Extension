@@ -7,6 +7,7 @@ import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { Balance } from '../ui/balance/Balance';
+import { number } from 'prop-types';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -122,16 +123,22 @@ class AccountInfoComponent extends React.Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { selectedAccount, assets } = props;
+        const { selectedAccount, assets, balances } = props;
         const asset = assets['WAVES'];
 
         if (!asset) {
             props.getAsset('WAVES');
             return { balance: null };
         }
+        const assetInstance = new Asset(asset);
+        const balancesMoney = {};
 
-        const balance = new Money(props.balances[selectedAccount.address] || 0, new Asset(asset));
-        return { balance };
+        Object.entries(props.balances)
+            .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
+
+
+        const balance = balancesMoney[selectedAccount.address];
+        return { balance, balances: balancesMoney };
     }
 }
 

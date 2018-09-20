@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
+import { Balance } from '../ui';
 import * as styles from './wallet.styl';
 
 
@@ -41,7 +42,7 @@ export const WalletItem = ({
                 {account.name}
             </div>
             <div className={styles.balance}>
-                {balance} Waves
+                <Balance isShortFormat={false} showAsset={true} balance={balance}/>
             </div>
         </div>
 
