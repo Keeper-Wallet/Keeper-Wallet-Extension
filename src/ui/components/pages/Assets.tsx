@@ -3,13 +3,15 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {WalletItem, ActiveWallet} from '../wallets';
 import {translate, Trans} from 'react-i18next';
-import { getBalances, selectAccount, setActiveAccount } from '../../actions';
+import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../actions';
 import {PAGES} from '../../pageConfig';
+import { Asset, Money } from '@waves/data-entities';
 
 @translate('extension')
 class AssetsComponent extends React.Component {
 
     props;
+    state = {} as any;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     getBalancesHandler = () => this.props.getBalances();
     onSelectHandler = account => this.props.setActiveAccount(account);
@@ -20,13 +22,12 @@ class AssetsComponent extends React.Component {
     };
     
     render() {
-
         const {address: activeAddress} = this.props.activeAccount;
         const {address: selectedAddress} = this.props.selectedAccount;
 
         const activeProps = {
             account: this.props.selectedAccount,
-            balance: this.props.balances[selectedAddress],
+            balance: this.state.balances[selectedAddress],
             onClick: () => this.props.setTab(PAGES.ACCOUNT_INFO),
             onShowQr: this.showQrHandler,
             active: activeAddress === selectedAddress,
@@ -38,7 +39,7 @@ class AssetsComponent extends React.Component {
                 <WalletItem
                     account={account}
                     active={activeAddress === account.address}
-                    balance={this.getBalance(account.address)}
+                    balance={this.state.balances[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}/>)
             );
@@ -63,8 +64,20 @@ class AssetsComponent extends React.Component {
         </div>
     }
 
-    getBalance(address) {
-        return this.props.balances[address];
+    static getDerivedStateFromProps(props, state) {
+        const asset = props.assets['WAVES'];
+
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balances: {} };
+        }
+        
+        const assetInstance = new Asset(asset);
+        const balancesMoney = {};
+        Object.entries(props.balances)
+            .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
+
+        return { balances: balancesMoney };
     }
 }
 
@@ -73,11 +86,13 @@ const mapStateToProps = function (store: any) {
         activeAccount: store.selectedAccount,
         accounts: store.accounts,
         balances: store.balances,
-        selectedAccount: store.localState.assets.account || store.selectedAccount
+        selectedAccount: store.localState.assets.account || store.selectedAccount,
+        assets: store.assets,
     };
 };
 
 const actions = {
+    getAsset,
     getBalances,
     selectAccount,
     setActiveAccount
