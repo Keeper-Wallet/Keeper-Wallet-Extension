@@ -37,7 +37,7 @@ class AccountInfoComponent extends React.Component {
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>
-                    <div className={`headline1 marginTop1 ${styles.balance}`}><Balance balance={this.state.balance}/></div>
+                    <div className={`headline1 marginTop1 ${styles.balance}`}><Balance showAsset={true} balance={this.state.balance}/></div>
                 </div>
             </div>
 
