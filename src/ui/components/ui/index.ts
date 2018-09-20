@@ -6,4 +6,5 @@ export * from './balance/Balance';
 export * from './copy';
 export * from './pills';
 export * from './modal/Modal';
-export {default as Loader} from './loader';
+export * from './qRCode/QrCode';
+export * from './loader';

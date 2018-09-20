@@ -2,11 +2,10 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
-import { Avatar, CopyText, Modal, Input, Button } from '../ui';
+import { Avatar, CopyText, Modal, Input, Button, Balance } from '../ui';
 import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
-import { Balance } from '../ui/balance/Balance';
 import { PAGES } from '../../pageConfig';
 
 @translate('extension')

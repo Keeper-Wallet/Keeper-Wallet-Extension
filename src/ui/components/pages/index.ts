@@ -14,3 +14,4 @@ export * from  './NewAccount';
 export * from  './Settings';
 export * from  './Sign';
 export * from  './Assets';
+export * from  './SelectedAccountQr';

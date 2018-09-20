@@ -45,6 +45,7 @@
     "parse-json-bignumber": "^0.1.1",
     "post-message-stream": "^3.0.0",
     "pump": "^3.0.0",
+    "qrcode": "^1.2.2",
     "react": "^16.4.2",
     "react-addons-css-transition-group": "^15.6.2",
     "react-addons-transition-group": "^15.6.2",
