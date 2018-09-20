@@ -5,7 +5,15 @@ import cn from 'classnames';
 import * as styles from './wallet.styl';
 
 
-export const WalletItem = ({className='', onSelect=null, account=null, active=false, balance=null, children=[], ...props}) => {
+export const WalletItem = ({
+        className = '',
+        onSelect = null,
+        account = null,
+        active = false,
+        balance = null,
+        children = [],
+        ...props
+    }) => {
 
     className = cn(styles.wallet, className, {[styles.activeWallet]: active});
 

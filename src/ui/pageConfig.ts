@@ -13,6 +13,7 @@ import {
     Info,
     AccountInfo,
     DeleteActiveAccount,
+    ChangeAccountName,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -23,20 +24,21 @@ export const PAGES = {
     LOGIN: 'login',
     NEW: 'new',
     IMPORT: 'import',
-    IMPORT_FROM_ASSETS: 'importAndBackToAssets',
+    IMPORT_FROM_ASSETS: 'import_and_back_to_assets',
     NEW_ACCOUNT: 'new_account',
     NEW_ACCOUNT_BACK: 'new_account_back',
-    ACCOUNT_NAME: 'accountName',
-    ACCOUNT_NAME_SEED: 'accountNameSeed',
-    SAVE_BACKUP: 'safeBackup',
-    CONFIRM_BACKUP: 'confirmBackup',
+    ACCOUNT_NAME: 'account_name',
+    ACCOUNT_NAME_SEED: 'account_name_seed',
+    SAVE_BACKUP: 'safe_backup',
+    CONFIRM_BACKUP: 'confirm_backup',
     IMPORT_SEED: 'import_seed',
     IMPORT_SEED_BACK: 'import_seed_back',
     ASSETS: 'assets',
     SETTINGS: 'settings',
     INFO: 'info',
-    ACCOUNT_INFO: 'accountInfo',
-    DELETE_ACTIVE_ACCOUNT: 'deleteActiveAccount',
+    ACCOUNT_INFO: 'account_info',
+    DELETE_ACTIVE_ACCOUNT: 'delete_active_account',
+    CHANGE_ACCOUNT_NAME: 'change_account_name',
     QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     ROOT: '',
@@ -136,6 +138,19 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.IMPORT_SEED_BACK,
+        }
+    },
+    [PAGES.CHANGE_ACCOUNT_NAME]: {
+        component: ChangeAccountName,
+        props: {
+        },
+        bottom: {
+            noChangeNetwork: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
         }
     },
     [PAGES.SAVE_BACKUP]: {

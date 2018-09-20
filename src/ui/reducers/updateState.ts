@@ -1,4 +1,5 @@
 import { ACTION } from '../actions/constants';
+import { string } from 'prop-types';
 export * from './localState';
 
 const MAX_HISTORY = 10;
@@ -25,6 +26,16 @@ export const selectedAccount = (store = {}, action: any) => {
 
 export const networks = (store = [], action: any) => {
     return action.type === ACTION.UPDATE_NETWORKS ? action.payload : store;
+};
+
+export const assets = (store = {}, action: any) => {
+    const isMy = [ACTION.UPDATE_ASSETS, ACTION.UPDATE_ASSET].includes(action.type);
+
+    if (!isMy) {
+        return store;
+    }
+
+    return { ...store, ...action.payload };
 };
 
 export const currentNetwork = (store = '', action: any) => {

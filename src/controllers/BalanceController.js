@@ -1,7 +1,6 @@
 import ObservableStore from 'obs-store';
-import EventEmitter from 'events';
-import { libs, utils, TX_TYPE_MAP } from '@waves/signature-generator';
 import {addressFromPublicKey} from '../lib/cryptoUtil'
+import {NETWORK_CONFIG} from "../constants";
 
 export class BalanceController {
     constructor(options = {}){
@@ -12,6 +11,7 @@ export class BalanceController {
 
         this.getAccounts = options.getAccounts;
         this.getNetwork = options.getNetwork;
+        this.getCustomNodes = options.getCustomNodes
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
         this.poller = undefined;
 
@@ -28,10 +28,10 @@ export class BalanceController {
         const accounts = this.getAccounts();
         if (accounts.length < 1) return;
         const network = this.getNetwork();
-        const urlBase = URL_MAP[network];
+        const API_BASE = this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server
         let balances = await Promise.all(accounts.map(async account => {
             const address = addressFromPublicKey(account.publicKey, network);
-            const url = `${urlBase}addresses/balance/${address}`;
+            const url = new URL(`addresses/balance/${address}`, API_BASE).toString()
             try {
                 return await fetch(url).then(resp => resp.json())
             }catch (e) {
@@ -45,10 +45,4 @@ export class BalanceController {
         const oldBalances = this.store.getState().balances;
         this.store.updateState({balances: Object.assign({}, oldBalances, balances)})
     }
-}
-
-
-const URL_MAP = {
-    testnet: 'https://testnet1.wavesnodes.com/',
-    mainnet: 'https://nodes.wavesplatform.com/'
 }

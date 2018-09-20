@@ -6,6 +6,7 @@ import { Seed } from '@waves/signature-generator';
 import { newAccountSelect } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
+import { PAGES } from '../../pageConfig';
 
 @translate('extension')
 class ImportSeedComponent extends React.Component {
@@ -71,7 +72,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _onSubmit() {
-        this.props.setTab('accountNameSeed');
+        this.props.setTab(PAGES.ACCOUNT_NAME_SEED);
     }
 
     _validate(value = '') {

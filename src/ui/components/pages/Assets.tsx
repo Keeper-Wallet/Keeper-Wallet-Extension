@@ -3,7 +3,7 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {WalletItem, ActiveWallet} from '../wallets';
 import {translate, Trans} from 'react-i18next';
-import {getBalances, selectAccount} from '../../actions';
+import { getBalances, selectAccount, setActiveAccount } from '../../actions';
 import {PAGES} from '../../pageConfig';
 
 @translate('extension')
@@ -12,21 +12,24 @@ class AssetsComponent extends React.Component {
     props;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     getBalancesHandler = () => this.props.getBalances();
-    onSelectHandler = account => this.props.selectAccount(account);
+    onSelectHandler = account => this.props.setActiveAccount(account);
+    onSetActiveHandler = account => this.props.selectAccount(account);
     showQrHandler = (event) => {
         event.stopPropagation();
         this.props.setTab(PAGES.QR_CODE_SELECTED);
     };
-
-
+    
     render() {
 
+        const {address: activeAddress} = this.props.activeAccount;
         const {address: selectedAddress} = this.props.selectedAccount;
+
         const activeProps = {
             account: this.props.selectedAccount,
             balance: this.props.balances[selectedAddress],
             onClick: () => this.props.setTab(PAGES.ACCOUNT_INFO),
-            onShowQr: this.showQrHandler
+            onShowQr: this.showQrHandler,
+            active: activeAddress === selectedAddress,
         };
 
         const wallets = this.props.accounts
@@ -34,6 +37,7 @@ class AssetsComponent extends React.Component {
             .map((account) => (
                 <WalletItem
                     account={account}
+                    active={activeAddress === account.address}
                     balance={this.getBalance(account.address)}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}/>)
@@ -66,15 +70,17 @@ class AssetsComponent extends React.Component {
 
 const mapStateToProps = function (store: any) {
     return {
-        selectedAccount: store.selectedAccount,
+        activeAccount: store.selectedAccount,
         accounts: store.accounts,
         balances: store.balances,
+        selectedAccount: store.localState.assets.account || store.selectedAccount
     };
 };
 
 const actions = {
     getBalances,
     selectAccount,
+    setActiveAccount
 };
 
 export const Assets = connect(mapStateToProps, actions)(AssetsComponent);

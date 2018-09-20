@@ -5,6 +5,7 @@ class Background {
     initPromise: Promise<void>;
     onUpdateCb: Array<(state) => void> = [];
     _defer;
+    _assetsPromise;
 
     constructor() {
         this._defer = {};
@@ -119,7 +120,10 @@ class Background {
 
     async assetInfo(assetId: string): Promise<any> {
         await this.initPromise;
-        return this.background.assetInfo(assetId);
+        this._assetsPromise = this._assetsPromise || this.background.assetInfo(assetId);
+        const data = await this._assetsPromise;
+        this._assetsPromise = null;
+        return data;
     }
 
     async getUserList(type: string, from: number, to: number): Promise<any> {

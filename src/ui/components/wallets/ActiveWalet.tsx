@@ -5,9 +5,9 @@ import * as styles from './wallet.styl';
 import { WalletItem } from './';
 import cn from 'classnames';
 
-export function ActiveWallet({className = '', onShowQr=null, account, balance, ...props}) {
+export function ActiveWallet({className = '', onShowQr = null, active, account, balance, ...props}) {
 
-    className = cn(styles.activeWallet, className);
+    className = cn(styles.activeWallet, className, { [styles.activeWalletSelected]: active });
 
     if (!account) {
         return null;
@@ -15,9 +15,9 @@ export function ActiveWallet({className = '', onShowQr=null, account, balance, .
 
     const walletItemProps = {
         className: 'center',
-        active: true,
         account,
         balance,
+        active
     };
 
     return <div className={className} {...props}>

@@ -12,6 +12,15 @@ function newUser(state = {}, action) {
     return state;
 }
 
+function assets(state = {}, action) {
+    switch (action.type) {
+        case ACTION.SET_ACTIVE_ACCOUNT:
+            return {...state, account: action.payload };
+    }
+
+    return state;
+}
+
 function login(state = {}, action) {
     switch (action.type) {
         case ACTION.LOGIN_UPDATE:
@@ -57,4 +66,5 @@ export const localState = combineReducers({
     newAccount,
     addNewAccount,
     menu,
+    assets,
 });

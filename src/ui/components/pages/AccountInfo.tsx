@@ -4,6 +4,9 @@ import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, CopyText, Modal, Input, Button } from '../ui';
 import background from '../../services/Background';
+import { getAsset, selectAccount } from '../../actions';
+import { Money, Asset } from '@waves/data-entities';
+import { Balance } from '../ui/Balance';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -16,11 +19,12 @@ class AccountInfoComponent extends React.Component {
     confirmPassword = () => this.deffer.resolve(this.state.password);
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value });
+    setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
 
     render() {
+        const { selectedAccount, activeAccount } = this.props;
+        const isActive = selectedAccount.address === activeAccount.address;
 
-        const {selectedAccount} = this.props;
-        const balance = this.props.balances[selectedAccount.address];
 
         return <div className={styles.content}>
 
@@ -29,15 +33,19 @@ class AccountInfoComponent extends React.Component {
                 <div className={styles.accountData}>
                     <div>
                         <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
-                        <i className={styles.editIcon}></i>
+                        <Button type='transparent' className={styles.editIconBtn}>
+                            <i className={styles.editIcon}></i>
+                        </Button>
                     </div>
-                    <div className={`headline1 marginTop1 ${styles.balance}`}>{balance} Waves</div>
+                    <div className={`headline1 marginTop1 ${styles.balance}`}><Balance balance={this.state.balance}/></div>
                 </div>
             </div>
 
             <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
-                {/* todo @vba / add IF for this button - active now (disabled) or activate onClick (enabled) */}
-                <Button disabled={true} className={`margin-main-big ${styles.activeAccount}`} type="interface">
+                <Button onClick={this.setActiveAccount}
+                        disabled={isActive} 
+                        className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
+                        type="interface">
                     <Trans i18nKey='ur.activeNow'>Active now</Trans>
                 </Button>
                 <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface">
@@ -111,14 +119,32 @@ class AccountInfoComponent extends React.Component {
             });
     }
 
+    static getDerivedStateFromProps(props, state) {
+        const { selectedAccount, assets } = props;
+        const asset = assets['WAVES'];
 
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balance: null };
+        }
+
+        const balance = new Money(props.balances[selectedAccount.address] || 0, new Asset(asset));
+        return { balance };
+    }
 }
 
 const mapStateToProps = function (store: any) {
     return {
-        selectedAccount: store.selectedAccount,
+        selectedAccount: store.localState.assets.account || store.selectedAccount,
+        activeAccount: store.selectedAccount,
         balances: store.balances,
+        assets: store.assets,
     };
 };
 
-export const AccountInfo = connect(mapStateToProps)(AccountInfoComponent);
+const actions = {
+    getAsset,
+    selectAccount
+};
+
+export const AccountInfo = connect(mapStateToProps, actions)(AccountInfoComponent);
