@@ -6,7 +6,7 @@ import { Avatar, CopyText, Modal, Input, Button } from '../ui';
 import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
-import { Balance } from '../ui/Balance';
+import { Balance } from '../ui/balance/Balance';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -37,7 +37,9 @@ class AccountInfoComponent extends React.Component {
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>
-                    <div className={`headline1 marginTop1 ${styles.balance}`}><Balance showAsset={true} balance={this.state.balance}/></div>
+                    <div className={`headline1 marginTop1 ${styles.balance}`}>
+                        <Balance split={true} showAsset={true} balance={this.state.balance}/>
+                    </div>
                 </div>
             </div>
 

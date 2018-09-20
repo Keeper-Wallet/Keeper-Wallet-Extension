@@ -1,6 +1,7 @@
 import * as React from 'react';
 import cn from 'classnames';
 import { Money } from '@waves/data-entities';
+import * as styles from './balance.styl';
 
 const SEPARATOR = '.';
 
@@ -18,10 +19,10 @@ export const Balance = ({ balance, split, showAsset, isShortFormat, children, ..
     }
 
     return <div {...props}>
-        <span>{tokens[0]}</span>
+        <span className="font600">{tokens[0]}</span>
         {SEPARATOR}
         <span>{tokens[1]}</span>
-        {assetName}
+        <span className={styles.assetNameMargin}>{assetName}</span>
         {children}
         </div>;
 };
