@@ -132,6 +132,7 @@ class BackgroundService extends EventEmitter {
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getCustomNodes: this.networkController.getCustomNodes.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -203,6 +204,7 @@ class BackgroundService extends EventEmitter {
             // network
             setNetwork: async (network) => this.networkController.setNetwork(network),
             getNetworks: async () => this.networkController.getNetworks(),
+            setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
 
             // external devices
             getUserList: async (type, from, to) => await ExternalDeviceController.getUserList(type, from, to),
