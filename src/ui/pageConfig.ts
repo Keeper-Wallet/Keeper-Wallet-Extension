@@ -38,7 +38,7 @@ export const PAGES = {
     INFO: 'info',
     ACCOUNT_INFO: 'account_info',
     DELETE_ACTIVE_ACCOUNT: 'delete_active_account',
-    CHANGE_ACCOUNT_NAME: 'chnage_account_name',
+    CHANGE_ACCOUNT_NAME: 'change_account_name',
     QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     ROOT: '',

@@ -80,7 +80,7 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSubmit() {
-        this.props.setTab('accountName');
+        this.props.setTab(PAGES.ACCOUNT_NAME);
     }
 }
 

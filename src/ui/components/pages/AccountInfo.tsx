@@ -4,7 +4,7 @@ import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, CopyText, Modal, Input, Button } from '../ui';
 import background from '../../services/Background';
-import { getAsset } from '../../actions';
+import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { Balance } from '../ui/Balance';
 
@@ -19,10 +19,12 @@ class AccountInfoComponent extends React.Component {
     confirmPassword = () => this.deffer.resolve(this.state.password);
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value });
+    setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
 
     render() {
-        const {selectedAccount} = this.props;
-        const balance = this.props.balances[selectedAccount.address];
+        const { selectedAccount, activeAccount } = this.props;
+        const isActive = selectedAccount.address === activeAccount.address;
+
 
         return <div className={styles.content}>
 
@@ -35,14 +37,16 @@ class AccountInfoComponent extends React.Component {
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>
-                    <div className={`headline1 ${styles.balance}`}><Balance balance={this.state.balance}/></div>
+                    <div className={`headline1 marginTop1 ${styles.balance}`}><Balance balance={this.state.balance}/></div>
                 </div>
             </div>
 
-
             <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
-                <Button disabled={true} className={`margin-main-big ${styles.activeAccount}`} type="interface">
-                    <Trans i18nKey='ur.activeNow'>Active</Trans>
+                <Button onClick={this.setActiveAccount}
+                        disabled={isActive} 
+                        className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
+                        type="interface">
+                    <Trans i18nKey='ur.activeNow'>Active now</Trans>
                 </Button>
                 <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface">
                     <Trans i18nKey='ui.showQR'>Show QR</Trans>
@@ -51,7 +55,7 @@ class AccountInfoComponent extends React.Component {
 
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
-                    <Trans i18nKey='accountInfo.address'>Address</Trans>
+                    <Trans i18nKey='accountInfo.address'>Your address</Trans>
                 </div>
                 <div className="input-like tag1">
                     <CopyText text={selectedAccount.address} showCopy={true} showText={true}/>
@@ -60,7 +64,7 @@ class AccountInfoComponent extends React.Component {
 
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
-                    <Trans i18nKey='accountInfo.pubKey'>pubKey</Trans>
+                    <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
                 <div className="input-like tag1">
                     <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true}/>
@@ -69,7 +73,7 @@ class AccountInfoComponent extends React.Component {
 
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
-                    <Trans i18nKey='accountInfo.privKey'>privKey</Trans>
+                    <Trans i18nKey='accountInfo.privKey'>Private key</Trans>
                 </div>
                 <div className="input-like password-input tag1">
                     <CopyText type='key' getText={this.getPrivate} showCopy={true}/>
@@ -78,7 +82,7 @@ class AccountInfoComponent extends React.Component {
 
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
-                    <Trans i18nKey='accountInfo.backUp'>backUp</Trans>
+                    <Trans i18nKey='accountInfo.backUp'>Backup phrase</Trans>
                 </div>
                 <div className="input-like password-input tag1">
                     <CopyText type='key' getText={this.getSeed} showCopy={true}/>
@@ -131,14 +135,16 @@ class AccountInfoComponent extends React.Component {
 
 const mapStateToProps = function (store: any) {
     return {
-        selectedAccount: store.selectedAccount,
+        selectedAccount: store.localState.assets.account || store.selectedAccount,
+        activeAccount: store.selectedAccount,
         balances: store.balances,
         assets: store.assets,
     };
 };
 
 const actions = {
-    getAsset
+    getAsset,
+    selectAccount
 };
 
 export const AccountInfo = connect(mapStateToProps, actions)(AccountInfoComponent);

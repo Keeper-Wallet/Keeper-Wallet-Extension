@@ -20,6 +20,10 @@
   position: relative;
   font-weight: 300;
 
+ul
+  list-style-type: none;
+  padding: 0;
+
 // align
 :global #app-content,
 :global .app
@@ -80,10 +84,19 @@
 :global .tag1
   font-size: 11px;
 
+:global .link
+  text-decoration: underline;
+  font-weight: 400;
+  &:hover
+    text-decoration: none;
+
 // layout
 $layout-10 = 10px;
 $layout-14 = 14px;
 $layout-24 = 24px;
+
+:global .centered
+  margin: 0 auto;
 
 :global .margin-main
   margin-bottom: $layout-14;

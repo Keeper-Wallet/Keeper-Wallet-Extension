@@ -1,12 +1,52 @@
 @import '../../styles/colors.styl';
 
-.content {
+.content
   padding: 14px;
-}
 
 .activeWallet
   width: 100%;
   margin-bottom: 24px;
+
+  .wallet
+    height: 112px;
+
+    .controls
+      width: 100%;
+      margin-top: 18px;
+      position: relative;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      border-color: transparent;
+
+      div
+        padding: 0 8px 0 28px;
+        background-color: $basic50;
+        border: 0.5px solid  $basic100;
+        height: 26px;
+        border-radius: 2px;
+        margin-right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+
+        &:last-child
+          position: absolute;
+          padding: 0;
+          right: 0;
+          bottom: 0;
+          width: 30px;
+          height: 26px;
+          background-color: transparent;
+          border-color: transparent;
+          margin-right: 0;
+
+
+.activeWalletSelected
+
+  &.activeAccountHeader
+    width: auto;
 
 .wallet
   width: 100%;
@@ -20,10 +60,21 @@
   z-index: 1;
   margin-bottom: 8px;
   cursor: pointer;
+  height: 64px;
 
-  &.active
-    height: 112px;
-    cursor: pointer;
+  .controls
+    margin-top: 0;
+    position: absolute;
+    bottom: 18px;
+    right: 14px;
+    border: 1px dashed $basic200;
+    display: block;
+    border-radius: 2px;
+
+    div {
+      padding: 0;
+      border: 0 none;
+    }
 
 .accountIcon
   width: 28px;
@@ -38,78 +89,43 @@
 .title
   color: $disabled200;
 
-.activeAccountHeader {
+.activeAccountHeader
   color: $white;
   margin: 0 0 8px 0;
   position: relative;
   z-index: 1;
-}
 
-.inner {
+.inner
   flex-wrap: wrap;
-}
 
-.avatar {
+.avatar
   width: 40px;
+  height: 40px;
   margin-right: 14px;
-  & > div {
+  & > div
     border: 0 none;
-  }
 
-  img {
+  img
     width: 40px !important;
     height: 40px !important;
     margin: 0;
 
-  }
-}
-
-.accountData {
+.accountData
   flex-grow: 1;
   text-align: left;
 
-  div {
+  .accountName
     height: 24px;
-  }
-}
 
-.controls {
-  flex-basis: 100%;
-  display: flex;
-  position: relative;
-  margin-top: 18px;
+  div
+    height: 16px;
 
-  div {
-    background-color: $basic50;
-    border: 0.5px solid  $basic100;
-    padding: 0 8px 0 28px;
-    height: 26px;
-    border-radius: 2px;
-    margin-right: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: normal;
-
-    &:last-child {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 26px;
-      height: 26px;
-      border: 0 none;
-      background: none transparent;
-      margin-right: 0;
-    }
-  }
-}
-
-.showQrIcon {
+.showQrIcon
   background: url(../../assets/img/qr-14-black.svg) 8px 5px no-repeat;
-}
 
-.copyIconBlack {
+
+.copyIconBlack
   display: block;
   cursor: pointer;
   background: url(../../assets/img/copy-14-black.svg) 8px 5px no-repeat $basic50;
-}
+

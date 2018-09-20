@@ -5,7 +5,15 @@ import cn from 'classnames';
 import * as styles from './wallet.styl';
 
 
-export const WalletItem = ({className='', onSelect=null, account=null, active=false, balance=null, children=[], ...props}) => {
+export const WalletItem = ({
+        className = '',
+        onSelect = null,
+        account = null,
+        active = false,
+        balance = null,
+        children = [],
+        ...props
+    }) => {
 
     className = cn(styles.wallet, className, {[styles.activeWallet]: active});
 
@@ -29,7 +37,7 @@ export const WalletItem = ({className='', onSelect=null, account=null, active=fa
         </div>
 
         <div className={`body1 ${styles.accountData}`}>
-            <div className="basic500">
+            <div className={`basic500 ${styles.accountName}`}>
                 {account.name}
             </div>
             <div className={styles.balance}>

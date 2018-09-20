@@ -7,7 +7,7 @@ export const Balance = ({ balance, children, ...props }: IProps) => {
     if (!balance) {
         return <div>N/A {children}</div>
     }
-
+     debugger;
     return <div {...props}>{balance.toFormat()} {children}</div>;
 };
 
@@ -17,3 +17,4 @@ interface IProps {
     isShortFormat?: boolean;
     children?: any;
 }
+
