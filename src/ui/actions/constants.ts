@@ -43,6 +43,7 @@ export const ACTION = {
     UPDATE_ASSETS: 'UPDATE_ASSETS',
     UPDATE_ASSET: 'UPDATE_ASSET',
     GET_ASSETS: 'GET_ASSETS',
+    CHANGE_ACCOUNT_NAME: 'CHANGE_ACCOUNT_NAME',
 };
 
 export const createAction = type => payload => ({ type, payload });

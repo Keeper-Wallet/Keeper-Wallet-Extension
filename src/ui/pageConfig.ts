@@ -14,6 +14,7 @@ import {
     AccountInfo,
     DeleteActiveAccount,
     ChangeAccountName,
+    QRCodeSelectedAccount,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -248,7 +249,7 @@ export const PAGES_CONF = {
         }
     },
     [PAGES.QR_CODE_SELECTED]: {
-        component: () => 'QrCode',
+        component: QRCodeSelectedAccount,
         menu: {
             hasLogo: true,
             hasSettings: false,

@@ -51,5 +51,4 @@ export const WalletItem = ({
             <div className={iconClass}></div>
         </div>
     </div>;
-
 };
