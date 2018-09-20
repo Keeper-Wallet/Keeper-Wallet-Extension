@@ -40,8 +40,8 @@ export class PreferencesController extends EventEmitter{
         const accounts = fromKeyrings.map((account, i) => {
             return Object.assign(
                 {name: `Account ${i + 1}`},
+                oldAccounts.find(oldAcc => oldAcc.address === account.address),
                 account,
-                oldAccounts.find(oldAcc => oldAcc.address === account.address)
             )
         });
         this.store.updateState({accounts});

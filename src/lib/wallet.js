@@ -9,12 +9,12 @@ const {stringify, parse} = create({BigNumber});
 
 export class Wallet {
     constructor(user) {
-        if (!user) throw new Error('user required')
+        if (!user) throw new Error('user required');
         this.user = user
     }
 
     getAccount() {
-        let account = Object.assign({}, this.user)
+        let account = Object.assign({}, this.user);
         delete account['id'];
         delete account['seed'];
         return account;
@@ -33,12 +33,12 @@ export class Wallet {
 
         Adapter.initOptions({networkCode: this.user.networkCode});
         //Todo: temporary for seed
-        let params = this.user
+        let params = this.user;
         if (this.user.type === 'seed'){
-            params = this.user.seed
+            params = this.user.seed;
         }
         const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
-        return await signable.getDataForApi()
+        return await signable.getDataForApi();
     }
 }

@@ -86,6 +86,11 @@ class Background {
         return this.background.exportAccount(address, password);
     }
 
+    async editWalletName(address, name) {
+        await this.initPromise;
+        return this.background.editWalletName(address, name);
+    }
+
     async newPassword(oldPassword, newPassword): Promise<void> {
         await this.initPromise;
         return this.background.newPassword(oldPassword, newPassword);

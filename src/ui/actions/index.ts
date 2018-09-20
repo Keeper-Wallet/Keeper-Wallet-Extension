@@ -6,4 +6,5 @@ export * from './network';
 export * from './balances';
 export * from './addUser';
 export * from './assets';
+export * from './account';
 export * from './menu';

@@ -45,6 +45,18 @@ export class WalletController {
         this._saveWallets()
     }
 
+    editWalletName(address, name) {
+        if (this.store.getState().locked) throw new Error('App is locked');
+        const index = this.wallets.findIndex(wallet => wallet.getAccount().address === address);
+        const wallet = this.wallets[index];
+        if (!wallet) {
+            throw new Error(`Wallet ${address} not found`);
+        }
+
+        this.wallets[index] = new Wallet({ ...wallet.user, name });
+        this._saveWallets();
+    }
+
     removeWallet(address) {
         if (this.store.getState().locked) throw new Error('App is locked');
         const index = this.wallets.findIndex(wallet => wallet.getAccount().address === address);

@@ -89,6 +89,16 @@ export const getAsset = store => next => action => {
     return next(action);
 };
 
+export const changeName = store => next => action => {
+    if (action.type === ACTION.CHANGE_ACCOUNT_NAME) {
+        const { address, name } = action.payload;
+        background.editWalletName(address, name);
+        return null;
+    }
+
+    return next(action);
+};
+
 export const updateNetworkCode = store => next => action => {
     if (action.type === ACTION.UPDATE_CURRENT_NETWORK || action.type === ACTION.UPDATE_NETWORKS) {
         const { payload, type } = action;

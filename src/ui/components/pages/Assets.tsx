@@ -82,11 +82,14 @@ class AssetsComponent extends React.Component {
 }
 
 const mapStateToProps = function (store: any) {
+    const activeAccount = store.selectedAccount.address;
+    const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
+
     return {
-        activeAccount: store.selectedAccount,
+        selectedAccount: store.accounts.find(({ address }) => address === selected),
+        activeAccount: store.accounts.find(({ address }) => address === activeAccount),
         accounts: store.accounts,
         balances: store.balances,
-        selectedAccount: store.localState.assets.account || store.selectedAccount,
         assets: store.assets,
     };
 };

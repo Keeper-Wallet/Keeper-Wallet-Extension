@@ -7,7 +7,7 @@ import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { Balance } from '../ui/balance/Balance';
-import { number } from 'prop-types';
+import { PAGES } from '../../pageConfig';
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
@@ -21,6 +21,7 @@ class AccountInfoComponent extends React.Component {
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value });
     setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
+    editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
     render() {
         const { selectedAccount, activeAccount } = this.props;
@@ -34,7 +35,9 @@ class AccountInfoComponent extends React.Component {
                 <div className={styles.accountData}>
                     <div>
                         <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
-                        <Button type='transparent' className={styles.editIconBtn}>
+                        <Button type='transparent'
+                                className={styles.editIconBtn}
+                                onClick={this.editNameHandler} >
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>
@@ -117,7 +120,6 @@ class AccountInfoComponent extends React.Component {
                 return background.exportAccount(address, password);
             })
             .then(data => {
-                debugger;
                 return data[field]
             });
     }
@@ -143,9 +145,12 @@ class AccountInfoComponent extends React.Component {
 }
 
 const mapStateToProps = function (store: any) {
+    const activeAccount = store.selectedAccount.address;
+    const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
+
     return {
-        selectedAccount: store.localState.assets.account || store.selectedAccount,
-        activeAccount: store.selectedAccount,
+        selectedAccount: store.accounts.find(({ address }) => address === selected),
+        activeAccount: store.accounts.find(({ address }) => address === activeAccount),
         balances: store.balances,
         assets: store.assets,
     };
