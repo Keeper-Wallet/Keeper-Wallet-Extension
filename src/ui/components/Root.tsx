@@ -35,8 +35,11 @@ class RootComponent extends React.Component<any, any> {
         const currentTab = this.state.tab;
         const { backTabs } = this.props;
         const menuProps = {
-            ...pageConf.menu,
-            back: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+            hasLogo: pageConf.menu.hasLogo,
+            hasSettings: pageConf.menu.hasSettings,
+            deleteAccount: pageConf.menu.deleteAccount,
+            hasClose: !!pageConf.menu.close,
+            hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
         };
 
         const setTab = (tab) => {

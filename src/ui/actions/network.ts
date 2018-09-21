@@ -7,3 +7,10 @@ export const setNetwork = (netName) => {
         payload: netName
     }
 };
+
+export const setCustomNode = (url) => {
+    return {
+        type: ACTION.CHANGE_NODE,
+        payload: url
+    }
+};
