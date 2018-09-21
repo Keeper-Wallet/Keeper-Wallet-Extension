@@ -101,21 +101,25 @@ class AccountInfoComponent extends React.Component {
             </div>
 
             <Modal showModal={this.state.showPassword} showChildrenOnly={true}>
-                <div className="modal">
-                    <Input onChange={this.inputPassword}/>
-                    <Button onClick={this.confirmPassword}>Enter</Button>
+                <div className={`modal ${styles.enterPasswordModal}`}>
+                    <i className={`lock-icon ${styles.lockIcon}`}></i>
+                    <div className="basic500 tag1 input-title">
+                        <Trans i18nKey='accountInfo.password'>Password</Trans>
+                    </div>
+                    <Input className="margin-main-big" onChange={this.inputPassword}/>
+                    <Button className="margin-main-big" type="submit" onClick={this.confirmPassword}>Enter</Button>
                     <Button onClick={this.rejectPassword}>Cancel</Button>
                 </div>
             </Modal>
             
             <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
-                <div className="modal">
+                <div className="modal notification">
                     <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                 </div>
             </Modal>
 
             <Modal showModal={this.state.passwordError} showChildrenOnly={true}>
-                <div className="modal">
+                <div className="modal notification error">
                     <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
                 </div>
             </Modal>
@@ -125,13 +129,13 @@ class AccountInfoComponent extends React.Component {
     setCopiedModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ showCopied: true });
-        this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
+        // this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
 
     showErrorModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ passwordError: true });
-        this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
+        // this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
     }
 
     async getAccountInfo(field) {
