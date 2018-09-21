@@ -24,7 +24,7 @@ export function updateState(state) {
         });
     }
 
-    if (JSON.stringify(state.customNodes) !== JSON.stringify(customNodes)) {
+    if (JSON.stringify(currentState.customNodes) !== JSON.stringify(customNodes)) {
         actions.push({
             type: ACTION.UPDATE_NODES,
             payload: customNodes

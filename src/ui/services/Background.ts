@@ -1,3 +1,5 @@
+import { promises } from 'fs';
+
 class Background {
 
     static instance: Background;
@@ -121,6 +123,11 @@ class Background {
         const networks = await this.background.getNetworks();
         this._onUpdate({ networks });
         return networks;
+    }
+
+    async setCustomNode(url, network): Promise<void> {
+        await this.initPromise;
+        return this.background.setCustomNode(url, network);
     }
 
     async assetInfo(assetId: string): Promise<any> {

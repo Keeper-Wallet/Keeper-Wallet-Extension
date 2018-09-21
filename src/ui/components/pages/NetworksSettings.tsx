@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import { changeAccountName } from '../../actions';
+import { setCustomNode } from '../../actions';
 import {Trans, translate} from 'react-i18next';
 import { Button, BUTTON_TYPE, Copy, Input } from '../ui';
 
@@ -11,6 +11,8 @@ class NetworksSettingsComponent extends React.PureComponent {
     readonly state;
 
     onInputHandler = (event) => this.setState({ node: event.target.value });
+    onSaveNodeHandler = () => this.saveNode();
+    onSetDefaultNodeHandler = () => this.setDefaultNode();
 
     render() {
         return <div>
@@ -30,13 +32,16 @@ class NetworksSettingsComponent extends React.PureComponent {
             </div>
 
             <div>
-                <Button type={BUTTON_TYPE.SUBMIT} disabled={!this.state.hasChanges}>
+                <Button type={BUTTON_TYPE.SUBMIT}
+                        disabled={!this.state.hasChanges}
+                        onClick={this.onSaveNodeHandler}>
                     <Trans i18nKey='networksSettings.save'>Save</Trans>
                 </Button>
             </div>
 
             <div>
-                <Button disabled={this.state.isDefault}>
+                <Button disabled={this.state.isDefault}
+                        onClick={this.onSetDefaultNodeHandler}>
                     <Trans i18nKey='networksSettings.setDefault'>Set Default</Trans>
                 </Button>
             </div>
@@ -51,12 +56,12 @@ class NetworksSettingsComponent extends React.PureComponent {
             return null;
         }
         
-        this.props.editNode(node);
+        this.props.setCustomNode(node);
     }
 
     setDefaultNode() {
-        this.props.setNodeToDefault();
-        this.setState({ node: '' });
+        this.props.setCustomNode(null);
+        this.setState({ node: this.state.defaultNode });
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -82,7 +87,7 @@ const mapToProps = (store) => {
 };
 
 const actions = {
-    changeAccountName,
+    setCustomNode,
 };
 
 export const NetworksSettings = connect(mapToProps, actions)(NetworksSettingsComponent);

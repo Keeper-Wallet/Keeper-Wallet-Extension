@@ -99,6 +99,17 @@ export const changeName = store => next => action => {
     return next(action);
 };
 
+
+export const setCustomNode = store => next => action => {
+    if (ACTION.CHANGE_NODE === action.type) {
+        const { currentNetwork } = store.getState();
+        background.setCustomNode(action.payload, currentNetwork);
+        return null;
+    }
+
+    return next(action);
+};
+
 export const updateNetworkCode = store => next => action => {
     if (action.type === ACTION.UPDATE_CURRENT_NETWORK || action.type === ACTION.UPDATE_NETWORKS) {
         const { payload, type } = action;
