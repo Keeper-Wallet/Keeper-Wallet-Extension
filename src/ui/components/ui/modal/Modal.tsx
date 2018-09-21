@@ -28,12 +28,12 @@ export class Modal extends React.PureComponent {
     readonly props: IProps;
     onclickOut = event => this._onClickOut(event);
 
-    static el: HTMLDivElement;
+    el: HTMLDivElement;
     static modalRoot: HTMLElement;
 
     constructor(props: IProps) {
         super(props);
-        Modal.el = Modal.el || document.createElement('div');
+        this.el = this.el || document.createElement('div');
         Modal.modalRoot = Modal.modalRoot || document.getElementById('app-modal')
     }
 
@@ -44,12 +44,12 @@ export class Modal extends React.PureComponent {
     }
 
     componentDidMount() {
-        Modal.modalRoot.appendChild(Modal.el);
+        Modal.modalRoot.appendChild(this.el);
         this._addClickOut();
     }
 
     componentWillUnmount() {
-        Modal.modalRoot.removeChild(Modal.el);
+        Modal.modalRoot.removeChild(this.el);
         document.removeEventListener('click', this.onclickOut);
     }
 
@@ -61,7 +61,7 @@ export class Modal extends React.PureComponent {
                           showChildrenOnly={this.props.showChildrenOnly}>
                 {this.props.children}
             </ModalWrapper>,
-            Modal.el,
+            this.el,
         );
     }
 
@@ -81,13 +81,14 @@ export class Modal extends React.PureComponent {
         let node = event.target;
 
         while (node) {
-            if (node === Modal.el) {
+            if (node === this.el) {
                 return null;
             }
 
             node = node.parentElement;
         }
-
+        event.stopPropagation();
+        event.preventDefault();
         this.closeHandler();
     }
 }
