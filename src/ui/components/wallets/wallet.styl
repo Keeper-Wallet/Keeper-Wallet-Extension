@@ -30,11 +30,14 @@
       background-color: $basic50;
       border: 1px solid $basic200;
 
-    div {
+    div, .accountIcon {
       padding: 0;
       border: 0 none;
     }
 
+    .accountIcon
+      &:hover
+        background-color: $basic100;
 
 .activeWallet
   width: 100%;
@@ -70,20 +73,20 @@
         align-items: center;
         justify-content: center;
         font-weight: normal;
+
         &:hover
           background-color: $basic100;
 
-        &:last-child
-          position: absolute;
-          padding: 0;
-          right: 0;
-          bottom: 0;
-          width: 30px;
-          height: 26px;
-          background-color: transparent;
-          border-color: transparent;
-          margin-right: 0;
-
+      .accountIcon
+        position: absolute;
+        padding: 0;
+        right: 0;
+        bottom: 0;
+        width: 30px;
+        height: 26px;
+        background-color: transparent;
+        border-color: transparent;
+        margin-right: 0;
 
 .activeWalletSelected
   &.activeAccountHeader

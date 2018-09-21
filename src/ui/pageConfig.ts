@@ -270,7 +270,7 @@ export const PAGES_CONF = {
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
         menu: {
-            hasLogo: false,
+            hasLogo: true,
             hasSettings: false,
             back: true,
         }

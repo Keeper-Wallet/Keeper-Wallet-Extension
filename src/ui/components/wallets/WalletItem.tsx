@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
-import { Balance } from '../ui';
+import { Balance, Button } from '../ui';
 import * as styles from './wallet.styl';
 
 
@@ -48,7 +48,7 @@ export const WalletItem = ({
 
         <div className={styles.controls}>
             {children}
-            <div className={iconClass}></div>
+            <Button className={iconClass}></Button>
         </div>
     </div>;
 };

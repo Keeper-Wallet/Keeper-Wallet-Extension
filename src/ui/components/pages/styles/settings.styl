@@ -1,5 +1,29 @@
 @import './../../../styles/colors.styl';
 
-.settings
+.content
   width: 100%;
   position: relative;
+  padding: 110px 60px;
+
+.settingsMenuItem
+  border-bottom: 1px solid $accent50;
+  line-height: 44px;
+  background-position: center right;
+  background-repeat: no-repeat;
+
+  &.network
+    background-image: url(../../../assets/img/network-14-basic-200.svg);
+  &.language
+    background-image: url(../../../assets/img/language-14-basic-200.svg);
+  &.password
+    background-image: url(../../../assets/img/password-14-basic-200.svg);
+  &.logout
+    background-image: url(../../../assets/img/logout-14-basic-200.svg);
+
+.networkTab
+  margin: 64px 60px 0 60px;
+
+  .copyIcon
+    position: absolute;
+    right: 0;
+    top: 0;
