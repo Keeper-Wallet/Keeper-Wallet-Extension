@@ -7,25 +7,30 @@ import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
+import { Seed } from '@waves/signature-generator';
+
 
 @translate('extension')
 class AccountInfoComponent extends React.Component {
 
     readonly props;
     readonly state = {} as any;
+    copiedTimer;
     deffer;
-    getSeed = () => this.getAccountInfo('sed');
+    getSeed = () => this.getAccountInfo('seed');
     getPrivate = () => this.getAccountInfo('privateKey');
     confirmPassword = () => this.deffer.resolve(this.state.password);
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value });
     setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
     editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
+    showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
+    onCopyHandler = () => this.setCopiedModal();
 
     render() {
         const { selectedAccount, activeAccount } = this.props;
         const isActive = selectedAccount.address === activeAccount.address;
-
+        const { onCopyHandler } = this;
 
         return <div className={styles.content}>
 
@@ -54,7 +59,7 @@ class AccountInfoComponent extends React.Component {
                     {isActive ? <Trans i18nKey='ur.activeNow'>Active now</Trans> :
                     <Trans i18nKey='ur.unactive'>Make active</Trans>}
                 </Button>
-                <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface">
+                <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface" onClick={this.showQrHandler}>
                     <Trans i18nKey='ui.showQR'>Show QR</Trans>
                 </Button>
             </div>
@@ -64,7 +69,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.address'>Your address</Trans>
                 </div>
                 <div className="input-like tag1">
-                    <CopyText text={selectedAccount.address} showCopy={true} showText={true}/>
+                    <CopyText text={selectedAccount.address} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
 
@@ -73,7 +78,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
                 <div className="input-like tag1">
-                    <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true}/>
+                    <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
 
@@ -82,7 +87,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.privKey'>Private key</Trans>
                 </div>
                 <div className="input-like password-input tag1">
-                    <CopyText type='key' getText={this.getPrivate} showCopy={true}/>
+                    <CopyText type='key' getText={this.getPrivate} showCopy={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
 
@@ -91,7 +96,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.backUp'>Backup phrase</Trans>
                 </div>
                 <div className="input-like password-input tag1">
-                    <CopyText type='key' getText={this.getSeed} showCopy={true}/>
+                    <CopyText type='key' getText={this.getSeed} showCopy={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
 
@@ -102,7 +107,31 @@ class AccountInfoComponent extends React.Component {
                     <Button onClick={this.rejectPassword}>Cancel</Button>
                 </div>
             </Modal>
+            
+            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+                <div className="modal">
+                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
+                </div>
+            </Modal>
+
+            <Modal showModal={this.state.passwordError} showChildrenOnly={true}>
+                <div className="modal">
+                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                </div>
+            </Modal>
         </div>
+    }
+
+    setCopiedModal() {
+        clearTimeout(this.copiedTimer);
+        this.setState({ showCopied: true });
+        this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
+    }
+
+    showErrorModal() {
+        clearTimeout(this.copiedTimer);
+        this.setState({ passwordError: true });
+        this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
     }
 
     async getAccountInfo(field) {
@@ -120,7 +149,15 @@ class AccountInfoComponent extends React.Component {
                 return background.exportAccount(address, password);
             })
             .then(data => {
-                return data[field]
+                const seed = new Seed(data);
+                const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
+                return info[field];
+            }).catch((e) => {
+                this.setState({ showPassword: false });
+                if (e) {
+                    this.showErrorModal();
+                }
+                return Promise.reject();
             });
     }
 

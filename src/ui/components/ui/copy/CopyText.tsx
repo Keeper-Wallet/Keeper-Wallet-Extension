@@ -10,7 +10,9 @@ export class CopyText extends React.PureComponent {
     readonly props: IProps;
 
     showTextHandler = () => {
-        this.setState({ showText: true });
+        this.setState({
+            showText: true,
+        });
     };
 
     onCopyHandler = (event) => this._copyText(event);
@@ -42,21 +44,19 @@ export class CopyText extends React.PureComponent {
         }
 
         if (this.props.getText) {
-
-           this.props.getText().then(
-               text => {
-                   const result = copy(text, this.props.copyOptions);
-                   if (this.props) {
-                       this.props.onCopy(text, result);
-                   }
-               }
-           );
+            this.props.getText().then(text => this.copy(text));
             return null;
         }
 
         const text = this.props.text;
+        this.copy(text)
+    }
+
+    private copy(text) {
         const result = copy(text, this.props.copyOptions);
-        this.props.onCopy(text, result);
+        if (this.props.onCopy) {
+            this.props.onCopy(text, result);
+        }
     }
 }
 
