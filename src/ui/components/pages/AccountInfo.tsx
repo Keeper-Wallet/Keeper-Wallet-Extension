@@ -38,10 +38,10 @@ class AccountInfoComponent extends React.Component {
                 <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
                 <div className={styles.accountData}>
                     <div>
-                        <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
                         <Button type='transparent'
                                 className={styles.editIconBtn}
                                 onClick={this.editNameHandler} >
+                            <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>
