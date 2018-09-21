@@ -20,12 +20,18 @@
     background-color: $white;
     border: 1px solid $basic200;
 
+    &:hover
+      border: 1px solid $black;
+
   &:focus
     outline: none;
 
   &.submit
     background-color: $submit400;
     color: $white;
+
+    &:hover
+      background-color: $submit300;
 
     &.disabled,
     &:disabled,
@@ -35,9 +41,6 @@
 
       &:hover
         background-color: $submit200;
-
-    &:hover
-      background-color: $submit300;
 
   &.transparent
     background-color: transparent;
@@ -52,6 +55,9 @@
     background-color: $error400;
     color: $white;
 
+    &:hover
+      background-color: $error300;
+
   &.interface
     background-color: $white;
     height: 32px;
@@ -62,10 +68,13 @@
     font-weight: 400;
     width: auto;
     margin: 0;
-    border: 0.5px solid trasparent;
+    border: 0.5px solid transparent;
 
     &:not(:last-child)
       margin-right: 14px;
+
+    &:hover
+      box-shadow: 0 4px 6px 0 #9ba6b266;
 
     &.disabled,
     &:disabled,

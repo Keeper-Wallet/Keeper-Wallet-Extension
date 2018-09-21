@@ -8,27 +8,41 @@
   margin: auto;
   background-color: $basic50;
 
-.editIcon {
-  background: url(../../../assets/img/edit-14-basic-500.svg) center no-repeat;
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-  margin: 0 0 3px 6px;
-}
-
-.editIconBtn {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-}
-
 .accountName {
-  border-bottom: 1px dotted $basic500;
+  height: 20px;
+  text-align: left;
   margin-bottom: 2px;
   display: inline-block;
   max-width: 243px;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
+  border-radius: 0;
+  width: auto;
+  padding-right: 20px;
+
+  span {
+    border-bottom: 1px dotted $basic500;
+  }
+
+  .editIcon {
+    background: url(../../../assets/img/edit-14-basic-500.svg) right center no-repeat $basic50;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    margin: 0 0 -4px 8px;
+  }
+
+  &:hover {
+    span {
+      border-bottom: 1px dotted $black;
+      color: $black;
+    }
+
+    i.editIcon {
+      background-image: url(../../../assets/img/edit-14-black.svg);
+    }
+  }
 }
 
 .balance {
@@ -39,6 +53,7 @@
 .avatar {
   margin: 0 14px 0 0;
   min-width: 56px;
+  cursor: default;
 }
 
 .wallet {
@@ -76,13 +91,6 @@
   background: url(../../../assets/img/qr-14-basic-500.svg) 14px center no-repeat;
 }
 
-.editIcon {
-  background: url(../../../assets/img/edit-14-basic-500.svg) center no-repeat;
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-}
-
 .lockIcon {
   width: 48px;
   height: 48px;
@@ -103,4 +111,3 @@
   z-index: 100;
   box-shadow: 0 0 0 300px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
-

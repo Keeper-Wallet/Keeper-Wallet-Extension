@@ -39,9 +39,9 @@ class AccountInfoComponent extends React.Component {
                 <div className={styles.accountData}>
                     <div>
                         <Button type='transparent'
-                                className={styles.editIconBtn}
+                                className={styles.accountName}
                                 onClick={this.editNameHandler} >
-                            <span className={`basic500 body1 ${styles.accountName}`}>{selectedAccount.name}</span>
+                            <span className={`basic500 body1`}>{selectedAccount.name}</span>
                             <i className={styles.editIcon}></i>
                         </Button>
                     </div>

@@ -1,3 +1,4 @@
+import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import {connect} from 'react-redux';
 import { changeAccountName } from '../../actions';
@@ -22,22 +23,25 @@ class ChangeAccountNameComponent extends React.PureComponent {
     }
 
     render() {
-        return <div>
-            <h1>
+        return <div className={styles.content}>
+            <h2 className={`title1 margin3 left`}>
                 <Trans i18nKey='changeName.title'>Change name</Trans>
-            </h1>
+            </h2>
 
-            <div>
+            <div className="tag1 basic500 input-title">
                 <Trans i18nKey='changeName.currentName'>Current account name</Trans>
             </div>
-            <div>{this.props.account.name}</div>
+
+            <div className="body1 font400 margin-main-big">{this.props.account.name}</div>
+
+            <div className="separator margin-main-big"></div>
 
             <form onSubmit={this.onSubmit}>
-                <div>
+                <div className="tag1 basic500 input-title">
                     <Trans i18nKey='changeName.newName'>New account name</Trans>
                 </div>
 
-                <div>
+                <div className="margin-main-big">
                     <Input onChange={this.setNewName} value={this.state.newName} maxLength='26'/>
                 </div>
 
