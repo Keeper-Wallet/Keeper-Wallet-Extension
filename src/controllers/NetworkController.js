@@ -21,12 +21,11 @@ export class NetworkController {
     }
 
     getNetworks() {
-        const { customNodes } = this.store.getState()
-        return NETWORKS.map(name => ({ name, code: NETWORK_CONFIG[name].code }));
+        return NETWORKS.map(name => ({ ...NETWORK_CONFIG[name], name }));
     }
 
     setNetwork(network){
-        this.store.updateState({currentNetwork:network})
+        this.store.updateState({currentNetwork:network});
     }
 
     getNetwork(){
@@ -34,26 +33,26 @@ export class NetworkController {
     }
 
     setCustomNode(url, network = 'mainnet'){
-        let { customNodes } = this.store.getState()
-        customNodes[network] = url
-        this.store.updateState({customNodes})
+        let { customNodes } = this.store.getState();
+        customNodes[network] = url;
+        this.store.updateState({customNodes});
     }
 
     getCustomNodes(){
-        return this.store.getState().customNodes
+        return this.store.getState().customNodes;
     }
 
     async broadcast(tx){
-        const network = this.getNetwork()
-        const API_BASE = this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server
-        const url = new URL('transactions/broadcast', API_BASE).toString()
+        const network = this.getNetwork();
+        const API_BASE = this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server;
+        const url = new URL('transactions/broadcast', API_BASE).toString();
         const resp =  await fetch(url, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json; charset=utf-8"
             },
             body: stringify(tx)
-        })
+        });
         const data = await resp.json();
         return data
     }

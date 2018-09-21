@@ -1,6 +1,6 @@
 import { ACTION } from './constants';
 
-export function addUser(account) {
+export function user(account) {
     return {
         type: ACTION.SAVE_NEW_ACCOUNT,
         payload: account
@@ -26,3 +26,7 @@ export function addUserReceive(error?) {
         }
     };
 }
+
+export const lock = () => ({ type: ACTION.LOCK });
+
+

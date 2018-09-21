@@ -122,3 +122,11 @@ export const updateNetworkCode = store => next => action => {
 
     next(action);
 };
+
+export const lock = store => next => action => {
+    if (action.type === ACTION.LOCK) {
+        background.lock();
+        return null;
+    }
+    return next(action);
+};

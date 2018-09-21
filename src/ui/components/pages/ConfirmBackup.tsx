@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Button, Pills } from '../ui';
-import { addUser, setUiState } from '../../actions';
+import { user, setUiState } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
@@ -127,4 +127,4 @@ const mapStateToProps = function(store: any) {
     };
 };
 
-export const ConfirmBackup = connect(mapStateToProps, { addUser, setUiState })(ConfirmBackupComponent);
+export const ConfirmBackup = connect(mapStateToProps, { addUser: user, setUiState })(ConfirmBackupComponent);

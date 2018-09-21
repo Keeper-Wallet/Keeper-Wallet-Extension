@@ -22,20 +22,25 @@ const Buttons = (props) => {
     </div>;
 };
 
-const Navigation = ({hasBack, onClick}) => {
+const Back = ({ hasBack, onClick }) => {
     return hasBack ? <div className={`${styles.arrowBackIcon} arrow-back-icon`} onClick={onClick}></div> : null;
 };
 
-export const Menu = ({setTab, onBack, onDelete, ...props}: IProps) => {
+const Close = ({ hasClose, onClick }) => {
+    return hasClose ? <div className={`${styles.closeIcon} close-icon`} onClick={onClick}></div> : null;
+};
+
+export const Menu = ({setTab, onBack, hasClose=false, hasBack=false, onDelete, ...props}: IProps) => {
     const leftClick = () => setTab(PAGES.SETTINGS);
     const rightClick = () => setTab(PAGES.INFO);
     const navBack = () => onBack();
-    const hasBack = props.back;
+
     return (
         <div className={`${styles.menu}`}>
             <Logo {...props}/>
             <Settings leftClick={leftClick} rightClick={rightClick} {...props}/>
-            <Navigation hasBack={hasBack} onClick={navBack}/>
+            <Back hasBack={hasBack} onClick={navBack}/>
+            <Close hasClose={hasClose} onClick={navBack}/>
             <Buttons onDelete={onDelete} {...props}/>
         </div>
     );
@@ -44,8 +49,9 @@ export const Menu = ({setTab, onBack, onDelete, ...props}: IProps) => {
 interface IProps {
     hasLogo: boolean;
     hasSettings: boolean;
-    back: boolean;
-    deleteAccount?: boolean;
+    hasBack: boolean;
+    hasClose: boolean;
+    deleteAccount: boolean;
     setTab: (tab: string) => void;
     onBack: () => void;
     onDelete: () => void;

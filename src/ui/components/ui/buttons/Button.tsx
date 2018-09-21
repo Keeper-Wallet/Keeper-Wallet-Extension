@@ -2,16 +2,23 @@ import * as React from 'react';
 import * as styles from './buttons.styl';
 import cn from 'classnames';
 
+export const BUTTON_TYPE = {
+    SUBMIT: 'submit',
+    TRANSPARENT: 'transparent',
+    WARNING: 'warning',
+    INTERFACE: 'interface',
+};
+
 export function Button({ className, type, children, ...props }: IProps ) {
 
     const btnClassName = cn(
         className,
         styles.button,
         {
-            [styles.submit]: type === 'submit',
-            [styles.transparent]: type === 'transparent',
-            [styles.warning]: type === 'warning',
-            [styles.interface]: type === 'interface',
+            [styles.submit]: type === BUTTON_TYPE.SUBMIT,
+            [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
+            [styles.warning]: type === BUTTON_TYPE.WARNING,
+            [styles.interface]: type === BUTTON_TYPE.INTERFACE,
             [styles.default]: !type
         }
     );

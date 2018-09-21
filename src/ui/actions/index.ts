@@ -4,7 +4,7 @@ export * from './setTab';
 export * from './localState';
 export * from './network';
 export * from './balances';
-export * from './addUser';
+export * from './user';
 export * from './assets';
 export * from './account';
 export * from './menu';

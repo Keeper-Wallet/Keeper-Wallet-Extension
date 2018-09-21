@@ -13,6 +13,7 @@ export function updateState(state) {
         messages = [],
         balances = [],
         uiState = {},
+        customNodes = {}
     } = state;
     const currentState = store.getState();
 
@@ -20,6 +21,13 @@ export function updateState(state) {
         actions.push({
             type: ACTION.UPDATE_NETWORKS,
             payload: state.networks
+        });
+    }
+
+    if (JSON.stringify(state.customNodes) !== JSON.stringify(customNodes)) {
+        actions.push({
+            type: ACTION.UPDATE_NODES,
+            payload: customNodes
         });
     }
 
