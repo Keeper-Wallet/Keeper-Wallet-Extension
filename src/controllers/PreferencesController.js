@@ -40,8 +40,8 @@ export class PreferencesController extends EventEmitter{
         const accounts = fromKeyrings.map((account, i) => {
             return Object.assign(
                 {name: `Account ${i + 1}`},
-                oldAccounts.find(oldAcc => oldAcc.address === account.address),
                 account,
+                oldAccounts.find(oldAcc => oldAcc.address === account.address),
             )
         });
         this.store.updateState({accounts});
@@ -62,9 +62,12 @@ export class PreferencesController extends EventEmitter{
         }
     }
 
-    addLabel(account, label) {
+    addLabel(address, label) {
         const accounts = this.store.getState().accounts;
-        const index = accounts.findIndex(current => current.address === account.address);
+        const index = accounts.findIndex(current => current.address === address);
+        if (!index){
+            throw new Error(`Account with address "${address}" not found`)
+        }
         accounts[index].name = label;
         this.store.updateState({accounts})
     }

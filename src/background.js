@@ -183,13 +183,13 @@ class BackgroundService extends EventEmitter {
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (publicKey) => this.preferencesController.selectAccount(publicKey),
+            editWalletName: async (address, name) => this.preferencesController.addLabel(address, name),
 
             // ui state
             setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
             addWallet: async (account) => this.walletController.addWallet(account),
-            editWalletName: async (account, name) => this.walletController.editWalletName(account, name),
             removeWallet: async (publicKey) => this.walletController.removeWallet(publicKey),
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
