@@ -1,41 +1,34 @@
-.settingsIcon {
+@import '../../styles/colors.styl';
+
+.settingsIcon,
+.navigationIcon,
+.deleteIcon,
+.arrowBackIcon
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   position: absolute;
-  top: 17px;
-  right: 11px;
+  top: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:hover
+    background-color: $basic100;
+
+.settingsIcon
+  right: 8px;
   z-index: 1;
   background: url(../../assets/img/setting-18-black.svg) center no-repeat;
-}
 
-.navigationIcon {
-  display: block;
-  width: 18px;
-  height: 18px;
-  position: absolute;
-  left: 11px;
-  top: 17px;
+.navigationIcon
+  left: 8px;
   z-index: 1;
   background: url(../../assets/img/menu-18-black.svg) center no-repeat;
-}
 
-.deleteIcon {
-  display: block;
-  height: 18px;
-  width: 18px;
-  position: absolute;
-  top: 17px;
-  right: 11px;
+.deleteIcon
+  right: 8px;
   background: url(../../assets/img/delete-18-error-400.svg) center no-repeat;
-}
 
-.arrowBackIcon {
-  display: block;
-  height: 18px;
-  width: 18px;
-  position: absolute;
-  top: 17px;
-  left: 11px;
+.arrowBackIcon
+  left: 8px;
   background: url(../../assets/img/back-18-black.svg) center no-repeat;
-}

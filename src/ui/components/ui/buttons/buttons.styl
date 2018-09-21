@@ -6,7 +6,7 @@
   justify-content: space-between;
 
 .button
-  width: 236px;
+  width: 240px;
   height: 40px;
   display: block;
   border-radius: 4px;
@@ -23,19 +23,18 @@
   &:focus
     outline: none;
 
-  &.disabled,
-  &:disabled,
-  &[disabled]
-    cursor: default;
-    background-color: $disabled200;
-
   &.submit
     background-color: $submit400;
     color: $white;
 
-    &.disabled
+    &.disabled,
+    &:disabled,
+    &[disabled]
       background-color: $submit200;
       cursor: default;
+
+      &:hover
+        background-color: $submit200;
 
     &:hover
       background: $submit300;

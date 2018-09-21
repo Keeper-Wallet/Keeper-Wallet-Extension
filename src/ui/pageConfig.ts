@@ -58,7 +58,7 @@ export const PAGES_CONF = {
     [PAGES.LOGIN]: {
         component: Login,
         menu: {
-            hasLogo: true,
+            hasLogo: false,
             hasSettings: false,
             back: null,
         }

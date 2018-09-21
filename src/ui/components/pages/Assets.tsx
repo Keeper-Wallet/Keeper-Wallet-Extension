@@ -48,7 +48,7 @@ class AssetsComponent extends React.Component {
 
             <ActiveWallet {...activeProps}/>
 
-            <div className={`margin4 body1 basic500 border-dashed ${styles.addAccount}`}
+            <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                  onClick={this.addWalletHandler}>
                 <Trans i18nKey='assets.addAccount'>Add an account</Trans>
             </div>
