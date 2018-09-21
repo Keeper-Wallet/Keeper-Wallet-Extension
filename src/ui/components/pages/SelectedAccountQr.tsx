@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {Trans, translate} from 'react-i18next';
-//import * as styles from './styles/accountInfo.styl';
+import * as styles from './styles/selectedAccountQr.styl';
 import { Avatar, QRCode, Button } from '../ui';
 
 
@@ -13,9 +13,9 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
     render() {
         const address = this.props.selectedAccount.address;
 
-        return <div>
-            <Avatar address={address}/>
-            <div>{address}</div>
+        return <div className={`center ${styles.content}`}>
+            <Avatar className="margin1" size={48} address={address}/>
+            <div className="body1 basic500 margin4">{address}</div>
             
             <QRCode width={200}
                     height={200}
@@ -25,7 +25,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
                     type='image/png'
                     text={address}/>
 
-            <Button type='submit'>
+            <Button type='submit' className={styles.downloadQr}>
                 <div>
                     <Trans i18nKey='qrCode.download'>Download QR code</Trans>
                 </div>
