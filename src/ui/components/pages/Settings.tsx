@@ -13,6 +13,7 @@ class SettingsComponent extends React.Component {
     lock = () => this.props.lock();
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
+    passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
 
     render() {
         return <div className={styles.content}>
@@ -34,7 +35,7 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.password}`}>
-                <Button type='transparent'>
+                <Button type='transparent' onClick={this.passwordHandler}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.password'>Change password</Trans>
                     </div>

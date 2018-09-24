@@ -41,7 +41,8 @@ class AssetsComponent extends React.Component {
                     active={activeAddress === account.address}
                     balance={this.state.balances[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
-                    onSelect={this.onSelectHandler}/>)
+                    onSelect={this.onSelectHandler}
+                    onActive={this.onSetActiveHandler}/>)
             );
 
         return <div className={styles.assets}>

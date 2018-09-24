@@ -46,6 +46,7 @@ export const ACTION = {
     UPDATE_LANGS: 'UPDATE_LANGS',
     GET_ASSETS: 'GET_ASSETS',
     CHANGE_ACCOUNT_NAME: 'CHANGE_ACCOUNT_NAME',
+    CHANGE_PASSWORD: 'CHANGE_PASSWORD',
 };
 
 export const createAction = type => payload => ({ type, payload });

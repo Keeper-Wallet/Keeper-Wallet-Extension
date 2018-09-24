@@ -1,6 +1,6 @@
-import * as styles from './styles/newaccount.styl';
+import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
-import { createNew } from '../../actions';
+import { changePassword } from '../../actions';
 import * as React from 'react'
 import { Input, Button } from '../ui';
 import { translate, Trans } from 'react-i18next';
@@ -9,35 +9,39 @@ const MIN_LENGTH = 6;
 
 const mapStateToProps = function (store: any) {
     return {
-        account: store.localState.newAccount
+        account: store.localState.changePassword
     };
 };
 
 @translate('extension')
-class NewAccountComponent extends React.PureComponent {
+class ChangePasswordComponent extends React.PureComponent {
 
     inputEl: Input;
     state = {
         firstValue: '',
         secondValue: '',
+        oldValue: '',
+        oldError: null,
         firstError: null,
         secondError: null,
         buttonDisabled: true,
         passwordError: false,
     };
     props: {
-        createNew: (pass: string) => void;
+        changePassword: (p1: string, p2: string) => void;
     };
 
     getRef = input => this.inputEl = input;
-    onFirstBlur = () => this._onFirstBlur();
-    onSecondBlur = () => this._onSecondBlur();
+    onFirstBlur = () => this._onBlur();
+    onSecondBlur = () => this._onBlur();
+    onOldBlur = () => this._onBlur();
     onChangeFist = e => this._onChangeFist(e);
     onChangeSecond = e => this._onChangeSecond(e);
+    onChangeOld = e => this._onChangeOld(e);
     onSubmit = (e) => {
         e.preventDefault();
         if (!this.state.passwordError && this.state.firstValue) {
-            this.props.createNew(this.state.firstValue);
+            this.props.changePassword(this.state.oldValue, this.state.firstValue);
         }
     };
 
@@ -46,25 +50,35 @@ class NewAccountComponent extends React.PureComponent {
     }
 
     render() {
-        return <div className={styles.account}>
+        return <div className={styles.newPassword}>
             <form className={styles.content} onSubmit={this.onSubmit}>
                 <h2 className={`title1 margin3 left`}>
-                    <Trans i18nKey='newAccount.protect'>Protect Your Account</Trans>
+                    <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
                     <div className={`basic500 tag1 left input-title`}>
-                        <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
+                        <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
+                    </div>
+                    <Input id='old'
+                           className={`margin3`}
+                           type="password"
+                           onChange={this.onChangeOld}
+                           onBlur={this.onOldBlur}
+                           error={!!this.state.oldError}
+                           ref={this.getRef}
+                    />
+                    <div className={`basic500 tag1 left input-title`}>
+                        <Trans i18nKey='changePassword.newPassword'>New password</Trans>
                     </div>
                     <Input id='first'
                            className={`margin3`}
                            type="password"
-                           ref={this.getRef}
                            onBlur={this.onFirstBlur}
                            onChange={this.onChangeFist}
                            error={!!this.state.firstError}
                     />
                     <div className={`basic500 tag1 left input-title`}>
-                        <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
+                        <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
                     </div>
                     <Input id='second'
                            className={`margin3`}
@@ -75,48 +89,51 @@ class NewAccountComponent extends React.PureComponent {
                     />
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
-                    <Trans i18nKey='newAccount.create'>Continue</Trans>
+                    <Trans i18nKey='changePassword.create'>Save</Trans>
                 </Button>
-                <div className={`tag1 left basic500 marginTop3`}>
-                    <Trans i18nKey='newAccount.passinfo'>
-                        The password you entered will be stored locally.
-                        If you change device or lose your password,
-                        you will have to repeat the process of adding accounts to Waves Keeper.
-                        Waves does not store your passwords.
-                    </Trans>
-                </div>
-
             </form>
 
         </div>
     }
 
-    _onFirstBlur() {
-        this._checkValues();
-    }
-
-    _onSecondBlur() {
+    _onBlur() {
         this._checkValues();
     }
 
     _onChangeFist(e) {
-        const buttonDisabled = this._isDisabledButton();
         const firstValue = e.target.value;
-        this.setState({firstValue, buttonDisabled});
+        this.setState({ firstValue });
+        const buttonDisabled = this._isDisabledButton();
+        this.setState({ buttonDisabled });
     }
 
     _onChangeSecond(e) {
-        const buttonDisabled = this._isDisabledButton();
         const secondValue = e.target.value;
-        this.setState({secondValue, buttonDisabled});
+        this.setState({ secondValue });
+        const buttonDisabled = this._isDisabledButton();
+        this.setState({ buttonDisabled });
+    }
+
+    _onChangeOld(e) {
+        const oldValue = e.target.value;
+        this.setState({ oldValue });
+        const buttonDisabled = this._isDisabledButton();
+        this.setState({ buttonDisabled });
     }
 
     _isDisabledButton() {
-        if (!this.state.firstValue || !this.state.secondValue) {
+
+        const { oldValue, firstValue, secondValue } = this.state;
+
+        if (!oldValue || !firstValue || !secondValue) {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LENGTH;
+        if (oldValue.length < MIN_LENGTH) {
+            return true;
+        }
+
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length < MIN_LENGTH;
     }
 
     _checkValues() {
@@ -150,4 +167,4 @@ class NewAccountComponent extends React.PureComponent {
     }
 }
 
-export const NewAccount = connect(mapStateToProps, {createNew})(NewAccountComponent);
+export const ChangePassword = connect(mapStateToProps, { changePassword })(ChangePasswordComponent);

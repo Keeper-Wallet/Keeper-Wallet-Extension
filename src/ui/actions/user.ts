@@ -31,4 +31,10 @@ export const lock = () => ({ type: ACTION.LOCK });
 
 export const setLocale = (locale) => ({ type: ACTION.CHANGE_LNG, payload: locale });
 
+export const changePassword = (oldPassword, newPassword) => (
+        {
+            type: ACTION.CHANGE_PASSWORD,
+            payload: { oldPassword, newPassword }
 
+        }
+    );

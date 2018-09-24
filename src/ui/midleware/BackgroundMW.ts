@@ -4,6 +4,7 @@ import background from '../services/Background';
 import { i18n } from '../i18n';
 import { setTab, updateAsset } from '../actions';
 import { PAGES } from '../pageConfig';
+import { store } from '../store';
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {
@@ -139,5 +140,20 @@ export const lock = store => next => action => {
         background.lock();
         return null;
     }
+    return next(action);
+};
+
+
+export const changePassword = store => next => action => {
+    if (action.type === ACTION.CHANGE_PASSWORD) {
+        const { oldPassword, newPassword } = action.payload;
+
+        background.newPassword(oldPassword, newPassword).then(
+            (...args) => { debugger },
+            (...args) => { debugger }
+        );
+        return null;
+    }
+
     return next(action);
 };

@@ -13,7 +13,7 @@ class NewWalletNameComponent extends React.Component {
 
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
-    onSubmit = () => this._onSubmit();
+    onSubmit = (e) => this._onSubmit(e);
     getRef = input => this.inputEl = input;
 
     render() {
@@ -49,7 +49,8 @@ class NewWalletNameComponent extends React.Component {
         this.props.newAccountName(e.target.value)
     }
 
-    _onSubmit() {
+    _onSubmit(e) {
+        e.preventDefault();
         if (this.props.account.hasBackup) {
             this.props.addUser(this.props.account);
             return null;

@@ -17,6 +17,7 @@ import {
     QRCodeSelectedAccount,
     NetworksSettings,
     LangsSettings,
+    ChangePassword,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -46,6 +47,7 @@ export const PAGES = {
     INTRO: 'intro',
     NETWORK_SETTINGS: 'networks_select',
     LANGS_SETTINGS: 'langs_settings',
+    CHANGE_PASSWORD: 'change_password_settings',
     ROOT: '',
 };
 
@@ -279,6 +281,14 @@ export const PAGES_CONF = {
     },
     [PAGES.LANGS_SETTINGS]: {
         component: LangsSettings,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.CHANGE_PASSWORD]: {
+        component: ChangePassword,
         menu: {
             hasLogo: true,
             hasSettings: false,

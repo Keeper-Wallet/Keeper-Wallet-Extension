@@ -9,6 +9,7 @@ import * as styles from './wallet.styl';
 export const WalletItem = ({
         className = '',
         onSelect = null,
+        onActive = null,
         account = null,
         active = false,
         balance = null,
@@ -31,6 +32,13 @@ export const WalletItem = ({
             onSelect(account);
         }
     };
+    const selectHandler = (e) => {
+        if (onActive) {
+            e.preventDefault();
+            e.stopPropagation();
+            onActive(account);
+        }
+    };
 
     return <div className={`${className} ${styles.inner} flex`} onClick={clickHandler} {...props}>
         <div className={styles.avatar}>
@@ -48,7 +56,7 @@ export const WalletItem = ({
 
         <div className={styles.controls}>
             {children}
-            <Button className={iconClass}></Button>
+            <Button onClick={selectHandler} className={iconClass}></Button>
         </div>
     </div>;
 };

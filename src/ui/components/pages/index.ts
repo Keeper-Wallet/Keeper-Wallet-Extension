@@ -17,3 +17,4 @@ export * from  './Assets';
 export * from  './SelectedAccountQr';
 export * from  './NetworksSettings';
 export * from  './LangsSettings';
+export * from  './ChangePassword';
