@@ -12,6 +12,7 @@ class SettingsComponent extends React.Component {
     readonly props;
     lock = () => this.props.lock();
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
+    langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
 
     render() {
         return <div className={styles.content}>
@@ -25,7 +26,7 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.language}`}>
-                <Button type='transparent'>
+                <Button type='transparent' onClick={this.langsHandler}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.langs'>Change language</Trans>
                     </div>

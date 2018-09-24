@@ -29,4 +29,6 @@ export function addUserReceive(error?) {
 
 export const lock = () => ({ type: ACTION.LOCK });
 
+export const setLocale = (locale) => ({ type: ACTION.CHANGE_LNG, payload: locale });
+
 

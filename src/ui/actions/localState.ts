@@ -7,7 +7,6 @@ const createCommonAction = (type, pending) => (error = false) => ({
         error
     }
 });
-
 const createMVAction = type => payload => ({
     type,
     payload
@@ -27,3 +26,4 @@ export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 export const deleteActiveAccount = createMVAction(ACTION.DELETE_ACTIVE_ACCOUNT);
 export const addBackTab = createMVAction(ACTION.ADD_BACK_TAB);
 export const removeBackTab = createMVAction(ACTION.REMOVE_BACK_TAB);
+export const setLangs = createMVAction(ACTION.UPDATE_LANGS);

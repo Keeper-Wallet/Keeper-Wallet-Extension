@@ -16,6 +16,7 @@ export const messages =  createSimpleReducer([], ACTION.UPDATE_MESSAGES);
 export const balances =  createSimpleReducer({}, ACTION.UPDATE_BALANCES);
 export const currentLocale =  createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes =  createSimpleReducer({}, ACTION.UPDATE_NODES);
+export const langs =  createSimpleReducer({}, ACTION.UPDATE_LANGS);
 
 export const assets = (store = {}, action: any) => {
     if (ACTION.UPDATE_ASSET === action.type) {

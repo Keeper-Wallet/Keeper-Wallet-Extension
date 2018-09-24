@@ -43,4 +43,43 @@ i18n
         }
     });
 
-export { i18n };
+const LANGS = [
+    {
+        id: 'en',
+        name: 'English'
+    },
+    {
+        id: 'ru',
+        name: 'Русский'
+    },
+    {
+        id: 'ko',
+        name: '한국어'
+    },
+    {
+        id: 'zh',
+        name: '中文(简体)'
+    },
+    {
+        id: 'tr',
+        name: 'Türkçe'
+    },
+    {
+        id: 'hi',
+        name: 'हिन्दी'
+    },
+    {
+        id: 'es',
+        name: 'Español'
+    },
+    {
+        id: 'pt',
+        name: 'Portugal'
+    },
+    {
+        id: 'pl',
+        name: 'Polsk'
+    }
+];
+
+export { i18n, LANGS };

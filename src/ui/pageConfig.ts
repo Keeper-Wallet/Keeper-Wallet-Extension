@@ -15,7 +15,8 @@ import {
     DeleteActiveAccount,
     ChangeAccountName,
     QRCodeSelectedAccount,
-    NetworksSettings
+    NetworksSettings,
+    LangsSettings,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -44,6 +45,7 @@ export const PAGES = {
     QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     NETWORK_SETTINGS: 'networks_select',
+    LANGS_SETTINGS: 'langs_settings',
     ROOT: '',
 };
 
@@ -269,6 +271,14 @@ export const PAGES_CONF = {
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.LANGS_SETTINGS]: {
+        component: LangsSettings,
         menu: {
             hasLogo: true,
             hasSettings: false,
