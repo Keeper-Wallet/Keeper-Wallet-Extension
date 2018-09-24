@@ -153,18 +153,3 @@ export const lock = store => next => action => {
     }
     return next(action);
 };
-
-
-export const changePassword = store => next => action => {
-    if (action.type === ACTION.CHANGE_PASSWORD) {
-        const { oldPassword, newPassword } = action.payload;
-
-        background.newPassword(oldPassword, newPassword).then(
-            (...args) => { debugger },
-            (...args) => { debugger }
-        );
-        return null;
-    }
-
-    return next(action);
-};

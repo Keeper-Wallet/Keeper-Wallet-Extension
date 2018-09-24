@@ -116,7 +116,7 @@ class NewAccountComponent extends React.PureComponent {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length <= MIN_LENGTH;
+        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length < MIN_LENGTH;
     }
 
     _checkValues() {
@@ -132,7 +132,7 @@ class NewAccountComponent extends React.PureComponent {
             return null;
         }
 
-        if (this.state.firstValue.length <= MIN_LENGTH) {
+        if (this.state.firstValue.length < MIN_LENGTH) {
             return {error: 'isSmall'};
         }
     }

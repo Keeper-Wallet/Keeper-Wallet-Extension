@@ -2,8 +2,10 @@ import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
 import { changePassword } from '../../actions';
 import * as React from 'react'
-import { Input, Button } from '../ui';
+import { Input, Button, Modal } from '../ui';
+import background from '../../services/Background';
 import { translate, Trans } from 'react-i18next';
+import { PAGES } from '../../pageConfig';
 
 const MIN_LENGTH = 6;
 
@@ -26,6 +28,7 @@ class ChangePasswordComponent extends React.PureComponent {
         secondError: null,
         buttonDisabled: true,
         passwordError: false,
+        showChanged: false,
     };
     props: {
         changePassword: (p1: string, p2: string) => void;
@@ -38,12 +41,8 @@ class ChangePasswordComponent extends React.PureComponent {
     onChangeFist = e => this._onChangeFist(e);
     onChangeSecond = e => this._onChangeSecond(e);
     onChangeOld = e => this._onChangeOld(e);
-    onSubmit = (e) => {
-        e.preventDefault();
-        if (!this.state.passwordError && this.state.firstValue) {
-            this.props.changePassword(this.state.oldValue, this.state.firstValue);
-        }
-    };
+    onSubmit = (e) => this._onSubmit(e);
+
 
     componentDidMount() {
         this.inputEl.focus();
@@ -93,9 +92,47 @@ class ChangePasswordComponent extends React.PureComponent {
                 </Button>
             </form>
 
+            <Modal showModal={this.state.showChanged} showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
+                </div>
+            </Modal>
+
+            <Modal showModal={this.state.oldError} showChildrenOnly={true}>
+                <div className="modal notification error">
+                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                </div>
+            </Modal>
+
         </div>
     }
 
+    _onSubmit(e) {
+        e.preventDefault();
+        e.preventDefault();
+
+        if (!this.state.passwordError && this.state.firstValue) {
+            background.newPassword(this.state.oldValue, this.state.firstValue).then(
+                () => {
+                    this.setState({
+                        firstValue: '',
+                        secondValue: '',
+                        oldValue: '',
+                        oldError: null,
+                        firstError: null,
+                        secondError: null,
+                        buttonDisabled: true,
+                        passwordError: false,
+                        showChanged: true,
+                    });
+
+                    setTimeout(() => this.setState({ showChanged: false }), 1000);
+                },
+                () => this.setState({ oldError: true })
+            );
+        }
+    }
+    
     _onBlur() {
         this._checkValues();
     }
@@ -149,7 +186,7 @@ class ChangePasswordComponent extends React.PureComponent {
             return null;
         }
 
-        if (this.state.firstValue.length <= MIN_LENGTH) {
+        if (this.state.firstValue.length < MIN_LENGTH) {
             return {error: 'isSmall'};
         }
     }
