@@ -70,7 +70,11 @@ export class WalletController {
 
     initVault(password) {
         if (!password || typeof password !== 'string') {
-            throw new Error('Password is required');
+            this.store.updateState({locked: true, initialized: false});
+            this.password = '';
+            this.wallets = [];
+            this._saveWallets();
+            return null;
         }
         this.password = password;
         this.wallets = [];

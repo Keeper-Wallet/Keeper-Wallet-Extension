@@ -41,6 +41,17 @@ export const deleteActiveAccount = store => next => action => {
     return next(action);
 };
 
+export const deleteAccount = store => next => action => {
+    if (action.type === ACTION.DELETE_ACCOUNT) {
+        background.initVault().then(
+            () => store.dispatch(setTab(PAGES.ROOT))
+        );
+        return null;
+    }
+
+    return next(action);
+};
+
 export const uiState = store => next => action => {
     if (action.type === ACTION.SET_UI_STATE) {
         const ui = store.getState().uiState;

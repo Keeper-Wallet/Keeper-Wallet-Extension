@@ -1,4 +1,3 @@
-import { promises } from 'fs';
 
 class Background {
 
@@ -78,7 +77,7 @@ class Background {
         return this.background.unlock(password);
     }
 
-    async initVault(password): Promise<void> {
+    async initVault(password?): Promise<void> {
         await this.initPromise;
         return this.background.initVault(password);
     }

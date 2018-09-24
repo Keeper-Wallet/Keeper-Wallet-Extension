@@ -14,6 +14,7 @@ class SettingsComponent extends React.Component {
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
+    deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
 
     render() {
         return <div className={styles.content}>
@@ -50,7 +51,7 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
 
-            <Button type={BUTTON_TYPE.WARNING}>
+            <Button type={BUTTON_TYPE.WARNING} onClick={this.deleteHandler}>
                 <Trans i18nKey='settings.delete'>Delete account</Trans>
             </Button>
         </div>

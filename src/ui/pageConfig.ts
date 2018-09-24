@@ -18,6 +18,7 @@ import {
     NetworksSettings,
     LangsSettings,
     ChangePassword,
+    DeleteAccount,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -48,6 +49,7 @@ export const PAGES = {
     NETWORK_SETTINGS: 'networks_select',
     LANGS_SETTINGS: 'langs_settings',
     CHANGE_PASSWORD: 'change_password_settings',
+    DELETE_ACCOUNT: 'delete_account',
     ROOT: '',
 };
 
@@ -289,6 +291,14 @@ export const PAGES_CONF = {
     },
     [PAGES.CHANGE_PASSWORD]: {
         component: ChangePassword,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.DELETE_ACCOUNT]: {
+        component: DeleteAccount,
         menu: {
             hasLogo: true,
             hasSettings: false,

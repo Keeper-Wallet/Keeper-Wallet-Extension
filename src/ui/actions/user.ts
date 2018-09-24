@@ -1,5 +1,8 @@
 import { ACTION } from './constants';
 
+
+export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
+
 export function user(account) {
     return {
         type: ACTION.SAVE_NEW_ACCOUNT,

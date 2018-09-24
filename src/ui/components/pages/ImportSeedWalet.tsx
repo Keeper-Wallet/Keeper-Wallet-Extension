@@ -21,7 +21,7 @@ class ImportSeedComponent extends React.Component {
 
     constructor({ isNew, ...props }) {
         super(props);
-        const value = isNew ? '' : this.props.account.phrase;
+        const value = isNew ? '' : this.props.account && this.props.account.phrase;
         const error = this._validate(value);
         this.state = { value, error, showError: false };
     }
