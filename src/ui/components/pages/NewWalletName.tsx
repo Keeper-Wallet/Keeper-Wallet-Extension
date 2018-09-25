@@ -27,7 +27,7 @@ class NewWalletNameComponent extends React.Component {
                         <Input ref={this.getRef}
                                onChange={this.onChange}
                                value={this.props.account.name || ''}
-                               maxlength='32'
+                               maxLength='32'
                         />
                     </div>
 

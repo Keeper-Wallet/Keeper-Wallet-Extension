@@ -8,7 +8,7 @@ import {PAGES} from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-
+import cn from 'classnames';
 
 @translate('extension')
 class AssetsComponent extends React.Component {
@@ -19,6 +19,11 @@ class AssetsComponent extends React.Component {
     getBalancesHandler = () => this.props.getBalances();
     onSelectHandler = account => this.showInfo(account);
     onSetActiveHandler = account => this.setActive(account);
+    scrollHandler = (e) => {
+        const value = e.target.scrollTop;
+        this.setState({ topScrollMain: value > 90 });
+        e.target.scrollTop = Math.min(value, 90);
+    };
     showQrHandler = (event) => {
         event.stopPropagation();
         this.props.setTab(PAGES.QR_CODE_SELECTED);
@@ -47,10 +52,14 @@ class AssetsComponent extends React.Component {
                     onActive={this.onSetActiveHandler}/>)
             );
 
+        const scrollClassName = cn('scroll-container', {
+            'lock-scroll': this.state.topScrollMain
+        });
+
         return <div className={styles.assets}>
             <ActiveWallet {...activeProps} key={activeAddress}/>
 
-            <div className="scroll-container">
+            <div className={scrollClassName} onScroll={this.scrollHandler}>
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>

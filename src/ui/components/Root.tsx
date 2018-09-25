@@ -17,7 +17,7 @@ class RootComponent extends React.Component<any, any> {
         let tab = nextProps.tab;
 
         if (nextProps.messages && nextProps.messages.length) {
-            tab = PAGES.MESSAGES
+            //tab = PAGES.MESSAGES
         }
 
         if (!tab && nextProps.locked == null) {
