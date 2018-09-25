@@ -50,23 +50,25 @@ class AssetsComponent extends React.Component {
         return <div className={styles.assets}>
             <ActiveWallet {...activeProps} key={activeAddress}/>
 
-            <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
-                 onClick={this.addWalletHandler}>
-                <Trans i18nKey='assets.addAccount'>Add an account</Trans>
-            </div>
-
-            <div>
-                <div className="basic500 body1">
-                    <Trans i18nKey='assets.inStorage'>In storage</Trans>
+            <div className="scroll-container">
+                <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
+                     onClick={this.addWalletHandler}>
+                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
-                <div className={styles.walletsList}>
-                    <CSSTransitionGroup transitionName="animate_wallets"
-                                        transitionEnterTimeout={600}
-                                        transitionEnter={true}
-                                        transitionLeaveTimeout={600}
-                                        transitionLeave={true}>
-                        {wallets}
-                    </CSSTransitionGroup>
+
+                <div>
+                    <div className="basic500 body1">
+                        <Trans i18nKey='assets.inStorage'>In storage</Trans>
+                    </div>
+                    <div className={styles.walletsList}>
+                        <CSSTransitionGroup transitionName="animate_wallets"
+                                            transitionEnterTimeout={600}
+                                            transitionEnter={true}
+                                            transitionLeaveTimeout={600}
+                                            transitionLeave={true}>
+                            {wallets}
+                        </CSSTransitionGroup>
+                    </div>
                 </div>
             </div>
 
