@@ -1,8 +1,34 @@
 @import '../../../styles/colors.styl';
 
-.loader {
-  background: $submit;
-  width: 20px;
-  height: 20px;
+.loader
+  background: $basic100;
+  width: 146px;
+  max-height: 8px;
   display: inline-block;
-}
+  border-radius: 4px;
+  overflow: hidden;
+
+  &::after
+    width: 54px;
+    height: 8px;
+    display: block;
+    content: '';
+    background-image: linear-gradient(to left, #ffffff00, $white 50%, #ffffff00);
+    animation: loaderAnimation linear .8s;
+    animation-iteration-count: infinite;
+    transform-origin: 100% 50%;
+    -webkit-animation: loaderAnimation linear .8s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-transform-origin: 100% 50%;
+
+@keyframes loaderAnimation
+  0%
+    transform: translate(-54px, 0px);
+  100%
+    transform: translate(200px, 0px);
+
+@-webkit-keyframes loaderAnimation
+  0%
+    -webkit-transform: translate(-54px, 0px);
+  100%
+    -webkit-transform: translate(200px, 0px);

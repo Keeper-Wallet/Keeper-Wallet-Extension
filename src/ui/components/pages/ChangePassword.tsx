@@ -51,36 +51,36 @@ class ChangePasswordComponent extends React.PureComponent {
     render() {
         return <div className={styles.newPassword}>
             <form className={styles.content} onSubmit={this.onSubmit}>
-                <h2 className={`title1 margin3 left`}>
+                <h2 className="title1 margin2">
                     <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
-                    <div className={`basic500 tag1 left input-title`}>
+                    <div className="basic500 tag1 input-title">
                         <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
                     </div>
                     <Input id='old'
-                           className={`margin3`}
+                           className="margin-main-big"
                            type="password"
                            onChange={this.onChangeOld}
                            onBlur={this.onOldBlur}
                            error={!!this.state.oldError}
                            ref={this.getRef}
                     />
-                    <div className={`basic500 tag1 left input-title`}>
+                    <div className="basic500 tag1 input-title">
                         <Trans i18nKey='changePassword.newPassword'>New password</Trans>
                     </div>
                     <Input id='first'
-                           className={`margin3`}
+                           className="margin-main-big"
                            type="password"
                            onBlur={this.onFirstBlur}
                            onChange={this.onChangeFist}
                            error={!!this.state.firstError}
                     />
-                    <div className={`basic500 tag1 left input-title`}>
+                    <div className="basic500 tag1 input-title">
                         <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
                     </div>
                     <Input id='second'
-                           className={`margin3`}
+                           className="margin-main-big"
                            type="password"
                            onBlur={this.onSecondBlur}
                            onChange={this.onChangeSecond}

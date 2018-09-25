@@ -16,8 +16,9 @@
   .network {
     background: url(../../assets/img/network-14-basic-500.svg) left center no-repeat;
     padding-left: 22px;
-    flex-grow: 1;
+    flex-grow: 0;
     cursor: pointer;
+
     span {
       border-bottom: 1px dotted $basic500;
     }
@@ -26,24 +27,32 @@
 
 .selectNetworks
   position: absolute;
-  bottom: -9px;
+  bottom: -3px;
   background-color: white;
-  padding: 5px;
-  box-shadow: 0 2px 4px 0 #9ba6b2;
+  padding: 2px 8px;
+  box-shadow: 0 2px 6px 0 #9ba6b266;
   border-radius: 5px;
   z-index: 10;
+  width: 100px;
 
   .network
-    margin: 5px;
+    padding: 6px 5px 6px 20px;
+    width: 100%;
+    font-weight: 400;
+    text-transform: capitalize;
+
+    &:not(:first-child)
+      border-top: 1px solid $accent50;
 
     span
-      border-bottom: 1px solid $basic500;
+      border-bottom: 0 none;
 
   .selectedNet
     cursor: default;
+    background: url(../../assets/img/network-14-black.svg) left center no-repeat;
     
     span
-      border-bottom: 1px dotted $basic500;
+      color: $black;
 
 
 

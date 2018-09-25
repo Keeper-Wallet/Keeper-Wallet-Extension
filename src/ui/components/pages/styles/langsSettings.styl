@@ -3,17 +3,27 @@
 .content
   width: 100%;
   position: relative;
-  padding: 110px 60px;
+  padding: 64px 60px 0 60px;
 
 .lang
   width: 100%;
-  height: 34px;
-  border-bottom: 1px solid $disabled200;
+  height: 44px;
+  border-bottom: 1px solid $accent50;
   display: flex;
+  position: relative;
 
-  .flagIcon
-    padding-top: 12px;
+  &.selected
+    button
+      color: $disabled200;
+
+.flagIcon
+  height: 44px;
+  width: 18px;
+  position: absolute;
+  right: 0;
+  top: 0;
 
 .selectButton
-  display: inline-flex;
-
+  display: flex;
+  height: 44px;
+  font-family Roboto;

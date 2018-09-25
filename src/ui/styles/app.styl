@@ -178,39 +178,13 @@ $layout-24 = 24px;
   border-radius: 2px;
 }
 
-// global icons
-:global .copy-icon {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
-  background: url(../assets/img/copy-14-submit-400.svg) center no-repeat;
-}
-
-:global .password-icon {
-  background: url(../assets/img/password-14-basic-200.svg) center no-repeat;
-  width: 14px;
-  height: 14px;
-}
-
-:global .active-account-icon {
-  background: url(../assets/img/activeasset-18-submit-400.svg) center no-repeat;
-}
-
-:global .inactive-account-icon {
-  background: url(../assets/img/activeasset-18-basic-500.svg) center no-repeat;
-}
-
-:global .lock-icon {
-  background: url(../assets/img/lock-48-multy.svg) center no-repeat;
-}
-
 // modal
 :global #app-modal
-  position: fixed;
-  height: 32px;
+  position: relative;
   width: 100%;
-  display: flex;
-  bottom: 14px;
+  display: block;
+  top: 0;
+  z-index: 2;
 
 :global .modal
   position: fixed;
@@ -234,9 +208,9 @@ $layout-24 = 24px;
   background: rgba(0, 0, 0, 0.8);
   color: $white;
   z-index: 1;
+  top: calc(100% - 42px);
 
   &.error {
     background-color: $error400;
     z-index: 2;
   }
-
