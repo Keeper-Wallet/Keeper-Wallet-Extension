@@ -13,7 +13,12 @@ class RootComponent extends React.Component<any, any> {
     state = { tab: null };
 
     static getDerivedStateFromProps(nextProps: IProps) {
+
         let tab = nextProps.tab;
+
+        if (nextProps.messages && nextProps.messages.length) {
+            tab = PAGES.MESSAGES
+        }
 
         if (!tab && nextProps.locked == null) {
             tab = PAGES.INTRO;
@@ -99,7 +104,8 @@ const mapStateToProps = function (store: any) {
         tab: store.tab || '',
         tmpTab: store.tmpTab,
         backTabs: store.backTabs,
-        ui: store.uiState
+        ui: store.uiState,
+        messages: store.messages
     };
 };
 
@@ -115,4 +121,5 @@ interface IProps {
     removeBackTab: () => void;
     tab: string;
     backTabs: Array<string>;
+    messages: Array<any>;
 }
