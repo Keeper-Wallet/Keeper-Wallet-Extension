@@ -2,13 +2,14 @@ import * as React from 'react';
 import cn from 'classnames';
 import { Money } from '@waves/data-entities';
 import * as styles from './balance.styl';
+import { Loader } from '../loader';
 
 const SEPARATOR = '.';
 
 export const Balance = ({ balance, split, showAsset, isShortFormat, children, ...props }: IProps) => {
 
     if (!balance) {
-        return <div>N/A {children}</div>
+        return <div><Loader/> {children}</div>
     }
 
     const tokens = (isShortFormat ? balance.toFormat() : balance.toTokens()).split('.');

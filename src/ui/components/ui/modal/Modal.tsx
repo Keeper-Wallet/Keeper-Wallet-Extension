@@ -2,25 +2,36 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as styles from './modal.styl';
 import cn from 'classnames';
+import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+
 
 const ModalWrapper = (props) => {
-
+    let Item;
     if (props.showChildrenOnly) {
-        return props.showModal ? props.children : null;
-    }
+        Item = props.showModal ? props.children : null;
+    } else {
 
-    const className = cn(styles.modal, 'modal', {
-        [styles.hidden]: !props.showModal
-    });
+        const className = cn(styles.modal, 'modal', styles.animated, {
+            [styles.hidden]: !props.showModal
+        });
 
-    return (
-        <div className={className}>
-            {props.showClose ? <div className={styles.close} onClick={props.onClose}>X</div> : null}
-            <div className={styles.content}>
-                {props.children}
+        Item = (
+            <div className={className}>
+                {props.showClose ? <div className={styles.close} onClick={props.onClose}>X</div> : null}
+                <div className={styles.content}>
+                    {props.children}
+                </div>
             </div>
-        </div>
-    );
+        );
+
+    }
+    return <CSSTransitionGroup transitionName="animated_modal"
+                               transitionEnterTimeout={200}
+                               transitionEnter={true}
+                               transitionLeaveTimeout={200}
+                               transitionLeave={true}>
+        {Item}
+    </CSSTransitionGroup>
 };
 
 

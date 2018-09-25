@@ -29,7 +29,7 @@ class ConditionsComponent extends React.Component {
         const confirmDisabled = height > 5;
 
         if (this.state.confirmDisabled !== confirmDisabled) {
-            this.setState({confirmDisabled});
+            this.setState({ confirmDisabled });
         }
     }
 

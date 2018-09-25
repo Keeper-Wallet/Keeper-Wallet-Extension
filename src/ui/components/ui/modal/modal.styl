@@ -2,3 +2,23 @@
 
 .hidden
   display: none;
+  opacity: 0;
+  transform: scale3d(1, 0.01, 1) translateX(-50%);
+
+:global .animated_modal-enter
+  opacity: 0;
+  transform: scale3d(1, 0.01, 1) translateX(-50%);
+
+:global .animated_modal-enter.animated_modal-enter-active
+  opacity: 1;
+  transform: scale3d(1, 1, 1) translateX(-50%);
+  transition: transform 0.2s linear, opacity 0.2s linear;
+
+:global .animated_modal-leave
+  opacity: 1;
+  transform: scale3d(1, 1, 1) translateX(-50%);
+
+:global .animated_modal-leave.animated_modal-leave-active
+  opacity: 0;
+  transform: scale3d(1, 0.01, 0.01) translateX(-50%);
+  transition: transform 0.2s linear, opacity 0.2s linear;

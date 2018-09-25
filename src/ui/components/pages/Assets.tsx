@@ -6,6 +6,9 @@ import {translate, Trans} from 'react-i18next';
 import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../actions';
 import {PAGES} from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
+import { Modal } from '../ui';
+import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+
 
 @translate('extension')
 class AssetsComponent extends React.Component {
@@ -14,31 +17,30 @@ class AssetsComponent extends React.Component {
     state = {} as any;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     getBalancesHandler = () => this.props.getBalances();
-    onSelectHandler = account => this.props.setActiveAccount(account);
-    onSetActiveHandler = account => this.props.selectAccount(account);
+    onSelectHandler = account => this.showInfo(account);
+    onSetActiveHandler = account => this.setActive(account);
     showQrHandler = (event) => {
         event.stopPropagation();
         this.props.setTab(PAGES.QR_CODE_SELECTED);
     };
-    
+
     render() {
         const {address: activeAddress} = this.props.activeAccount;
-        const {address: selectedAddress} = this.props.selectedAccount;
 
         const activeProps = {
-            account: this.props.selectedAccount,
-            balance: this.state.balances[selectedAddress],
-            onClick: () => this.props.setTab(PAGES.ACCOUNT_INFO),
+            account: this.props.activeAccount,
+            balance: this.state.balances[activeAddress],
+            onClick: () => this.showInfo(this.props.activeAccount),
             onShowQr: this.showQrHandler,
-            active: activeAddress === selectedAddress,
+            active: true,
         };
 
         const wallets = this.props.accounts
-            .filter(account => account.address !== selectedAddress)
+            .filter(account => account.address !== activeAddress)
             .map((account) => (
                 <WalletItem
                     account={account}
-                    active={activeAddress === account.address}
+                    active={false}
                     balance={this.state.balances[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}
@@ -46,8 +48,7 @@ class AssetsComponent extends React.Component {
             );
 
         return <div className={styles.assets}>
-
-            <ActiveWallet {...activeProps}/>
+            <ActiveWallet {...activeProps} key={activeAddress}/>
 
             <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                  onClick={this.addWalletHandler}>
@@ -59,10 +60,42 @@ class AssetsComponent extends React.Component {
                     <Trans i18nKey='assets.inStorage'>In storage</Trans>
                 </div>
                 <div className={styles.walletsList}>
-                    {wallets}
+                    <CSSTransitionGroup transitionName="animate_wallets"
+                                        transitionEnterTimeout={600}
+                                        transitionEnter={true}
+                                        transitionLeaveTimeout={600}
+                                        transitionLeave={true}>
+                        {wallets}
+                    </CSSTransitionGroup>
                 </div>
             </div>
+
+            <Modal showModal={this.state.showActivated} showChildrenOnly={true}>
+                <div className="modal notification" key={this.state.name}>
+                    <Trans i18nKey="assets.account">Account</Trans>
+                    <span>{this.state.name}</span>
+                    <Trans i18nKey="assets.setActive">set active!</Trans>
+                </div>
+            </Modal>
+
         </div>
+    }
+
+    setActive(account) {
+        this.props.selectAccount(account);
+        this.setState({ showActivated: true, name: account.name });
+        this.closeModals();
+    }
+
+    showInfo(account) {
+        this.props.setActiveAccount(account);
+        this.props.setTab(PAGES.ACCOUNT_INFO);
+    }
+
+    closeModals() {
+        const showSelected = false;
+        const showActivated = false;
+        setTimeout(() => this.setState({ showSelected, showActivated }), 1000);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -87,8 +120,8 @@ const mapStateToProps = function (store: any) {
     const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
 
     return {
-        selectedAccount: store.accounts.find(({ address }) => address === selected),
-        activeAccount: store.accounts.find(({ address }) => address === activeAccount),
+        selectedAccount: store.accounts.find(({ address }) => address === selected) || {},
+        activeAccount: store.accounts.find(({ address }) => address === activeAccount) || {},
         accounts: store.accounts,
         balances: store.balances,
         assets: store.assets,
