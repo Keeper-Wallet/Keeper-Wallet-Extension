@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { getTxId } from './';
+import { getTxId, TxIcon } from './';
 import { Balance, Button, BUTTON_TYPE } from '../ui';
+import { TransactionWallet } from '../wallets';
 
 @translate('extension')
 export class Transfer extends React.PureComponent {
@@ -21,10 +22,12 @@ export class Transfer extends React.PureComponent {
         const { data: tx } = this.props.signData;
 
         return <div>
-            <div>Account info
-                {this.props.selectAccount}
+            <div>
+                <TransactionWallet account={this.props.selectedAccount}/>
             </div>
-            <div>Icon-{this.props.txtype}</div>
+            <div>
+                <TxIcon txType={this.props.txType}/>
+            </div>
             <div>
                 <Balance balance={tx.amount}/>
             </div>

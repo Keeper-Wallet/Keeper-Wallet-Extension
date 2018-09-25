@@ -2,29 +2,23 @@ import * as React from 'react';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
-import { Balance, Button } from '../ui';
+import { Button } from '../ui';
 import * as styles from './wallet.styl';
 
 
-export const WalletItem = ({
+export const TransactionWallet = ({
         className = '',
         onSelect = null,
         onActive = null,
         account = null,
         active = false,
-        balance = null,
         children = [],
         ...props
     }) => {
 
     className = cn(styles.wallet, className, {[styles.activeWallet]: active});
 
-    const iconClass = cn(
-        styles.accountIcon,
-        {
-            'active-account-icon': active,
-            'inactive-account-icon': !active,
-        });
+    const iconClass = cn(styles.accountIcon, 'change-account-icon');
 
     const clickHandler = () => {
         if (onSelect) {
@@ -49,7 +43,7 @@ export const WalletItem = ({
                 {account.name}
             </div>
             <div className={styles.balance}>
-                <Balance isShortFormat={false} split={true} showAsset={true} balance={balance}/>
+                {account.address}
             </div>
         </div>
 

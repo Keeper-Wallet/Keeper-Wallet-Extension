@@ -24,7 +24,7 @@ class MessagesComponent extends React.Component {
         const conf = getConfigByTransaction(signData);
         const { component: Component, type } = conf;
 
-        return <Component txtype={type}
+        return <Component txType={type}
                           signData={signData}
                           selectedAccount={this.state.selectedAccount}
                           reject={this.rejectHandler}

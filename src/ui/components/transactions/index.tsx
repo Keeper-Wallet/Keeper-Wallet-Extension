@@ -1,6 +1,9 @@
 import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapter';
 import { Transfer } from './Transfer';
 
+export * from './Transfer';
+export * from './TransactionIcon';
+
 export const getConfigByTransaction = tx => {
     const config = {
         type: null,
