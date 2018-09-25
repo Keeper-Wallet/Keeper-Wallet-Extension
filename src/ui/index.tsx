@@ -1,4 +1,5 @@
 import './styles/app.styl';
+import './styles/icons.styl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { LANGS } from './i18n';

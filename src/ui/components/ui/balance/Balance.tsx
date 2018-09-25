@@ -9,7 +9,8 @@ const SEPARATOR = '.';
 export const Balance = ({ balance, split, showAsset, isShortFormat, children, ...props }: IProps) => {
 
     if (!balance) {
-        return <div><Loader/> {children}</div>
+        return <div><
+            Loader/> {children}</div>
     }
 
     const tokens = (isShortFormat ? balance.toFormat() : balance.toTokens()).split('.');

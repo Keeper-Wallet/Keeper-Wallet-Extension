@@ -53,6 +53,7 @@ class LoginComponent extends React.Component {
             </Error>
             <div>
                 <a href="#" className={`${styles.forgotLnk} link`}>
+                    {/* todo @vba  - link to recovery */}
                     <Trans i18nKey="login.passwordforgot">I forgot password</Trans>
                 </a>
             </div>

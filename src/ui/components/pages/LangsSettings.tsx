@@ -8,9 +8,11 @@ import cn from 'classnames';
 
 
 const Lang = ({ id, name, onSelect, selected }) => {
-    const className = cn(styles[id], styles.lang);
+    const className = cn(styles[id], styles.lang, {
+        [styles.selected]: selected
+    });
     const iconClass = cn(styles.flagIcon, {
-        'selected-icon': selected,
+        'selected-lang': selected,
         [`flag-${id}-icon`]: !selected
     });
 
@@ -18,7 +20,7 @@ const Lang = ({ id, name, onSelect, selected }) => {
         <Button className={styles.selectButton} type={BUTTON_TYPE.TRANSPARENT} onClick={onSelect}>
             <Trans i18nKey={`langsSettings.${id}`}>{name}</Trans>
         </Button>
-        <div className={iconClass}>F</div>
+        <div className={iconClass}></div>
     </div>;
 };
 
@@ -29,9 +31,9 @@ class LangsSettingsComponent extends React.Component {
 
     render() {
         return <div className={styles.content}>
-            <h1>
+            <h2 className="title1 margin-main-big">
                 <Trans i18nKey='langsSettings.title'>Change the language</Trans>
-            </h1>
+            </h2>
             <div>
                 {
                     this.props.langs.map(({ id, name }) => {
