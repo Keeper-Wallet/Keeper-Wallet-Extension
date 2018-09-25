@@ -19,6 +19,7 @@ import {
     LangsSettings,
     ChangePassword,
     DeleteAccount,
+    Messages,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -50,6 +51,7 @@ export const PAGES = {
     LANGS_SETTINGS: 'langs_settings',
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
+    MESSAGES: 'messages',
     ROOT: '',
 };
 
@@ -303,6 +305,14 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
+        }
+    },
+    [PAGES.MESSAGES]: {
+        component: Messages,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: false,
         }
     }
 };

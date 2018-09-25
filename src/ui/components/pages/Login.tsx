@@ -1,7 +1,7 @@
 import * as styles from './styles/login.styl';
 import * as React from 'react'
-import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
+import {connect} from 'react-redux';
 import {BigLogo} from '../head';
 import {Button, Input, Error} from '../ui';
 import {login} from '../../actions';
