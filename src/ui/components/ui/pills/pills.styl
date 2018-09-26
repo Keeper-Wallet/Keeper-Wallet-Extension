@@ -13,6 +13,7 @@
     cursur: pointer;
 
     &.selectedPill
+        border-radius: 2px;
 
         &.hiddenPill
         .text
@@ -22,8 +23,8 @@
 
     &.hiddenPill
         background-color: transparent;
-        display: none;
-        .text
+        opacity: 0;
+        div
             opacity: 0;
             transform: scale3d(0.01, 0.01, 1);
 

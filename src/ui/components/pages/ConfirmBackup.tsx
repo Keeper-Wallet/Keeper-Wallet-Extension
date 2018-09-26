@@ -53,8 +53,8 @@ class ConfirmBackupComponent extends React.Component {
                     </div>
                     <div>
                         <Button type='transparent' onClick={this.onClear}>
-                            <Trans i18nKey='confirmBackup.clear'>Clear</Trans>
-                            <Trans i18nKey='confirmBackup.selectAgain'>and tap again</Trans>
+                            <span className="link"><Trans i18nKey='confirmBackup.clear'>Clear</Trans><span>
+                            <Trans i18nKey='confirmBackup.selectAgain'> </Trans>
                         </Button>
                     </div>
                 </div>
