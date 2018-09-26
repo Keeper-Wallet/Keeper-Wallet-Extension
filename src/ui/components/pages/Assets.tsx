@@ -22,7 +22,6 @@ class AssetsComponent extends React.Component {
     scrollHandler = (e) => {
         const value = e.target.scrollTop;
         this.setState({ topScrollMain: value > 90 });
-        e.target.scrollTop = Math.min(value, 90);
     };
     showQrHandler = (event) => {
         event.stopPropagation();
@@ -59,17 +58,17 @@ class AssetsComponent extends React.Component {
         return <div className={styles.assets}>
             <ActiveWallet {...activeProps} key={activeAddress}/>
 
-            <div className={scrollClassName} onScroll={this.scrollHandler}>
+            <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
 
                 <div>
-                    <div className="basic500 body1">
+                    <div className="basic500 body1 in-storage">
                         <Trans i18nKey='assets.inStorage'>In storage</Trans>
                     </div>
-                    <div className={styles.walletsList}>
+                    <div>
                         <CSSTransitionGroup transitionName="animate_wallets"
                                             transitionEnterTimeout={600}
                                             transitionEnter={true}
