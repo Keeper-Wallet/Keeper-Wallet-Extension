@@ -2,7 +2,7 @@ import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
 import { createNew } from '../../actions';
 import * as React from 'react'
-import { Input, Button } from '../ui';
+import { Input, Button, Error } from '../ui';
 import { translate, Trans } from 'react-i18next';
 
 const MIN_LENGTH = 6;
@@ -32,8 +32,8 @@ class NewAccountComponent extends React.PureComponent {
     getRef = input => this.inputEl = input;
     onFirstBlur = () => this._onFirstBlur();
     onSecondBlur = () => this._onSecondBlur();
-    onChangeFist = e => this._onChangeFist(e);
-    onChangeSecond = e => this._onChangeSecond(e);
+    onChangeFist = e => this._onChangeInputs(e.target.value, this.state.secondValue);
+    onChangeSecond = e => this._onChangeInputs(this.state.firstValue, e.target.value);
     onSubmit = (e) => {
         e.preventDefault();
         if (!this.state.passwordError && this.state.firstValue) {
@@ -52,27 +52,35 @@ class NewAccountComponent extends React.PureComponent {
                     <Trans i18nKey='newAccount.protect'>Protect Your Account</Trans>
                 </h2>
                 <div>
-                    <div className={`basic500 tag1 left input-title`}>
-                        <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
+                    <div className='margin3 relative'>
+                        <div className={`basic500 tag1 left input-title`}>
+                            <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
+                        </div>
+                        <Input id='first'
+                               className='margin1'
+                               type="password"
+                               ref={this.getRef}
+                               onBlur={this.onFirstBlur}
+                               onChange={this.onChangeFist}
+                               error={!!this.state.firstError}/>
+                        <Error className={styles.firstError} hide={!this.state.firstError}>
+                            <Trans i18nKey='newAccount.smallPass'>Password is small</Trans>
+                        </Error>
                     </div>
-                    <Input id='first'
-                           className={`margin3`}
-                           type="password"
-                           ref={this.getRef}
-                           onBlur={this.onFirstBlur}
-                           onChange={this.onChangeFist}
-                           error={!!this.state.firstError}
-                    />
-                    <div className={`basic500 tag1 left input-title`}>
-                        <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
+                    <div className='margin3 relative'>
+                        <div className={`basic500 tag1 left input-title`}>
+                            <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
+                        </div>
+                        <Input id='second'
+                               className='margin1'
+                               type="password"
+                               onBlur={this.onSecondBlur}
+                               onChange={this.onChangeSecond}
+                               error={!!this.state.secondError}/>
+                        <Error className={styles.secondError} hide={!this.state.secondError}>
+                            <Trans i18nKey='newAccount.notMatch'>Password no match</Trans>
+                        </Error>
                     </div>
-                    <Input id='second'
-                           className={`margin3`}
-                           type="password"
-                           onBlur={this.onSecondBlur}
-                           onChange={this.onChangeSecond}
-                           error={!!this.state.secondError}
-                    />
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='newAccount.create'>Continue</Trans>
@@ -85,64 +93,62 @@ class NewAccountComponent extends React.PureComponent {
                         Waves does not store your passwords.
                     </Trans>
                 </div>
-
             </form>
-
         </div>
     }
 
     _onFirstBlur() {
-        this._checkValues();
+        this._checkValues(this.state.firstValue, this.state.secondValue);
     }
 
     _onSecondBlur() {
-        this._checkValues();
+        this._checkValues(this.state.firstValue, this.state.secondValue);
     }
 
-    _onChangeFist(e) {
-        const buttonDisabled = this._isDisabledButton();
-        const firstValue = e.target.value;
-        this.setState({firstValue, buttonDisabled});
+
+    _onChangeInputs(firstValue, secondValue) {
+        this.setState({ firstValue, secondValue });
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
+        if (!buttonDisabled) {
+            this._checkValues(firstValue, secondValue);
+        }
     }
 
-    _onChangeSecond(e) {
-        const buttonDisabled = this._isDisabledButton();
-        const secondValue = e.target.value;
-        this.setState({secondValue, buttonDisabled});
+    _checkValues(firstValue, secondValue) {
+        const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
+        const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
+        const passwordError = !!(firstError || secondError);
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
+        this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
 
-    _isDisabledButton() {
-        if (!this.state.firstValue || !this.state.secondValue) {
+    static _isDisabledButton({ firstValue, secondValue }) {
+        if (!firstValue || !secondValue) {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length < MIN_LENGTH;
+        const isFirstError = NewAccountComponent._validateFirst(firstValue, secondValue);
+        const isSecondError = NewAccountComponent._validateSecond(firstValue, secondValue);
+
+        return isFirstError || isSecondError;
     }
 
-    _checkValues() {
-        const firstError = this._validateFirst();
-        const secondError = this._validateSecond();
-        const passwordError = !!(firstError || secondError);
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({passwordError, firstError, secondError, buttonDisabled});
-    }
-
-    _validateFirst() {
-        if (!this.state.firstValue) {
+    static _validateFirst(firstValue, secondValue) {
+        if (!firstValue) {
             return null;
         }
 
-        if (this.state.firstValue.length < MIN_LENGTH) {
+        if (firstValue.length < MIN_LENGTH) {
             return {error: 'isSmall'};
         }
     }
 
-    _validateSecond() {
-        if (!this.state.secondValue || !this.state.firstValue) {
+    static _validateSecond(firstValue, secondValue) {
+        if (!secondValue || !firstValue) {
             return null;
         }
 
-        if (this.state.firstValue === this.state.secondValue) {
+        if (firstValue === secondValue) {
             return null;
         }
 

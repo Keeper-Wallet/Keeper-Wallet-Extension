@@ -5,7 +5,7 @@ export class Error extends React.PureComponent {
 
     props: IProps;
     state = { hidden: false };
-    onClick = this._onClick;
+    onClick = (e) => this._onClick(e);
 
     render() {
         const { hidden } = this.state;
@@ -14,7 +14,7 @@ export class Error extends React.PureComponent {
             return null;
         }
 
-        const { className = '', children, ...props } = this.props;
+        const { className = '', hide, onClick, hideByClick, children, ...props } = this.props;
         const errorProps = {
             ...props,
             onClick: this.onClick,

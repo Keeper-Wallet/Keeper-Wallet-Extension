@@ -9,6 +9,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import cn from 'classnames';
+import { Intro } from './Intro';
 
 @translate('extension')
 class AssetsComponent extends React.Component {
@@ -16,7 +17,6 @@ class AssetsComponent extends React.Component {
     props;
     state = {} as any;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
-    getBalancesHandler = () => this.props.getBalances();
     onSelectHandler = account => this.showInfo(account);
     onSetActiveHandler = account => this.setActive(account);
     scrollHandler = (e) => {
@@ -29,6 +29,11 @@ class AssetsComponent extends React.Component {
     };
 
     render() {
+
+        if (this.state.loading) {
+            return <Intro/>;
+        }
+
         const {address: activeAddress} = this.props.activeAccount;
 
         const activeProps = {
@@ -111,9 +116,13 @@ class AssetsComponent extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const asset = props.assets['WAVES'];
 
+        if (!props.activeAccount) {
+            return { loading: true };
+        }
+
         if (!asset) {
             props.getAsset('WAVES');
-            return { balances: {} };
+            return { balances: {}, loading: false };
         }
         
         const assetInstance = new Asset(asset);
@@ -121,7 +130,7 @@ class AssetsComponent extends React.Component {
         Object.entries(props.balances)
             .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
 
-        return { balances: balancesMoney };
+        return { balances: balancesMoney, loading: false };
     }
 }
 
@@ -130,8 +139,8 @@ const mapStateToProps = function (store: any) {
     const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
 
     return {
-        selectedAccount: store.accounts.find(({ address }) => address === selected) || {},
-        activeAccount: store.accounts.find(({ address }) => address === activeAccount) || {},
+        selectedAccount: store.accounts.find(({ address }) => address === selected),
+        activeAccount: store.accounts.find(({ address }) => address === activeAccount),
         accounts: store.accounts,
         balances: store.balances,
         assets: store.assets,

@@ -3,17 +3,19 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { newAccountName, user } from '../../actions';
-import { Input, Button } from '../ui';
+import { Input, Button, Error } from '../ui';
 
 @translate('extension')
 class NewWalletNameComponent extends React.Component {
 
     inputEl: Input;
-    props;
+    readonly props;
+    readonly state = {} as any;
 
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
     onSubmit = (e) => this._onSubmit(e);
+    onBlur = () => this._onBlur();
     getRef = input => this.inputEl = input;
 
     render() {
@@ -28,7 +30,11 @@ class NewWalletNameComponent extends React.Component {
                                onChange={this.onChange}
                                value={this.props.account.name || ''}
                                maxLength='32'
-                        />
+                               error={this.state.noName}
+                               onBlur={this.onBlur}/>
+                        <Error className={styles.error} hide={!this.state.noName}>
+                            <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
+                        </Error>
                     </div>
 
                     <div className={`basic500 tag1 margin2`}>
@@ -37,7 +43,7 @@ class NewWalletNameComponent extends React.Component {
                         </Trans>
                     </div>
 
-                        <Button type='submit'>
+                        <Button type='submit' disabled={!this.props.account.name}>
                             <Trans i18nKey="newAccountName.continue">Continue</Trans>
                         </Button>
                 </form>
@@ -45,8 +51,20 @@ class NewWalletNameComponent extends React.Component {
         </div>
     }
 
+    componentDidMount() {
+        this.inputEl.focus();
+    }
+
     _onChange(e) {
-        this.props.newAccountName(e.target.value)
+        this.props.newAccountName(e.target.value);
+        if (e.target.value)  {
+            this.setState({ noName: false });
+        }
+
+    }
+
+    _onBlur() {
+        this.setState({ noName: !this.props.account.name });
     }
 
     _onSubmit(e) {
