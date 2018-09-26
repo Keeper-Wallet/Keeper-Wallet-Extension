@@ -3,14 +3,16 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { setUiStateAndSetTab, setUiState } from '../../actions';
 import { translate, Trans } from 'react-i18next';
-import { Copy, Button } from '../ui';
+import { Copy, Button, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
 
 @translate('extension')
 class BackUpSeedComponent extends React.Component {
-
-    props;
+    readonly state = {} as any;
+    readonly props;
+    _t;
     onClick = () => this._onClick();
+    copyHandler = () => this._onCopy();
     cancelHandler = () => this._cancelHandler();
 
     render() {
@@ -25,7 +27,7 @@ class BackUpSeedComponent extends React.Component {
                         Please carefully write down these 15 words or copy them
                     </Trans>
                 </div>
-                <Copy text={this.props.account.seed}>
+                <Copy onCopy={this.copyHandler} text={this.props.account.seed} >
                     <div className={`copy-icon ${styles.copyIcon}`}></div>
                 </Copy>
             </div>
@@ -47,6 +49,12 @@ class BackUpSeedComponent extends React.Component {
             <Button className="button default" onClick={this.cancelHandler}>
                 <Trans i18nKey='backupSeed.cancel'>Cancel creation</Trans>
             </Button>
+
+            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="backupSeed.copied">Copied!</Trans>
+                </div>
+            </Modal>
         </div>
     }
 
@@ -54,6 +62,12 @@ class BackUpSeedComponent extends React.Component {
         this.props.setUiState({
             account: this.props.account
         });
+    }
+
+    _onCopy() {
+        this.setState({ showCopied: true });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
 
     _onClick() {

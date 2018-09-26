@@ -14,7 +14,7 @@ class NewWalletComponent extends React.Component {
     props;
     state;
     onSelect = (account) => this._onSelect(account);
-    onSubmit = () => this._onSubmit();
+    onSubmit = (e) => this._onSubmit(e);
 
     constructor({ isGenerateNew, ...props }) {
         super(props);
@@ -76,10 +76,11 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSelect(account) {
-        this.props.newAccountSelect({ ...account, type: 'seed', name: '' });
+        this.props.newAccountSelect({ name: '', ...account, type: 'seed' });
     }
 
-    _onSubmit() {
+    _onSubmit(e) {
+        e.stopPropagation();
         this.props.setTab(PAGES.ACCOUNT_NAME);
     }
 }
