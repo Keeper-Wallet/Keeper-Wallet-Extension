@@ -20,9 +20,10 @@ const Networks = ({isShow, onSelect, selectedNet, networks}) => {
                 styles.network,
                 {
                     'basic500': selected,
-                    [styles.selectedNet]: selected
+                    [styles.selectedNet]: selected,
                 }
             );
+
             const onSelectNet = selected ? null : () => onSelect(net);
 
             return <div onClick={onSelectNet} className={className} key={currentNetwork}>
@@ -41,7 +42,7 @@ class BottomComponent extends React.PureComponent {
     state = {showNetworks: false};
     clickHandler = () => {
         this.addClickOutHandler();
-        this.setState({showNetworks: !this.props.noChangeNetwork});
+        this.setState({ showNetworks: !this.props.noChangeNetwork });
     };
     selectHandler = (net) => {
         if (net) {
@@ -51,7 +52,7 @@ class BottomComponent extends React.PureComponent {
     };
     clickOutHandler = () => {
         this.removeClickOutHandler();
-        this.setState({showNetworks: false});
+        this.setState({ showNetworks: false });
     };
 
     render() {
@@ -62,11 +63,17 @@ class BottomComponent extends React.PureComponent {
             {
                 [styles.hidden]: this.props.locked || !this.props.initialized
             });
-
+        const networkClassName = cn(
+                styles.network,
+                'basic500',
+                {
+                    [styles.disabledNet]: this.props.noChangeNetwork,
+                }
+            );
         const currentNetwork = this.props.currentNetwork || 'mainnet';
 
         return <div className={className}>
-            <div className={`${styles.network} basic500`} onClick={this.clickHandler}>
+            <div className={networkClassName} onClick={this.clickHandler}>
                 <span>
                     <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                 </span>

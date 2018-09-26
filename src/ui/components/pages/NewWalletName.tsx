@@ -2,7 +2,7 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { newAccountName, user } from '../../actions';
+import { newAccountName, user, setUiState } from '../../actions';
 import { Input, Button, Error } from '../ui';
 
 @translate('extension')
@@ -17,6 +17,13 @@ class NewWalletNameComponent extends React.Component {
     onSubmit = (e) => this._onSubmit(e);
     onBlur = () => this._onBlur();
     getRef = input => this.inputEl = input;
+
+    constructor(params) {
+        super(params);
+        this.props.setUiState({
+            account: null
+        });
+    }
 
     render() {
         return <div className={styles.content}>
@@ -87,6 +94,7 @@ const mapStateToProps = function (store: any) {
 const actions = {
     newAccountName,
     addUser: user,
+    setUiState,
 };
 
 export const NewWalletName = connect(mapStateToProps, actions)(NewWalletNameComponent);
