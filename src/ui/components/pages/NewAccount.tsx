@@ -1,9 +1,9 @@
 import * as styles from './styles/newaccount.styl';
-import { connect } from 'react-redux';
-import { createNew } from '../../actions';
+import {connect} from 'react-redux';
+import {createNew} from '../../actions';
 import * as React from 'react'
-import { Input, Button, Error } from '../ui';
-import { translate, Trans } from 'react-i18next';
+import {Input, Button, Error} from '../ui';
+import {translate, Trans} from 'react-i18next';
 
 const MIN_LENGTH = 6;
 
@@ -52,7 +52,7 @@ class NewAccountComponent extends React.PureComponent {
                     <Trans i18nKey='newAccount.protect'>Protect Your Account</Trans>
                 </h2>
                 <div>
-                    <div className='margin3 relative'>
+                    <div className='margin1 relative'>
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
                         </div>
@@ -63,23 +63,28 @@ class NewAccountComponent extends React.PureComponent {
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
                                error={!!this.state.firstError}/>
-                        <Error className={styles.firstError} hide={!this.state.firstError}>
+
+                        <Error hide={!this.state.firstError}>
                             <Trans i18nKey='newAccount.smallPass'>Password is small</Trans>
                         </Error>
+
                     </div>
-                    <div className='margin3 relative'>
+                    <div className='margin1 relative'>
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
                         </div>
+
                         <Input id='second'
                                className='margin1'
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}/>
-                        <Error className={styles.secondError} hide={!this.state.secondError}>
+
+                        <Error hide={!this.state.secondError}>
                             <Trans i18nKey='newAccount.notMatch'>Password no match</Trans>
                         </Error>
+
                     </div>
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
@@ -107,8 +112,8 @@ class NewAccountComponent extends React.PureComponent {
 
 
     _onChangeInputs(firstValue, secondValue) {
-        this.setState({ firstValue, secondValue });
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
+        this.setState({firstValue, secondValue});
+        const buttonDisabled = NewAccountComponent._isDisabledButton({firstValue, secondValue});
         if (!buttonDisabled) {
             this._checkValues(firstValue, secondValue);
         }
@@ -118,11 +123,11 @@ class NewAccountComponent extends React.PureComponent {
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
-        this.setState({ passwordError, firstError, secondError, buttonDisabled });
+        const buttonDisabled = NewAccountComponent._isDisabledButton({firstValue, secondValue});
+        this.setState({passwordError, firstError, secondError, buttonDisabled});
     }
 
-    static _isDisabledButton({ firstValue, secondValue }) {
+    static _isDisabledButton({firstValue, secondValue}) {
         if (!firstValue || !secondValue) {
             return true;
         }

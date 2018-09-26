@@ -70,6 +70,7 @@ class AssetsComponent extends React.Component {
                 </div>
 
                 <div>
+                    {/* todo @vba remove inStorage div if no account there */}
                     <div className="basic500 body1 in-storage">
                         <Trans i18nKey='assets.inStorage'>In storage</Trans>
                     </div>

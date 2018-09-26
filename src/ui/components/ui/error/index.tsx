@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as styles from './error.styl';
+import cn from 'classnames';
 
 export class Error extends React.PureComponent {
 
@@ -10,20 +11,23 @@ export class Error extends React.PureComponent {
     render() {
         const { hidden } = this.state;
 
-        if (hidden) {
+        const { className = '', type, hide, onClick, hideByClick, children, ...props } = this.props;
+
+        if (type === 'modal') {
             return null;
         }
 
-        const { className = '', hide, onClick, hideByClick, children, ...props } = this.props;
         const errorProps = {
             ...props,
             onClick: this.onClick,
-            className: `${styles.error} ${className}`
+            className: cn(styles.error, className, {
+                [styles.modalError]: type && type === 'modal'
+            })
         };
 
         return (
             <div { ...errorProps }>
-                {children}
+                {hidden ? null : children}
             </div>
         );
     }
@@ -52,6 +56,7 @@ export class Error extends React.PureComponent {
 }
 
 interface IProps {
+    type?: string;
     hide?: boolean;
     children?: any;
     className?: string;

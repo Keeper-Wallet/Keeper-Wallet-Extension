@@ -32,16 +32,19 @@ class NewWalletNameComponent extends React.Component {
             </h2>
 
                 <form onSubmit={this.onSubmit}>
-                    <div className={`margin2`}>
+                    <div className={`margin1`}>
                         <Input ref={this.getRef}
+                               className="margin1"
                                onChange={this.onChange}
                                value={this.props.account.name || ''}
                                maxLength='32'
                                error={this.state.noName}
                                onBlur={this.onBlur}/>
+
                         <Error className={styles.error} hide={!this.state.noName}>
                             <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
                         </Error>
+
                     </div>
 
                     <div className={`basic500 tag1 margin2`}>
