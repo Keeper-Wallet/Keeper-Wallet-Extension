@@ -2,7 +2,7 @@ import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
 import { changePassword } from '../../actions';
 import * as React from 'react'
-import { Input, Button, Modal } from '../ui';
+import { Input, Error, Button, Modal } from '../ui';
 import background from '../../services/Background';
 import { translate, Trans } from 'react-i18next';
 import { PAGES } from '../../pageConfig';
@@ -55,37 +55,57 @@ class ChangePasswordComponent extends React.PureComponent {
                     <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
+
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
+                        </div>
+                        <Input id='old'
+                               className="margin1"
+                               type="password"
+                               onChange={this.onChangeOld}
+                               onBlur={this.onOldBlur}
+                               error={!!this.state.oldError}
+                               ref={this.getRef}
+                        />
+                        <Error>
+                            <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans>
+                        </Error>
                     </div>
-                    <Input id='old'
-                           className="margin-main-big"
-                           type="password"
-                           onChange={this.onChangeOld}
-                           onBlur={this.onOldBlur}
-                           error={!!this.state.oldError}
-                           ref={this.getRef}
-                    />
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.newPassword'>New password</Trans>
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.newPassword'>New password</Trans>
+                        </div>
+                        <Input id='first'
+                               className="margin1"
+                               type="password"
+                               onBlur={this.onFirstBlur}
+                               onChange={this.onChangeFist}
+                               error={!!this.state.firstError}
+                        />
+                        <Error>
+                            <Trans i18nKey='changePassword.errorShortNew'>Name is required</Trans>
+                        </Error>
                     </div>
-                    <Input id='first'
-                           className="margin-main-big"
-                           type="password"
-                           onBlur={this.onFirstBlur}
-                           onChange={this.onChangeFist}
-                           error={!!this.state.firstError}
-                    />
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
+                        </div>
+                        <Input id='second'
+                               className="margin1"
+                               type="password"
+                               onBlur={this.onSecondBlur}
+                               onChange={this.onChangeSecond}
+                               error={!!this.state.secondError}
+                        />
+                        <Error>
+                            <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans>
+                        </Error>
                     </div>
-                    <Input id='second'
-                           className="margin-main-big"
-                           type="password"
-                           onBlur={this.onSecondBlur}
-                           onChange={this.onChangeSecond}
-                           error={!!this.state.secondError}
-                    />
+
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='changePassword.create'>Save</Trans>

@@ -24,7 +24,7 @@ class ImportComponent extends React.PureComponent {
                 </div>
                 <div>
                     <div className={`left border-bottom ${styles.importChooser}`}>
-                        <Button type='transparent' onClick={this.onClick.bind(this, 'import_seed')}>
+                        <Button className="fullwidth" type='transparent' onClick={this.onClick.bind(this, 'import_seed')}>
                             <div className='body1'>
                                 <Trans i18nKey='import.importAccount'>Import Account</Trans>
                             </div>
