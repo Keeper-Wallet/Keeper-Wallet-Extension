@@ -5,7 +5,6 @@ import * as React from 'react'
 import { Input, Error, Button, Modal } from '../ui';
 import background from '../../services/Background';
 import { translate, Trans } from 'react-i18next';
-import { PAGES } from '../../pageConfig';
 
 const MIN_LENGTH = 6;
 
@@ -66,10 +65,13 @@ class ChangePasswordComponent extends React.PureComponent {
                                type="password"
                                onChange={this.onChangeOld}
                                onBlur={this.onOldBlur}
-                               error={!!this.state.oldError}
+                               error={!!(this.state.oldError || this.state.passwordError)}
                                ref={this.getRef}
                         />
-                        <Error>
+                        <Error hide={!this.state.oldError}>
+                            <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
+                        </Error>
+                        <Error hide={!this.state.passwordError}>
                             <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans>
                         </Error>
                     </div>
@@ -85,7 +87,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                onChange={this.onChangeFist}
                                error={!!this.state.firstError}
                         />
-                        <Error>
+                        <Error hide={!this.state.firstError}>
                             <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
                         </Error>
                     </div>
@@ -101,7 +103,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}
                         />
-                        <Error>
+                        <Error hide={!this.state.secondError}>
                             <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans>
                         </Error>
                     </div>
@@ -111,18 +113,6 @@ class ChangePasswordComponent extends React.PureComponent {
                     <Trans i18nKey='changePassword.create'>Save</Trans>
                 </Button>
             </form>
-
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showChanged} showChildrenOnly={true}>
-                <div className="modal notification">
-                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
-                </div>
-            </Modal>
-
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.oldError} showChildrenOnly={true}>
-                <div className="modal notification error">
-                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
-                </div>
-            </Modal>
 
         </div>
     }
@@ -148,7 +138,7 @@ class ChangePasswordComponent extends React.PureComponent {
 
                     setTimeout(() => this.setState({ showChanged: false }), 1000);
                 },
-                () => this.setState({ oldError: true })
+                () => this.setState({ passwordError: true })
             );
         }
     }
@@ -157,31 +147,30 @@ class ChangePasswordComponent extends React.PureComponent {
         this._checkValues();
     }
 
+    _onChange(oldValue, firstValue, secondValue) {
+        const buttonDisabled = this._isDisabledButton(oldValue, firstValue, secondValue);
+        this.setState({ oldValue, firstValue, secondValue, buttonDisabled });
+    }
+
     _onChangeFist(e) {
         const firstValue = e.target.value;
-        this.setState({ firstValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { oldValue, secondValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
     _onChangeSecond(e) {
         const secondValue = e.target.value;
-        this.setState({ secondValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { oldValue, firstValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
     _onChangeOld(e) {
         const oldValue = e.target.value;
-        this.setState({ oldValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { secondValue, firstValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
-    _isDisabledButton() {
-
-        const { oldValue, firstValue, secondValue } = this.state;
-
+    _isDisabledButton(oldValue, firstValue, secondValue) {
         if (!oldValue || !firstValue || !secondValue) {
             return true;
         }
@@ -190,15 +179,31 @@ class ChangePasswordComponent extends React.PureComponent {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length < MIN_LENGTH;
+        return firstValue === secondValue && secondValue.length < MIN_LENGTH;
     }
 
     _checkValues() {
+        let { passwordError } = this.state;
+        const oldError = this._validateOld();
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
-        const passwordError = !!(firstError || secondError);
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({passwordError, firstError, secondError, buttonDisabled});
+        const buttonDisabled = oldError || firstError || secondError;
+
+        if (oldError) {
+            passwordError = false;
+        }
+
+        this.setState({ oldError, firstError, passwordError, secondError, buttonDisabled });
+    }
+
+    _validateOld() {
+        if (!this.state.oldValue) {
+            return null;
+        }
+
+        if (this.state.oldValue.length < MIN_LENGTH) {
+            return {error: 'isSmall'};
+        }
     }
 
     _validateFirst() {
