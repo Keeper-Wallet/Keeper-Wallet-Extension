@@ -9,7 +9,6 @@ import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
 
-
 @translate('extension')
 class AccountInfoComponent extends React.Component {
 

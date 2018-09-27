@@ -8,7 +8,6 @@ export class Info extends React.Component {
 
     render() {
         return <div className={`${styles.content} body1`}>
-            {/* todo @vba / this page must not contain top logo */}
             <BigLogo className={`${styles.logoLeft} margin-main`} noTitle={true}/>
 
             <div className="margin-main basic500">
@@ -19,8 +18,6 @@ export class Info extends React.Component {
             </div>
 
             <a className="link black" target='_blank' href='https://wavescommunity.com'>wavescommunity.com</a>
-
-
 
             <div className={`${styles.social} margin-main`}>
                 <div className="margin-main basic500">

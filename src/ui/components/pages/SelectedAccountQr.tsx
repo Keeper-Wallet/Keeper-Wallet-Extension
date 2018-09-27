@@ -4,7 +4,6 @@ import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Avatar, QRCode, Button } from '../ui';
 
-
 @translate('extension')
 class QRCodeSelectedAccountComponent extends React.PureComponent {
 
@@ -71,7 +70,5 @@ const mapStateToProps = function (store: any) {
         selectedAccount,
     };
 };
-
-
 
 export const QRCodeSelectedAccount = connect(mapStateToProps)(QRCodeSelectedAccountComponent);

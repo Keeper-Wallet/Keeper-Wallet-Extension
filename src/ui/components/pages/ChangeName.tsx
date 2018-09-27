@@ -5,7 +5,6 @@ import { changeAccountName } from '../../actions';
 import {Trans, translate} from 'react-i18next';
 import { Button, Input } from '../ui';
 
-
 @translate('extension')
 class ChangeAccountNameComponent extends React.PureComponent {
     readonly props;

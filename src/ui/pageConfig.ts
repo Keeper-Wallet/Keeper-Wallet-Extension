@@ -231,7 +231,7 @@ export const PAGES_CONF = {
     [PAGES.INFO]: {
         component: Info,
         menu: {
-            hasLogo: true,
+            hasLogo: false,
             hasSettings: false,
             back: true,
         }
