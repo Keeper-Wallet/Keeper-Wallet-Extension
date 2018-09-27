@@ -24,11 +24,11 @@ export class Info extends React.Component {
                     <Trans i18nKey='info.joinUs'>Join the Waves Community</Trans>
                 </div>
                 <ul>
-                    <li className={styles.github}></li>
-                    <li className={styles.telegram}></li>
-                    <li className={styles.discord}></li>
-                    <li className={styles.twitter}></li>
-                    <li className={styles.facebook}></li>
+                    <li className={styles.github}><a target="_blank" href="https://github.com/wavesplatform/"></a></li>
+                    <li className={styles.telegram}><a target="_blank" href="https://telegram.me/wavesnews"></a></li>
+                    <li className={styles.discord}><a target="_blank" href="https://discord.gg/cnFmDyA"></a></li>
+                    <li className={styles.twitter}><a target="_blank" href="https://twitter.com/wavesplatform"></a></li>
+                    <li className={styles.facebook}><a target="_blank" href="https://www.facebook.com/wavesplatform"></a></li>
                 </ul>
             </div>
 
