@@ -34,7 +34,7 @@ class LangsSettingsComponent extends React.Component {
             <h2 className="title1 margin-main-big">
                 <Trans i18nKey='langsSettings.title'>Change the language</Trans>
             </h2>
-            <div>
+            <div className={styles.langsList}>
                 {
                     this.props.langs.map(({ id, name }) => {
                         return <Lang id={id}

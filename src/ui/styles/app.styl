@@ -17,7 +17,7 @@
   display: block;
   line-height: normal;
   font-family: Roboto;
-  position: relative;
+  position: fixed;
   font-weight: 300;
 
 ul
@@ -25,9 +25,11 @@ ul
   padding: 0;
 
 // align
-:global #app-content,
+:global #app-content
 :global .app
   height: 100%;
+  max-height: 600px;
+  overflow: hidden;
 
 :global .left
   text-align: left;
@@ -220,3 +222,18 @@ $layout-24 = 24px;
     background-color: $error400;
     z-index: 2;
   }
+
+
+  // temp
+
+/* Demonstrate a "mostly customized" scrollbar
+ * (won't be visible otherwise if width/height is specified) */
+body::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+  background-color: #aaa; /* or add it to the track */
+}
+/* Add a thumb */
+body::-webkit-scrollbar-thumb {
+  background: #000;
+}
