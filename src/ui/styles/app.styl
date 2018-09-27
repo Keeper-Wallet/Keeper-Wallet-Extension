@@ -7,9 +7,8 @@
   padding: 0;
   box-sizing: border-box;
 
-:global * {
+:global *
   font-family: Roboto;
-}
 
 :global body
   width: 100%;
@@ -17,7 +16,7 @@
   display: block;
   line-height: normal;
   font-family: Roboto;
-  position: relative;
+  position: fixed;
   font-weight: 300;
 
 ul
@@ -25,9 +24,11 @@ ul
   padding: 0;
 
 // align
-:global #app-content,
+:global #app-content
 :global .app
   height: 100%;
+  max-height: 600px;
+  overflow: hidden;
 
 :global .left
   text-align: left;
@@ -38,19 +39,16 @@ ul
 :global .center
   text-align: center;
 
-:global .relative {
+:global .relative
   position: relative;
-}
 
-:global .absolute {
+:global .absolute
   position: absolute;
-}
 
-:global .flex {
+:global .flex
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
 
 // typography
 :global .title1
@@ -160,29 +158,25 @@ $layout-24 = 24px;
   display: inline-block;
   margin-bottom: 7px;
 
-:global .border-bottom {
+:global .border-bottom
   border-bottom: 1px solid $accent50;
-}
 
-:global .border-dashed {
+:global .border-dashed
   border: 1px dashed $basic200;
-}
 
-:global .grey-line {
+:global .grey-line
   background: $basic50;
   border: 1px dashed $basic200;
   display: flex;
   height: 42px;
   align-items: center;
   justify-content: center;
-}
 
-:global .plate {
+:global .plate
   background: $basic50;
   border: 1px dashed $basic200;
   padding: $layout-14;
   border-radius: 2px;
-}
 
 // modal
 :global #app-modal
@@ -216,7 +210,6 @@ $layout-24 = 24px;
   z-index: 1;
   top: calc(100% - 42px);
 
-  &.error {
+  &.error
     background-color: $error400;
     z-index: 2;
-  }
