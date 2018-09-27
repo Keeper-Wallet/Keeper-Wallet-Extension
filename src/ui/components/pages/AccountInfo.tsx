@@ -76,7 +76,7 @@ class AccountInfoComponent extends React.Component {
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
-                <div className="input-like tag1">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
                     <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
