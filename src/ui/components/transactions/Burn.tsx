@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
-import { SignClass } from './';
+import { SignClass } from './SignClass';
 
 @translate('extension')
 export class Burn extends SignClass {

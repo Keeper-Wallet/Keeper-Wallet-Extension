@@ -9,7 +9,7 @@ import { getConfigByTransaction } from '../transactions';
 @translate('extension')
 class MessagesComponent extends React.Component {
 
-    readonly state;
+    readonly state = {} as any;
     readonly props;
     rejectHandler = () => {};
     approveHandler = () => {};

@@ -182,7 +182,7 @@ class AccountInfoComponent extends React.Component {
         const assetInstance = new Asset(asset);
         const balancesMoney = {};
 
-        Object.entries(props.balances)
+        Object.entries(balances)
             .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
 
 

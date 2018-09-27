@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { getTxId, TxIcon } from './';
+import { getTxId } from './';
+import { TxIcon } from './TransactionIcon';
 import background from '../../services/Background';
 import { TransactionWallet } from '../wallets';
 
