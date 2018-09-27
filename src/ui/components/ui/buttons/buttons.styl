@@ -6,7 +6,7 @@
   justify-content: space-between;
 
 .button
-  width: calc(100% - 14px);
+  width: 100%;
   max-width: 240px;
   height: 40px;
   display: block;
@@ -16,10 +16,12 @@
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
+  transition: all .3s;
 
   &.default
     background-color: $white;
     border: 1px solid $basic200;
+    color: $black;
 
     &:hover
       border: 1px solid $black;
@@ -46,6 +48,7 @@
   &.transparent
     background-color: transparent;
     width: auto;
+    max-width: auto;
     display: inline-block;
     height: auto;
     font-weight: 400;

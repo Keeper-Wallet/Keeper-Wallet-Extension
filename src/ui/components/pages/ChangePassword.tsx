@@ -54,8 +54,6 @@ class ChangePasswordComponent extends React.PureComponent {
                     <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
-
-
                     <div className="margin1 relative">
                         <div className="basic500 tag1 input-title">
                             <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
