@@ -50,7 +50,7 @@ class BackUpSeedComponent extends React.Component {
                 <Trans i18nKey='backupSeed.cancel'>Cancel creation</Trans>
             </Button>
 
-            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied} showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="backupSeed.copied">Copied!</Trans>
                 </div>

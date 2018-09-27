@@ -100,7 +100,7 @@ class AccountInfoComponent extends React.Component {
                 </div>
             </div>
 
-            <Modal animation={Modal.ANIMATION.FROM_DOWN}
+            <Modal animation={Modal.ANIMATION.FLASH}
                    showModal={this.state.showPassword}
                    showChildrenOnly={true}>
                 <div className={`modal ${styles.enterPasswordModal}`}>

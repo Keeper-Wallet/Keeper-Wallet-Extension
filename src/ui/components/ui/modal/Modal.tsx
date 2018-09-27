@@ -8,7 +8,7 @@ import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 const ModalWrapper = (props) => {
     let Item;
     if (props.showChildrenOnly) {
-        Item = props.showModal ? <div className='modal-content'>props.children</div> : null;
+        Item = props.showModal ? props.children : null;
     } else {
 
         const className = cn(styles.modal, 'modal', styles.animated, {
@@ -45,12 +45,6 @@ export class Modal extends React.PureComponent {
     el: HTMLDivElement;
     static modalRoot: HTMLElement;
     static ANIMATION = {
-        FROM_DOWN: 'from_down_modal',
-        FROM_UP: 'from_up_modal',
-        FROM_LEFT: 'from_left_modal',
-        FROM_RIGHT: 'from_right_modal',
-        ZOOM_IN: 'zoom_in_modal',
-        ZOOM_OUT: 'zoom_out_modal',
         FLASH: 'flash_modal',
         FLASH_SCALE: 'flash_scale_modal',
     };
