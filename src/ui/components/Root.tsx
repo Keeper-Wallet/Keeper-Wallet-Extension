@@ -15,7 +15,9 @@ class RootComponent extends React.Component<any, any> {
         
         let tab = nextProps.tab;
         
-        if (nextProps.messages && nextProps.messages.length) {
+        if (nextProps.messages.length &&
+            nextProps.messages.find(({ status }) => status === 'unapproved')
+        ) {
             tab = PAGES.MESSAGES;
         }
         

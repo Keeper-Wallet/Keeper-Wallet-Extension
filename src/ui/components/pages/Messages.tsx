@@ -50,7 +50,7 @@ class MessagesComponent extends React.Component {
         if (currentId && isExistMsg) {
             return { ...state, balance, selectedAccount, assets};
         }
-        const message = props.messages[0];
+        const message = props.messages.find(({ status }) => status === 'unapproved');
         const sourceSignData = message.tx;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
@@ -81,7 +81,7 @@ class MessagesComponent extends React.Component {
             }
 
             if ( 'assetId' in currentData) {
-                assets[currentData.assetId] = true;
+                assets[currentData.assetId || 'WAVES'] = true;
 
                 if ('tokens' in currentData ) {
                     moneys.push({ ...currentData, path: currentPath });
