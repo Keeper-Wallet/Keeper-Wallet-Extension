@@ -8,7 +8,7 @@ import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 const ModalWrapper = (props) => {
     let Item;
     if (props.showChildrenOnly) {
-        Item = props.showModal ? props.children : null;
+        Item = props.showModal ? <div className='modal-content'>props.children</div> : null;
     } else {
 
         const className = cn(styles.modal, 'modal', styles.animated, {
@@ -18,18 +18,21 @@ const ModalWrapper = (props) => {
         Item = (
             <div className={className}>
                 {props.showClose ? <div className={styles.close} onClick={props.onClose}>X</div> : null}
-                <div className={styles.content}>
+                <div className='modal-content'>
                     {props.children}
                 </div>
             </div>
         );
 
     }
-    return <CSSTransitionGroup transitionName="animated_modal"
+
+    const hasAnimation = !!props.animation;
+
+    return <CSSTransitionGroup transitionName={props.animation || 'default_modal'}
                                transitionEnterTimeout={200}
-                               transitionEnter={true}
+                               transitionEnter={hasAnimation}
                                transitionLeaveTimeout={200}
-                               transitionLeave={true}>
+                               transitionLeave={hasAnimation}>
         {Item}
     </CSSTransitionGroup>
 };
@@ -41,6 +44,16 @@ export class Modal extends React.PureComponent {
 
     el: HTMLDivElement;
     static modalRoot: HTMLElement;
+    static ANIMATION = {
+        FROM_DOWN: 'from_down_modal',
+        FROM_UP: 'from_up_modal',
+        FROM_LEFT: 'from_left_modal',
+        FROM_RIGHT: 'from_right_modal',
+        ZOOM_IN: 'zoom_in_modal',
+        ZOOM_OUT: 'zoom_out_modal',
+        FLASH: 'flash_modal',
+        FLASH_SCALE: 'flash_scale_modal',
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -68,6 +81,7 @@ export class Modal extends React.PureComponent {
     render() {
         return ReactDOM.createPortal(
             <ModalWrapper onClose={this.closeHandler.bind(this)}
+                          animation={this.props.animation}
                           showClose={this.props.showClose}
                           showModal={this.props.showModal}
                           showChildrenOnly={this.props.showChildrenOnly}>
@@ -113,4 +127,5 @@ interface IProps {
     noClickOut?: boolean;
     children?: any;
     onClose?: () => void;
+    animation?: string;
 }

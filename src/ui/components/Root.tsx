@@ -20,7 +20,7 @@ class RootComponent extends React.Component<any, any> {
             //tab = PAGES.MESSAGES
         }
 
-        if (!nextProps.accounts.length) {
+        if (!nextProps.accounts.length && !nextProps.locked) {
             tab = PAGES.IMPORT;
         }
 

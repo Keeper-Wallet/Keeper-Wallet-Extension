@@ -100,7 +100,9 @@ class AccountInfoComponent extends React.Component {
                 </div>
             </div>
 
-            <Modal showModal={this.state.showPassword} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FROM_DOWN}
+                   showModal={this.state.showPassword}
+                   showChildrenOnly={true}>
                 <div className={`modal ${styles.enterPasswordModal}`}>
                     <i className={`lock-icon ${styles.lockIcon}`}></i>
                     <div className="basic500 tag1 input-title">
@@ -112,13 +114,17 @@ class AccountInfoComponent extends React.Component {
                 </div>
             </Modal>
             
-            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.showCopied}
+                   showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                 </div>
             </Modal>
 
-            <Modal showModal={this.state.passwordError} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.passwordError}
+                   showChildrenOnly={true}>
                 <div className="modal notification error">
                     <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
                 </div>
@@ -129,13 +135,13 @@ class AccountInfoComponent extends React.Component {
     setCopiedModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ showCopied: true });
-        // this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
+        this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
 
     showErrorModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ passwordError: true });
-        // this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
+        this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
     }
 
     async getAccountInfo(field) {
