@@ -16,4 +16,3 @@ export class Intro extends React.Component {
         </div>
     }
 }
-

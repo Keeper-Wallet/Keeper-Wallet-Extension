@@ -6,7 +6,6 @@ import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { setLocale } from '../../actions';
 import cn from 'classnames';
 
-
 const Lang = ({ id, name, onSelect, selected }) => {
     const className = cn(styles[id], styles.lang, {
         [styles.selected]: selected

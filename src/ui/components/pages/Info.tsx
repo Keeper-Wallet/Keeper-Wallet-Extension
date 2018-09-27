@@ -19,8 +19,6 @@ export class Info extends React.Component {
 
             <a className="link black" target='_blank' href='https://wavescommunity.com'>wavescommunity.com</a>
 
-
-
             <div className={`${styles.social} margin-main`}>
                 <div className="margin-main basic500">
                     <Trans i18nKey='info.joinUs'>Join the Waves Community</Trans>
