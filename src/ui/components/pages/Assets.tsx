@@ -69,10 +69,11 @@ class AssetsComponent extends React.Component {
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
                 <div>
-                    {/* todo @vba remove inStorage div if no account there */}
-                    <div className="basic500 body1 in-storage">
+                    
+                    {wallets.length ? <div className="basic500 body1 in-storage">
                         <Trans i18nKey='assets.inStorage'>In storage</Trans>
-                    </div>
+                    </div> : null}
+                    
                     <div className={styles.walletListWrapper}>
                         <CSSTransitionGroup transitionName="animate_wallets"
                                             transitionEnterTimeout={600}

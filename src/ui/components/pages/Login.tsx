@@ -19,7 +19,7 @@ class LoginComponent extends React.Component {
 
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
-    onSubmit = () => this._onSubmit();
+    onSubmit = (e) => this._onSubmit(e);
     getRef = input => this.inputEl = input;
 
     componentDidMount() {
@@ -49,12 +49,12 @@ class LoginComponent extends React.Component {
                 </Button>
             </form>
             <Error hide={!this.state.passwordError}>
-                <Trans i18nKey="login.password">Wrong password</Trans>
+                <Trans i18nKey="login.passwordError">Wrong password</Trans>
             </Error>
             <div>
                 <a href="#" className={`${styles.forgotLnk} link`}>
                     {/* todo @vba  - link to recovery */}
-                    <Trans i18nKey="login.passwordforgot">I forgot password</Trans>
+                    <Trans i18nKey="login.passwordForgot">I forgot password</Trans>
                 </a>
             </div>
         </div>
@@ -65,7 +65,8 @@ class LoginComponent extends React.Component {
         this.setState({password, passwordError: false});
     }
 
-    _onSubmit() {
+    _onSubmit(e) {
+        e.preventDefault();
         this.props.login(this.state.password);
     }
 

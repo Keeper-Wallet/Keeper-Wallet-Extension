@@ -131,7 +131,7 @@ class Background {
 
     async assetInfo(assetId: string): Promise<any> {
         await this.initPromise;
-        this._assetsPromise = this._assetsPromise || this.background.assetInfo(assetId);
+        this._assetsPromise = this._assetsPromise || this.background.assetInfo(assetId || 'WAVES');
         const data = await this._assetsPromise;
         this._assetsPromise = null;
         return data;
