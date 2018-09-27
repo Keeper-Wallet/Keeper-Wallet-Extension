@@ -210,9 +210,22 @@ $layout-24 = 24px;
   z-index: 1;
   top: calc(100% - 42px);
 
+  span {
+    max-width: 276px;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &.error
     background-color: $error400;
     z-index: 2;
+
+  &.active-asset
+    height: auto;
+    top: -110px;
+    text-align: center;
 
 // temp
 
