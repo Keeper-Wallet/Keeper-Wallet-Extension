@@ -1,25 +1,26 @@
 import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
-import { getTxId} from './';
+import { getTxId, TxIcon } from './';
+import background from '../../services/Background';
+import { TransactionWallet } from '../wallets';
 
 
-@translate('extension')
 export class SignClass extends React.PureComponent {
-
+    
     readonly props;
     readonly state = Object.create(null);
-
+    approveHandler = () => this.approve();
+    rejectHandler = () => this.reject();
+    bgPromise;
+    
     constructor(props) {
         super(props);
-
+        
         getTxId(props.signData).then(
             txId => this.setState({ txId })
         )
     }
-
+    
     render() {
-        const { data: tx } = this.props.signData;
-
         return <div>
             <div>
                 <TransactionWallet account={this.props.selectedAccount}/>
@@ -27,22 +28,24 @@ export class SignClass extends React.PureComponent {
             <div>
                 <TxIcon txType={this.props.txType}/>
             </div>
-
-            <div>Auth</div>
-            <div>data: {tx.data}</div>
-            <div>host: {tx.host}</div>
-            <div>Tx id = {this.state.txId}</div>
-            
-            <div>
-                <Button type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey='sign.reject'>Reject</Trans>
-                </Button>
-                <Button type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey='sign.auth'>Auth</Trans>
-                </Button>
-            </div>
-        </div>
+        </div>;
     }
-
-
+    
+    approve() {
+        this.setState({ inProgress: true });
+        this.bgPromise = background.approve(this.props.mesasge.id, this.props.selectedAccount.address)
+            .then(
+                (approve) => this.setState({ approve }),
+                (error) => this.setState({ error }),
+            );
+    }
+    
+    reject() {
+        this.setState({ inProgress: true });
+        this.bgPromise = background.reject(this.props.mesasge.id)
+            .then(
+                (reject) => this.setState({ reject }),
+                (error) => this.setState({ error }),
+            );
+    }
 }

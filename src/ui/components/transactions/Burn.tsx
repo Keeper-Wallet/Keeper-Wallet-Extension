@@ -4,7 +4,7 @@ import { Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './';
 
 @translate('extension')
-export class Auth extends SignClass {
+export class Burn extends SignClass {
 
     render() {
         const { data: tx } = this.props.signData;
