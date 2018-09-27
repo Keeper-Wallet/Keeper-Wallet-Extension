@@ -6,37 +6,36 @@ import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 
 
-
 class RootComponent extends React.Component<any, any> {
-
+    
     props: IProps;
     state = { tab: null };
-
+    
     static getDerivedStateFromProps(nextProps: IProps) {
-
+        
         let tab = nextProps.tab;
-
+        
         if (nextProps.messages && nextProps.messages.length) {
-            //tab = PAGES.MESSAGES
+            tab = PAGES.MESSAGES;
         }
-
+        
         if (!nextProps.accounts.length && tab === PAGES.ASSETS) {
             tab = PAGES.IMPORT;
         }
-
+        
         if (!tab && nextProps.locked == null) {
             tab = PAGES.INTRO;
         } else if (!tab && nextProps.locked) {
             tab = PAGES.CONDITIONS;
         }
-
+        
         if (!tab || tab && !RootComponent.canUseTab(nextProps, tab)) {
             tab = RootComponent.getStateTab(nextProps);
         }
-
+        
         return { tab };
     }
-
+    
     render() {
         const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
         const Component = pageConf.component;
@@ -50,43 +49,43 @@ class RootComponent extends React.Component<any, any> {
             hasClose: !!pageConf.menu.close,
             hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
         };
-
+        
         const setTab = (tab) => {
             this.props.addBackTab(currentTab);
             this.props.setTab(tab);
         };
-
+        
         const onBack = () => {
             const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
             this.props.removeBackTab();
             this.props.setTab(tab);
         };
-
+        
         const onDelete = () => {
             setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
         };
-
+        
         const pageProps = { ...pageConf.props, setTab, onBack };
-
+        
         return <div className="height">
             <Menu {...menuProps} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
             <Component {...pageProps}/>
             <Bottom {...pageConf.bottom}/>
         </div>;
     }
-
+    
     static getStateTab(props) {
         if (props.locked) {
             return props.initialized ? PAGES.LOGIN : PAGES.CONDITIONS;
         }
-
+        
         if (props.ui && props.ui.account) {
             return PAGES.NEW_ACCOUNT;
         }
-
+        
         return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT;
     }
-
+    
     static canUseTab(props, tab) {
         switch (tab) {
             case PAGES.NEW:

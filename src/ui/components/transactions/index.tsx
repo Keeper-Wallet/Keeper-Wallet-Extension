@@ -1,5 +1,6 @@
 import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapter';
 import { Transfer } from './Transfer';
+import { Auth } from './Auth';
 
 export * from './Transfer';
 export * from './TransactionIcon';
@@ -15,6 +16,9 @@ export const getConfigByTransaction = tx => {
             config.type = 'transfer';
             config.component = Transfer;
             break;
+        case SIGN_TYPE.AUTH:
+            config.type = 'auth';
+            config.component = Auth;
         default:
             config.type = 'unknown';
             config.component = null;

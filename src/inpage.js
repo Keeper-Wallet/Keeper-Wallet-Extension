@@ -32,9 +32,9 @@ async function setupInpageApi() {
 }
 
 function setupClickInterceptor(){
-    const defaultOnClick = global.onclick || (() => {})
+    const defaultOnClick = global.onclick || (() => {});
     global.onclick = function(e) {
-        const paymentApiLink = checkForPaymentApiLink(e)
+        const paymentApiLink = checkForPaymentApiLink(e);
         if (paymentApiLink) {
             e.preventDefault();
             e.stopPropagation();
