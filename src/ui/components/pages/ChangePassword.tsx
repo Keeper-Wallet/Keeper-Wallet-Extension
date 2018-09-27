@@ -86,7 +86,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                error={!!this.state.firstError}
                         />
                         <Error>
-                            <Trans i18nKey='changePassword.errorShortNew'>Name is required</Trans>
+                            <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
                         </Error>
                     </div>
 
