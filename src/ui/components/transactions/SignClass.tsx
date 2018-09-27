@@ -34,7 +34,7 @@ export class SignClass extends React.PureComponent {
     
     approve() {
         this.setState({ inProgress: true });
-        this.bgPromise = background.approve(this.props.mesasge.id, this.props.selectedAccount.address)
+        this.bgPromise = background.approve(this.props.message.id, this.props.selectedAccount.address)
             .then(
                 (approve) => this.setState({ approve }),
                 (error) => this.setState({ error }),
@@ -43,7 +43,7 @@ export class SignClass extends React.PureComponent {
     
     reject() {
         this.setState({ inProgress: true });
-        this.bgPromise = background.reject(this.props.mesasge.id)
+        this.bgPromise = background.reject(this.props.message.id)
             .then(
                 (reject) => this.setState({ reject }),
                 (error) => this.setState({ error }),
