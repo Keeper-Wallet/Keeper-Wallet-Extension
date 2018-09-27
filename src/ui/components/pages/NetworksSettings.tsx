@@ -48,7 +48,7 @@ class NetworksSettingsComponent extends React.PureComponent {
                 </Button>
             </div>
 
-            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied} showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="networksSettings.copied">Copied!</Trans>
                 </div>

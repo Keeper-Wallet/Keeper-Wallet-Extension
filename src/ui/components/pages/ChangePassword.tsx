@@ -112,13 +112,13 @@ class ChangePasswordComponent extends React.PureComponent {
                 </Button>
             </form>
 
-            <Modal showModal={this.state.showChanged} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showChanged} showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                 </div>
             </Modal>
 
-            <Modal showModal={this.state.oldError} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.oldError} showChildrenOnly={true}>
                 <div className="modal notification error">
                     <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
                 </div>
