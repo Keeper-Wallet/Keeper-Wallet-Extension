@@ -68,13 +68,12 @@ class AssetsComponent extends React.Component {
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
-
                 <div>
                     {/* todo @vba remove inStorage div if no account there */}
                     <div className="basic500 body1 in-storage">
                         <Trans i18nKey='assets.inStorage'>In storage</Trans>
                     </div>
-                    <div>
+                    <div className={styles.walletListWrapper}>
                         <CSSTransitionGroup transitionName="animate_wallets"
                                             transitionEnterTimeout={600}
                                             transitionEnter={true}
@@ -88,9 +87,9 @@ class AssetsComponent extends React.Component {
 
             <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showActivated} showChildrenOnly={true}>
                 <div className="modal notification" key={this.state.name}>
-                    <Trans i18nKey="assets.account">Account</Trans>
-                    <span> {this.state.name} </span>
-                    <Trans i18nKey="assets.setActive">set active!</Trans>
+                    <div><Trans i18nKey="assets.account">Account</Trans></div>
+                    <div><span> {this.state.name} </span></div>
+                    <div><Trans i18nKey="assets.setActive">set active!</Trans></div>
                 </div>
             </Modal>
 
