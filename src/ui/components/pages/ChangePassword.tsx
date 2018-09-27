@@ -68,12 +68,11 @@ class ChangePasswordComponent extends React.PureComponent {
                                error={!!(this.state.oldError || this.state.passwordError)}
                                ref={this.getRef}
                         />
-                        <Error hide={!this.state.oldError}>
-                            <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
+                        <Error hide={!this.state.oldError && !this.state.passwordError}>
+                            {this.state.oldError ? <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans> : null}
+                            {this.state.passwordError ? <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans> : null}
                         </Error>
-                        <Error hide={!this.state.passwordError}>
-                            <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans>
-                        </Error>
+
                     </div>
 
                     <div className="margin1 relative">
