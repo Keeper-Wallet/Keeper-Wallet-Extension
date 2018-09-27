@@ -73,18 +73,15 @@ class NewAccountComponent extends React.PureComponent {
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
                         </div>
-
                         <Input id='second'
                                className='margin1'
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}/>
-
                         <Error hide={!this.state.secondError}>
                             <Trans i18nKey='newAccount.notMatch'>Password no match</Trans>
                         </Error>
-
                     </div>
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
