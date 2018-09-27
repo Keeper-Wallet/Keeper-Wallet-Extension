@@ -18,7 +18,7 @@ export class Info extends React.Component {
                     happening on the Waves Platform</Trans>
             </div>
 
-            <a className="link black" href='wavescommunity.com'>wavescommunity.com</a>
+            <a className="link black" target='_blank' href='https://wavescommunity.com'>wavescommunity.com</a>
 
 
 

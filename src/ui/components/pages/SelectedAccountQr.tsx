@@ -9,6 +9,9 @@ import { Avatar, QRCode, Button } from '../ui';
 class QRCodeSelectedAccountComponent extends React.PureComponent {
 
     readonly props;
+    qrCode: QRCode;
+    getQrRef = (qr) => this.qrCode = qr;
+    downloadHandler = () => this._download();
 
     render() {
         const address = this.props.selectedAccount.address;
@@ -17,7 +20,8 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
             <Avatar className="margin1" size={48} address={address}/>
             <div className="body1 basic500 margin4">{address}</div>
             
-            <QRCode width={200}
+            <QRCode ref={this.getQrRef}
+                    width={200}
                     height={200}
                     scale={16}
                     quality={1}
@@ -25,12 +29,37 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
                     type='image/png'
                     text={address}/>
 
-            <Button type='submit' className={styles.downloadQr}>
+            <Button type='submit' className={styles.downloadQr} onClick={this.downloadHandler}>
                 <div>
                     <Trans i18nKey='qrCode.download'>Download QR code</Trans>
                 </div>
             </Button>
         </div>;
+    }
+
+    _download() {
+        const data = this.qrCode.getImg();
+        const name = `${this.props.selectedAccount.address}.png`;
+        if (window.navigator && typeof window.navigator.msSaveOrOpenBlob === 'function') {
+            this._downloadInMsEdge(data, name);
+        } else {
+            const link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', name);
+            link.setAttribute('target', '_blank');
+            link.style.position = 'absolute';
+            link.style.opacity = '0';
+            document.body.appendChild(link);
+            link.click();
+            requestAnimationFrame(() => {
+                document.body.removeChild(link);
+            });
+        }
+    }
+
+    _downloadInMsEdge(data, name) {
+        const blob = new Blob([data], { type: 'image/png' });
+        window.navigator.msSaveOrOpenBlob(blob, name);
     }
 }
 
