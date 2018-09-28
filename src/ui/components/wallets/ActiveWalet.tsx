@@ -7,7 +7,7 @@ import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 
-export function ActiveWallet({className = '', onShowQr = null, onSelect = null, active, account, balance, ...props}) {
+export function ActiveWallet({className = '', onCopy=null, onShowQr = null, onSelect = null, active, account, balance, ...props}) {
 
     className = cn(styles.activeWallet, className, { [styles.activeWalletSelected]: active });
 
@@ -25,7 +25,7 @@ export function ActiveWallet({className = '', onShowQr = null, onSelect = null, 
 
     const wallets = [
         <WalletItem {...walletItemProps} key={account.address}>
-            <Copy text={account.address}>
+            <Copy onCopy={onCopy} text={account.address}>
                 <div className={styles.copyIconBlack}>
                     <Trans i18nKey='ur.copyAddress'>Copy address</Trans>
                 </div>

@@ -16,9 +16,11 @@ class AssetsComponent extends React.Component {
 
     props;
     state = {} as any;
+    _t;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     onSelectHandler = account => this.showInfo(account);
     onSetActiveHandler = account => this.setActive(account);
+    copyActiveHandler = () => this.onCopyModal();
     scrollHandler = (e) => {
         const value = e.target.scrollTop;
         this.setState({ topScrollMain: value > 90 });
@@ -61,7 +63,7 @@ class AssetsComponent extends React.Component {
         });
 
         return <div className={styles.assets}>
-            <ActiveWallet {...activeProps} key={activeAddress}/>
+            <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
 
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
@@ -87,7 +89,7 @@ class AssetsComponent extends React.Component {
             </div>
 
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}
-                   showModal={this.state.showCopied}
+                   showModal={this.state.showCopy}
                    showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="assets.copied">Copied!</Trans>
@@ -99,7 +101,7 @@ class AssetsComponent extends React.Component {
                     <div><Trans i18nKey="assets.setActive">Set active account</Trans></div>
                 </div>
             </Modal>
-
+            
         </div>
     }
 
@@ -117,9 +119,15 @@ class AssetsComponent extends React.Component {
     closeModals() {
         const showSelected = false;
         const showActivated = false;
-        setTimeout(() => this.setState({ showSelected, showActivated }), 1000);
+        const showCopy = false;
+        setTimeout(() => this.setState({ showSelected, showActivated, showCopy }), 1000);
     }
-
+    
+    onCopyModal() {
+        this.setState({ showCopy: true });
+        this.closeModals();
+    }
+    
     static getDerivedStateFromProps(props, state) {
         const asset = props.assets['WAVES'];
 
