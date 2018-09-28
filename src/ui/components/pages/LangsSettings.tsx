@@ -16,9 +16,9 @@ const Lang = ({ id, name, onSelect, selected }) => {
     });
 
     return <div className={className}>
-        <Button className={styles.selectButton} type={BUTTON_TYPE.TRANSPARENT} onClick={onSelect}>
+        <div className={`${styles.selectButton} fullwidth body1 left`} onClick={onSelect}>
             <Trans i18nKey={`langsSettings.${id}`}>{name}</Trans>
-        </Button>
+        </div>
         <div className={iconClass}></div>
     </div>;
 };
