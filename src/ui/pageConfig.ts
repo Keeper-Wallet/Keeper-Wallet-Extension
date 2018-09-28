@@ -52,6 +52,7 @@ export const PAGES = {
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
     MESSAGES: 'messages',
+    FORGOT: 'forgot_password',
     ROOT: '',
 };
 
@@ -300,6 +301,14 @@ export const PAGES_CONF = {
         }
     },
     [PAGES.DELETE_ACCOUNT]: {
+        component: DeleteAccount,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.FORGOT]: {
         component: DeleteAccount,
         menu: {
             hasLogo: true,

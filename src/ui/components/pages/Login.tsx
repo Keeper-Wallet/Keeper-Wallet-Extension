@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {BigLogo} from '../head';
 import {Button, Input, Error} from '../ui';
 import {login} from '../../actions';
+import { PAGES } from '../../pageConfig';
 
 @translate('extension')
 class LoginComponent extends React.Component {
@@ -15,12 +16,12 @@ class LoginComponent extends React.Component {
         password: ''
     };
 
-    props: { login: (password) => void; error: any, pending: boolean };
+    readonly props;
 
-    passwordError: boolean;
     onChange = (e) => this._onChange(e);
     onSubmit = (e) => this._onSubmit(e);
     getRef = input => this.inputEl = input;
+    forgotHandler = (e) => this.props.setTab(PAGES.FORGOT);
 
     componentDidMount() {
         this.inputEl.focus();
@@ -52,10 +53,9 @@ class LoginComponent extends React.Component {
                 <Trans i18nKey="login.passwordError">Wrong password</Trans>
             </Error>
             <div>
-                <a href="#" className={`${styles.forgotLnk} link`}>
-                    {/* todo @vba  - link to recovery */}
+                <div className={`${styles.forgotLnk} link`} onClick={this.forgotHandler}>
                     <Trans i18nKey="login.passwordForgot">I forgot password</Trans>
-                </a>
+                </div>
             </div>
         </div>
     }
