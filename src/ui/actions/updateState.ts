@@ -1,6 +1,8 @@
 import { store } from '../store';
 import { ACTION } from './constants';
 
+const deepEqualByJSON = (obj1, obj2) => JSON.stringify(obj1) === JSON.stringify(obj2);
+
 export function updateState(state) {
     const actions = [];
     const {
@@ -24,7 +26,7 @@ export function updateState(state) {
         });
     }
 
-    if (JSON.stringify(currentState.customNodes) !== JSON.stringify(customNodes)) {
+    if (!deepEqualByJSON(currentState.customNodes, customNodes)) {
         actions.push({
             type: ACTION.UPDATE_NODES,
             payload: customNodes
@@ -52,7 +54,7 @@ export function updateState(state) {
         });
     }
 
-    if (JSON.stringify(messages) !== JSON.stringify(currentState.messages)) {
+    if (!deepEqualByJSON(messages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
             payload: messages
@@ -65,10 +67,8 @@ export function updateState(state) {
             payload: selectedAccount
         });
     }
-
-    const hasChangesInAccounts = JSON.stringify(accounts) !== JSON.stringify(currentState.accounts);
-
-    if (hasChangesInAccounts) {
+    
+    if (!deepEqualByJSON(accounts, currentState.accounts)) {
         actions.push({
             type: ACTION.UPDATE_ACCOUNTS,
             payload: accounts

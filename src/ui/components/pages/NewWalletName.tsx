@@ -40,7 +40,7 @@ class NewWalletNameComponent extends React.Component {
                            maxLength='32'
                            error={this.state.noName}
                            onBlur={this.onBlur}/>
-                    <Error hide={!this.state.noName}>
+                    <Error show={this.state.noName}>
                         <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
                     </Error>
                 </div>
