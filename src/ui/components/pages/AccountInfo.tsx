@@ -107,7 +107,7 @@ class AccountInfoComponent extends React.Component {
                     <div className="basic500 tag1 input-title">
                         <Trans i18nKey='accountInfo.password'>Password</Trans>
                     </div>
-                    <Input className="margin-main-big" onChange={this.inputPassword}/>
+                    <Input type="password" className="margin-main-big" onChange={this.inputPassword}/>
                     <Button className="margin-main-big" type="submit" onClick={this.confirmPassword}>Enter</Button>
                     <Button onClick={this.rejectPassword}>Cancel</Button>
                 </div>
