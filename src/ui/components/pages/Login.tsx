@@ -43,7 +43,7 @@ class LoginComponent extends React.Component {
                            onChange={this.onChange}
                            error={this.state.passwordError}
                     />
-                    <Error hide={!this.state.passwordError}>
+                    <Error show={this.state.passwordError}>
                         <Trans i18nKey="login.passwordError">Wrong password</Trans>
                     </Error>
                 </div>

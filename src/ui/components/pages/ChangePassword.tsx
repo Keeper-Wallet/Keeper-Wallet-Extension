@@ -66,7 +66,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                error={!!(this.state.oldError || this.state.passwordError)}
                                ref={this.getRef}
                         />
-                        <Error hide={!this.state.oldError && !this.state.passwordError}>
+                        <Error show={this.state.oldError && !this.state.passwordError}>
                             {this.state.oldError ? <Trans i18nKey='changePassword.errorShortOld'>Password can't be so short</Trans> : null}
                             {this.state.passwordError ? <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans> : null}
                         </Error>
@@ -84,7 +84,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                onChange={this.onChangeFist}
                                error={!!this.state.firstError}
                         />
-                        <Error hide={!this.state.firstError}>
+                        <Error show={this.state.firstError}>
                             <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
                         </Error>
                     </div>
@@ -100,7 +100,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}
                         />
-                        <Error hide={!this.state.secondError}>
+                        <Error show={this.state.secondError}>
                             <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans>
                         </Error>
                     </div>

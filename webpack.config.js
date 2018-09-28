@@ -13,7 +13,7 @@ module.exports = env => {
     const DIST_FOLDER = path.resolve(__dirname, DIST);
     const BUID_FOLDER = path.resolve(DIST_FOLDER, 'build');
 
-    const metaScripts = isProduction ? [] : ['chromereload.js'];
+    const metaScripts = isProduction ? [] : [];
     const browserPlatforms = {
         chrome: {
             copyFiles: [

@@ -161,6 +161,5 @@ export const approve = store => next => action => {
     const { selectedAccount } = store.getState();
     const { address } = selectedAccount;
     
-    background.approve(action.payload, address)
-    
+    background.approve(action.payload, address);
 };
