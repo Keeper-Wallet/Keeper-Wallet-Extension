@@ -19,3 +19,4 @@ export * from  './LangsSettings';
 export * from  './ChangePassword';
 export * from  './DeleteAccount';
 export * from  './Messages';
+export * from  './ForgotPassword';
