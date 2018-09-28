@@ -8,3 +8,4 @@ export * from './user';
 export * from './assets';
 export * from './account';
 export * from './menu';
+export * from './messages';

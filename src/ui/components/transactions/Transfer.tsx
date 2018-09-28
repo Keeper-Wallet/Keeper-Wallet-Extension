@@ -19,10 +19,10 @@ export class Transfer extends SignClass {
             <div><Balance balance={tx.fee}/></div>
 
             <div>
-                <Button onClick={this.approveHandler} type={BUTTON_TYPE.WARNING}>
+                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='sign.reject'>Reject</Trans>
                 </Button>
-                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.SUBMIT}>
+                <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
             </div>

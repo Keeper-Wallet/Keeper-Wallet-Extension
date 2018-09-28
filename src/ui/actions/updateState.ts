@@ -52,7 +52,7 @@ export function updateState(state) {
         });
     }
 
-    if (messages.length !== currentState.messages.length) {
+    if (JSON.stringify(messages) !== JSON.stringify(currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
             payload: messages

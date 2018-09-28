@@ -11,16 +11,29 @@ export class Auth extends SignClass {
 
         return <div>
             {super.render()}
-            <div>Auth</div>
-            <div>data: {tx.data}</div>
-            <div>host: {tx.host}</div>
+            <h1>
+                <Trans i18nKey='sign.signAccessWaves'>Sign in with Waves</Trans>
+            </h1>
+            
+            <div>
+                <div>{tx.host}</div>
+                <Trans i18nKey='sign.signAccessHost'>wants to access your Waves Address</Trans>
+            </div>
+            
             <div>Tx id = {this.state.txId}</div>
             
             <div>
-                <Button onClick={this.approveHandler} type={BUTTON_TYPE.WARNING}>
+                <Trans i18nKey='sign.signAccessInfo'>
+                    The application will have access your Waves address. It will not get your SEED or Private key.
+                    Don't enter your secret phrase (SEED) on websites you will be redirected on.
+                </Trans>
+            </div>
+            
+            <div>
+                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='sign.reject'>Reject</Trans>
                 </Button>
-                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.SUBMIT}>
+                <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.auth'>Auth</Trans>
                 </Button>
             </div>

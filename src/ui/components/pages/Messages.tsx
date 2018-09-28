@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { getAsset } from '../../actions';
+import { getAsset, approve, reject } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
@@ -11,8 +11,8 @@ class MessagesComponent extends React.Component {
 
     readonly state = {} as any;
     readonly props;
-    rejectHandler = () => {};
-    approveHandler = () => {};
+    rejectHandler = () => this.reject();
+    approveHandler = () => this.approve();
     
 
     render() {
@@ -33,6 +33,14 @@ class MessagesComponent extends React.Component {
         </Component>;
     }
 
+    approve() {
+        this.props.approve(this.state.message.id);
+    }
+    
+    reject() {
+        this.props.reject(this.state.message.id);
+    }
+    
     static getDerivedStateFromProps(props, state) {
 
         const { balance: sourceBalance, selectedAccount, assets, messages } = props;
@@ -44,7 +52,7 @@ class MessagesComponent extends React.Component {
 
         const assetInstance = new Asset(assets['WAVES']);
         const currentId = state && state.message && state.message.id;
-        const isExistMsg = !!messages.find(({ id }) => id === currentId);
+        const isExistMsg = !!messages.find(({ id, status }) => id === currentId && status === 'unapproved');
         const balance = new Money(sourceBalance || 0, assetInstance);
 
         if (currentId && isExistMsg) {
@@ -132,7 +140,9 @@ const mapStateToProps = function (store) {
 };
 
 const actions = {
-    getAsset
+    getAsset,
+    approve,
+    reject
 };
 
 export const Messages = connect(mapStateToProps, actions)(MessagesComponent);

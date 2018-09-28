@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { getTxId } from './';
 import { TxIcon } from './TransactionIcon';
-import background from '../../services/Background';
 import { TransactionWallet } from '../wallets';
 
 
@@ -9,9 +8,8 @@ export class SignClass extends React.PureComponent {
     
     readonly props;
     readonly state = Object.create(null);
-    approveHandler = () => this.approve();
-    rejectHandler = () => this.reject();
-    bgPromise;
+    approveHandler = () => this.props.approve();
+    rejectHandler = () => this.props.reject();
     
     constructor(props) {
         super(props);
@@ -30,29 +28,5 @@ export class SignClass extends React.PureComponent {
                 <TxIcon txType={this.props.txType}/>
             </div>
         </div>;
-    }
-    
-    approve() {
-        this.setState({ inProgress: true });
-        this.bgPromise = background.approve(this.props.message.id, this.props.selectedAccount.address)
-            .then(
-                (approve) => {
-                    this.setState({ approve });
-                    background.clearMessages();
-                },
-                        (error) => this.setState({ error })
-            );
-    }
-    
-    reject() {
-        this.setState({ inProgress: true });
-        this.bgPromise = background.reject(this.props.message.id)
-            .then(
-                (reject) => {
-                    this.setState({ reject });
-                    background.clearMessages();
-                },
-                (error) => this.setState({ error }),
-            );
     }
 }

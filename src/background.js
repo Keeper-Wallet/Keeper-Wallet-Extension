@@ -217,7 +217,7 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         const sign = async (tx, from, broadcast = false) => {
-            this._validateTx(tx, from);
+            this._validateTx(tx, from)
             return await this.messageController.newTx(tx, origin, from, broadcast)
         };
 
