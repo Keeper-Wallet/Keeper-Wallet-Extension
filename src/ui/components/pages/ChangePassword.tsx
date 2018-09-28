@@ -100,10 +100,11 @@ class ChangePasswordComponent extends React.PureComponent {
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}
-                               error={!!this.state.secondError}
+                               error={!!this.state.secondError || this.state.oldEqualNewError}
                         />
-                        <Error show={this.state.secondError}>
-                            <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans>
+                        <Error show={this.state.secondError || this.state.oldEqualNewError}>
+                            {this.state.oldEqualNewError ? <Trans i18nKey='changePassword.equalPassword'>Old password is equal new</Trans> : null}
+                            {this.state.secondError ? <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans> : null}
                         </Error>
                     </div>
 
@@ -133,6 +134,7 @@ class ChangePasswordComponent extends React.PureComponent {
                         buttonDisabled: true,
                         passwordError: false,
                         showChanged: true,
+                        oldEqualNewError: true,
                     });
 
                     setTimeout(() => this.setState({ showChanged: false }), 1000);
@@ -178,21 +180,31 @@ class ChangePasswordComponent extends React.PureComponent {
             return true;
         }
 
-        return firstValue === secondValue && secondValue.length < MIN_LENGTH;
+        return firstValue !== secondValue
+            || secondValue.length < MIN_LENGTH
+            || firstValue === oldValue;
     }
 
     _checkValues() {
-        let { passwordError } = this.state;
+        let { passwordError, firstValue, oldValue } = this.state;
         const oldError = this._validateOld();
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
-        const buttonDisabled = oldError || firstError || secondError;
+        const oldEqualNewError = !firstError && !secondError && firstValue === oldValue;
+        const buttonDisabled = oldEqualNewError || oldError || firstError || secondError;
 
         if (oldError) {
             passwordError = false;
         }
 
-        this.setState({ oldError, firstError, passwordError, secondError, buttonDisabled });
+        this.setState({
+            oldEqualNewError,
+            oldError,
+            firstError,
+            passwordError,
+            secondError,
+            buttonDisabled
+        });
     }
 
     _validateOld() {
