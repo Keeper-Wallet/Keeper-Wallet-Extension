@@ -4,7 +4,6 @@ import * as styles from './modal.styl';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
-
 const ModalWrapper = (props) => {
     let Item;
     if (props.showChildrenOnly) {
