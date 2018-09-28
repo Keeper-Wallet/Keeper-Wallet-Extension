@@ -23,9 +23,9 @@ class ChangePasswordComponent extends React.PureComponent {
         firstValue: '',
         secondValue: '',
         oldValue: '',
-        oldError: null,
-        firstError: null,
-        secondError: null,
+        oldError: '',
+        firstError: '',
+        secondError: '',
         buttonDisabled: true,
         passwordError: false,
         showChanged: false,
@@ -84,9 +84,9 @@ class ChangePasswordComponent extends React.PureComponent {
                                type="password"
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
-                               error={!!this.state.firstError}
+                               error={!!this.state.firstError || this.state.oldEqualNewError}
                         />
-                        <Error show={this.state.firstError}>
+                        <Error show={!!this.state.firstError}>
                             <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
                         </Error>
                     </div>
@@ -102,7 +102,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError || this.state.oldEqualNewError}
                         />
-                        <Error show={this.state.secondError || this.state.oldEqualNewError}>
+                        <Error show={!!this.state.secondError || this.state.oldEqualNewError}>
                             {this.state.oldEqualNewError ? <Trans i18nKey='changePassword.equalPassword'>Old password is equal new</Trans> : null}
                             {this.state.secondError ? <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans> : null}
                         </Error>
@@ -134,7 +134,7 @@ class ChangePasswordComponent extends React.PureComponent {
                         buttonDisabled: true,
                         passwordError: false,
                         showChanged: true,
-                        oldEqualNewError: true,
+                        oldEqualNewError: false,
                     });
 
                     setTimeout(() => this.setState({ showChanged: false }), 1000);
@@ -190,8 +190,8 @@ class ChangePasswordComponent extends React.PureComponent {
         const oldError = this._validateOld();
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
-        const oldEqualNewError = !firstError && !secondError && firstValue === oldValue;
-        const buttonDisabled = oldEqualNewError || oldError || firstError || secondError;
+        const oldEqualNewError = !firstError && !secondError && !oldError && oldValue && firstValue === oldValue;
+        const buttonDisabled = oldEqualNewError || oldError || firstError || secondError || !oldValue || !firstValue;
 
         if (oldError) {
             passwordError = false;
