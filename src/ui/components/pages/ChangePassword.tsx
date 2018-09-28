@@ -5,8 +5,9 @@ import * as React from 'react'
 import { Input, Error, Button, Modal } from '../ui';
 import background from '../../services/Background';
 import { translate, Trans } from 'react-i18next';
+import { CONFIG } from '../../appConfig';
 
-const MIN_LENGTH = 6;
+const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
 const mapStateToProps = function (store: any) {
     return {
@@ -28,6 +29,7 @@ class ChangePasswordComponent extends React.PureComponent {
         buttonDisabled: true,
         passwordError: false,
         showChanged: false,
+        oldEqualNewError: false,
     };
     props: {
         changePassword: (p1: string, p2: string) => void;

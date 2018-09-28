@@ -39,7 +39,7 @@ class AssetsComponent extends React.Component {
         const activeProps = {
             account: this.props.activeAccount,
             balance: this.state.balances[activeAddress],
-            onClick: () => this.showInfo(this.props.activeAccount),
+            onSelect: this.onSelectHandler,
             onShowQr: this.showQrHandler,
             active: true,
         };

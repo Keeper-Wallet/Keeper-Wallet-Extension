@@ -7,7 +7,7 @@ import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 
-export function ActiveWallet({className = '', onShowQr = null, active, account, balance, ...props}) {
+export function ActiveWallet({className = '', onShowQr = null, onSelect = null, active, account, balance, ...props}) {
 
     className = cn(styles.activeWallet, className, { [styles.activeWalletSelected]: active });
 
@@ -19,7 +19,8 @@ export function ActiveWallet({className = '', onShowQr = null, active, account, 
         className: 'center',
         account,
         balance,
-        active
+        active,
+        onSelect,
     };
 
     const wallets = [
