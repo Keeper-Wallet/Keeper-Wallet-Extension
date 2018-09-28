@@ -20,6 +20,7 @@ import {
     ChangePassword,
     DeleteAccount,
     Messages,
+    ForgotPassword,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -52,6 +53,7 @@ export const PAGES = {
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
     MESSAGES: 'messages',
+    FORGOT: 'forgot_password',
     ROOT: '',
 };
 
@@ -305,6 +307,14 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
+        }
+    },
+    [PAGES.FORGOT]: {
+        component: ForgotPassword,
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: false,
         }
     },
     [PAGES.MESSAGES]: {

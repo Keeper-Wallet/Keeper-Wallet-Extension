@@ -94,6 +94,7 @@ class RootComponent extends React.Component<any, any> {
             case PAGES.CONDITIONS:
                 return !props.initialized;
             case PAGES.LOGIN:
+            case PAGES.FORGOT:
                 return props.initialized && props.locked;
             default:
                 return !props.locked;
