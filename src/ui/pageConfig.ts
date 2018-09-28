@@ -312,7 +312,7 @@ export const PAGES_CONF = {
     [PAGES.FORGOT]: {
         component: ForgotPassword,
         menu: {
-            hasLogo: true,
+            hasLogo: false,
             hasSettings: false,
             back: false,
         }

@@ -1,4 +1,4 @@
-import * as styles from './styles/deleteAccount.styl';
+import * as styles from './styles/forgotAccount.styl';
 import * as React from 'react'
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
@@ -16,19 +16,21 @@ class ForgotPasswordComponent extends React.Component {
             <h2 className="title1 margin2">
                 <Trans i18nKey='forgotPassword.attention'>Attention!</Trans>
             </h2>
-            <div className="margin4 body1">
+            <div className="body1">
                 <Trans i18nkey='forgotPassword.warn'>
-                    If you forget your password, you must delete accounts and restore all your accounts from their SEEDs.
+                    If you forget your password, you must restore all your accounts from their SEEDs and set a new password.
                 </Trans>
             </div>
-            <div>
-                <Button onClick={this.onClickHandler} type='warning'>
-                    <Trans i18nKey='forgotPassword.delete'>Delete accounts</Trans>
+            <div className={styles.buttonMargin}>
+                <Button className="margin4 link" onClick={this.onClickHandler} type='warning'>
+                    <Trans i18nKey='forgotPassword.restore'>Restore all</Trans>
                 </Button>
             </div>
-            <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.onBackHandler}>
-                <Trans i18nKey='forgotPassword.tryAgain'>Try again</Trans>
-            </Button>
+            <div className={`${styles.tryAgain} link`}>
+                <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.onBackHandler}>
+                    <Trans i18nKey='forgotPassword.tryAgain'>Try again</Trans>
+                </Button>
+            </div>
         </div>
     }
 }
