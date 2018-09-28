@@ -85,8 +85,8 @@ export const PAGES_CONF = {
     [PAGES.IMPORT]: {
         component: Import,
         menu: {
-            hasLogo: true,
-            hasSettings: false,
+            hasLogo: false,
+            hasSettings: true,
             back: null,
         }
     },

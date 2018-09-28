@@ -80,7 +80,7 @@ class NewAccountComponent extends React.PureComponent {
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}/>
                         <Error hide={!this.state.secondError}>
-                            <Trans i18nKey='newAccount.notMatch'>Password no match</Trans>
+                            <Trans i18nKey='newAccount.notMatch'>Passwords no match</Trans>
                         </Error>
                     </div>
                 </div>
