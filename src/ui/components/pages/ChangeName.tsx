@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import { changeAccountName } from '../../actions';
 import {Trans, translate} from 'react-i18next';
 import { Button, Error, Input } from '../ui';
+import { CONFIG } from '../../appConfig';
 
 @translate('extension')
 class ChangeAccountNameComponent extends React.PureComponent {
@@ -66,13 +67,8 @@ class ChangeAccountNameComponent extends React.PureComponent {
     }
     
     onBlur() {
-        this.setState({ error: !this.state.newName });
+        this.setState({ error: this.state.newName.length < CONFIG.NAME_MIN_LENGTH });
     }
-    
-    // static getDerivedStateFromProps(props, state) {
-    //     const newName = state.newName === null ? props.account.name : state.newName;
-    //     return { newName };
-    // }
 }
 
 

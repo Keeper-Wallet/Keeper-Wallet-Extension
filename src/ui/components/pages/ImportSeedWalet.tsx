@@ -76,7 +76,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _validate(value = '', noSetState?) {
-        const error = value.length < 15;
+        const error = value.length < 24;
         if (!noSetState) {
             this.setState({ error });
         }
@@ -87,7 +87,7 @@ class ImportSeedComponent extends React.Component {
         const phrase = e.target.value;
         let seed = { address: '', phrase: '' };
 
-        if (phrase.length >= 15) {
+        if (phrase.length >= 24) {
             seed = new Seed(phrase);
         }
 
