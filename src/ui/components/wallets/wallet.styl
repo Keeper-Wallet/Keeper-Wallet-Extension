@@ -75,7 +75,7 @@
         justify-content: center;
         font-weight: normal;
 
-        &:hover
+        &:not(:last-child):hover
           background-color: $basic100;
 
       .accountIcon
@@ -154,22 +154,14 @@
   animation-fill-mode: both;
 
 
-@keyframes :global(animation-active-show) {
-  0% {
+@keyframes :global(animation-active-show)
+  0%
     opacity: 0;
-  }
-
-  100% {
+  100%
     opacity: 1;
-  }
-}
 
-@keyframes :global(animation-active-hide) {
-  0% {
+@keyframes :global(animation-active-hide)
+  0%
     opacity: 1;
-  }
-
-  100% {
+  100%
     opacity: 0;
-  }
-}
