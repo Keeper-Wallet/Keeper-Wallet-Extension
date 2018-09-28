@@ -37,4 +37,3 @@ export class Avatar extends React.Component {
     }
 
 }
-

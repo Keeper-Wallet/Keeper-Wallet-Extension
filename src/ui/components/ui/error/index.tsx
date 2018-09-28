@@ -62,5 +62,4 @@ interface IProps {
     className?: string;
     hideByClick?: boolean;
     onClick?: (...args) => void;
-
 }
