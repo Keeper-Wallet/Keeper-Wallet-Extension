@@ -44,17 +44,19 @@ class ChangeAccountNameComponent extends React.PureComponent {
                     <Trans i18nKey='changeName.newName'>New account name</Trans>
                 </div>
 
-                <div className="margin-main-big">
+                <div className="margin1 relative">
                     <Input ref={this.getRef}
+                           className="margin1"
                            onInput={this.setNewName}
                            onBlur={this.blurHandler}
                            error={this.state.error}
                            value={this.state.newName} maxLength='26'
                     />
+                    <Error show={this.state.error}>
+                        <Trans i18nKey='changeName.error'>Name is required</Trans>
+                    </Error>
                 </div>
-                <Error show={this.state.error}>
-                    <Trans i18nKey='changeName.error'>Name is required</Trans>
-                </Error>
+
                 <Button type='submit'>
                     <Trans i18nKey='changeName.save'>Save</Trans>
                 </Button>

@@ -96,9 +96,7 @@ class AssetsComponent extends React.Component {
 
             <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showActivated} showChildrenOnly={true}>
                 <div className="modal notification active-asset" key={this.state.name}>
-                    <div><Trans i18nKey="assets.account">Account</Trans></div>
-                    <div><span> {this.state.name} </span></div>
-                    <div><Trans i18nKey="assets.setActive">set active!</Trans></div>
+                    <div><Trans i18nKey="assets.setActive">Set active account</Trans></div>
                 </div>
             </Modal>
 
