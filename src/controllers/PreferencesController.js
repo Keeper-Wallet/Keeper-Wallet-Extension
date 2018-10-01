@@ -65,7 +65,7 @@ export class PreferencesController extends EventEmitter{
     addLabel(address, label) {
         const accounts = this.store.getState().accounts;
         const index = accounts.findIndex(current => current.address === address);
-        if (!index){
+        if (index === -1){
             throw new Error(`Account with address "${address}" not found`)
         }
         accounts[index].name = label;

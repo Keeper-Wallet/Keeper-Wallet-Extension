@@ -1,39 +1,61 @@
 import ObservableStore from 'obs-store';
-import {default as DataServiceClient} from '@waves/data-service-client-js'
 
+const WAVES = {
+    quantity: "10000000000000000",
+    ticker: 'WAVES',
+    id: 'WAVES',
+    name: 'Waves',
+    precision: 8,
+    description: '',
+    height: 0,
+    timestamp: '2016-04-11T21:00:00.000Z',
+    sender: '',
+    reissuable: false,
+    displayName: 'WAVES'
+}
 export class AssetInfoController {
     constructor(options = {}) {
         const defaults = {
             assets: {
-                mainnet:{},
-                testnet:{}
+                mainnet: {
+                    WAVES
+                },
+                testnet: {
+                    WAVES
+                }
             }
-        }
-        this.getNetwork = options.getNetwork
+        };
+        this.getNode = options.getNode;
+        this.getNetwork = options.getNetwork;
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
-        this.clients ={
-            mainnet: new DataServiceClient({
-                rootUrl: 'http://api.wavesplatform.com/v0',
-                fetch: req => fetch(req).then(res => res.text()), // fetch must return string
-                parse: str => JSON.parse(str),
-            }),
-            testnet: new DataServiceClient({
-                rootUrl: 'http://api.testnet.wavesplatform.com/v0',
-                fetch: req => fetch(req).then(res => res.text()), // fetch must return string
-                parse: str => JSON.parse(str),
-            })
-        }
     }
 
     async assetInfo(assetId) {
-        const network = this.getNetwork()
+        const network = this.getNetwork();
+        const API_BASE = this.getNode();
+        const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
         let assets = this.store.getState().assets;
         if (!assets[network][assetId]) {
-            let assetInfo = (await this.clients[network].getAssets(assetId)).data[0];
-            //Convert Bignuber to string
-            if (assetInfo) assetInfo.quantity = assetInfo.quantity.toString();
-            assets[network][assetId] = assetInfo;
-            this.store.updateState({assets})
+            let assetInfo = await fetch(url).then(resp => resp.text())
+                .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')));
+            
+            if (! assetInfo.error){
+                const mapped = {
+                        quantity: assetInfo.quantity,
+                        ticker: assetInfo.ticker,
+                        id: assetInfo.assetId,
+                        name: assetInfo.name,
+                        precision: assetInfo.decimals,
+                        description: assetInfo.description,
+                        height: assetInfo.issueHeight,
+                        timestamp: (new Date(parseInt(assetInfo.issueTimestamp))).toJSON(),
+                        sender: assetInfo.issuer,
+                        reissuable: assetInfo.reissuable,
+                        displayName: assetInfo.ticker || assetInfo.name
+                    }
+                assets[network][assetId] = mapped;
+                this.store.updateState({assets})
+            }``
         }
         return assets[network][assetId]
     }
