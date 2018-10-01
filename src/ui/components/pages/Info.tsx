@@ -8,7 +8,6 @@ export class Info extends React.Component {
 
     render() {
         return <div className={`${styles.content} body1`}>
-            {/* todo @vba / this page must not contain top logo */}
             <BigLogo className={`${styles.logoLeft} margin-main`} noTitle={true}/>
 
             <div className="margin-main basic500">
@@ -18,20 +17,18 @@ export class Info extends React.Component {
                     happening on the Waves Platform</Trans>
             </div>
 
-            <a className="link black" href='wavescommunity.com'>wavescommunity.com</a>
-
-
+            <a className="link black" target='_blank' href='https://wavescommunity.com'>wavescommunity.com</a>
 
             <div className={`${styles.social} margin-main`}>
                 <div className="margin-main basic500">
                     <Trans i18nKey='info.joinUs'>Join the Waves Community</Trans>
                 </div>
                 <ul>
-                    <li className={styles.github}></li>
-                    <li className={styles.telegram}></li>
-                    <li className={styles.discord}></li>
-                    <li className={styles.twitter}></li>
-                    <li className={styles.facebook}></li>
+                    <li className={styles.github}><a target="_blank" href="https://github.com/wavesplatform/"></a></li>
+                    <li className={styles.telegram}><a target="_blank" href="https://telegram.me/wavesnews"></a></li>
+                    <li className={styles.discord}><a target="_blank" href="https://discord.gg/cnFmDyA"></a></li>
+                    <li className={styles.twitter}><a target="_blank" href="https://twitter.com/wavesplatform"></a></li>
+                    <li className={styles.facebook}><a target="_blank" href="https://www.facebook.com/wavesplatform"></a></li>
                 </ul>
             </div>
 

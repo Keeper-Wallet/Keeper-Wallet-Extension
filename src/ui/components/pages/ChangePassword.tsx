@@ -2,12 +2,12 @@ import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
 import { changePassword } from '../../actions';
 import * as React from 'react'
-import { Input, Button, Modal } from '../ui';
+import { Input, Error, Button, Modal } from '../ui';
 import background from '../../services/Background';
 import { translate, Trans } from 'react-i18next';
-import { PAGES } from '../../pageConfig';
+import { CONFIG } from '../../appConfig';
 
-const MIN_LENGTH = 6;
+const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
 const mapStateToProps = function (store: any) {
     return {
@@ -23,12 +23,13 @@ class ChangePasswordComponent extends React.PureComponent {
         firstValue: '',
         secondValue: '',
         oldValue: '',
-        oldError: null,
-        firstError: null,
-        secondError: null,
+        oldError: '',
+        firstError: '',
+        secondError: '',
         buttonDisabled: true,
         passwordError: false,
         showChanged: false,
+        oldEqualNewError: false,
     };
     props: {
         changePassword: (p1: string, p2: string) => void;
@@ -55,54 +56,63 @@ class ChangePasswordComponent extends React.PureComponent {
                     <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
+                        </div>
+                        <Input id='old'
+                               className="margin1"
+                               type="password"
+                               onChange={this.onChangeOld}
+                               onBlur={this.onOldBlur}
+                               error={!!(this.state.oldError || this.state.passwordError)}
+                               ref={this.getRef}
+                        />
+                        <Error show={this.state.oldError && !this.state.passwordError}>
+                            {this.state.oldError ? <Trans i18nKey='changePassword.errorShortOld'>Password can't be so short</Trans> : null}
+                            {this.state.passwordError ? <Trans i18nKey='changePassword.errorWrongOld'>Wrong password</Trans> : null}
+                        </Error>
+
                     </div>
-                    <Input id='old'
-                           className="margin-main-big"
-                           type="password"
-                           onChange={this.onChangeOld}
-                           onBlur={this.onOldBlur}
-                           error={!!this.state.oldError}
-                           ref={this.getRef}
-                    />
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.newPassword'>New password</Trans>
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.newPassword'>New password</Trans>
+                        </div>
+                        <Input id='first'
+                               className="margin1"
+                               type="password"
+                               onBlur={this.onFirstBlur}
+                               onChange={this.onChangeFist}
+                               error={!!this.state.firstError || this.state.oldEqualNewError}
+                        />
+                        <Error show={!!this.state.firstError}>
+                            <Trans i18nKey='changePassword.errorShortNew'>Password is too short</Trans>
+                        </Error>
                     </div>
-                    <Input id='first'
-                           className="margin-main-big"
-                           type="password"
-                           onBlur={this.onFirstBlur}
-                           onChange={this.onChangeFist}
-                           error={!!this.state.firstError}
-                    />
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
+                        </div>
+                        <Input id='second'
+                               className="margin1"
+                               type="password"
+                               onBlur={this.onSecondBlur}
+                               onChange={this.onChangeSecond}
+                               error={!!this.state.secondError || this.state.oldEqualNewError}
+                        />
+                        <Error show={!!this.state.secondError || this.state.oldEqualNewError}>
+                            {this.state.oldEqualNewError ? <Trans i18nKey='changePassword.equalPassword'>Old password is equal new</Trans> : null}
+                            {this.state.secondError ? <Trans i18nKey='changePassword.errorWrongConfirm'>New passwords not match</Trans> : null}
+                        </Error>
                     </div>
-                    <Input id='second'
-                           className="margin-main-big"
-                           type="password"
-                           onBlur={this.onSecondBlur}
-                           onChange={this.onChangeSecond}
-                           error={!!this.state.secondError}
-                    />
+
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='changePassword.create'>Save</Trans>
                 </Button>
             </form>
-
-            <Modal showModal={this.state.showChanged} showChildrenOnly={true}>
-                <div className="modal notification">
-                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
-                </div>
-            </Modal>
-
-            <Modal showModal={this.state.oldError} showChildrenOnly={true}>
-                <div className="modal notification error">
-                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
-                </div>
-            </Modal>
 
         </div>
     }
@@ -124,11 +134,12 @@ class ChangePasswordComponent extends React.PureComponent {
                         buttonDisabled: true,
                         passwordError: false,
                         showChanged: true,
+                        oldEqualNewError: false,
                     });
 
                     setTimeout(() => this.setState({ showChanged: false }), 1000);
                 },
-                () => this.setState({ oldError: true })
+                () => this.setState({ passwordError: true })
             );
         }
     }
@@ -137,31 +148,30 @@ class ChangePasswordComponent extends React.PureComponent {
         this._checkValues();
     }
 
+    _onChange(oldValue, firstValue, secondValue) {
+        const buttonDisabled = this._isDisabledButton(oldValue, firstValue, secondValue);
+        this.setState({ oldValue, firstValue, secondValue, buttonDisabled });
+    }
+
     _onChangeFist(e) {
         const firstValue = e.target.value;
-        this.setState({ firstValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { oldValue, secondValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
     _onChangeSecond(e) {
         const secondValue = e.target.value;
-        this.setState({ secondValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { oldValue, firstValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
     _onChangeOld(e) {
         const oldValue = e.target.value;
-        this.setState({ oldValue });
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({ buttonDisabled });
+        const { secondValue, firstValue } = this.state;
+        this._onChange(oldValue, firstValue, secondValue);
     }
 
-    _isDisabledButton() {
-
-        const { oldValue, firstValue, secondValue } = this.state;
-
+    _isDisabledButton(oldValue, firstValue, secondValue) {
         if (!oldValue || !firstValue || !secondValue) {
             return true;
         }
@@ -170,15 +180,41 @@ class ChangePasswordComponent extends React.PureComponent {
             return true;
         }
 
-        return this.state.firstValue === this.state.secondValue && this.state.secondValue.length < MIN_LENGTH;
+        return firstValue !== secondValue
+            || secondValue.length < MIN_LENGTH
+            || firstValue === oldValue;
     }
 
     _checkValues() {
+        let { passwordError, firstValue, oldValue } = this.state;
+        const oldError = this._validateOld();
         const firstError = this._validateFirst();
         const secondError = this._validateSecond();
-        const passwordError = !!(firstError || secondError);
-        const buttonDisabled = this._isDisabledButton();
-        this.setState({passwordError, firstError, secondError, buttonDisabled});
+        const oldEqualNewError = !firstError && !secondError && !oldError && oldValue && firstValue === oldValue;
+        const buttonDisabled = oldEqualNewError || oldError || firstError || secondError || !oldValue || !firstValue;
+
+        if (oldError) {
+            passwordError = false;
+        }
+
+        this.setState({
+            oldEqualNewError,
+            oldError,
+            firstError,
+            passwordError,
+            secondError,
+            buttonDisabled
+        });
+    }
+
+    _validateOld() {
+        if (!this.state.oldValue) {
+            return null;
+        }
+
+        if (this.state.oldValue.length < MIN_LENGTH) {
+            return {error: 'isSmall'};
+        }
     }
 
     _validateFirst() {

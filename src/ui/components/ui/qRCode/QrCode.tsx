@@ -54,6 +54,10 @@ export class QRCode extends React.PureComponent {
         </div>;
     }
 
+    getImg() {
+        return this.state.src;
+    }
+
     static getDerivedStateFromProps(nextProps, state) {
         const {
             errorCorrectionLevel = DEFAULTS.errorCorrectionLevel,

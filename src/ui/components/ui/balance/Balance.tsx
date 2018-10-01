@@ -36,4 +36,3 @@ interface IProps {
     isShortFormat?: boolean;
     children?: any;
 }
-

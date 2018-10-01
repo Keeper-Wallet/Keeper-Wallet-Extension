@@ -4,7 +4,6 @@ import * as styles from './modal.styl';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
-
 const ModalWrapper = (props) => {
     let Item;
     if (props.showChildrenOnly) {
@@ -18,18 +17,21 @@ const ModalWrapper = (props) => {
         Item = (
             <div className={className}>
                 {props.showClose ? <div className={styles.close} onClick={props.onClose}>X</div> : null}
-                <div className={styles.content}>
+                <div className='modal-content'>
                     {props.children}
                 </div>
             </div>
         );
 
     }
-    return <CSSTransitionGroup transitionName="animated_modal"
+
+    const hasAnimation = !!props.animation;
+
+    return <CSSTransitionGroup transitionName={props.animation || 'default_modal'}
                                transitionEnterTimeout={200}
-                               transitionEnter={true}
+                               transitionEnter={hasAnimation}
                                transitionLeaveTimeout={200}
-                               transitionLeave={true}>
+                               transitionLeave={hasAnimation}>
         {Item}
     </CSSTransitionGroup>
 };
@@ -41,6 +43,10 @@ export class Modal extends React.PureComponent {
 
     el: HTMLDivElement;
     static modalRoot: HTMLElement;
+    static ANIMATION = {
+        FLASH: 'flash_modal',
+        FLASH_SCALE: 'flash_scale_modal',
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -68,6 +74,7 @@ export class Modal extends React.PureComponent {
     render() {
         return ReactDOM.createPortal(
             <ModalWrapper onClose={this.closeHandler.bind(this)}
+                          animation={this.props.animation}
                           showClose={this.props.showClose}
                           showModal={this.props.showModal}
                           showChildrenOnly={this.props.showChildrenOnly}>
@@ -113,4 +120,5 @@ interface IProps {
     noClickOut?: boolean;
     children?: any;
     onClose?: () => void;
+    animation?: string;
 }

@@ -16,9 +16,11 @@ class AssetsComponent extends React.Component {
 
     props;
     state = {} as any;
+    _t;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     onSelectHandler = account => this.showInfo(account);
     onSetActiveHandler = account => this.setActive(account);
+    copyActiveHandler = () => this.onCopyModal();
     scrollHandler = (e) => {
         const value = e.target.scrollTop;
         this.setState({ topScrollMain: value > 90 });
@@ -39,7 +41,7 @@ class AssetsComponent extends React.Component {
         const activeProps = {
             account: this.props.activeAccount,
             balance: this.state.balances[activeAddress],
-            onClick: () => this.showInfo(this.props.activeAccount),
+            onSelect: this.onSelectHandler,
             onShowQr: this.showQrHandler,
             active: true,
         };
@@ -61,20 +63,20 @@ class AssetsComponent extends React.Component {
         });
 
         return <div className={styles.assets}>
-            <ActiveWallet {...activeProps} key={activeAddress}/>
+            <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
 
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
-
                 <div>
-                    {/* todo @vba remove inStorage div if no account there */}
-                    <div className="basic500 body1 in-storage">
+                    
+                    {wallets.length ? <div className="basic500 body1 in-storage">
                         <Trans i18nKey='assets.inStorage'>In storage</Trans>
-                    </div>
-                    <div>
+                    </div> : null}
+                    
+                    <div className={styles.walletListWrapper}>
                         <CSSTransitionGroup transitionName="animate_wallets"
                                             transitionEnterTimeout={600}
                                             transitionEnter={true}
@@ -86,14 +88,20 @@ class AssetsComponent extends React.Component {
                 </div>
             </div>
 
-            <Modal showModal={this.state.showActivated} showChildrenOnly={true}>
-                <div className="modal notification" key={this.state.name}>
-                    <Trans i18nKey="assets.account">Account</Trans>
-                    <span> {this.state.name} </span>
-                    <Trans i18nKey="assets.setActive">set active!</Trans>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.showCopy}
+                   showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="assets.copied">Copied!</Trans>
                 </div>
             </Modal>
 
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showActivated} showChildrenOnly={true}>
+                <div className="modal notification active-asset" key={this.state.name}>
+                    <div><Trans i18nKey="assets.setActive">Set active account</Trans></div>
+                </div>
+            </Modal>
+            
         </div>
     }
 
@@ -111,9 +119,15 @@ class AssetsComponent extends React.Component {
     closeModals() {
         const showSelected = false;
         const showActivated = false;
-        setTimeout(() => this.setState({ showSelected, showActivated }), 1000);
+        const showCopy = false;
+        setTimeout(() => this.setState({ showSelected, showActivated, showCopy }), 1000);
     }
-
+    
+    onCopyModal() {
+        this.setState({ showCopy: true });
+        this.closeModals();
+    }
+    
     static getDerivedStateFromProps(props, state) {
         const asset = props.assets['WAVES'];
 

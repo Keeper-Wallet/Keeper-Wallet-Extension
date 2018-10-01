@@ -1,11 +1,12 @@
 import * as styles from './styles/newaccount.styl';
-import {connect} from 'react-redux';
-import {createNew} from '../../actions';
+import { connect } from 'react-redux';
+import { createNew } from '../../actions';
 import * as React from 'react'
-import {Input, Button, Error} from '../ui';
-import {translate, Trans} from 'react-i18next';
+import { Input, Button, Error } from '../ui';
+import { translate, Trans } from 'react-i18next';
+import { CONFIG } from '../../appConfig';
 
-const MIN_LENGTH = 6;
+const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
 const mapStateToProps = function (store: any) {
     return {
@@ -15,7 +16,7 @@ const mapStateToProps = function (store: any) {
 
 @translate('extension')
 class NewAccountComponent extends React.PureComponent {
-
+    
     inputEl: Input;
     state = {
         firstValue: '',
@@ -28,7 +29,7 @@ class NewAccountComponent extends React.PureComponent {
     props: {
         createNew: (pass: string) => void;
     };
-
+    
     getRef = input => this.inputEl = input;
     onFirstBlur = () => this._onFirstBlur();
     onSecondBlur = () => this._onSecondBlur();
@@ -40,11 +41,11 @@ class NewAccountComponent extends React.PureComponent {
             this.props.createNew(this.state.firstValue);
         }
     };
-
+    
     componentDidMount() {
         this.inputEl.focus();
     }
-
+    
     render() {
         return <div className={styles.account}>
             <form className={styles.content} onSubmit={this.onSubmit}>
@@ -63,28 +64,25 @@ class NewAccountComponent extends React.PureComponent {
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
                                error={!!this.state.firstError}/>
-
-                        <Error hide={!this.state.firstError}>
+                        
+                        <Error show={this.state.firstError}>
                             <Trans i18nKey='newAccount.smallPass'>Password is small</Trans>
                         </Error>
-
+                    
                     </div>
                     <div className='margin1 relative'>
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
                         </div>
-
                         <Input id='second'
                                className='margin1'
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}
                                error={!!this.state.secondError}/>
-
-                        <Error hide={!this.state.secondError}>
-                            <Trans i18nKey='newAccount.notMatch'>Password no match</Trans>
+                        <Error show={this.state.secondError}>
+                            <Trans i18nKey='newAccount.notMatch'>Passwords no match</Trans>
                         </Error>
-
                     </div>
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
@@ -101,64 +99,64 @@ class NewAccountComponent extends React.PureComponent {
             </form>
         </div>
     }
-
+    
     _onFirstBlur() {
         this._checkValues(this.state.firstValue, this.state.secondValue);
     }
-
+    
     _onSecondBlur() {
         this._checkValues(this.state.firstValue, this.state.secondValue);
     }
-
-
+    
+    
     _onChangeInputs(firstValue, secondValue) {
-        this.setState({firstValue, secondValue});
-        const buttonDisabled = NewAccountComponent._isDisabledButton({firstValue, secondValue});
+        this.setState({ firstValue, secondValue });
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
         if (!buttonDisabled) {
             this._checkValues(firstValue, secondValue);
         }
     }
-
+    
     _checkValues(firstValue, secondValue) {
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = NewAccountComponent._isDisabledButton({firstValue, secondValue});
-        this.setState({passwordError, firstError, secondError, buttonDisabled});
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
+        this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
-
-    static _isDisabledButton({firstValue, secondValue}) {
+    
+    static _isDisabledButton({ firstValue, secondValue }) {
         if (!firstValue || !secondValue) {
             return true;
         }
-
+        
         const isFirstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const isSecondError = NewAccountComponent._validateSecond(firstValue, secondValue);
-
+        
         return isFirstError || isSecondError;
     }
-
+    
     static _validateFirst(firstValue, secondValue) {
         if (!firstValue) {
             return null;
         }
-
+        
         if (firstValue.length < MIN_LENGTH) {
-            return {error: 'isSmall'};
+            return { error: 'isSmall' };
         }
     }
-
+    
     static _validateSecond(firstValue, secondValue) {
         if (!secondValue || !firstValue) {
             return null;
         }
-
+        
         if (firstValue === secondValue) {
             return null;
         }
-
-        return {error: 'noMatch'}
+        
+        return { error: 'noMatch' }
     }
 }
 
-export const NewAccount = connect(mapStateToProps, {createNew})(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);

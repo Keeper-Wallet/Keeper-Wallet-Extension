@@ -20,6 +20,7 @@ import {
     ChangePassword,
     DeleteAccount,
     Messages,
+    ForgotPassword,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -49,9 +50,11 @@ export const PAGES = {
     INTRO: 'intro',
     NETWORK_SETTINGS: 'networks_select',
     LANGS_SETTINGS: 'langs_settings',
+    LANGS_SETTINGS_INTRO: 'langs_settings_intro',
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
     MESSAGES: 'messages',
+    FORGOT: 'forgot_password',
     ROOT: '',
 };
 
@@ -84,8 +87,8 @@ export const PAGES_CONF = {
     [PAGES.IMPORT]: {
         component: Import,
         menu: {
-            hasLogo: true,
-            hasSettings: false,
+            hasLogo: false,
+            hasSettings: true,
             back: null,
         }
     },
@@ -221,6 +224,9 @@ export const PAGES_CONF = {
     },
     [PAGES.SETTINGS]: {
         component: Settings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -231,7 +237,7 @@ export const PAGES_CONF = {
     [PAGES.INFO]: {
         component: Info,
         menu: {
-            hasLogo: true,
+            hasLogo: false,
             hasSettings: false,
             back: true,
         }
@@ -277,6 +283,9 @@ export const PAGES_CONF = {
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -285,14 +294,31 @@ export const PAGES_CONF = {
     },
     [PAGES.LANGS_SETTINGS]: {
         component: LangsSettings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
             back: true,
         }
     },
+    [PAGES.LANGS_SETTINGS_INTRO]: {
+        component: LangsSettings,
+        props: {
+            confirm: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: false,
+        }
+    },
     [PAGES.CHANGE_PASSWORD]: {
         component: ChangePassword,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -305,6 +331,14 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
+        }
+    },
+    [PAGES.FORGOT]: {
+        component: ForgotPassword,
+        menu: {
+            hasLogo: false,
+            hasSettings: false,
+            back: false,
         }
     },
     [PAGES.MESSAGES]: {

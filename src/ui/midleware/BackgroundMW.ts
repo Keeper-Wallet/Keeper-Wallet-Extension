@@ -111,7 +111,6 @@ export const changeName = store => next => action => {
     return next(action);
 };
 
-
 export const setCustomNode = store => next => action => {
     if (ACTION.CHANGE_NODE === action.type) {
         const { currentNetwork } = store.getState();
@@ -152,4 +151,15 @@ export const lock = store => next => action => {
         return null;
     }
     return next(action);
+};
+
+export const approve = store => next => action => {
+    if (action.type !== ACTION.APPROVE) {
+        return next(action);
+    }
+    
+    const { selectedAccount } = store.getState();
+    const { address } = selectedAccount;
+    
+    background.approve(action.payload, address);
 };

@@ -38,7 +38,7 @@ class ConfirmBackupComponent extends React.Component {
                     Please, tap each word in the correct order
                 </Trans>}
                 {showClear ? (
-                    <Error className={styles.noMargin}>
+                    <Error show={true} className={styles.noMargin}>
                         <Trans i18nKey="confirmBackup.wrongSeed">Wrong order, try again</Trans>
                     </Error>
                 ) : null}
