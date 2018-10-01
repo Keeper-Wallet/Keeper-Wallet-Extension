@@ -99,8 +99,18 @@ describe('WalletController', () => {
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
 
-        const exported = controller.exportAccount(controller.wallets[0].getAccount().address);
+        const exported = controller.exportAccount(controller.wallets[0].getAccount().address, password);
         expect(exported).to.eq(seed)
+    });
+
+    it('Should not export on invalid password', () => {
+        const controller = new WalletController({initState});
+        controller.unlock(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+
+
+        const exported = () => controller.exportAccount(controller.wallets[0].getAccount().address);
+        expect(exported).to.throw('Password is required')
     });
 
     it('Should approve tx', async () => {

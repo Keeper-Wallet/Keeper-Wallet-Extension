@@ -1,6 +1,4 @@
 import ObservableStore from 'obs-store';
-import {addressFromPublicKey} from '../lib/cryptoUtil'
-import {NETWORK_CONFIG} from "../constants";
 
 export class BalanceController {
     constructor(options = {}){
@@ -10,11 +8,9 @@ export class BalanceController {
         };
 
         this.getAccounts = options.getAccounts;
-        this.getNetwork = options.getNetwork;
-        this.getCustomNodes = options.getCustomNodes
+        this.getNode = options.getNode;
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
         this.poller = undefined;
-
         this.restartPolling();
     }
 
@@ -27,10 +23,9 @@ export class BalanceController {
     async updateBalances(){
         const accounts = this.getAccounts();
         if (accounts.length < 1) return;
-        const network = this.getNetwork();
-        const API_BASE = this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server
+        const API_BASE = this.getNode();
         let balances = await Promise.all(accounts.map(async account => {
-            const address = addressFromPublicKey(account.publicKey, network);
+            const address = account.address;
             const url = new URL(`addresses/balance/${address}`, API_BASE).toString()
             try {
                 return await fetch(url).then(resp => resp.json())

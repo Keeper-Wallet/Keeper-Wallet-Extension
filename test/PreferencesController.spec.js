@@ -5,13 +5,14 @@ describe("Preferences Controller", () => {
     let controller;
 
     beforeEach(() => {
-        controller = new PreferencesController();
+        controller = new PreferencesController({getNetwork: ()=>'mainnet'});
     });
 
     it('Should have correct default state', () => {
         const defaults = {
             currentLocale: 'en',
             accounts: [],
+            currentNetworkAccounts: [],
             selectedAccount: undefined
         };
         expect(controller.store.getState()).to.eql(defaults)
@@ -45,15 +46,21 @@ describe("Preferences Controller", () => {
 
     it('Should add label to account', () => {
         controller.syncAccounts([{address: '1', type: 'ledger'}]);
-        controller.addLabel({address: '1'}, 'yahoo');
+        controller.addLabel('1', 'yahoo');
         const account = controller._getAccountByAddress('1');
         expect(account.name).to.eql('yahoo')
     });
 
     it('Should select account', () => {
         controller.syncAccounts([{address: '1', type: 'ledger'}]);
-        //controller.selectAccount('1');
+        controller.selectAccount('1');
         const state = controller.store.getState();
         expect(state.selectedAccount).to.eql({address: '1', type: 'ledger', name: 'Account 1'})
+    })
+
+    it('Should automatically select account from current network if it exists', () => {
+        controller.syncAccounts([{address: '1', type: 'ledger', networkCode: 'W'}]);
+        const state = controller.store.getState();
+        expect(state.selectedAccount).to.eql({address: '1', type: 'ledger', name: 'Account 1', networkCode: 'W'})
     })
 });

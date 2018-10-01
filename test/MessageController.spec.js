@@ -43,7 +43,7 @@ describe("MessageController", () => {
         const messagePromise = controller.newTx(tx, origin, address);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
-        await controller.sign(msgId);
+        await controller.approve(msgId);
         expect(controller._getMessageById(msgId).status).to.eql('signed');
         const signedMessage = await messagePromise;
         expect(signedMessage).to.eql('placeholder');
@@ -53,7 +53,7 @@ describe("MessageController", () => {
         const messagePromise = controller.newTx(tx, origin);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
-        await controller.sign(msgId, address);
+        await controller.approve(msgId, address);
         expect(controller._getMessageById(msgId).status).to.eql('signed');
         const signedMessage = await messagePromise;
         expect(signedMessage).to.eql('placeholder');
@@ -65,7 +65,7 @@ describe("MessageController", () => {
         const msgId = state.messages[0].id;
         let msg = ''
         try {
-            await controller.sign(msgId);
+            await controller.approve(msgId);
         }catch (e) {
             msg = e.message
         }
@@ -76,10 +76,10 @@ describe("MessageController", () => {
         const messagePromise = controller.newTx(tx, origin, address, true);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
-        await controller.sign(msgId, address);
+        await controller.approve(msgId, address);
         expect(controller._getMessageById(msgId).status).to.eql('published');
         const signedMessage = await messagePromise;
-        expect(signedMessage).to.eql('placeholder');
+        expect(signedMessage).to.eql('broadcast placeholder');
     });
 
     it('Should reject messages', async () => {
