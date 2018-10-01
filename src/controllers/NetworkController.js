@@ -42,9 +42,12 @@ export class NetworkController {
         return this.store.getState().customNodes;
     }
 
-    async broadcast(tx){
+    getNode(){
         const network = this.getNetwork();
-        const API_BASE = this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server;
+        return this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server;
+    }
+    async broadcast(tx){
+        const API_BASE = this.getNode();
         const url = new URL('transactions/broadcast', API_BASE).toString();
         const resp =  await fetch(url, {
             method: 'POST',
