@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { setTab, addBackTab, removeBackTab, loading } from '../actions';
+import { setTab, addBackTab, removeBackTab, loading, setUiState } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { ReactNode } from 'react';
 
 
 class RootComponent extends React.Component {
@@ -58,7 +57,11 @@ class RootComponent extends React.Component {
     static getDerivedStateFromProps(nextProps: IProps) {
         
         if (nextProps.loading) {
-            return PAGES.INTRO;
+            return { tab: PAGES.INTRO };
+        }
+        
+        if (!nextProps.ui.selectedLangs) {
+            return { tab: PAGES.LANGS_SETTINGS };
         }
         
         let tab = nextProps.tab;
@@ -127,6 +130,7 @@ const mapStateToProps = function (store: any) {
 };
 
 const actions = {
+    setUiState,
     setLoading: loading,
     setTab,
     addBackTab,
@@ -148,5 +152,5 @@ interface IProps {
     backTabs: Array<string>;
     messages: Array<any>;
     loading: boolean;
-    children?: ReactNode;
+    ui: any;
 }
