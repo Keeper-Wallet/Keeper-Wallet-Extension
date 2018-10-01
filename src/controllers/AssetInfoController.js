@@ -36,7 +36,8 @@ export class AssetInfoController {
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
         let assets = this.store.getState().assets;
         if (!assets[network][assetId]) {
-            let assetInfo = await fetch(url).then(resp => resp.json())
+            let assetInfo = await fetch(url).then(resp => resp.text())
+                .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')));
             
             if (! assetInfo.error){
                 const mapped = {
@@ -47,7 +48,7 @@ export class AssetInfoController {
                         precision: assetInfo.decimals,
                         description: assetInfo.description,
                         height: assetInfo.issueHeight,
-                        timestamp: (new Date(assetInfo.issueTimestamp)).toJSON(),
+                        timestamp: (new Date(parseInt(assetInfo.issueTimestamp))).toJSON(),
                         sender: assetInfo.issuer,
                         reissuable: assetInfo.reissuable,
                         displayName: assetInfo.ticker || assetInfo.name

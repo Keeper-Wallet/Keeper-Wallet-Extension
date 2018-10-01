@@ -28,7 +28,10 @@ export class BalanceController {
             const address = account.address;
             const url = new URL(`addresses/balance/${address}`, API_BASE).toString()
             try {
-                return await fetch(url).then(resp => resp.json())
+                return await fetch(url)
+                    .then(resp => resp.text())
+                    // Convert numbers to strings
+                    .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')))
             }catch (e) {
                 return undefined
             }

@@ -11,15 +11,15 @@ describe('AssetInfoController', () => {
 
     it('Should Get waves asset info', async () => {
         const info = await controller.assetInfo('WAVES');
-        console.log(info)
+        //console.log(info)
         expect(info.description).to.eql('');
     });
 
     it('Should Get WBTC asset info', async () => {
         const info = await controller.assetInfo('8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS');
-        console.log(info)
+        //console.log(info)
         expect(info.description).to.eql('Bitcoin Token');
-        expect(info.quantity).to.eql(2099999999916825);
+        expect(info.quantity).to.eql('2099999999916825');
 
     });
 
