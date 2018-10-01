@@ -66,7 +66,7 @@ class BottomComponent extends React.Component {
             styles.bottom,
             this.props.className,
             {
-                [styles.hidden]: this.props.locked || !this.props.initialized
+                [styles.hidden]: this.props.locked || !this.props.initialized || this.props.hide
             });
         const networkClassName = cn(
                 styles.network,
@@ -122,6 +122,7 @@ interface IProps {
     className?: string;
     currentNetwork: string;
     noChangeNetwork: boolean;
+    hide?: boolean;
     networks: Array<{ name: string, code: string }>;
     version: string;
     locked: boolean;
