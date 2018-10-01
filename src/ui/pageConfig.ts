@@ -224,6 +224,9 @@ export const PAGES_CONF = {
     },
     [PAGES.SETTINGS]: {
         component: Settings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -280,6 +283,9 @@ export const PAGES_CONF = {
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -288,6 +294,9 @@ export const PAGES_CONF = {
     },
     [PAGES.LANGS_SETTINGS]: {
         component: LangsSettings,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -307,6 +316,9 @@ export const PAGES_CONF = {
     },
     [PAGES.CHANGE_PASSWORD]: {
         component: ChangePassword,
+        bottom: {
+            noChangeNetwork: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,

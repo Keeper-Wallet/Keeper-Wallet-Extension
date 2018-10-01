@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as styles from './bottom.styl';
 import { translate, Trans } from 'react-i18next';
 import cn from 'classnames';
-import { setNetwork } from '../../actions';
+import { setNetwork, loading } from '../../actions';
 
 const key = (key) => `bottom.${key}`;
 
@@ -49,6 +49,8 @@ class BottomComponent extends React.Component {
     selectHandler = (net) => {
         if (net) {
             this.props.setNetwork(net.name);
+            this.props.loading(true);
+            setTimeout(() => this.props.loading(false), 1000);
         }
         this.clickOutHandler();
     };
@@ -114,7 +116,7 @@ const mapStateToProps = ({currentNetwork, version, state, networks}) => ({
     initialized: state && state.initialized,
 });
 
-export const Bottom = connect(mapStateToProps, { setNetwork })(BottomComponent);
+export const Bottom = connect(mapStateToProps, { setNetwork, loading })(BottomComponent);
 
 interface IProps {
     className?: string;
@@ -125,4 +127,5 @@ interface IProps {
     locked: boolean;
     initialized: boolean;
     setNetwork: (net: string) => void;
+    loading: (show: boolean) => void;
 }
