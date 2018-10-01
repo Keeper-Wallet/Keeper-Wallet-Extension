@@ -36,20 +36,23 @@ const Networks = ({isShow, onSelect, selectedNet, networks}) => {
 };
 
 @translate('extension')
-class BottomComponent extends React.PureComponent {
+class BottomComponent extends React.Component {
 
     props: IProps;
     state = {showNetworks: false};
+    
     clickHandler = () => {
         this.addClickOutHandler();
         this.setState({ showNetworks: !this.props.noChangeNetwork });
     };
+    
     selectHandler = (net) => {
         if (net) {
             this.props.setNetwork(net.name);
         }
         this.clickOutHandler();
     };
+    
     clickOutHandler = () => {
         this.removeClickOutHandler();
         this.setState({ showNetworks: false });
@@ -73,7 +76,7 @@ class BottomComponent extends React.PureComponent {
         const currentNetwork = this.props.currentNetwork || 'mainnet';
 
         return <div className={className}>
-            <div className={networkClassName} onClick={this.clickHandler}>
+            <div className={networkClassName} onClick={this.clickHandler} key={currentNetwork}>
                 <span>
                     <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                 </span>
