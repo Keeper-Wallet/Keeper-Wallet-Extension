@@ -1,0 +1,32 @@
+:global .flash_scale_modal-enter
+    opacity: 0;
+    transform: scale3d(1, 0.01, 1) translateX(-50%);
+
+:global .flash_scale_modal-enter.flash_scale_modal-enter-active
+    opacity: 1;
+    transform: scale3d(1, 1, 1) translateX(-50%);
+    transition: transform 0.2s linear, opacity 0.2s linear;
+
+:global .flash_scale_modal-leave
+    opacity: 1;
+    transform: scale3d(1, 1, 1) translateX(-50%);
+
+:global .flash_scale_modal-leave.flash_scale_modal-leave-active
+    opacity: 0;
+    transform: scale3d(1, 0.01, 0.01) translateX(-50%);
+    transition: transform 0.2s linear, opacity 0.2s linear;
+
+
+:global .flash_modal-enter
+  opacity: 0;
+
+:global .flash_modal-enter.flash_modal-enter-active
+  opacity: 1;
+  transition: opacity 0.2s linear;
+
+:global .flash_modal-leave
+  opacity: 1;
+
+:global .flash_modal-leave.flash_modal-leave-active
+  opacity: 0;
+  transition: linear, opacity 0.2s linear;

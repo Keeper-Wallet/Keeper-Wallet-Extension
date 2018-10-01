@@ -55,7 +55,7 @@ export const WalletItem = ({
 
         <div className={styles.controls}>
             {children}
-            <Button onClick={selectHandler} className={iconClass}></Button>
+            <div onClick={selectHandler} className={iconClass}></div>
         </div>
     </div>;
 };

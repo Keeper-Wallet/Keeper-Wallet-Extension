@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { ACTION } from '../actions/constants';
-import { store } from '../store';
 
 function newUser(state = {}, action) {
      switch (action.type) {
@@ -60,7 +59,17 @@ function menu(state = { logo: false }, { type, payload }) {
     return state;
 }
 
+function loading(state = true, { type, payload }) {
+    
+    if (type === ACTION.LOADING) {
+        return payload;
+    }
+    
+    return state;
+}
+
 export const localState = combineReducers({
+    loading,
     newUser,
     login,
     newAccount,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { getAsset } from '../../actions';
+import { getAsset, approve, reject } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
@@ -9,10 +9,10 @@ import { getConfigByTransaction } from '../transactions';
 @translate('extension')
 class MessagesComponent extends React.Component {
 
-    readonly state;
+    readonly state = {} as any;
     readonly props;
-    rejectHandler = () => {};
-    approveHandler = () => {};
+    rejectHandler = () => this.reject();
+    approveHandler = () => this.approve();
     
 
     render() {
@@ -20,18 +20,27 @@ class MessagesComponent extends React.Component {
             return <Intro></Intro>
         }
 
-        const signData = this.state.signData;
+        const { message, signData } = this.state;
         const conf = getConfigByTransaction(signData);
         const { component: Component, type } = conf;
 
         return <Component txType={type}
                           signData={signData}
+                          message={message}
                           selectedAccount={this.state.selectedAccount}
                           reject={this.rejectHandler}
                           approve={this.approveHandler}>
         </Component>;
     }
 
+    approve() {
+        this.props.approve(this.state.message.id);
+    }
+    
+    reject() {
+        this.props.reject(this.state.message.id);
+    }
+    
     static getDerivedStateFromProps(props, state) {
 
         const { balance: sourceBalance, selectedAccount, assets, messages } = props;
@@ -43,13 +52,13 @@ class MessagesComponent extends React.Component {
 
         const assetInstance = new Asset(assets['WAVES']);
         const currentId = state && state.message && state.message.id;
-        const isExistMsg = !!messages.find(({ id }) => id === currentId);
+        const isExistMsg = !!messages.find(({ id, status }) => id === currentId && status === 'unapproved');
         const balance = new Money(sourceBalance || 0, assetInstance);
 
         if (currentId && isExistMsg) {
             return { ...state, balance, selectedAccount, assets};
         }
-        const message = props.messages[0];
+        const message = props.messages.find(({ status }) => status === 'unapproved');
         const sourceSignData = message.tx;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
@@ -80,7 +89,7 @@ class MessagesComponent extends React.Component {
             }
 
             if ( 'assetId' in currentData) {
-                assets[currentData.assetId] = true;
+                assets[currentData.assetId || 'WAVES'] = true;
 
                 if ('tokens' in currentData ) {
                     moneys.push({ ...currentData, path: currentPath });
@@ -131,7 +140,9 @@ const mapStateToProps = function (store) {
 };
 
 const actions = {
-    getAsset
+    getAsset,
+    approve,
+    reject
 };
 
 export const Messages = connect(mapStateToProps, actions)(MessagesComponent);

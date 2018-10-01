@@ -3,17 +3,20 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import { changeAccountName } from '../../actions';
 import {Trans, translate} from 'react-i18next';
-import { Button, Input } from '../ui';
-
+import { Button, Error, Input } from '../ui';
+import { CONFIG } from '../../appConfig';
 
 @translate('extension')
 class ChangeAccountNameComponent extends React.PureComponent {
     readonly props;
-    readonly state = { newName: null };
-
-    setNewName = event => this.setState({ newName: event.target.value });
+    readonly state = { newName: '', error: false };
+    inputEl: Input;
+    
+    getRef = input => this.inputEl = input;
+    setNewName = event => this.setState({ newName: event.target.value, error: false });
     onSubmit = (event) => this.changeName(event);
-
+    blurHandler = () => this.onBlur();
+    
     changeName(event) {
         event.preventDefault();
         const name = this.state.newName;
@@ -41,8 +44,17 @@ class ChangeAccountNameComponent extends React.PureComponent {
                     <Trans i18nKey='changeName.newName'>New account name</Trans>
                 </div>
 
-                <div className="margin-main-big">
-                    <Input onChange={this.setNewName} value={this.state.newName} maxLength='26'/>
+                <div className="margin1 relative">
+                    <Input ref={this.getRef}
+                           className="margin1"
+                           onInput={this.setNewName}
+                           onBlur={this.blurHandler}
+                           error={this.state.error}
+                           value={this.state.newName} maxLength='26'
+                    />
+                    <Error show={this.state.error}>
+                        <Trans i18nKey='changeName.error'>Name is required</Trans>
+                    </Error>
                 </div>
 
                 <Button type='submit'>
@@ -51,10 +63,13 @@ class ChangeAccountNameComponent extends React.PureComponent {
             </form>
         </div>;
     }
-
-    static getDerivedStateFromProps(props, state) {
-        const newName = state.newName === null ? props.account.name : state.newName;
-        return { newName };
+    
+    componentDidMount() {
+        this.inputEl.focus();
+    }
+    
+    onBlur() {
+        this.setState({ error: this.state.newName.length < CONFIG.NAME_MIN_LENGTH });
     }
 }
 

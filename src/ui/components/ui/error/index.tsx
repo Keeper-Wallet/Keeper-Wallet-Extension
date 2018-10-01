@@ -5,13 +5,13 @@ import cn from 'classnames';
 export class Error extends React.PureComponent {
 
     props: IProps;
-    state = { hidden: false };
+    state = { showed: false };
     onClick = (e) => this._onClick(e);
 
     render() {
-        const { hidden } = this.state;
+        const { showed } = this.state;
 
-        const { className = '', type, hide, onClick, hideByClick, children, ...props } = this.props;
+        const { className = '', type, show, onClick, hideByClick, children, ...props } = this.props;
 
         if (type === 'modal') {
             return null;
@@ -27,7 +27,7 @@ export class Error extends React.PureComponent {
 
         return (
             <div { ...errorProps }>
-                {hidden ? null : children}
+                {showed ?  children: null}
             </div>
         );
     }
@@ -44,11 +44,11 @@ export class Error extends React.PureComponent {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { hidden } = state;
-        const { hide } = props;
+        const { showed } = state;
+        const { show } = props;
 
-        if (!state || hidden !== hide) {
-            return { ...state, hidden: hide };
+        if (!state || showed != show) {
+            return { ...state, showed: show };
         }
 
         return null;
@@ -57,10 +57,9 @@ export class Error extends React.PureComponent {
 
 interface IProps {
     type?: string;
-    hide?: boolean;
+    show?: boolean;
     children?: any;
     className?: string;
     hideByClick?: boolean;
     onClick?: (...args) => void;
-
 }

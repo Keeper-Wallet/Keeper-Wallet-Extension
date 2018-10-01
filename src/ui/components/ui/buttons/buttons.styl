@@ -6,20 +6,24 @@
   justify-content: space-between;
 
 .button
-  width: 100%;
-  max-width: 240px;
-  height: 40px;
-  display: block;
-  border-radius: 4px;
-  font-family: Roboto-Medium;
-  font-size: 14px;
-  text-align: center;
-  white-space: nowrap;
   cursor: pointer;
+
+  &:not(.transparent)
+    transition: all .3s;
+    white-space: nowrap;
+    display: block;
+    border-radius: 4px;
+    font-family: Roboto-Medium;
+    text-align: center;
+    font-size: 14px;
+    width: 100%;
+    max-width: 240px;
+    height: 40px;
 
   &.default
     background-color: $white;
     border: 1px solid $basic200;
+    color: $black;
 
     &:hover
       border: 1px solid $black;
@@ -45,12 +49,6 @@
 
   &.transparent
     background-color: transparent;
-    width: auto;
-    display: inline-block;
-    height: auto;
-    font-weight: 400;
-    font-size: inherit;
-    font-family: inherit;
 
     &.disabled
       background-color: transparent;
@@ -58,6 +56,12 @@
     &:hover
       background: transparent;
       text-decoration: none;
+
+    &.fullwidth
+      width: 100%;
+
+    &.body1
+      font-size: 14px;
 
   &.warning
     background-color: $error400;

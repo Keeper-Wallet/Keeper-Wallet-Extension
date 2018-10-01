@@ -1,9 +1,9 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
-import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { newAccountName, user, setUiState } from '../../actions';
-import { Input, Button, Error } from '../ui';
+import {connect} from 'react-redux';
+import {translate, Trans} from 'react-i18next';
+import {newAccountName, user, setUiState} from '../../actions';
+import {Input, Button, Error} from '../ui';
 
 @translate('extension')
 class NewWalletNameComponent extends React.Component {
@@ -31,32 +31,30 @@ class NewWalletNameComponent extends React.Component {
                 <Trans i18nKey='newAccountName.accountName'>Account name</Trans>
             </h2>
 
-                <form onSubmit={this.onSubmit}>
-                    <div className={`margin1`}>
-                        <Input ref={this.getRef}
-                               className="margin1"
-                               onChange={this.onChange}
-                               value={this.props.account.name || ''}
-                               maxLength='32'
-                               error={this.state.noName}
-                               onBlur={this.onBlur}/>
+            <form onSubmit={this.onSubmit}>
+                <div className={`margin1`}>
+                    <Input ref={this.getRef}
+                           className="margin1"
+                           onChange={this.onChange}
+                           value={this.props.account.name || ''}
+                           maxLength='32'
+                           error={this.state.noName}
+                           onBlur={this.onBlur}/>
+                    <Error show={this.state.noName}>
+                        <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
+                    </Error>
+                </div>
 
-                        <Error className={styles.error} hide={!this.state.noName}>
-                            <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
-                        </Error>
+                <div className={`basic500 tag1 margin2`}>
+                    <Trans i18nKey="newAccountName.nameInfo">
+                        The account name will be known only to you
+                    </Trans>
+                </div>
 
-                    </div>
-
-                    <div className={`basic500 tag1 margin2`}>
-                        <Trans i18nKey="newAccountName.nameInfo">
-                            The account name will be known only to you
-                        </Trans>
-                    </div>
-
-                        <Button type='submit' disabled={!this.props.account.name}>
-                            <Trans i18nKey="newAccountName.continue">Continue</Trans>
-                        </Button>
-                </form>
+                <Button type='submit' disabled={!this.props.account.name}>
+                    <Trans i18nKey="newAccountName.continue">Continue</Trans>
+                </Button>
+            </form>
 
         </div>
     }
@@ -67,14 +65,14 @@ class NewWalletNameComponent extends React.Component {
 
     _onChange(e) {
         this.props.newAccountName(e.target.value);
-        if (e.target.value)  {
-            this.setState({ noName: false });
+        if (e.target.value) {
+            this.setState({noName: false});
         }
 
     }
 
     _onBlur() {
-        this.setState({ noName: !this.props.account.name });
+        this.setState({noName: !this.props.account.name});
     }
 
     _onSubmit(e) {

@@ -22,7 +22,7 @@ class ImportSeedComponent extends React.Component {
     constructor({ isNew, ...props }) {
         super(props);
         const value = isNew ? '' : this.props.account && this.props.account.phrase;
-        const error = this._validate(value);
+        const error = this._validate(value, true);
         this.state = { value, error, showError: false };
     }
 
@@ -75,9 +75,11 @@ class ImportSeedComponent extends React.Component {
         this.props.setTab(PAGES.ACCOUNT_NAME_SEED);
     }
 
-    _validate(value = '') {
-        const error = value.length < 15;
-        this.setState({ error });
+    _validate(value = '', noSetState?) {
+        const error = value.length < 24;
+        if (!noSetState) {
+            this.setState({ error });
+        }
         return error;
     }
 
@@ -85,7 +87,7 @@ class ImportSeedComponent extends React.Component {
         const phrase = e.target.value;
         let seed = { address: '', phrase: '' };
 
-        if (phrase.length >= 15) {
+        if (phrase.length >= 24) {
             seed = new Seed(phrase);
         }
 

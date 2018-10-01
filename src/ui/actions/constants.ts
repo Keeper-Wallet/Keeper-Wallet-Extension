@@ -48,6 +48,7 @@ export const ACTION = {
     CHANGE_ACCOUNT_NAME: 'CHANGE_ACCOUNT_NAME',
     CHANGE_PASSWORD: 'CHANGE_PASSWORD',
     DELETE_ACCOUNT: 'DELETE_ACCOUNT',
+    LOADING: 'LOADING',
 };
 
 export const createAction = type => payload => ({ type, payload });

@@ -20,7 +20,9 @@ class SettingsComponent extends React.Component {
         return <div className={styles.content}>
 
             <div className={`${styles.settingsMenuItem} ${styles.network}`}>
-                <Button type='transparent' onClick={this.networkHandler}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.networkHandler}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.network'>Network</Trans>
                     </div>
@@ -28,7 +30,9 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.language}`}>
-                <Button type='transparent' onClick={this.langsHandler}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.langsHandler}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.langs'>Change language</Trans>
                     </div>
@@ -36,7 +40,9 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.password}`}>
-                <Button type='transparent' onClick={this.passwordHandler}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.passwordHandler}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.password'>Change password</Trans>
                     </div>
@@ -44,7 +50,9 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.logout} margin4`}>
-                <Button type='transparent' onClick={this.lock}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.lock}>
                     <div className='body1 left'>
                         <Trans i18nKey='settings.logOut'>Log out</Trans>
                     </div>

@@ -2,17 +2,19 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import { setCustomNode } from '../../actions';
 import {Trans, translate} from 'react-i18next';
-import { Button, BUTTON_TYPE, Copy, Input } from '../ui';
+import { Button, BUTTON_TYPE, Copy, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 
 @translate('extension')
 class NetworksSettingsComponent extends React.PureComponent {
     readonly props;
     readonly state;
+    _t;
 
     onInputHandler = (event) => this.setState({ node: event.target.value });
     onSaveNodeHandler = () => this.saveNode();
     onSetDefaultNodeHandler = () => this.setDefaultNode();
+    copyHandler = () => this.onCopy();
 
     render() {
         return <div className={styles.networkTab}>
@@ -22,7 +24,7 @@ class NetworksSettingsComponent extends React.PureComponent {
 
             <div className="margin-main-big relative">
                 <label className="input-title basic500 tag1" htmlFor='node_address'>
-                    <Copy text={this.state.node}>
+                    <Copy text={this.state.node} onCopy={this.copyHandler}>
                         <div className={`copy-icon ${styles.copyIcon}`}></div>
                     </Copy>
                     <Trans i18nKey='networksSettings.node'>Node address</Trans>
@@ -45,6 +47,12 @@ class NetworksSettingsComponent extends React.PureComponent {
                     <Trans i18nKey='networksSettings.setDefault'>Set Default</Trans>
                 </Button>
             </div>
+
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied} showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="networksSettings.copied">Copied!</Trans>
+                </div>
+            </Modal>
         </div>;
     }
 
@@ -62,6 +70,12 @@ class NetworksSettingsComponent extends React.PureComponent {
     setDefaultNode() {
         this.props.setCustomNode(null);
         this.setState({ node: this.state.defaultNode });
+    }
+
+    onCopy() {
+        clearTimeout(this._t);
+        this.setState({ showCopied: true });
+        this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
 
     static getDerivedStateFromProps(props, state) {

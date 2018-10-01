@@ -9,7 +9,6 @@ import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
 
-
 @translate('extension')
 class AccountInfoComponent extends React.Component {
 
@@ -77,7 +76,7 @@ class AccountInfoComponent extends React.Component {
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
-                <div className="input-like tag1">
+                <div className={`input-like tag1 ${styles.ellipsis}`}>
                     <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
@@ -100,25 +99,31 @@ class AccountInfoComponent extends React.Component {
                 </div>
             </div>
 
-            <Modal showModal={this.state.showPassword} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH}
+                   showModal={this.state.showPassword}
+                   showChildrenOnly={true}>
                 <div className={`modal ${styles.enterPasswordModal}`}>
                     <i className={`lock-icon ${styles.lockIcon}`}></i>
                     <div className="basic500 tag1 input-title">
                         <Trans i18nKey='accountInfo.password'>Password</Trans>
                     </div>
-                    <Input className="margin-main-big" onChange={this.inputPassword}/>
+                    <Input type="password" className="margin-main-big" onChange={this.inputPassword}/>
                     <Button className="margin-main-big" type="submit" onClick={this.confirmPassword}>Enter</Button>
                     <Button onClick={this.rejectPassword}>Cancel</Button>
                 </div>
             </Modal>
             
-            <Modal showModal={this.state.showCopied} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.showCopied}
+                   showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                 </div>
             </Modal>
 
-            <Modal showModal={this.state.passwordError} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.passwordError}
+                   showChildrenOnly={true}>
                 <div className="modal notification error">
                     <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
                 </div>
@@ -129,13 +134,13 @@ class AccountInfoComponent extends React.Component {
     setCopiedModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ showCopied: true });
-        // this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
+        this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
 
     showErrorModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ passwordError: true });
-        // this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
+        this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
     }
 
     async getAccountInfo(field) {
@@ -176,7 +181,7 @@ class AccountInfoComponent extends React.Component {
         const assetInstance = new Asset(asset);
         const balancesMoney = {};
 
-        Object.entries(props.balances)
+        Object.entries(balances)
             .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
 
 

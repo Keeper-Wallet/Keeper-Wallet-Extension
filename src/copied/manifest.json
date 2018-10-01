@@ -27,7 +27,6 @@
   "default_locale": "en",
   "background": {
     "scripts": [
-      "chromereload.js",
       "background.js"
     ],
     "persistent": true
