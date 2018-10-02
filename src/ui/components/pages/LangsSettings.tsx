@@ -33,7 +33,7 @@ class LangsSettingsComponent extends React.PureComponent {
     
     render() {
         
-        const className = cn(styles.content, { 'trololo': !this.props.selectedLangs });
+        const className = cn(styles.content, { 'introLangList': !this.props.selectedLangs });
         
         return <div className={className}>
             {this.props.hideTitle ? null : <h2 className="title1 margin-main-big">
@@ -50,12 +50,11 @@ class LangsSettingsComponent extends React.PureComponent {
                     })
                 }
             </div>
-            {!this.props.selectedLangs ? <div>
-                <Button onClick={this.confirmHandler} type={BUTTON_TYPE.SUBMIT}>
+            {!this.props.selectedLangs ? <Button className={styles.langsConfirm}
+                                                 onClick={this.confirmHandler}
+                                                 type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='langsSettings.confirm'>Confirm</Trans>
-                </Button>
-            </div> : null}
-            
+                </Button> : null}
         </div>
     }
 
