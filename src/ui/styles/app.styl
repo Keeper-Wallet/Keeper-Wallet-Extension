@@ -6,9 +6,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
-:global *
   font-family: Roboto;
+
+  &::-webkit-scrollbar
+    z-index: 4;
+    position: relative;
+    width: 4px;
+    height: 8px;
+    background-color: $white;
+
+  &::-webkit-scrollbar-thumb
+    background: $black;
+    border-radius: 2px;
 
 :global body
   width: 100%;
@@ -23,7 +32,7 @@ ul
   list-style-type: none;
   padding: 0;
 
-// align
+// aligns
 :global #app-content
 :global .app
   height: 100%;
@@ -209,9 +218,10 @@ $layout-24 = 24px;
   background: rgba(0, 0, 0, 0.8);
   color: $white;
   z-index: 1;
+  white-space: nowrap;
   top: calc(100% - 42px);
 
-  span {
+  div {
     max-width: 276px;
     white-space: nowrap;
     display: block;
@@ -222,16 +232,3 @@ $layout-24 = 24px;
   &.error
     background-color: $error400;
     z-index: 2;
-
-// temporary scroll
-:global *
-  &::-webkit-scrollbar
-    z-index: 4;
-    position: relative;
-    width: 4px;
-    height: 8px;
-    background-color: $white;
-
-  &::-webkit-scrollbar-thumb
-    background: #ccc;
-    border-radius: 2px;
