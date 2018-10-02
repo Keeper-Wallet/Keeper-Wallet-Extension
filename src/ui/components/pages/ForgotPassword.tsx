@@ -22,12 +22,12 @@ class ForgotPasswordComponent extends React.Component {
                 </Trans>
             </div>
             <div className={styles.buttonMargin}>
-                <Button className="margin4 link" onClick={this.onClickHandler} type='warning'>
+                <Button className="margin4" onClick={this.onClickHandler} type='warning'>
                     <Trans i18nKey='forgotPassword.restore'>Restore all</Trans>
                 </Button>
             </div>
-            <div className={`${styles.tryAgain} link`}>
-                <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.onBackHandler}>
+            <div className={styles.tryAgain}>
+                <Button type={BUTTON_TYPE.TRANSPARENT}  onClick={this.onBackHandler}>
                     <Trans i18nKey='forgotPassword.tryAgain'>Try again</Trans>
                 </Button>
             </div>

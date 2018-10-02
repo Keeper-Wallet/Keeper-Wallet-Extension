@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
-import { Avatar, CopyText, Modal, Input, Button, Balance } from '../ui';
+import { Avatar, CopyText, Modal, Input, Error, Button, Balance } from '../ui';
 import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
@@ -104,12 +104,23 @@ class AccountInfoComponent extends React.Component {
                    showChildrenOnly={true}>
                 <div className={`modal ${styles.enterPasswordModal}`}>
                     <i className={`lock-icon ${styles.lockIcon}`}></i>
-                    <div className="basic500 tag1 input-title">
-                        <Trans i18nKey='accountInfo.password'>Password</Trans>
+
+                    <div className="margin1 relative">
+                        <div className="basic500 tag1 input-title">
+                            <Trans i18nKey='accountInfo.password'>Password</Trans>
+                        </div>
+                        <Input type="password" className="margin1" onChange={this.inputPassword}/>
+
+                        <Error show={this.state.passwordError}>
+                            <div className="error">
+                                <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                            </div>
+                        </Error>
                     </div>
-                    <Input type="password" className="margin-main-big" onChange={this.inputPassword}/>
+
                     <Button className="margin-main-big" type="submit" onClick={this.confirmPassword}>Enter</Button>
                     <Button onClick={this.rejectPassword}>Cancel</Button>
+
                 </div>
             </Modal>
             
@@ -118,14 +129,6 @@ class AccountInfoComponent extends React.Component {
                    showChildrenOnly={true}>
                 <div className="modal notification">
                     <Trans i18nKey="accountInfo.copied">Copied!</Trans>
-                </div>
-            </Modal>
-
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
-                   showModal={this.state.passwordError}
-                   showChildrenOnly={true}>
-                <div className="modal notification error">
-                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
                 </div>
             </Modal>
         </div>
@@ -138,9 +141,7 @@ class AccountInfoComponent extends React.Component {
     }
 
     showErrorModal() {
-        clearTimeout(this.copiedTimer);
         this.setState({ passwordError: true });
-        this.copiedTimer = setTimeout(() => this.setState({ passwordError: false }), 1000);
     }
 
     async getAccountInfo(field) {

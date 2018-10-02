@@ -29,7 +29,7 @@ class ImportComponent extends React.PureComponent {
                                 <Trans i18nKey='import.importAccount'>Import Account</Trans>
                             </div>
                             <div className='body3 disabled500 font300'>
-                                <Trans i18nKey='import.viaSeed'>Via SEED or Encoded</Trans>
+                                <Trans i18nKey='import.viaSeed'>Via SEED</Trans>
                             </div>
                         </Button>
                     </div>

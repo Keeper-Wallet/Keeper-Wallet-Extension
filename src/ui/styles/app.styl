@@ -226,9 +226,12 @@ $layout-24 = 24px;
 // temporary scroll
 :global *
   &::-webkit-scrollbar
+    z-index: 4;
+    position: relative;
     width: 4px;
     height: 8px;
-    background-color: #fff;
+    background-color: $white;
 
   &::-webkit-scrollbar-thumb
     background: #ccc;
+    border-radius: 2px;

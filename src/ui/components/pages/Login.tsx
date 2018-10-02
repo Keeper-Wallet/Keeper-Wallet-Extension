@@ -54,7 +54,7 @@ class LoginComponent extends React.Component {
                 </Button>
             </form>
             <div>
-                <div className={`${styles.forgotLnk} link`} onClick={this.forgotHandler}>
+                <div className={styles.forgotLnk} onClick={this.forgotHandler}>
                     <Trans i18nKey="login.passwordForgot">I forgot password</Trans>
                 </div>
             </div>
