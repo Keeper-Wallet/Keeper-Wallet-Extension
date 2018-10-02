@@ -318,6 +318,10 @@ export const PAGES_CONF = {
         component: LangsSettings,
         props: {
             confirm: true,
+            hideTitle: true
+        },
+        bottom: {
+            hide: true,
         },
         menu: {
             hasLogo: true,

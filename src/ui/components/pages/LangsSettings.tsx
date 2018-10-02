@@ -32,10 +32,13 @@ class LangsSettingsComponent extends React.PureComponent {
     };
     
     render() {
-        return <div className={styles.content}>
-            <h2 className="title1 margin-main-big">
+        
+        const className = cn(styles.content, { 'trololo': !this.props.selectedLangs });
+        
+        return <div className={className}>
+            {this.props.hideTitle ? null : <h2 className="title1 margin-main-big">
                 <Trans i18nKey='langsSettings.title'>Change the language</Trans>
-            </h2>
+            </h2>}
             <div className={styles.langsList}>
                 {
                     this.props.langs.map(({ id, name }) => {
