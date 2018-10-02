@@ -61,7 +61,7 @@ class RootComponent extends React.Component {
         }
         
         if (!nextProps.ui.selectedLangs) {
-            return { tab: PAGES.LANGS_SETTINGS };
+            return { tab: PAGES.LANGS_SETTINGS_INTRO };
         }
         
         let tab = nextProps.tab;
