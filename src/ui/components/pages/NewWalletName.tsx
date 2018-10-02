@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {newAccountName, user, setUiState} from '../../actions';
 import {Input, Button, Error} from '../ui';
+import { CONFIG } from '../../appConfig';
 
 @translate('extension')
 class NewWalletNameComponent extends React.Component {
@@ -38,11 +39,9 @@ class NewWalletNameComponent extends React.Component {
                            onChange={this.onChange}
                            value={this.props.account.name || ''}
                            maxLength='32'
-                           error={this.state.noName}
+                           error={this.state.error}
                            onBlur={this.onBlur}/>
-                    <Error show={this.state.noName}>
-                        <Trans i18nKey='newAccountName.errorNameRequired'>Name is required</Trans>
-                    </Error>
+                    <Error show={this.state.error} errors={this.state.errors}/>
                 </div>
 
                 <div className={`basic500 tag1 margin2`}>
@@ -51,7 +50,7 @@ class NewWalletNameComponent extends React.Component {
                     </Trans>
                 </div>
 
-                <Button type='submit' disabled={!this.props.account.name}>
+                <Button type='submit' disabled={this.state.errors.length}>
                     <Trans i18nKey="newAccountName.continue">Continue</Trans>
                 </Button>
             </form>
@@ -64,19 +63,18 @@ class NewWalletNameComponent extends React.Component {
     }
 
     _onChange(e) {
-        this.props.newAccountName(e.target.value);
-        if (e.target.value) {
-            this.setState({noName: false});
-        }
-
+        const newName = e.target.value;
+        this.props.newAccountName(newName);
     }
 
     _onBlur() {
-        this.setState({noName: !this.props.account.name});
+        const errors = NewWalletNameComponent.validateName(this.props.account.name, this.props.accounts);
+        this.setState({error: errors.length , errors});
     }
 
     _onSubmit(e) {
         e.preventDefault();
+        
         if (this.props.account.hasBackup) {
             this.props.addUser(this.props.account);
             return null;
@@ -84,11 +82,34 @@ class NewWalletNameComponent extends React.Component {
 
         this.props.setTab(this.props.next);
     }
+    
+    static validateName(name: string, accounts) {
+        const errors = [];
+        const names = accounts.map(({ name }) => name);
+        
+        if (name.length < CONFIG.NAME_MIN_LENGTH) {
+            errors.push({ code: 1, key: 'newAccountName.errorRequired', msg: 'Required name' });
+        }
+        
+        if (names.includes(name)) {
+            errors.push({ code: 2, key: 'newAccountName.errorInUse', msg: 'Name already exist' });
+        }
+        
+        return errors;
+    }
+    
+    static getDerivedStateFromProps(props, state) {
+        const { account, accounts } = props;
+        const name = account && account.name || '';
+        const errors = NewWalletNameComponent.validateName(name, accounts);
+        return { ...state, errors };
+    }
 }
 
 const mapStateToProps = function (store: any) {
     return {
-        account: store.localState.newAccount
+        account: store.localState.newAccount,
+        accounts: store.accounts,
     };
 };
 

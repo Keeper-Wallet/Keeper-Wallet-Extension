@@ -50,6 +50,7 @@ export const PAGES = {
     INTRO: 'intro',
     NETWORK_SETTINGS: 'networks_select',
     LANGS_SETTINGS: 'langs_settings',
+    LANGS_SETTINGS_INTRO: 'langs_settings_intro',
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
     MESSAGES: 'messages',
@@ -59,8 +60,10 @@ export const PAGES = {
 
 export const PAGES_CONF = {
     [PAGES.CONDITIONS]: {
-        component: Conditions
-            ,
+        component: Conditions,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -69,6 +72,9 @@ export const PAGES_CONF = {
     },
     [PAGES.LOGIN]: {
         component: Login,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: false,
             hasSettings: false,
@@ -105,7 +111,7 @@ export const PAGES_CONF = {
             isGenerateNew: true,
         },
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -116,7 +122,7 @@ export const PAGES_CONF = {
     [PAGES.NEW_ACCOUNT_BACK]: {
         component: NewWallet,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -130,7 +136,7 @@ export const PAGES_CONF = {
             next: PAGES.SAVE_BACKUP
         },
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -145,7 +151,7 @@ export const PAGES_CONF = {
             next: PAGES.SAVE_BACKUP
         },
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -158,7 +164,7 @@ export const PAGES_CONF = {
         props: {
         },
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -169,7 +175,7 @@ export const PAGES_CONF = {
     [PAGES.SAVE_BACKUP]: {
         component: BackUpSeed,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -180,7 +186,7 @@ export const PAGES_CONF = {
     [PAGES.CONFIRM_BACKUP]: {
         component: ConfirmBackup,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -194,7 +200,7 @@ export const PAGES_CONF = {
             isNew: true
         },
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -205,7 +211,7 @@ export const PAGES_CONF = {
     [PAGES.IMPORT_SEED_BACK]: {
         component: ImportSeed,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -223,6 +229,9 @@ export const PAGES_CONF = {
     },
     [PAGES.SETTINGS]: {
         component: Settings,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -232,6 +241,9 @@ export const PAGES_CONF = {
     },
     [PAGES.INFO]: {
         component: Info,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: false,
             hasSettings: false,
@@ -241,7 +253,7 @@ export const PAGES_CONF = {
     [PAGES.ACCOUNT_INFO]: {
         component: AccountInfo,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -253,7 +265,7 @@ export const PAGES_CONF = {
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {
         component: DeleteActiveAccount,
         bottom: {
-            noChangeNetwork: true,
+            hide: true,
         },
         menu: {
             hasLogo: true,
@@ -263,6 +275,9 @@ export const PAGES_CONF = {
     },
     [PAGES.QR_CODE_SELECTED]: {
         component: QRCodeSelectedAccount,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -279,6 +294,9 @@ export const PAGES_CONF = {
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -287,14 +305,31 @@ export const PAGES_CONF = {
     },
     [PAGES.LANGS_SETTINGS]: {
         component: LangsSettings,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
             back: true,
         }
     },
+    [PAGES.LANGS_SETTINGS_INTRO]: {
+        component: LangsSettings,
+        props: {
+            confirm: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: false,
+        }
+    },
     [PAGES.CHANGE_PASSWORD]: {
         component: ChangePassword,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -303,6 +338,9 @@ export const PAGES_CONF = {
     },
     [PAGES.DELETE_ACCOUNT]: {
         component: DeleteAccount,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,
@@ -311,6 +349,9 @@ export const PAGES_CONF = {
     },
     [PAGES.FORGOT]: {
         component: ForgotPassword,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: false,
             hasSettings: false,

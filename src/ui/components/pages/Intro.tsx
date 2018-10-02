@@ -11,7 +11,6 @@ export class Intro extends React.Component {
         return <div className={styles.intro}>
             <BigLogo/>
             <div className={styles.loader}>
-                <Loader/>
             </div>
         </div>
     }

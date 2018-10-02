@@ -119,7 +119,7 @@ class BackgroundService extends EventEmitter {
         // Ui State. Provides storage for ui application
         this.uiStateController = new UiStateController({initState: initState.UiStateController});
 
-        // Wallet. Wallet creation, app locking, signing methond
+        // Wallet. Wallet creation, app locking, signing method
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
             if (!state.locked) {
@@ -131,8 +131,7 @@ class BackgroundService extends EventEmitter {
         // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
-            getNetwork: this.networkController.getNetwork.bind(this.networkController),
-            getCustomNodes: this.networkController.getCustomNodes.bind(this.networkController),
+            getNode: this.networkController.getNode.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -140,7 +139,8 @@ class BackgroundService extends EventEmitter {
         // AssetInfo. Provides information about assets
         this.assetInfoController = new AssetInfoController({
             initState: initState.AssetInfoController,
-            getNetwork: this.networkController.getNetwork.bind(this.networkController)
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getNode: this.networkController.getNode.bind(this.networkController)
         });
 
         // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.

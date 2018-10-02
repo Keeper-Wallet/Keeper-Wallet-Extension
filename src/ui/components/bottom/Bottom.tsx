@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as styles from './bottom.styl';
 import { translate, Trans } from 'react-i18next';
 import cn from 'classnames';
-import { setNetwork } from '../../actions';
+import { setNetwork, loading } from '../../actions';
 
 const key = (key) => `bottom.${key}`;
 
@@ -36,20 +36,25 @@ const Networks = ({isShow, onSelect, selectedNet, networks}) => {
 };
 
 @translate('extension')
-class BottomComponent extends React.PureComponent {
+class BottomComponent extends React.Component {
 
     props: IProps;
     state = {showNetworks: false};
+    
     clickHandler = () => {
         this.addClickOutHandler();
         this.setState({ showNetworks: !this.props.noChangeNetwork });
     };
+    
     selectHandler = (net) => {
         if (net) {
             this.props.setNetwork(net.name);
+            this.props.loading(true);
+            setTimeout(() => this.props.loading(false), 1000);
         }
         this.clickOutHandler();
     };
+    
     clickOutHandler = () => {
         this.removeClickOutHandler();
         this.setState({ showNetworks: false });
@@ -61,7 +66,7 @@ class BottomComponent extends React.PureComponent {
             styles.bottom,
             this.props.className,
             {
-                [styles.hidden]: this.props.locked || !this.props.initialized
+                [styles.hidden]: this.props.locked || !this.props.initialized || this.props.hide
             });
         const networkClassName = cn(
                 styles.network,
@@ -73,7 +78,7 @@ class BottomComponent extends React.PureComponent {
         const currentNetwork = this.props.currentNetwork || 'mainnet';
 
         return <div className={className}>
-            <div className={networkClassName} onClick={this.clickHandler}>
+            <div className={networkClassName} onClick={this.clickHandler} key={currentNetwork}>
                 <span>
                     <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                 </span>
@@ -111,15 +116,17 @@ const mapStateToProps = ({currentNetwork, version, state, networks}) => ({
     initialized: state && state.initialized,
 });
 
-export const Bottom = connect(mapStateToProps, { setNetwork })(BottomComponent);
+export const Bottom = connect(mapStateToProps, { setNetwork, loading })(BottomComponent);
 
 interface IProps {
     className?: string;
     currentNetwork: string;
     noChangeNetwork: boolean;
+    hide?: boolean;
     networks: Array<{ name: string, code: string }>;
     version: string;
     locked: boolean;
     initialized: boolean;
     setNetwork: (net: string) => void;
+    loading: (show: boolean) => void;
 }
