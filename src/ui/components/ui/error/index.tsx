@@ -1,7 +1,23 @@
 import * as React from 'react';
 import * as styles from './error.styl';
-import cn from 'classnames';
 
+import cn from 'classnames';
+import {translate, Trans} from 'react-i18next';
+
+
+const Errors = ({ errors, show }) => {
+    
+    if (!show || !errors || !errors.length) {
+        return null;
+    }
+    
+    return errors.map(({ key, msg }) => {
+        
+        return <Trans i18nKey={key} key={key}>{msg}</Trans>
+    });
+};
+
+@translate('extension')
 export class Error extends React.PureComponent {
 
     props: IProps;
@@ -11,7 +27,7 @@ export class Error extends React.PureComponent {
     render() {
         const { showed } = this.state;
 
-        const { className = '', type, show, onClick, hideByClick, children, ...props } = this.props;
+        const { className = '', errors, type, show, onClick, hideByClick, children, ...props } = this.props;
 
         if (type === 'modal') {
             return null;
@@ -24,9 +40,10 @@ export class Error extends React.PureComponent {
                 [styles.modalError]: type && type === 'modal'
             })
         };
-
+        
         return (
             <div { ...errorProps }>
+                <Errors errors={errors} show={showed}/>
                 {showed ?  children: null}
             </div>
         );
@@ -62,4 +79,5 @@ interface IProps {
     className?: string;
     hideByClick?: boolean;
     onClick?: (...args) => void;
+    errors?: Array<{ code: number, key: string, msg: string }>
 }
