@@ -1,8 +1,8 @@
+import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { getTxId } from './';
 import { TxIcon } from './TransactionIcon';
 import { TransactionWallet } from '../wallets';
-
 
 export class SignClass extends React.PureComponent {
     
@@ -21,10 +21,10 @@ export class SignClass extends React.PureComponent {
     
     render() {
         return <div>
-            <div>
+            <div className={styles.txWallet}>
                 <TransactionWallet account={this.props.selectedAccount}/>
             </div>
-            <div>
+            <div className={styles.txIcon}>
                 <TxIcon txType={this.props.txType}/>
             </div>
         </div>;

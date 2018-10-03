@@ -1,0 +1,42 @@
+.transaction {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+
+  .txWallet {
+    & > div {
+      border-radius: 0;
+      background: darkgray;
+      flex-wrap: nowrap;
+    }
+  }
+
+  .txIcon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: pink;
+  }
+
+  .txRow {
+    width: calc(100% - 48px);
+    margin: 0 auto;
+    border-bottom: 1px dashed black;
+  }
+
+  .txBalance {
+    width: calc(100% - 48px);
+    margin: 0 auto;
+    line-height: 40px;
+  }
+
+  .txButtonsWrapper {
+    width: calc(100% - 48px);
+    position: fixed;
+    bottom: 0;
+    margin: 24px;
+
+  }
+}
