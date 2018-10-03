@@ -115,6 +115,18 @@ class AssetsComponent extends React.Component {
         if (!activeAddress) {
             return [];
         }
+        this._sorted = this._sorted || [];
+        const hash = {};
+        this.props.accounts.forEach(account => hash[account.address] = account);
+        
+        this._sorted = this._sorted.map(account => {
+            const { address } = account || { address: null };
+            const data = hash[address];
+            delete hash[address];
+            return data;
+        }).filter(Boolean);
+        delete hash[activeAddress];
+        this._sorted = [...this._sorted, ...Object.values(hash)];
         
         if (this._currentActive === activeAddress) {
             return this._sorted;
@@ -122,7 +134,6 @@ class AssetsComponent extends React.Component {
     
         if (!this._currentActive) {
             this._currentActive = activeAddress;
-            this._sorted =  this.props.accounts.filter(account => account.address !== activeAddress);
             return this._sorted;
         }
     

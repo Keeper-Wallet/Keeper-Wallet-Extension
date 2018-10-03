@@ -31,8 +31,10 @@ export const selectAccount = store => next => action => {
 
 export const deleteActiveAccount = store => next => action => {
     if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
-        const { selectedAccount } = store.getState();
-        background.removeWallet(selectedAccount.address).then(
+        const { selectedAccount, localState } = store.getState();
+        const selected =  localState.assets.account ?  localState.assets.account.address : selectedAccount.address;
+        
+        background.removeWallet(selected).then(
             () => store.dispatch(setTab(PAGES.ROOT))
         );
         return null;
