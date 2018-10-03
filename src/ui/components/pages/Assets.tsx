@@ -13,9 +13,10 @@ import { Intro } from './Intro';
 
 @translate('extension')
 class AssetsComponent extends React.Component {
-
     props;
     state = {} as any;
+    _currentActive;
+    _sorted;
     _t;
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
     onSelectHandler = account => this.showInfo(account);
@@ -45,9 +46,8 @@ class AssetsComponent extends React.Component {
             onShowQr: this.showQrHandler,
             active: true,
         };
-
-        const wallets = this.props.accounts
-            .filter(account => account.address !== activeAddress)
+        
+        const wallets = this.getFilteredAndSortedAccounts(activeAddress)
             .map((account) => (
                 <WalletItem
                     account={account}
@@ -63,8 +63,14 @@ class AssetsComponent extends React.Component {
         });
 
         return <div className={styles.assets}>
-            <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
-
+            <CSSTransitionGroup className={styles.activeAnimationSpan}
+                                transitionName="animate_active_wallet"
+                                transitionEnterTimeout={600}
+                                transitionEnter={true}
+                                transitionLeaveTimeout={600}
+                                transitionLeave={true}>
+                <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
+            </CSSTransitionGroup>
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
@@ -105,6 +111,28 @@ class AssetsComponent extends React.Component {
         </div>
     }
 
+    getFilteredAndSortedAccounts(activeAddress) {
+        if (!activeAddress) {
+            return [];
+        }
+        
+        if (this._currentActive === activeAddress) {
+            return this._sorted;
+        }
+    
+        if (!this._currentActive) {
+            this._currentActive = activeAddress;
+            this._sorted =  this.props.accounts.filter(account => account.address !== activeAddress);
+            return this._sorted;
+        }
+    
+        const last = this.props.accounts.find(account => account.address === this._currentActive);
+        this._sorted = this._sorted.filter(account => account.address !== activeAddress);
+        this._sorted.push(last);
+        this._currentActive = activeAddress;
+        return this._sorted;
+    }
+    
     setActive(account) {
         this.props.selectAccount(account);
         this.setState({ showActivated: true, name: account.name });

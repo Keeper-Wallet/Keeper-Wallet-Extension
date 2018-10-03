@@ -12,7 +12,6 @@ const Errors = ({ errors, show }) => {
     }
     
     return errors.map(({ key, msg }) => {
-        
         return <Trans i18nKey={key} key={key}>{msg}</Trans>
     });
 };
@@ -27,7 +26,7 @@ export class Error extends React.PureComponent {
     render() {
         const { showed } = this.state;
 
-        const { className = '', errors, type, show, onClick, hideByClick, children, ...props } = this.props;
+        const { className = '', errors, type, t, show, onClick, hideByClick, children, ...props } = this.props;
 
         if (type === 'modal') {
             return null;
@@ -73,6 +72,7 @@ export class Error extends React.PureComponent {
 }
 
 interface IProps {
+    t?: (key) => string;
     type?: string;
     show?: boolean;
     children?: any;
