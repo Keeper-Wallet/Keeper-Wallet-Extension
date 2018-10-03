@@ -13,7 +13,7 @@ class RootComponent extends React.Component {
     
     constructor(props: IProps) {
         super(props);
-        setTimeout(() => props.setLoading(false), 1000);
+        setTimeout(() => props.setLoading(false), 2000);
     }
     
     render() {

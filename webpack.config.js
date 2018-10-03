@@ -125,14 +125,14 @@ module.exports = env => {
         devtool: "source-map",
 
         resolve: {
-            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
         },
 
         module: {
             //noParse: /fs/,
             rules: [
                 {
-                    test: /\.(png|jpg|svg)$/,
+                    test: /\.(png|jpg|svg|gif)$/,
                     loader: "url-loader?limit=1000&name=assets/img/[name].[ext]",
                 },
 
