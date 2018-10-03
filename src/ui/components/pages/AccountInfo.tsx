@@ -13,18 +13,25 @@ import { Seed } from '@waves/signature-generator';
 class AccountInfoComponent extends React.Component {
 
     readonly props;
-    readonly state = {} as any;
+    readonly state = { } as any;
+    passInputEl: Input;
     copiedTimer;
     deffer;
     getSeed = () => this.getAccountInfo('seed');
     getPrivate = () => this.getAccountInfo('privateKey');
     confirmPassword = () => this.deffer.resolve(this.state.password);
     rejectPassword = () => this.deffer.reject();
-    inputPassword = (event) => this.setState({ password: event.target.value });
+    inputPassword = (event) => this.setState({ password: event.target.value, passwordError: false });
     setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
     editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
     showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
     onCopyHandler = () => this.setCopiedModal();
+    getInputPassRef = (el) => {
+        this.passInputEl = el;
+        if (el) {
+            this.passInputEl.focus();
+        }
+    };
 
     render() {
         const { selectedAccount, activeAccount } = this.props;
@@ -105,21 +112,31 @@ class AccountInfoComponent extends React.Component {
                 <div className={`modal ${styles.enterPasswordModal}`}>
                     <i className={`lock-icon ${styles.lockIcon}`}></i>
 
-                    <div className="margin1 relative">
-                        <div className="basic500 tag1 input-title">
+                    <div className='margin1 relative'>
+                        <div className='basic500 tag1 input-title'>
                             <Trans i18nKey='accountInfo.password'>Password</Trans>
                         </div>
-                        <Input type="password" className="margin1" onChange={this.inputPassword}/>
+                        <Input ref={this.getInputPassRef}
+                               type='password'
+                               error={this.state.passwordError}
+                               className='margin1'
+                               onChange={this.inputPassword}/>
 
                         <Error show={this.state.passwordError}>
-                            <div className="error">
-                                <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                            <div className='error'>
+                                <Trans i18nKey='accountInfo.passwordError'>Incorrect password</Trans>
                             </div>
                         </Error>
                     </div>
 
-                    <Button className="margin-main-big" type="submit" onClick={this.confirmPassword}>Enter</Button>
-                    <Button onClick={this.rejectPassword}>Cancel</Button>
+                    <Button disabled={this.state.passwordError || !this.state.password}
+                            className='margin-main-big' type='submit' 
+                            onClick={this.confirmPassword}>
+                        <Trans i18nKey='accountInfo.enter'>Enter</Trans>
+                    </Button>
+                    <Button onClick={this.rejectPassword}>
+                        <Trans i18nKey='accountInfo.cancel'>Cancel</Trans>
+                    </Button>
 
                 </div>
             </Modal>
@@ -127,8 +144,8 @@ class AccountInfoComponent extends React.Component {
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}
                    showModal={this.state.showCopied}
                    showChildrenOnly={true}>
-                <div className="modal notification">
-                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
+                <div className='modal notification'>
+                    <Trans i18nKey='accountInfo.copied'>Copied!</Trans>
                 </div>
             </Modal>
         </div>
@@ -152,21 +169,23 @@ class AccountInfoComponent extends React.Component {
             this.deffer.resolve = res;
             this.deffer.reject = rej;
         });
-
         return this.deffer.promise
             .then((password) => {
-                this.setState({ showPassword: false });
                 return background.exportAccount(address, password);
             })
             .then(data => {
+                this.setState({ showPassword: false, passwordError: false });
                 const seed = new Seed(data);
                 const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
                 return info[field];
             }).catch((e) => {
-                this.setState({ showPassword: false });
                 if (e) {
+                    this.setState({ passwordError: true });
                     this.showErrorModal();
+                    this.getAccountInfo(field);
+                    return Promise.reject();
                 }
+                this.setState({ showPassword: false, passwordError: false });
                 return Promise.reject();
             });
     }

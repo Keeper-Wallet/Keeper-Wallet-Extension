@@ -26,14 +26,13 @@ export class Error extends React.PureComponent {
     render() {
         const { showed } = this.state;
 
-        const { className = '', errors, type, t, show, onClick, hideByClick, children, ...props } = this.props;
+        const { className = '', errors, type, children } = this.props;
 
         if (type === 'modal') {
             return null;
         }
 
         const errorProps = {
-            ...props,
             onClick: this.onClick,
             className: cn(styles.error, className, {
                 [styles.modalError]: type && type === 'modal'
