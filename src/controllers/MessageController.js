@@ -72,7 +72,10 @@ export class MessageController extends EventEmitter {
                 message.status = 'published'
             }
         } catch (e) {
-            message.err = e;
+            message.err = {
+                message: e.toString(),
+                stack: e.stack
+            };
             message.status = 'failed'
         }
         this._updateMessage(message);
@@ -132,9 +135,9 @@ export class MessageController extends EventEmitter {
 
     async _convertMoneylikeFieldsToMoney(txData) {
         let result = Object.assign({}, txData);
-        for (let key in txData){
+        for (let key in txData) {
             const field = txData[key];
-            if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')){
+            if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
                 const asset = await this.assetInfo(txData[key].assetId);
                 let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
                 result[key] = new Money(amount, asset)
