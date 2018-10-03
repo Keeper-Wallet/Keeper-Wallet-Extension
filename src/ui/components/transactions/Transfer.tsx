@@ -12,12 +12,25 @@ export class Transfer extends SignClass {
 
         return <div className={styles.transaction}>
             {super.render()}
-            <div className={styles.txBalance}>
-                <Balance balance={tx.amount}/>
+
+            <div className={`${styles.txBalance} center headline2`}>
+                - <Balance balance={tx.amount}/> Waves
             </div>
-            <div className={styles.txRow}>{tx.recipient}</div>
-            <div className={styles.txRow}>Tx id = {this.state.txId}</div>
-            <div className={styles.txRow}><Balance balance={tx.fee}/></div>
+
+            <div className={styles.txRow}>
+                <div className="tx-label tag1 basic500">Send to</div>
+                <div className={styles.txValue}>{tx.recipient}</div>
+            </div>
+
+            <div className={styles.txRow}>
+                <div className="tx-label tag1 basic500">TXID</div>
+                <div className={styles.txValue}>{this.state.txId}</div>
+            </div>
+
+            <div className={styles.txRow}>
+                <div className="tx-label tag1 basic500">Fee</div>
+                <div className={styles.txValue}><Balance balance={tx.fee}/></div>
+            </div>
 
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>

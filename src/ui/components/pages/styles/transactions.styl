@@ -1,8 +1,11 @@
+@import '../../../styles/colors.styl';
+
 .transaction {
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
+  font-weight: 400;
 
   .txWallet {
     & > div {
@@ -10,6 +13,8 @@
       background: darkgray;
       flex-wrap: nowrap;
     }
+
+    //changeaccount icon
   }
 
   .txIcon {
@@ -17,19 +22,29 @@
     height: 48px;
     margin: 0 auto;
     border-radius: 50%;
-    background: pink;
+
   }
+
+
 
   .txRow {
     width: calc(100% - 48px);
-    margin: 0 auto;
-    border-bottom: 1px dashed black;
+    margin: 12px auto;
+    border-bottom: 1px dashed $basic200;
+    &:last-child {
+      border-bottom: 0 none;
+    }
+    //.txValue {
+    //  font-weight: 600;
+    //}
   }
 
   .txBalance {
     width: calc(100% - 48px);
     margin: 0 auto;
     line-height: 40px;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .txButtonsWrapper {
