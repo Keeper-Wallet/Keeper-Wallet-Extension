@@ -28,3 +28,6 @@ export const addBackTab = createMVAction(ACTION.ADD_BACK_TAB);
 export const removeBackTab = createMVAction(ACTION.REMOVE_BACK_TAB);
 export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const loading = createMVAction(ACTION.LOADING);
+export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
+export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
+export const notificationChangeName = createMVAction(ACTION.NOTIFICATION_NAME_CHANGED);

@@ -148,6 +148,12 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.copied'>Copied!</Trans>
                 </div>
             </Modal>
+    
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.changeNameNotify} showChildrenOnly={true}>
+                <div className="modal notification active-asset" key='change_name'>
+                    <div><Trans i18nKey="assets.changeName">Account name changed</Trans></div>
+                </div>
+            </Modal>
         </div>
     }
 
@@ -203,10 +209,11 @@ class AccountInfoComponent extends React.Component {
 
         Object.entries(balances)
             .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
-
-
+    
+        const { changeName: changeNameNotify } = props.notifications;
+    
         const balance = balancesMoney[selectedAccount.address];
-        return { balance, balances: balancesMoney };
+        return { balance, balances: balancesMoney, changeNameNotify };
     }
 }
 
@@ -219,6 +226,7 @@ const mapStateToProps = function (store: any) {
         activeAccount: store.accounts.find(({ address }) => address === activeAccount),
         balances: store.balances,
         assets: store.assets,
+        notifications: store.localState.notifications
     };
 };
 

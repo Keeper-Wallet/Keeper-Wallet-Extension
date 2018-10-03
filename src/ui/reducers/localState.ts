@@ -68,6 +68,20 @@ function loading(state = true, { type, payload }) {
     return state;
 }
 
+function notifications(state = {}, { type, payload }) {
+    switch (type) {
+        case ACTION.NOTIFICATION_SELECT:
+            return { ...state, selected: payload };
+        case ACTION.NOTIFICATION_DELETE:
+            return { ...state, deleted: payload };
+        case ACTION.NOTIFICATION_NAME_CHANGED:
+            return { ...state, changeName: payload };
+        default:
+            return state;
+    }
+    
+}
+
 export const localState = combineReducers({
     loading,
     newUser,
@@ -76,4 +90,5 @@ export const localState = combineReducers({
     addNewAccount,
     menu,
     assets,
+    notifications
 });

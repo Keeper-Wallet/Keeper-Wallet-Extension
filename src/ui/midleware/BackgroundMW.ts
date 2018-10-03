@@ -2,7 +2,7 @@ import { ACTION } from '../actions/constants';
 import { config } from '@waves/signature-generator';
 import background from '../services/Background';
 import { i18n } from '../i18n';
-import { setTab, updateAsset } from '../actions';
+import { setTab, updateAsset, notificationDelete, notificationSelect, notificationChangeName } from '../actions';
 import { PAGES } from '../pageConfig';
 import { store } from '../store';
 
@@ -22,7 +22,12 @@ export const updateLang = store => next => action => {
 
 export const selectAccount = store => next => action => {
     if (action.type === ACTION.SELECT_ACCOUNT && store.getState().selectedAccount.address !== action.payload.address) {
-        background.selectAccount(action.payload.address);
+        background.selectAccount(action.payload.address).then(
+            () => {
+                store.dispatch(notificationSelect(true));
+                setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
+            }
+        );
         return null;
     }
 
@@ -35,7 +40,11 @@ export const deleteActiveAccount = store => next => action => {
         const selected =  localState.assets.account ?  localState.assets.account.address : selectedAccount.address;
         
         background.removeWallet(selected).then(
-            () => store.dispatch(setTab(PAGES.ROOT))
+            () => {
+                store.dispatch(setTab(PAGES.ROOT));
+                store.dispatch(notificationDelete(true));
+                setTimeout(() => store.dispatch(notificationDelete(false)), 1000);
+            }
         );
         return null;
     }
@@ -43,10 +52,14 @@ export const deleteActiveAccount = store => next => action => {
     return next(action);
 };
 
-export const deleteAccount = store => next => action => {
+export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
         background.initVault().then(
-            () => store.dispatch(setTab(PAGES.ROOT))
+            () => {
+                store.dispatch(setTab(PAGES.ROOT));
+                store.dispatch(notificationDelete(true));
+                setTimeout(() => store.dispatch(notificationDelete(false)), 1000);
+            }
         );
         return null;
     }
@@ -106,7 +119,12 @@ export const getAsset = store => next => action => {
 export const changeName = store => next => action => {
     if (action.type === ACTION.CHANGE_ACCOUNT_NAME) {
         const { address, name } = action.payload;
-        background.editWalletName(address, name);
+        background.editWalletName(address, name).then(
+            () => {
+                store.dispatch(notificationChangeName(true));
+                setTimeout(() => store.dispatch(notificationChangeName(false)), 1000);
+            }
+        );
         return null;
     }
 

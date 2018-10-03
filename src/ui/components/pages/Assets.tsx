@@ -3,7 +3,12 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {WalletItem, ActiveWallet} from '../wallets';
 import {translate, Trans} from 'react-i18next';
-import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../actions';
+import {
+    getBalances,
+    getAsset,
+    selectAccount,
+    setActiveAccount,
+} from '../../actions';
 import {PAGES} from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
@@ -107,6 +112,12 @@ class AssetsComponent extends React.Component {
                     <div><Trans i18nKey="assets.setActive">Active account changed</Trans></div>
                 </div>
             </Modal>
+    
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.deletedNotify} showChildrenOnly={true}>
+                <div className="modal notification active-asset" key='deleted'>
+                    <div><Trans i18nKey="assets.deleteAccount">Delete account</Trans></div>
+                </div>
+            </Modal>
             
         </div>
     }
@@ -184,7 +195,9 @@ class AssetsComponent extends React.Component {
         Object.entries(props.balances)
             .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
 
-        return { balances: balancesMoney, loading: false };
+        const { deleted: deletedNotify } = props.notifications;
+        
+        return { balances: balancesMoney, loading: false, deletedNotify };
     }
 }
 
@@ -198,6 +211,7 @@ const mapStateToProps = function (store: any) {
         accounts: store.accounts,
         balances: store.balances,
         assets: store.assets,
+        notifications: store.localState.notifications
     };
 };
 
@@ -205,7 +219,7 @@ const actions = {
     getAsset,
     getBalances,
     selectAccount,
-    setActiveAccount
+    setActiveAccount,
 };
 
 export const Assets = connect(mapStateToProps, actions)(AssetsComponent);
