@@ -3,6 +3,7 @@ import { Transfer } from './Transfer';
 import { Auth } from './Auth';
 import { Burn } from './Burn';
 import { Alias } from './Alias';
+import { Issure } from './Issure';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -48,7 +49,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.ISSUE:
             config.type = 'issue';
-            config.component = SignClass;
+            config.component = Issure;
             break;
         case SIGN_TYPE.LEASE:
             config.type = 'lease';
