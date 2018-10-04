@@ -2,6 +2,7 @@ import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapt
 import { Transfer } from './Transfer';
 import { Auth } from './Auth';
 import { Burn } from './Burn';
+import { Alias } from './Alias';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -35,7 +36,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.CREATE_ALIAS:
             config.type = 'create-alias';
-            config.component = SignClass;
+            config.component = Alias;
             break;
         case SIGN_TYPE.CREATE_ORDER:
             config.type = 'create-order';
