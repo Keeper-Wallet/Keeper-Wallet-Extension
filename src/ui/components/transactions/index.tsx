@@ -1,9 +1,10 @@
 import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapter';
-
 import { Transfer } from './Transfer';
 import { Auth } from './Auth';
 import { Burn } from './Burn';
 import { SignClass } from './SignClass';
+
+export { FinalTransaction } from './FinalTransaction';
 
 export const getConfigByTransaction = tx => {
     const config = {

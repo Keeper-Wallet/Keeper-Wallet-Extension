@@ -364,6 +364,9 @@ export const PAGES_CONF = {
     },
     [PAGES.MESSAGES]: {
         component: Messages,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: true,
             hasSettings: false,

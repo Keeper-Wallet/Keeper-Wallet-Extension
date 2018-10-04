@@ -4,6 +4,8 @@ import log from 'loglevel';
 import EventEmitter from 'events'
 import {Money, BigNumber} from '@waves/data-entities';
 import {moneylikeToMoney} from '../lib/moneyUtil';
+import extension from 'extensionizer';
+
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -16,10 +18,10 @@ export class MessageController extends EventEmitter {
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
 
         // Signing method from WalletController
-        this.signWavesTx = options.sign
+        this.signWavesTx = options.sign;
 
         // Broadcast method from NetworkController
-        this.broadcast = options.broadcast
+        this.broadcast = options.broadcast;
 
         // Get assetInfo methid from AssetInfoController
         this.assetInfo = options.assetInfo
@@ -39,7 +41,7 @@ export class MessageController extends EventEmitter {
         meta.tx = tx;
         let messages = this.store.getState().messages;
         messages.push(meta);
-        this.store.updateState({messages});
+        this._updateStore(messages);
         return new Promise((resolve, reject) => {
             this.once(`${meta.id}:finished`, finishedMeta => {
                 switch (finishedMeta.status) {
@@ -96,7 +98,7 @@ export class MessageController extends EventEmitter {
 
     // for debug purposes
     clearMessages() {
-        this.store.updateState({messages: []})
+        this._updateStore([]);
     }
 
     // _setStatus(id, status) {
@@ -111,7 +113,7 @@ export class MessageController extends EventEmitter {
         const id = message.id;
         const index = messages.findIndex(message => message.id === id);
         messages[index] = message;
-        this.store.updateState({messages});
+        this._updateStore(messages);
     }
 
     _getMessageById(id) {
@@ -128,6 +130,14 @@ export class MessageController extends EventEmitter {
             time: Date.now()
 
         }
+    }
+
+    _updateStore(messages) {
+        this.store.updateState({messages});
+        const unapproved = messages.filter(({ status }) => status === 'unapproved').length;
+        const text = unapproved ? unapproved.toString() : '';
+        extension.browserAction.setBadgeText({ text });
+        extension.browserAction.setBadgeBackgroundColor({ color: '#FFF85E' });
     }
 
     async _convertMoneylikeFieldsToMoney(txData) {

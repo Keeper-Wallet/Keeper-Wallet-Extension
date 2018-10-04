@@ -2,7 +2,16 @@ import { ACTION } from '../actions/constants';
 import { config } from '@waves/signature-generator';
 import background from '../services/Background';
 import { i18n } from '../i18n';
-import { setTab, updateAsset, notificationDelete, notificationSelect, notificationChangeName } from '../actions';
+import {
+    setTab,
+    updateAsset,
+    notificationDelete,
+    notificationSelect,
+    notificationChangeName,
+    approveError,
+    approveOk,
+    approvePending, rejectOk,
+} from '../actions';
 import { PAGES } from '../pageConfig';
 import { store } from '../store';
 
@@ -173,13 +182,45 @@ export const lock = store => next => action => {
     return next(action);
 };
 
+export const clearMessages = () => next => action => {
+    
+    if (ACTION.CLEAR_MESSAGES === action.type) {
+        background.clearMessages();
+        return;
+    }
+    
+    return next(action);
+};
+
 export const approve = store => next => action => {
     if (action.type !== ACTION.APPROVE) {
         return next(action);
     }
-    
+    const messageId = action.payload;
     const { selectedAccount } = store.getState();
     const { address } = selectedAccount;
+    const { messages } = store.getState();
+    const message = messages.find(({ id }) => id === action.payload);
+    const res = background.approve(messageId, address);
+    store.dispatch(approvePending(true));
+    res.then(
+        (res) => store.dispatch(approveOk({ res, message })),
+        (error) => store.dispatch(approveError({ error, message })),
+    ).then(
+        () => store.dispatch(approvePending(message))
+    )
     
-    background.approve(action.payload, address);
+};
+
+export const reject = store => next => action => {
+    if (action.type !== ACTION.REJECT) {
+        return next(action);
+    }
+    
+    const { messages } = store.getState();
+    const message = messages.find(({ id }) => id === action.payload);
+    
+    background.reject(action.payload).then(
+        () => store.dispatch(rejectOk(message))
+    );
 };

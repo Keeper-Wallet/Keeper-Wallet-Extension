@@ -66,9 +66,11 @@ class RootComponent extends React.Component {
         
         let tab = nextProps.tab;
         
-        if (nextProps.messages.length &&
-            nextProps.messages.find(({ status }) => status === 'unapproved')
-        ) {
+        const { messages } = nextProps;
+        const hasUnapprovedMsg = messages.length && messages.find(({ status }) => status === 'unapproved');
+        const showMessages = !!Object.values(nextProps.transactionStatus).filter(Boolean).length;
+        
+        if (showMessages || hasUnapprovedMsg) {
             tab = PAGES.MESSAGES;
         }
         
@@ -126,6 +128,7 @@ const mapStateToProps = function (store: any) {
         backTabs: store.backTabs,
         ui: store.uiState,
         messages: store.messages,
+        transactionStatus: store.localState.transactionStatus,
     };
 };
 
@@ -141,6 +144,12 @@ export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 
 
 interface IProps {
+    transactionStatus: {
+        approvePending: any;
+        approveOk: any;
+        approveError: any;
+        rejectOk: any;
+    };
     locked: boolean;
     initialized: boolean;
     accounts: Array<any>;
