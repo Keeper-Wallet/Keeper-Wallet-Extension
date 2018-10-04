@@ -82,6 +82,24 @@ function notifications(state = {}, { type, payload }) {
     
 }
 
+function transactionStatus(state = {}, { type, payload }) {
+    
+    switch (type) {
+        case ACTION.APPROVE_PENDING:
+            return { ...state, approvePending: payload };
+        case ACTION.APPROVE_OK:
+            return { ...state, approveOk: payload };
+        case ACTION.APPROVE_ERROR:
+            return { ...state, approveError: payload };
+        case ACTION.REJECT_OK:
+            return { ...state, rejectOk: payload };
+        case ACTION.APPROVE_REJECT_CLEAR:
+            return {};
+    }
+    
+    return state;
+}
+
 export const localState = combineReducers({
     loading,
     newUser,
@@ -90,5 +108,6 @@ export const localState = combineReducers({
     addNewAccount,
     menu,
     assets,
-    notifications
+    notifications,
+    transactionStatus
 });

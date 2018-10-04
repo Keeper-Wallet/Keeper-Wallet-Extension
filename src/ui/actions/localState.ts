@@ -1,16 +1,7 @@
 import { ACTION } from './constants';
 
-const createCommonAction = (type, pending) => (error = false) => ({
-    type,
-    payload: {
-        pending,
-        error
-    }
-});
-const createMVAction = type => payload => ({
-    type,
-    payload
-});
+const createMVAction = type => (payload = null) => ({ type, payload });
+const createCommonAction = (type, pending) => (error = false) => createMVAction(type)({ pending, error });
 
 export const createNew = createMVAction(ACTION.SET_PASSWORD);
 export const newUser = createCommonAction(ACTION.SET_PASSWORD_PENDING, true);
@@ -31,3 +22,9 @@ export const loading = createMVAction(ACTION.LOADING);
 export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
 export const notificationChangeName = createMVAction(ACTION.NOTIFICATION_NAME_CHANGED);
+
+export const approvePending = createMVAction(ACTION.APPROVE_PENDING);
+export const approveOk = createMVAction(ACTION.APPROVE_OK);
+export const approveError = createMVAction(ACTION.APPROVE_ERROR);
+export const rejectOk = createMVAction(ACTION.REJECT_OK);
+export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);

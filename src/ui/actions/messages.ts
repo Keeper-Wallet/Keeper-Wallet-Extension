@@ -5,6 +5,11 @@ export const approve = messageId => ({
     payload: messageId
 });
 
+export const clearMessages = () => ({
+    type: ACTION.CLEAR_MESSAGES,
+    payload: null
+});
+
 export const reject = messageId => ({
     type: ACTION.REJECT,
     payload: messageId

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { getAsset, approve, reject } from '../../actions';
+import { getAsset, approve, reject, clearMessagesStatus, clearMessages } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
-import { getConfigByTransaction } from '../transactions';
+import { getConfigByTransaction, FinalTransaction } from '../transactions';
 
 @translate('extension')
 class MessagesComponent extends React.Component {
@@ -13,21 +13,37 @@ class MessagesComponent extends React.Component {
     readonly props;
     rejectHandler = () => this.reject();
     approveHandler = () => this.approve();
+    clearMessagesHandler = () => this.clearMessages();
+    clearMessageStatusHandler = () => this.cleanMessageStatus();
     
 
     render() {
         if (this.state.loading) {
-            return <Intro></Intro>
+            return <Intro/>
         }
-
+    
+        const {
+            approveOk,
+            approveError,
+            rejectOk
+        } = this.state.transactionStatus;
+        
+        if (approveOk || approveError || rejectOk ) {
+            return <FinalTransaction transactionStatus={this.state.transactionStatus}
+                                     onClick={this.clearMessageStatusHandler}/>
+        }
+        
         const { message, signData } = this.state;
         const conf = getConfigByTransaction(signData);
         const { component: Component, type } = conf;
 
         return <Component txType={type}
+                          pending={this.state.approvePending}
                           signData={signData}
                           message={message}
                           selectedAccount={this.state.selectedAccount}
+                          clearMessagesHandler={this.clearMessagesHandler }
+                          clearMessageStatusHandler={this.clearMessageStatusHandler }
                           reject={this.rejectHandler}
                           approve={this.approveHandler}>
         </Component>;
@@ -41,6 +57,15 @@ class MessagesComponent extends React.Component {
         this.props.reject(this.state.message.id);
     }
     
+    clearMessages() {
+        this.props.clearMessages();
+        this.cleanMessageStatus();
+    }
+    
+    cleanMessageStatus() {
+        this.props.clearMessagesStatus();
+    }
+    
     static getDerivedStateFromProps(props, state) {
 
         const { balance: sourceBalance, selectedAccount, assets, messages } = props;
@@ -50,6 +75,18 @@ class MessagesComponent extends React.Component {
             return { loading: true, selectedAccount } ;
         }
 
+        const { transactionStatus } = props;
+        
+        const {
+            approveOk,
+            approveError,
+            rejectOk,
+        } = transactionStatus;
+        
+        if (approveOk || approveError || rejectOk) {
+            return { transactionStatus, selectedAccount };
+        }
+        
         const assetInstance = new Asset(assets['WAVES']);
         const currentId = state && state.message && state.message.id;
         const isExistMsg = !!messages.find(({ id, status }) => id === currentId && status === 'unapproved');
@@ -69,7 +106,7 @@ class MessagesComponent extends React.Component {
         }
 
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
-        return { message, signData, balance, selectedAccount, assets, loading: false };
+        return { message, signData, balance, selectedAccount, assets, loading: false, transactionStatus };
     }
 
     static getAssetsAndMoneys(data) {
@@ -132,14 +169,17 @@ class MessagesComponent extends React.Component {
 
 const mapStateToProps = function (store) {
     return {
-        selectedAccount: store.selectedAccount,
+        transactionStatus: store.localState.transactionStatus,
         balance: store.balances[store.selectedAccount.address],
+        selectedAccount: store.selectedAccount,
         messages: store.messages,
         assets: store.assets
     };
 };
 
 const actions = {
+    clearMessagesStatus,
+    clearMessages,
     getAsset,
     approve,
     reject
