@@ -1,29 +1,46 @@
 @import '../../../styles/colors.styl';
 
-.transaction {
+.transaction
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
 
-  .txRow {
+  .txRow
     width: calc(100% - 48px);
-    padding: 12px 0;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     margin: 0 24px;
-    border-top: 1px dashed $basic200;
 
-    &:first-child {
-      border-top: 0 none; // todo @uIsk / fix it
-    }
-  }
+    & + .txRow
+      border-top: 1px dashed $basic200;
 
-  .txIcon div {
+  .txScrollBox
+    overflow: auto;
+    padding-bottom: 24px;
+    max-height: 290px;
+    position: relative;
+
+    &:after
+      content: '';
+      display: block;
+      height: 24px;
+      bottom: 64px;
+      position: fixed;
+      left: 24px;
+      width: calc(100% - 48px);
+      background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 41%, rgba(255,255,255,1) 43%);
+      background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 41%,rgba(255,255,255,1) 43%);
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 41%,rgba(255,255,255,1) 43%);
+
+  .txIcon div
     width: 48px;
     height: 48px;
     margin: auto;
-  }
 
-  .txBalance {
+  .txBalance
     width: calc(100% - 48px);
     margin: 0 auto 36px auto;
     white-space: nowrap;
@@ -33,15 +50,12 @@
     justify-content: center;
     align-items: center;
 
-      span {
-        margin: 0 7px;
-      }
-  }
+    span
+      margin: 0 7px;
 
-  .txButtonsWrapper {
+  .txButtonsWrapper
     width: calc(100% - 48px);
     position: fixed;
     bottom: 0;
-    margin: 24px;
-  }
-}
+    margin: 0 24px 24px;
+    background: $white;
