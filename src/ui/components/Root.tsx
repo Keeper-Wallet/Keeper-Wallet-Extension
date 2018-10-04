@@ -5,7 +5,6 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 
-
 class RootComponent extends React.Component {
     
     props: IProps;
@@ -141,7 +140,6 @@ const actions = {
 };
 
 export const Root = connect(mapStateToProps, actions)(RootComponent as any);
-
 
 interface IProps {
     transactionStatus: {
