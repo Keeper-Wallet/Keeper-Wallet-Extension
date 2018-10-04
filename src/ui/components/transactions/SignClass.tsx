@@ -10,6 +10,7 @@ export class SignClass extends React.PureComponent {
     readonly state = Object.create(null);
     approveHandler = () => this.props.approve();
     rejectHandler = () => this.props.reject();
+    selectAccountHandler = () => this.props.selectAccount();
     
     constructor(props) {
         super(props);
@@ -22,7 +23,7 @@ export class SignClass extends React.PureComponent {
     render() {
         return <div>
             <div className="margin-main-big">
-                <TransactionWallet account={this.props.selectedAccount}/>
+                <TransactionWallet account={this.props.selectedAccount} onSelect={this.selectAccountHandler}/>
             </div>
             <div className={`${styles.txIcon} margin-main`}>
                 <TxIcon txType={this.props.txType}/>

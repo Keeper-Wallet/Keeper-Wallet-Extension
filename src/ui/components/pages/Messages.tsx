@@ -2,6 +2,7 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import { getAsset, approve, reject, clearMessagesStatus, clearMessages } from '../../actions';
+import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction, FinalTransaction } from '../transactions';
@@ -15,13 +16,13 @@ class MessagesComponent extends React.Component {
     approveHandler = () => this.approve();
     clearMessagesHandler = () => this.clearMessages();
     clearMessageStatusHandler = () => this.cleanMessageStatus();
-    
+    selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
         if (this.state.loading) {
             return <Intro/>
         }
-    
+        
         const {
             approveOk,
             approveError,
@@ -45,7 +46,8 @@ class MessagesComponent extends React.Component {
                           clearMessagesHandler={this.clearMessagesHandler }
                           clearMessageStatusHandler={this.clearMessageStatusHandler }
                           reject={this.rejectHandler}
-                          approve={this.approveHandler}>
+                          approve={this.approveHandler}
+                          selectAccount={this.selectAccountHandler}>
         </Component>;
     }
 

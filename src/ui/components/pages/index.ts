@@ -20,3 +20,4 @@ export * from  './ChangePassword';
 export * from  './DeleteAccount';
 export * from  './Messages';
 export * from  './ForgotPassword';
+export * from  './SelectTxAccount';
