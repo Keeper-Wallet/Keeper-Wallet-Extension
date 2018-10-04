@@ -14,9 +14,7 @@ export class Transfer extends SignClass {
             {super.render()}
 
             <div className={`${styles.txBalance} center headline2`}>
-                <span>-</span>
-                <Balance balance={tx.amount}/>
-                <span><Trans i18nKey='transactions.waves'>WAVES</Trans></span>
+                <Balance split={true} addSign='-' showAsset={true} balance={tx.amount}/>
             </div>
 
             <div className={styles.txScrollBox}>

@@ -20,7 +20,7 @@ import {
     ChangePassword,
     DeleteAccount,
     Messages,
-    ForgotPassword,
+    ForgotPassword, SelectTxAccount,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -55,6 +55,7 @@ export const PAGES = {
     DELETE_ACCOUNT: 'delete_account',
     MESSAGES: 'messages',
     FORGOT: 'forgot_password',
+    CHANGE_TX_ACCOUNT: 'change_tx_account',
     ROOT: '',
 };
 
@@ -371,6 +372,17 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: false,
+        }
+    },
+    [PAGES.CHANGE_TX_ACCOUNT]: {
+        component: SelectTxAccount,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
         }
     }
 };

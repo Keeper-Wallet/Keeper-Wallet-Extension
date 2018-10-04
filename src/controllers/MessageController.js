@@ -23,8 +23,10 @@ export class MessageController extends EventEmitter {
         // Broadcast method from NetworkController
         this.broadcast = options.broadcast;
 
-        // Get assetInfo methid from AssetInfoController
-        this.assetInfo = options.assetInfo
+        // Get assetInfo method from AssetInfoController
+        this.assetInfo = options.assetInfo;
+
+        this._updateBage(this.store.getState().messages);
     }
 
     /**
@@ -134,10 +136,14 @@ export class MessageController extends EventEmitter {
 
     _updateStore(messages) {
         this.store.updateState({messages});
+        this._updateBage(messages);
+    }
+
+    _updateBage(messages) {
         const unapproved = messages.filter(({ status }) => status === 'unapproved').length;
         const text = unapproved ? unapproved.toString() : '';
         extension.browserAction.setBadgeText({ text });
-        extension.browserAction.setBadgeBackgroundColor({ color: '#FFF85E' });
+        extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
     }
 
     async _convertMoneylikeFieldsToMoney(txData) {
