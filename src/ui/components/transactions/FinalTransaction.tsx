@@ -17,7 +17,7 @@ export class FinalTransaction extends React.PureComponent {
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
-        const className = cn(styles.txFinalIcon, 'margin-main', {
+        const className = cn(styles.txBigIcon, 'margin-main', {
             'tx-error-icon': isError,
             'tx-approve-icon': isReject || isApprove,
         });
@@ -29,7 +29,7 @@ export class FinalTransaction extends React.PureComponent {
                 {isError ? <Error approveError={transactionStatus.approveError}/> : null}
             </div>
             {/*<div className="link">*/}
-                {/*<Trans i18nKey='sign.viewTransaction'>View transaction</Trans>*/}
+                {/*<Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>*/}
             {/*</div>*/}
             <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
                 <Trans i18nKey='sign.ok'>Okay</Trans>

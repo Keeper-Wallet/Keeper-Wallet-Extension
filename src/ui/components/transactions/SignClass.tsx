@@ -1,7 +1,6 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { getTxId } from './';
-import { TxIcon } from './TransactionIcon';
 import { TransactionWallet } from '../wallets';
 
 export class SignClass extends React.PureComponent {
@@ -22,11 +21,8 @@ export class SignClass extends React.PureComponent {
     
     render() {
         return <div>
-            <div className="margin-main-big">
+            <div>
                 <TransactionWallet account={this.props.selectedAccount} onSelect={this.selectAccountHandler}/>
-            </div>
-            <div className={`${styles.txIcon} margin-main`}>
-                <TxIcon txType={this.props.txType}/>
             </div>
         </div>;
     }

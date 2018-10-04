@@ -1,23 +1,28 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
-import { Balance, Button, BUTTON_TYPE } from '../ui';
-import { SignClass } from './SignClass';
+import {translate, Trans} from 'react-i18next';
+import {Balance, Button, BUTTON_TYPE} from '../ui';
+import {SignClass} from './SignClass';
+import { TxIcon } from './TransactionIcon';
 
 @translate('extension')
 export class Transfer extends SignClass {
 
     render() {
-        const { data: tx } = this.props.signData;
+        const {data: tx} = this.props.signData;
 
         return <div className={styles.transaction}>
             {super.render()}
-
-            <div className={`${styles.txBalance} center headline2`}>
-                <Balance split={true} addSign='-' showAsset={true} balance={tx.amount}/>
-            </div>
-
             <div className={styles.txScrollBox}>
+
+                <div className={`${styles.txIcon} margin-main`}>
+                    <TxIcon txType={this.props.txType}/>
+                </div>
+
+                <div className={`${styles.txBalance} center headline2`}>
+                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.amount}/>
+                </div>
+
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.sendTo'>Send to</Trans>

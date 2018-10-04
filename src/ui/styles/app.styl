@@ -105,6 +105,7 @@ ul
 $layout-10 = 10px;
 $layout-14 = 14px;
 $layout-24 = 24px;
+$layout-44 = 44px;
 
 :global .fullwidth
   width: 100%;
@@ -117,6 +118,9 @@ $layout-24 = 24px;
 
 :global .margin-main-big
   margin-bottom: $layout-24;
+
+:global .margin-main-large
+  margin-bottom: $layout-44;
 
 :global .margin1
   margin-bottom: $layout-10;
@@ -186,11 +190,29 @@ $layout-24 = 24px;
   align-items: center;
   justify-content: center;
 
+// blocks
+
 :global .plate
   background: $basic50;
   border: 1px dashed $basic200;
   padding: $layout-14;
   border-radius: 2px;
+
+:global .info-block //with icon
+  display: flex;
+  align-items: flex-start;
+
+  & > div:first-child
+    flex-grow: 0;
+    margin-right: 14px;
+
+    i
+      width: 18px;
+      height:18px;
+      display: block;
+
+  & > div:last-child
+    flex-grow: 1;
 
 // modals, errors, notifications
 :global #app-modal

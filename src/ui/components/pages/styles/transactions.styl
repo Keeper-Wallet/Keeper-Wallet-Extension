@@ -7,72 +7,83 @@
   position: relative;
 
   .txRow
-    width: calc(100% - 48px);
+    width: 100%;
     height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 0 24px;
+    align-items: flex-start;
+
+    &.bordered
+      border-top: 1px dashed $basic200;
+      border-bottom: 1px dashed $basic200;
 
     & + .txRow
       border-top: 1px dashed $basic200;
 
   .txScrollBox
     overflow: auto;
-    padding-bottom: 24px;
-    max-height: 290px;
+    height: 100%;
+    max-height: calc(100% - 177px);
     position: relative;
-
-    &:after
-      content: '';
-      display: block;
-      height: 24px;
-      bottom: 64px;
-      position: fixed;
-      left: 24px;
-      width: calc(100% - 48px);
-      background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 41%, rgba(255,255,255,1) 43%);
-      background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 41%,rgba(255,255,255,1) 43%);
-      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 41%,rgba(255,255,255,1) 43%);
+    padding: 0 24px;
 
   .txIcon div
     width: 48px;
     height: 48px;
-    margin: auto;
+    margin: 24px auto 0 auto;
 
   .txBalance
     width: calc(100% - 48px);
     margin: 0 auto 36px auto;
     white-space: nowrap;
     line-height: 1em;
-    font-weight: 600;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: 400;
 
-    span
-      margin: 0 7px;
+    span:first-child
+      font-weight: 600;
 
-  .txButtonsWrapper
-    width: calc(100% - 48px);
-    position: fixed;
-    bottom: 0;
-    margin: 0 24px 24px;
-    background: $white;
+.txButtonsWrapper
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding: 14px 14px;
+  background: $white;
+  border-top: 1px solid $basic100;
 
 // final transaction step
 
+.txBigIcon {
+  width: 80px;
+  height: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .txFinal {
   margin-top: 130px;
-
-  .txFinalIcon {
-    width: 80px;
-    height: 80px;
-    margin-left: auto;
-    margin-right: auto;
-  }
 
   button {
     margin: 44px auto 0 auto;
   }
 }
+
+.txSign {
+  margin: 93px 0 0;
+  .infoBlock {
+    margin-top: 44px;
+  }
+  .appName {
+    margin-right: 5px;
+    max-width: 100%;
+    word-break: break-all;
+  }
+}
+
+.txContent {
+  margin: 0 24px;
+}
+
