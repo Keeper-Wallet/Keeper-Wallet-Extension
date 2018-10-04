@@ -34,14 +34,19 @@
     margin: 24px auto 0 auto;
 
   .txBalance
-    width: calc(100% - 48px);
+    width: 100%;
     margin: 0 auto 36px auto;
     white-space: nowrap;
-    line-height: 1em;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 400;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.block
+      display: block;
 
     span:first-child
       font-weight: 600;

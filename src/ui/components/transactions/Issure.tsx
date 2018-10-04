@@ -4,7 +4,7 @@ import { translate, Trans } from 'react-i18next';
 import { Balance, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
-
+import { TxIcon } from './TransactionIcon';
 
 @translate('extension')
 export class Issure extends SignClass {
@@ -23,12 +23,16 @@ export class Issure extends SignClass {
         
         return <div className={styles.transaction}>
             {super.render()}
-            
-            <div className={`${styles.txBalance} center headline2`}>
-                <Balance split={true} showAsset={true} balance={quantity}/>
-            </div>
-            
             <div className={styles.txScrollBox}>
+
+                <div className={`${styles.txIcon} margin-main`}>
+                    <TxIcon txType={this.props.txType}/>
+                </div>
+
+                <div className={`${styles.txBalance} center headline2`}>
+                    <Balance split={true} showAsset={true} balance={quantity}/>
+                </div>
+
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.description'>Description</Trans>

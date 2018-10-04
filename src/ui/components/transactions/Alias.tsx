@@ -3,6 +3,7 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Balance, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
+import { TxIcon } from './TransactionIcon';
 
 @translate('extension')
 export class Alias extends SignClass {
@@ -12,12 +13,17 @@ export class Alias extends SignClass {
         
         return <div className={styles.transaction}>
             {super.render()}
-            
-            <div className={`${styles.txBalance} center headline2`}>
-                {tx.alias}
-            </div>
-            
+
             <div className={styles.txScrollBox}>
+
+                <div className={`${styles.txIcon} margin`}>
+                    <TxIcon txType={this.props.txType}/>
+                </div>
+
+                <div className={`${styles.txBalance} ${styles.block} center headline2`}>
+                    {tx.alias}
+                </div>
+
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.txid'>TXID</Trans>
@@ -29,7 +35,9 @@ export class Alias extends SignClass {
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
-                    <div className={styles.txValue}><Balance isShortFormat={true} balance={tx.fee} showAsset={true}/></div>
+                    <div className={styles.txValue}>
+                        <Balance isShortFormat={true} balance={tx.fee} showAsset={true}/>
+                    </div>
                 </div>
             </div>
             
