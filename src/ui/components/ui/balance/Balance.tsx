@@ -1,5 +1,5 @@
 import * as React from 'react';
-import cn from 'classnames';
+import { ASSETS_NAMES } from '../../../appConfig';
 import { Money } from '@waves/data-entities';
 import * as styles from './balance.styl';
 import { Loader } from '../loader';
@@ -15,7 +15,7 @@ export const Balance = ({ balance, split, addSign=null, showAsset, isShortFormat
             </div>;
     }
     const tokens = (isShortFormat ? balance.toFormat() : balance.toTokens()).split('.');
-    const assetName = showAsset ? balance.asset.name : null;
+    const assetName = showAsset ? ASSETS_NAMES[balance.asset.id] || balance.asset.name : null;
 
     if (!split) {
         return <div {...props}>{tokens.join(SEPARATOR)} {assetName} {children}</div>;

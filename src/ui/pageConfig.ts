@@ -287,6 +287,9 @@ export const PAGES_CONF = {
     },
     [PAGES.INTRO]: {
         component: Intro,
+        bottom: {
+            hide: true,
+        },
         menu: {
             hasLogo: false,
             hasSettings: false,
