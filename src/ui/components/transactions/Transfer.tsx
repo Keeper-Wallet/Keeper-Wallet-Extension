@@ -14,21 +14,29 @@ export class Transfer extends SignClass {
             {super.render()}
 
             <div className={`${styles.txBalance} center headline2`}>
-                - <Balance balance={tx.amount}/> Waves
+                <span>-</span>
+                <Balance balance={tx.amount}/>
+                <span><Trans i18nKey='transactions.waves'>WAVES</Trans></span>
             </div>
 
             <div className={styles.txRow}>
-                <div className="tx-label tag1 basic500">Send to</div>
+                <div className="tx-label tag1 basic500">
+                    <Trans i18nKey='transactions.sendTo'>Send to</Trans>
+                </div>
                 <div className={styles.txValue}>{tx.recipient}</div>
             </div>
 
             <div className={styles.txRow}>
-                <div className="tx-label tag1 basic500">TXID</div>
+                <div className="tx-label tag1 basic500">
+                    <Trans i18nKey='transactions.txid'>TXID</Trans>
+                </div>
                 <div className={styles.txValue}>{this.state.txId}</div>
             </div>
 
             <div className={styles.txRow}>
-                <div className="tx-label tag1 basic500">Fee</div>
+                <div className="tx-label tag1 basic500">
+                    <Trans i18nKey='transactions.fee'>Fee</Trans>
+                </div>
                 <div className={styles.txValue}><Balance balance={tx.fee}/></div>
             </div>
 

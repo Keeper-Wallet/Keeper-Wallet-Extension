@@ -21,10 +21,10 @@ export class SignClass extends React.PureComponent {
     
     render() {
         return <div>
-            <div className={styles.txWallet}>
+            <div className="margin-main-big">
                 <TransactionWallet account={this.props.selectedAccount}/>
             </div>
-            <div className={styles.txIcon}>
+            <div className={`${styles.txIcon} margin-main`}>
                 <TxIcon txType={this.props.txType}/>
             </div>
         </div>;

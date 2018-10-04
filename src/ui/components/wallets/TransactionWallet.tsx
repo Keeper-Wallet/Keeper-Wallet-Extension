@@ -33,16 +33,16 @@ export const TransactionWallet = ({
         }
     };
 
-    return <div className={`${className} ${styles.inner} flex`} onClick={clickHandler} {...props}>
+    return <div className={`${className} ${styles.inner} ${styles.txWallet} flex`} onClick={clickHandler} {...props}>
         <div className={styles.avatar}>
-            <Avatar size={40} address={account.address}/>
+            <Avatar size={28} address={account.address}/>
         </div>
 
-        <div className={`body1 ${styles.accountData}`}>
-            <div className={`basic500 ${styles.accountName}`}>
+        <div className={`body3 ${styles.accountData}`}>
+            <div className={styles.accountName}>
                 {account.name}
             </div>
-            <div className={styles.balance}>
+            <div className={`${styles.balance} basic500`}>
                 {account.address}
             </div>
         </div>
