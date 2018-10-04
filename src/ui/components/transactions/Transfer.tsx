@@ -36,7 +36,7 @@ export class Transfer extends SignClass {
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
-                    <div className={styles.txValue}><Balance balance={tx.fee} showAsset={true}/></div>
+                    <div className={styles.txValue}><Balance isShortFormat={true} balance={tx.fee} showAsset={true}/></div>
                 </div>
             </div>
 
