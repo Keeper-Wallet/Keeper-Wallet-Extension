@@ -154,7 +154,7 @@ class MessagesComponent extends React.Component {
         for (const { path, ...money } of moneys) {
 
             let obj = result;
-            const moneyInstance = new Money(money.tokens, new Asset(assets[money.assetId]));
+            const moneyInstance = new Money(0, new Asset(assets[money.assetId])).cloneWithTokens(money.tokens);
             const key = path.pop();
 
             for (const key of path) {
