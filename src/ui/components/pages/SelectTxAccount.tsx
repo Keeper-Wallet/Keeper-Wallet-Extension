@@ -1,3 +1,4 @@
+import * as styles from './styles/selectTxAccount.styl';
 import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
@@ -16,14 +17,15 @@ class SelectTxAccountComponent extends React.PureComponent {
     };
     
     render() {
-        return <div>
-            <h2>
+        return <div className={styles.content}>
+            <div className="title1 margin-main-big">
                 <Trans i18nKey='sign.changeAccount'>Do you want to change your account?</Trans>
-            </h2>
-            <h4>
+            </div>
+
+            <div className="margin-main-large body1">
                 <Trans i18nKey='sign.changeAccountInfo'>If you change account, we will cancel the current transaction.
                     After selecting a new active account, repeat the operation.</Trans>
-            </h4>
+            </div>
 
             <Button type={BUTTON_TYPE.SUBMIT} onClick={this.onClick}>
                 <Trans i18nKey='sign.switchAccount'>Switch account</Trans>
