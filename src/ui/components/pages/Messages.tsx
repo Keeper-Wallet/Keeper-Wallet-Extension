@@ -98,6 +98,11 @@ class MessagesComponent extends React.Component {
             return { ...state, balance, selectedAccount, assets};
         }
         const message = props.messages.find(({ status }) => status === 'unapproved');
+        
+        if (!message) {
+            return { loading: true };
+        }
+        
         const sourceSignData = message.tx;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
