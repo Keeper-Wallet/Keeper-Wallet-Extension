@@ -6,6 +6,7 @@ import { Issure } from './Issure';
 import { ReIssure } from './ReIssure';
 import { Alias } from './Alias';
 import { Lease } from './Lease';
+import { CancelLease } from './CancelLease';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -31,7 +32,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.CANCEL_LEASING:
             config.type = 'cancel-leasing';
-            config.component = SignClass;
+            config.component = CancelLease;
             break;
         case SIGN_TYPE.CANCEL_ORDER:
             config.type = 'cancel-order';
