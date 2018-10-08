@@ -2,8 +2,10 @@ import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapt
 import { Transfer } from './Transfer';
 import { Auth } from './Auth';
 import { Burn } from './Burn';
-import { Alias } from './Alias';
 import { Issure } from './Issure';
+import { ReIssure } from './ReIssure';
+import { Alias } from './Alias';
+import { Lease } from './Lease';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -53,7 +55,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.LEASE:
             config.type = 'lease';
-            config.component = SignClass;
+            config.component = Lease;
             break;
         case SIGN_TYPE.MASS_TRANSFER:
             config.type = 'mass_transfer';
@@ -65,7 +67,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.REISSUE:
             config.type = 'reissue';
-            config.component = SignClass;
+            config.component = ReIssure;
             break;
         case SIGN_TYPE.SET_SCRIPT:
             config.type = 'set-script';
