@@ -91,6 +91,4 @@ const mapPropsToState = ({ assets }) => {
     };
 };
 
-
-
 export const Burn = connect(mapPropsToState)(BurnComponent as any);
