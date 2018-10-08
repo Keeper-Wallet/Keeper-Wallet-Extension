@@ -5,7 +5,7 @@ import { Button, BUTTON_TYPE } from '../ui';
 import cn from 'classnames';
 
 const Error = ({ approveError }) => {
-    return <div>ERROR {approveError}</div>;
+    return <div>ERROR {JSON.stringify(approveError.error, null, 4)}</div>;
 };
 
 @translate('extension')

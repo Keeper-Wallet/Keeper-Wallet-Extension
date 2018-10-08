@@ -8,6 +8,7 @@ import { Alias } from './Alias';
 import { Lease } from './Lease';
 import { CancelLease } from './CancelLease';
 import { CancelOrder } from './CancelOrder';
+import { Matcher } from './Matcher';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -65,7 +66,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.MATCHER_ORDERS:
             config.type = 'matcher_orders';
-            config.component = SignClass;
+            config.component = Matcher;
             break;
         case SIGN_TYPE.REISSUE:
             config.type = 'reissue';
