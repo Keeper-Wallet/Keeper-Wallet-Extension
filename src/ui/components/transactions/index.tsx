@@ -7,6 +7,7 @@ import { ReIssure } from './ReIssure';
 import { Alias } from './Alias';
 import { Lease } from './Lease';
 import { CancelLease } from './CancelLease';
+import { CancelOrder } from './CancelOrder';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -36,7 +37,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.CANCEL_ORDER:
             config.type = 'cancel-order';
-            config.component = SignClass;
+            config.component = CancelOrder;
             break;
         case SIGN_TYPE.CREATE_ALIAS:
             config.type = 'create-alias';
