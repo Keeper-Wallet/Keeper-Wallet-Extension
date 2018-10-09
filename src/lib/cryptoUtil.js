@@ -33,3 +33,8 @@ export function addressFromPublicKey(pk, network) {
     const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
     return SG.libs.base58.encode(SG.utils.concatUint8Arrays(rawAddress, addressHash));
 }
+
+export function networkByteFromAddress(address) {
+    const rawNetworkByte = SG.libs.base58.decode(address).slice(1, 2);
+    return String.fromCharCode(rawNetworkByte)
+}

@@ -12,6 +12,7 @@ import { CancelOrder } from './CancelOrder';
 import { CreateOrder } from './CreateOrder';
 import { Matcher } from './Matcher';
 import { Data } from './Data';
+import { SponsorShip } from './SponsorShip';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -81,7 +82,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.SPONSORSHIP:
             config.type = 'sponsorship';
-            config.component = SignClass;
+            config.component = SponsorShip;
             break;
         default:
             config.type = 'unknown';
