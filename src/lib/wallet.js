@@ -39,6 +39,7 @@ export class Wallet {
         }
         const adapter = new Adapter(params);
         const signable = adapter.makeSignable(tx);
+        console.log(await signable.getId());
         return await signable.getDataForApi();
     }
 }

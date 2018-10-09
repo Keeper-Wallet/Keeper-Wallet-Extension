@@ -2,10 +2,10 @@ import ObservableStore from 'obs-store';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
-import {Money, BigNumber} from '@waves/data-entities';
-import {moneylikeToMoney} from '../lib/moneyUtil';
 import extension from 'extensionizer';
-
+import {getAdapterByType} from "@waves/signature-adapter";
+import {BigNumber, Money} from '@waves/data-entities';
+import {networkByteFromAddress} from "../lib/cryptoUtil";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -37,14 +37,17 @@ export class MessageController extends EventEmitter {
      * @param {boolean} broadcast - Should this tx be sent to node
      * @returns {Promise<tx>}
      */
-    newTx(tx, origin, from, broadcast = false) {
+    async newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
+        const txId = await this.validateAndBuildTxId(tx, from);
+        console.log(txId)
         let meta = this._generateMetadata(origin, from, broadcast);
         meta.tx = tx;
+        meta.txHash = txId;
         let messages = this.store.getState().messages;
         messages.push(meta);
         this._updateStore(messages);
-        return new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             this.once(`${meta.id}:finished`, finishedMeta => {
                 switch (finishedMeta.status) {
                     case 'signed':
@@ -68,7 +71,7 @@ export class MessageController extends EventEmitter {
         }
         try {
             if (!message.account) throw new Error('Orphaned tx. No account public key');
-            const txDataWithMoney = await this._convertMoneylikeFieldsToMoney(message.tx.data);
+            const txDataWithMoney = await this._convertMoneyLikeFieldsToMoney(message.tx.data);
             message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
             message.status = 'signed';
             if (message.broadcast) {
@@ -149,7 +152,7 @@ export class MessageController extends EventEmitter {
         extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
     }
 
-    async _convertMoneylikeFieldsToMoney(txData) {
+    async _convertMoneyLikeFieldsToMoney(txData) {
         let result = Object.assign({}, txData);
         for (let key in txData) {
             const field = txData[key];
@@ -160,5 +163,15 @@ export class MessageController extends EventEmitter {
             }
         }
         return result
+    }
+
+    async validateAndBuildTxId(tx, from) {
+        // Correct transaction check
+        let data = await this._convertMoneyLikeFieldsToMoney(tx.data);
+        const Adapter = getAdapterByType('seed')
+        Adapter.initOptions({networkCode: networkByteFromAddress(from)});
+        const adapter = new Adapter('validation seed');
+        const signable = adapter.makeSignable({...tx, data});
+        return await signable.getId();
     }
 }
