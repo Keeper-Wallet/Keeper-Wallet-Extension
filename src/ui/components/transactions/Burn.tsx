@@ -6,6 +6,7 @@ import { SignClass } from './SignClass';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
 import {connect} from 'react-redux';
+import { OriginWarning } from './OriginWarning';
 
 @translate('extension')
 export class BurnComponent extends SignClass {
@@ -75,6 +76,9 @@ export class BurnComponent extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
+                <div>
+                    <OriginWarning {...this.props}/>
+                </div>
             </div>
         </div>
     }

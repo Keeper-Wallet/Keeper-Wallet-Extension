@@ -4,6 +4,7 @@ import { translate, Trans } from 'react-i18next';
 import { Balance, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
+import { OriginWarning } from './OriginWarning';
 
 @translate('extension')
 export class Alias extends SignClass {
@@ -48,6 +49,10 @@ export class Alias extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
+    
+                <div>
+                    <OriginWarning {...this.props}/>
+                </div>
             </div>
         </div>
     }

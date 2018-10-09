@@ -5,6 +5,7 @@ import { Balance, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
+import { OriginWarning } from './OriginWarning';
 
 @translate('extension')
 export class Issure extends SignClass {
@@ -80,6 +81,10 @@ export class Issure extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
+                
+                <div>
+                    <OriginWarning {...this.props}/>
+                </div>
             </div>
         </div>
     }

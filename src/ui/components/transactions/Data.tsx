@@ -1,11 +1,10 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, Button, BUTTON_TYPE } from '../ui';
+import { Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
-import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
-import {connect} from 'react-redux';
+import { OriginWarning } from './OriginWarning';
 
 @translate('extension')
 export class Data extends SignClass {
@@ -43,6 +42,9 @@ export class Data extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
+                <div>
+                    <OriginWarning {...this.props}/>
+                </div>
             </div>
         </div>
     }
