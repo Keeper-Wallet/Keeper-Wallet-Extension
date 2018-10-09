@@ -3,7 +3,7 @@
 .transaction
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100% - 48px);
   position: relative;
 
   .txRow
@@ -24,10 +24,9 @@
 
   .txScrollBox
     overflow: auto;
-    height: 100%;
-    max-height: calc(100% - 177px);
     position: relative;
     padding: 0 24px;
+    flex-grow: 1;
 
   .txIcon div
     width: 48px;
@@ -54,11 +53,11 @@
 
 .txButtonsWrapper
   width: 100%;
-  position: fixed;
-  bottom: 0;
   padding: 14px 14px;
   background: $white;
   border-top: 1px solid $basic100;
+  text-align: center;
+  flex-wrap: wrap;
 
 .txBigIcon
   width: 80px;
@@ -84,3 +83,13 @@
 
 .txContent
   margin: 0 24px;
+
+.originWarning {
+  flex-basis: 100%;
+  margin: 10px 0 -4px 0;
+
+  div:first-child {
+    text-decoration: underline;
+    padding-bottom: 2px;
+  }
+}

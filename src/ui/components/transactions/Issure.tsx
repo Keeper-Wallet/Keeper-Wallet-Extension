@@ -82,9 +82,7 @@ export class Issure extends SignClass {
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
                 
-                <div>
-                    <OriginWarning {...this.props}/>
-                </div>
+                <OriginWarning {...this.props}/>
             </div>
         </div>
     }

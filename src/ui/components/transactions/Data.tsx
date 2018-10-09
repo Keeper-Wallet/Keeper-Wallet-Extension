@@ -42,9 +42,8 @@ export class Data extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
-                <div>
-                    <OriginWarning {...this.props}/>
-                </div>
+
+                <OriginWarning {...this.props}/>
             </div>
         </div>
     }
