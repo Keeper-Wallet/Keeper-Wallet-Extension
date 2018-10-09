@@ -32,16 +32,16 @@ export class Auth extends SignClass {
                 </div>
 
                 <div className={`${styles.infoBlock} info-block tag1 basic500 left`}>
-                    <div>
-                        <i className="inactive-account-icon"></i>
-                    </div>
-                    <div>
-                        <Trans i18nKey='sign.signAccessInfo'>
-                            The application will have access your Waves address. It will not get your SEED or Private key.
-                            Don't enter your secret phrase (SEED) on websites you will be redirected on.
-                        </Trans>
-                    </div>
+                <div>
+                    <i className="inactive-account-icon"></i>
                 </div>
+                <div>
+                    <Trans i18nKey='sign.signAccessInfo'>
+                        The application will have access your Waves address. It will not get your SEED or Private key.
+                        Don't enter your secret phrase (SEED) on websites you will be redirected on.
+                    </Trans>
+                </div>
+            </div>
             </div>
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>
