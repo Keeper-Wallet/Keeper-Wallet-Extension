@@ -14,6 +14,7 @@ import { Matcher } from './Matcher';
 import { Data } from './Data';
 import { SponsorShip } from './SponsorShip';
 import { SetScript } from './SetScript';
+import { CustomSign } from './CustomSign';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -85,6 +86,9 @@ export const getConfigByTransaction = tx => {
             config.type = 'sponsorship';
             config.component = SponsorShip;
             break;
+        case -1:
+            config.type = 'custom';
+            config.component = CustomSign;
         default:
             config.type = 'unknown';
             config.component = SignClass;

@@ -13,10 +13,6 @@ export class SignClass extends React.PureComponent {
     
     constructor(props) {
         super(props);
-        
-        getTxId(props.signData).then(
-            txId => this.setState({ txId })
-        )
     }
     
     render() {
