@@ -8,6 +8,7 @@ import { Alias } from './Alias';
 import { Lease } from './Lease';
 import { CancelLease } from './CancelLease';
 import { CancelOrder } from './CancelOrder';
+import { CreateOrder } from './CreateOrder';
 import { Matcher } from './Matcher';
 import { SignClass } from './SignClass';
 
@@ -46,7 +47,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.CREATE_ORDER:
             config.type = 'create-order';
-            config.component = SignClass;
+            config.component = CreateOrder;
             break;
         case SIGN_TYPE.DATA:
             config.type = 'data';

@@ -8,3 +8,4 @@ export * from './pills';
 export * from './modal/Modal';
 export * from './qRCode/QrCode';
 export * from './loader';
+export * from './Date/FormatDate';
