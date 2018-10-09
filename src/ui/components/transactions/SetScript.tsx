@@ -1,13 +1,14 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, Button, BUTTON_TYPE } from '../ui';
+import { Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
 import { OriginWarning } from './OriginWarning';
+import { toByteArray } from 'base64-js';
 
 @translate('extension')
-export class Matcher extends SignClass {
+export class SetScript extends SignClass {
 
     render() {
         const { data: tx } = this.props.signData;
@@ -22,9 +23,9 @@ export class Matcher extends SignClass {
     
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.matcherTimeStamp'>Matcher Time Stamp</Trans>
+                        <Trans i18nKey='transactions.script'>Script</Trans>
                     </div>
-                    <div className={styles.txValue}>{tx.timestamp}</div>
+                    <div className={styles.txValue}>{tx.script}</div>
                 </div>
             
                 <div className={styles.txRow}>
@@ -42,7 +43,6 @@ export class Matcher extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.approve'>Approve</Trans>
                 </Button>
-    
                 <div>
                     <OriginWarning {...this.props}/>
                 </div>

@@ -13,6 +13,7 @@ import { CreateOrder } from './CreateOrder';
 import { Matcher } from './Matcher';
 import { Data } from './Data';
 import { SponsorShip } from './SponsorShip';
+import { SetScript } from './SetScript';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -78,7 +79,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.SET_SCRIPT:
             config.type = 'set-script';
-            config.component = SignClass;
+            config.component = SetScript;
             break;
         case SIGN_TYPE.SPONSORSHIP:
             config.type = 'sponsorship';
