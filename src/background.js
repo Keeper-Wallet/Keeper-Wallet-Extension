@@ -217,8 +217,13 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         const sign = async (tx, from, broadcast = false) => {
-            this._validateTx(tx, from);
-            return await this.messageController.newTx(tx, origin, from, broadcast)
+            this._validate(tx, from);
+            const dataDefaults = {
+                timestamp: Date.now(),
+                senderPublicKey: this.getState().selectedAccount.publicKey
+            };
+            const updatedData = {...dataDefaults, ...tx.data};
+            return await this.messageController.newTx({type: tx.type, data: updatedData}, origin, from, broadcast)
         };
 
         return {
@@ -277,7 +282,7 @@ class BackgroundService extends EventEmitter {
         }
     }
 
-    _validateTx(tx, from) {
+    _validate(tx, from) {
         // Fields check
         if (!tx.type || !tx.data) {
             throw new Error('Invalid tx. Tx should contain type and data fields');
