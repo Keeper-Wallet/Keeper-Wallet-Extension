@@ -40,6 +40,7 @@ class MessagesComponent extends React.Component {
 
         return <Component txType={type}
                           pending={this.state.approvePending}
+                          txHash={this.state.txHash}
                           signData={signData}
                           message={message}
                           selectedAccount={this.state.selectedAccount}
@@ -113,7 +114,8 @@ class MessagesComponent extends React.Component {
         }
 
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
-        return { message, signData, balance, selectedAccount, assets, loading: false, transactionStatus };
+        const { txHash } = message;
+        return { message, signData, txHash, balance, selectedAccount, assets, loading: false, transactionStatus };
     }
 
     static getAssetsAndMoneys(data) {
