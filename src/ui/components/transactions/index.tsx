@@ -1,5 +1,6 @@
 import { SIGN_TYPE, getAdapterByType, AdapterType } from '@waves/signature-adapter';
 import { Transfer } from './Transfer';
+import { MassTransfer } from './MassTransfer';
 import { Auth } from './Auth';
 import { Burn } from './Burn';
 import { Issure } from './Issure';
@@ -63,7 +64,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.MASS_TRANSFER:
             config.type = 'mass_transfer';
-            config.component = SignClass;
+            config.component = MassTransfer;
             break;
         case SIGN_TYPE.MATCHER_ORDERS:
             config.type = 'matcher_orders';
