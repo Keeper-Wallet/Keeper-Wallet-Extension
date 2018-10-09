@@ -11,6 +11,7 @@ import { CancelLease } from './CancelLease';
 import { CancelOrder } from './CancelOrder';
 import { CreateOrder } from './CreateOrder';
 import { Matcher } from './Matcher';
+import { Data } from './Data';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -52,7 +53,7 @@ export const getConfigByTransaction = tx => {
             break;
         case SIGN_TYPE.DATA:
             config.type = 'data';
-            config.component = SignClass;
+            config.component = Data;
             break;
         case SIGN_TYPE.ISSUE:
             config.type = 'issue';
