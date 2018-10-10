@@ -218,12 +218,13 @@ class BackgroundService extends EventEmitter {
     getInpageApi(origin) {
         const sign = async (tx, from, broadcast = false) => {
             this._validate(tx, from);
+            const {publicKey, address} = this.getState().selectedAccount
             const dataDefaults = {
                 timestamp: Date.now(),
-                senderPublicKey: this.getState().selectedAccount.publicKey
+                senderPublicKey: publicKey
             };
             const updatedData = {...dataDefaults, ...tx.data};
-            return await this.messageController.newTx({type: tx.type, data: updatedData}, origin, from, broadcast)
+            return await this.messageController.newTx({type: tx.type, data: updatedData}, origin, from || address, broadcast)
         };
 
         return {
@@ -283,15 +284,16 @@ class BackgroundService extends EventEmitter {
     }
 
     _validate(tx, from) {
+        const {selectedAccount} = this.getState();
+        if (!selectedAccount) throw new Error('WavesKeeper contains co accounts');
+
         // Fields check
         if (!tx.type || !tx.data) {
             throw new Error('Invalid tx. Tx should contain type and data fields');
         }
 
         // Proper public key check
-        const selectedAccount = this.getState().selectedAccount;
-        const selectedAccountAddress = selectedAccount ? selectedAccount.address : undefined
-        if (from && from !== selectedAccountAddress) {
+        if (from && from !== selectedAccount.address) {
             throw new Error('From address should match selected account address or be blank');
         }
     }
