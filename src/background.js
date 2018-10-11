@@ -149,6 +149,7 @@ class BackgroundService extends EventEmitter {
             initState: initState.MessageController,
             signTx: this.walletController.signTx.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
+            signRequest: this.walletController.signRequest.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
@@ -239,6 +240,10 @@ class BackgroundService extends EventEmitter {
                 const {address} = this.getState().selectedAccount;
                 return this.messageController.newAuthMsg(authData, origin, from || address)
             },
+            signRequest: async (request, from) => {
+                const {address} = this.getState().selectedAccount;
+                return this.messageController.newRequest(request, origin, from || address)
+            }
             //publicState: async () => this._publicState(this.getState()),
         }
     }

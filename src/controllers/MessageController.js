@@ -20,6 +20,7 @@ export class MessageController extends EventEmitter {
         // Signing methods from WalletController
         this.signTx = options.signTx;
         this.auth = options.auth;
+        this.signRequest = options.signRequest;
 
         // Broadcast method from NetworkController
         this.broadcast = options.broadcast;
@@ -69,10 +70,10 @@ export class MessageController extends EventEmitter {
 
     /**
      * Generates metadata for authMsg. Add authMsg to pipeline
-     * @param {authData} authData - Transaction to approve
+     * @param {authData} authData - authMsg to approve
      * @param {string} origin - Domain, which has sent this authMsg
      * @param {string | undefined} from - Address of the account, that should approve authMsg. Can be undefined
-     * @returns {Promise<tx>}
+     * @returns {Promise<authData>}
      */
     newAuthMsg(authData, origin, from) {
         log.debug(`New authMessage ${JSON.stringify(authData)}`);
@@ -99,6 +100,37 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    /**
+     * Generates metadata for request. Add signRequest to pipeline
+     * @param {signRequest} request - signRequest to approve
+     * @param {string} origin - Domain, which has sent this signRequest
+     * @param {string | undefined} from - Address of the account, that should approve request. Can be undefined
+     * @returns {Promise<string>}
+     */
+    newRequest(request, origin, from) {
+        log.debug(`New authMessage ${JSON.stringify(request)}`);
+        let meta = this._generateMetadata(origin, from, 'request');
+        meta.request = request;
+
+        let messages = this.store.getState().messages;
+        messages.push(meta);
+        this._updateStore(messages);
+        return new Promise((resolve, reject) => {
+            this.once(`${meta.id}:finished`, finishedMeta => {
+                switch (finishedMeta.status) {
+                    case 'signed':
+                        return resolve(finishedMeta.request);
+                    case 'rejected':
+                        return reject(new Error('User denied message'));
+                    case 'failed':
+                        return reject(new Error(finishedMeta.err.message));
+                    default:
+                        return reject(new Error('Unknown error'))
+                }
+            })
+        })
+    }
+
     approve(id, address) {
         const message = this._getMessageById(id);
         message.account = address || message.account;
@@ -106,6 +138,7 @@ export class MessageController extends EventEmitter {
 
         if (message.tx) return this._approveTx(message);
         else if (message.authData) return this._approveAuth(message);
+        else if (message.request) return this._approveRequest(message);
         else return Promise.reject('Unknown message type');
     }
 
@@ -193,6 +226,28 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    _approveRequest(message) {
+        return new Promise((resolve, reject) => {
+            this.signRequest(message.account, message.request)
+                .then(signedRequest => {
+                    message.request = signedRequest;
+                    message.status = 'signed';
+                }).catch(e => {
+                if (e.message !== 'BRAKE') {
+                    message.status = 'failed';
+                    message.err = {
+                        message: e.toString(),
+                        stack: e.stack
+                    };
+                }
+            }).finally(() => {
+                this._updateMessage(message);
+                this.emit(`${message.id}:finished`, message);
+                message.status === 'failed' ? reject(message.err.message) : resolve(message.request)
+            });
+        })
+    }
+
     _updateMessage(message) {
         const messages = this.store.getState().messages;
         const id = message.id;
@@ -260,3 +315,4 @@ export class MessageController extends EventEmitter {
         return await signable.getId();
     }
 }
+

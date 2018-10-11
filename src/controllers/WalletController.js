@@ -106,6 +106,10 @@ export class WalletController {
         return await wallet.signTx(tx);
     }
 
+    async signRequest(address, request){
+        const wallet = this._findWallet(address);
+        return wallet.signRequest(request);
+    }
     async auth(address, authData){
         const wallet = this._findWallet(address);
         const bytes = new TextEncoder().encode(authData.data)
