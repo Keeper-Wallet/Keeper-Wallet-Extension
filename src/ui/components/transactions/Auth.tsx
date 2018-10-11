@@ -53,6 +53,4 @@ export class Auth extends SignClass {
             </div>
         </div>
     }
-
-
 }
