@@ -274,7 +274,7 @@ export class MessageController extends EventEmitter {
         return new Promise((resolve, reject) => {
             this.signRequest(message.account.address, message.data)
                 .then(signedRequest => {
-                    message.request = signedRequest;
+                    message.data = signedRequest;
                     message.status = 'signed';
                 }).catch(e => {
                 if (e.message !== 'BRAKE') {
@@ -287,7 +287,7 @@ export class MessageController extends EventEmitter {
             }).finally(() => {
                 this._updateMessage(message);
                 this.emit(`${message.id}:finished`, message);
-                message.status === 'failed' ? reject(message.err.message) : resolve(message.request)
+                message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
             });
         })
     }
