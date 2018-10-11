@@ -56,8 +56,19 @@ export class NetworkController {
             },
             body: stringify(tx)
         });
-        const data = await resp.json();
-        return data
+        console.log(resp)
+        if (resp.ok){
+
+        }
+        switch (resp.status) {
+            case 200:
+                return await resp.json();
+            case 400:
+                const error = await resp.json();
+                throw new Error(error.message);
+            default:
+                throw new Error(await resp.text())
+        }
     }
 }
 

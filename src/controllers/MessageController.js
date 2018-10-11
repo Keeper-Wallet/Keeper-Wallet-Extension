@@ -112,7 +112,7 @@ export class MessageController extends EventEmitter {
                     }
                     this._updateMessage(message);
                     this.emit(`${message.id}:finished`, message);
-                    message.status === 'failed' ? reject(message.err) : resolve(message.tx)
+                    message.status === 'failed' ? reject(message.err.message) : resolve(message.tx)
                 });
         })
 
