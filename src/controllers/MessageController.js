@@ -134,15 +134,56 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    /**
+     * Generates message with metadata. Add tx to pipeline
+     * @param {data} data - message data
+     * @param {string} origin - Domain, which has sent this data
+     * @param {string} type - type of message(transaction, request, auth, bytes)
+     * @param {object | undefined} account - Account, that should approve message. Can be undefined
+     * @param {boolean} broadcast - Should this message be sent(node, matcher, somewhere else)
+     * @returns {Promise<object>}
+     */
+    async newMessage(data, type, origin, account, broadcast = false) {
+        log.debug(`New message ${type}: ${JSON.stringify(data)}`);
+
+        const message = await this._generateMessage(data, type, origin, account, broadcast);
+
+        let messages = this.store.getState().messages;
+        log.debug(`Generated message ${JSON.stringify(message)}`);
+        messages.push(message);
+        this._updateStore(messages);
+        return await new Promise((resolve, reject) => {
+            this.once(`${message.id}:finished`, finishedMessage => {
+                switch (finishedMessage.status) {
+                    case 'signed':
+                    case 'published':
+                        return resolve(finishedMessage.data);
+                    case 'rejected':
+                        return reject(new Error('User denied message'));
+                    case 'failed':
+                        return reject(new Error(finishedMessage.err.message));
+                    default:
+                        return reject(new Error('Unknown error'))
+                }
+            })
+        })
+    }
+
     approve(id, address) {
         const message = this._getMessageById(id);
         message.account = address || message.account;
         if (!message.account) return Promise.reject('Message has empty account filed and no address is provided');
 
-        if (message.tx) return this._approveTx(message);
-        else if (message.authData) return this._approveAuth(message);
-        else if (message.request) return this._approveRequest(message);
-        else return Promise.reject('Unknown message type');
+        switch (message.type) {
+            case 'transaction':
+                return this._approveTx(message);
+            case 'auth':
+                return this._approveAuth(message);
+            case 'request':
+                return this._approveRequest(message);
+            default:
+                Promise.reject('Unknown message type')
+        }
     }
 
     reject(id) {
@@ -160,21 +201,21 @@ export class MessageController extends EventEmitter {
 
     _approveTx(message) {
         return new Promise((resolve, reject) => {
-            this._convertMoneyLikeFieldsToMoney(message.tx.data)
-                .then(txDataWithMoney => this.signTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney})))
+            this._convertMoneyLikeFieldsToMoney(message.data.data)
+                .then(txDataWithMoney => this.signTx(message.account.address, Object.assign({}, message.data, {data: txDataWithMoney})))
                 .then(signedTxData => {
                     message.status = 'signed';
-                    message.tx = signedTxData;
+                    message.data = signedTxData;
                     if (message.broadcast) {
-                        return this.broadcast(message.tx)
+                        return this.broadcast(message.data)
                     } else throw new Error('BRAKE')
                 })
                 .then(broadCastedTx => {
-                    message.tx = broadCastedTx;
+                    message.data = broadCastedTx;
                     message.status = 'published';
                     if (message.successPath) {
                         const url = new URL(message.successPath);
-                        url.searchParams.append('txId', message.txHash);
+                        url.searchParams.append('txId', message.messageHash);
                         extension.tabs.create({
                             url: url.href
                         })
@@ -192,16 +233,16 @@ export class MessageController extends EventEmitter {
                 .finally(() => {
                     this._updateMessage(message);
                     this.emit(`${message.id}:finished`, message);
-                    message.status === 'failed' ? reject(message.err.message) : resolve(message.tx)
+                    message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
                 });
         })
     }
 
     _approveAuth(message) {
         return new Promise((resolve, reject) => {
-            this.auth(message.account, message.authData)
+            this.auth(message.account.address, message.data)
                 .then(signedAuthData => {
-                    message.authData = signedAuthData;
+                    message.data = signedAuthData;
                     message.status = 'signed';
                     if (message.successPath) {
                         const url = new URL(message.successPath);
@@ -224,14 +265,14 @@ export class MessageController extends EventEmitter {
             }).finally(() => {
                 this._updateMessage(message);
                 this.emit(`${message.id}:finished`, message);
-                message.status === 'failed' ? reject(message.err.message) : resolve(message.authData)
+                message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
             });
         })
     }
 
     _approveRequest(message) {
         return new Promise((resolve, reject) => {
-            this.signRequest(message.account, message.request)
+            this.signRequest(message.account.address, message.data)
                 .then(signedRequest => {
                     message.request = signedRequest;
                     message.status = 'signed';
@@ -316,6 +357,73 @@ export class MessageController extends EventEmitter {
         const adapter = new Adapter('validation seed');
         const signable = adapter.makeSignable({...tx, data});
         return await signable.getId();
+    }
+
+    /**
+     * Generates message hash. Throws message is invalid
+     * @param {object} message - Message to approve
+     * @returns {Promise<string>}
+     */
+    async _getMessageHash(message) {
+        let signableData = await this._convertMoneyLikeFieldsToMoney(message.data.data);
+        const Adapter = getAdapterByType('seed')
+        Adapter.initOptions({networkCode: networkByteFromAddress(message.account)});
+        const adapter = new Adapter('validation seed');
+        const signable = adapter.makeSignable({data: signableData, type: message.data.type});
+        return await signable.getId();
+    }
+
+    async _validateAndTransform(message) {
+        let result = {...message};
+        switch (message.type) {
+            case 'auth':
+                result.data = {
+                    type: 1000,
+                    data: {
+                        data: message.data.data,
+                        prefix: 'WavesWalletAuthentication',
+                        host: message.data.referrer || message.origin
+                    }
+                };
+                result.messageHash = await this._getMessageHash(result);
+                if (message.data.successPath) {
+                    result.successPath = new URL(message.data.successPath, 'https://' + message.origin).href
+                }
+                break;
+            case 'transaction':
+                const txDefaults = {
+                    timestamp: Date.now(),
+                    senderPublicKey: message.account.publicKey
+                };
+                result.data.data = {...txDefaults, ...result.data.data};
+                result.messageHash = await this._getMessageHash(result);
+                if (message.data.successPath) {
+                    result.successPath = message.data.successPath
+                }
+                break;
+            case 'request':
+                result.messageHash = await this._getMessageHash(result);
+                break;
+            case 'bytes':
+                break;
+            default:
+                throw new Error(`Incorrect type "${type}"`)
+        }
+        return result
+    }
+
+    async _generateMessage(data, type, origin, account, broadcast) {
+        const message = {
+            account,
+            broadcast,
+            id: uuid(),
+            origin,
+            data,
+            status: 'unapproved',
+            time: Date.now(),
+            type
+        };
+        return await this._validateAndTransform(message)
     }
 }
 
