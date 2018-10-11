@@ -39,11 +39,13 @@ export class MessageController extends EventEmitter {
      */
     async newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
+
         const txId = await this.validateAndBuildTxId(tx, from);
-        console.log(txId)
         let meta = this._generateMetadata(origin, from, broadcast);
         meta.tx = tx;
         meta.txHash = txId;
+        meta.successPath = tx.successPath
+
         let messages = this.store.getState().messages;
         messages.push(meta);
         this._updateStore(messages);
@@ -64,37 +66,83 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    async approve(id, address) {
+    approve(id, address) {
         const message = this._getMessageById(id);
         if (address) {
             message.account = address
         }
-        try {
-            if (!message.account) throw new Error('Orphaned tx. No account public key');
-            const txDataWithMoney = await this._convertMoneyLikeFieldsToMoney(message.tx.data);
-            message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
-            message.status = 'signed';
-            if (message.broadcast) {
-                message.tx = await this.broadcast(message.tx);
-                message.status = 'published'
+        return new Promise((resolve, reject) => {
+            if (address) {
+                message.account = address
             }
-        } catch (e) {
-            message.err = {
-                message: e.toString(),
-                stack: e.stack
-            };
-            message.status = 'failed'
-        }
-        this._updateMessage(message);
+            if (!message.account) reject('Orphaned tx. No account public key');
 
-        this.emit(`${message.id}:finished`, message);
-        if (message.status === 'signed' || message.status === 'published') {
-            return message.tx
-        } else if (message.status === 'failed') {
-            throw message.err
-        } else {
-            throw new Error('Unknown error')
-        }
+            this._convertMoneyLikeFieldsToMoney(message.tx.data)
+                .then(txDataWithMoney => this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney})))
+                .then(signedTxData => {
+                    message.status = 'signed';
+                    message.tx = signedTxData
+                })
+                .then(()=>{
+                    if (message.broadcast){
+                        return this.broadcast(message.tx)
+                    }else throw new Error('BRAKE')
+                })
+                .then(broadCastedTx => {
+                    message.tx = broadCastedTx;
+                    message.status = 'published'
+                })
+                .then(()=>{
+                    if (message.successPath){
+                        const url = new URL(message.successPath);
+                        url.searchParams.append('txId', message.txHash);
+                        extension.tabs.create({
+                            url: url.href
+                        })
+                    }
+                    throw new Error('BRAKE')
+                })
+                .catch(e=>{
+                    if(e.message !== 'BRAKE'){
+                        message.status = 'failed';
+                        message.err = {
+                            message: e.toString(),
+                            stack: e.stack
+                        };
+                    }
+                    this._updateMessage(message);
+                    this.emit(`${message.id}:finished`, message);
+                    message.status === 'failed' ? reject(message.err) : resolve(message.tx)
+                });
+        })
+
+        // checkAddress().then(makeSignableData).then(sign).then(publish).then(openPaymentApiLink).then(processFinish).catch(error)
+        // try {
+        //     if (!message.account) throw new Error('Orphaned tx. No account public key');
+        //     const txDataWithMoney = await this._convertMoneyLikeFieldsToMoney(message.tx.data);
+        //     message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
+        //     message.status = 'signed';
+        //     if (message.broadcast) {
+        //         message.tx = await this.broadcast(message.tx);
+        //         message.status = 'published'
+        //     }
+        // } catch (e) {
+        //     message.err = {
+        //         message: e.toString(),
+        //         stack: e.stack
+        //     };
+        //     message.status = 'failed'
+        // }
+        // this._updateMessage(message);
+        //
+        // this.emit(`${message.id}:finished`, message);
+        // if (message.status === 'signed' || message.status === 'published') {
+        //     return message.tx
+        // } else if (message.status === 'failed') {
+        //     throw message.err
+        // } else {
+        //     throw new Error('Unknown error')
+        // }
     }
 
     reject(id) {

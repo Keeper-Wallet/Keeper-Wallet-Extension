@@ -224,14 +224,14 @@ class BackgroundService extends EventEmitter {
                 senderPublicKey: publicKey
             };
             const updatedData = {...dataDefaults, ...tx.data};
-            return await this.messageController.newTx({type: tx.type, data: updatedData}, origin, from || address, broadcast)
+            return await this.messageController.newTx({...tx, data: updatedData}, origin, from || address, broadcast)
         };
 
         return {
-            sign: async (tx, from) => {
+            signTransaction: async (tx, from) => {
                 return await sign(tx, from, false)
             },
-            signAndPublish: async (tx, from) => {
+            signAndPublishTransaction: async (tx, from) => {
                 return await sign(tx, from, true)
             },
             publicState: async () => this._publicState(this.getState()),

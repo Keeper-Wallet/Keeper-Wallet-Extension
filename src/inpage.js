@@ -110,7 +110,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
             break;
         case 'send':
             const assetId = hash.split('?')[0].replace('#send/', '');
-            inpageApi.signAndPublish({
+            inpageApi.signAndPublishTransaction({
                 type: 4,
                 successPath: apiData.referrer,
                 data: {
