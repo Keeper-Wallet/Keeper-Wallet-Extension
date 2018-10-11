@@ -10,28 +10,30 @@ export class Auth extends SignClass {
     render() {
         const { data: tx } = this.props.signData;
 
-        return <div className={`${styles.txSign} ${styles.transaction} center`}>
+        return <div className={`${styles.txSign} ${styles.transaction} font400 center`}>
 
-            <div className={styles.txContent}>
-                <div className={`${styles.txBigIcon} signin-icon margin-main`}></div>
+            <div className={styles.txScrollBox}>
+                <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}></div>
 
-                <div className="headline2 margin-main">
+                <div className="body3 margin-main">
+                    <span className={styles.appName}>{tx.host}</span>
+                    <span className="body1">
+                        <Trans i18nKey='sign.signAccessHost'>wants to access your Waves Address</Trans>
+                    </span>
+                </div>
+
+                <div className="headline2 margin-main-large">
                     <Trans i18nKey='sign.signAccessWaves'>Sign in with Waves</Trans>
                 </div>
 
-                <div className="body3 margin-main-large">
-                    <span className={styles.appName}>{tx.host}</span>
-                    <span><Trans i18nKey='sign.signAccessHost'>wants to access your Waves Address</Trans></span>
-                </div>
-
-                <div className={`${styles.txRow} ${styles.bordered} margin-main-big `}>
-                    <div className="tx-title tag1 basic500">
+                <div className={`${styles.txRow} ${styles.borderedBottom} margin-main-big `}>
+                    <div className="tx-title body3 basic500">
                         <Trans i18nKey='transactions.txid'>TXID</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
 
-                <div className={`${styles.infoBlock} info-block tag1 basic500 left`}>
+                <div className={`${styles.infoBlock} info-block body3 basic500 left`}>
                 <div>
                     <i className="inactive-account-icon"></i>
                 </div>

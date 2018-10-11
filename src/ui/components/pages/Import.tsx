@@ -14,8 +14,7 @@ class ImportComponent extends React.PureComponent {
     render() {
         return <div className={styles.import}>
             <div className={styles.content}>
-                <BigLogo className={styles.logoMargin}/>
-                <div className='margin4'>
+                <div className={styles.topMargin}>
                     <form onSubmit={this.onClick.bind(this, 'new_account')}>
                         <Button type='submit'>
                             <Trans i18nKey='import.createNew'>Create a new account</Trans>

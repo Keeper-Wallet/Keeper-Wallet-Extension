@@ -77,14 +77,10 @@ class AssetsComponent extends React.Component {
                 <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
             </CSSTransitionGroup>
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
-                <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
-                     onClick={this.addWalletHandler}>
-                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
-                </div>
                 <div>
-                    
+
                     {wallets.length ? <div className="basic500 body1 in-storage">
-                        <Trans i18nKey='assets.inStorage'>In storage</Trans>
+                        <Trans i18nKey='assets.inStorage'>Other accounts</Trans>
                     </div> : null}
                     
                     <div className={styles.walletListWrapper}>
@@ -96,6 +92,10 @@ class AssetsComponent extends React.Component {
                             {wallets}
                         </CSSTransitionGroup>
                     </div>
+                </div>
+                <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
+                     onClick={this.addWalletHandler}>
+                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
                 </div>
             </div>
 

@@ -60,7 +60,7 @@ class SettingsComponent extends React.Component {
             </div>
 
             <Button type={BUTTON_TYPE.WARNING} onClick={this.deleteHandler}>
-                <Trans i18nKey='settings.delete'>Delete account</Trans>
+                <Trans i18nKey='settings.delete'>Delete all accounts</Trans>
             </Button>
         </div>
     }
