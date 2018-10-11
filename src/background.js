@@ -238,7 +238,16 @@ class BackgroundService extends EventEmitter {
             },
             auth: async (authData, from) => {
                 const {address} = this.getState().selectedAccount;
-                return this.messageController.newAuthMsg(authData, origin, from || address)
+                const authObj = {
+                    type: 1000,
+                    data: {
+                        data: authData.data,
+                        prefix: 'WavesWalletAuthentication',
+                        host: authData.referrer || origin
+                    },
+                    successPath: authData.successPath ? new URL(authData.successPath,'https://' +  origin).href : undefined
+                }
+                return this.messageController.newAuthMsg(authObj, origin, from || address)
             },
             signRequest: async (request, from) => {
                 const {address} = this.getState().selectedAccount;

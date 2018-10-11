@@ -42,10 +42,10 @@ export class MessageController extends EventEmitter {
     async newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
 
-        const txId = await this._validateAndBuildTxId(tx, from);
+        const messageHash = await this._validateAndBuildTxId(tx, from);
         let meta = this._generateMetadata(origin, from, 'transaction', broadcast);
         meta.tx = tx;
-        meta.txHash = txId;
+        meta.messageHash = messageHash;
         meta.successPath = tx.successPath
 
         let messages = this.store.getState().messages;
@@ -75,16 +75,19 @@ export class MessageController extends EventEmitter {
      * @param {string | undefined} from - Address of the account, that should approve authMsg. Can be undefined
      * @returns {Promise<authData>}
      */
-    newAuthMsg(authData, origin, from) {
+    async newAuthMsg(authData, origin, from) {
         log.debug(`New authMessage ${JSON.stringify(authData)}`);
+
+        const messageHash = await this._validateAndBuildTxId(authData, from);
         let meta = this._generateMetadata(origin, from, 'auth');
         meta.authData = authData;
-        meta.successPath = authData.successPath
+        meta.messageHash = messageHash;
+        meta.successPath = authData.successPath;
 
         let messages = this.store.getState().messages;
         messages.push(meta);
         this._updateStore(messages);
-        return new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             this.once(`${meta.id}:finished`, finishedMeta => {
                 switch (finishedMeta.status) {
                     case 'signed':
