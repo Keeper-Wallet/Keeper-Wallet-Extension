@@ -56,10 +56,7 @@ export class NetworkController {
             },
             body: stringify(tx)
         });
-        console.log(resp)
-        if (resp.ok){
 
-        }
         switch (resp.status) {
             case 200:
                 return await resp.json();
