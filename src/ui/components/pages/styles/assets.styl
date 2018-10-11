@@ -7,6 +7,7 @@
   height: 552px;
   background: $basic50;
   padding-bottom: 30px;
+  overflow: hidden;
 
   &::after
     display: block;
@@ -131,7 +132,7 @@
   animation-name: animation-active-show;
   animation-duration: 0.6s;
   animation-fill-mode: both;
-  position: absolute
+  position: absolute;
 
 :global .animate_active_wallet-leave
   animation-name: animation-active-hide;
@@ -141,7 +142,7 @@
 @keyframes :global(animation-active-show)
   0%
     opacity: 0;
-    transform: translate(-110%, 0);
+    transform: translate(0, -110%);
 
   100%
     opacity: 1;
@@ -154,4 +155,4 @@
 
   100%
     opacity: 0;
-    transform: translate(110%, 0);
+    transform: translate(0, 110%);
