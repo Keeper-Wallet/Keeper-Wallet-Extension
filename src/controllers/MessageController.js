@@ -17,8 +17,9 @@ export class MessageController extends EventEmitter {
         };
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
 
-        // Signing method from WalletController
-        this.signWavesTx = options.sign;
+        // Signing methods from WalletController
+        this.signTx = options.signTx;
+        this.auth = options.auth;
 
         // Broadcast method from NetworkController
         this.broadcast = options.broadcast;
@@ -40,8 +41,8 @@ export class MessageController extends EventEmitter {
     async newTx(tx, origin, from, broadcast = false) {
         log.debug(`New tx ${JSON.stringify(tx)}`);
 
-        const txId = await this.validateAndBuildTxId(tx, from);
-        let meta = this._generateMetadata(origin, from, broadcast);
+        const txId = await this._validateAndBuildTxId(tx, from);
+        let meta = this._generateMetadata(origin, from, 'transaction', broadcast);
         meta.tx = tx;
         meta.txHash = txId;
         meta.successPath = tx.successPath
@@ -66,83 +67,46 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    /**
+     * Generates metadata for authMsg. Add authMsg to pipeline
+     * @param {authData} authData - Transaction to approve
+     * @param {string} origin - Domain, which has sent this authMsg
+     * @param {string | undefined} from - Address of the account, that should approve authMsg. Can be undefined
+     * @returns {Promise<tx>}
+     */
+    newAuthMsg(authData, origin, from) {
+        log.debug(`New authMessage ${JSON.stringify(authData)}`);
+        let meta = this._generateMetadata(origin, from, 'auth');
+        meta.authData = authData;
+        meta.successPath = authData.successPath
+
+        let messages = this.store.getState().messages;
+        messages.push(meta);
+        this._updateStore(messages);
+        return new Promise((resolve, reject) => {
+            this.once(`${meta.id}:finished`, finishedMeta => {
+                switch (finishedMeta.status) {
+                    case 'signed':
+                        return resolve(finishedMeta.authData);
+                    case 'rejected':
+                        return reject(new Error('User denied message'));
+                    case 'failed':
+                        return reject(new Error(finishedMeta.err.message));
+                    default:
+                        return reject(new Error('Unknown error'))
+                }
+            })
+        })
+    }
+
     approve(id, address) {
         const message = this._getMessageById(id);
-        if (address) {
-            message.account = address
-        }
-        return new Promise((resolve, reject) => {
-            if (address) {
-                message.account = address
-            }
-            if (!message.account) reject('Orphaned tx. No account public key');
+        message.account = address || message.account;
+        if (!message.account) return Promise.reject('Message has empty account filed and no address is provided');
 
-            this._convertMoneyLikeFieldsToMoney(message.tx.data)
-                .then(txDataWithMoney => this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney})))
-                .then(signedTxData => {
-                    message.status = 'signed';
-                    message.tx = signedTxData
-                })
-                .then(()=>{
-                    if (message.broadcast){
-                        return this.broadcast(message.tx)
-                    }else throw new Error('BRAKE')
-                })
-                .then(broadCastedTx => {
-                    message.tx = broadCastedTx;
-                    message.status = 'published'
-                })
-                .then(()=>{
-                    if (message.successPath){
-                        const url = new URL(message.successPath);
-                        url.searchParams.append('txId', message.txHash);
-                        extension.tabs.create({
-                            url: url.href
-                        })
-                    }
-                    throw new Error('BRAKE')
-                })
-                .catch(e=>{
-                    if(e.message !== 'BRAKE'){
-                        message.status = 'failed';
-                        message.err = {
-                            message: e.toString(),
-                            stack: e.stack
-                        };
-                    }
-                    this._updateMessage(message);
-                    this.emit(`${message.id}:finished`, message);
-                    message.status === 'failed' ? reject(message.err.message) : resolve(message.tx)
-                });
-        })
-
-        // checkAddress().then(makeSignableData).then(sign).then(publish).then(openPaymentApiLink).then(processFinish).catch(error)
-        // try {
-        //     if (!message.account) throw new Error('Orphaned tx. No account public key');
-        //     const txDataWithMoney = await this._convertMoneyLikeFieldsToMoney(message.tx.data);
-        //     message.tx = await this.signWavesTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney}));
-        //     message.status = 'signed';
-        //     if (message.broadcast) {
-        //         message.tx = await this.broadcast(message.tx);
-        //         message.status = 'published'
-        //     }
-        // } catch (e) {
-        //     message.err = {
-        //         message: e.toString(),
-        //         stack: e.stack
-        //     };
-        //     message.status = 'failed'
-        // }
-        // this._updateMessage(message);
-        //
-        // this.emit(`${message.id}:finished`, message);
-        // if (message.status === 'signed' || message.status === 'published') {
-        //     return message.tx
-        // } else if (message.status === 'failed') {
-        //     throw message.err
-        // } else {
-        //     throw new Error('Unknown error')
-        // }
+        if (message.tx) return this._approveTx(message);
+        else if (message.authData) return this._approveAuth(message);
+        else return Promise.reject('Unknown message type');
     }
 
     reject(id) {
@@ -157,12 +121,77 @@ export class MessageController extends EventEmitter {
         this._updateStore([]);
     }
 
-    // _setStatus(id, status) {
-    //     let messages = this.store.getState().messages;
-    //     const index = messages.findIndex(message => message.id === id);
-    //     messages[index].status = status;
-    //     this.store.updateState({messages})
-    // }
+
+    _approveTx(message) {
+        return new Promise((resolve, reject) => {
+            this._convertMoneyLikeFieldsToMoney(message.tx.data)
+                .then(txDataWithMoney => this.signTx(message.account, Object.assign({}, message.tx, {data: txDataWithMoney})))
+                .then(signedTxData => {
+                    message.status = 'signed';
+                    message.tx = signedTxData;
+                    if (message.broadcast) {
+                        return this.broadcast(message.tx)
+                    } else throw new Error('BRAKE')
+                })
+                .then(broadCastedTx => {
+                    message.tx = broadCastedTx;
+                    message.status = 'published';
+                    if (message.successPath) {
+                        const url = new URL(message.successPath);
+                        url.searchParams.append('txId', message.txHash);
+                        extension.tabs.create({
+                            url: url.href
+                        })
+                    }
+                })
+                .catch(e => {
+                    if (e.message !== 'BRAKE') {
+                        message.status = 'failed';
+                        message.err = {
+                            message: e.toString(),
+                            stack: e.stack
+                        };
+                    }
+                })
+                .finally(() => {
+                    this._updateMessage(message);
+                    this.emit(`${message.id}:finished`, message);
+                    message.status === 'failed' ? reject(message.err.message) : resolve(message.tx)
+                });
+        })
+    }
+
+    _approveAuth(message) {
+        return new Promise((resolve, reject) => {
+            this.auth(message.account, message.authData)
+                .then(signedAuthData => {
+                    message.authData = signedAuthData;
+                    message.status = 'signed';
+                    if (message.successPath) {
+                        const url = new URL(message.successPath);
+                        url.searchParams.append('d', signedAuthData.data);
+                        url.searchParams.append('p', signedAuthData.publicKey);
+                        url.searchParams.append('s', signedAuthData.signature);
+                        url.searchParams.append('a', signedAuthData.address);
+                        extension.tabs.create({
+                            url: url.href
+                        })
+                    }
+                }).catch(e => {
+                if (e.message !== 'BRAKE') {
+                    message.status = 'failed';
+                    message.err = {
+                        message: e.toString(),
+                        stack: e.stack
+                    };
+                }
+            }).finally(() => {
+                this._updateMessage(message);
+                this.emit(`${message.id}:finished`, message);
+                message.status === 'failed' ? reject(message.err.message) : resolve(message.authData)
+            });
+        })
+    }
 
     _updateMessage(message) {
         const messages = this.store.getState().messages;
@@ -173,18 +202,20 @@ export class MessageController extends EventEmitter {
     }
 
     _getMessageById(id) {
-        return this.store.getState().messages.find(message => message.id === id);
+        const result = this.store.getState().messages.find(message => message.id === id);
+        if (!result) throw new Error(`Failed to ge message with id ${id}`);
+        return result;
     }
 
-    _generateMetadata(origin, from, broadcast) {
+    _generateMetadata(origin, from, type, broadcast) {
         return {
             account: from,
             broadcast,
             id: uuid(),
             origin,
             status: 'unapproved',
-            time: Date.now()
-
+            time: Date.now(),
+            type
         }
     }
 
@@ -194,10 +225,10 @@ export class MessageController extends EventEmitter {
     }
 
     _updateBage(messages) {
-        const unapproved = messages.filter(({ status }) => status === 'unapproved').length;
+        const unapproved = messages.filter(({status}) => status === 'unapproved').length;
         const text = unapproved ? unapproved.toString() : '';
-        extension.browserAction.setBadgeText({ text });
-        extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
+        extension.browserAction.setBadgeText({text});
+        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
     }
 
     async _convertMoneyLikeFieldsToMoney(txData) {
@@ -213,7 +244,13 @@ export class MessageController extends EventEmitter {
         return result
     }
 
-    async validateAndBuildTxId(tx, from) {
+    /**
+     * Generates transaction ID. Throws if tx is invalid
+     * @param {tx} tx - Transaction to approve
+     * @param {string} from - Address of the account, that should approve tx
+     * @returns {Promise<string>}
+     */
+    async _validateAndBuildTxId(tx, from) {
         // Correct transaction check
         let data = await this._convertMoneyLikeFieldsToMoney(tx.data);
         const Adapter = getAdapterByType('seed')

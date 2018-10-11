@@ -142,7 +142,7 @@ describe('WalletController', () => {
             }
         }
         const address = controller.wallets[0].getAccount().address
-        const signed = await controller.sign(address, tx)
+        const signed = await controller.signTx(address, tx)
         expect(signed.signature).to.be.a('string')
     });
 });

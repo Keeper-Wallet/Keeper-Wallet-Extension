@@ -101,13 +101,23 @@ export class WalletController {
         return wallet.getSecret();
     }
 
-    async sign(address, tx) {
-        if (this.store.getState().locked) throw new Error('App is locked');
-        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
-        if (!wallet) throw new Error(`Wallet not found for address ${address}`);
-        return await wallet.sign(tx)
+    async signTx(address, tx) {
+        const wallet = this._findWallet(address);
+        return await wallet.signTx(tx);
     }
 
+    async auth(address, authData){
+        const wallet = this._findWallet(address);
+        const bytes = new TextEncoder().encode(authData.data)
+        const signature = await wallet.signBytes(bytes);
+        const {publicKey} = wallet.getAccount();
+        return {
+            ...authData,
+            address,
+            publicKey,
+            signature
+        }
+    }
     // Private
     _checkForDuplicate(address) {
         if (this.getAccounts().find(account => account.address === address)) {
@@ -123,5 +133,12 @@ export class WalletController {
     _restoreWallets(password) {
         const decryptedData = decrypt(this.store.getState().vault, password);
         this.wallets = decryptedData.map(user => new Wallet(user));
+    }
+
+    _findWallet(address){
+        if (this.store.getState().locked) throw new Error('App is locked');
+        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
+        if (!wallet) throw new Error(`Wallet not found for address ${address}`);
+        return wallet;
     }
 }

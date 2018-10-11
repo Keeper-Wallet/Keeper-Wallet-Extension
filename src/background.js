@@ -147,7 +147,8 @@ class BackgroundService extends EventEmitter {
         // Delegates approve to walletController, broadcast to networkController and assetInfo for assetInfoController
         this.messageController = new MessageController({
             initState: initState.MessageController,
-            sign: this.walletController.sign.bind(this.walletController),
+            signTx: this.walletController.signTx.bind(this.walletController),
+            auth: this.walletController.auth.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
@@ -234,7 +235,11 @@ class BackgroundService extends EventEmitter {
             signAndPublishTransaction: async (tx, from) => {
                 return await sign(tx, from, true)
             },
-            publicState: async () => this._publicState(this.getState()),
+            auth: async (authData, from) => {
+                const {address} = this.getState().selectedAccount;
+                return this.messageController.newAuthMsg(authData, origin, from || address)
+            },
+            //publicState: async () => this._publicState(this.getState()),
         }
     }
 
