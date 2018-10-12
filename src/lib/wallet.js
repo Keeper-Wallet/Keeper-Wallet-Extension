@@ -50,5 +50,8 @@ export class Wallet {
         return this._adapter.signData(bytes)
     }
 
-
+    async signRequest(request){
+        const signable = this._adapter.makeSignable(request);
+        return await signable.getSignature()
+    }
 }

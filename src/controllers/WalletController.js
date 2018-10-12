@@ -106,13 +106,16 @@ export class WalletController {
         return await wallet.signTx(tx);
     }
 
+    async signRequest(address, request){
+        const wallet = this._findWallet(address);
+        return wallet.signRequest(request);
+    }
     async auth(address, authData){
         const wallet = this._findWallet(address);
-        const bytes = new TextEncoder().encode(authData.data)
-        const signature = await wallet.signBytes(bytes);
+        const signature = await wallet.signRequest(authData);
         const {publicKey} = wallet.getAccount();
         return {
-            ...authData,
+            ...authData.data,
             address,
             publicKey,
             signature
