@@ -218,40 +218,28 @@ class BackgroundService extends EventEmitter {
     }
 
     getInpageApi(origin) {
-        const sign = async (tx, from, broadcast = false) => {
-            this._validate(tx, from);
-            const {publicKey, address} = this.getState().selectedAccount
-            const dataDefaults = {
-                timestamp: Date.now(),
-                senderPublicKey: publicKey
-            };
-            const updatedData = {...dataDefaults, ...tx.data};
-            return await this.messageController.newTx({...tx, data: updatedData}, origin, from || address, broadcast)
-        };
+        const newMessage = async (data, type, from, broadcast) => {
+            const {selectedAccount} = this.getState();
 
+            if (!selectedAccount) throw new Error('WavesKeeper contains co accounts');
+            // Proper public key check
+            if (from && from !== selectedAccount.address) {
+                throw new Error('From address should match selected account address or be blank');
+            }
+            return await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast)
+        }
         return {
-            signTransaction: async (tx, from) => {
-                return await sign(tx, from, false)
+            signTransaction: async (data, from) => {
+                return await newMessage(data, 'transaction', from, false)
             },
-            signAndPublishTransaction: async (tx, from) => {
-                return await sign(tx, from, true)
+            signAndPublishTransaction: async (data, from) => {
+                return await newMessage(data, 'transaction', from, true)
             },
-            auth: async (authData, from) => {
-                const {address} = this.getState().selectedAccount;
-                const authObj = {
-                    type: 1000,
-                    data: {
-                        data: authData.data,
-                        prefix: 'WavesWalletAuthentication',
-                        host: authData.referrer || origin
-                    },
-                    successPath: authData.successPath ? new URL(authData.successPath,'https://' +  origin).href : undefined
-                }
-                return this.messageController.newAuthMsg(authObj, origin, from || address)
+            auth: async (data, from) => {
+                return await newMessage(data, 'auth', from, true)
             },
-            signRequest: async (request, from) => {
-                const {address} = this.getState().selectedAccount;
-                return this.messageController.newRequest(request, origin, from || address)
+            signRequest: async (data, from) => {
+                return await newMessage(data, 'request', from, true)
             }
             //publicState: async () => this._publicState(this.getState()),
         }
