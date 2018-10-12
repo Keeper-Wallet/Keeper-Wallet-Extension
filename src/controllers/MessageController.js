@@ -31,108 +31,6 @@ export class MessageController extends EventEmitter {
         this._updateBage(this.store.getState().messages);
     }
 
-    /**
-     * Generates metadata for tx. Add tx to pipeline
-     * @param {tx} tx - Transaction to approve
-     * @param {string} origin - Domain, which has sent this tx
-     * @param {string | undefined} from - Address of the account, that should approve tx. Can be undefined
-     * @param {boolean} broadcast - Should this tx be sent to node
-     * @returns {Promise<tx>}
-     */
-    async newTx(tx, origin, from, broadcast = false) {
-        log.debug(`New tx ${JSON.stringify(tx)}`);
-
-        const messageHash = await this._validateAndBuildTxId(tx, from);
-        let meta = this._generateMetadata(origin, from, 'transaction', broadcast);
-        meta.tx = tx;
-        meta.messageHash = messageHash;
-        meta.successPath = tx.successPath
-
-        let messages = this.store.getState().messages;
-        messages.push(meta);
-        this._updateStore(messages);
-        return await new Promise((resolve, reject) => {
-            this.once(`${meta.id}:finished`, finishedMeta => {
-                switch (finishedMeta.status) {
-                    case 'signed':
-                    case 'published':
-                        return resolve(finishedMeta.tx);
-                    case 'rejected':
-                        return reject(new Error('User denied message'));
-                    case 'failed':
-                        return reject(new Error(finishedMeta.err.message));
-                    default:
-                        return reject(new Error('Unknown error'))
-                }
-            })
-        })
-    }
-
-    /**
-     * Generates metadata for authMsg. Add authMsg to pipeline
-     * @param {authData} authData - authMsg to approve
-     * @param {string} origin - Domain, which has sent this authMsg
-     * @param {string | undefined} from - Address of the account, that should approve authMsg. Can be undefined
-     * @returns {Promise<authData>}
-     */
-    async newAuthMsg(authData, origin, from) {
-        log.debug(`New authMessage ${JSON.stringify(authData)}`);
-
-        const messageHash = await this._validateAndBuildTxId(authData, from);
-        let meta = this._generateMetadata(origin, from, 'auth');
-        meta.authData = authData;
-        meta.messageHash = messageHash;
-        meta.successPath = authData.successPath;
-
-        let messages = this.store.getState().messages;
-        messages.push(meta);
-        this._updateStore(messages);
-        return await new Promise((resolve, reject) => {
-            this.once(`${meta.id}:finished`, finishedMeta => {
-                switch (finishedMeta.status) {
-                    case 'signed':
-                        return resolve(finishedMeta.authData);
-                    case 'rejected':
-                        return reject(new Error('User denied message'));
-                    case 'failed':
-                        return reject(new Error(finishedMeta.err.message));
-                    default:
-                        return reject(new Error('Unknown error'))
-                }
-            })
-        })
-    }
-
-    /**
-     * Generates metadata for request. Add signRequest to pipeline
-     * @param {signRequest} request - signRequest to approve
-     * @param {string} origin - Domain, which has sent this signRequest
-     * @param {string | undefined} from - Address of the account, that should approve request. Can be undefined
-     * @returns {Promise<string>}
-     */
-    newRequest(request, origin, from) {
-        log.debug(`New authMessage ${JSON.stringify(request)}`);
-        let meta = this._generateMetadata(origin, from, 'request');
-        meta.request = request;
-
-        let messages = this.store.getState().messages;
-        messages.push(meta);
-        this._updateStore(messages);
-        return new Promise((resolve, reject) => {
-            this.once(`${meta.id}:finished`, finishedMeta => {
-                switch (finishedMeta.status) {
-                    case 'signed':
-                        return resolve(finishedMeta.request);
-                    case 'rejected':
-                        return reject(new Error('User denied message'));
-                    case 'failed':
-                        return reject(new Error(finishedMeta.err.message));
-                    default:
-                        return reject(new Error('Unknown error'))
-                }
-            })
-        })
-    }
 
     /**
      * Generates message with metadata. Add tx to pipeline
@@ -174,16 +72,24 @@ export class MessageController extends EventEmitter {
         message.account = address || message.account;
         if (!message.account) return Promise.reject('Message has empty account filed and no address is provided');
 
-        switch (message.type) {
-            case 'transaction':
-                return this._approveTx(message);
-            case 'auth':
-                return this._approveAuth(message);
-            case 'request':
-                return this._approveRequest(message);
-            default:
-                Promise.reject('Unknown message type')
-        }
+        return new Promise((resolve, reject) => {
+            this._fillSignableData(message)
+                .then(this._signMessage.bind(this))
+                .then(this._broadcastMessage.bind(this))
+                .then(this._processSuccessPath.bind(this))
+                .catch(e => {
+                    message.status = 'failed';
+                    message.err = {
+                        message: e.toString(),
+                        stack: e.stack
+                    };
+                })
+                .finally(() => {
+                    this._updateMessage(message);
+                    this.emit(`${message.id}:finished`, message);
+                    message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
+                })
+        })
     }
 
     reject(id) {
@@ -196,100 +102,6 @@ export class MessageController extends EventEmitter {
     // for debug purposes
     clearMessages() {
         this._updateStore([]);
-    }
-
-
-    _approveTx(message) {
-        return new Promise((resolve, reject) => {
-            this._convertMoneyLikeFieldsToMoney(message.data.data)
-                .then(txDataWithMoney => this.signTx(message.account.address, Object.assign({}, message.data, {data: txDataWithMoney})))
-                .then(signedTxData => {
-                    message.status = 'signed';
-                    message.data = signedTxData;
-                    if (message.broadcast) {
-                        return this.broadcast(message.data)
-                    } else throw new Error('BRAKE')
-                })
-                .then(broadCastedTx => {
-                    message.data = broadCastedTx;
-                    message.status = 'published';
-                    if (message.successPath) {
-                        const url = new URL(message.successPath);
-                        url.searchParams.append('txId', message.messageHash);
-                        extension.tabs.create({
-                            url: url.href
-                        })
-                    }
-                })
-                .catch(e => {
-                    if (e.message !== 'BRAKE') {
-                        message.status = 'failed';
-                        message.err = {
-                            message: e.toString(),
-                            stack: e.stack
-                        };
-                    }
-                })
-                .finally(() => {
-                    this._updateMessage(message);
-                    this.emit(`${message.id}:finished`, message);
-                    message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
-                });
-        })
-    }
-
-    _approveAuth(message) {
-        return new Promise((resolve, reject) => {
-            this.auth(message.account.address, message.data)
-                .then(signedAuthData => {
-                    message.data = signedAuthData;
-                    message.status = 'signed';
-                    if (message.successPath) {
-                        const url = new URL(message.successPath);
-                        url.searchParams.append('d', signedAuthData.data);
-                        url.searchParams.append('p', signedAuthData.publicKey);
-                        url.searchParams.append('s', signedAuthData.signature);
-                        url.searchParams.append('a', signedAuthData.address);
-                        extension.tabs.create({
-                            url: url.href
-                        })
-                    }
-                }).catch(e => {
-                if (e.message !== 'BRAKE') {
-                    message.status = 'failed';
-                    message.err = {
-                        message: e.toString(),
-                        stack: e.stack
-                    };
-                }
-            }).finally(() => {
-                this._updateMessage(message);
-                this.emit(`${message.id}:finished`, message);
-                message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
-            });
-        })
-    }
-
-    _approveRequest(message) {
-        return new Promise((resolve, reject) => {
-            this.signRequest(message.account.address, message.data)
-                .then(signedRequest => {
-                    message.data = signedRequest;
-                    message.status = 'signed';
-                }).catch(e => {
-                if (e.message !== 'BRAKE') {
-                    message.status = 'failed';
-                    message.err = {
-                        message: e.toString(),
-                        stack: e.stack
-                    };
-                }
-            }).finally(() => {
-                this._updateMessage(message);
-                this.emit(`${message.id}:finished`, message);
-                message.status === 'failed' ? reject(message.err.message) : resolve(message.data)
-            });
-        })
     }
 
     _updateMessage(message) {
@@ -306,17 +118,6 @@ export class MessageController extends EventEmitter {
         return result;
     }
 
-    _generateMetadata(origin, from, type, broadcast) {
-        return {
-            account: from,
-            broadcast,
-            id: uuid(),
-            origin,
-            status: 'unapproved',
-            time: Date.now(),
-            type
-        }
-    }
 
     _updateStore(messages) {
         this.store.updateState({messages});
@@ -330,33 +131,77 @@ export class MessageController extends EventEmitter {
         extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
     }
 
-    async _convertMoneyLikeFieldsToMoney(txData) {
-        let result = Object.assign({}, txData);
-        for (let key in txData) {
-            const field = txData[key];
-            if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
-                const asset = await this.assetInfo(txData[key].assetId);
-                let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
-                result[key] = new Money(amount, asset)
-            }
+    async _fillSignableData(message) {
+        switch (message.type) {
+            case 'transaction':
+                let result = {...message.data.data}
+                for (let key in message.data.data) {
+                    const field = message.data.data[key];
+                    if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
+                        const asset = await this.assetInfo(message.data.data[key].assetId);
+                        let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
+                        result[key] = new Money(amount, asset)
+                    }
+                }
+                message.data.data = result;
+                return message;
+            default:
+                return message
         }
-        return result
+
     }
 
-    /**
-     * Generates transaction ID. Throws if tx is invalid
-     * @param {tx} tx - Transaction to approve
-     * @param {string} from - Address of the account, that should approve tx
-     * @returns {Promise<string>}
-     */
-    async _validateAndBuildTxId(tx, from) {
-        // Correct transaction check
-        let data = await this._convertMoneyLikeFieldsToMoney(tx.data);
-        const Adapter = getAdapterByType('seed')
-        Adapter.initOptions({networkCode: networkByteFromAddress(from)});
-        const adapter = new Adapter('validation seed');
-        const signable = adapter.makeSignable({...tx, data});
-        return await signable.getId();
+    async _signMessage(message) {
+        let signedData = message.data;
+        switch (message.type) {
+            case 'transaction':
+                signedData = await this.signTx(message.account.address, message.data);
+                break;
+            case 'auth':
+                signedData = await this.auth(message.account.address, message.data);
+                break;
+            case 'request':
+                signedData = await this.signRequest(message.account.address, message.data);
+                break;
+            default:
+                throw new Error(`Unknown message type ${message.type}`)
+        }
+        message.status = 'signed';
+        message.data = signedData;
+        return message;
+    }
+
+    async _broadcastMessage(message) {
+        if (!message.broadcast || message.type !== 'transaction') return message;
+
+        const broadcastResp = await this.broadcast(message.data);
+        message.status = 'published';
+        message.data = broadcastResp;
+        return message
+    }
+
+    async _processSuccessPath(message) {
+        if (message.successPath) {
+            const url = new URL(message.successPath);
+            switch (message.type) {
+                case 'transaction':
+                    url.searchParams.append('txId', message.messageHash);
+                    extension.tabs.create({
+                        url: url.href
+                    });
+                    break;
+                case 'auth':
+                    url.searchParams.append('d', message.data.data);
+                    url.searchParams.append('p', message.data.publicKey);
+                    url.searchParams.append('s', message.data.signature);
+                    url.searchParams.append('a', message.data.address);
+                    extension.tabs.create({
+                        url: url.href
+                    });
+                    break;
+            }
+        }
+        return message
     }
 
     /**
@@ -365,11 +210,11 @@ export class MessageController extends EventEmitter {
      * @returns {Promise<string>}
      */
     async _getMessageHash(message) {
-        let signableData = await this._convertMoneyLikeFieldsToMoney(message.data.data);
-        const Adapter = getAdapterByType('seed')
+        let signableMessage = await this._fillSignableData(message);
+        const Adapter = getAdapterByType('seed');
         Adapter.initOptions({networkCode: networkByteFromAddress(message.account)});
         const adapter = new Adapter('validation seed');
-        const signable = adapter.makeSignable({data: signableData, type: message.data.type});
+        const signable = adapter.makeSignable(signableMessage.data);
         return await signable.getId();
     }
 
