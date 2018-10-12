@@ -4,7 +4,7 @@ import {translate, Trans} from 'react-i18next';
 import {Balance, Button, BUTTON_TYPE} from '../ui';
 import {SignClass} from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { OriginWarning } from './OriginWarning';
+import { TransactionBottom } from './TransactionBottom';
 
 const MIN_COUNT = 3;
 
@@ -80,17 +80,8 @@ export class MassTransfer extends SignClass {
                     <div className={styles.txValue}><Balance isShortFormat={true} balance={tx.fee} showAsset={true}/></div>
                 </div>
             </div>
-
-            <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey='sign.reject'>Reject</Trans>
-                </Button>
-                <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey='sign.approve'>Approve</Trans>
-                </Button>
-                
-                <OriginWarning {...this.props}/>
-            </div>
+    
+            <TransactionBottom {...this.props}/>
         </div>
     }
 }

@@ -29,7 +29,7 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
 
-            <div className={`${styles.settingsMenuItem} ${styles.language}`}>
+            {/*<div className={`${styles.settingsMenuItem} ${styles.language}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
                         onClick={this.langsHandler}>
@@ -37,7 +37,7 @@ class SettingsComponent extends React.Component {
                         <Trans i18nKey='settings.langs'>Change language</Trans>
                     </div>
                 </Button>
-            </div>
+            </div>*/}
 
             <div className={`${styles.settingsMenuItem} ${styles.password}`}>
                 <Button type='transparent'

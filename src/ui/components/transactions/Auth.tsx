@@ -17,9 +17,9 @@ export class Auth extends SignClass {
 
             <div className={styles.txScrollBox}>
                 {
-                    !tx.icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}></div>
+                    !tx.icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}/>
                         :
-                        <img className={styles.txBigIcon} src={tx.icon}></img>
+                        <img className={styles.txBigIcon} src={tx.icon}/>
                 }
                 <div className="body3 margin-main">
                     <span className={styles.appName}>{tx.name}</span>
@@ -38,7 +38,7 @@ export class Auth extends SignClass {
 
                 <div className={`${styles.infoBlock} info-block body3 basic500 left`}>
                 <div>
-                    <i className="inactive-account-icon"></i>
+                    <i className="inactive-account-icon"/>
                 </div>
                 <div>
                     <Trans i18nKey='sign.signAccessInfo'>

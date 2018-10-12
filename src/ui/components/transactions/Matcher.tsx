@@ -1,10 +1,9 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { OriginWarning } from './OriginWarning';
+import { TransactionBottom } from './TransactionBottom';
 
 @translate('extension')
 export class Matcher extends SignClass {
@@ -34,17 +33,8 @@ export class Matcher extends SignClass {
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
             </div>
-        
-            <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-                <Button onClick={this.rejectHandler} type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey='sign.reject'>Reject</Trans>
-                </Button>
-                <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey='sign.approve'>Approve</Trans>
-                </Button>
     
-                <OriginWarning {...this.props}/>
-            </div>
+            <TransactionBottom {...this.props}/>
         </div>
     }
 }

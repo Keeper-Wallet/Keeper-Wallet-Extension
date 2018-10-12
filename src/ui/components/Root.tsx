@@ -5,6 +5,9 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 
+const NO_USER_START_PAGE = PAGES.NEW;
+const USER_START_PAGE = PAGES.LOGIN;
+
 class RootComponent extends React.Component {
     
     props: IProps;
@@ -12,7 +15,7 @@ class RootComponent extends React.Component {
     
     constructor(props: IProps) {
         super(props);
-        setTimeout(() => props.setLoading(false), 0);
+        setTimeout(() => props.setLoading(false), 1000);
     }
     
     render() {
@@ -58,10 +61,10 @@ class RootComponent extends React.Component {
         if (nextProps.loading) {
             return { tab: PAGES.INTRO };
         }
-        
-        if (!nextProps.ui.selectedLangs) {
-            return { tab: PAGES.LANGS_SETTINGS_INTRO };
-        }
+        // // select langs at first
+        // if (!nextProps.ui.selectedLangs) {
+        //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
+        // }
         
         let tab = nextProps.tab;
         
@@ -82,7 +85,7 @@ class RootComponent extends React.Component {
         if (!tab && nextProps.locked == null) {
             tab = PAGES.INTRO;
         } else if (!tab && nextProps.locked) {
-            tab = PAGES.CONDITIONS;
+            tab = NO_USER_START_PAGE;
         }
         
         if (!tab || tab && !RootComponent.canUseTab(nextProps, tab)) {
@@ -94,7 +97,7 @@ class RootComponent extends React.Component {
     
     static getStateTab(props) {
         if (props.locked) {
-            return props.initialized ? PAGES.LOGIN : PAGES.CONDITIONS;
+            return props.initialized ? USER_START_PAGE : NO_USER_START_PAGE;
         }
         
         if (props.ui && props.ui.account) {
@@ -107,7 +110,7 @@ class RootComponent extends React.Component {
     static canUseTab(props, tab) {
         switch (tab) {
             case PAGES.NEW:
-            case PAGES.CONDITIONS:
+            case PAGES.INTRO:
                 return !props.initialized;
             case PAGES.LOGIN:
             case PAGES.FORGOT:
