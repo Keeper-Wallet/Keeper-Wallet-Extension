@@ -236,10 +236,10 @@ class BackgroundService extends EventEmitter {
                 return await newMessage(data, 'transaction', from, true)
             },
             auth: async (data, from) => {
-                return await newMessage(data, 'auth', from, true)
+                return await newMessage(data, 'auth', from, false)
             },
             signRequest: async (data, from) => {
-                return await newMessage(data, 'request', from, true)
+                return await newMessage(data, 'request', from, false)
             }
             //publicState: async () => this._publicState(this.getState()),
         }
