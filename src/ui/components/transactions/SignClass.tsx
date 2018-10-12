@@ -6,8 +6,6 @@ export class SignClass extends React.PureComponent {
     
     readonly props;
     readonly state = Object.create(null);
-    approveHandler = () => this.props.approve();
-    rejectHandler = () => this.props.reject();
     selectAccountHandler = () => this.props.selectAccount();
 
     render() {
