@@ -191,7 +191,7 @@ export class MessageController extends EventEmitter {
                     });
                     break;
                 case 'auth':
-                    url.searchParams.append('d', message.data.data);
+                    //url.searchParams.append('d', message.data.data);
                     url.searchParams.append('p', message.data.publicKey);
                     url.searchParams.append('s', message.data.signature);
                     url.searchParams.append('a', message.data.address);
@@ -232,7 +232,7 @@ export class MessageController extends EventEmitter {
                 };
                 result.messageHash = await this._getMessageHash(result);
                 if (message.data.successPath) {
-                    result.successPath = new URL(message.data.successPath, 'https://' + message.origin).href
+                    result.successPath =  message.data.successPath
                 }
                 break;
             case 'transaction':
