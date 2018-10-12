@@ -150,7 +150,7 @@ class AssetsComponent extends React.Component {
     
         const last = this.props.accounts.find(account => account.address === this._currentActive);
         this._sorted = this._sorted.filter(account => account.address !== activeAddress);
-        this._sorted.push(last);
+        this._sorted.unshift(last);
         this._currentActive = activeAddress;
         return this._sorted;
     }

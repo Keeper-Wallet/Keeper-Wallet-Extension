@@ -90,7 +90,7 @@ class BottomComponent extends React.Component {
                       onSelect={this.selectHandler}/>
 
             <div className={'basic500'}>
-                v {this.props.version}
+                v {this.props.version} beta
             </div>
         </div>
     }
