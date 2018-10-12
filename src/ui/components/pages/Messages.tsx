@@ -104,7 +104,7 @@ class MessagesComponent extends React.Component {
             return { loading: true };
         }
         
-        const sourceSignData = message.tx;
+        const sourceSignData = message.tx || message.authData && { type: 1000, data: { ...message.authData } } || {};
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
         needGetAssets.forEach( id => props.getAsset(id));

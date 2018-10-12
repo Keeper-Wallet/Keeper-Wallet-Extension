@@ -103,7 +103,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
                 successPath: apiData.s || apiData.r,
                 data: {
                     prefix: 'WavesWalletAuthentication',
-                    host: apiData.r,
+                    host: location.host,
                     data: apiData.d,
                 }
             });

@@ -3,18 +3,24 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
+import { OriginWarning } from './OriginWarning';
 
 @translate('extension')
 export class Auth extends SignClass {
 
     render() {
         const { data: tx } = this.props.signData;
-
+        const origin = tx.referrer || this.props.message.origin;
+        const warningOrigin = { origin };
+        
         return <div className={`${styles.txSign} ${styles.transaction} font400 center`}>
 
             <div className={styles.txScrollBox}>
-                <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}></div>
-
+                {
+                    !tx.icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}></div>
+                        :
+                        <img className={styles.txBigIcon} src={tx.icon}></img>
+                }
                 <div className="body3 margin-main">
                     <span className={styles.appName}>{tx.host}</span>
                     <span className="body1">
@@ -52,7 +58,10 @@ export class Auth extends SignClass {
                 <Button onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.auth'>Auth</Trans>
                 </Button>
+    
+                <OriginWarning message={warningOrigin}/>
             </div>
         </div>
     }
+    
 }
