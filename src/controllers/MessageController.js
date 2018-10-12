@@ -227,7 +227,9 @@ export class MessageController extends EventEmitter {
                     data: {
                         data: message.data.data,
                         prefix: 'WavesWalletAuthentication',
-                        host: message.data.referrer || message.origin
+                        host: message.data.referrer || message.origin,
+                        name: message.data.name,
+                        icon: message.data.icon
                     }
                 };
                 result.messageHash = await this._getMessageHash(result);
