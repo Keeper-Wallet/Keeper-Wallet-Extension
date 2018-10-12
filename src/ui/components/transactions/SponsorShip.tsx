@@ -15,7 +15,7 @@ export class SponsorShip extends SignClass {
         const { minSponsoredAssetFee } = tx;
         const asset = minSponsoredAssetFee.asset;
         const zero = minSponsoredAssetFee.cloneWithTokens(0);
-        const txType = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disbale';
+        const txType = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
         return <div className={styles.transaction}>
             {super.render()}
             <div className={styles.txScrollBox}>

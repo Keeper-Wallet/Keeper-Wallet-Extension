@@ -11,13 +11,14 @@
 .button
   cursor: pointer;
   font-size: 14px;
+  font-family: Roboto;
+  font-weight: 400;
 
   &:not(.transparent)
     transition: all .3s;
     white-space: nowrap;
     display: block;
     border-radius: 4px;
-    font-family: Roboto-Medium;
     text-align: center;
     width: 100%;
     max-width: 240px;
@@ -27,7 +28,6 @@
     background-color: $white;
     border: 1px solid $basic200;
     color: $black;
-    font-family: Roboto;
     font-weight: 300;
 
     &:hover
@@ -71,7 +71,6 @@
   &.warning
     background-color: $error400;
     color: $white;
-    font-family: Roboto;
     font-weight: 300;
 
     &:hover
@@ -83,11 +82,11 @@
     line-height: 32px;
     padding: 0 14px 0 40px;
     box-shadow: 0 2px 4px 0 #9ba6b266;
-    font-family: Roboto;
     font-weight: 400;
     width: auto;
     margin: 0;
     border: 0.5px solid transparent;
+    flex-basis: auto;
 
     &:not(:last-child)
       margin-right: 14px;

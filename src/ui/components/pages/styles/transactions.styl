@@ -19,6 +19,14 @@
       border-top: 1px dashed $basic200;
       border-bottom: 1px dashed $basic200;
 
+      &Top
+        border-top: 1px dashed $basic200;
+        border-bottom: 0 none;
+
+      &Bottom
+        border-bottom: 1px dashed $basic200;
+        border-top: 0 none;
+
     & + .txRow
       border-top: 1px dashed $basic200;
 
@@ -72,17 +80,16 @@
     margin: 44px auto 0 auto;
 
 .txSign
-  margin: 93px 0 0;
   .infoBlock
-    margin-top: 44px;
+    margin: 0 0 64px 0;
+
+  .iconMargin
+    margin: 64px auto 4px auto;
 
   .appName
     margin-right: 5px;
     max-width: 100%;
     word-break: break-all;
-
-.txContent
-  margin: 0 24px;
 
 .originWarning {
   flex-basis: 100%;
