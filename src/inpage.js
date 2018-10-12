@@ -96,16 +96,12 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
 
     switch (apiData.type) {
         case 'auth':
-            inpageApi.sign({
-                type: 1000,
+            inpageApi.auth({
                 name: apiData.n,
+                data: apiData.d,
                 icon: apiData.i,
-                successPath: apiData.s || apiData.r,
-                data: {
-                    prefix: 'WavesWalletAuthentication',
-                    host: location.host,
-                    data: apiData.d,
-                }
+                referrer: apiData.r,
+                successPath: apiData.s,
             });
             break;
         case 'send':

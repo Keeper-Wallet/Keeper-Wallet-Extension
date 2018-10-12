@@ -24,7 +24,7 @@ export class Auth extends SignClass {
                 <div className="body3 margin-main">
                     <span className={styles.appName}>{tx.host}</span>
                     <span className="body1">
-                        <Trans i18nKey='sign.signAccessHost'>wants to access your Waves Address</Trans>
+                        {tx.name}
                     </span>
                 </div>
 

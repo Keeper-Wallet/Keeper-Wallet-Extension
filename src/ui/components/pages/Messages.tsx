@@ -104,7 +104,7 @@ class MessagesComponent extends React.Component {
             return { loading: true };
         }
         
-        const sourceSignData = message.tx || message.authData && { type: 1000, data: { ...message.authData } } || {};
+        const sourceSignData = message.data;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
         needGetAssets.forEach( id => props.getAsset(id));
@@ -114,7 +114,7 @@ class MessagesComponent extends React.Component {
         }
 
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
-        const { txHash } = message;
+        const txHash = message.messageHash;
         return { message, signData, txHash, balance, selectedAccount, assets, loading: false, transactionStatus };
     }
 
