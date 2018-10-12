@@ -198,10 +198,9 @@ export const approve = store => next => action => {
     }
     const messageId = action.payload;
     const { selectedAccount } = store.getState();
-    const { address } = selectedAccount;
     const { messages } = store.getState();
     const message = messages.find(({ id }) => id === action.payload);
-    const res = background.approve(messageId, address);
+    const res = background.approve(messageId, selectedAccount);
     store.dispatch(approvePending(true));
     res.then(
         (res) => store.dispatch(approveOk({ res, message })),

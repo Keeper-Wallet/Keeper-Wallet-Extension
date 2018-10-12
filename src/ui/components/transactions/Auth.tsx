@@ -10,7 +10,7 @@ export class Auth extends SignClass {
 
     render() {
         const { data: tx } = this.props.signData;
-        const origin = tx.referrer || this.props.message.origin;
+        const origin = tx.host;
         const warningOrigin = { origin };
         
         return <div className={`${styles.txSign} ${styles.transaction} font400 center`}>
@@ -22,10 +22,7 @@ export class Auth extends SignClass {
                         <img className={styles.txBigIcon} src={tx.icon}></img>
                 }
                 <div className="body3 margin-main">
-                    <span className={styles.appName}>{tx.host}</span>
-                    <span className="body1">
-                        {tx.name}
-                    </span>
+                    <span className={styles.appName}>{tx.name}</span>
                 </div>
 
                 <div className="headline2 margin-main-large">

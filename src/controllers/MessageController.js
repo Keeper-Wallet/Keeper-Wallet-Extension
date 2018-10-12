@@ -227,7 +227,7 @@ export class MessageController extends EventEmitter {
                     data: {
                         data: message.data.data,
                         prefix: 'WavesWalletAuthentication',
-                        host: message.data.referrer || message.origin,
+                        host: (new URL(message.data.referrer || 'https://' + message.origin)).host,
                         name: message.data.name,
                         icon: message.data.icon
                     }

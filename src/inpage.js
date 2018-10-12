@@ -90,7 +90,7 @@ function checkForPaymentApiLink(e) {
 function processPaymentAPILink({ type, hash }, inpageApi) {
     const apiData = hash.split('?')[1].split('&').reduce( (obj, data) => {
         const item = data.split('=');
-        obj[item[0]] = item[1];
+        obj[item[0]] = decodeURIComponent(item[1]);
         return obj;
     }, { type });
 
@@ -101,7 +101,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
                 data: apiData.d,
                 icon: apiData.i,
                 referrer: apiData.r,
-                successPath: apiData.s,
+                successPath: new URL(apiData.s || '', apiData.r).href,
             });
             break;
         case 'send':
