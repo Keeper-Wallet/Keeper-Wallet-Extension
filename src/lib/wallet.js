@@ -4,6 +4,7 @@ import {BigNumber} from '@waves/data-entities';
 //
 // import * as SG from "@waves/signature-generator"
 import create from 'parse-json-bignumber';
+import {networkByteFromAddress} from "./cryptoUtil";
 
 const {stringify, parse} = create({BigNumber});
 
@@ -18,6 +19,8 @@ export class Wallet {
         const Adapter = getAdapterByType(this.user.type);
 
         Adapter.initOptions({networkCode: this.user.networkCode});
+        Adapter.initOptions({networkCode: this.user.networkCode.charCodeAt(0)});
+
         //Todo: temporary for seed
         let params = this.user;
         if (this.user.type === 'seed'){
