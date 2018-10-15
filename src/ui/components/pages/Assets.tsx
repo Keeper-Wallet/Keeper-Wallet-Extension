@@ -79,7 +79,7 @@ class AssetsComponent extends React.Component {
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div>
 
-                    {wallets.length ? <div className="basic500 body1 in-storage">
+                    {wallets.length ? <div className={`${styles.otherWalletsTitle} basic500 body3`}>
                         <Trans i18nKey='assets.inStorage'>Other accounts</Trans>
                     </div> : null}
                     

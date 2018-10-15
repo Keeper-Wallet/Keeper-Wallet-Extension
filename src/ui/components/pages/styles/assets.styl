@@ -22,24 +22,9 @@
     background: -webkit-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
 
-:global .in-storage
-  height: 44px;
-  display: flex;
-  align-items: center;
-
-:global .lock-scroll
-  &.wallets-list
-    padding-top: 60px;
-
-  .in-storage
-    position: fixed;
-    top: 174px;
-    width: 100%;
-    background: $basic50;
-    z-index: 2;
-    left: 14px;
-    padding: 0;
-    height: 44px;
+.otherWalletsTitle
+  height: 52px;
+  padding-top: 24px;
 
 .walletListWrapper
   overflow: hidden;
@@ -51,7 +36,7 @@
   white-space: nowrap;
   height: 32px;
   width: 148px;
-  margin: 14px auto 27px auto;
+  margin: 20px auto 27px auto;
   line-height: 32px;
   cursor: pointer;
   border-radius: 4px;
@@ -78,7 +63,6 @@
   margin-right: -14px;
   padding-right: 14px;
   position: relative;
-  padding-top: 15px;
 
 :global .animate_wallets-enter
   animation-name: animation-show;
