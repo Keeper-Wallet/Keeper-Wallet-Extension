@@ -34,6 +34,7 @@
     "debounce-stream": "^2.0.0",
     "del": "^3.0.0",
     "dnode": "^1.2.2",
+    "download-json-webpack-plugin": "^0.1.0",
     "events": "^3.0.0",
     "extensionizer": "^1.0.1",
     "gulp": "github:gulpjs/gulp#4.0",

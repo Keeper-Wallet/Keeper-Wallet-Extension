@@ -21,7 +21,7 @@ i18n
             projectId: '30ffe655-de56-4196-b274-5edc3080c724', // <-- replace with your projectId
             apiKey: '5af41ced-a862-4947-a079-2c7999367925',
             referenceLng: 'en',
-            // loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+            loadPath: './_locales/{{lng}}/{{ns}}.json',
             // privatePath: 'https://locize.wvservices.com/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
             // pullPath: 'https://locize.wvservices.com/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
             // getLanguagesPath: 'https://locize.wvservices.com/languages/{{projectId}}',
