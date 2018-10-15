@@ -134,7 +134,7 @@ export class MessageController extends EventEmitter {
     async _fillSignableData(message) {
         switch (message.type) {
             case 'transaction':
-                let result = {...message.data.data}
+                let result = {...message.data.data};
                 for (let key in message.data.data) {
                     const field = message.data.data[key];
                     if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
@@ -172,7 +172,9 @@ export class MessageController extends EventEmitter {
     }
 
     async _broadcastMessage(message) {
-        if (!message.broadcast || message.type !== 'transaction') return message;
+        if (!message.broadcast || message.type !== 'transaction') {
+            return message;
+        }
 
         const broadcastResp = await this.broadcast(message.data);
         message.status = 'published';
@@ -212,7 +214,7 @@ export class MessageController extends EventEmitter {
     async _getMessageHash(message) {
         let signableMessage = await this._fillSignableData(message);
         const Adapter = getAdapterByType('seed');
-        Adapter.initOptions({networkCode: networkByteFromAddress(message.account)});
+        Adapter.initOptions({networkCode: networkByteFromAddress(message.account.address).charCodeAt(0)});
         const adapter = new Adapter('validation seed');
         const signable = adapter.makeSignable(signableMessage.data);
         return await signable.getId();

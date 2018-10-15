@@ -34,10 +34,9 @@ async function setupInpageApi() {
 function setupClickInterceptor(inpageApi){
     document.addEventListener("click", (e)=> {
         const paymentApiResult = checkForPaymentApiLink(e);
-        if (paymentApiResult) {
+        if (paymentApiResult && processPaymentAPILink(paymentApiResult, inpageApi)) {
             e.preventDefault();
             e.stopPropagation();
-            processPaymentAPILink(paymentApiResult, inpageApi)
         }
     })
 }
@@ -66,7 +65,7 @@ function checkForPaymentApiLink(e) {
             }
         }
 
-        if (!url.hash.indexOf('#send/')) {
+        if (!url.hash.indexOf('#send/') && url.hash.includes('strict=true')) {
             return {
                 type: 'send',
                 hash: url.hash
@@ -90,12 +89,16 @@ function checkForPaymentApiLink(e) {
 function processPaymentAPILink({ type, hash }, inpageApi) {
     const apiData = hash.split('?')[1].split('&').reduce( (obj, data) => {
         const item = data.split('=');
-        obj[item[0]] = decodeURIComponent(item[1]);
+        obj[item[0]] = decodeURIComponent(item[1].trim());
         return obj;
     }, { type });
 
     switch (apiData.type) {
         case 'auth':
+            if (!apiData.n || !apiData.d || !apiData.r || apiData.r.indexOf('https') !== 0) {
+                return false;
+            }
+
             inpageApi.auth({
                 name: apiData.n,
                 data: apiData.d,
@@ -106,6 +109,11 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
             break;
         case 'send':
             const assetId = hash.split('?')[0].replace('#send/', '');
+
+            if (!assetId || !apiData.amount) {
+                return false;
+            }
+
             inpageApi.signAndPublishTransaction({
                 type: 4,
                 successPath: apiData.referrer,
@@ -123,5 +131,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
             });
             break;
     }
+
+    return true;
 }
 
