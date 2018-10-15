@@ -1,10 +1,11 @@
 const path = require('path');
-const LiveReloadPlugin = require('webpack-livereload-plugin');
 const WebpackShellPlugin = require('./scripts/webpackRunAfterBuildPlugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const copyFiles = require('./scripts/copyFiles');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const DownloadJsonPlugin = require('download-json-webpack-plugin');
+
 
 module.exports = env => {
     const DIST = 'dist2';
@@ -100,7 +101,13 @@ module.exports = env => {
         hash: true,
         excludeChunks: ['background', 'contentscript', 'inpage'],
     }));
+    plugins.push(
+        new DownloadJsonPlugin({
+            path: 'https://api.locize.io/30ffe655-de56-4196-b274-5edc3080c724/latest/en/extension',
+            filename: 'dist2/build/_locales/en/extension.json',
+        })
 
+    );
     // if (!isProduction) {
     //     plugins.push(
     //         new LiveReloadPlugin({
