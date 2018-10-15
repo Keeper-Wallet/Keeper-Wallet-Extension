@@ -6,10 +6,10 @@ import cn from 'classnames';
 
 const Error = ({ approveError }) => {
     return <div>
-        <h3>
+        <div className="headline2 margin-main-big">
             <Trans i18nKey='sign.someError'>Something went wrong</Trans>
-        </h3>
-        <pre>{JSON.stringify(approveError.error, null, 4)}</pre>
+        </div>
+        <div className="plate body3">{JSON.stringify(approveError.error, null, 4)}</div>
     </div>;
 };
 
@@ -27,15 +27,16 @@ export class FinalTransaction extends React.PureComponent {
         const network = message.account && message.account.networkCode;
         const txLink = `https://${ network === 'T' ? 'testnet' : 'mainet'}.wavesexplorer.com/tx/${message.messageHash}`;
         const className = cn(styles.txBigIcon, 'margin-main', {
-            'tx-error-icon': isError,
-            'tx-approve-icon': isReject || isApprove,
+            'tx-reject-icon':  isReject,
+            'tx-approve-icon': isApprove,
+            'tx-error-icon': isError
         });
         return <div className={`${styles.txFinal} center`}>
             <div className={className}></div>
-            <div className="headline2 margin-main">
+            <div className="headline2 margin-main-top margin-main">
                 {isApprove ? <Trans i18nKey='sign.approved'>Your transaction is approved!</Trans> : null}
                 {isReject ? <Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans> : null}
-                {isError ? <Error approveError={transactionStatus.approveError}/> : null}
+                {isError ? <div><Error approveError={transactionStatus.approveError}/></div> : null}
             </div>
             {isSend ?
                 <a className="link" href={txLink} target="_blank">
@@ -43,7 +44,8 @@ export class FinalTransaction extends React.PureComponent {
                 </a> : null
             }
             <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
-                <Trans i18nKey='sign.ok'>Okay</Trans>
+                {isError ? <Trans i18nKey='sign.action'>Action</Trans> : null}
+                {isReject || isApprove ? <Trans i18nKey='sign.ok'>Okay</Trans> : null}
             </Button>
         </div>;
     }

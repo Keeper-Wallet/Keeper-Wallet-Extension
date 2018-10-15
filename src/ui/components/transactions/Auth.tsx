@@ -21,11 +21,11 @@ export class Auth extends SignClass {
                         :
                         <img className={styles.txBigIcon} src={tx.icon}/>
                 }
-                <div className="body3 margin-main">
+                <div className="body1 margin-main">
                     <span className={styles.appName}>{tx.name}</span>
                 </div>
 
-                <div className="headline2 margin-main-large">
+                <div className="headline2 font600 margin-main-large">
                     <Trans i18nKey='sign.signAccessWaves'>Sign in with Waves</Trans>
                 </div>
 

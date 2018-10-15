@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+    <g fill="none" fill-rule="evenodd">
+        <path fill="#D8D8D8" fill-opacity="0" d="M0 0h80v80H0z"/>
+        <rect width="9.6" height="12" x="62.4" y="64.8" fill="#FFF" stroke="#5A81EA" stroke-width="1.6" rx=".8"/>
+        <rect width="72.8" height="70.4" x="5.6" y="4" fill="#FFF" stroke="#5A81EA" stroke-width="1.6" rx="4.8"/>
+        <rect width="56.8" height="54.4" x="13.6" y="12" fill="#FFF" stroke="#5A81EA" stroke-width="1.6" rx="3.2"/>
+        <circle cx="41.6" cy="39.2" r="18.4" fill="#FFF" stroke="#5A81EA" stroke-width="1.6"/>
+        <path fill="#5A81EA" d="M41.6 24l-2.4-2.4H44z"/>
+        <path fill="#FFF" d="M3.2 55.2h4.213L31.2 58.4v6.4h-28z"/>
+        <path fill="#FFF" fill-rule="nonzero" d="M5.6 64h28v6.4h-28V64zm-2.4 6.4h28v6.4h-28v-6.4z"/>
+        <circle cx="41.6" cy="39.2" r="13.6" fill="#FFF" stroke="#5A81EA" stroke-width="1.6"/>
+        <circle cx="41.6" cy="39.2" r="7.2" fill="#FFF" stroke="#5A81EA" stroke-width="1.6"/>
+        <path fill="#5A81EA" fill-rule="nonzero" d="M40.8 25.6h1.6v3.2a.8.8 0 1 1-1.6 0v-3.2zm.8 23.2a.8.8 0 0 1 .8.8v3.2h-1.6v-3.2a.8.8 0 0 1 .8-.8zm13.6-9.6a.8.8 0 0 1-.8.8H52a.8.8 0 1 1 0-1.6h2.4a.8.8 0 0 1 .8.8zm-23.2 0a.8.8 0 0 1-.8.8h-2.4a.8.8 0 1 1 0-1.6h2.4a.8.8 0 0 1 .8.8zm16.4-11.778a.8.8 0 0 1 .293 1.093l-1.2 2.079a.8.8 0 0 1-1.386-.8l1.2-2.079a.8.8 0 0 1 1.093-.293zM36.8 47.514a.8.8 0 0 1 .293 1.092l-1.2 2.079a.8.8 0 0 1-1.386-.8l1.2-2.079a.8.8 0 0 1 1.093-.292zM53.378 32.4a.8.8 0 0 1-.293 1.093l-2.079 1.2a.8.8 0 0 1-.8-1.386l2.079-1.2a.8.8 0 0 1 1.093.293zM33.286 44a.8.8 0 0 1-.292 1.093l-2.079 1.2a.8.8 0 0 1-.8-1.386l2.079-1.2a.8.8 0 0 1 1.092.293zM34.8 27.422a.8.8 0 0 1 1.093.293l1.2 2.079a.8.8 0 0 1-1.386.8l-1.2-2.079a.8.8 0 0 1 .293-1.093zm11.6 20.092a.8.8 0 0 1 1.093.292l1.2 2.079a.8.8 0 0 1-1.386.8l-1.2-2.079a.8.8 0 0 1 .293-1.092zM29.822 32.4a.8.8 0 0 1 1.093-.293l2.079 1.2a.8.8 0 0 1-.8 1.386l-2.079-1.2a.8.8 0 0 1-.293-1.093zM49.914 44a.8.8 0 0 1 1.092-.293l2.079 1.2a.8.8 0 0 1-.8 1.386l-2.079-1.2A.8.8 0 0 1 49.914 44z"/>
+        <circle cx="16" cy="45.6" r="16" fill="#FFF"/>
+        <circle cx="16" cy="45.6" r="13.6" fill="#EEF5FE" stroke="#5A81EA" stroke-width="1.6"/>
+        <path fill="#5A81EA" d="M16 38.812l6.788 6.788L16 52.388 9.212 45.6z"/>
+        <rect width="4.8" height="12" x="67.2" y="18.4" fill="#FFF" stroke="#5A81EA" stroke-width="1.6" rx="1.6"/>
+        <rect width="4.8" height="12" x="67.2" y="48" fill="#FFF" stroke="#5A81EA" stroke-width="1.6" rx="1.6"/>
+        <path fill="#EEF5FE" stroke="#5A81EA" stroke-width="1.6" d="M3.2 60.8h25.6v4.8H3.2z"/>
+        <path fill="#5A81EA" fill-rule="nonzero" d="M24.8 61.6h1.6v3.2h-1.6v-3.2zm-3.2 0h1.6v3.2h-1.6v-3.2zm-3.2 0H20v3.2h-1.6v-3.2z"/>
+        <path fill="#EEF5FE" stroke="#5A81EA" stroke-width="1.6" d="M5.6 66.4h25.6v4.8H5.6z"/>
+        <path fill="#5A81EA" fill-rule="nonzero" d="M27.2 67.2h1.6v3.2h-1.6v-3.2zm-3.2 0h1.6v3.2H24v-3.2zm-3.2 0h1.6v3.2h-1.6v-3.2z"/>
+        <path fill="#EEF5FE" stroke="#5A81EA" stroke-width="1.6" d="M3.2 72h25.6v4.8H3.2z"/>
+        <path fill="#5A81EA" fill-rule="nonzero" d="M24.8 72.8h1.6V76h-1.6v-3.2zm-3.2 0h1.6V76h-1.6v-3.2zm-3.2 0H20V76h-1.6v-3.2z"/>
+    </g>
+</svg>
