@@ -8,12 +8,14 @@
 
   .txRow
     width: 100%;
-    height: 60px;
+    min-height: 60px;
     display: flex;
+    padding: 10px 0;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     word-break: break-all;
+    text-align: left;
 
     &.bordered
       border-top: 1px dashed $basic200;
@@ -35,6 +37,7 @@
     position: relative;
     padding: 0 24px;
     flex-grow: 1;
+    flex-shrink: 999;
 
   .txIcon div
     width: 48px;
@@ -61,11 +64,15 @@
 
 .txButtonsWrapper
   width: 100%;
-  padding: 14px 14px;
+  flex-shring: 0;
+  padding: 14px 14px 0 14px;
   background: $white;
   border-top: 1px solid $basic100;
   text-align: center;
   flex-wrap: wrap;
+
+  button
+    margin-bottom: 14px;
 
 .txBigIcon
   width: 80px;
@@ -80,19 +87,25 @@
 
 .txSign
   .infoBlock
-    margin: 0 0 64px 0;
+    margin: 0 0 24px 0;
 
   .iconMargin
     margin: 64px auto 4px auto;
 
   .appName
-    margin-right: 5px;
     max-width: 100%;
     word-break: break-all;
 
 .originWarning
   flex-basis: 100%;
-  margin: 10px 0 -4px 0;
+  overflow: auto;
+  max-height: 120px;
+
+  &::after
+    display: block;
+    width: 100%;
+    height: 14px;
+    content: '';
 
   div:first-child
     text-decoration: underline;

@@ -26,15 +26,28 @@
     display: block;
     border-radius: 2px;
 
+    .accountIconTooltip
+      display: block;
+      top: -20px;
+      right: 0;
+      white-space: nowrap;
+      opacity: 0;
+
     &:hover
       background-color: $basic50;
       border: 1px solid $basic200;
+
+      .accountIconTooltip
+        display: block;
+        top: -42px;
+        opacity: 1;
 
     div, .accountIcon
       padding: 0;
       border: 0 none;
 
     .accountIcon
+      position: relative;
       &:hover
         background-color: $basic100;
 
@@ -58,6 +71,9 @@
       right: 0;
       display: flex;
       border-color: transparent;
+
+      .accountIconTooltip
+        display: none;
 
       &:hover
         background-color: transparent;

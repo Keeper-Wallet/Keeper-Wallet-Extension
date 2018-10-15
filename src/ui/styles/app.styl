@@ -210,7 +210,6 @@ $layout-44 = 44px;
   padding: $layout-14;
   border-radius: 2px;
 
-
 :global .info-block //with icon
   display: flex;
   align-items: flex-start;
@@ -221,13 +220,34 @@ $layout-44 = 44px;
 
     i
       width: 18px;
-      height:18px;
+      height: 18px;
       display: block;
 
   & > div:last-child
     flex-grow: 1;
 
 // modals, errors, notifications
+:global .tooltip
+  background: $black;
+  color: $white;
+  font-size: 14px;
+  height: 32px;
+  position: absolute;
+  display: none;
+  transition: .3s;
+  border-radius: 2px;
+  padding: 8px 14px !important; //todo @uisk
+
+  &::after
+    background: $black;
+    width: 10px;
+    height: 10px;
+    content: '';
+    transform: rotate(45deg);
+    right: 10px;
+    bottom: -2px;
+    position: absolute;
+
 :global #app-modal
   position: relative;
   width: 100%;

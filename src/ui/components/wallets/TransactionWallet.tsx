@@ -42,7 +42,7 @@ export const TransactionWallet = ({
             <div className={styles.accountName}>
                 {account.name}
             </div>
-            <div className={`${styles.balance} basic500`}>
+            <div className={`basic500`}>
                 {account.address}
             </div>
         </div>
