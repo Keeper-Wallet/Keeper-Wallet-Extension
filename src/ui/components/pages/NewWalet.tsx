@@ -76,7 +76,7 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSelect(account) {
-        this.props.newAccountSelect({ name: '', ...account, type: 'seed' });
+        this.props.newAccountSelect({ name: '', ...account, type: 'seed', hasBackup: false });
     }
 
     _onSubmit(e) {
