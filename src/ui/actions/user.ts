@@ -25,7 +25,8 @@ export function addUserReceive(error?) {
         type: ACTION.SAVE_NEW_ACCOUNT_RECEIVE,
         payload: {
             pending: false,
-            error: !!error
+            error: !!error,
+            errorData: error
         }
     };
 }

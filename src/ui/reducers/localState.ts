@@ -47,6 +47,9 @@ function addNewAccount(state = { pending: false, error: false }, { type, payload
          case ACTION.SAVE_NEW_ACCOUNT_SEND:
          case ACTION.SAVE_NEW_ACCOUNT_RECEIVE:
              return payload;
+         case ACTION.NEW_ACCOUNT_CLEAR_ERRORS:
+             return { ...state, error: false };
+    
      }
 
      return state;
