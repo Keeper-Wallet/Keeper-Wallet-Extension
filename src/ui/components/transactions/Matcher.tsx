@@ -15,8 +15,12 @@ export class Matcher extends SignClass {
             {super.render()}
             <div className={styles.txScrollBox}>
             
-                <div className={`${styles.txIcon} margin-main`}>
+                <div className={`${styles.txIcon} ${styles.txIconBig} margin-main`}>
                     <TxIcon txType={this.props.txType}/>
+                </div>
+
+                <div className="headline2 center margin-main-large">
+                    <Trans i18nKey='transactions.signToMatcher'>Sign a request to the Matcher</Trans>
                 </div>
     
                 <div className={styles.txRow}>

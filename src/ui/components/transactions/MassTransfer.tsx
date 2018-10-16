@@ -13,8 +13,8 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
         ({ recipient, amount }) => {
             const money = totalAmount.cloneWithTokens(amount);
             return <div key={recipient} className={styles.txRow}>
-                <div>{recipient}</div>
-                <div className='tx-title tag1 basic500'>
+                <div className="tx-title-black">{recipient}</div>
+                <div className='tag1 basic500'>
                     <Balance isShortFormat={true} balance={money}/>
                 </div>
             </div>;
@@ -31,7 +31,7 @@ const ToggleList = ({ count, currentCount, onClick }) => {
     return <Button onClick={toggle} type={BUTTON_TYPE.TRANSPARENT}>
         {!showAll ?
             <Trans i18nKey='transactions.transfersClose'>Hide</Trans> :
-            <div><Trans i18nKey='transactions.transfersShowAll'>Show All</Trans>({count})</div>
+            <div><Trans i18nKey='transactions.transfersShowAll'>Show All</Trans><span>({count})</span></div>
         }
     </Button>;
 };
@@ -42,7 +42,6 @@ export class MassTransfer extends SignClass {
     readonly state;
     
     toggleShowRecipients = (count) => {
-        debugger;
         this.setState({ count });
     }
     
@@ -63,7 +62,11 @@ export class MassTransfer extends SignClass {
 
                 <div>
                     <Transfers transfers={tx.transfers} totalAmount={tx.totalAmount} count={this.state.count}/>
-                    <ToggleList count={tx.transfers.length} currentCount={this.state.count} onClick={this.toggleShowRecipients}/>
+                    <div className={`${styles.toggleList} margin-main`}>
+                    <ToggleList count={tx.transfers.length}
+                                currentCount={this.state.count}
+                                onClick={this.toggleShowRecipients}/>
+                    </div>
                 </div>
 
                 <div className={styles.txRow}>

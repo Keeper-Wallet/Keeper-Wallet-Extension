@@ -42,10 +42,29 @@
     flex-grow: 1;
     flex-shrink: 999;
 
-  .txIcon div
-    width: 48px;
-    height: 48px;
-    margin: 24px auto 0 auto;
+  .toggleList
+    border-top: 1px dashed $basic200;
+
+    button
+      color: $submit300;
+      font-size: 12px;
+      display: inline-block;
+      margin-top: 8px;
+
+      span
+        margin-left: 3px;
+        display: inline-block;
+
+  .txIcon
+    div
+      width: 48px;
+      height: 48px;
+      margin: 24px auto 0 auto;
+    &Big
+      div
+        width: 80px;
+        height: 80px;
+        margin: 64px auto 14px auto;
 
   .txBalance
     width: 100%;
@@ -80,13 +99,29 @@
 .txBigIcon
   width: 80px;
   height: 80px;
-  margin: 120px auto 4px auto;
+  margin: 44px auto 4px auto;
 
 .txFinal
   margin: 0 auto;
 
   .finalTxContent
     margin: 0 24px;
+
+  .txInfoRow
+    display: flex;
+    align-items: center;
+    padding: 12px 0 12px 20px;
+    border-top: 1px dashed $basic200;
+    border-bottom: 1px dashed $basic200;
+
+    .icon
+      min-width: 48px;
+      height: 48px;
+      margin-right: 10px;
+
+    .data
+      flex-grow: 1;
+      line-height: 20px;
 
   button
     margin: 44px auto 0 auto;

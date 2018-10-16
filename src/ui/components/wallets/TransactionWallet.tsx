@@ -5,6 +5,19 @@ import cn from 'classnames';
 import { Button } from '../ui';
 import * as styles from './wallet.styl';
 
+const CONF = {
+
+    small: {
+        size: 28,
+        addClass: ''
+    },
+
+    big: {
+        size: 48,
+        addClass: styles.bigWalet
+
+    }
+};
 
 export const TransactionWallet = ({
         className = '',
@@ -14,10 +27,13 @@ export const TransactionWallet = ({
         active = false,
         hideButton = false,
         children = null,
+        type = 'small',
         ...props
     }) => {
 
-    className = cn(styles.wallet, className, {[styles.activeWallet]: active});
+    const conf = CONF[type] || CONF.small;
+    const size = conf.size;
+    className = cn(styles.wallet, className, conf.addClass, {[styles.activeWallet]: active});
 
     const iconClass = cn(styles.accountIcon, 'change-account-icon');
 
@@ -36,14 +52,14 @@ export const TransactionWallet = ({
 
     return <div className={`${className} ${styles.inner} ${styles.txWallet} flex`} onClick={clickHandler} {...props}>
         <div className={styles.avatar}>
-            <Avatar size={28} address={account.address}/>
+            <Avatar size={size} address={account.address}/>
         </div>
 
         <div className={`body3 ${styles.accountData}`}>
             <div className={`${styles.accountName} tag1`}>
                 {account.name}
             </div>
-            <div className={`basic500`}>
+            <div className={`basic500 ${styles.accountAddress}`}>
                 {account.address}
             </div>
         </div>

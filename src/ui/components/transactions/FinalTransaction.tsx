@@ -36,20 +36,26 @@ export class FinalTransaction extends React.PureComponent {
             'tx-error-icon': isError
         });
 
-        return <div className={`${styles.txFinal} center`}>
+        return <div className={styles.txFinal}>
             <HeadLogo/>
             <div className={className}></div>
 
             <div className={styles.finalTxContent}>
-                <div className="headline2 margin-main-top margin-main">
-                    {isApprove ? <Trans i18nKey='sign.approved'>Your transaction is approved!</Trans> : null}
-                    {isReject ? <Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans> : null}
-                    {isError ? <div><Error approveError={transactionStatus.approveError}/></div> : null}
+                <div className="margin-main-top center margin-main">
+                    {isApprove ? <div className="margin-main-large headline2"><Trans i18nKey='sign.approved'>Your transaction is approved!</Trans></div> : null}
+                    {isReject ? <div className="margin-main-large headline2"><Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans></div> : null}
+                    {isError ? <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>
 
-                {isError ? null : <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>}
-                {isError ? null : <div className={`${styles.txIcon} margin-main`}>
-                    <TxIcon txType={this.props.txType}/>
+                {isError ? null : <TransactionWallet type='big' account={this.props.selectedAccount} hideButton={true}/>}
+                {isError ? null : <div className={styles.txInfoRow}>
+                    <TxIcon className={styles.icon} txType={this.props.txType}/>
+                    <div className={styles.data}>
+                        <div className="body1">
+                            <Trans i18nKey='transactions.txid'>TXID</Trans>
+                        </div>
+                        <div className="basic500 tag1">9PCjZftzzhtY4ZLLBfsyvNxw8RwAgXZVZJX</div>
+                    </div>
                 </div>}
             </div>
 
