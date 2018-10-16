@@ -52,7 +52,7 @@ export class FinalTransaction extends React.PureComponent {
                     <TxIcon txType={this.props.txType}/>
                 </div>}
             </div>
-            }
+
             {isSend ?
                 <a className="link" href={txLink} target="_blank">
                     <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
