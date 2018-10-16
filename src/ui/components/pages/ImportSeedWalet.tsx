@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Seed } from '@waves/signature-generator';
-import { newAccountSelect } from '../../actions';
+import { newAccountSelect, clearSeedErrors } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 import { PAGES } from '../../pageConfig';
@@ -72,6 +72,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _onSubmit() {
+        this.props.clearSeedErrors();
         this.props.setTab(PAGES.ACCOUNT_NAME_SEED);
     }
 
@@ -103,11 +104,13 @@ class ImportSeedComponent extends React.Component {
 
 const actions = {
     newAccountSelect,
+    clearSeedErrors
 };
 
 const mapStateToProps = function(store: any) {
     return {
-        account: store.localState.newAccount
+        account: store.localState.newAccount,
+        accounts: store.accounts
     };
 };
 

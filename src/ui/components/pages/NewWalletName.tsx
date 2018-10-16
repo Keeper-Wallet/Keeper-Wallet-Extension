@@ -27,6 +27,9 @@ class NewWalletNameComponent extends React.Component {
     }
 
     render() {
+        
+        const accountResult = this.props.addNewAccount;
+        
         return <div className={styles.content}>
             <h2 className={`title1 margin1`}>
                 <Trans i18nKey='newAccountName.accountName'>Account name</Trans>
@@ -99,16 +102,24 @@ class NewWalletNameComponent extends React.Component {
     }
     
     static getDerivedStateFromProps(props, state) {
-        const { account, accounts } = props;
+        const { account, accounts, accountSave } = props;
         const name = account && account.name || '';
         const errors = NewWalletNameComponent.validateName(name, accounts);
-        return { ...state, errors };
+        let error = state.error;
+        if (accountSave && accountSave.error) {
+            errors.push({
+                code: 3, key: 'newAccountName.errorSeedExist', msg: 'Account already exist'
+            });
+            error = true;
+        }
+        return { ...state, errors, error };
     }
 }
 
 const mapStateToProps = function (store: any) {
     return {
         account: store.localState.newAccount,
+        accountSave: store.localState.addNewAccount,
         accounts: store.accounts,
     };
 };
