@@ -29,7 +29,7 @@ export class FinalTransaction extends React.PureComponent {
         const message = transactionStatus.approveOk && transactionStatus.approveOk.message || {};
         const isSend = message.broadcast;
         const network = message.account && message.account.networkCode;
-        const txLink = `https://${ network === 'T' ? 'testnet' : 'mainet'}.wavesexplorer.com/tx/${message.messageHash}`;
+        const txLink = `https://${ network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
         const className = cn(styles.txBigIcon, 'margin-main', {
             'tx-reject-icon': isReject,
             'tx-approve-icon': isApprove,
