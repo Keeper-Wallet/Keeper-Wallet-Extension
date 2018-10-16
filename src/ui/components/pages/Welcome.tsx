@@ -12,14 +12,14 @@ export class Welcome extends React.Component {
     clickHandler = () => this.props.setTab(PAGES.NEW);
     
     render() {
-        return <div className={styles.content}>
-            <BigLogo/>
-            <Button type={BUTTON_TYPE.SUBMIT} onClick={this.clickHandler}>
+        return <div className={`${styles.content}`}>
+            <BigLogo className="margin-main-large" />
+            <Button type={BUTTON_TYPE.SUBMIT} onClick={this.clickHandler} className="margin-main-big">
                 <Trans i18nKey='welcome.getStarted'>Get Started</Trans>
             </Button>
-            <div>
-                <Trans i18nKey='welcome.info'>Waves Keeper – some powerful text.</Trans>
-                <Trans i18nKey='welcome.info2'>Allows you to store ether and tokens and serves as a bridge to decentralized applications.</Trans>
+            <div className="basic500 body3">
+                <div><Trans i18nKey='welcome.info'>Waves Keeper – some powerful text.</Trans></div>
+                <div><Trans i18nKey='welcome.info2'>Allows you to store ether and tokens and serves as a bridge to decentralized applications.</Trans></div>
             </div>
         </div>
     }
