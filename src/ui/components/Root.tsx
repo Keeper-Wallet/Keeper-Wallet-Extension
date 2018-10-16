@@ -5,7 +5,7 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 
-const NO_USER_START_PAGE = PAGES.NEW;
+const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
 
 class RootComponent extends React.Component {
@@ -15,7 +15,7 @@ class RootComponent extends React.Component {
     
     constructor(props: IProps) {
         super(props);
-        setTimeout(() => props.setLoading(false), 1000);
+        setTimeout(() => props.setLoading(false), 200);
     }
     
     render() {

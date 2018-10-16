@@ -1,4 +1,5 @@
 import {
+    Welcome,
     Login,
     Intro,
     Conditions,
@@ -27,6 +28,7 @@ import { ImportSeed } from './components/pages/ImportSeedWalet';
 
 
 export const PAGES = {
+    WELCOME: 'welcome',
     CONDITIONS: 'conditions',
     LOGIN: 'login',
     NEW: 'new',
@@ -60,6 +62,17 @@ export const PAGES = {
 };
 
 export const PAGES_CONF = {
+    [PAGES.WELCOME]: {
+        component: Welcome,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: false,
+            hasSettings: false,
+            back: null,
+        }
+    },
     [PAGES.CONDITIONS]: {
         component: Conditions,
         bottom: {

@@ -1,3 +1,4 @@
+export * from  './Welcome';
 export * from  './Conditions';
 export * from  './NewWalet';
 export * from  './NewWalletName';
