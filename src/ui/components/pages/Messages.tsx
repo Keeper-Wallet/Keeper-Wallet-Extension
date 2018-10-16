@@ -32,6 +32,7 @@ class MessagesComponent extends React.Component {
         if (approveOk || approveError || rejectOk ) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
                                      transactionStatus={this.state.transactionStatus}
+                                     txType={this.state.txType}
                                      onClick={this.clearMessageStatusHandler}/>
         }
         
@@ -88,7 +89,9 @@ class MessagesComponent extends React.Component {
         } = transactionStatus;
         
         if (approveOk || approveError || rejectOk) {
-            return { transactionStatus, selectedAccount };
+            const { data } = (approveOk || approveError || rejectOk).message;
+            const conf = getConfigByTransaction(data);
+            return { transactionStatus, selectedAccount, txType: conf.type };
         }
         
         const assetInstance = new Asset(assets['WAVES']);

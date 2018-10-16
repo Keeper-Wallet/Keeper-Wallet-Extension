@@ -6,6 +6,7 @@ import { HeadLogo } from '../head/HeadLogo';
 import cn from 'classnames';
 import { TransactionWallet } from '../wallets';
 import { getConfigByTransaction } from './index';
+import { TxIcon } from './TransactionIcon';
 
 const Error = ({ approveError }) => {
     return <div>
@@ -34,6 +35,7 @@ export class FinalTransaction extends React.PureComponent {
             'tx-approve-icon': isApprove,
             'tx-error-icon': isError
         });
+        
         return <div className={`${styles.txFinal} center`}>
             <HeadLogo/>
             <div className={className}></div>
@@ -44,7 +46,11 @@ export class FinalTransaction extends React.PureComponent {
             </div>
     
             <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
-    
+            
+            <div className={`${styles.txIcon} margin-main`}>
+                <TxIcon txType={this.props.txType}/>
+            </div>
+            
             {isSend ?
                 <a className="link" href={txLink} target="_blank">
                     <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>

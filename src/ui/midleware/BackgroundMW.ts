@@ -209,7 +209,7 @@ export const approve = store => next => action => {
         (res) => store.dispatch(approveOk({ res, message })),
         (error) => store.dispatch(approveError({ error, message })),
     ).then(
-        () => store.dispatch(approvePending(message))
+        () => store.dispatch(approvePending(false))
     )
     
 };

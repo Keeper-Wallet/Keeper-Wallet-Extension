@@ -13,7 +13,7 @@ export const TransactionWallet = ({
         account = null,
         active = false,
         hideButton = false,
-        children,
+        children = null,
         ...props
     }) => {
 
