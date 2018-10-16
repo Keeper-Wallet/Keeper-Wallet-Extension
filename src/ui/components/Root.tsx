@@ -4,7 +4,6 @@ import { setTab, addBackTab, removeBackTab, loading, setUiState } from '../actio
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { Animation } from './ui';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
@@ -31,7 +30,7 @@ class RootComponent extends React.Component {
             hasSettings: pageConf.menu.hasSettings,
             deleteAccount: pageConf.menu.deleteAccount,
             hasClose: !!pageConf.menu.close,
-            hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+            hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back),
         };
         
         const setTab = (tab) => {

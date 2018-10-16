@@ -12,6 +12,7 @@ export const TransactionWallet = ({
         onActive = null,
         account = null,
         active = false,
+        hideButton = false,
         children = [],
         ...props
     }) => {
@@ -49,7 +50,7 @@ export const TransactionWallet = ({
 
         <div className={styles.controls}>
             {children}
-            <Button onClick={selectHandler} className={iconClass}></Button>
+            { hideButton ? null :<Button onClick={selectHandler} className={iconClass}></Button> }
         </div>
     </div>;
 };
