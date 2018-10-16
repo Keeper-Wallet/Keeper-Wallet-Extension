@@ -2,7 +2,10 @@ import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
+import { HeadLogo } from '../head/HeadLogo';
 import cn from 'classnames';
+import { TransactionWallet } from '../wallets';
+import { getConfigByTransaction } from './index';
 
 const Error = ({ approveError }) => {
     return <div>
@@ -32,12 +35,16 @@ export class FinalTransaction extends React.PureComponent {
             'tx-error-icon': isError
         });
         return <div className={`${styles.txFinal} center`}>
+            <HeadLogo/>
             <div className={className}></div>
             <div className="headline2 margin-main-top margin-main">
                 {isApprove ? <Trans i18nKey='sign.approved'>Your transaction is approved!</Trans> : null}
                 {isReject ? <Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans> : null}
                 {isError ? <div><Error approveError={transactionStatus.approveError}/></div> : null}
             </div>
+    
+            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
+    
             {isSend ?
                 <a className="link" href={txLink} target="_blank">
                     <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>

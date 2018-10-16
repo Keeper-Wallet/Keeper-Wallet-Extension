@@ -30,7 +30,8 @@ class MessagesComponent extends React.Component {
         } = this.state.transactionStatus;
         
         if (approveOk || approveError || rejectOk ) {
-            return <FinalTransaction transactionStatus={this.state.transactionStatus}
+            return <FinalTransaction selectedAccount={this.props.selectedAccount}
+                                     transactionStatus={this.state.transactionStatus}
                                      onClick={this.clearMessageStatusHandler}/>
         }
         

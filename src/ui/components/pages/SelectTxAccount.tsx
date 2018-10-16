@@ -5,6 +5,7 @@ import { Button, BUTTON_TYPE } from '../ui/buttons';
 import {connect} from 'react-redux';
 import { clearMessagesStatus, clearMessages } from '../../actions';
 import { PAGES } from '../../pageConfig';
+import { TransactionWallet } from '../wallets';
 
 @translate('extension')
 class SelectTxAccountComponent extends React.PureComponent {
@@ -18,6 +19,10 @@ class SelectTxAccountComponent extends React.PureComponent {
     
     render() {
         return <div className={styles.content}>
+            <TransactionWallet hideButton={true} account={this.props.selectAccount}>
+                <div className={`${styles.arrowBackIcon} arrow-back-icon`} onClick={this.props.onBack}></div>
+            </TransactionWallet>
+            
             <div className="title1 margin-main-big">
                 <Trans i18nKey='sign.changeAccount'>Do you want to change your account?</Trans>
             </div>
@@ -34,4 +39,11 @@ class SelectTxAccountComponent extends React.PureComponent {
     }
 }
 
-export const SelectTxAccount = connect(null, { clearMessagesStatus, clearMessages })(SelectTxAccountComponent);
+const mapStateToProps = (state) => {
+    return {
+        selectAccount: state.selectedAccount,
+    
+}
+};
+
+export const SelectTxAccount = connect(mapStateToProps, { clearMessagesStatus, clearMessages })(SelectTxAccountComponent);
