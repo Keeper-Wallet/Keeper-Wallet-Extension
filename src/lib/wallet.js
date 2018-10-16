@@ -18,7 +18,6 @@ export class Wallet {
     get _adapter(){
         const Adapter = getAdapterByType(this.user.type);
 
-        Adapter.initOptions({networkCode: this.user.networkCode});
         Adapter.initOptions({networkCode: this.user.networkCode.charCodeAt(0)});
 
         //Todo: temporary for seed
