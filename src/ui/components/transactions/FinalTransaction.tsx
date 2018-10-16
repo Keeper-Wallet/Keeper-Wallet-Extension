@@ -1,13 +1,13 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
-import { HeadLogo } from '../head/HeadLogo';
+import {translate, Trans} from 'react-i18next';
+import {Button, BUTTON_TYPE} from '../ui';
+import {HeadLogo} from '../head/HeadLogo';
 import cn from 'classnames';
-import { TransactionWallet } from '../wallets';
-import { getConfigByTransaction } from './index';
+import {TransactionWallet} from '../wallets';
+import {getConfigByTransaction} from './index';
 
-const Error = ({ approveError }) => {
+const Error = ({approveError}) => {
     return <div>
         <div className="headline2 margin-main-big">
             <Trans i18nKey='sign.someError'>Something went wrong</Trans>
@@ -19,9 +19,9 @@ const Error = ({ approveError }) => {
 @translate('extension')
 export class FinalTransaction extends React.PureComponent {
     readonly props;
-    
+
     render() {
-        const { transactionStatus } = this.props;
+        const {transactionStatus} = this.props;
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
@@ -30,21 +30,23 @@ export class FinalTransaction extends React.PureComponent {
         const network = message.account && message.account.networkCode;
         const txLink = `https://${ network === 'T' ? 'testnet' : 'mainet'}.wavesexplorer.com/tx/${message.messageHash}`;
         const className = cn(styles.txBigIcon, 'margin-main', {
-            'tx-reject-icon':  isReject,
+            'tx-reject-icon': isReject,
             'tx-approve-icon': isApprove,
             'tx-error-icon': isError
         });
         return <div className={`${styles.txFinal} center`}>
             <HeadLogo/>
             <div className={className}></div>
-            <div className="headline2 margin-main-top margin-main">
-                {isApprove ? <Trans i18nKey='sign.approved'>Your transaction is approved!</Trans> : null}
-                {isReject ? <Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans> : null}
-                {isError ? <div><Error approveError={transactionStatus.approveError}/></div> : null}
+
+            <div className={styles.finalTxContent}>
+                <div className="headline2 margin-main-top margin-main">
+                    {isApprove ? <Trans i18nKey='sign.approved'>Your transaction is approved!</Trans> : null}
+                    {isReject ? <Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans> : null}
+                    {isError ? <div><Error approveError={transactionStatus.approveError}/></div> : null}
+                </div>
+
+                {isError ? null : <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>}
             </div>
-    
-            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
-    
             {isSend ?
                 <a className="link" href={txLink} target="_blank">
                     <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>

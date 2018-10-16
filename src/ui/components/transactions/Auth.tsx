@@ -14,7 +14,7 @@ export class Auth extends SignClass {
         const warningOrigin = { origin };
         
         return <div className={`${styles.txSign} ${styles.transaction} font400 center`}>
-
+            {super.render()}
             <div className={styles.txScrollBox}>
                 {
                     !tx.icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}/>
