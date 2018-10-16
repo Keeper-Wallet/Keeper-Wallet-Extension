@@ -223,6 +223,6 @@ export const reject = store => next => action => {
     const message = messages.find(({ id }) => id === action.payload);
     
     background.reject(action.payload).then(
-        () => store.dispatch(rejectOk(message))
+        () => store.dispatch(rejectOk({ message }))
     );
 };
