@@ -20,21 +20,22 @@ class SelectTxAccountComponent extends React.PureComponent {
     render() {
         return <div className={styles.content}>
             <TransactionWallet hideButton={true} account={this.props.selectAccount}>
-                <div className={`${styles.arrowBackIcon} arrow-back-icon`} onClick={this.props.onBack}></div>
+                <div className={styles.closeIcon} onClick={this.props.onBack}></div>
             </TransactionWallet>
-            
-            <div className="title1 margin-main-big">
-                <Trans i18nKey='sign.changeAccount'>Do you want to change your account?</Trans>
-            </div>
+            <div className={styles.wrapper}>
+                <div className="title1 margin-main-big">
+                    <Trans i18nKey='sign.changeAccount'>Do you want to change your account?</Trans>
+                </div>
 
-            <div className="margin-main-large body1">
-                <Trans i18nKey='sign.changeAccountInfo'>If you change account, we will cancel the current transaction.
-                    After selecting a new active account, repeat the operation.</Trans>
-            </div>
+                <div className="margin-main-large body1">
+                    <Trans i18nKey='sign.changeAccountInfo'>If you change account, we will cancel the current transaction.
+                        After selecting a new active account, repeat the operation.</Trans>
+                </div>
 
-            <Button type={BUTTON_TYPE.SUBMIT} onClick={this.onClick}>
-                <Trans i18nKey='sign.switchAccount'>Switch account</Trans>
-            </Button>
+                <Button type={BUTTON_TYPE.SUBMIT} onClick={this.onClick}>
+                    <Trans i18nKey='sign.switchAccount'>Switch account</Trans>
+                </Button>
+            </div>
         </div>;
     }
 }

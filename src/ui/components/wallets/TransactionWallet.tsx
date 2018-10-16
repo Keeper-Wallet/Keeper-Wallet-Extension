@@ -40,7 +40,7 @@ export const TransactionWallet = ({
         </div>
 
         <div className={`body3 ${styles.accountData}`}>
-            <div className={styles.accountName}>
+            <div className={`${styles.accountName} tag1`}>
                 {account.name}
             </div>
             <div className={`basic500`}>

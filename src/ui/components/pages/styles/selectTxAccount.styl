@@ -1,7 +1,21 @@
-.content
-  margin: 124px 60px;
+@import '../../../styles/colors.styl';
 
-.arrowBackIcon
-  width: 20px;
-  height: 20px;
-  background: url(../../../assets/img/back-18-black.svg) center no-repeat;
+.content
+  margin: 0;
+
+.wrapper
+  margin: 124px auto 0 auto;
+  width: calc(100% - 120px);
+
+.closeIcon
+  display: block;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 4px;
+  position: absolute;
+  top:-4px;
+  background: url(../../../assets/img/close-18-black.svg) center no-repeat;
+
+  &:hover
+    background-color: $basic100;
