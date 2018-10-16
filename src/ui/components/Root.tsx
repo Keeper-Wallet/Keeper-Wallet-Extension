@@ -19,7 +19,8 @@ class RootComponent extends React.Component {
     }
     
     render() {
-        const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
+        const tab = this.state.tab || PAGES.INTRO;
+        const pageConf = PAGES_CONF[tab];
         const Component = pageConf.component;
         const backTabFromConf = typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
         const currentTab = this.state.tab;
@@ -29,7 +30,7 @@ class RootComponent extends React.Component {
             hasSettings: pageConf.menu.hasSettings,
             deleteAccount: pageConf.menu.deleteAccount,
             hasClose: !!pageConf.menu.close,
-            hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
+            hasBack: pageConf.menu.back !== null && (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back),
         };
         
         const setTab = (tab) => {
@@ -51,7 +52,7 @@ class RootComponent extends React.Component {
         
         return <div className="height">
             <Menu {...menuProps} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
-            <Component {...pageProps}/>
+            <Component {...pageProps} key={tab}/>
             <Bottom {...pageConf.bottom}/>
         </div>;
     }

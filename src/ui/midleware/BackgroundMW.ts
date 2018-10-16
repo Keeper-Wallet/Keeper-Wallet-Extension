@@ -80,7 +80,11 @@ export const uiState = store => next => action => {
     if (action.type === ACTION.SET_UI_STATE) {
         const ui = store.getState().uiState;
         const newState = { ...ui, ...action.payload };
-        background.setUiState(newState);
+        background.setUiState(newState).then(
+            (uiState) => {
+                store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
+            }
+        );
         return null;
     }
 
@@ -88,14 +92,13 @@ export const uiState = store => next => action => {
         const ui = store.getState().uiState;
         const newState = { ...ui, ...action.payload.ui };
         background.setUiState(newState).then(
-            next(setTab(action.payload.tab))
+            (uiState) => {
+                store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
+                store.dispatch(setTab(action.payload.tab));
+            }
         );
-        store.dispatch({
-            type: ACTION.UPDATE_UI_STATE,
-            payload: newState
-        });
 
-        return setTab(action.payload.tab);
+        return;
     }
 
     return next(action);

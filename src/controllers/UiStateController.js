@@ -11,6 +11,7 @@ export class UiStateController {
 
     // Public
     setUiState(uiState) {
-        this.store.updateState({uiState})
+        this.store.updateState({uiState});
+        return this.store.getState();
     }
 }
