@@ -4,6 +4,7 @@ import { setTab, addBackTab, removeBackTab, loading, setUiState } from '../actio
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
+import { Animation } from './ui';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
@@ -19,7 +20,8 @@ class RootComponent extends React.Component {
     }
     
     render() {
-        const pageConf = PAGES_CONF[this.state.tab] || PAGES_CONF[PAGES.INTRO];
+        const tab = this.state.tab || PAGES.INTRO;
+        const pageConf = PAGES_CONF[tab];
         const Component = pageConf.component;
         const backTabFromConf = typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
         const currentTab = this.state.tab;
@@ -51,7 +53,7 @@ class RootComponent extends React.Component {
         
         return <div className="height">
             <Menu {...menuProps} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
-            <Component {...pageProps}/>
+            <Component {...pageProps} key={tab}/>
             <Bottom {...pageConf.bottom}/>
         </div>;
     }

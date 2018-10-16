@@ -1,7 +1,7 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
-import { setUiStateAndSetTab, setUiState } from '../../actions';
+import { setUiStateAndSetTab, newAccountSelect, setUiState } from '../../actions';
 import { translate, Trans } from 'react-i18next';
 import { Copy, Button, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
@@ -60,7 +60,7 @@ class BackUpSeedComponent extends React.Component {
 
     componentDidMount() {
         this.props.setUiState({
-            account: this.props.account
+            account: this.props.account,
         });
     }
 
@@ -76,7 +76,7 @@ class BackUpSeedComponent extends React.Component {
 
     _cancelHandler() {
         this.props.setUiStateAndSetTab({
-            account: null
+            account: null,
         }, PAGES.ROOT);
     }
 }
@@ -90,7 +90,8 @@ const mapStateToProps = function (store: any) {
 
 const actions = {
     setUiState,
-    setUiStateAndSetTab
+    setUiStateAndSetTab,
+    newAccountSelect
 };
 
 export const BackUpSeed = connect(mapStateToProps, actions)(BackUpSeedComponent);
