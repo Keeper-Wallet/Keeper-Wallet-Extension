@@ -83,7 +83,9 @@ export const getConfigByTransaction = tx => {
             config.component = SetScript;
             break;
         case SIGN_TYPE.SPONSORSHIP:
-            config.type = 'sponsorship';
+            const { minSponsoredAssetFee } = tx.data;
+            const zero = minSponsoredAssetFee.cloneWithTokens(0);
+            config.type = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
             config.component = SponsorShip;
             break;
         case -1:

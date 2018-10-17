@@ -12,15 +12,13 @@ export class SponsorShip extends SignClass {
     render() {
         const { data: tx } = this.props.signData;
         const { minSponsoredAssetFee } = tx;
-        const asset = minSponsoredAssetFee.asset;
-        const zero = minSponsoredAssetFee.cloneWithTokens(0);
-        const txType = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
+
         return <div className={styles.transaction}>
             {super.render()}
             <div className={styles.txScrollBox}>
 
                 <div className={`${styles.txIcon} margin-main`}>
-                    <TxIcon txType={txType}/>
+                    <TxIcon txType={this.props.txType}/>
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>

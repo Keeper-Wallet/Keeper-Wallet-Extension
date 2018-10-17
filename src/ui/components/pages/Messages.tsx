@@ -91,8 +91,10 @@ class MessagesComponent extends React.Component {
         
         if (approveOk || approveError || rejectOk) {
             const { data } = (approveOk || approveError || rejectOk).message;
-            const conf = getConfigByTransaction(data);
-            return { transactionStatus, selectedAccount, txType: conf.type };
+            const parsedData = MessagesComponent.getAssetsAndMoneys(data);
+            const signData = MessagesComponent.fillSignData(data, parsedData.moneys, assets);
+            const conf = getConfigByTransaction(signData);
+            return { transactionStatus, selectedAccount, txType: conf.type, signData };
         }
         
         const assetInstance = new Asset(assets['WAVES']);
