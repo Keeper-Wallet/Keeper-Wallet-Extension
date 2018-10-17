@@ -10,10 +10,10 @@ import {
     notificationChangeName,
     approveError,
     approveOk,
-    approvePending, rejectOk,
+    approvePending,
+    rejectOk,
 } from '../actions';
 import { PAGES } from '../pageConfig';
-import { store } from '../store';
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {
@@ -224,5 +224,7 @@ export const reject = store => next => action => {
     
     background.reject(action.payload).then(
         () => store.dispatch(rejectOk({ message }))
+    ).then(
+        () => store.dispatch(approvePending(false))
     );
 };

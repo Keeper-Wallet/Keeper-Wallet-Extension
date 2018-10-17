@@ -5,7 +5,6 @@ import {Button, BUTTON_TYPE} from '../ui';
 import {HeadLogo} from '../head/HeadLogo';
 import cn from 'classnames';
 import {TransactionWallet} from '../wallets';
-import {getConfigByTransaction} from './index';
 import {TxIcon} from './TransactionIcon';
 
 const Error = ({approveError}) => {

@@ -69,6 +69,7 @@ class MessagesComponent extends React.Component {
     
     cleanMessageStatus() {
         this.props.clearMessagesStatus();
+        this.props.setTab(PAGES.ROOT);
     }
     
     static getDerivedStateFromProps(props, state) {
