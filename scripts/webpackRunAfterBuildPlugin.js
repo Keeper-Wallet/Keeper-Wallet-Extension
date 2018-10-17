@@ -18,13 +18,12 @@ module.exports = class WebpackShellPlugin {
             }
         });
 
-        compiler.plugin("emit", (compilation, callback) => {
+        compiler.plugin("afterEmit", (compilation) => {
             if(options.onBuildEnd.length){
                 console.log("Executing post-build scripts");
                 options.onBuildEnd.forEach(script => script());
             }
-            callback();
         });
     }
 
-}
+};

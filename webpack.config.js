@@ -108,6 +108,13 @@ module.exports = env => {
         })
 
     );
+    plugins.push(
+        new DownloadJsonPlugin({
+            path: 'https://api.locize.io/30ffe655-de56-4196-b274-5edc3080c724/latest/ru/extension',
+            filename: 'dist2/build/_locales/ru/extension.json',
+        })
+
+    );
     // if (!isProduction) {
     //     plugins.push(
     //         new LiveReloadPlugin({
