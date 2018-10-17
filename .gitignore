@@ -146,3 +146,5 @@ typings/
 # next.js build output
 .next
 test/sandbox.spec.js
+
+src/copied/_locales/extension_*.json

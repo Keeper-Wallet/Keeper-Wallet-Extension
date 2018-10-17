@@ -104,14 +104,14 @@ module.exports = env => {
     plugins.push(
         new DownloadJsonPlugin({
             path: 'https://api.locize.io/30ffe655-de56-4196-b274-5edc3080c724/latest/en/extension',
-            filename: 'dist2/build/_locales/en/extension.json',
+            filename: 'src/copied/_locales/extension_en.json',
         })
 
     );
     plugins.push(
         new DownloadJsonPlugin({
             path: 'https://api.locize.io/30ffe655-de56-4196-b274-5edc3080c724/latest/ru/extension',
-            filename: 'dist2/build/_locales/ru/extension.json',
+            filename: 'src/copied/_locales/extension_ru.json',
         })
 
     );
