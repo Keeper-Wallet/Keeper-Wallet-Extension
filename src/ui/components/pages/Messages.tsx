@@ -141,6 +141,10 @@ class MessagesComponent extends React.Component {
                 continue;
             }
 
+            if ( currentData instanceof Money) {
+                continue;
+            }
+            
             if ('priceAsset' in currentData) {
                 assets[currentData.priceAsset || 'WAVES'] = true;
             }
