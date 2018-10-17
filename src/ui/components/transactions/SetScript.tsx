@@ -3,6 +3,7 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
+import { Button } from '../ui';
 import { TransactionBottom } from './TransactionBottom';
 
 @translate('extension')
@@ -18,20 +19,40 @@ export class SetScript extends SignClass {
                 <div className={`${styles.txIcon} margin-main`}>
                     <TxIcon txType={this.props.txType}/>
                 </div>
-    
+
+                <div className="headline2 center margin-main-big">
+                    <Trans i18nKey='transactions.setSctiptHeader'>Script transaction</Trans>
+                </div>
+
+                <div className="plate plate-with-controls break-all">
+                    <div className={styles.txValue}>{tx.script}</div>
+                    <div className="buttons-wrapper">
+                        <Button>
+                            <Trans i18nKey='transactions.copy'>Copy</Trans>
+                        </Button>
+                        <Button>
+                            <Trans i18nKey='transactions.showAll'>Show all</Trans>
+                        </Button>
+                    </div>
+                </div>
+
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.script'>Script</Trans>
+                        <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
-                    <div className={styles.txValue}>{tx.script}</div>
+                    <div className={styles.txValue}>0.003 Waves</div>
                 </div>
-            
-                <div className={styles.txRow}>
+
+                <div className={`${styles.txRow} margin-main`}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.txid'>TXID</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
+
+                <div className="font600 tag1 basic500 margin-main-min"><Trans i18nKey='transactions.scriptWarningHeader'>Warning: actions can lead to loss of access to your account</Trans></div>
+                <div className="margin-main tag1 basic500"><Trans i18nKey='transactions.scriptWarningDescription'>We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.</Trans></div>
+
             </div>
     
             <TransactionBottom {...this.props}/>

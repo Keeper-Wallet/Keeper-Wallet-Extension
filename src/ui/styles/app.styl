@@ -105,6 +105,7 @@ ul
     text-decoration: none;
 
 // layout
+$layout-4 = 4px;
 $layout-10 = 10px;
 $layout-14 = 14px;
 $layout-24 = 24px;
@@ -118,6 +119,9 @@ $layout-44 = 44px;
 
 :global .margin-main
   margin-bottom: $layout-14;
+
+:global .margin-main-min
+  margin-bottom: $layout-4;
 
 :global .margin-main-big
   margin-bottom: $layout-24;
@@ -175,6 +179,10 @@ $layout-44 = 44px;
 :global .font600
   font-weight: 600;
 
+:global .break-all {
+  word-break: break-all;
+}
+
 // misc
 :global .separator
   height: 1px;
@@ -187,6 +195,9 @@ $layout-44 = 44px;
 :global .tx-title
   display: inline-block;
   margin-bottom: 4px;
+  &-black
+    color: $black;
+    margin-bottom: 4px;
 
 :global .border-bottom
   border-bottom: 1px solid $accent50;
@@ -209,6 +220,44 @@ $layout-44 = 44px;
   border: 1px dashed $basic200;
   padding: $layout-14;
   border-radius: 2px;
+
+  &-with-controls
+    .buttons-wrapper
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+
+      button
+        padding: 0;
+        margin: 0 20px 0 10px;
+        color: $submit300;
+        font-size: 12px;
+        height: auto;
+        background: none transparent;
+        border: 0 none;
+        border-radius: 0;
+        position: relative;
+        width: auto!important;
+        flex-basis: auto;
+
+        &:not(:last-child)
+          &:after
+            content: '';
+            position: absolute;
+            height: 14px;
+            top: 0;
+            background $basic500;
+            display: block;
+            right: -15px;
+            width: 1px;
+
+        &:hover
+          border: 0 none;
+
+
+        &:last-child
+          margin-right: 0;
 
 :global .info-block //with icon
   display: flex;
