@@ -2,7 +2,6 @@ import * as styles from './styles/import.styl';
 import * as React from 'react'
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import {BigLogo} from '../head';
 import {Button} from '../ui/buttons';
 
 @translate('extension')
