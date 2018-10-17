@@ -222,6 +222,16 @@ $layout-44 = 44px;
   border-radius: 2px;
 
   &-with-controls
+    max-height: 108px;
+    display: flex;
+    flex-direction: column;
+
+    div:first-child
+      max-height: 100px;
+      overflow: auto;
+      padding-right: 14px;
+      margin-right: -14px;
+
     .buttons-wrapper
       width: 100%;
       display: flex;
