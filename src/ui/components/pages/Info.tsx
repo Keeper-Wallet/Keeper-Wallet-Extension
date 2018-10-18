@@ -12,12 +12,11 @@ export class Info extends React.Component {
 
             <div className="margin-main basic500">
                 <Trans i18nKey='info.keepUp'>
-                    Keep up with the latest news and
-                    articles, and find out all about events
-                    happening on the Waves Platform</Trans>
+                    Waves Keeper — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Waves Keeper, you can sign transactions and remain safe from malicious sites.
+                </Trans>
             </div>
 
-            <a className="link black" target='_blank' href='https://wavescommunity.com'>wavescommunity.com</a>
+            <a className="link black" target='_blank' href='https://forum.wavesplatform.com'>forum.wavesplatform.com</a>
 
             <div className={`${styles.social} margin-main`}>
                 <div className="margin-main basic500">

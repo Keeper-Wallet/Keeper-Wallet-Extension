@@ -42,8 +42,8 @@ export class Auth extends SignClass {
                 </div>
                 <div>
                     <Trans i18nKey='sign.signAccessInfo'>
-                        The application will have access your Waves address. It will not get your SEED or Private key.
-                        Don't enter your secret phrase (SEED) on websites you will be redirected on.
+                        The application will have access to your Waves address but will not expose your SEED or private key.
+                        Never enter your secret phrase (SEED) on any website you are redirected to.
                     </Trans>
                 </div>
             </div>
