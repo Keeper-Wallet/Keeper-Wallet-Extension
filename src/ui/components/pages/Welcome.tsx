@@ -18,8 +18,8 @@ export class Welcome extends React.Component {
                 <Trans i18nKey='welcome.getStarted'>Get Started</Trans>
             </Button>
             <div className="basic500 body3">
-                <div><Trans i18nKey='welcome.info'>Waves Keeper – some powerful text.</Trans></div>
-                <div><Trans i18nKey='welcome.info2'>Allows you to store ether and tokens and serves as a bridge to decentralized applications.</Trans></div>
+                <div><Trans i18nKey='welcome.info'>Waves Keeper — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps.</Trans></div>
+                <div><Trans i18nKey='welcome.info2'>Using Waves Keeper, you can sign transactions and remain safe from malicious sites.</Trans></div>
             </div>
         </div>
     }
