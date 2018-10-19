@@ -41,12 +41,18 @@ export class FinalTransaction extends React.PureComponent {
 
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main">
-                    {isApprove ? <div className="margin-main-large headline2"><Trans i18nKey='sign.approved'>Your transaction is approved!</Trans></div> : null}
-                    {isReject ? <div className="margin-main-large headline2"><Trans i18nKey='sign.rejected'>Your transaction is rejected!</Trans></div> : null}
-                    {isError ? <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
+                    {isApprove ?
+                        <div className="margin-main-large headline2"><Trans i18nKey='sign.approved'>Your transaction is
+                            approved!</Trans></div> : null}
+                    {isReject ?
+                        <div className="margin-main-large headline2"><Trans i18nKey='sign.rejected'>Your transaction is
+                            rejected!</Trans></div> : null}
+                    {isError ?
+                        <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>
 
-                {isError ? null : <TransactionWallet type='big' account={this.props.selectedAccount} hideButton={true}/>}
+                {isError ? null :
+                    <TransactionWallet type='big' account={this.props.selectedAccount} hideButton={true}/>}
                 {isError ? null : <div className={styles.txInfoRow}>
                     <TxIcon className={styles.icon} txType={this.props.txType}/>
                     <div className={styles.data}>
@@ -58,15 +64,20 @@ export class FinalTransaction extends React.PureComponent {
                 </div>}
             </div>
 
+            <div className="margin-main-big">
+                <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
+                    {isError ? <Trans i18nKey='sign.action'>Action</Trans> : null}
+                    {isReject || isApprove ? <Trans i18nKey='sign.ok'>Okay</Trans> : null}
+                </Button>
+            </div>
+
             {isSend ?
-                <a className="link" href={txLink} target="_blank">
-                    <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
-                </a> : null
+                <div className="center">
+                    <a className="link black" href={txLink} target="_blank">
+                        <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
+                    </a>
+                </div> : null
             }
-            <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
-                {isError ? <Trans i18nKey='sign.action'>Action</Trans> : null}
-                {isReject || isApprove ? <Trans i18nKey='sign.ok'>Okay</Trans> : null}
-            </Button>
         </div>;
     }
 }
