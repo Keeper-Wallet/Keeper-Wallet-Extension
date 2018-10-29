@@ -19,7 +19,7 @@ describe('AssetInfoController', () => {
         const info = await controller.assetInfo('8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS');
         //console.log(info)
         expect(info.description).to.eql('Bitcoin Token');
-        expect(info.quantity).to.eql('2099999999916825');
+        expect(info.height).to.eql(257457);
 
     });
 
