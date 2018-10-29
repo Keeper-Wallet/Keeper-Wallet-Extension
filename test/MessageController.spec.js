@@ -1,5 +1,9 @@
-import {expect, assert} from 'chai';
+import chai, {expect, assert} from 'chai';
+import chaiAsPromised from 'chai-as-promised'
 import {MessageController, AssetInfoController} from "../src/controllers";
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe("MessageController", () => {
     require('isomorphic-fetch');
@@ -9,10 +13,9 @@ describe("MessageController", () => {
         address: '3MxjhrvCr1nnDxvNJiCQfSC557gd8QYEhDx',
         publicKey: '9oRf59sSHE2inwF6wraJDPQNsx7ktMKxaKvyFFL8GDrh',
         networkCode: 'T'
-    }
-    const origin = 'SomeOrigin';
+    };
 
-    const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://testnodes.wavesnodes.com'})
+    const origin = 'SomeOrigin';
 
     const tx = {
         type: 4,
@@ -29,27 +32,29 @@ describe("MessageController", () => {
             attachment: '',
             recipient: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'
         }
-    }
+    };
 
     const auth =  {
         name: 'avcd',
         data: 'hello',
         successPath: 'https://www.wikipedia.org/wiki/Main_Page'
-    }
+    };
 
     const matcherRequest = {
         type: 1001,
         data: {
             timestamp: Date.now()
         }
-    }
+    };
 
     const coinomatRequest = {
         type: 1004,
         data: {
             timestamp: Date.now()
         }
-    }
+    };
+
+    const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://testnodes.wavesnodes.com'})
 
     beforeEach(() => {
         controller = new MessageController({signTx: async() => 'placeholder', broadcast: async () => 'broadcast placeholder', assetInfo: (id)=>assetInfoController.assetInfo(id)});
@@ -70,6 +75,10 @@ describe("MessageController", () => {
         expect(state.messages[0].status).to.eql('unapproved');
         expect(state.messages[0].time).to.be.a('number');
         expect(state.messages[0].time).to.be.lt(Date.now());
+    });
+
+    it('Shouldn\'t add invalid messages to pipeline', ()=>{
+        return controller.newMessage({}, 'transaction', origin, account).should.eventually.be.rejected;
     });
 
     it('Should approve message', async () => {
@@ -98,15 +107,8 @@ describe("MessageController", () => {
         const messageId = await controller.newMessage(tx, 'transaction', origin, account);
         const messageResultPromise = controller.getMessageResult(messageId);
         controller.reject(messageId);
-        expect(controller._getMessageById(messageId).status).to.eql('rejected');
-        let err;
-        try {
-            await messageResultPromise;
-        } catch (e) {
-            err = e
-        }
-        expect(err).to.be.a('Error');
-        expect(err.message).to.eql('User denied message')
+
+        return messageResultPromise.should.eventually.be.rejectedWith('User denied message')
     });
 
 });

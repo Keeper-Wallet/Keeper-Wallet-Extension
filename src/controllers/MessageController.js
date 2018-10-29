@@ -38,7 +38,7 @@ export class MessageController extends EventEmitter {
      * @param {string} type - type of message(transaction, request, auth, bytes)
      * @param {object | undefined} account - Account, that should approve message. Can be undefined
      * @param {boolean} broadcast - Should this message be sent(node, matcher, somewhere else)
-     * @returns {string} id - message id
+     * @returns {Promise<string>} id - message id
      */
     async newMessage(data, type, origin, account, broadcast = false) {
         log.debug(`New message ${type}: ${JSON.stringify(data)}`);
