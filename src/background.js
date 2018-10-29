@@ -1,4 +1,5 @@
 import log from 'loglevel';
+import 'babel-polyfill';
 import pump from 'pump';
 import url from 'url';
 import EventEmitter from 'events';

@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import extension from 'extensionizer';
 import EventEmitter from 'events';
 import PortStream from './lib/port-stream.js';
