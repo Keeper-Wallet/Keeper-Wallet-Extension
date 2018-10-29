@@ -1,7 +1,6 @@
 import { store } from '../store';
 import { ACTION } from './constants';
-
-const deepEqualByJSON = (obj1, obj2) => JSON.stringify(obj1) === JSON.stringify(obj2);
+import { equals } from 'ramda';
 
 export function updateState(state) {
     const actions = [];
@@ -26,7 +25,7 @@ export function updateState(state) {
         });
     }
 
-    if (!deepEqualByJSON(currentState.customNodes, customNodes)) {
+    if (!equals(currentState.customNodes, customNodes)) {
         actions.push({
             type: ACTION.UPDATE_NODES,
             payload: customNodes
@@ -54,10 +53,10 @@ export function updateState(state) {
         });
     }
 
-    if (!deepEqualByJSON(messages, currentState.messages)) {
+    if (!equals(messages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
-            payload: messages
+            payload: messages.filter(msg => msg.status === 'unapproved')
         });
     }
 
@@ -68,14 +67,18 @@ export function updateState(state) {
         });
     }
     
-    if (!deepEqualByJSON(accounts, currentState.accounts)) {
+    if (!equals(accounts, currentState.accounts)) {
         actions.push({
             type: ACTION.UPDATE_ACCOUNTS,
             payload: accounts
         });
     }
 
-    if (!currentState.state || initialized !== currentState.state.initialized || locked !== currentState.state.locked) {
+    if (
+        !currentState.state ||
+        (initialized || !!accounts.length) !== currentState.state.initialized ||
+        locked !== currentState.state.locked
+    ) {
         actions.push({
             type: ACTION.UPDATE_APP_STATE,
             payload: { initialized, locked }

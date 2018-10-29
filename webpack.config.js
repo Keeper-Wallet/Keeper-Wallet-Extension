@@ -8,7 +8,7 @@ const DownloadJsonPlugin = require('download-json-webpack-plugin');
 
 
 module.exports = env => {
-    const DIST = 'dist2';
+    const DIST = 'dist';
     const isProduction = env && env.production;
     const SOURCE_FOLDER = path.resolve(__dirname, 'src');
     const DIST_FOLDER = path.resolve(__dirname, DIST);

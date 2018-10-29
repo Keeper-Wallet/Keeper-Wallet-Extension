@@ -70,7 +70,7 @@ class RootComponent extends React.Component {
         let tab = nextProps.tab;
         
         const { messages } = nextProps;
-        const hasUnapprovedMsg = messages.length && messages.find(({ status }) => status === 'unapproved');
+        const hasUnapprovedMsg = messages.length && messages[0];
         const showMessages = !!Object.values(nextProps.transactionStatus).filter(Boolean).length;
         
         if (showMessages || hasUnapprovedMsg) {
