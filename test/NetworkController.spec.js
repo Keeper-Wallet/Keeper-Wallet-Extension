@@ -1,5 +1,9 @@
-import {expect, assert} from 'chai';
+import chai, {expect, assert} from 'chai';
 import {NetworkController} from "../src/controllers";
+import chaiAsPromised from "chai-as-promised";
+
+chai.use(chaiAsPromised);
+chai.should();
 
 describe('NetworkController', () => {
     require('isomorphic-fetch')
@@ -21,13 +25,18 @@ describe('NetworkController', () => {
         expect(controller.getCustomNodes().testnet).to.eql('https://testnet1.wavesnodes.com/')
         expect(controller.getCustomNodes().mainnet).to.eql('https://testnet1.wavesnodes.com/')
     });
+
     it('Should broadcast transactions', async () => {
         const tx = {}
-        const resp = await controller.broadcast(tx)
-        expect(resp.message).to.eql('failed to parse json message')
-        controller.setCustomNode('https://testnet1.wavesnodes.com/')
-        const resp2 = await controller.broadcast(tx)
-        expect(resp2.message).to.eql('failed to parse json message')
+        const resp =  controller.broadcast(tx)
+        // Check for correct node error. That way we know request was correct
+        return resp.should.eventually.be.rejectedWith('failed to parse json message')
     });
 
+    it('Should broadcast transactions to custom nodes', () => {
+        const tx = {}
+        const resp =  controller.broadcast(tx)
+        controller.setCustomNode('https://testnet1.wavesnodes.com/')
+        return resp.should.eventually.be.rejectedWith('failed to parse json message')
+    });
 });

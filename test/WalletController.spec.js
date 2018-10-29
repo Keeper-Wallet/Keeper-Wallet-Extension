@@ -113,7 +113,7 @@ describe('WalletController', () => {
         expect(exported).to.throw('Password is required')
     });
 
-    it('Should approve tx', async () => {
+    it('Should sign tx', async () => {
         const controller = new WalletController({initState});
         controller.unlock(password);
         controller.addWallet({type: 'seed', networkCode: 'T', seed});
@@ -143,6 +143,41 @@ describe('WalletController', () => {
         }
         const address = controller.wallets[0].getAccount().address
         const signed = await controller.signTx(address, tx)
+        expect(signed.proofs.length).to.be.greaterThan(0)
+    });
+
+
+    it('Should sign auth data', async () => {
+        const controller = new WalletController({initState});
+        controller.unlock(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+
+        const authData = {
+            type: 1000,
+            data:
+                {
+                    data: 'hello',
+                    prefix: 'WavesWalletAuthentication',
+                    host: 'someorigin',
+                    name: 'avcd',
+                    icon: undefined
+                }
+        };
+
+        const address = controller.wallets[0].getAccount().address
+        const signed = await controller.auth(address, authData)
+        expect(signed.signature).to.be.a('string')
+    });
+
+    it('Should sign request data', async () => {
+        const controller = new WalletController({initState});
+        controller.unlock(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+
+        const requestData = { type: 1001, data: { timestamp: 1540817062571 } };
+
+        const address = controller.wallets[0].getAccount().address
+        const signed = await controller.auth(address, requestData)
         expect(signed.signature).to.be.a('string')
     });
 });
