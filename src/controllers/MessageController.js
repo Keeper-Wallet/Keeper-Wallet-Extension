@@ -127,8 +127,7 @@ export class MessageController extends EventEmitter {
     _updateBage(messages) {
         const unapproved = messages.filter(({status}) => status === 'unapproved').length;
         const text = unapproved ? unapproved.toString() : '';
-        extension.browserAction.setBadgeText({text});
-        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
+        this.emit('Update badge', text)
     }
 
     async _fillSignableData(message) {

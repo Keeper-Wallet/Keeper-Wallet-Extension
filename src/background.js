@@ -75,6 +75,12 @@ async function setupBackgroundService() {
     extension.runtime.onConnect.addListener(connectRemote);
     extension.runtime.onConnectExternal.addListener(connectExternal);
 
+    // update badge
+    backgroundService.messageController.on('Update badge', text => {
+        extension.browserAction.setBadgeText({text});
+        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
+    })
+
     function connectRemote(remotePort) {
         const processName = remotePort.name;
         if (processName === 'contentscript') {
