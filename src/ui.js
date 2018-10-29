@@ -37,6 +37,12 @@ async function startUi() {
         global.background = background
     }
 
+    // If popup is opened close notification window
+    if (extension.extension.getViews({ type: "popup" }).length > 0){
+        await background.closeNotificationWindow();
+    }
 
+
+    // Initialize app
     initApp(background);
 }

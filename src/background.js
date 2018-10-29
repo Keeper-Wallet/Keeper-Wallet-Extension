@@ -20,7 +20,7 @@ import {
     UiStateController, AssetInfoController, ExternalDeviceController
 } from './controllers'
 import {setupDnode} from './lib/dnode-util';
-import * as uiHelper from './lib/uiHelper'
+import {WindowManager} from './lib/WindowManger'
 
 
 const WAVESKEEPER_DEBUG = true;
@@ -41,10 +41,11 @@ async function setupBackgroundService() {
         initLangCode
     });
 
+    const windowManager = new WindowManager();
+
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService
-        global.uiHelper = uiHelper
     }
 
     // setup state persistence
@@ -83,10 +84,12 @@ async function setupBackgroundService() {
 
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
-        extension.tabs.create({
-            url: url.href
-        });
+        extension.tabs.create({url});
     });
+
+    // Notification window management
+    backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
+    backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
 
     function connectRemote(remotePort) {
         const processName = remotePort.name;
@@ -226,7 +229,10 @@ class BackgroundService extends EventEmitter {
             getUserList: async (type, from, to) => await ExternalDeviceController.getUserList(type, from, to),
 
             // asset information
-            assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId)
+            assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId),
+
+            // window control
+            closeNotificationWindow: async () => this.emit('Close notification')
         }
     }
 
@@ -240,7 +246,8 @@ class BackgroundService extends EventEmitter {
                 throw new Error('From address should match selected account address or be blank');
             }
 
-            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast)
+            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
+            this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
         }
         return {
