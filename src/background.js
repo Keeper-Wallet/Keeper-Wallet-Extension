@@ -79,7 +79,14 @@ async function setupBackgroundService() {
     backgroundService.messageController.on('Update badge', text => {
         extension.browserAction.setBadgeText({text});
         extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
-    })
+    });
+
+    // open new tab
+    backgroundService.messageController.on('Open new tab', url => {
+        extension.tabs.create({
+            url: url.href
+        });
+    });
 
     function connectRemote(remotePort) {
         const processName = remotePort.name;
@@ -232,7 +239,9 @@ class BackgroundService extends EventEmitter {
             if (from && from !== selectedAccount.address) {
                 throw new Error('From address should match selected account address or be blank');
             }
-            return await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast)
+
+            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast)
+            return await this.messageController.getMessageResult(messageId)
         }
         return {
             signTransaction: async (data, from) => {
