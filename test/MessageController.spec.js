@@ -1,96 +1,107 @@
 import {expect, assert} from 'chai';
-import {MessageController} from "../src/controllers";
+import {MessageController, AssetInfoController} from "../src/controllers";
 
 describe("MessageController", () => {
     require('isomorphic-fetch');
 
     let controller;
-    const address = 'someAddress'
+    const account = {
+        address: '3MxjhrvCr1nnDxvNJiCQfSC557gd8QYEhDx',
+        publicKey: '9oRf59sSHE2inwF6wraJDPQNsx7ktMKxaKvyFFL8GDrh',
+        networkCode: 'T'
+    }
     const origin = 'SomeOrigin';
+
+    const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://testnodes.wavesnodes.com'})
 
     const tx = {
         type: 4,
+        successPath: 'https://wikipedia.org',
         data: {
-            assetId: 'WAVES',
-            feeAssetId: 'WAVES',
-            amount: 10000,
-            fee: 1000,
+            amount: {
+                tokens: '1',
+                assetId:'WAVES'
+            },
+            fee: {
+                tokens: '0.001',
+                assetId:'WAVES'
+            },
             attachment: '',
             recipient: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'
         }
     }
 
+    const auth =  {
+        name: 'avcd',
+        data: 'hello',
+        successPath: 'https://www.wikipedia.org/wiki/Main_Page'
+    }
+
+    const matcherRequest = {
+        type: 1001,
+        data: {
+            timestamp: Date.now()
+        }
+    }
+
+    const coinomatRequest = {
+        type: 1004,
+        data: {
+            timestamp: Date.now()
+        }
+    }
+
     beforeEach(() => {
-        controller = new MessageController({sign: async() => 'placeholder', broadcast: async () => 'broadcast placeholder'});
+        controller = new MessageController({signTx: async() => 'placeholder', broadcast: async () => 'broadcast placeholder', assetInfo: (id)=>assetInfoController.assetInfo(id)});
     });
 
 
-    it('Should add new messages and generate correct metadata', () => {
-        controller.newTx(tx, origin, address);
-        controller.newTx(tx, origin, address);
+    it('Should add correct messages to pipeline with correct metadata', async () => {
+        await controller.newMessage(tx, 'transaction', origin, account);
+        await controller.newMessage(auth, 'auth', origin, account);
+        await controller.newMessage(matcherRequest, 'request', origin, account);
+        await controller.newMessage(matcherRequest, 'request', origin, account);
         const state = controller.store.getState();
-        expect(state.messages.length).to.eql(2);
+        expect(state.messages.length).to.eql(4);
         expect(state.messages[0].id).to.be.a('string');
         expect(state.messages[0].id).to.be.not.eql(state.messages[1].id);
         expect(state.messages[0].origin).to.eql(origin);
-        expect(state.messages[0].account).to.eql(address);
+        expect(state.messages[0].account).to.eql(account);
         expect(state.messages[0].status).to.eql('unapproved');
         expect(state.messages[0].time).to.be.a('number');
         expect(state.messages[0].time).to.be.lt(Date.now());
     });
 
-    it('Should approve message that has sender', async () => {
-        const messagePromise = controller.newTx(tx, origin, address);
+    it('Should approve message', async () => {
+        const messageId = await controller.newMessage(tx, 'transaction', origin, account);
+        const messageResultPromise = controller.getMessageResult(messageId);
         const state = controller.store.getState();
         const msgId = state.messages[0].id;
         await controller.approve(msgId);
         expect(controller._getMessageById(msgId).status).to.eql('signed');
-        const signedMessage = await messagePromise;
+        const signedMessage = await messageResultPromise;
         expect(signedMessage).to.eql('placeholder');
     });
 
-    it('Should approve message that don\'t have sender. Sender is passed as param', async () => {
-        const messagePromise = controller.newTx(tx, origin);
-        const state = controller.store.getState();
-        const msgId = state.messages[0].id;
-        await controller.approve(msgId, address);
-        expect(controller._getMessageById(msgId).status).to.eql('signed');
-        const signedMessage = await messagePromise;
-        expect(signedMessage).to.eql('placeholder');
-    });
 
-    it('Shouldn\'t approve message that don\'t have sender. Sender not passed as param', async () => {
-        controller.newTx(tx, origin).catch(()=>{});
-        const state = controller.store.getState();
-        const msgId = state.messages[0].id;
-        let msg = ''
-        try {
-            await controller.approve(msgId);
-        }catch (e) {
-            msg = e.message
-        }
-        expect(msg).to.eql('Orphaned tx. No account public key')
-    });
 
     it('Should approve and broadcast message if broadcast = true', async () => {
-        const messagePromise = controller.newTx(tx, origin, address, true);
-        const state = controller.store.getState();
-        const msgId = state.messages[0].id;
-        await controller.approve(msgId, address);
-        expect(controller._getMessageById(msgId).status).to.eql('published');
-        const signedMessage = await messagePromise;
+        const messageId = await controller.newMessage(tx, 'transaction', origin, account, true);
+        const messageResultPromise = controller.getMessageResult(messageId);
+        await controller.approve(messageId);
+        expect(controller._getMessageById(messageId).status).to.eql('published');
+        const signedMessage = await messageResultPromise;
         expect(signedMessage).to.eql('broadcast placeholder');
     });
 
     it('Should reject messages', async () => {
-        const messagePromise = controller.newTx(tx, origin, address);
-        const state = controller.store.getState();
-        const msgId = state.messages[0].id;
-        controller.reject(msgId);
-        expect(controller._getMessageById(msgId).status).to.eql('rejected');
+        const messageId = await controller.newMessage(tx, 'transaction', origin, account);
+        const messageResultPromise = controller.getMessageResult(messageId);
+        controller.reject(messageId);
+        expect(controller._getMessageById(messageId).status).to.eql('rejected');
         let err;
         try {
-            await messagePromise;
+            await messageResultPromise;
         } catch (e) {
             err = e
         }

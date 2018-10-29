@@ -2,7 +2,6 @@ import ObservableStore from 'obs-store';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
-import extension from 'extensionizer';
 import {getAdapterByType} from "@waves/signature-adapter";
 import {BigNumber, Money} from '@waves/data-entities';
 import {networkByteFromAddress} from "../lib/cryptoUtil";
@@ -34,12 +33,12 @@ export class MessageController extends EventEmitter {
 
     /**
      * Generates message with metadata. Add tx to pipeline
-     * @param {data} data - message data
+     * @param {object} data - message data
      * @param {string} origin - Domain, which has sent this data
      * @param {string} type - type of message(transaction, request, auth, bytes)
      * @param {object | undefined} account - Account, that should approve message. Can be undefined
      * @param {boolean} broadcast - Should this message be sent(node, matcher, somewhere else)
-     * @returns {Promise<object>}
+     * @returns {string} id - message id
      */
     async newMessage(data, type, origin, account, broadcast = false) {
         log.debug(`New message ${type}: ${JSON.stringify(data)}`);
@@ -50,8 +49,18 @@ export class MessageController extends EventEmitter {
         log.debug(`Generated message ${JSON.stringify(message)}`);
         messages.push(message);
         this._updateStore(messages);
-        return await new Promise((resolve, reject) => {
-            this.once(`${message.id}:finished`, finishedMessage => {
+        return message.id
+    }
+
+    // Todo: Find appropriate name. What if message has already been finished?
+    /**
+     * Get message result once it has been approved or rejected
+     * @param {string} id - message id
+     * @returns {Promise<object>}
+     */
+    getMessageResult(id){
+        return new Promise((resolve, reject) => {
+            this.once(`${id}:finished`, finishedMessage => {
                 switch (finishedMessage.status) {
                     case 'signed':
                     case 'published':
@@ -67,9 +76,9 @@ export class MessageController extends EventEmitter {
         })
     }
 
-    approve(id, address) {
+    approve(id, account) {
         const message = this._getMessageById(id);
-        message.account = address || message.account;
+        message.account = account || message.account;
         if (!message.account) return Promise.reject('Message has empty account filed and no address is provided');
 
         return new Promise((resolve, reject) => {
@@ -127,8 +136,7 @@ export class MessageController extends EventEmitter {
     _updateBage(messages) {
         const unapproved = messages.filter(({status}) => status === 'unapproved').length;
         const text = unapproved ? unapproved.toString() : '';
-        extension.browserAction.setBadgeText({text});
-        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
+        this.emit('Update badge', text)
     }
 
     async _fillSignableData(message) {
@@ -188,18 +196,14 @@ export class MessageController extends EventEmitter {
             switch (message.type) {
                 case 'transaction':
                     url.searchParams.append('txId', message.messageHash);
-                    extension.tabs.create({
-                        url: url.href
-                    });
+                    this.emit('Open new tab', url.href);
                     break;
                 case 'auth':
                     //url.searchParams.append('d', message.data.data);
                     url.searchParams.append('p', message.data.publicKey);
                     url.searchParams.append('s', message.data.signature);
                     url.searchParams.append('a', message.data.address);
-                    extension.tabs.create({
-                        url: url.href
-                    });
+                    this.emit('Open new tab', url.href);
                     break;
             }
         }
