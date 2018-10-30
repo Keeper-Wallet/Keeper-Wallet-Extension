@@ -9,6 +9,8 @@ import {networkByteFromAddress} from "../lib/cryptoUtil";
 // msg statuses: unapproved, signed, published, rejected, failed
 
 export class MessageController extends EventEmitter {
+    MAX_MESSAGES = 100;
+
     constructor(options = {}) {
         super();
         const defaults = {
@@ -46,6 +48,16 @@ export class MessageController extends EventEmitter {
         const message = await this._generateMessage(data, type, origin, account, broadcast);
 
         let messages = this.store.getState().messages;
+
+        while (messages.length > this.MAX_MESSAGES){
+            const oldest = messages.filter(msg => ['published', 'signed', 'failed', 'rejected'].indexOf(msg.status)>-1)
+                .sort((a,b) => a.timestamp - b.timestamp)[0];
+            if (oldest){
+                this._deleteMessage(oldest.id)
+            }else {
+                break;
+            }
+        }
         log.debug(`Generated message ${JSON.stringify(message)}`);
         messages.push(message);
         this._updateStore(messages);
@@ -76,6 +88,12 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    /**
+     * Approves message
+     * @param {string} id - message id
+     * @param {object} [account] - Account, approving this tx
+     * @returns {Promise<object>}
+     */
     approve(id, account) {
         const message = this._getMessageById(id);
         message.account = account || message.account;
@@ -101,6 +119,10 @@ export class MessageController extends EventEmitter {
         })
     }
 
+    /**
+     * Rejects message
+     * @param {string} id - message id
+     */
     reject(id) {
         const message = this._getMessageById(id);
         message.status = 'rejected';
@@ -127,6 +149,12 @@ export class MessageController extends EventEmitter {
         return result;
     }
 
+    _deleteMessage(id){
+        const {messages} = this.store.getState()
+        const index = messages.findIndex(message => message.id === id);
+        messages.splice(index, 1)
+        this._updateStore(messages);
+    }
 
     _updateStore(messages) {
         this.store.updateState({messages});
@@ -273,7 +301,7 @@ export class MessageController extends EventEmitter {
             origin,
             data,
             status: 'unapproved',
-            time: Date.now(),
+            timestamp: Date.now(),
             type
         };
         return await this._validateAndTransform(message)
