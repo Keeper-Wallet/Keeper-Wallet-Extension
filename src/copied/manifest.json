@@ -55,7 +55,8 @@
   "permissions": [
     "storage",
     "unlimitedStorage",
-    "clipboardWrite"
+    "clipboardWrite",
+    "idle"
   ],
   "web_accessible_resources": [
     "inpage.js"
