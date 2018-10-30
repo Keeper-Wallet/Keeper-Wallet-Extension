@@ -25,24 +25,22 @@ import {WindowManager} from './lib/WindowManger'
 
 
 const WAVESKEEPER_DEBUG = true;
+const IDLE_INTERVAL = 60;
+
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
 
 
 async function setupBackgroundService() {
+    // Background service init
     const localStore = new LocalStore();
-
-    // create background service
     const initState = await localStore.get();
     const initLangCode = await getFirstLangCode();
-
     const backgroundService = new BackgroundService({
         initState,
         initLangCode
     });
-
-    const windowManager = new WindowManager();
 
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
@@ -89,9 +87,19 @@ async function setupBackgroundService() {
     });
 
     // Notification window management
+    const windowManager = new WindowManager();
     backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
     backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
 
+    // Idle management
+    extension.idle.setDetectionInterval(IDLE_INTERVAL);
+    extension.idle.onStateChanged.addListener(state => {
+        if (['active', 'idle'].indexOf(state) > -1){
+            backgroundService.walletController.lock()
+        }
+    });
+
+    // Connection handlers
     function connectRemote(remotePort) {
         const processName = remotePort.name;
         if (processName === 'contentscript') {
