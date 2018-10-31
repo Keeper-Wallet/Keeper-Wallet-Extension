@@ -101,15 +101,44 @@ export class WalletController {
         return wallet.getSecret();
     }
 
+    /**
+     * Signs transaction
+     * @param {string} address - wallet address
+     * @param {object} tx - transaction to sign
+     * @returns {Promise<string>} signed transaction as json string
+     */
     async signTx(address, tx) {
         const wallet = this._findWallet(address);
         return await wallet.signTx(tx);
     }
 
+    /**
+     * Signs transaction
+     * @param {string} address - wallet address
+     * @param {array} bytes - array of bytes
+     * @returns {Promise<string>} signed transaction as json string
+     */
+    async signBytes(address, bytes) {
+        const wallet = this._findWallet(address);
+        return await wallet.signBytes(bytes);
+    }
+    /**
+     * Signs request
+     * @param {string} address - wallet address
+     * @param {object} request - transaction to sign
+     * @returns {Promise<string>} signature
+     */
     async signRequest(address, request){
         const wallet = this._findWallet(address);
         return wallet.signRequest(request);
     }
+
+    /**
+     * Signs request
+     * @param {string} address - wallet address
+     * @param {object} authData - object, representing auth request
+     * @returns {Promise<object>} object, representing auth response
+     */
     async auth(address, authData){
         const wallet = this._findWallet(address);
         const signature = await wallet.signRequest(authData);

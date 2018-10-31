@@ -22,6 +22,7 @@ export class MessageController extends EventEmitter {
         this.signTx = options.signTx;
         this.auth = options.auth;
         this.signRequest = options.signRequest;
+        this.signBytes = options.signBytes;
 
         // Broadcast method from NetworkController
         this.broadcast = options.broadcast;
@@ -131,8 +132,18 @@ export class MessageController extends EventEmitter {
     }
 
     // for debug purposes
-    clearMessages() {
-        this._updateStore([]);
+    /**
+     * Rejects message
+     * @param {array} [ids] - message id
+     */
+    clearMessages(ids) {
+        if (typeof ids === 'string'){
+            this._deleteMessage(ids)
+        } else if (ids && ids.length > 0){
+            ids.forEach(id => this._deleteMessage(id))
+        }else {
+            this._updateStore([]);
+        }
     }
 
     _updateMessage(message) {
@@ -152,8 +163,10 @@ export class MessageController extends EventEmitter {
     _deleteMessage(id){
         const {messages} = this.store.getState()
         const index = messages.findIndex(message => message.id === id);
-        messages.splice(index, 1)
-        this._updateStore(messages);
+        if (index > -1){
+            messages.splice(index, 1);
+            this._updateStore(messages);
+        }
     }
 
     _updateStore(messages) {
@@ -169,6 +182,8 @@ export class MessageController extends EventEmitter {
 
     async _fillSignableData(message) {
         switch (message.type) {
+            case 'order':
+            case 'cancelOrder':
             case 'transaction':
                 let result = {...message.data.data};
                 for (let key in message.data.data) {
@@ -190,6 +205,8 @@ export class MessageController extends EventEmitter {
     async _signMessage(message) {
         let signedData = message.data;
         switch (message.type) {
+            case 'order':
+            case 'cancelOrder':
             case 'transaction':
                 signedData = await this.signTx(message.account.address, message.data);
                 break;
@@ -198,6 +215,9 @@ export class MessageController extends EventEmitter {
                 break;
             case 'request':
                 signedData = await this.signRequest(message.account.address, message.data);
+                break;
+            case 'bytes':
+                signedData=  await this.signBytes(message.account.address, message.data);
                 break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
@@ -208,11 +228,11 @@ export class MessageController extends EventEmitter {
     }
 
     async _broadcastMessage(message) {
-        if (!message.broadcast || message.type !== 'transaction') {
+        if (!message.broadcast || ['transaction', 'order', 'cancelOrder'].indexOf(message.type) === -1) {
             return message;
         }
 
-        const broadcastResp = await this.broadcast(message.data);
+        const broadcastResp = await this.broadcast(message);
         message.status = 'published';
         message.data = broadcastResp;
         return message
@@ -252,6 +272,20 @@ export class MessageController extends EventEmitter {
         return await signable.getId();
     }
 
+    async _generateMessage(data, type, origin, account, broadcast) {
+        const message = {
+            account,
+            broadcast,
+            id: uuid(),
+            origin,
+            data,
+            status: 'unapproved',
+            timestamp: Date.now(),
+            type
+        };
+        return await this._validateAndTransform(message)
+    }
+
     async _validateAndTransform(message) {
         let result = {...message};
         switch (message.type) {
@@ -271,6 +305,7 @@ export class MessageController extends EventEmitter {
                     result.successPath =  message.data.successPath
                 }
                 break;
+            case 'order':
             case 'transaction':
                 const txDefaults = {
                     timestamp: Date.now(),
@@ -282,6 +317,10 @@ export class MessageController extends EventEmitter {
                     result.successPath = message.data.successPath
                 }
                 break;
+            case 'cancelOrder':
+                result.amountAsset = message.data.amountAsset;
+                result.priceAsset = message.data.priceAsset;
+                break;
             case 'request':
                 result.messageHash = await this._getMessageHash(result);
                 break;
@@ -291,20 +330,6 @@ export class MessageController extends EventEmitter {
                 throw new Error(`Incorrect type "${type}"`)
         }
         return result
-    }
-
-    async _generateMessage(data, type, origin, account, broadcast) {
-        const message = {
-            account,
-            broadcast,
-            id: uuid(),
-            origin,
-            data,
-            status: 'unapproved',
-            timestamp: Date.now(),
-            type
-        };
-        return await this._validateAndTransform(message)
     }
 }
 

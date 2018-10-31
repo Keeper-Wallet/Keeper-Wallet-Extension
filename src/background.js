@@ -175,6 +175,7 @@ class BackgroundService extends EventEmitter {
             signTx: this.walletController.signTx.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),
+            signBytes: this.walletController.signBytes.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
@@ -233,6 +234,7 @@ class BackgroundService extends EventEmitter {
             setNetwork: async (network) => this.networkController.setNetwork(network),
             getNetworks: async () => this.networkController.getNetworks(),
             setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
+            setCustomMatcher: async (url, network) => this.networkController.setCustomMatcher(url, network),
 
             // external devices
             getUserList: async (type, from, to) => await ExternalDeviceController.getUserList(type, from, to),
@@ -259,7 +261,20 @@ class BackgroundService extends EventEmitter {
             this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
         }
-        return {
+
+        const api = {
+            signOrder: async (data, from) => {
+                return await newMessage(data, 'order', from, false)
+            },
+            signAndPublishOrder: async (data, from) => {
+                return await newMessage(data, 'order', from, true)
+            },
+            signCancelOrder: async (data, from) => {
+                return await newMessage(data, 'cancelOrder', from, false)
+            },
+            signAndPublishCancelOrder: async (data, from) => {
+                return await newMessage(data, 'cancelOrder', from, true)
+            },
             signTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, false)
             },
@@ -273,7 +288,13 @@ class BackgroundService extends EventEmitter {
                 return await newMessage(data, 'request', from, false)
             }
             //publicState: async () => this._publicState(this.getState()),
+        };
+
+        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+            api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false)
         }
+
+        return api
     }
 
     setupUiConnection(connectionStream, origin) {

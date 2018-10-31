@@ -73,8 +73,8 @@ describe("MessageController", () => {
         expect(state.messages[0].origin).to.eql(origin);
         expect(state.messages[0].account).to.eql(account);
         expect(state.messages[0].status).to.eql('unapproved');
-        expect(state.messages[0].time).to.be.a('number');
-        expect(state.messages[0].time).to.be.lt(Date.now());
+        expect(state.messages[0].timestamp).to.be.a('number');
+        expect(state.messages[0].timestamp).to.be.lt(Date.now());
     });
 
     it('Shouldn\'t add invalid messages to pipeline', ()=>{
