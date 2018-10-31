@@ -131,8 +131,18 @@ export class MessageController extends EventEmitter {
     }
 
     // for debug purposes
-    clearMessages() {
-        this._updateStore([]);
+    /**
+     * Rejects message
+     * @param {array} [ids] - message id
+     */
+    clearMessages(ids) {
+        if (typeof ids === 'string'){
+            this._deleteMessage(ids)
+        } else if (ids && ids.length > 0){
+            ids.forEach(id => this._deleteMessage(id))
+        }else {
+            this._updateStore([]);
+        }
     }
 
     _updateMessage(message) {
@@ -152,8 +162,10 @@ export class MessageController extends EventEmitter {
     _deleteMessage(id){
         const {messages} = this.store.getState()
         const index = messages.findIndex(message => message.id === id);
-        messages.splice(index, 1)
-        this._updateStore(messages);
+        if (index > -1){
+            messages.splice(index, 1);
+            this._updateStore(messages);
+        }
     }
 
     _updateStore(messages) {
