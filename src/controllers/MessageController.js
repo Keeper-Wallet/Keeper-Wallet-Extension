@@ -22,6 +22,7 @@ export class MessageController extends EventEmitter {
         this.signTx = options.signTx;
         this.auth = options.auth;
         this.signRequest = options.signRequest;
+        this.signBytes = options.signBytes;
 
         // Broadcast method from NetworkController
         this.broadcast = options.broadcast;
@@ -215,6 +216,9 @@ export class MessageController extends EventEmitter {
             case 'request':
                 signedData = await this.signRequest(message.account.address, message.data);
                 break;
+            case 'bytes':
+                signedData=  await this.signBytes(message.account.address, message.data);
+                break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
         }
@@ -268,6 +272,20 @@ export class MessageController extends EventEmitter {
         return await signable.getId();
     }
 
+    async _generateMessage(data, type, origin, account, broadcast) {
+        const message = {
+            account,
+            broadcast,
+            id: uuid(),
+            origin,
+            data,
+            status: 'unapproved',
+            timestamp: Date.now(),
+            type
+        };
+        return await this._validateAndTransform(message)
+    }
+
     async _validateAndTransform(message) {
         let result = {...message};
         switch (message.type) {
@@ -306,27 +324,12 @@ export class MessageController extends EventEmitter {
             case 'request':
                 result.messageHash = await this._getMessageHash(result);
                 break;
-
             case 'bytes':
                 break;
             default:
                 throw new Error(`Incorrect type "${type}"`)
         }
         return result
-    }
-
-    async _generateMessage(data, type, origin, account, broadcast) {
-        const message = {
-            account,
-            broadcast,
-            id: uuid(),
-            origin,
-            data,
-            status: 'unapproved',
-            timestamp: Date.now(),
-            type
-        };
-        return await this._validateAndTransform(message)
     }
 }
 

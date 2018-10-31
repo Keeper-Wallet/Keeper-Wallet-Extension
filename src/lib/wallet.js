@@ -43,7 +43,7 @@ export class Wallet {
     }
 
     async signBytes(bytes){
-        return this._adapter.signData(bytes)
+        return await this._adapter.signData(Uint8Array.from(bytes))
     }
 
     async signRequest(request){

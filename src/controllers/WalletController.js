@@ -113,6 +113,16 @@ export class WalletController {
     }
 
     /**
+     * Signs transaction
+     * @param {string} address - wallet address
+     * @param {array} bytes - array of bytes
+     * @returns {Promise<string>} signed transaction as json string
+     */
+    async signBytes(address, bytes) {
+        const wallet = this._findWallet(address);
+        return await wallet.signBytes(bytes);
+    }
+    /**
      * Signs request
      * @param {string} address - wallet address
      * @param {object} request - transaction to sign

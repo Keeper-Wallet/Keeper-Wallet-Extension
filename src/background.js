@@ -175,6 +175,7 @@ class BackgroundService extends EventEmitter {
             signTx: this.walletController.signTx.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),
+            signBytes: this.walletController.signBytes.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
@@ -260,7 +261,8 @@ class BackgroundService extends EventEmitter {
             this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
         }
-        return {
+
+        const api = {
             signOrder: async (data, from) => {
                 return await newMessage(data, 'order', from, false)
             },
@@ -286,7 +288,13 @@ class BackgroundService extends EventEmitter {
                 return await newMessage(data, 'request', from, false)
             }
             //publicState: async () => this._publicState(this.getState()),
+        };
+
+        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+            api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false)
         }
+
+        return api
     }
 
     setupUiConnection(connectionStream, origin) {

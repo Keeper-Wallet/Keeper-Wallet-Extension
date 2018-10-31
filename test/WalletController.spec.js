@@ -2,6 +2,7 @@ import {expect, assert} from 'chai';
 import {WalletController} from "../src/controllers";
 import {encrypt} from "../src/lib/encryprtor";
 import {Money} from "@waves/data-entities";
+import * as SG from '@waves/signature-generator';
 
 describe('WalletController', () => {
     const password = 'example';
@@ -179,5 +180,18 @@ describe('WalletController', () => {
         const address = controller.wallets[0].getAccount().address
         const signed = await controller.auth(address, requestData)
         expect(signed.signature).to.be.a('string')
+    });
+
+    it('Should sign arbitrary bytes', async () => {
+        const controller = new WalletController({initState});
+        controller.unlock(password);
+        controller.addWallet({type: 'seed', networkCode: 'T', seed});
+
+        const data =[2,3,4,5];
+
+        const {address, publicKey } = controller.wallets[0].getAccount()
+        const signature = await controller.signBytes(address, data)
+
+        expect( SG.utils.crypto.isValidSignature(Uint8Array.from(data), signature, publicKey)).to.be.true
     });
 });
