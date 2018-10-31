@@ -1,6 +1,7 @@
 import ObservableStore from 'obs-store';
 
 export class BalanceController {
+    active = true
     constructor(options = {}){
         const defaults = {
             balances: {},
@@ -22,7 +23,7 @@ export class BalanceController {
 
     async updateBalances(){
         const accounts = this.getAccounts();
-        if (accounts.length < 1) return;
+        if (!this.active || accounts.length < 1) return;
         const API_BASE = this.getNode();
         let balances = await Promise.all(accounts.map(async account => {
             const address = account.address;

@@ -181,6 +181,8 @@ export class MessageController extends EventEmitter {
 
     async _fillSignableData(message) {
         switch (message.type) {
+            case 'order':
+            case 'cancelOrder':
             case 'transaction':
                 let result = {...message.data.data};
                 for (let key in message.data.data) {
@@ -202,6 +204,8 @@ export class MessageController extends EventEmitter {
     async _signMessage(message) {
         let signedData = message.data;
         switch (message.type) {
+            case 'order':
+            case 'cancelOrder':
             case 'transaction':
                 signedData = await this.signTx(message.account.address, message.data);
                 break;
@@ -220,11 +224,11 @@ export class MessageController extends EventEmitter {
     }
 
     async _broadcastMessage(message) {
-        if (!message.broadcast || message.type !== 'transaction') {
+        if (!message.broadcast || ['transaction', 'order', 'cancelOrder'].indexOf(message.type) === -1) {
             return message;
         }
 
-        const broadcastResp = await this.broadcast(message.data);
+        const broadcastResp = await this.broadcast(message);
         message.status = 'published';
         message.data = broadcastResp;
         return message
@@ -283,6 +287,7 @@ export class MessageController extends EventEmitter {
                     result.successPath =  message.data.successPath
                 }
                 break;
+            case 'order':
             case 'transaction':
                 const txDefaults = {
                     timestamp: Date.now(),
@@ -294,9 +299,14 @@ export class MessageController extends EventEmitter {
                     result.successPath = message.data.successPath
                 }
                 break;
+            case 'cancelOrder':
+                result.amountAsset = message.data.amountAsset;
+                result.priceAsset = message.data.priceAsset;
+                break;
             case 'request':
                 result.messageHash = await this._getMessageHash(result);
                 break;
+
             case 'bytes':
                 break;
             default:

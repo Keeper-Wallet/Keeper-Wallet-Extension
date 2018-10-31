@@ -233,6 +233,7 @@ class BackgroundService extends EventEmitter {
             setNetwork: async (network) => this.networkController.setNetwork(network),
             getNetworks: async () => this.networkController.getNetworks(),
             setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
+            setCustomMatcher: async (url, network) => this.networkController.setCustomMatcher(url, network),
 
             // external devices
             getUserList: async (type, from, to) => await ExternalDeviceController.getUserList(type, from, to),
@@ -260,6 +261,18 @@ class BackgroundService extends EventEmitter {
             return await this.messageController.getMessageResult(messageId)
         }
         return {
+            signOrder: async (data, from) => {
+                return await newMessage(data, 'order', from, false)
+            },
+            signAndPublishOrder: async (data, from) => {
+                return await newMessage(data, 'order', from, true)
+            },
+            signCancelOrder: async (data, from) => {
+                return await newMessage(data, 'cancelOrder', from, false)
+            },
+            signAndPublishCancelOrder: async (data, from) => {
+                return await newMessage(data, 'cancelOrder', from, true)
+            },
             signTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, false)
             },

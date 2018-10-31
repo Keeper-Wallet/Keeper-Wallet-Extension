@@ -11,6 +11,10 @@ export class NetworkController {
             customNodes: {
                 mainnet: null,
                 testnet: null
+            },
+            customMatchers: {
+                mainnet: null,
+                testnet: null
             }
         };
         this.store =  new ObservableStore(Object.assign({}, defaults, options.initState))
@@ -34,23 +38,82 @@ export class NetworkController {
         this.store.updateState({customNodes});
     }
 
+    setCustomMatcher(url, network = 'mainnet'){
+        let { customMatchers } = this.store.getState();
+        customMatchers[network] = url;
+        this.store.updateState({customMatchers});
+    }
+
     getCustomNodes(){
         return this.store.getState().customNodes;
     }
 
     getNode(){
         const network = this.getNetwork();
-        return this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server;
+        return this.getCustomNodes()[network] || NETWORK_CONFIG[network].server;
     }
-    async broadcast(txJson){
-        const API_BASE = this.getNode();
-        const url = new URL('transactions/broadcast', API_BASE).toString();
+
+    getCustomMatchers(){
+        return this.store.getState().customMatchers;
+    }
+
+    getMather(){
+        const network = this.getNetwork();
+        return this.getCustomMatchers()[network] || NETWORK_CONFIG[network].matcher;
+    }
+
+    async sendOrder(order){
+        const API_BASE = this.getMather();
+        if (!API_BASE){
+            throw new Error('Matcher not set. Cannot send order')
+        }
+        const url = new URL('matcher/orderbook', API_BASE).toString();
+        return await NetworkController._sendToServer(order, url)
+    }
+
+    async cancelOrder(cancelObj, amountId, priceId){
+        const API_BASE = this.getMather();
+        if (!API_BASE){
+            throw new Error('Matcher not set. Cannot send order')
+        }
+        const url = new URL(`matcher/orderbook/${amountId}/${priceId}/cancel`, API_BASE).toString();
+        return await NetworkController._sendToServer(cancelObj, url)
+    }
+
+    async broadcast(message){
+        const {data,  type} = message;
+        let API_BASE, url;
+
+        switch (type) {
+            case 'transaction':
+                API_BASE = this.getNode();
+                url = new URL('transactions/broadcast', API_BASE).toString();
+                break;
+            case 'order':
+                API_BASE = this.getMather();
+                if (!API_BASE){
+                    throw new Error('Matcher not set. Cannot send order')
+                }
+                url = new URL('matcher/orderbook', API_BASE).toString();
+                break;
+            case 'cancelOrder':
+                const {amountId, priceId} = message;
+                API_BASE = this.getMather();
+                if (!API_BASE){
+                    throw new Error('Matcher not set. Cannot send order')
+                }
+                url = new URL(`matcher/orderbook/${amountId}/${priceId}/cancel`, API_BASE).toString();
+                break;
+            default:
+                throw new Error(`Unknown message type: ${type}`)
+        }
+
         const resp =  await fetch(url, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json; charset=utf-8"
             },
-            body: txJson
+            body: data
         });
 
         switch (resp.status) {
@@ -63,5 +126,6 @@ export class NetworkController {
                 throw new Error(await resp.text())
         }
     }
+
 }
 
