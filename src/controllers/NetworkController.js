@@ -1,8 +1,4 @@
 import ObservableStore from 'obs-store';
-import {BigNumber} from '@waves/data-entities';
-import create from 'parse-json-bignumber';
-const {stringify, parse} = create({BigNumber});
-
 import { NETWORKS, NETWORK_CONFIG } from '../constants';
 
 const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
@@ -46,7 +42,7 @@ export class NetworkController {
         const network = this.getNetwork();
         return this.getCustomNodes()[network] || NETWORK_CONFIG[this.getNetwork()].server;
     }
-    async broadcast(tx){
+    async broadcast(txJson){
         const API_BASE = this.getNode();
         const url = new URL('transactions/broadcast', API_BASE).toString();
         const resp =  await fetch(url, {
@@ -54,12 +50,12 @@ export class NetworkController {
             headers: {
                 "Content-Type": "application/json; charset=utf-8"
             },
-            body: stringify(tx)
+            body: txJson
         });
 
         switch (resp.status) {
             case 200:
-                return await resp.json();
+                return await resp.text();
             case 400:
                 const error = await resp.json();
                 throw new Error(error.message);

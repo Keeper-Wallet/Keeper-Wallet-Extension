@@ -142,8 +142,8 @@ describe('WalletController', () => {
             }
         }
         const address = controller.wallets[0].getAccount().address
-        const signed = await controller.signTx(address, tx)
-        expect(signed.proofs.length).to.be.greaterThan(0)
+        const txJson = await controller.signTx(address, tx)
+        expect(JSON.parse(txJson).proofs.length).to.be.greaterThan(0)
     });
 
 

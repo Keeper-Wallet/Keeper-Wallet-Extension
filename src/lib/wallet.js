@@ -1,13 +1,7 @@
 import {getAdapterByType} from '@waves/signature-adapter'
 import {BigNumber} from '@waves/data-entities';
-// import {moneylikeToMoney} from '../lib/moneyUtil';
-//
-// import * as SG from "@waves/signature-generator"
 import create from 'parse-json-bignumber';
-import {networkByteFromAddress} from "./cryptoUtil";
-
 const {stringify, parse} = create({BigNumber});
-
 
 export class Wallet {
     constructor(user) {
@@ -45,7 +39,7 @@ export class Wallet {
 
     async signTx(tx){
         const signable = this._adapter.makeSignable(tx);
-        return await signable.getDataForApi();
+        return stringify(await signable.getDataForApi());
     }
 
     async signBytes(bytes){
