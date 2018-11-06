@@ -62,22 +62,16 @@ export class NetworkController {
         return this.getCustomMatchers()[network] || NETWORK_CONFIG[network].matcher;
     }
 
-    async sendOrder(order){
-        const API_BASE = this.getMather();
-        if (!API_BASE){
-            throw new Error('Matcher not set. Cannot send order')
-        }
-        const url = new URL('matcher/orderbook', API_BASE).toString();
-        return await NetworkController._sendToServer(order, url)
-    }
+    async getMatcherPublicKey(){
+        const keyMap = {};
+        const url =  new URL('/matcher', this.getMather()).toString();
+        if (keyMap[url] == null){
+            const resp = await fetch(url);
 
-    async cancelOrder(cancelObj, amountId, priceId){
-        const API_BASE = this.getMather();
-        if (!API_BASE){
-            throw new Error('Matcher not set. Cannot send order')
+            keyMap[url] = await resp.text()
         }
-        const url = new URL(`matcher/orderbook/${amountId}/${priceId}/cancel`, API_BASE).toString();
-        return await NetworkController._sendToServer(cancelObj, url)
+        console.log(keyMap[url]);
+        return keyMap[url];
     }
 
     async broadcast(message){

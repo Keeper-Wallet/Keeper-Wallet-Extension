@@ -12,7 +12,8 @@ const WAVES = {
     sender: '',
     reissuable: false,
     displayName: 'WAVES'
-}
+};
+
 export class AssetInfoController {
     constructor(options = {}) {
         const defaults = {
@@ -35,12 +36,14 @@ export class AssetInfoController {
         const API_BASE = this.getNode();
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
         let assets = this.store.getState().assets;
+
         if (!assets[network][assetId]) {
-            let assetInfo = await fetch(url).then(resp => resp.text())
-                .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')));
-            
-            if (! assetInfo.error){
-                const mapped = {
+            let resp = await fetch(url)
+            switch (resp.status) {
+                case 200:
+                    let assetInfo = await resp.text()
+                        .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')));
+                    const mapped = {
                         quantity: assetInfo.quantity,
                         ticker: assetInfo.ticker,
                         id: assetInfo.assetId,
@@ -52,11 +55,18 @@ export class AssetInfoController {
                         sender: assetInfo.issuer,
                         reissuable: assetInfo.reissuable,
                         displayName: assetInfo.ticker || assetInfo.name
-                    }
-                assets[network][assetId] = mapped;
-                this.store.updateState({assets})
-            }``
+                    };
+                    assets[network][assetId] = mapped;
+                    this.store.updateState({assets});
+                    break;
+                case 400:
+                    const error = await resp.json();
+                    throw new Error(`Could not find info for asset with id: ${assetId}. ${error.message}`);
+                default:
+                    throw new Error(await resp.text())
+            }
         }
+
         return assets[network][assetId]
     }
 }
