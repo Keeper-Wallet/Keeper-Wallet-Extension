@@ -107,6 +107,7 @@ export class MessageController extends EventEmitter {
                 .then(this._broadcastMessage.bind(this))
                 .then(this._processSuccessPath.bind(this))
                 .catch(e => {
+                    log.error(e)
                     message.status = 'failed';
                     message.err = {
                         message: e.toString(),
