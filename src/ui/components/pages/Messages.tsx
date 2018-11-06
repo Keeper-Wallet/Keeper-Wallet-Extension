@@ -113,7 +113,7 @@ class MessagesComponent extends React.Component {
         
         const sourceSignData = message.data;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
-        const needGetAssets = Object.keys(parsedData.assets).filter(id => !assets[id]);
+        const needGetAssets = Object.keys(parsedData.assets).filter(id => assets[id] === undefined);
         needGetAssets.forEach( id => props.getAsset(id));
 
         if (needGetAssets.length) {
@@ -177,10 +177,11 @@ class MessagesComponent extends React.Component {
     static fillSignData(data, moneys, assets) {
         const result = { ...data };
 
-        for (const { path, ...money } of moneys) {
+        for (const { path, assetId, tokens } of moneys) {
 
             let obj = result;
-            const moneyInstance = new Money(0, new Asset(assets[money.assetId])).cloneWithTokens(money.tokens);
+            const asset = assets[assetId];
+            const moneyInstance = asset ? new Money(0, new Asset(asset)).cloneWithTokens(tokens) : null;
             const key = path.pop();
 
             for (const key of path) {
@@ -188,7 +189,7 @@ class MessagesComponent extends React.Component {
                  obj = obj[key];
             }
 
-            obj[key] = moneyInstance;
+            obj[key] = moneyInstance || obj[key];
         }
 
         return result;

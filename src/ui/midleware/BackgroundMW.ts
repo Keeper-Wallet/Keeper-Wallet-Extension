@@ -119,7 +119,7 @@ export const getAsset = store => next => action => {
     if (action.type === ACTION.GET_ASSETS) {
         background.assetInfo(action.payload).then(
             (data) => {
-                store.dispatch(updateAsset({[data.id]: data}))
+                store.dispatch(updateAsset({[action.payload]: data}))
             }
         );
         return null;
@@ -150,6 +150,16 @@ export const setCustomNode = store => next => action => {
         return null;
     }
 
+    return next(action);
+};
+
+export const setCustomMatcher = store => next => action => {
+    if (ACTION.CHANGE_MATCHER === action.type) {
+        const { currentNetwork } = store.getState();
+        background.setCustomMatcher(action.payload, currentNetwork);
+        return null;
+    }
+    
     return next(action);
 };
 
