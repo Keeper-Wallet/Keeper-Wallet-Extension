@@ -294,7 +294,8 @@ class BackgroundService extends EventEmitter {
         };
 
         if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
-            api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false)
+            api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false);
+            api.publicState = async () => this._publicState(this.getState())
         }
 
         return api
@@ -323,14 +324,16 @@ class BackgroundService extends EventEmitter {
         dnode.on('remote', (remote) => {
             // push account change event to the page
             const sendUpdate = remote.sendUpdate.bind(remote);
-            this.on('update', function (state) {
-                const updatedPublicState = self._publicState(state);
-                // If public state changed call remote with new public state
-                if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
-                    publicState = updatedPublicState;
-                    sendUpdate(publicState)
-                }
-            })
+            if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+                this.on('update', function (state) {
+                    const updatedPublicState = self._publicState(state);
+                    // If public state changed call remote with new public state
+                    if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
+                        publicState = updatedPublicState;
+                        sendUpdate(publicState)
+                    }
+                })
+            }
         })
     }
 
@@ -341,7 +344,7 @@ class BackgroundService extends EventEmitter {
     _publicState(state) {
         return {
             locked: state.locked,
-            account: state.locked ? undefined : state.selectedAccount
+            account: state.selectedAccount
         }
     }
 
