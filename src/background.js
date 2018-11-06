@@ -156,6 +156,7 @@ class BackgroundService extends EventEmitter {
         // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNode: this.networkController.getNode.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
@@ -169,7 +170,8 @@ class BackgroundService extends EventEmitter {
         });
 
         // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
-        // Delegates approve to walletController, broadcast to networkController and assetInfo for assetInfoController
+        // Delegates different signing to walletController, broadcast and getMatcherPublicKey to networkController,
+        // assetInfo for assetInfoController
         this.messageController = new MessageController({
             initState: initState.MessageController,
             signTx: this.walletController.signTx.bind(this.walletController),
@@ -177,6 +179,7 @@ class BackgroundService extends EventEmitter {
             signRequest: this.walletController.signRequest.bind(this.walletController),
             signBytes: this.walletController.signBytes.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
+            getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
         });
 

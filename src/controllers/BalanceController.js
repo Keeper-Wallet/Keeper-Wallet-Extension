@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import {NETWORK_CONFIG} from "../constants";
 
 export class BalanceController {
     active = true
@@ -9,6 +10,7 @@ export class BalanceController {
         };
 
         this.getAccounts = options.getAccounts;
+        this.getNetwork = options.getNetwork;
         this.getNode = options.getNode;
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
         this.poller = undefined;
@@ -22,7 +24,7 @@ export class BalanceController {
     }
 
     async updateBalances(){
-        const accounts = this.getAccounts();
+        const accounts = this.getAccounts().filter(account => account.networkCode === NETWORK_CONFIG[this.getNetwork()].code);
         if (!this.active || accounts.length < 1) return;
         const API_BASE = this.getNode();
         let balances = await Promise.all(accounts.map(async account => {

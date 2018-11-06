@@ -24,8 +24,9 @@ export class MessageController extends EventEmitter {
         this.signRequest = options.signRequest;
         this.signBytes = options.signBytes;
 
-        // Broadcast method from NetworkController
+        // Broadcast and getMatcherPublicKey method from NetworkController
         this.broadcast = options.broadcast;
+        this.getMatcherPublicKey = options.getMatcherPublicKey;
 
         // Get assetInfo method from AssetInfoController
         this.assetInfo = options.assetInfo;
@@ -50,12 +51,12 @@ export class MessageController extends EventEmitter {
 
         let messages = this.store.getState().messages;
 
-        while (messages.length > this.MAX_MESSAGES){
-            const oldest = messages.filter(msg => ['published', 'signed', 'failed', 'rejected'].indexOf(msg.status)>-1)
-                .sort((a,b) => a.timestamp - b.timestamp)[0];
-            if (oldest){
+        while (messages.length > this.MAX_MESSAGES) {
+            const oldest = messages.filter(msg => ['published', 'signed', 'failed', 'rejected'].indexOf(msg.status) > -1)
+                .sort((a, b) => a.timestamp - b.timestamp)[0];
+            if (oldest) {
                 this._deleteMessage(oldest.id)
-            }else {
+            } else {
                 break;
             }
         }
@@ -71,7 +72,7 @@ export class MessageController extends EventEmitter {
      * @param {string} id - message id
      * @returns {Promise<object>}
      */
-    getMessageResult(id){
+    getMessageResult(id) {
         return new Promise((resolve, reject) => {
             this.once(`${id}:finished`, finishedMessage => {
                 switch (finishedMessage.status) {
@@ -137,11 +138,11 @@ export class MessageController extends EventEmitter {
      * @param {array} [ids] - message id
      */
     clearMessages(ids) {
-        if (typeof ids === 'string'){
+        if (typeof ids === 'string') {
             this._deleteMessage(ids)
-        } else if (ids && ids.length > 0){
+        } else if (ids && ids.length > 0) {
             ids.forEach(id => this._deleteMessage(id))
-        }else {
+        } else {
             this._updateStore([]);
         }
     }
@@ -160,10 +161,10 @@ export class MessageController extends EventEmitter {
         return result;
     }
 
-    _deleteMessage(id){
+    _deleteMessage(id) {
         const {messages} = this.store.getState()
         const index = messages.findIndex(message => message.id === id);
-        if (index > -1){
+        if (index > -1) {
             messages.splice(index, 1);
             this._updateStore(messages);
         }
@@ -187,6 +188,11 @@ export class MessageController extends EventEmitter {
             case 'transaction':
                 let result = {...message.data.data};
                 for (let key in message.data.data) {
+                    // Validate fields containing assetId
+                    if (['assetId', 'amountAsset', 'priceAsset'].includes(key)) {
+                        await this.assetInfo(message.data.data[key]);
+                    }
+                    // Convert moneyLike fields
                     const field = message.data.data[key];
                     if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
                         const asset = await this.assetInfo(message.data.data[key].assetId);
@@ -217,7 +223,7 @@ export class MessageController extends EventEmitter {
                 signedData = await this.signRequest(message.account.address, message.data);
                 break;
             case 'bytes':
-                signedData=  await this.signBytes(message.account.address, message.data);
+                signedData = await this.signBytes(message.account.address, message.data);
                 break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
@@ -302,10 +308,13 @@ export class MessageController extends EventEmitter {
                 };
                 result.messageHash = await this._getMessageHash(result);
                 if (message.data.successPath) {
-                    result.successPath =  message.data.successPath
+                    result.successPath = message.data.successPath
                 }
                 break;
             case 'order':
+                if (message.data.matcherPublicKey == null) {
+                    result.data.matcherPublicKey = await this.getMatcherPublicKey()
+                }
             case 'transaction':
                 const txDefaults = {
                     timestamp: Date.now(),
