@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import { setCustomNode } from '../../actions';
+import { setCustomNode, setCustomMatcher } from '../../actions';
 import {Trans, translate} from 'react-i18next';
 import { Button, BUTTON_TYPE, Copy, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
@@ -12,8 +12,17 @@ class NetworksSettingsComponent extends React.PureComponent {
     _t;
 
     onInputHandler = (event) => this.setState({ node: event.target.value });
-    onSaveNodeHandler = () => this.saveNode();
-    onSetDefaultNodeHandler = () => this.setDefaultNode();
+    onInputMatcherHandler = (event) => this.setState({ matcher: event.target.value });
+    onSaveNodeHandler = () => {
+        this.saveNode();
+        this.saveMatcher();
+    };
+    onSaveMatcherHandler = () => this.saveMatcher();
+    saveDefault = () => {
+        this.setDefaultNode();
+        this.setDefaultMatcher();
+    };
+    
     copyHandler = () => this.onCopy();
 
     render() {
@@ -31,10 +40,20 @@ class NetworksSettingsComponent extends React.PureComponent {
                 </label>
                 <Input id='node_address' value={this.state.node} onChange={this.onInputHandler}/>
             </div>
+    
+            <div className="margin-main-big relative">
+                <label className="input-title basic500 tag1" htmlFor='matcher_address'>
+                    <Copy text={this.state.matcher} onCopy={this.copyHandler}>
+                        <div className={`copy-icon ${styles.copyIcon}`}></div>
+                    </Copy>
+                    <Trans i18nKey='networksSettings.matcher'>Matcher address</Trans>
+                </label>
+                <Input id='matcher_address' value={this.state.matcher} onChange={this.onInputMatcherHandler}/>
+            </div>
 
             <div>
                 <Button type={BUTTON_TYPE.SUBMIT}
-                        disabled={!this.state.hasChanges}
+                        disabled={!(this.state.hasChanges || this.state.hasChangesMatcher)}
                         className="margin-main-big"
                         onClick={this.onSaveNodeHandler}>
                     <Trans i18nKey='networksSettings.save'>Save</Trans>
@@ -42,8 +61,8 @@ class NetworksSettingsComponent extends React.PureComponent {
             </div>
 
             <div>
-                <Button disabled={this.state.isDefault}
-                        onClick={this.onSetDefaultNodeHandler}>
+                <Button disabled={this.state.isDefault && this.state.isDefaultMatcher}
+                        onClick={this.saveDefault}>
                     <Trans i18nKey='networksSettings.setDefault'>Set Default</Trans>
                 </Button>
             </div>
@@ -57,21 +76,41 @@ class NetworksSettingsComponent extends React.PureComponent {
     }
 
     saveNode() {
-        const { node, isDefault } = this.state;
+        const { node, isDefault, hasChanges } = this.state;
 
         if (isDefault) {
             this.setDefaultNode();
             return null;
         }
         
-        this.props.setCustomNode(node);
+        if (hasChanges) {
+            this.props.setCustomNode(node);
+        }
+    }
+    
+    saveMatcher() {
+        const { matcher, isDefaultMatcher, hasChangesMatcher } = this.state;
+        
+        if (isDefaultMatcher) {
+            this.setDefaultMatcher();
+            return null;
+        }
+        
+        if (hasChangesMatcher) {
+            this.props.setCustomMatcher(matcher);
+        }
     }
 
     setDefaultNode() {
         this.props.setCustomNode(null);
         this.setState({ node: this.state.defaultNode });
     }
-
+    
+    setDefaultMatcher() {
+        this.props.setCustomMatcher(null);
+        this.setState({ matcher: this.state.defaultMatcher });
+    }
+    
     onCopy() {
         clearTimeout(this._t);
         this.setState({ showCopied: true });
@@ -81,13 +120,25 @@ class NetworksSettingsComponent extends React.PureComponent {
     static getDerivedStateFromProps(props, state) {
         state = { ...state };
 
-        const defaultNode = props.networks.find(item => item.name === props.currentNetwork).server;
+        const defaultServers = props.networks.find(item => item.name === props.currentNetwork);
+        
+        const defaultNode = defaultServers.server;
         const currentNode = props.customNodes[props.currentNetwork];
         const isDefault = state.node === defaultNode;
         const isCurrent = currentNode && state.node === currentNode;
         const hasChanges = state.node && ((isDefault && currentNode) || (!isCurrent && !isDefault) );
         const node = hasChanges || state.node != null ? state.node : currentNode || defaultNode;
-        return { node, defaultNode, currentNode, hasChanges, isDefault, isCurrent };
+        const defaultMatcher = defaultServers.matcher;
+        const currentMatcher = props.customMatcher[props.currentNetwork];
+        const isDefaultMatcher = state.matcher === defaultMatcher;
+        const isCurrentMatcher = currentMatcher && state.matcher === currentMatcher;
+        const hasChangesMatcher = state.matcher && ((isDefaultMatcher && currentMatcher) || (!isCurrentMatcher && !isDefaultMatcher) );
+        const matcher = hasChangesMatcher || state.matcher != null ? state.matcher : currentMatcher || defaultMatcher;
+        
+        return {
+            node, defaultNode, currentNode, hasChanges, isDefault, isCurrent,
+            matcher, defaultMatcher, currentMatcher, hasChangesMatcher, isDefaultMatcher, isCurrentMatcher
+        };
     }
 }
 
@@ -97,11 +148,13 @@ const mapToProps = (store) => {
         networks: store.networks,
         currentNetwork: store.currentNetwork,
         customNodes: store.customNodes,
+        customMatcher: store.customMatcher,
     };
 };
 
 const actions = {
     setCustomNode,
+    setCustomMatcher
 };
 
 export const NetworksSettings = connect(mapToProps, actions)(NetworksSettingsComponent);

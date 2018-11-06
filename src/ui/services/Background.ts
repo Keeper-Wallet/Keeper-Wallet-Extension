@@ -6,9 +6,10 @@ class Background {
     initPromise: Promise<void>;
     onUpdateCb: Array<(state) => void> = [];
     _defer;
-    _assetsPromise;
-
+    _assetsStore;
+    
     constructor() {
+        this._assetsStore = {};
         this._defer = {};
         this.initPromise = new Promise((res, rej) => {
             this._defer.resolve = res;
@@ -128,13 +129,28 @@ class Background {
         await this.initPromise;
         return this.background.setCustomNode(url, network);
     }
+    
+    async setCustomMatcher(url, network): Promise<void> {
+        await this.initPromise;
+        return this.background.setCustomMatcher(url, network);
+    }
 
     async assetInfo(assetId: string): Promise<any> {
+        assetId = assetId || 'WAVES';
+        
+        if (this._assetsStore[assetId]) {
+            return await this._assetsStore[assetId];
+        }
+        
         await this.initPromise;
-        this._assetsPromise = this._assetsPromise || this.background.assetInfo(assetId || 'WAVES');
-        const data = await this._assetsPromise;
-        this._assetsPromise = null;
-        return data;
+        this._assetsStore[assetId] = this.background.assetInfo(assetId);
+        
+        try {
+            return await this._assetsStore[assetId];
+        } catch (e) {
+            delete this._assetsStore[assetId];
+            throw e;
+        }
     }
 
     async getUserList(type: string, from: number, to: number): Promise<any> {

@@ -14,3 +14,10 @@ export const setCustomNode = (url) => {
         payload: url
     }
 };
+
+export const setCustomMatcher = (url) => {
+    return {
+        type: ACTION.CHANGE_MATCHER,
+        payload: url
+    }
+};
