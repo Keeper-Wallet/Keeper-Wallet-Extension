@@ -20,7 +20,7 @@ export class WalletController {
     addWallet(options) {
         if (this.store.getState().locked) throw new Error('App is locked');
         let user;
-        switch (options.type){
+        switch (options.type) {
             case 'seed':
                 SG.config.set({networkByte: options.networkCode.charCodeAt(0)});
                 const seed = new SG.Seed(options.seed);
@@ -70,16 +70,19 @@ export class WalletController {
 
     initVault(password) {
         if (!password || typeof password !== 'string') {
-            this.store.updateState({locked: true, initialized: false});
-            this.password = '';
-            this.wallets = [];
-            this._saveWallets();
-            return null;
+            throw new Error('Password is needed to init vault')
         }
         this.password = password;
         this.wallets = [];
         this._saveWallets();
-        this.store.updateState({locked: false, initialized:true})
+        this.store.updateState({locked: false, initialized: true})
+    }
+
+    deleteVault() {
+        this.password = null;
+        this.wallets = [];
+        this.store.updateState({initialized: false, vault: undefined});
+        this.store.updateState({locked: true});
     }
 
     newPassword(oldPassword, newPassword) {
@@ -122,13 +125,14 @@ export class WalletController {
         const wallet = this._findWallet(address);
         return await wallet.signBytes(bytes);
     }
+
     /**
      * Signs request
      * @param {string} address - wallet address
      * @param {object} request - transaction to sign
      * @returns {Promise<string>} signature
      */
-    async signRequest(address, request){
+    async signRequest(address, request) {
         const wallet = this._findWallet(address);
         return wallet.signRequest(request);
     }
@@ -139,7 +143,7 @@ export class WalletController {
      * @param {object} authData - object, representing auth request
      * @returns {Promise<object>} object, representing auth response
      */
-    async auth(address, authData){
+    async auth(address, authData) {
         const wallet = this._findWallet(address);
         const signature = await wallet.signRequest(authData);
         const {publicKey} = wallet.getAccount();
@@ -150,6 +154,7 @@ export class WalletController {
             signature
         }
     }
+
     // Private
     _checkForDuplicate(address) {
         if (this.getAccounts().find(account => account.address === address)) {
@@ -167,7 +172,7 @@ export class WalletController {
         this.wallets = decryptedData.map(user => new Wallet(user));
     }
 
-    _findWallet(address){
+    _findWallet(address) {
         if (this.store.getState().locked) throw new Error('App is locked');
         const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
         if (!wallet) throw new Error(`Wallet not found for address ${address}`);
