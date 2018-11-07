@@ -1,5 +1,4 @@
 import log from 'loglevel';
-import 'babel-polyfill';
 import pump from 'pump';
 import url from 'url';
 import EventEmitter from 'events';
@@ -346,7 +345,8 @@ class BackgroundService extends EventEmitter {
         return {
             initialized: state.initialized,
             locked: state.locked,
-            account: state.selectedAccount
+            account: state.selectedAccount,
+            accounts: state.currentNetworkAccounts
         }
     }
 
