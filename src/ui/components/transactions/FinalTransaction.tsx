@@ -12,7 +12,7 @@ const Error = ({approveError}) => {
         <div className="headline2 margin-main-big">
             <Trans i18nKey='sign.someError'>Something went wrong</Trans>
         </div>
-        <div className="plate body3">{JSON.stringify(approveError.error, null, 4)}</div>
+        <div className={`plate body3 ${styles.finalTxPlate}`}>{JSON.stringify(approveError.error, null, 4)}</div>
     </div>;
 };
 
@@ -66,7 +66,7 @@ export class FinalTransaction extends React.PureComponent {
 
             <div className="margin-main-big">
                 <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
-                    {isError ? <Trans i18nKey='sign.action'>Action</Trans> : null}
+                    {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
                     {isReject || isApprove ? <Trans i18nKey='sign.ok'>Okay</Trans> : null}
                 </Button>
             </div>
