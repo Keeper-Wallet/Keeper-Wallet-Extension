@@ -12,11 +12,11 @@ import { TransactionBottom } from './TransactionBottom';
 class CreateOrderComponent extends SignClass {
 
     render() {
-        const { amountAsset, feeAsset, priceAsset, tx } = this.state;
+        const { tx } = this.state;
         
-        const amount = new Money(0, new Asset(amountAsset)).cloneWithTokens(tx.amount);
-        const price = new Money(0, new Asset(priceAsset)).cloneWithTokens(tx.price);
-        const fee = new Money(0, new Asset(feeAsset)).cloneWithTokens(tx.matcherFee);
+        const amount =  tx.amount;
+        const price = tx.price;
+        const fee = tx.matcherFee;
         const orderType = ['sell', 'buy'].includes(tx.orderType) ? tx.orderType : 'n/a';
         
         return <div className={styles.transaction}>
@@ -77,10 +77,7 @@ class CreateOrderComponent extends SignClass {
     
     static getDerivedStateFromProps(props) {
         const tx = props.signData.data;
-        const feeAsset = props.assets['WAVES'];
-        const amountAsset = props.assets[tx.amountAsset];
-        const priceAsset = props.assets[tx.priceAsset];
-        return { amountAsset, feeAsset, priceAsset, tx };
+        return { tx };
     }
 }
 
