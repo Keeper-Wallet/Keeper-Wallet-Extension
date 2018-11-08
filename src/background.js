@@ -293,7 +293,7 @@ class BackgroundService extends EventEmitter {
             //publicState: async () => this._publicState(this.getState()),
         };
 
-        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+        if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
             api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false);
             api.publicState = async () => this._publicState(this.getState())
         }
@@ -324,7 +324,7 @@ class BackgroundService extends EventEmitter {
         dnode.on('remote', (remote) => {
             // push account change event to the page
             const sendUpdate = remote.sendUpdate.bind(remote);
-            if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+            if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
                 this.on('update', function (state) {
                     const updatedPublicState = self._publicState(state);
                     // If public state changed call remote with new public state
@@ -346,7 +346,6 @@ class BackgroundService extends EventEmitter {
             initialized: state.initialized,
             locked: state.locked,
             account: state.selectedAccount,
-            accounts: state.currentNetworkAccounts
         }
     }
 
