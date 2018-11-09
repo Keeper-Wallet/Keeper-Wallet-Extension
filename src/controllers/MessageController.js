@@ -184,6 +184,16 @@ export class MessageController extends EventEmitter {
 
     async _transformData(data) {
 
+        if (!data || typeof data !== 'object' || data instanceof BigNumber || data instanceof Money) {
+            return data;
+        }
+
+        if (Array.isArray(data)) {
+            data = [ ...data ];
+        } else {
+            data = { ...data };
+        }
+
         for (const key in data) {
             if (!data.hasOwnProperty(key)) {
                 continue;
@@ -197,10 +207,6 @@ export class MessageController extends EventEmitter {
             const field = data[key];
 
             if (field && typeof field === 'object') {
-
-                if (field instanceof Money || field instanceof BigNumber) {
-                    continue;
-                }
 
                 if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
                     const asset = await this.assetInfo(data[key].assetId);

@@ -3,7 +3,6 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Balance, DateFormat } from '../ui';
 import { SignClass } from './SignClass';
-import { Asset, Money } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
 import {connect} from 'react-redux';
 import { TransactionBottom } from './TransactionBottom';

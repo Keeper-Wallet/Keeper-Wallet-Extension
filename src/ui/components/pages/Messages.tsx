@@ -28,11 +28,12 @@ class MessagesComponent extends React.Component {
             approveError,
             rejectOk
         } = this.state.transactionStatus;
-        
-        if (approveOk || approveError || rejectOk ) {
+    
+        if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
                                      transactionStatus={this.state.transactionStatus}
-                                     txType={this.state.txType}
+                                     config={this.state.config}
+                                     signData={this.state.signData}
                                      onClick={this.clearMessageStatusHandler}/>
         }
         
@@ -93,8 +94,8 @@ class MessagesComponent extends React.Component {
             const { data } = (approveOk || approveError || rejectOk).message;
             const parsedData = MessagesComponent.getAssetsAndMoneys(data);
             const signData = MessagesComponent.fillSignData(data, parsedData.moneys, assets);
-            const conf = getConfigByTransaction(signData);
-            return { transactionStatus, selectedAccount, txType: conf.type, signData };
+            const config = getConfigByTransaction(signData);
+            return { transactionStatus, selectedAccount, config, signData };
         }
         
         const assetInstance = new Asset(assets['WAVES']);
@@ -122,7 +123,8 @@ class MessagesComponent extends React.Component {
 
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
         const txHash = message.messageHash;
-        return { message, signData, txHash, balance, selectedAccount, assets, loading: false, transactionStatus };
+        const config = getConfigByTransaction(signData);
+        return { message, signData, config, txHash, balance, selectedAccount, assets, loading: false, transactionStatus };
     }
 
     static getAssetsAndMoneys(data) {

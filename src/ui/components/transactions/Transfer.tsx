@@ -37,6 +37,13 @@ export class Transfer extends SignClass {
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
+    
+                <div className={styles.txRow}>
+                    <div className="tx-title tag1 basic500">
+                        <Trans i18nKey='transactions.assetId'>AssetId</Trans>
+                    </div>
+                    <div className={styles.txValue}>{tx.amount.asset.id}</div>
+                </div>
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
