@@ -137,7 +137,7 @@ class MessagesComponent extends React.Component {
         while (work.length) {
             const { path: currentPath, data: currentData} = work.pop();
 
-            if (typeof currentData !== 'object') {
+            if (currentData == null || typeof currentData !== 'object') {
                 continue;
             }
 
@@ -185,7 +185,11 @@ class MessagesComponent extends React.Component {
             const key = path.pop();
 
             for (const key of path) {
-                 obj[key] = { ...obj[key] };
+                if (Array.isArray(obj[key])) {
+                    obj[key] = [ ...obj[key] ];
+                } else {
+                    obj[key] = { ...obj[key] };
+                }
                  obj = obj[key];
             }
 

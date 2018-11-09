@@ -182,26 +182,47 @@ export class MessageController extends EventEmitter {
         this.emit('Update badge', text)
     }
 
+    async _transformData(data) {
+
+        for (const key in data) {
+            if (!data.hasOwnProperty(key)) {
+                continue;
+            }
+
+            // Validate fields containing assetId
+            if (['assetId', 'amountAsset', 'priceAsset'].includes(key)) {
+                await this.assetInfo(data[key]);
+            }
+            // Convert moneyLike fields
+            const field = data[key];
+
+            if (field && typeof field === 'object') {
+
+                if (field instanceof Money || field instanceof BigNumber) {
+                    continue;
+                }
+
+                if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
+                    const asset = await this.assetInfo(data[key].assetId);
+                    const amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
+                    data[key] = new Money(amount, asset)
+                } else if (Array.isArray(field)) {
+                    data[key] = await Promise.all(data[key].map((item) => this._transformData(item)));
+                } else {
+                    data[key] = await this._transformData(field);
+                }
+            }
+        }
+
+        return data;
+    }
+
     async _fillSignableData(message) {
         switch (message.type) {
             case 'order':
             case 'cancelOrder':
             case 'transaction':
-                let result = {...message.data.data};
-                for (let key in message.data.data) {
-                    // Validate fields containing assetId
-                    if (['assetId', 'amountAsset', 'priceAsset'].includes(key)) {
-                        await this.assetInfo(message.data.data[key]);
-                    }
-                    // Convert moneyLike fields
-                    const field = message.data.data[key];
-                    if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
-                        const asset = await this.assetInfo(message.data.data[key].assetId);
-                        let amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
-                        result[key] = new Money(amount, asset)
-                    }
-                }
-                message.data.data = result;
+                message.data.data = await this._transformData({ ...message.data.data });
                 return message;
             default:
                 return message
