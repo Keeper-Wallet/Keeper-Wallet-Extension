@@ -77,7 +77,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _validate(value = '', noSetState?) {
-        const error = value.length < 24;
+        const error = value.length < 25;
         if (!noSetState) {
             this.setState({ error });
         }
