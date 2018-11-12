@@ -76,21 +76,22 @@ class ConfirmBackupComponent extends React.Component {
         this._setSelected(selected);
     }
 
-    private _onUnSelect({text}) {
-        const selected = this.state.selectedList.filter(item => item.text !== text);
+    private _onUnSelect({ id }) {
+        const selected = this.state.selectedList.filter(item => item.id !== id);
         this._setSelected(selected);
     }
 
     private _setSelected(selected) {
         const list = this.state.list;
         const selectedTextsList = selected.map(item => item.text);
+        const selectedIdsList = selected.map(item => item.id);
 
         const state = {
             selectedList: selected,
             wrongSeed: this.state.seed !== selectedTextsList.join(' '),
             complete: selected.length === list.length,
             list: this.state.list.map(item => {
-                item.hidden = selectedTextsList.includes(item.text);
+                item.hidden = selectedIdsList.includes(item.id);
                 return item;
             })
         };
@@ -103,7 +104,7 @@ class ConfirmBackupComponent extends React.Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        const {seed} = props.account;
+        const { seed } = props.account;
 
         if (seed == state.seed) {
             return null;
