@@ -72,6 +72,11 @@ class Background {
         return this.background.deleteVault();
     }
 
+    async closeNotificationWindow(): Promise<void> {
+        await this.initPromise;
+        return this.background.closeNotificationWindow();
+    }
+    
     async lock(): Promise<void> {
         await this.initPromise;
         return this.background.lock();

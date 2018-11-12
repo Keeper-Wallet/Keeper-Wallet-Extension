@@ -1,7 +1,6 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance } from '../ui';
 
 @translate('extension')
 export class DataFinal extends React.PureComponent {
