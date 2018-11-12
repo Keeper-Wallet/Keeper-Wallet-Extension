@@ -14,19 +14,19 @@ export class AliasFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your sended transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your approved transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend.alias'>An alias has been created.</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.alias'>You have approved Alias creation.</Trans> : null}
                 </div>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
         

@@ -14,12 +14,12 @@ export class TransferFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is send!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your have send</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your have approved send</Trans> : null}
+                    {isSend ? <span><Trans i18nKey='sign.transactionSend.transfer'>You have sent</Trans> 0.001 WAVES</span> : null} /* todo @boris - add asset and amount */
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirm.transfer'>You have approved a Send transaction for</Trans> 0.001 WAVES</span> : null}
                     <Balance isShortFormat={true} balance={tx.data.amount} showAsset={true}/>
                 </div>
             </div>
@@ -27,7 +27,7 @@ export class TransferFinal extends React.PureComponent {
        
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
         

@@ -14,19 +14,19 @@ export class MassTransferFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is send!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your sended transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your approved transaction</Trans> : null}
+                    {isSend ? <span><Trans i18nKey='sign.transactionSend.massTransfer'>You have sent</Trans> 0.099 WAVES</span> : null} /* todo @boris - add asset and amount */
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirm.massTransfer'>You have approved a Mass Transfer transaction for</Trans> 0.099 WAVES</span> : null} /* todo @boris */
                 </div>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
         

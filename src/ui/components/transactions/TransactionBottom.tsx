@@ -16,8 +16,8 @@ export const TransactionBottom = ({ message, approve, reject }) => {
         <Button onClick={approve} type={BUTTON_TYPE.SUBMIT}>
             {
                 isSend ?
-                    <Trans i18nKey='sign.approve'>Confirm</Trans> :
-                    <Trans i18nKey='sign.approve'>Sign</Trans>
+                    <Trans i18nKey='sign.confirmButton'>Confirm</Trans> :
+                    <Trans i18nKey='sign.signButton'>Sign</Trans>
             }
         </Button>
         
