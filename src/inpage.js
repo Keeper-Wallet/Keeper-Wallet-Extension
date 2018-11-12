@@ -126,7 +126,8 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
                         assetId: 'WAVES',
                         tokens: '0.00100000'
                     },
-                    recipient: apiData.recipient
+                    recipient: apiData.recipient,
+                    attachment: apiData.attachment || ''
                 }
             });
             break;
