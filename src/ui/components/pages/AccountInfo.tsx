@@ -149,7 +149,9 @@ class AccountInfoComponent extends React.Component {
                 </div>
             </Modal>
     
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.changeNameNotify} showChildrenOnly={true}>
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={this.state.changeNameNotify}
+                   showChildrenOnly={true}>
                 <div className="modal notification active-asset" key='change_name'>
                     <div><Trans i18nKey="assets.changeName">Account name changed</Trans></div>
                 </div>

@@ -263,7 +263,7 @@ class BackgroundService extends EventEmitter {
             const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
             this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
-        }
+        };
 
         const api = {
             signOrder: async (data, from) => {
