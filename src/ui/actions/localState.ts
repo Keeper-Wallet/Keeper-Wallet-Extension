@@ -29,3 +29,4 @@ export const approveOk = createMVAction(ACTION.APPROVE_OK);
 export const approveError = createMVAction(ACTION.APPROVE_ERROR);
 export const rejectOk = createMVAction(ACTION.REJECT_OK);
 export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);
+export const closeNotificationWindow = createMVAction(ACTION.CLOSE_WINDOW);

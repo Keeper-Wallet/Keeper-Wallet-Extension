@@ -14,6 +14,7 @@ import {
     rejectOk,
 } from '../actions';
 import { PAGES } from '../pageConfig';
+import { store } from '../store';
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {
@@ -58,6 +59,13 @@ export const deleteActiveAccount = store => next => action => {
         return null;
     }
 
+    return next(action);
+};
+
+export const closeNotificationWindow = _ => next => action => {
+    if (action.type === ACTION.CLOSE_WINDOW) {
+        background.closeNotificationWindow();
+    }
     return next(action);
 };
 

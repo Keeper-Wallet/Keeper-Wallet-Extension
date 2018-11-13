@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { getAsset, approve, reject, clearMessagesStatus, clearMessages } from '../../actions';
+import { getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
@@ -70,6 +70,7 @@ class MessagesComponent extends React.Component {
     
     cleanMessageStatus() {
         this.props.clearMessagesStatus();
+        this.props.closeNotificationWindow();
         this.props.setTab(PAGES.ROOT);
     }
     
@@ -213,6 +214,7 @@ const mapStateToProps = function (store) {
 };
 
 const actions = {
+    closeNotificationWindow,
     clearMessagesStatus,
     clearMessages,
     getAsset,
