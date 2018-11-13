@@ -13,7 +13,7 @@ export class MatcherFinal extends React.PureComponent {
 
         if (isApprove) {
             return <div>
-                <div className="margin-main-large headline2">
+                <div className="margin-main headline2">
                     {isSend ? <Trans i18nKey='sign.authSend'>Sign a request to the matcher!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.authConfirmed'>Sign a request to the matcher!</Trans>: null}
                 </div>
