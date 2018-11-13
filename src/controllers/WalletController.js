@@ -81,8 +81,7 @@ export class WalletController {
     deleteVault() {
         this.password = null;
         this.wallets = [];
-        this.store.updateState({initialized: false, vault: undefined});
-        this.store.updateState({locked: true});
+        this.store.updateState({locked: true, initialized: false, vault: undefined});
     }
 
     newPassword(oldPassword, newPassword) {
