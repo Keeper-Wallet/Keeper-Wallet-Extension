@@ -34,6 +34,10 @@ class ConditionsComponent extends React.Component {
         }
     }
 
+    componentWillMount() {
+        this._onScroll();
+    }
+    
     render () {
         return <div className={`body1 height ${styles.contentWrapper}`} onScroll={this.onScroll}>
             <div className={`${styles.conditionsContent} height`}>
