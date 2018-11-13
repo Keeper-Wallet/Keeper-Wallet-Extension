@@ -130,7 +130,7 @@ class ChangePasswordComponent extends React.PureComponent {
         e.preventDefault();
         e.preventDefault();
 
-        if (!this.state.passwordError && this.state.firstValue) {
+        if (this.state.firstValue) {
             background.newPassword(this.state.oldValue, this.state.firstValue).then(
                 () => {
                     this.setState({
