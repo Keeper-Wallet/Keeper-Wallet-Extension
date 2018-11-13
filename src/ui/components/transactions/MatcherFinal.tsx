@@ -10,23 +10,19 @@ export class MatcherFinal extends React.PureComponent {
     
     render() {
         const { tx, isApprove, isReject, isSend } = this.props;
-        
+
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
-                </div>
-                <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your sended transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your approved transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.authSend'>Sign a request to the matcher!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.authConfirmed'>Sign a request to the matcher!</Trans>: null}
                 </div>
             </div>
         }
-        
+
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.authRejected'>Request has not been signed</Trans>
             </div>
         }
         

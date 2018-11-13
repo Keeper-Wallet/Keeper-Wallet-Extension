@@ -14,19 +14,19 @@ export class IssureFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your sended transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your approved transaction</Trans> : null}
+                    {isSend ? <span><Trans i18nKey='sign.transactionSend.issure'>You have generated</Trans> 1,000,000 Sviblovo</span> : null} /* todo @boris - add token amount and name */
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirm.issure'>You have approved generated</Trans> 1,000,000 Sviblovo</span> : null} /* todo @boris */
                 </div>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
         

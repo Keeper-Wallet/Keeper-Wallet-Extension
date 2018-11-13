@@ -14,17 +14,15 @@ export class AuthFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.authConfirmed'>Your auth is confirmed and sended!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.authConfirmed'>Your auth is confirmed!</Trans>: null}
-                </div>
-                <div className="basic500">
+                    {isSend ? <Trans i18nKey='sign.authConfirmed'>Request has been signed!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.authConfirmed'>Request has been signed!</Trans>: null}
                 </div>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.authRejected'>Your Auth is rejected!</Trans>
+                <Trans i18nKey='sign.authRejected'>Request has not been signed.</Trans>
             </div>
         }
         

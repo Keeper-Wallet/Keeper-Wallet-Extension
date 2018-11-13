@@ -14,19 +14,19 @@ export class SetScriptFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main-large headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is send!</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is send!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your sended transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your approved transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend.setScript'>You have created a script transaction</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.setScript'>You have approved a Set Script transaction</Trans> : null}
                 </div>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.transactionFiled'>Your transaction is filed!</Trans>
+                <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
         
