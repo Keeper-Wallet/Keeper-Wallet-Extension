@@ -1,7 +1,9 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
+import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { Balance } from '../ui';
+
 
 @translate('extension')
 export class IssureFinal extends React.PureComponent {
@@ -10,6 +12,16 @@ export class IssureFinal extends React.PureComponent {
     
     render() {
         const { tx, isApprove, isReject, isSend } = this.props;
+    
+        const asset = {
+            description: tx.data.description,
+            name: tx.data.name,
+            precision: tx.data.precision,
+            quantity: new BigNumber(tx.data.quantity),
+            reissuable: false
+        } as any;
+    
+        const quantity = new Money(asset.quantity, new Asset(asset));
         
         if (isApprove) {
             return <div>
@@ -18,8 +30,11 @@ export class IssureFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSendIssure'>You have generated</Trans> 1,000,000 Sviblovo</span> : null} /* todo @boris - add token amount and name */
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmIssure'>You have approved generated</Trans> 1,000,000 Sviblovo</span> : null} /* todo @boris */
+                    <span>
+                        {isSend ? <Trans i18nKey='sign.transactionSendIssure'>You have generated</Trans> : null}
+                        {!isSend ? <Trans i18nKey='sign.transactionConfirmIssure'>You have approved generated</Trans> : null}
+                        <Balance balance={quantity} isShortFormat={false} showAsset={true}/>
+                    </span>
                 </div>
             </div>
         }

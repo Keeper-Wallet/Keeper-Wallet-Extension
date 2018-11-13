@@ -3,7 +3,6 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Balance } from '../ui';
 import { SignClass } from './SignClass';
-import { Asset, Money } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
 import {connect} from 'react-redux';
 import { TransactionBottom } from './TransactionBottom';
@@ -14,8 +13,7 @@ export class ReIssureComponent extends SignClass {
     render() {
         const { data: tx } = this.props.signData;
         const asset = this.state.asset;
-    
-        const quantity = new Money(tx.quantity, new Asset(asset));
+        const quantity = tx.quantity;
     
         return <div className={styles.transaction}>
             {super.render()}
