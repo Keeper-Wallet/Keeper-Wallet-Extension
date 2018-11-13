@@ -33,10 +33,6 @@ class ConditionsComponent extends React.Component {
             this.setState({ confirmDisabled });
         }
     }
-
-    componentWillMount() {
-        this._onScroll();
-    }
     
     render () {
         return <div className={`body1 height ${styles.contentWrapper}`} onScroll={this.onScroll}>
