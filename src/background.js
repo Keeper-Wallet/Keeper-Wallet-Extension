@@ -342,10 +342,19 @@ class BackgroundService extends EventEmitter {
     }
 
     _publicState(state) {
+
+        if (!state.locked) {
+            return {
+                initialized: state.initialized,
+                locked: state.locked,
+                account: state.selectedAccount,
+            }
+        }
+
         return {
             initialized: state.initialized,
             locked: state.locked,
-            account: state.selectedAccount,
+            account: null,
         }
     }
 

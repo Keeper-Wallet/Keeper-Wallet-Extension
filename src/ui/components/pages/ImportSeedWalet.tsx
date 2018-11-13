@@ -85,7 +85,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _changeHandler(e) {
-        const phrase = e.target.value;
+        const phrase = (e.target.value || '').trim();
         let seed = { address: '', phrase: '' };
 
         if (phrase.length >= 24) {
