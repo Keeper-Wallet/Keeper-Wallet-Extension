@@ -18,8 +18,8 @@ export class AliasFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.alias'>An alias has been created.</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.alias'>You have approved Alias creation.</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendAlias'>An alias has been created.</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmAlias'>You have approved Alias creation.</Trans> : null}
                 </div>
             </div>
         }

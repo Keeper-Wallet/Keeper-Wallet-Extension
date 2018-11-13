@@ -18,8 +18,8 @@ export class CancelLeaseFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.cancelLeasing'>You have canceled a leasing transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.cancelLeasing'>You have approved a Cancel Lease transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendCancelLeasing'>You have canceled a leasing transaction</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmCancelLeasing'>You have approved a Cancel Lease transaction</Trans> : null}
                 </div>
             </div>
         }

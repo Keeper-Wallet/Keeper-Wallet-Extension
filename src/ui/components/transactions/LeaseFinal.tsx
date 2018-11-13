@@ -18,8 +18,8 @@ export class LeaseFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSend.lease'>You have leased</Trans> 0.001 WAVES</span> : null} /* todo @boris - add amount of WAVES*/
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirm.lease'>Your approved transaction</Trans> 0.001 WAVES</span> : null} /* todo @boris */
+                    {isSend ? <span><Trans i18nKey='sign.transactionSendLease'>You have leased</Trans> 0.001 WAVES</span> : null} /* todo @boris - add amount of WAVES*/
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmLease'>Your approved transaction</Trans> 0.001 WAVES</span> : null} /* todo @boris */
                 </div>
             </div>
         }

@@ -18,8 +18,8 @@ export class TransferFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSend.transfer'>You have sent</Trans> 0.001 WAVES</span> : null} /* todo @boris - add asset and amount */
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirm.transfer'>You have approved a Send transaction for</Trans> 0.001 WAVES</span> : null}
+                    {isSend ? <span><Trans i18nKey='sign.transactionSendTransfer'>You have sent</Trans> 0.001 WAVES</span> : null} /* todo @boris - add asset and amount */
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmTransfer'>You have approved a Send transaction for</Trans> 0.001 WAVES</span> : null}
                     <Balance isShortFormat={true} balance={tx.data.amount} showAsset={true}/>
                 </div>
             </div>

@@ -25,7 +25,7 @@ export class MatcherFinal extends React.PureComponent {
                 <Trans i18nKey='sign.authRejected'>Request has not been signed</Trans>
             </div>
         }
-        
+
         return null;
     }
 }

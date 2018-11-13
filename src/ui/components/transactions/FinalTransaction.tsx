@@ -55,7 +55,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className="margin-main-big">
                 <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
                     {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
-                    {isReject || isApprove ? <Trans i18nKey='sign.ok'>Okay</Trans> : null}
+                    {isReject || isApprove ? <Trans i18nKey='sign.ok'>I Inderstandy</Trans> : null}
                 </Button>
             </div>
 

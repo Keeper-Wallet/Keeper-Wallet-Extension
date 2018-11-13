@@ -18,8 +18,8 @@ export class CancelOrderFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.cancelOrder'>Create Order is confirmed!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.cancelOrder'>You have approved a Cancel Order transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendCancelOrder'>Create Order is confirmed!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmCancelOrder'>You have approved a Cancel Order transaction</Trans> : null}
                 </div>
             </div>
         }
