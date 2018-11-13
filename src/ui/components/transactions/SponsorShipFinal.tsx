@@ -18,8 +18,8 @@ export class SponsorShipFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.sponsor'>Sponsorship has been set</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.sponsor'>You have approved a Set Sponsorship transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendSponsor'>Sponsorship has been set</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmSponsor'>You have approved a Set Sponsorship transaction</Trans> : null}
                     <Balance isShortFormat={true} balance={tx.data.amount} showAsset={true}/>
                 </div>
             </div>

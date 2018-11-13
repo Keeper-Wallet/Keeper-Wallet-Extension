@@ -17,8 +17,8 @@ export class DataFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.data.'>You have created a Data transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.data'>You have approved a Data transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendData.'>You have created a Data transaction</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmData'>You have approved a Data transaction</Trans> : null}
                 </div>
             </div>
         }

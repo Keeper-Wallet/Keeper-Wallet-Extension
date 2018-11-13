@@ -18,8 +18,8 @@ export class CreateOrderFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSend.createOrder'>You have approved a Create Order transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm.createOrder'>You have approved a Create Order transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendCreateOrder'>You have approved a Create Order transaction</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmCreateOrder'>You have approved a Create Order transaction</Trans> : null}
                 </div>
             </div>
         }

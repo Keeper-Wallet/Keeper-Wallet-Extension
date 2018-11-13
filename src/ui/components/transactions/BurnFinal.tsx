@@ -18,8 +18,8 @@ export class BurnFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSend.burn'>You have burned</Trans> [Token name]</span> : null} /* todo @boris - add token name */
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmed.burn'>You have approved a Burn transaction.</Trans></span> : null}
+                    {isSend ? <span><Trans i18nKey='sign.transactionSendBurn'>You have burned</Trans> [Token name]</span> : null} /* todo @boris - add token name */
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmedBurn'>You have approved a Burn transaction.</Trans></span> : null}
                 </div>
             </div>
         }
