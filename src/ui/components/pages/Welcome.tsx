@@ -9,7 +9,7 @@ import { PAGES } from '../../pageConfig';
 export class Welcome extends React.Component {
     
     readonly props;
-    clickHandler = () => this.props.setTab(PAGES.NEW);
+    clickHandler = () => this.props.setTab(PAGES.CONDITIONS);
     
     render() {
         return <div className={`${styles.content}`}>

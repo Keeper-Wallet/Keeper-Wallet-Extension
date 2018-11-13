@@ -111,6 +111,7 @@ class RootComponent extends React.Component {
     static canUseTab(props, tab) {
         switch (tab) {
             case PAGES.NEW:
+            case PAGES.CONDITIONS:
             case PAGES.INTRO:
                 return !props.initialized;
             case PAGES.LOGIN:
