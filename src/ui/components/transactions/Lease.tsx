@@ -3,7 +3,6 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Balance } from '../ui';
 import { SignClass } from './SignClass';
-import { Asset, Money } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
 import {connect} from 'react-redux';
 import { TransactionBottom } from './TransactionBottom';
@@ -12,8 +11,7 @@ import { TransactionBottom } from './TransactionBottom';
 export class LeaseComponent extends SignClass {
 
     render() {
-        const { tx, asset } = this.state;
-        const amount = new Money(tx.amount, new Asset(asset));
+        const { tx } = this.state;
     
         return <div className={styles.transaction}>
             {super.render()}
@@ -24,7 +22,7 @@ export class LeaseComponent extends SignClass {
                 </div>
             
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} showAsset={true} balance={amount}/>
+                    <Balance split={true} showAsset={true} balance={tx.amount}/>
                 </div>
 
                 

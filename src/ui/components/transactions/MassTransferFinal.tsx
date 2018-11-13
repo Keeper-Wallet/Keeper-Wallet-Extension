@@ -18,8 +18,11 @@ export class MassTransferFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSendMassTransfer'>You have sent</Trans> 0.099 WAVES</span> : null} /* todo @boris - add asset and amount */
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmMassTransfer'>You have approved a Mass Transfer transaction for</Trans> 0.099 WAVES</span> : null} /* todo @boris */
+                    <span>
+                        {isSend ? <Trans i18nKey='sign.transactionSendMassTransfer'>You have sent</Trans>: null}
+                        {!isSend ? <Trans i18nKey='sign.transactionConfirmMassTransfer'>You have approved a Mass Transfer transaction for</Trans> : null}
+                        <Balance balance={tx.data.totalAmount} isShortFormat={true} showAsset={true}/>
+                    </span>
                 </div>
             </div>
         }

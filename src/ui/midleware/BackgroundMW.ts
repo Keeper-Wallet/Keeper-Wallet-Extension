@@ -71,9 +71,8 @@ export const closeNotificationWindow = _ => next => action => {
 
 export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
-        background.initVault().then(
+        background.deleteVault().then(
             () => {
-                store.dispatch(setTab(PAGES.ROOT));
                 store.dispatch(notificationDelete(true));
                 setTimeout(() => store.dispatch(notificationDelete(false)), 1000);
             }

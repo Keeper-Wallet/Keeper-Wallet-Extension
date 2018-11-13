@@ -8,7 +8,7 @@ import { deleteAccount } from '../../actions';
 @translate()
 class ForgotPasswordComponent extends React.Component {
     props;
-    onClickHandler = () => this.props.deleteAccount(null);
+    onClickHandler = () => this.props.deleteAccount();
     onBackHandler = () => this.props.onBack();
 
     render() {

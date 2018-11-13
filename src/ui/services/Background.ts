@@ -68,10 +68,15 @@ class Background {
         if (address) {
             return this.background.removeWallet(address);
         }
-        
+    
+        return this.deleteVault();
+    }
+    
+    async deleteVault() {
+        await this.initPromise;
         return this.background.deleteVault();
     }
-
+    
     async closeNotificationWindow(): Promise<void> {
         await this.initPromise;
         return this.background.closeNotificationWindow();

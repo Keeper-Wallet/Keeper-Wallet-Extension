@@ -18,8 +18,8 @@ export class ReIssureFinal extends React.PureComponent {
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSendReIssure'>You have generated additional</Trans> Sviblovo</span> : null} /* todo @boris add asset name and amount */
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmReIssure'>You have approved additional Issuance of</Trans> 1,000.000 Sviblovo</span> : null} /* todo @boris */
+                    {isSend ? <span><Trans i18nKey='sign.transactionSendReIssure'>You have generated additional</Trans> {tx.data.name}</span> : null}
+                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmReIssure'>You have approved additional Issuance of</Trans> <Balance showAsset={true} isShortFormat={true} balance={tx.data.quantity}/></span> : null}
                 </div>
             </div>
         }
