@@ -146,7 +146,7 @@ class BackgroundService extends EventEmitter {
         // Wallet. Wallet creation, app locking, signing method
         this.walletController = new WalletController({initState: initState.WalletController});
         this.walletController.store.subscribe(state => {
-            if (!state.locked) {
+            if (!state.locked || !state.initialized) {
                 const accounts = this.walletController.getAccounts();
                 this.preferencesController.syncAccounts(accounts);
             }
