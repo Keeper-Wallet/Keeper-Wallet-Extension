@@ -15,7 +15,7 @@ export class BurnComponent extends SignClass {
         const { data: tx } = this.props.signData;
         const asset = this.state.asset;
     
-        const quantity = tx.quantity;
+        const quantity = tx.amount;
     
         return <div className={styles.transaction}>
             {super.render()}
