@@ -46,12 +46,12 @@ export class BurnComponent extends SignClass {
                             <Trans i18nKey='transactions.noReissuable'>Not reissuable</Trans>
                     }</div>
                 </div>
-                
-                <div className={styles.txRow}>
+
+                <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.description'>Description</Trans>
                     </div>
-                    <div className={styles.txValue}>{asset.description}</div>
+                    <div className={`${styles.txValue} plate fullwidth`}>{asset.description}</div>
                 </div>
             
                 <div className={styles.txRow}>

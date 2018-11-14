@@ -69,11 +69,11 @@ export class MassTransfer extends SignClass {
                     </div>
                 </div>
 
-                <div className={styles.txRow}>
+                <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.description'>Description</Trans>
                     </div>
-                    <div className={styles.txValue}>TROLOLO</div>
+                    <div className={`${styles.txValue} plate fullwidth`}>TROLOLO</div>
                 </div>
 
                 <div className={styles.txRow}>
