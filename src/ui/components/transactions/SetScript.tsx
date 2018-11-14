@@ -3,7 +3,7 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { Button, Copy, Modal } from '../ui';
+import { Balance, Button, Copy, Modal } from '../ui';
 import { TransactionBottom } from './TransactionBottom';
 import cn from 'classnames';
 
@@ -56,7 +56,9 @@ export class SetScript extends SignClass {
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
-                    <div className={styles.txValue}>0.003 Waves</div>
+                    <div className={styles.txValue}>
+                        <Balance balance={tx.fee} isShortFormat={true} showAsset={true}/>
+                    </div>
                 </div>
 
                 <div className={`${styles.txRow} margin-main`}>
