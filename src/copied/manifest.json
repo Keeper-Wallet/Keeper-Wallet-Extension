@@ -1,7 +1,7 @@
 {
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "manifest_version": 2,
   "author": "",
   "description": "__MSG_appDescription__",
@@ -35,7 +35,7 @@
     "default_icon": {
       "16": "images/icon_16.png"
     },
-    "default_title": "WavesKeeper",
+    "default_title": "Waves Keeper",
     "default_popup": "popup.html"
   },
   "content_scripts": [
