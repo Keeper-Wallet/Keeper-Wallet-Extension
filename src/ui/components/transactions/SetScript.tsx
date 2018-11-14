@@ -3,18 +3,27 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { Button, Copy, Modal } from '../ui';
+import { Balance, Button, Copy, Modal } from '../ui';
 import { TransactionBottom } from './TransactionBottom';
 import cn from 'classnames';
 
 @translate('extension')
 export class SetScript extends SignClass {
-
-    readonly state = { showAllScript: false, showCopied: false };
+    
+    scriptEl: HTMLDivElement;
+    readonly state = { showAllScript: false, showCopied: false, showResizeBtn: false };
     _t;
     
     toggleShowScript = () => this.setState({ showAllScript: !this.state.showAllScript });
     onCopy = () => this._onCopy();
+    getScriptRef = (ref) => this.scriptEl = ref;
+    
+    componentDidMount() {
+        const scrollHeight = this.scriptEl.scrollHeight;
+        const height = this.scriptEl.offsetHeight;
+        const showResizeBtn = scrollHeight > height;
+        this.setState({ showResizeBtn })
+    }
     
     render() {
         const { data: tx } = this.props.signData;
@@ -35,20 +44,20 @@ export class SetScript extends SignClass {
                 </div>
 
                 <div className={`plate plate-with-controls break-all ${showAllClass}`}>
-                    <div className={`${styles.txValue}`}>{tx.script}</div>
+                    <div ref={this.getScriptRef} className={`${styles.txValue}`}>{tx.script}</div>
                     <div className="buttons-wrapper">
-                        <Copy text={tx.script} onCopy={this.onCopy}>
+                        { tx.script ? <Copy text={tx.script} onCopy={this.onCopy}>
                             <Button>
                                 <Trans i18nKey='transactions.copy'>Copy</Trans>
                             </Button>
-                        </Copy>
-                        <Button onClick={this.toggleShowScript}>
+                        </Copy> : null }
+                        { this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>
                             {
                                 !this.state.showAllScript ?
                                 <Trans i18nKey='transactions.showAll'>Show all</Trans>:
                                 <Trans i18nKey='transactions.hide'>Hide</Trans>
                             }
-                        </Button>
+                        </Button>: null }
                     </div>
                 </div>
 
@@ -56,7 +65,9 @@ export class SetScript extends SignClass {
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
-                    <div className={styles.txValue}>0.003 Waves</div>
+                    <div className={styles.txValue}>
+                        <Balance balance={tx.fee} isShortFormat={true} showAsset={true}/>
+                    </div>
                 </div>
 
                 <div className={`${styles.txRow} margin-main`}>

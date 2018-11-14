@@ -22,7 +22,7 @@ export class CoinomatConfirmFinal extends React.PureComponent {
 
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.authRejected'>Request has not been signed</Trans>
+                <Trans i18nKey='sign.coinomatRejected'>Request has not been signed</Trans>
             </div>
         }
 

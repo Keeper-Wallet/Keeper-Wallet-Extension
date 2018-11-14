@@ -357,8 +357,12 @@ export class MessageController extends EventEmitter {
             case 'cancelOrder':
                 result.amountAsset = message.data.amountAsset;
                 result.priceAsset = message.data.priceAsset;
-                break;
             case 'request':
+                const requestDefaults = {
+                    timestamp: Date.now(),
+                    senderPublicKey: message.account.publicKey
+                };
+                result.data.data = {...requestDefaults, ...result.data.data};
                 result.messageHash = await this._getMessageHash(result);
                 break;
             case 'bytes':
