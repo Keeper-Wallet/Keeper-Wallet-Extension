@@ -32,7 +32,7 @@ export class CoinomatConfirm extends SignClass {
             
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.txid'>TXID</Trans>
+                        <Trans i18nKey='transactions.dataHash'>Data Hash</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
