@@ -4,7 +4,7 @@ import { translate, Trans } from 'react-i18next';
 import { Balance } from '../ui';
 
 @translate('extension')
-export class MatcherFinal extends React.PureComponent {
+export class CoinomatConfirmFinal extends React.PureComponent {
     
     readonly props;
     
@@ -14,8 +14,8 @@ export class MatcherFinal extends React.PureComponent {
         if (isApprove) {
             return <div>
                 <div className="margin-main headline2">
-                    {isSend ? <Trans i18nKey='sign.matcherSend'>Sign a request to the matcher!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.matcherConfirmed'>Sign a request to the matcher!</Trans>: null}
+                    {isSend ? <Trans i18nKey='sign.coinomatSend'>Sign a request to the coinomat!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.coinomatConfirmed'>Sign a request to the coinomat!</Trans>: null}
                 </div>
             </div>
         }
