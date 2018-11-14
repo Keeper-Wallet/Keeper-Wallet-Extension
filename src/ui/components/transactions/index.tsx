@@ -23,6 +23,8 @@ import { CreateOrder } from './CreateOrder';
 import { CreateOrderFinal } from './CreateOrderFinal';
 import { Matcher } from './Matcher';
 import { MatcherFinal } from './MatcherFinal';
+import { CoinomatConfirm } from './CoinomatConfirm';
+import { CoinomatConfirmFinal } from './CoinomatConfirmFinal';
 import { Data } from './Data';
 import { DataFinal } from './DataFinal';
 import { SponsorShip } from './SponsorShip';
@@ -102,6 +104,11 @@ export const getConfigByTransaction = tx => {
             config.type = 'matcher_orders';
             config.component = Matcher;
             config.final = MatcherFinal;
+            break;
+        case SIGN_TYPE.COINOMAT_CONFIRMATION:
+            config.type = 'coinomat_confirm';
+            config.component = CoinomatConfirm;
+            config.final = CoinomatConfirmFinal;
             break;
         case SIGN_TYPE.REISSUE:
             config.type = 'reissue';
