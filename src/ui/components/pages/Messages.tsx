@@ -6,6 +6,7 @@ import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction, FinalTransaction } from '../transactions';
+import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
 
 @translate('extension')
 class MessagesComponent extends React.Component {
@@ -184,7 +185,7 @@ class MessagesComponent extends React.Component {
 
             let obj = result;
             const asset = assets[assetId];
-            const moneyInstance = asset ? new Money(0, new Asset(asset)).cloneWithTokens(tokens) : null;
+            const moneyInstance = asset ? Money.fromTokens(tokens, asset) : null;
             const key = path.pop();
 
             for (const key of path) {
