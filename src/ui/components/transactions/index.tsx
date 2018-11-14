@@ -33,6 +33,8 @@ import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
 import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
+import { Unknown } from './Unknown';
+import { UnknownFinal } from './UnknownFinal';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -133,8 +135,8 @@ export const getConfigByTransaction = tx => {
             config.final = CustomSignFinal;
         default:
             config.type = 'unknown';
-            config.component = SignClass;
-            config.final = null;
+            config.component = Unknown;
+            config.final = UnknownFinal;
     }
     
     return config;
