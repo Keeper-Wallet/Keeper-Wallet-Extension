@@ -6,7 +6,7 @@ import { TxIcon } from './TransactionIcon';
 import { TransactionBottom } from './TransactionBottom';
 
 @translate('extension')
-export class Matcher extends SignClass {
+export class Unknown extends SignClass {
 
     render() {
         const { data: tx } = this.props.signData;
@@ -20,19 +20,12 @@ export class Matcher extends SignClass {
                 </div>
 
                 <div className="headline2 center margin-main-large">
-                    <Trans i18nKey='transactions.signToMatcher'>Sign a request to the Matcher</Trans>
-                </div>
-    
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.matcherTimeStamp'>Matcher Time Stamp</Trans>
-                    </div>
-                    <div className={styles.txValue}>{tx.timestamp}</div>
+                    <Trans i18nKey='transactions.signCustomRequest'>Sign a request</Trans>
                 </div>
             
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.dataHash'>Data Hash</Trans>
+                        <Trans i18nKey='transactions.hashId'>Request hash</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>

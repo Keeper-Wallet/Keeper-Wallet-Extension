@@ -62,7 +62,7 @@ class NewWalletComponent extends React.Component {
             </div>
 
             <div className={`tag1 basic500 input-title`}>
-                <Trans i18nkey='newWallet.address'>Account address</Trans>:
+                <Trans i18nkey='newWallet.address'>Account address</Trans>
             </div>
 
             <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>

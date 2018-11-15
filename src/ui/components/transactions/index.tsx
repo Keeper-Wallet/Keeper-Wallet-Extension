@@ -23,6 +23,8 @@ import { CreateOrder } from './CreateOrder';
 import { CreateOrderFinal } from './CreateOrderFinal';
 import { Matcher } from './Matcher';
 import { MatcherFinal } from './MatcherFinal';
+import { CoinomatConfirm } from './CoinomatConfirm';
+import { CoinomatConfirmFinal } from './CoinomatConfirmFinal';
 import { Data } from './Data';
 import { DataFinal } from './DataFinal';
 import { SponsorShip } from './SponsorShip';
@@ -31,6 +33,8 @@ import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
 import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
+import { Unknown } from './Unknown';
+import { UnknownFinal } from './UnknownFinal';
 import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
@@ -103,6 +107,11 @@ export const getConfigByTransaction = tx => {
             config.component = Matcher;
             config.final = MatcherFinal;
             break;
+        case SIGN_TYPE.COINOMAT_CONFIRMATION:
+            config.type = 'coinomat_confirm';
+            config.component = CoinomatConfirm;
+            config.final = CoinomatConfirmFinal;
+            break;
         case SIGN_TYPE.REISSUE:
             config.type = 'reissue';
             config.component = ReIssure;
@@ -126,8 +135,8 @@ export const getConfigByTransaction = tx => {
             config.final = CustomSignFinal;
         default:
             config.type = 'unknown';
-            config.component = SignClass;
-            config.final = null;
+            config.component = Unknown;
+            config.final = UnknownFinal;
     }
     
     return config;

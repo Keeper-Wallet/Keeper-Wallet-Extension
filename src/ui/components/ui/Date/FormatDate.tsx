@@ -12,7 +12,7 @@ const FullYear = ({ value }) => {
 
 const Month = ({ value }) => {
     const month = new Date(value).getMonth();
-    return <AddZero value={month}/> ;
+    return <AddZero value={month + 1}/> ;
 };
 
 const Day = ({ value }) => {
@@ -53,7 +53,7 @@ const DateFromFormat = ({ value, format }) => {
                 prev.data.push(<span key={res}>{res}</span>)
             }
             const Comp = TYPES[current.type];
-            prev.data.push(<Comp value={value} key={current.type}></Comp>);
+            prev.data.push(<Comp value={value} key={ current.type + prev.index }></Comp>);
             prev.index += current.type.length;
             return prev;
         }, { data: [], index: 0 }).data

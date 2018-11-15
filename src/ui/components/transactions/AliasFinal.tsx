@@ -13,7 +13,7 @@ export class AliasFinal extends React.PureComponent {
         
         if (isApprove) {
             return <div>
-                <div className="margin-main-large headline2">
+                <div className="margin-main headline2">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>

@@ -6,6 +6,7 @@ import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction, FinalTransaction } from '../transactions';
+import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
 
 @translate('extension')
 class MessagesComponent extends React.Component {

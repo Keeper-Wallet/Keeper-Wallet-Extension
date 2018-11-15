@@ -17,7 +17,7 @@ class DeleteAccountComponent extends React.Component {
             </h2>
             <div className="margin4 body1">
                 <Trans i18nkey='deleteUser.warn'>
-                    Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEED.
+                    Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEEDs.
                 </Trans>
             </div>
             <div>
