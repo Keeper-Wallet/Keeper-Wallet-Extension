@@ -1,7 +1,7 @@
 import extension from 'extensionizer';
 
-const height = 630;
-const width = 370;
+const height = 622;
+const width = 357;
 
 export class WindowManager {
     _notificationWindowId;

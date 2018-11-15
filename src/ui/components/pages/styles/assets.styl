@@ -111,29 +111,25 @@
 
 :global .animate_active_wallet-enter
   animation-name: animation-active-show;
-  animation-duration: 0.6s;
+  animation-duration: 0.9s;
   animation-fill-mode: both;
   position: absolute;
 
 :global .animate_active_wallet-leave
   animation-name: animation-active-hide;
-  animation-duration: 0.6s;
+  animation-duration: 0.9s;
   animation-fill-mode: both;
 
 @keyframes :global(animation-active-show)
   0%
     opacity: 0;
-    transform: translate(0, -151%);
 
   100%
     opacity: 1;
-    transform: translate(0, 0);
 
 @keyframes :global(animation-active-hide)
   0%
     opacity: 1;
-    transform: translate(0, 0);
 
   100%
     opacity: 0;
-    transform: translate(0, 151%);

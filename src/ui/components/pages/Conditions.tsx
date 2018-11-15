@@ -27,7 +27,7 @@ class ConditionsComponent extends React.Component {
         }
 
         const height = e.target.scrollHeight - e.target.scrollTop - e.target.offsetHeight;
-        const confirmDisabled = height > 5;
+        const confirmDisabled = height > 20;
 
         if (this.state.confirmDisabled !== confirmDisabled) {
             this.setState({ confirmDisabled });
