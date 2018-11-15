@@ -39,7 +39,7 @@ export class ReIssureComponent extends SignClass {
                         <Trans i18nKey='transactions.issureType'>Type</Trans>
                     </div>
                     <div className={styles.txValue}>{
-                        asset.reissuable ?
+                        tx.reissuable ?
                             <Trans i18nKey='transactions.reissuable'>Reissuable</Trans>:
                             <Trans i18nKey='transactions.noReissuable'>Not reissuable</Trans>
                     }</div>
