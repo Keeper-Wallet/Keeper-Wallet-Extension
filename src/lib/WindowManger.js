@@ -5,8 +5,12 @@ const width = 357;
 
 export class WindowManager {
     _notificationWindowId;
-
+    _inShowMode;
     async showWindow(){
+        if (this._inShowMode) {
+            return null;
+        }
+        this._inShowMode = true;
         const notificationWindow = await this._getNotificationWindow();
 
         if (notificationWindow) {
@@ -20,12 +24,12 @@ export class WindowManager {
                     width,
                     height,
                 }, window => {
-                    this._notificationWindowId = window.id
+                    this._notificationWindowId = window.id;
                     resolve()
                 })
             })
-
         }
+        this._inShowMode = false;
     }
 
     async closeWindow(){

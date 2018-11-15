@@ -56,7 +56,7 @@ export class ReIssureComponent extends SignClass {
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.txid'>TXID</Trans>
                     </div>
-                    <div className={`${styles.txValue} plate fullwidth`}>{this.props.txHash}</div>
+                    <div className={`${styles.txValue} fullwidth`}>{this.props.txHash}</div>
                 </div>
             
                 <div className={styles.txRow}>
