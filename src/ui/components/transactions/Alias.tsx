@@ -18,7 +18,7 @@ export class Alias extends SignClass {
 
             <div className={styles.txScrollBox}>
 
-                <div className={`${styles.txIcon} margin`}>
+                <div className={`${styles.txIcon} margin-main`}>
                     <TxIcon txType={this.props.txType}/>
                 </div>
 
