@@ -192,7 +192,7 @@ class MessagesComponent extends React.Component {
             const asset = assets[assetId];
             let moneyInstance = null;
             if (asset) {
-                moneyInstance = tokens != null ?  Money.fromTokens(tokens, new Asset(assetId)) : Money.fromCoins(coins, new Asset(assetId))
+                moneyInstance = tokens != null ?  Money.fromTokens(tokens, new Asset(asset)) : Money.fromCoins(coins, new Asset(asset))
             }
             const key = path.pop();
 
