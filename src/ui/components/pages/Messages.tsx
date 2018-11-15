@@ -163,6 +163,11 @@ class MessagesComponent extends React.Component {
                     moneys.push({ ...currentData, path: currentPath });
                     continue;
                 }
+
+                if ('coins' in currentData ) {
+                    moneys.push({ ...currentData, path: currentPath });
+                    continue;
+                }
             }
 
             for (const [key, data] of Object.entries(currentData)) {
@@ -180,11 +185,14 @@ class MessagesComponent extends React.Component {
     static fillSignData(data, moneys, assets) {
         const result = { ...data };
 
-        for (const { path, assetId, tokens } of moneys) {
+        for (const { path, assetId, tokens, coins } of moneys) {
 
             let obj = result;
             const asset = assets[assetId];
-            const moneyInstance = asset ? new Money(0, new Asset(asset)).cloneWithTokens(tokens) : null;
+            let moneyInstance = null;
+            if (asset) {
+                moneyInstance = tokens != null ?  Money.fromTokens(tokens, new Asset(assetId)) : Money.fromCoins(coins, new Asset(assetId))
+            }
             const key = path.pop();
 
             for (const key of path) {
