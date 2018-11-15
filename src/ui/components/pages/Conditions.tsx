@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { Button } from '../ui/buttons';
 import { ConditionsAndTerms } from '../conditions/Conditions';
 
+const SCROLL_DELTA = -15;
+
 @translate('extension')
 class ConditionsComponent extends React.Component {
 
@@ -25,10 +27,9 @@ class ConditionsComponent extends React.Component {
         if (!this.state.confirmDisabled ) {
             return null;
         }
-
-        const height = e.target.scrollHeight - e.target.scrollTop - e.target.offsetHeight;
-        const confirmDisabled = height > 20;
-
+        
+        const height =  e.target.scrollTop + e.target.offsetHeight - e.target.scrollHeight;
+        const confirmDisabled = height <= SCROLL_DELTA;
         if (this.state.confirmDisabled !== confirmDisabled) {
             this.setState({ confirmDisabled });
         }
