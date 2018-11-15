@@ -21,7 +21,7 @@ export const Balance = ({ balance, split, addSign=null, showAsset, isShortFormat
         return <div {...props}>{tokens.join(SEPARATOR)} {assetName} {children}</div>;
     }
 
-    return <div {...props}>
+    return <div {...props} className={styles.balanceWrapper}>
         {addSign ? <span>{addSign}</span> : null}
         <span className="font600">{tokens[0]}</span>{ tokens[1] ? <span>{SEPARATOR}{tokens[1]}</span> : null }
         <span className={styles.assetNameMargin}>{assetName}</span>
