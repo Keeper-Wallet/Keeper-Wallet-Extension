@@ -210,8 +210,10 @@ export class MessageController extends EventEmitter {
 
                 if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
                     const asset = await this.assetInfo(data[key].assetId);
-                    const amount = new BigNumber(field.tokens).multipliedBy(field.nonDecimal ? 1 : 10 ** asset.precision).toString();
-                    data[key] = new Money(amount, asset)
+                    data[key] = Money.fromTokens(field.tokens, asset)
+                } else if (field.hasOwnProperty('coins') && field.hasOwnProperty('assetId')) {
+                    const asset = await this.assetInfo(data[key].assetId);
+                    data[key] = Money.fromCoins(field.coins, asset)
                 } else if (Array.isArray(field)) {
                     data[key] = await Promise.all(data[key].map((item) => this._transformData(item)));
                 } else {

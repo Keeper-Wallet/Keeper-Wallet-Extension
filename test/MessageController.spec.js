@@ -26,7 +26,7 @@ describe("MessageController", () => {
                 assetId:'WAVES'
             },
             fee: {
-                tokens: '0.001',
+                coins: '1000000',
                 assetId:'WAVES'
             },
             attachment: '',
