@@ -22,7 +22,7 @@ export class SponsorShip extends SignClass {
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} showAsset={true} balance={minSponsoredAssetFee}/>
+                    <Balance split={true} showAsset={true} balance={minSponsoredAssetFee} className={styles.txBalanceWrapper} />
                 </div>
                 
                 <div className={styles.txRow}>

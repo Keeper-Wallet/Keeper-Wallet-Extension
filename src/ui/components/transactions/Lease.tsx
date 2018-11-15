@@ -22,7 +22,7 @@ export class LeaseComponent extends SignClass {
                 </div>
             
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} showAsset={true} balance={tx.amount}/>
+                    <Balance split={true} showAsset={true} balance={tx.amount} className={styles.txBalanceWrapper} />
                 </div>
 
                 

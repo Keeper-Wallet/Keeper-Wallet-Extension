@@ -26,7 +26,7 @@ export class BurnComponent extends SignClass {
                 </div>
             
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance addSign="-" split={true} showAsset={true} balance={quantity}/>
+                    <Balance addSign="-" split={true} showAsset={true} balance={quantity} className={styles.txBalanceWrapper}/>
                 </div>
     
                 <div className={styles.txRow}>

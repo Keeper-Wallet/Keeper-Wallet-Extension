@@ -27,7 +27,7 @@ class CreateOrderComponent extends SignClass {
                 </div>
     
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} showAsset={true} balance={amount}/>
+                    <Balance split={true} showAsset={true} balance={amount} className={styles.txBalanceWrapper} />
                 </div>
                 
                 <div className={styles.txRow}>
