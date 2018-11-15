@@ -135,7 +135,7 @@ export class MessageController extends EventEmitter {
 
     // for debug purposes
     /**
-     * Rejects message
+     * Deletes all messages
      * @param {array} [ids] - message id
      */
     clearMessages(ids) {
@@ -210,7 +210,7 @@ export class MessageController extends EventEmitter {
 
                 if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
                     const asset = await this.assetInfo(data[key].assetId);
-                    const amount = new BigNumber(field.tokens).multipliedBy(10 ** asset.precision).toString();
+                    const amount = new BigNumber(field.tokens).multipliedBy(field.nonDecimal ? 1 : 10 ** asset.precision).toString();
                     data[key] = new Money(amount, asset)
                 } else if (Array.isArray(field)) {
                     data[key] = await Promise.all(data[key].map((item) => this._transformData(item)));
@@ -293,7 +293,7 @@ export class MessageController extends EventEmitter {
     }
 
     /**
-     * Generates message hash. Throws message is invalid
+     * Generates message hash. Throws if message is invalid
      * @param {object} message - Message to approve
      * @returns {Promise<string>}
      */
