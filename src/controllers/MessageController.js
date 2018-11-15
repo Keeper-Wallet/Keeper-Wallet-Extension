@@ -230,7 +230,7 @@ export class MessageController extends EventEmitter {
             case 'order':
             case 'cancelOrder':
             case 'transaction':
-                message.data.data = await this._transformData({ ...message.data.data });
+                message.data.data = await this._transformData({...message.data.data});
                 return message;
             default:
                 return message
@@ -295,16 +295,16 @@ export class MessageController extends EventEmitter {
     }
 
     /**
-     * Generates message hash. Throws if message is invalid
+     * Generates message hash. Throws if data is invalid
      * @param {object} message - Message to approve
      * @returns {Promise<string>}
      */
     async _getMessageHash(message) {
-        let signableMessage = await this._fillSignableData(message);
+        let signableData = await this._transformData({...message.data.data});
         const Adapter = getAdapterByType('seed');
         Adapter.initOptions({networkCode: networkByteFromAddress(message.account.address).charCodeAt(0)});
         const adapter = new Adapter('validation seed');
-        const signable = adapter.makeSignable(signableMessage.data);
+        const signable = adapter.makeSignable({...message.data, data: signableData});
         return await signable.getId();
     }
 
