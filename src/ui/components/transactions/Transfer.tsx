@@ -30,6 +30,13 @@ export class Transfer extends SignClass {
                     </div>
                     <div className={styles.txValue}>{tx.recipient}</div>
                 </div>
+    
+                { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+                    <div className="tx-title tag1 basic500">
+                        <Trans i18nKey='transactions.description'>Description</Trans>
+                    </div>
+                    <div className={`${styles.txValue} plate fullwidth`}>{tx.attachment}</div>
+                </div> : null }
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">

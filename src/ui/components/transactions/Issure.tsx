@@ -33,13 +33,13 @@ export class Issure extends SignClass {
                 <div className={`${styles.txBalance} center headline2`}>
                     <Balance split={true} showAsset={true} balance={quantity}/>
                 </div>
-
-                <div className={styles.txRow}>
+    
+                { tx.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.description'>Description</Trans>
                     </div>
-                    <div className={styles.txValue}>{tx.description}</div>
-                </div>
+                    <div className={`${styles.txValue} plate fullwidth`}>{tx.description}</div>
+                </div> : null }
     
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
@@ -55,7 +55,7 @@ export class Issure extends SignClass {
                     <div className={styles.txValue}>{
                         tx.reissuable ?
                             <Trans i18nKey='transactions.reissuable'>Reissuable</Trans>:
-                            <Trans i18nKey='transactions.noReissuable'>No reissuable</Trans>
+                            <Trans i18nKey='transactions.noReissuable'>Not reissuable</Trans>
                     }</div>
                 </div>
                 

@@ -70,8 +70,8 @@ class RootComponent extends React.Component {
         let tab = nextProps.tab;
         
         const { messages } = nextProps;
-        const hasUnapprovedMsg = messages.length && messages[0];
-        const showMessages = !!Object.values(nextProps.transactionStatus).filter(Boolean).length;
+        const hasUnapprovedMsg = !nextProps.locked && messages.length && messages[0];
+        const showMessages = !nextProps.locked && !!Object.values(nextProps.transactionStatus).filter(Boolean).length;
         
         if (showMessages || hasUnapprovedMsg) {
             if (tab !== PAGES.CHANGE_TX_ACCOUNT) {

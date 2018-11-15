@@ -10,8 +10,7 @@ async function setupInpageApi() {
         name: 'page',
         target: 'content',
     });
-
-
+    
     const eventEmitter = new EventEmitter();
     const emitterApi = {
         sendUpdate: async state => eventEmitter.emit('update', state)

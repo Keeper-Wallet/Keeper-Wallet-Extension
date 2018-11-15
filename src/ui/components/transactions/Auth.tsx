@@ -31,7 +31,7 @@ export class Auth extends SignClass {
 
                 <div className={`${styles.txRow} ${styles.borderedBottom} margin-main-big `}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey='transactions.txid'>TXID</Trans>
+                        <Trans i18nKey='transactions.dataHash'>Data Hash</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>

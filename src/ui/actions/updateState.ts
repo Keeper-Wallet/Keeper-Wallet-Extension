@@ -84,7 +84,7 @@ export function updateState(state) {
 
     if (
         !currentState.state ||
-        (initialized || !!accounts.length) !== currentState.state.initialized ||
+        initialized !== currentState.state.initialized ||
         locked !== currentState.state.locked
     ) {
         actions.push({

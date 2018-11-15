@@ -42,7 +42,7 @@ class ImportSeedComponent extends React.Component {
 
             <form onSubmit={this.onSubmit}>
                 <div className={'tag1 basic500 input-title'}>
-                    <Trans i18nkey='importSeed.newSeed'>Wallet Seed</Trans>:
+                    <Trans i18nkey='importSeed.newSeed'>Wallet Seed</Trans>
                 </div>
 
                 <Input error={this.state.error && this.state.showError}
@@ -59,7 +59,7 @@ class ImportSeedComponent extends React.Component {
 
 
                 <div className={'tag1 basic500 input-title'}>
-                    <Trans i18nkey='importSeed.address'>Account address</Trans>:
+                    <Trans i18nkey='importSeed.address'>Account address</Trans>
                 </div>
 
                 <div className={`${styles.greyLine} grey-line`}>{address}</div>
@@ -85,7 +85,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     _changeHandler(e) {
-        const phrase = e.target.value;
+        const phrase = (e.target.value || '').trim();
         let seed = { address: '', phrase: '' };
 
         if (phrase.length >= 24) {

@@ -224,7 +224,10 @@ class BackgroundService extends EventEmitter {
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
-            deleteVault: async () => this.walletController.deleteVault(),
+            deleteVault: async () => {
+                await this.messageController.clearMessages();
+                await this.walletController.deleteVault();
+            },
             newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
             exportAccount: async (address, password) => this.walletController.exportAccount(address, password),
 
@@ -342,10 +345,19 @@ class BackgroundService extends EventEmitter {
     }
 
     _publicState(state) {
+
+        if (!state.locked) {
+            return {
+                initialized: state.initialized,
+                locked: state.locked,
+                account: state.selectedAccount,
+            }
+        }
+
         return {
             initialized: state.initialized,
             locked: state.locked,
-            account: state.selectedAccount,
+            account: null,
         }
     }
 
