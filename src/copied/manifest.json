@@ -56,7 +56,8 @@
     "storage",
     "unlimitedStorage",
     "clipboardWrite",
-    "idle"
+    "idle",
+    "activeTab"
   ],
   "web_accessible_resources": [
     "inpage.js"
