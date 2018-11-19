@@ -31,7 +31,7 @@ export class Issure extends SignClass {
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} showAsset={true} balance={quantity}/>
+                    <Balance split={true} showAsset={true} balance={quantity} className={styles.txBalanceWrapper} />
                 </div>
     
                 { tx.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>

@@ -23,7 +23,7 @@ import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 
 
-const WAVESKEEPER_DEBUG = true;
+const WAVESKEEPER_DEBUG = false;
 const IDLE_INTERVAL = 60;
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');

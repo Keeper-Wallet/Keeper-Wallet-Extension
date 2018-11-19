@@ -1,7 +1,7 @@
 {
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 2,
   "author": "support@wavesplatform.com",
   "description": "__MSG_appDescription__",
@@ -56,7 +56,8 @@
     "storage",
     "unlimitedStorage",
     "clipboardWrite",
-    "idle"
+    "idle",
+    "activeTab"
   ],
   "web_accessible_resources": [
     "inpage.js"

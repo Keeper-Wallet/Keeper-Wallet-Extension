@@ -21,7 +21,7 @@ export class Transfer extends SignClass {
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.amount}/>
+                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.amount} className={styles.txBalanceWrapper} />
                 </div>
 
                 <div className={styles.txRow}>

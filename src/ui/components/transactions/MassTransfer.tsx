@@ -69,7 +69,7 @@ export class MassTransfer extends SignClass {
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.totalAmount}/>
+                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.totalAmount} className={styles.txBalanceWrapper} />
                 </div>
 
                 <div>
