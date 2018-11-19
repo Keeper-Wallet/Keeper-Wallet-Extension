@@ -91,7 +91,7 @@ function shouldInject() {
  * @returns {boolean} {@code true} if the doctype is html or if none exists
  */
 function doctypeCheck() {
-    const doctype = window.document.doctype
+    const doctype = window.document.doctype;
     if (doctype) {
         return doctype.name === 'html'
     } else {
@@ -123,7 +123,7 @@ function suffixCheck() {
  * @returns {boolean} {@code true} if the documentElement is an html node or if none exists
  */
 function documentElementCheck() {
-    const documentElement = document.documentElement.nodeName
+    const documentElement = document.documentElement.nodeName;
     if (documentElement) {
         return documentElement.toLowerCase() === 'html'
     }
@@ -143,7 +143,7 @@ function blacklistedDomainCheck() {
         // 'cdn.shopify.com/s/javascripts/tricorder/xtld-read-only-frame.html',
         // 'adyen.com',
         // 'gravityforms.com',
-    ]
+    ];
     const currentUrl = window.location.href;
     let currentRegex;
     for (let i = 0; i < blacklistedDomains.length; i++) {

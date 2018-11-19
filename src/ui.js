@@ -6,7 +6,7 @@ import {cbToPromise, setupDnode, transformMethods} from './lib/dnode-util';
 import log from "loglevel";
 import {initApp} from './ui/index';
 
-const WAVESKEEPER_DEBUG = true;
+const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 startUi().catch(log.error);

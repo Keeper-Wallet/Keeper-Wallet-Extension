@@ -15,7 +15,7 @@ class ConfirmBackupComponent extends React.Component {
     onSelect = (list) => this._onSelect(list);
     onUnSelect = (list) => this._onUnSelect(list);
     onClear = () => this._onClear();
-    onSubmit = () => this._onSubmit();
+    onSubmit = (e) => this._onSubmit(e);
 
     render() {
         const {selectedList, list, complete, wrongSeed} = this.state;
@@ -64,7 +64,8 @@ class ConfirmBackupComponent extends React.Component {
         </div>
     }
 
-    private _onSubmit() {
+    private _onSubmit(event) {
+        event.preventDefault();
         this.props.setUiState({
             account: null
         });

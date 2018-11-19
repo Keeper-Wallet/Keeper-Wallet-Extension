@@ -46,7 +46,8 @@ class ImportComponent extends React.PureComponent {
         </div>
     }
 
-    onClick(tab) {
+    onClick(tab, event) {
+        event.preventDefault();
         this.props.setTab(tab);
     }
 }

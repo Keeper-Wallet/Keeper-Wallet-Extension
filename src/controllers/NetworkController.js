@@ -1,7 +1,7 @@
 import ObservableStore from 'obs-store';
 import { NETWORKS, NETWORK_CONFIG } from '../constants';
 
-const WAVESKEEPER_DEBUG = process.env.WAVESKEEPER_DEBUG;
+const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
 
 export class NetworkController {

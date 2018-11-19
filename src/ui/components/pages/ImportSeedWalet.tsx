@@ -14,7 +14,7 @@ class ImportSeedComponent extends React.Component {
     state;
     inputEl: Input;
     getRef = input => this.inputEl = input;
-    onSubmit = () => this._onSubmit();
+    onSubmit = (e) => this._onSubmit(e);
     onChange = e => this._changeHandler(e);
     inputBlurHandler = () => this._showError(true);
     inputFocusHandler = () => this._showError(false);
@@ -71,7 +71,8 @@ class ImportSeedComponent extends React.Component {
         </div>
     }
 
-    _onSubmit() {
+    _onSubmit(event) {
+        event.preventDefault();
         this.props.clearSeedErrors();
         this.props.setTab(PAGES.ACCOUNT_NAME_SEED);
     }

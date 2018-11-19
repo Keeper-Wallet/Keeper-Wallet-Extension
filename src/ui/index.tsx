@@ -19,10 +19,11 @@ export async function initApp(background: any) {
     backgroundService.getState();
 }
 
+
 ReactDOM.render(
-    <Provider store={store}>
-        <div className='app'>
-            <Root/>
-        </div>
-    </Provider>,
+<Provider store={store}>
+                <div className='app'>
+                    <Root/>
+                </div>
+        </Provider>,
     document.getElementById('app-content'));

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "webpack --mode development --watch",
-    "dist": "webpack --mode production",
+    "start": "webpack --watch",
+    "dist": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {
@@ -52,7 +52,8 @@
     "readable-stream": "^2.3.6",
     "redux": "^4.0.0",
     "url": "^0.11.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "web-ext": "^2.9.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

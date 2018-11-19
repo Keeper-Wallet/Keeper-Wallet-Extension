@@ -128,7 +128,6 @@ class ChangePasswordComponent extends React.PureComponent {
 
     _onSubmit(e) {
         e.preventDefault();
-        e.preventDefault();
 
         if (this.state.firstValue) {
             background.newPassword(this.state.oldValue, this.state.firstValue).then(
