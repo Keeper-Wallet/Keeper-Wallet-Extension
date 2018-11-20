@@ -87,6 +87,7 @@ async function setupBackgroundService() {
 
     // Notification window management
     const windowManager = new WindowManager();
+    backgroundService.windowManager = windowManager;
     backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
     backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
 
