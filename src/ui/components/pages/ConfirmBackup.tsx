@@ -29,12 +29,12 @@ class ConfirmBackupComponent extends React.Component {
             </h2>
 
             <Pills animated={true}
-                   className={`${styles.readSeed} plate`}
+                   className={`${styles.readSeed} plate body3`}
                    list={selectedList}
                    selected={false}
                    onSelect={this.onUnSelect}/>
 
-            <div className="center">
+            <div className="center body3">
                 {complete ? null : <Trans i18nKey='confirmBackup.selectWord'>
                     Please, tap each word in the correct order
                 </Trans>}
