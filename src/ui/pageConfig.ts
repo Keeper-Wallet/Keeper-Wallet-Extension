@@ -21,7 +21,9 @@ import {
     ChangePassword,
     DeleteAccount,
     Messages,
-    ForgotPassword, SelectTxAccount,
+    ForgotPassword,
+    SelectTxAccount,
+    PairingAccountQr
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -55,6 +57,7 @@ export const PAGES = {
     LANGS_SETTINGS_INTRO: 'langs_settings_intro',
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
+    PAIRING: 'pairing',
     MESSAGES: 'messages',
     FORGOT: 'forgot_password',
     CHANGE_TX_ACCOUNT: 'change_tx_account',
@@ -278,6 +281,17 @@ export const PAGES_CONF = {
     },
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {
         component: DeleteActiveAccount,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.PAIRING]: {
+        component: PairingAccountQr,
         bottom: {
             hide: true,
         },
