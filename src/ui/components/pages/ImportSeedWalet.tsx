@@ -7,8 +7,9 @@ import { newAccountSelect, clearSeedErrors } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class ImportSeedComponent extends React.Component {
     props;
     state;

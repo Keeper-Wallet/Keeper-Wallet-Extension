@@ -4,10 +4,14 @@ import { setTab, addBackTab, removeBackTab, loading, setUiState } from '../actio
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
+import { I18N_NAME_SPACE } from '../appConfig';
+import { translate } from 'react-i18next';
+
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
 
+@translate(I18N_NAME_SPACE)
 class RootComponent extends React.Component {
     
     props: IProps;
@@ -58,34 +62,43 @@ class RootComponent extends React.Component {
     }
     
     static getDerivedStateFromProps(nextProps: IProps) {
-        
+        /**
+         * Loading page
+         */
         if (nextProps.loading) {
             return { tab: PAGES.INTRO };
         }
-        // // select langs at first
+    
+        /**
+         * Select lang page
+         */
+            // // select langs at first
         // if (!nextProps.ui.selectedLangs) {
         //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
         // }
         
         let tab = nextProps.tab;
-        
-        const { messages } = nextProps;
-        const hasUnapprovedMsg = !nextProps.locked && messages.length && messages[0];
-        const showMessages = !nextProps.locked && !!Object.values(nextProps.transactionStatus).filter(Boolean).length;
-        
-        if (showMessages || hasUnapprovedMsg) {
-            if (tab !== PAGES.CHANGE_TX_ACCOUNT) {
-                tab = PAGES.MESSAGES;
-            }
-        }
-        
-        if (!nextProps.accounts.length && tab === PAGES.ASSETS) {
-            tab = PAGES.IMPORT;
-        }
-        
+    
+        /**
+         * Intro page on load
+         */
         if (!tab && nextProps.locked == null) {
             tab = PAGES.INTRO;
-        } else if (!tab && nextProps.locked) {
+        }
+        
+        /**
+         * Has notify - show confirm page
+         */
+        const { activeMessage } = nextProps;
+        
+        if (!nextProps.locked && activeMessage && tab !== PAGES.CHANGE_TX_ACCOUNT) {
+            tab = PAGES.MESSAGES;
+        }
+    
+        /**
+         * Start page on locked keeper
+         */
+        if (!tab && nextProps.locked) {
             tab = NO_USER_START_PAGE;
         }
         
@@ -117,6 +130,8 @@ class RootComponent extends React.Component {
             case PAGES.LOGIN:
             case PAGES.FORGOT:
                 return props.initialized && props.locked;
+            case PAGES.ASSETS:
+                return !props.locked && props.accounts.length;
             default:
                 return !props.locked;
         }
@@ -134,6 +149,7 @@ const mapStateToProps = function (store: any) {
         backTabs: store.backTabs,
         ui: store.uiState,
         messages: store.messages,
+        activeMessage: store.activeMessage,
         transactionStatus: store.localState.transactionStatus,
     };
 };
@@ -165,6 +181,7 @@ interface IProps {
     tab: string;
     backTabs: Array<string>;
     messages: Array<any>;
+    activeMessage: any;
     loading: boolean;
     ui: any;
 }

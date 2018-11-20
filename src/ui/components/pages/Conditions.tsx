@@ -5,10 +5,11 @@ import { translate, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Button } from '../ui/buttons';
 import { ConditionsAndTerms } from '../conditions/Conditions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const SCROLL_DELTA = -15;
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class ConditionsComponent extends React.Component {
 
     onScroll = e => this._onScroll(e);

@@ -4,8 +4,9 @@ import { BigLogo } from '../head';
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Welcome extends React.Component {
     
     readonly props;

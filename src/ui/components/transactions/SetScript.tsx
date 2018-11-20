@@ -6,8 +6,9 @@ import { TxIcon } from './TransactionIcon';
 import { Balance, Button, Copy, Modal } from '../ui';
 import { TransactionBottom } from './TransactionBottom';
 import cn from 'classnames';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class SetScript extends SignClass {
     
     scriptEl: HTMLDivElement;

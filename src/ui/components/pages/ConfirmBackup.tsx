@@ -4,10 +4,11 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {Button, Error, Pills} from '../ui';
 import {user, setUiState} from '../../actions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const SHUFFLE_COUNT = 500;
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class ConfirmBackupComponent extends React.Component {
 
     props;

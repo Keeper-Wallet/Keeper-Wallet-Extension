@@ -1,15 +1,15 @@
-import * as styles from './../pages/styles/transactions.styl';
+import './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance } from '../ui';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class AliasFinal extends React.PureComponent {
     
     readonly props;
     
     render() {
-        const { tx, isApprove, isReject, isSend } = this.props;
+        const { isApprove, isReject, isSend } = this.props;
         
         if (isApprove) {
             return <div>

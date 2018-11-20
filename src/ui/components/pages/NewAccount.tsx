@@ -4,7 +4,7 @@ import { createNew } from '../../actions';
 import * as React from 'react'
 import { Input, Button, Error } from '../ui';
 import { translate, Trans } from 'react-i18next';
-import { CONFIG } from '../../appConfig';
+import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -14,7 +14,7 @@ const mapStateToProps = function (store: any) {
     };
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class NewAccountComponent extends React.PureComponent {
     
     inputEl: Input;

@@ -3,13 +3,12 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from './SignClass';
 import { TransactionBottom } from './TransactionBottom';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class CustomSign extends SignClass {
 
     render() {
-        const { data: tx } = this.props.signData;
-        
         return <div className={styles.transaction}>
             {super.render()}
             <div className={styles.txScrollBox}>

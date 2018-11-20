@@ -6,6 +6,7 @@ import {SignClass} from './SignClass';
 import { TxIcon } from './TransactionIcon';
 import { TransactionBottom } from './TransactionBottom';
 import { Money } from '@waves/data-entities';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const MIN_COUNT = 3;
 
@@ -48,7 +49,7 @@ const ToggleList = ({ count, currentCount, onClick }) => {
     </div>;
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class MassTransfer extends SignClass {
 
     readonly state;

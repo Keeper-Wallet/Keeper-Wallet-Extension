@@ -1,14 +1,14 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow } from '../../actions';
+import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { getConfigByTransaction, FinalTransaction } from '../transactions';
-import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class MessagesComponent extends React.Component {
 
     readonly state = {} as any;
@@ -38,7 +38,7 @@ class MessagesComponent extends React.Component {
                                      onClick={this.clearMessageStatusHandler}/>
         }
         
-        const { message, signData } = this.state;
+        const { activeMessage, signData } = this.state;
         const conf = getConfigByTransaction(signData);
         const { component: Component, type } = conf;
 
@@ -46,7 +46,7 @@ class MessagesComponent extends React.Component {
                           pending={this.state.approvePending}
                           txHash={this.state.txHash}
                           signData={signData}
-                          message={message}
+                          message={activeMessage}
                           selectedAccount={this.state.selectedAccount}
                           clearMessagesHandler={this.clearMessagesHandler }
                           clearMessageStatusHandler={this.clearMessageStatusHandler }
@@ -57,11 +57,11 @@ class MessagesComponent extends React.Component {
     }
 
     approve() {
-        this.props.approve(this.state.message.id);
+        this.props.approve(this.state.activeMessage.id);
     }
     
     reject() {
-        this.props.reject(this.state.message.id);
+        this.props.reject(this.state.activeMessage.id);
     }
     
     clearMessages() {
@@ -70,6 +70,7 @@ class MessagesComponent extends React.Component {
     }
     
     cleanMessageStatus() {
+        this.props.updateActiveMessage();
         this.props.clearMessagesStatus();
         this.props.closeNotificationWindow();
         this.props.setTab(PAGES.ROOT);
@@ -77,56 +78,51 @@ class MessagesComponent extends React.Component {
     
     static getDerivedStateFromProps(props, state) {
 
-        const { balance: sourceBalance, selectedAccount, assets, messages } = props;
-
+        const { balance: sourceBalance, selectedAccount, assets, activeMessage } = props;
+        let loading = true;
+    
         if (!assets || !assets['WAVES']) {
             props.getAsset('WAVES');
             return { loading: true, selectedAccount } ;
         }
-
-        const { transactionStatus } = props;
-        
-        const {
-            approveOk,
-            approveError,
-            rejectOk,
-        } = transactionStatus;
-        
-        if (approveOk || approveError || rejectOk) {
-            const { data } = (approveOk || approveError || rejectOk).message;
-            const parsedData = MessagesComponent.getAssetsAndMoneys(data);
-            const signData = MessagesComponent.fillSignData(data, parsedData.moneys, assets);
-            const config = getConfigByTransaction(signData);
-            return { transactionStatus, selectedAccount, config, signData };
-        }
-        
+    
         const assetInstance = new Asset(assets['WAVES']);
-        const currentId = state && state.message && state.message.id;
-        const isExistMsg = !!messages.find(({ id, status }) => id === currentId && status === 'unapproved');
         const balance = new Money(sourceBalance || 0, assetInstance);
+        
+        const { transactionStatus } = props;
+        const isExistMsg = activeMessage && state.activeMessage && activeMessage.id === state.activeMessage.id;
 
-        if (currentId && isExistMsg) {
-            return { ...state, balance, selectedAccount, assets};
-        }
-        const message = props.messages.find(({ status }) => status === 'unapproved');
-        
-        if (!message) {
-            return { loading: true };
+        if (isExistMsg) {
+            const assetInstance = new Asset(assets['WAVES']);
+            const balance = Money.fromTokens(sourceBalance || 0, assetInstance);
+            loading = false;
+            return { ...state, balance, selectedAccount, assets, transactionStatus, loading};
         }
         
-        const sourceSignData = message.data;
+        const sourceSignData = activeMessage.data;
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => assets[id] === undefined);
         needGetAssets.forEach( id => props.getAsset(id));
 
         if (needGetAssets.length) {
-            return { loading: true, selectedAccount } ;
+            return { loading, selectedAccount } ;
         }
-
+        
+        loading = true;
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
-        const txHash = message.messageHash;
+        const txHash = activeMessage.messageHash;
         const config = getConfigByTransaction(signData);
-        return { message, signData, config, txHash, balance, selectedAccount, assets, loading: false, transactionStatus };
+        return {
+            transactionStatus,
+            activeMessage,
+            signData,
+            config,
+            txHash,
+            balance,
+            selectedAccount,
+            assets,
+            loading
+        };
     }
 
     static getAssetsAndMoneys(data) {
@@ -217,7 +213,7 @@ const mapStateToProps = function (store) {
         transactionStatus: store.localState.transactionStatus,
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
-        messages: store.messages,
+        activeMessage: store.activeMessage,
         assets: store.assets
     };
 };
@@ -225,6 +221,7 @@ const mapStateToProps = function (store) {
 const actions = {
     closeNotificationWindow,
     clearMessagesStatus,
+    updateActiveMessage,
     clearMessages,
     getAsset,
     approve,

@@ -7,8 +7,9 @@ import { AvatarList } from '../ui/avatar/AvatarList';
 import { Seed } from '@waves/signature-generator';
 import { Button } from '../ui/buttons';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class NewWalletComponent extends React.Component {
     static list = [];
     props;

@@ -5,6 +5,7 @@ import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { setLocale, setUiState } from '../../actions';
 import cn from 'classnames';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const Lang = ({ id, name, onSelect, selected }) => {
     const className = cn(styles[id], styles.lang, {
@@ -23,7 +24,7 @@ const Lang = ({ id, name, onSelect, selected }) => {
     </div>;
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class LangsSettingsComponent extends React.PureComponent {
 
     readonly props;

@@ -1,11 +1,12 @@
-import * as styles from './../pages/styles/transactions.styl';
+import './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { Balance } from '../ui';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class IssureFinal extends React.PureComponent {
     
     readonly props;

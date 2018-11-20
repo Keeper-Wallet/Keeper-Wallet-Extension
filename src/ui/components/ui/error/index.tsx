@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as styles from './error.styl';
-
 import cn from 'classnames';
 import {translate, Trans} from 'react-i18next';
+import { I18N_NAME_SPACE } from '../../../appConfig';
 
 
 const Errors = ({ errors, show }) => {
@@ -16,7 +16,7 @@ const Errors = ({ errors, show }) => {
     });
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Error extends React.PureComponent {
 
     props: IProps;

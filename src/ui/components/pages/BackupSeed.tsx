@@ -5,8 +5,9 @@ import { setUiStateAndSetTab, newAccountSelect, setUiState } from '../../actions
 import { translate, Trans } from 'react-i18next';
 import { Copy, Button, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class BackUpSeedComponent extends React.Component {
     readonly state = {} as any;
     readonly props;

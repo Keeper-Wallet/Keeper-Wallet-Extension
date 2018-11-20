@@ -2,8 +2,9 @@ import * as styles from './styles/info.styl';
 import * as React from 'react';
 import {Trans, translate} from 'react-i18next';
 import {BigLogo} from '../head';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Info extends React.Component {
 
     render() {

@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions';
 import { Trans, translate } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
-import { CONFIG } from '../../appConfig';
+import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class ChangeAccountNameComponent extends React.PureComponent {
     readonly props;
     readonly state = { newName: '', error: false, errors: [] };

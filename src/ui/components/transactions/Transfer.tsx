@@ -5,8 +5,9 @@ import { Balance } from '../ui';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
 import { TransactionBottom } from './TransactionBottom';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Transfer extends SignClass {
 
     render() {

@@ -3,8 +3,9 @@ import {connect} from 'react-redux';
 import {Trans, translate} from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Avatar, QRCode, Button } from '../ui';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class QRCodeSelectedAccountComponent extends React.PureComponent {
 
     readonly props;

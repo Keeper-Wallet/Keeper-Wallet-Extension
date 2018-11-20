@@ -6,8 +6,9 @@ import {BigLogo} from '../head';
 import {Button, Input, Error} from '../ui';
 import {login} from '../../actions';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class LoginComponent extends React.Component {
 
     inputEl: Input;

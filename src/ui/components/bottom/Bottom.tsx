@@ -4,6 +4,7 @@ import * as styles from './bottom.styl';
 import { translate, Trans } from 'react-i18next';
 import cn from 'classnames';
 import { setNetwork, loading } from '../../actions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const key = (key) => `bottom.${key}`;
 
@@ -35,7 +36,7 @@ const Networks = ({isShow, onSelect, selectedNet, networks}) => {
     }</div>;
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class BottomComponent extends React.Component {
 
     props: IProps;

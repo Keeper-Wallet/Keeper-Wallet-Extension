@@ -1,11 +1,12 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
+import { ApproveBtn, Button, BUTTON_TYPE } from '../ui';
 import { SignClass } from './SignClass';
 import { OriginWarning } from './OriginWarning';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Auth extends SignClass {
 
     render() {
@@ -52,9 +53,9 @@ export class Auth extends SignClass {
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='sign.reject'>Reject</Trans>
                 </Button>
-                <Button onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
+                <ApproveBtn onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.auth'>Auth</Trans>
-                </Button>
+                </ApproveBtn>
     
                 <OriginWarning message={warningOrigin}/>
             </div>

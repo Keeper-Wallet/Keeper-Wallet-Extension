@@ -4,9 +4,9 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {newAccountName, user, setUiState} from '../../actions';
 import {Input, Button, Error} from '../ui';
-import { CONFIG } from '../../appConfig';
+import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class NewWalletNameComponent extends React.Component {
 
     inputEl: Input;

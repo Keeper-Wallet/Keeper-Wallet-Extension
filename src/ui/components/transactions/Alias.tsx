@@ -1,13 +1,14 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, Button, BUTTON_TYPE } from '../ui';
+import { Balance } from '../ui';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { OriginWarning } from './OriginWarning';
 import { TransactionBottom } from './TransactionBottom';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+
+@translate(I18N_NAME_SPACE)
 export class Alias extends SignClass {
     
     render() {

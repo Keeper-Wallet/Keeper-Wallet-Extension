@@ -8,8 +8,9 @@ import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
 
     readonly props;

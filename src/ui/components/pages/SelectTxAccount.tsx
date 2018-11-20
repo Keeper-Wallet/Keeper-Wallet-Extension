@@ -3,15 +3,18 @@ import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import {connect} from 'react-redux';
-import { clearMessagesStatus, clearMessages } from '../../actions';
+import { clearMessagesStatus, clearMessages, updateActiveMessage, reject } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class SelectTxAccountComponent extends React.PureComponent {
     
     readonly props;
     onClick = () => {
+        this.props.messages.forEach(({ id }) => this.props.reject(id));
+        this.props.updateActiveMessage();
         this.props.clearMessagesStatus();
         this.props.clearMessages();
         this.props.setTab(PAGES.ASSETS);
@@ -43,8 +46,15 @@ class SelectTxAccountComponent extends React.PureComponent {
 const mapStateToProps = (state) => {
     return {
         selectAccount: state.selectedAccount,
-    
-}
+        messages: state.messages
+    };
 };
 
-export const SelectTxAccount = connect(mapStateToProps, { clearMessagesStatus, clearMessages })(SelectTxAccountComponent);
+const actions = {
+    updateActiveMessage,
+    clearMessagesStatus,
+    clearMessages,
+    reject
+};
+
+export const SelectTxAccount = connect(mapStateToProps, actions)(SelectTxAccountComponent);

@@ -61,13 +61,15 @@ export function updateState(state) {
         });
     }
 
-    if (!equals(messages, currentState.messages)) {
+    const unapprovedMessages = messages.filter(msg => msg.status === 'unapproved');
+    
+    if (!equals(unapprovedMessages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
-            payload: messages.filter(msg => msg.status === 'unapproved')
+            payload: unapprovedMessages
         });
     }
-
+    
     if (selectedAccount.address !== currentState.selectedAccount.address ) {
         actions.push({
             type: ACTION.UPDATE_SELECTED_ACCOUNT,

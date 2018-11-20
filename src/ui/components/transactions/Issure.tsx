@@ -6,8 +6,9 @@ import { SignClass } from './SignClass';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
 import { TransactionBottom } from './TransactionBottom';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class Issure extends SignClass {
     
     render() {

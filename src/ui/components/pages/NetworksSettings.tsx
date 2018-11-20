@@ -4,8 +4,9 @@ import { setCustomNode, setCustomMatcher } from '../../actions';
 import {Trans, translate} from 'react-i18next';
 import { Button, BUTTON_TYPE, Copy, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class NetworksSettingsComponent extends React.PureComponent {
     readonly props;
     readonly state;

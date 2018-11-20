@@ -7,6 +7,7 @@ import cn from 'classnames';
 import { TransactionWallet } from '../wallets';
 import { TxIcon } from './TransactionIcon';
 import { getConfigByTransaction } from './';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
 const Error = ({approveError}) => {
     return <div>
@@ -17,7 +18,7 @@ const Error = ({approveError}) => {
     </div>;
 };
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class FinalTransaction extends React.PureComponent {
     readonly props: any;
 

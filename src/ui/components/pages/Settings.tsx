@@ -5,8 +5,9 @@ import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { lock } from '../../actions';
 import { PAGES } from '../../pageConfig';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class SettingsComponent extends React.Component {
 
     readonly props;

@@ -6,8 +6,9 @@ import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
 import {connect} from 'react-redux';
 import { TransactionBottom } from './TransactionBottom';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 export class LeaseComponent extends SignClass {
 
     render() {

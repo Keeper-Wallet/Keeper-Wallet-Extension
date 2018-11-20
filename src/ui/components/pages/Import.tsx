@@ -3,8 +3,9 @@ import * as React from 'react'
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {Button} from '../ui/buttons';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate('extension')
+@translate(I18N_NAME_SPACE)
 class ImportComponent extends React.PureComponent {
 
     props: any;

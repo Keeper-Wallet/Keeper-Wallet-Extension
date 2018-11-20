@@ -242,11 +242,8 @@ export const reject = store => next => action => {
         return next(action);
     }
     
-    const { messages } = store.getState();
-    const message = messages.find(({ id }) => id === action.payload);
-    
     background.reject(action.payload).then(
-        () => store.dispatch(rejectOk({ message }))
+        () => store.dispatch(rejectOk(action.payload))
     ).then(
         () => store.dispatch(approvePending(false))
     );
