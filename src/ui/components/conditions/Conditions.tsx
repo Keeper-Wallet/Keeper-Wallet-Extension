@@ -194,7 +194,7 @@ export const ConditionsAndTerms = () => {
             enforceability of such provision under the law of any other jurisdiction shall be in any way affected or
             impaired as a result.
         </div>
-        <div>
+        <div className="margin-main-big">
             10.4. Headings are inserted for the convenience of the parties only and are not to be considered when
             interpreting these Terms. Words in the singular mean and include the plural and vice versa. Words in the
             masculine mean and include the feminine and vice versa.
