@@ -5,11 +5,12 @@ import cn from 'classnames';
 export const BUTTON_TYPE = {
     SUBMIT: 'submit',
     TRANSPARENT: 'transparent',
+    ICON: 'icon',
     WARNING: 'warning',
     INTERFACE: 'interface',
 };
 
-export function Button({ className, type, children, ...props }: IProps ) {
+export function Button({ className, type, withIcon, children, ...props }: IProps ) {
 
     const btnClassName = cn(
         className,
@@ -17,6 +18,7 @@ export function Button({ className, type, children, ...props }: IProps ) {
         {
             [styles.submit]: type === BUTTON_TYPE.SUBMIT,
             [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
+            [styles.icon]: withIcon,
             [styles.warning]: type === BUTTON_TYPE.WARNING,
             [styles.interface]: type === BUTTON_TYPE.INTERFACE,
             [styles.default]: !type
@@ -39,5 +41,6 @@ interface IProps {
     className?: string;
     onClick?: any;
     type?: any;
+    withIcon?: boolean;
     disabled?: any;
 }

@@ -29,7 +29,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
                     type='image/png'
                     text={address}/>
 
-            <Button type='submit' className={styles.downloadQr} onClick={this.downloadHandler}>
+            <Button type='submit' withIcon={true} className={`${styles.downloadQr}`} onClick={this.downloadHandler}>
                 <div>
                     <Trans i18nKey='qrCode.download'>Download QR code</Trans>
                 </div>
