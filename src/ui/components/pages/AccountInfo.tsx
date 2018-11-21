@@ -18,8 +18,9 @@ class AccountInfoComponent extends React.Component {
     passInputEl: Input;
     copiedTimer;
     deffer;
-    getSeed = () => this.getAccountInfo('seed');
-    getPrivate = () => this.getAccountInfo('privateKey');
+    getSeed = (cb) => this.getAccountInfo('seed', cb);
+    getPrivate = (cb) => this.getAccountInfo('privateKey', cb);
+    
     confirmPassword = () => this.deffer.resolve(this.state.password);
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value, passwordError: false });
@@ -170,7 +171,7 @@ class AccountInfoComponent extends React.Component {
         this.setState({ passwordError: true });
     }
 
-    async getAccountInfo(field) {
+    async getAccountInfo(field, cb) {
         const address = this.props.selectedAccount.address;
         this.deffer = {} as any;
         this.deffer.promise = new Promise((res, rej) => {
@@ -180,26 +181,41 @@ class AccountInfoComponent extends React.Component {
         
         this.setState({ showPassword: true });
     
-        return this.deffer.promise
-            .then((password) => {
-                return background.exportAccount(address, password);
-            })
-            .then(data => {
-                this.setState({ showPassword: false, passwordError: false });
-                const seed = new Seed(data);
-                const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
-                return info[field];
-            }).catch((e) => {
+        this.waitPassword(address)
+            .then(this.onGetAccount(field, cb))
+            .catch((e) => {
                 if (e) {
                     this.setState({ passwordError: true });
                     this.showErrorModal();
-                    return Promise.reject();
+                    this.getAccountInfo(field, cb);
+                    return null;
                 }
+    
                 this.setState({ showPassword: false, passwordError: false });
-                return Promise.reject();
             });
     }
 
+    private waitPassword(address) {
+        this.deffer.promise = new Promise((res, rej) => {
+            this.deffer.resolve = res;
+            this.deffer.reject = rej;
+        });
+        
+        return this.deffer.promise
+            .then((password) => {
+            return background.exportAccount(address, password);
+        });
+    }
+    
+    private onGetAccount(field, cb){
+        return (data) => {
+            this.setState({ showPassword: false, passwordError: false });
+            const seed = new Seed(data);
+            const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
+            cb(info[field]);
+        };
+    }
+    
     static getDerivedStateFromProps(props, state) {
         const { selectedAccount, assets, balances } = props;
         const asset = assets['WAVES'];

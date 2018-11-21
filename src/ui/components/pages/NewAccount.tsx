@@ -63,7 +63,8 @@ class NewAccountComponent extends React.PureComponent {
                                ref={this.getRef}
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
-                               error={!!this.state.firstError}/>
+                               error={!!this.state.firstError}
+                               autocomplete="off"/>
                         
                         <Error show={this.state.firstError}>
                             <Trans i18nKey='newAccount.smallPass'>Password is small</Trans>
@@ -79,7 +80,8 @@ class NewAccountComponent extends React.PureComponent {
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}
-                               error={!!this.state.secondError}/>
+                               error={!!this.state.secondError}
+                               autocomplete="off"/>
                         <Error show={this.state.secondError}>
                             <Trans i18nKey='newAccount.notMatch'>Passwords no match</Trans>
                         </Error>

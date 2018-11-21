@@ -44,7 +44,7 @@ export class CopyText extends React.PureComponent {
         }
 
         if (this.props.getText) {
-            this.props.getText().then(text => this.copy(text));
+            this.props.getText(text => this.copy(text));
             return null;
         }
 
@@ -62,7 +62,7 @@ export class CopyText extends React.PureComponent {
 
 interface IProps {
     text?: string;
-    getText?: () => Promise<string>;
+    getText?: (cb) => void;
     onCopy?: (...args) => void;
 
     toggleText?: boolean;

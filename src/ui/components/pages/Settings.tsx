@@ -11,7 +11,10 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 class SettingsComponent extends React.Component {
 
     readonly props;
-    lock = () => this.props.lock();
+    lock = () => {
+        this.props.setTab(null);
+        this.props.lock();
+    };
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);

@@ -43,6 +43,7 @@ class LoginComponent extends React.Component {
                            ref={this.getRef}
                            onChange={this.onChange}
                            error={this.state.passwordError}
+                           autocomplete="off"
                     />
                     <Error show={this.state.passwordError}>
                         <Trans i18nKey="login.passwordError">Wrong password</Trans>
