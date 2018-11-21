@@ -172,12 +172,14 @@ class AccountInfoComponent extends React.Component {
 
     async getAccountInfo(field) {
         const address = this.props.selectedAccount.address;
-        this.setState({ showPassword: true });
         this.deffer = {} as any;
         this.deffer.promise = new Promise((res, rej) => {
             this.deffer.resolve = res;
             this.deffer.reject = rej;
         });
+        
+        this.setState({ showPassword: true });
+    
         return this.deffer.promise
             .then((password) => {
                 return background.exportAccount(address, password);
@@ -191,7 +193,6 @@ class AccountInfoComponent extends React.Component {
                 if (e) {
                     this.setState({ passwordError: true });
                     this.showErrorModal();
-                    this.getAccountInfo(field);
                     return Promise.reject();
                 }
                 this.setState({ showPassword: false, passwordError: false });

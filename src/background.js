@@ -87,7 +87,6 @@ async function setupBackgroundService() {
 
     // Notification window management
     const windowManager = new WindowManager();
-    backgroundService.windowManager = windowManager;
     backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
     backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
 
@@ -231,7 +230,7 @@ class BackgroundService extends EventEmitter {
             },
             newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
             exportAccount: async (address, password) => this.walletController.exportAccount(address, password),
-            exportSeed: async (address) => this.walletController.exportSeed(address),
+            encryptedSeed: async (address) => this.walletController.encryptedSeed(address),
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
