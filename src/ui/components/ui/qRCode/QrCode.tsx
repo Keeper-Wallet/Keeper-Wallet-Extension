@@ -4,9 +4,9 @@ import cn from 'classnames';
 
 const DEFAULTS = {
     errorCorrectionLevel: 'H',
-    type: 'image/jpeg',
+    type: 'image/png',
     rendererOpts: {
-        quality: 0.3,
+        quality: 0.5,
     },
     margin: 4,
     scale: 4,
@@ -18,10 +18,22 @@ const DEFAULTS = {
     }
 };
 
+const QrCodeImage = ({ options, src, width, height, className, ...props }) => {
+    const isSvg = options.type === 'svg';
+    const svgSource = !isSvg || !src ? null : { __html: src };
+    
+    return <div className={className} {...props}>
+        {isSvg ?
+            <div dangerouslySetInnerHTML={svgSource}/> :
+            <img srcSet={src} width={options.width} height={options.height}/>}
+        {props.children}
+        </div> ;
+};
+
 export class QRCode extends React.PureComponent {
 
     readonly props;
-    readonly state;
+    readonly state = {} as any;
 
     render() {
         const state = this.state;
@@ -43,15 +55,13 @@ export class QRCode extends React.PureComponent {
         };
 
         if (state.hasChanged) {
-            QrCode.toDataURL(state.text, options, (err, url) => {
+            const method = options.type === 'svg' ? 'toString' : 'toDataURL';
+            QrCode[method](state.text, options, (err, url) => {
                 this.setState({src: url});
             });
         }
-
-        return <div className={this.state.className} {...this.state.props}>
-            <img srcSet={state.src} width={state.width} height={state.height}/>
-            {this.props.children}
-        </div>;
+        
+        return <QrCodeImage options={options} src={state.src} {...this.props}>{this.props.children}</QrCodeImage>;
     }
 
     getImg() {
@@ -75,7 +85,7 @@ export class QRCode extends React.PureComponent {
         } = nextProps;
 
         const rootClassName = cn(className);
-        const hasChanged = !state || state.text !== text;
+        const hasChanged = !state || state.text !== text || state.width !== width || state.height !== height;
         return {
             errorCorrectionLevel,
             type,
@@ -89,7 +99,7 @@ export class QRCode extends React.PureComponent {
             className: rootClassName,
             hasChanged,
             text,
-            props
+            ...props
         };
     }
 }

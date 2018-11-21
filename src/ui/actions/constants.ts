@@ -63,6 +63,12 @@ export const ACTION = {
     NOTIFICATION_DELETE: 'DELETE_ACCOUNT_NOTIFY',
     NOTIFICATION_SELECT: 'SELECT_ACCOUNT_NOTIFY',
     NOTIFICATION_NAME_CHANGED: 'NOTIFICATION_NAME_CHANGED',
+    
+    PAIRING: {
+        LOADING: 'PAIRING.LOADING',
+        GET_SEED: 'PAIRING.GET_SEED',
+        SET_SEED: 'PAIRING.SET_SEED',
+    }
 };
 
 export const createAction = type => payload => ({ type, payload });

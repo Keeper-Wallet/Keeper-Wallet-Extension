@@ -12,9 +12,28 @@ import {
     approveOk,
     approvePending,
     rejectOk,
+    pairingLoading,
+    pairingSetData,
 } from '../actions';
 import { PAGES } from '../pageConfig';
-import { store } from '../store';
+
+export const pairingData = store => next => action => {
+    if (action.type !== ACTION.PAIRING.GET_SEED) {
+        return next(action);
+    }
+    
+    store.dispatch(pairingLoading(true));
+    background.exportSeed(action.payload).then(
+        (data) => {
+            store.dispatch(pairingSetData(data));
+            store.dispatch(pairingLoading(false));
+        },
+        () => {
+            store.dispatch(pairingSetData(null));
+            store.dispatch(pairingLoading(false));
+        }
+    )
+};
 
 export const changeLang = store => next => action => {
     if (action.type === ACTION.CHANGE_LNG && action.payload !== store.getState().currentLocale) {

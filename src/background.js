@@ -231,6 +231,7 @@ class BackgroundService extends EventEmitter {
             },
             newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
             exportAccount: async (address, password) => this.walletController.exportAccount(address, password),
+            exportSeed: async (address) => this.walletController.exportSeed(address),
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),

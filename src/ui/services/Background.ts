@@ -101,6 +101,11 @@ class Background {
         await this.initPromise;
         return this.background.exportAccount(address, password);
     }
+    
+    async exportSeed(address): Promise<void> {
+        await this.initPromise;
+        return this.background.exportSeed(address);
+    }
 
     async editWalletName(address, name) {
         await this.initPromise;
