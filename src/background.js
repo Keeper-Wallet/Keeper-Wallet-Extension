@@ -293,7 +293,9 @@ class BackgroundService extends EventEmitter {
             },
             signRequest: async (data, from) => {
                 return await newMessage(data, 'request', from, false)
-            }
+            },
+            pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
+
             //publicState: async () => this._publicState(this.getState()),
         };
 

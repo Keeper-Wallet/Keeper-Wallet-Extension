@@ -255,6 +255,8 @@ export class MessageController extends EventEmitter {
             case 'bytes':
                 signedData = await this.signBytes(message.account.address, message.data);
                 break;
+            case 'pairing':
+                break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
         }
@@ -369,6 +371,8 @@ export class MessageController extends EventEmitter {
                 break;
             case 'bytes':
                 break;
+            case 'pairing':
+                break
             default:
                 throw new Error(`Incorrect type "${type}"`)
         }
