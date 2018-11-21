@@ -1,6 +1,6 @@
 {
   "name": "waveskeeper",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "scripts": {
     "start": "webpack --watch",
@@ -76,6 +76,7 @@
     "envify": "^4.0.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^2.0.0",
+    "folder-zip": "0.0.5",
     "html-webpack-plugin": "^3.2.0",
     "isomorphic-fetch": "^2.2.1",
     "mocha": "^5.2.0",

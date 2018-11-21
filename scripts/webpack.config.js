@@ -9,7 +9,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DownloadJsonPlugin = require('download-json-webpack-plugin');
 
 
-module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API }) => {
+module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isProduction }) => {
 
     const SOURCE_FOLDER = path.resolve(__dirname,'../' ,'src');
     const DIST_FOLDER = path.resolve(__dirname, '../', DIST);
@@ -24,10 +24,8 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API }) => 
         const platformsConfig = metaConf(BUILD_FOLDER, DIST_FOLDER, version);
 
         PLATFORMS.forEach(platform => {
-            copyFiles(platform, platformsConfig[platform]);
+            copyFiles(platform, platformsConfig[platform], isProduction);
         });
-
-        console.log('Compiled build');
     };
 
     const plugins = [];

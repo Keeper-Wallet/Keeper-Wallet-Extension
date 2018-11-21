@@ -64,11 +64,8 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
     };
 
     for (const browserConf of Object.values(conf)) {
-        console.log(browserConf);
         browserConf.manifest.add.version = version;
     }
-
-    console.log(conf);
 
     return conf;
 };

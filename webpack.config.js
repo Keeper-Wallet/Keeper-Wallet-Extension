@@ -14,7 +14,8 @@ module.exports = () => {
     if (!version) {
         throw 'Build failed';
     }
-    const configFn = process.env.NODE_ENV === 'production' ? prodConf : defConf;
+    const isProduction = process.env.NODE_ENV === 'production';
+    const configFn = isProduction ? prodConf : defConf;
     const config = configFn(
         {
             ...conf({
@@ -24,6 +25,7 @@ module.exports = () => {
                 LANGS,
                 I18N_API,
                 PAGE_TITLE,
+                isProduction,
             })
         });
 

@@ -30,6 +30,7 @@ module.exports = (path, options = {}, to) => {
     if(fs.existsSync(to)) {
         fs.unlinkSync(to);
     }
+
     fs.writeFileSync(to, JSON.stringify(data, null, 4));
 
     return data.version;
