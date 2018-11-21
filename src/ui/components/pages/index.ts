@@ -22,3 +22,4 @@ export * from  './DeleteAccount';
 export * from  './Messages';
 export * from  './ForgotPassword';
 export * from  './SelectTxAccount';
+export * from  './PairingAccountQr';

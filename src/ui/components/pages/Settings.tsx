@@ -16,6 +16,7 @@ class SettingsComponent extends React.Component {
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
+    pairingHandler = () => this.props.setTab(PAGES.PAIRING);
 
     render() {
         return <div className={styles.content}>
@@ -29,7 +30,17 @@ class SettingsComponent extends React.Component {
                     </div>
                 </Button>
             </div>
-
+    
+            <div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.pairingHandler}>
+                    <div className='body1 left'>
+                        <Trans i18nKey='settings.pairing'>Device Pairing</Trans>
+                    </div>
+                </Button>
+            </div>
+            
             {/*<div className={`${styles.settingsMenuItem} ${styles.language}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}

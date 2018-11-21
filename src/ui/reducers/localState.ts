@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import { ACTION } from '../actions/constants';
 
+import { pairing } from './pairing';
+
 function newUser(state = {}, action) {
      switch (action.type) {
          case ACTION.SET_PASSWORD_PENDING:
@@ -82,7 +84,6 @@ function notifications(state = {}, { type, payload }) {
         default:
             return state;
     }
-    
 }
 
 function transactionStatus(state = {}, { type, payload }) {
@@ -112,5 +113,6 @@ export const localState = combineReducers({
     menu,
     assets,
     notifications,
-    transactionStatus
+    transactionStatus,
+    pairing
 });
