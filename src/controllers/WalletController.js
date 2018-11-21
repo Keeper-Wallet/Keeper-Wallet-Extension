@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import * as SA from '@waves/signature-adapter';
 import *  as SG from '@waves/signature-generator'
 import {encrypt, decrypt} from '../lib/encryprtor';
 import {Wallet} from "../lib/wallet";
@@ -93,6 +94,12 @@ export class WalletController {
         this._saveWallets()
     }
 
+    /**
+     * Returns account seed
+     * @param {string} address - wallet address
+     * @param {string} password - application password
+     * @returns {string} encrypted seed
+     */
     exportAccount(address, password) {
         if (!password) throw new Error('Password is required');
         this._restoreWallets(password);
@@ -101,6 +108,17 @@ export class WalletController {
         if (!wallet) throw new Error(`Wallet not found for address: ${address}`);
 
         return wallet.getSecret();
+    }
+
+    /**
+     * Returns encrypted with current password account seed
+     * @param {string} address - wallet address
+     * @returns {string} encrypted seed
+     */
+    encryptedSeed(address) {
+        const wallet = this._findWallet(address);
+        const seed = wallet.getSecret();
+        return SG.Seed.encryptSeedPhrase(seed, this.password)
     }
 
     /**
