@@ -30,7 +30,7 @@ export class CopyText extends React.PureComponent {
         return <div onClick={toggleHandler}>
            <div>
                {this.props.type ? <div className={iconClass}></div> : null}
-               <div>{showText ? this.props.text : DEFAULT_HIDDEN_CONTENT}</div>
+               <div className={styles.copyTextOverflow}>{showText ? this.props.text : DEFAULT_HIDDEN_CONTENT}</div>
                {this.props.showCopy ? <div className={copyIcon} onClick={this.onCopyHandler}/> : null}
                {this.props.showConfirmed ? <div>Confirm</div> : null}
                {this.props.showNotAccess ? <div>N/A</div> : null}

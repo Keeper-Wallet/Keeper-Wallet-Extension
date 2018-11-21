@@ -33,7 +33,7 @@ class BackUpSeedComponent extends React.Component {
                 </Copy>
             </div>
 
-            <div className={`plate center body3 ${styles.plateMargin}`}>
+            <div className={`plate center body3 cant-select ${styles.plateMargin}`}>
                 {this.props.account.seed}
             </div>
 
