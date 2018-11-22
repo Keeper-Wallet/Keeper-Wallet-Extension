@@ -10,42 +10,42 @@ export class ApproveBtn extends React.PureComponent {
     readonly state = {} as any;
     updateInterval = () => this._updateInterval(Date.now());
     _timeout;
-    
+
     constructor(props) {
         super(props);
     }
-    
+
     componentDidMount(): void {
         this.updateInterval();
     }
-    
+
     render() {
         const { disabled } = this.state;
         const props = { ...this.props, disabled };
         const progressProps = {
             percentage: this.state.percentage,
-            strokeWidth: 15,
+            strokeWidth: 8,
             styles: {},
             className: styles.approveProgress,
-            counterClockwise: false,
+            counterClockwise:false,
         };
-        
+
         return <Button {...props} className={cn(props.className, styles.svgWrapper)}>
             {this.props.children}
             {disabled ? <CircularProgressbar {...progressProps}/> : null}
         </Button>;
     }
-    
+
     _updateInterval(currentTime) {
         const { timerEnd } = this.state;
         this.setState({ currentTime });
-        
+
         if (timerEnd > currentTime) {
             clearTimeout(this._timeout);
             this._timeout = window.setTimeout(this.updateInterval, 100);
         }
     }
-    
+
     static getDerivedStateFromProps(props, state) {
         const { timerEnd = Date.now() + CONFIG.MESSAGES_CONFIRM_TIMEOUT, currentTime = Date.now() } = state;
         const disabled = true//timerEnd == currentTime;
