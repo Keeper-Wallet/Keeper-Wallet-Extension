@@ -47,10 +47,9 @@ export class ApproveBtn extends React.PureComponent {
     }
     
     static getDerivedStateFromProps(props, state) {
-        const { timerEnd = Date.now() + CONFIG.MESSAGES_CONFIRM_TIMEOUT, currentTime = Date.now() } = state;
-        const disabled = true//timerEnd == currentTime;
-        const time = Math.floor((timerEnd - currentTime) / 1000) + 1;
-        const percentage = 100 -Math.floor((timerEnd - currentTime) / 100);
-        return { ...props, disabled, time, timerEnd, percentage };
+        const { timerEnd, currentTime = Date.now() } = state;
+        const disabled = !timerEnd || timerEnd == currentTime;
+        const percentage = !timerEnd ? 0 : 100 - Math.floor((timerEnd - currentTime) / 100);
+        return { ...props, disabled, timerEnd, percentage };
     }
 }
