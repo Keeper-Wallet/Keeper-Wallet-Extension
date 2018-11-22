@@ -18,14 +18,14 @@ const SIZE = {
 @translate(I18N_NAME_SPACE)
 class PairingAccountQrComponent extends React.PureComponent {
 
-    readonly state = { setBig: false };
+    readonly state = {setBig: false};
     readonly props;
 
     selectAccountHandler = () => this.selectAccount();
 
     private clickHandler = () => {
         const setBig = !this.state.setBig;
-        this.setState({ setBig });
+        this.setState({setBig});
     };
 
 
@@ -46,12 +46,12 @@ class PairingAccountQrComponent extends React.PureComponent {
         const seed = this.props.seed;
         const name = this.props.selectedAccount.name;
         const address = this.props.selectedAccount.address;
-        const { setBig } = this.state;
+        const {setBig} = this.state;
         const size = setBig ? SIZE.MAX : SIZE.MIN;
         const rootClassName = cn(styles.content, 'center', {
             [styles.big]: setBig
         });
-        
+
         const pairingData = `waves://export/${address}?encryptedSeed=${seed}&name=${name}`;
 
         return <div className={rootClassName}>
@@ -60,11 +60,11 @@ class PairingAccountQrComponent extends React.PureComponent {
             </div>
 
             <div className={styles.pairingWrapper}>
-                <h2 className={cn('title1', 'margin3', styles.title)}>
+                <h2 className={cn('title1', 'margin3', 'margin-main-big', styles.title)}>
                     <Trans i18nKey='pairing.scanPairing'>Scan Pairing Code</Trans>
                 </h2>
 
-                <div className={`${styles.qrCode} margin-main-big-top margin-main-big`} onClick={this.clickHandler}>
+                <div className={`${styles.qrCode} margin-main-big`} onClick={this.clickHandler}>
                     <QRCode width={size}
                             height={size}
                             scale={16}
@@ -74,21 +74,24 @@ class PairingAccountQrComponent extends React.PureComponent {
                             text={pairingData}/>
                 </div>
 
-                <div className="margin-main-big body1 basic500">
-                    <Trans i18nKey="pairing.scanInfo">
-                        Scan the code below with your iPhone or Android device to pair it with your account.
-                    </Trans>
-                </div>
-                <div className="margin-main body1 basic500">
-                    <Trans i18nKey="pairing.appInfo">
-                        Download our mobile applications below:
-                    </Trans>
+                <div className={`fixed ${styles.pairingFooter}`}>
+                    <div className="margin-main-big body1 basic500">
+                        <Trans i18nKey="pairing.scanInfo">
+                            Scan the code below with your iPhone or Android device to pair it with your account.
+                        </Trans>
+                    </div>
+                    <div className="margin-main body1 basic500">
+                        <Trans i18nKey="pairing.appInfo">
+                            Download our mobile applications below:
+                        </Trans>
+                    </div>
+
+                    <div className="buttons-wrapper margin-main-large">
+                        <a href="#" className="apple-store-btn" target="_blank"></a>
+                        <a href="#" className="google-play-btn" target="_blank"></a>
+                    </div>
                 </div>
 
-                <div className="buttons-wrapper margin-main-large">
-                    <a href="#" className="apple-store-btn" target="_blank"></a>
-                    <a href="#" className="google-play-btn" target="_blank"></a>
-                </div>
             </div>
         </div>;
     }
