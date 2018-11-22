@@ -15,7 +15,7 @@ export function updateState(state) {
         balances = [],
         uiState = {},
         customNodes = {},
-        customMatcher = {},
+        customMatchers = {},
     } = state;
     const currentState = store.getState();
 
@@ -33,10 +33,10 @@ export function updateState(state) {
         });
     }
     
-    if (!equals(currentState.customMatcher, customMatcher)) {
+    if (!equals(currentState.customMatcher, customMatchers)) {
         actions.push({
             type: ACTION.UPDATE_MATCHER,
-            payload: customMatcher
+            payload: customMatchers
         });
     }
 

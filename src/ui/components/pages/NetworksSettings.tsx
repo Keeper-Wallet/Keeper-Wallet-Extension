@@ -10,18 +10,21 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 class NetworksSettingsComponent extends React.PureComponent {
     readonly props;
     readonly state;
-    _t;
+    _tCopy;
+    _tSave;
+    _tSetDefault;
 
     onInputHandler = (event) => this.setState({ node: event.target.value });
     onInputMatcherHandler = (event) => this.setState({ matcher: event.target.value });
     onSaveNodeHandler = () => {
         this.saveNode();
         this.saveMatcher();
+        this.onSave();
     };
-    onSaveMatcherHandler = () => this.saveMatcher();
     saveDefault = () => {
         this.setDefaultNode();
         this.setDefaultMatcher();
+        this.onSaveDefault();
     };
     
     copyHandler = () => this.onCopy();
@@ -73,6 +76,18 @@ class NetworksSettingsComponent extends React.PureComponent {
                     <Trans i18nKey="networksSettings.copied">Copied!</Trans>
                 </div>
             </Modal>
+    
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSaved} showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="networksSettings.savedModal">Saved!</Trans>
+                </div>
+            </Modal>
+            
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSetDefault} showChildrenOnly={true}>
+                <div className="modal notification">
+                    <Trans i18nKey="networksSettings.setDefaultModal">Save default!</Trans>
+                </div>
+            </Modal>
         </div>;
     }
 
@@ -113,9 +128,21 @@ class NetworksSettingsComponent extends React.PureComponent {
     }
     
     onCopy() {
-        clearTimeout(this._t);
+        clearTimeout(this._tCopy);
         this.setState({ showCopied: true });
-        this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
+        this._tCopy = setTimeout(() => this.setState({ showCopied: false }), 1000);
+    }
+    
+    onSave() {
+        clearTimeout(this._tSave);
+        this.setState({ showSaved: true });
+        this._tSave = setTimeout(() => this.setState({ showSaved: false }), 1000);
+    }
+    
+    onSaveDefault() {
+        clearTimeout(this._tSetDefault);
+        this.setState({ showSetDefault: true });
+        this._tSetDefault = setTimeout(() => this.setState({ showSetDefault: false }), 1000);
     }
 
     static getDerivedStateFromProps(props, state) {
