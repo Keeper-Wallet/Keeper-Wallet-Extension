@@ -17,6 +17,7 @@
   },
   "icons": {
     "16": "images/icon_16.png",
+    "20": "images/icon_20.png",
     "128": "images/icon_128.png"
   },
   "applications": {
@@ -33,7 +34,9 @@
   },
   "browser_action": {
     "default_icon": {
-      "16": "images/icon_16.png"
+      "16": "images/icon_16.png",
+      "20": "images/icon_20.png",
+      "128": "images/icon_128.png"
     },
     "default_title": "Waves Keeper",
     "default_popup": "popup.html"
