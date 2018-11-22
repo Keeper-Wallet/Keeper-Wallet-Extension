@@ -1,7 +1,9 @@
 import * as React from 'react';
-import * as styles from './buttons.styl';
+import * as styles from './approveButtons.styl';
+import { CircularProgressbar } from '../loader';
 import { Button } from './Button';
 import { CONFIG } from '../../../appConfig';
+import cn from 'classnames';
 
 export class ApproveBtn extends React.PureComponent {
     readonly props;
@@ -20,9 +22,17 @@ export class ApproveBtn extends React.PureComponent {
     render() {
         const { disabled } = this.state;
         const props = { ...this.props, disabled };
-        return <Button {...props}>
+        const progressProps = {
+            percentage: this.state.percentage,
+            strokeWidth: 15,
+            styles: {},
+            className: styles.approveProgress,
+            counterClockwise: false,
+        };
+        
+        return <Button {...props} className={cn(props.className, styles.svgWrapper)}>
             {this.props.children}
-            {disabled ? <span>{this.state.time}</span> : null}
+            {disabled ? <CircularProgressbar {...progressProps}/> : null}
         </Button>;
     }
     
@@ -32,14 +42,15 @@ export class ApproveBtn extends React.PureComponent {
         
         if (timerEnd > currentTime) {
             clearTimeout(this._timeout);
-            this._timeout = window.setTimeout(this.updateInterval, 500);
+            this._timeout = window.setTimeout(this.updateInterval, 100);
         }
     }
     
     static getDerivedStateFromProps(props, state) {
         const { timerEnd = Date.now() + CONFIG.MESSAGES_CONFIRM_TIMEOUT, currentTime = Date.now() } = state;
-        const disabled = timerEnd >= currentTime;
+        const disabled = true//timerEnd == currentTime;
         const time = Math.floor((timerEnd - currentTime) / 1000) + 1;
-        return { ...props, disabled, time, timerEnd };
+        const percentage = 100 -Math.floor((timerEnd - currentTime) / 100);
+        return { ...props, disabled, time, timerEnd, percentage };
     }
 }

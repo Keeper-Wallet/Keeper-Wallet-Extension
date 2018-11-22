@@ -80,7 +80,7 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
         },
         
         resolve: {
-            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".css",".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
         },
 
         plugins,
@@ -119,6 +119,15 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
                         use: [
                             'css-loader?modules,localIdentName="[name]-[local]-[hash:base64:6]"',
                             'stylus-loader'
+                        ]
+                    }),
+                },
+                {
+                    test: /\.css/,
+                    loader: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: [
+                            'css-loader'
                         ]
                     }),
                 }
