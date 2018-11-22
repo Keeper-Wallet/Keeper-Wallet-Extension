@@ -26,12 +26,15 @@ export class ApproveBtn extends React.PureComponent {
             percentage: this.state.percentage,
             strokeWidth: 14,
             className: styles.approveProgress,
-            counterClockwise:false,
+            counterClockwise: false,
+            initialAnimation: 0,
             styles: {
             path: {
                 stroke: '#fff',
-            },
-            trail: { stroke: 'rgba(255, 255, 255, 0.33)' },
+                },
+            trail: {
+                stroke: 'rgba(255, 255, 255, 0.33)'
+                },
             }
         };
 
