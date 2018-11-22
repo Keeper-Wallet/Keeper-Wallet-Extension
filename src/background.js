@@ -348,35 +348,10 @@ class BackgroundService extends EventEmitter {
     }
 
     _publicState(state) {
-
-        if (!state.locked) {
-            return {
-                initialized: state.initialized,
-                locked: state.locked,
-                account: state.selectedAccount,
-            }
-        }
-
         return {
             initialized: state.initialized,
             locked: state.locked,
-            account: null,
+            account: state.locked ? null : state.selectedAccount,
         }
     }
-
-    _validate(tx, from) {
-        const {selectedAccount} = this.getState();
-        if (!selectedAccount) throw new Error('WavesKeeper contains co accounts');
-
-        // Fields check
-        if (!tx.type || !tx.data) {
-            throw new Error('Invalid tx. Tx should contain type and data fields');
-        }
-
-        // Proper public key check
-        if (from && from !== selectedAccount.address) {
-            throw new Error('From address should match selected account address or be blank');
-        }
-    }
-
 }
