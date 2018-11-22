@@ -87,11 +87,11 @@ class ImportSeedComponent extends React.Component {
     }
 
     _changeHandler(e) {
-        const phrase = (e.target.value || '').trim();
+        const phrase = e.target.value || '';
         let seed = { address: '', phrase: '' };
 
         if (phrase.length >= 24) {
-            seed = new Seed(phrase);
+            seed = new Seed(phrase.trim());
         }
 
         this.setState({ value: phrase });
