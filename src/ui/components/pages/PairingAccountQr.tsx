@@ -8,6 +8,7 @@ import {I18N_NAME_SPACE} from '../../appConfig';
 import {TransactionWallet} from '../wallets';
 import {PAGES} from '../../pageConfig';
 import {Intro} from './Intro';
+import cn from 'classnames';
 
 const SIZE = {
     MIN: 200,
@@ -17,15 +18,14 @@ const SIZE = {
 @translate(I18N_NAME_SPACE)
 class PairingAccountQrComponent extends React.PureComponent {
 
-    readonly state = {size: SIZE.MIN};
+    readonly state = { setBig: false };
     readonly props;
-    qrCode: QRCode;
 
     selectAccountHandler = () => this.selectAccount();
 
     private clickHandler = () => {
-        const size = this.state.size === SIZE.MIN ? SIZE.MAX : SIZE.MIN;
-        this.setState({size});
+        const setBig = !this.state.setBig;
+        this.setState({ setBig });
     };
 
 
@@ -46,22 +46,27 @@ class PairingAccountQrComponent extends React.PureComponent {
         const seed = this.props.seed;
         const name = this.props.selectedAccount.name;
         const address = this.props.selectedAccount.address;
-
+        const { setBig } = this.state;
+        const size = setBig ? SIZE.MAX : SIZE.MIN;
+        const rootClassName = cn(styles.content, 'center', {
+            [styles.big]: setBig
+        });
+        
         const pairingData = `waves://export/${address}?encryptedSeed=${seed}&name=${name}`;
 
-        return <div className={`center ${styles.content}`}>
+        return <div className={rootClassName}>
             <div className={styles.walletInfo}>
                 <TransactionWallet account={this.props.selectedAccount} onSelect={this.selectAccountHandler}/>
             </div>
 
             <div className={styles.pairingWrapper}>
-                <h2 className="title1 margin3">
+                <h2 className={cn('title1', 'margin3', styles.title)}>
                     <Trans i18nKey='pairing.scanPairing'>Scan Pairing Code</Trans>
                 </h2>
 
                 <div className={`${styles.qrCode} margin-main-big-top margin-main-big`} onClick={this.clickHandler}>
-                    <QRCode width={this.state.size}
-                            height={this.state.size}
+                    <QRCode width={size}
+                            height={size}
                             scale={16}
                             quality={1}
                             margin={1}

@@ -104,7 +104,7 @@ class Background {
     
     async exportSeed(address): Promise<void> {
         await this.initPromise;
-        return this.background.exportSeed(address);
+        return this.background.encryptedSeed(address);
     }
 
     async editWalletName(address, name) {
