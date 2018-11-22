@@ -20,6 +20,7 @@ export class Copy extends React.PureComponent {
         } = this.props;
 
         event.stopPropagation();
+        event.preventDefault();
 
         const elem = React.Children.only(children);
 

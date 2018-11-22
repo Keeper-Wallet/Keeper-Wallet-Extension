@@ -13,8 +13,8 @@ class MessagesComponent extends React.Component {
 
     readonly state = {} as any;
     readonly props;
-    rejectHandler = () => this.reject();
-    approveHandler = () => this.approve();
+    rejectHandler = (e) => this.reject(e);
+    approveHandler = (e) => this.approve(e);
     clearMessagesHandler = () => this.clearMessages();
     clearMessageStatusHandler = () => this.cleanMessageStatus();
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
@@ -56,11 +56,13 @@ class MessagesComponent extends React.Component {
         </Component>;
     }
 
-    approve() {
+    approve(e) {
+        e.preventDefault();
         this.props.approve(this.state.activeMessage.id);
     }
     
-    reject() {
+    reject(e) {
+        e.preventDefault();
         this.props.reject(this.state.activeMessage.id);
     }
     

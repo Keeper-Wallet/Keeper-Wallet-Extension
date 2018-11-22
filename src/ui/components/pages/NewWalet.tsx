@@ -81,6 +81,7 @@ class NewWalletComponent extends React.Component {
     }
 
     _onSubmit(e) {
+        e.preventDefault();
         e.stopPropagation();
         this.props.setTab(PAGES.ACCOUNT_NAME);
     }

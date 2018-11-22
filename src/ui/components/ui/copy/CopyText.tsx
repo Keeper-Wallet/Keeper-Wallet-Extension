@@ -41,6 +41,7 @@ export class CopyText extends React.PureComponent {
     private _copyText(event) {
         if (event) {
             event.stopPropagation();
+            event.preventDefault();
         }
 
         if (this.props.getText) {

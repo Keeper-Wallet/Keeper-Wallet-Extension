@@ -34,6 +34,7 @@ class AssetsComponent extends React.Component {
     };
     showQrHandler = (event) => {
         event.stopPropagation();
+        event.preventDefault();
         this.props.setTab(PAGES.QR_CODE_SELECTED);
     };
 

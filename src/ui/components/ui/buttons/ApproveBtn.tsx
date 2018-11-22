@@ -27,7 +27,7 @@ export class ApproveBtn extends React.PureComponent {
             strokeWidth: 14,
             className: styles.approveProgress,
             counterClockwise: false,
-            initialAnimation: 0,
+            initialAnimation: true,
             styles: {
             path: {
                 stroke: '#fff',
@@ -37,7 +37,7 @@ export class ApproveBtn extends React.PureComponent {
                 },
             }
         };
-
+        console.log(this.state.percentage);
         return <Button {...props} className={cn(props.className, styles.hideText, styles.svgWrapper)}>
             {this.props.children}
             {disabled ? <CircularProgressbar {...progressProps}/> : null}
@@ -45,19 +45,18 @@ export class ApproveBtn extends React.PureComponent {
     }
 
     _updateInterval(currentTime) {
-        const { timerEnd } = this.state;
-        this.setState({ currentTime });
-
-        if (timerEnd > currentTime) {
+        const timerEnd = this.state.timerEnd || currentTime + CONFIG.MESSAGES_CONFIRM_TIMEOUT;
+        this.setState({ timerEnd, currentTime });
+        if (timerEnd >= currentTime) {
             clearTimeout(this._timeout);
             this._timeout = window.setTimeout(this.updateInterval, 100);
         }
     }
 
     static getDerivedStateFromProps(props, state) {
-        const { timerEnd, currentTime = Date.now() } = state;
-        const disabled = !timerEnd || timerEnd == currentTime;
-        const percentage = !timerEnd ? 0 : 100 - Math.floor((timerEnd - currentTime) / 100);
+        const { timerEnd, currentTime } = state;
+        const disabled = !timerEnd || timerEnd > currentTime;
+        const percentage = !timerEnd ? 0 : 100 - Math.floor((timerEnd - currentTime) / CONFIG.MESSAGES_CONFIRM_TIMEOUT * 100);
         return { ...props, disabled, timerEnd, percentage };
     }
 }

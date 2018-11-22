@@ -13,7 +13,7 @@ interface IProps {
     strokeWidth?: number;
     background?: string;
     backgroundPadding?: number;
-    initialAnimation?: number;
+    initialAnimation?: boolean;
     counterClockwise?: boolean;
     styles?: Object;
 }
