@@ -2,7 +2,7 @@ export const CONFIG = {
     SEED_MIN_LENGTH: 24,
     NAME_MIN_LENGTH: 1,
     PASSWORD_MIN_LENGTH: 8,
-    MESSAGES_CONFIRM_TIMEOUT: 5000,
+    MESSAGES_CONFIRM_TIMEOUT: 3000,
     BASE_URL: 'https://client.wavesplatform.com',
 };
 

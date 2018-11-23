@@ -22,22 +22,29 @@ export class ApproveBtn extends React.PureComponent {
     render() {
         const { disabled } = this.state;
         const props = { ...this.props, disabled };
+    
+    
+        interface IProps {
+            percent: number;
+            className?: string;
+            strokeWidth?: number;
+            strokeLinecap?: string;
+            strokeColor?: string;
+            trailWidth?: number;
+            trailColor?: string;
+            style?: Object;
+            gapDegree?: number;
+            gapPosition?: string;
+        }
+    
+    
         const progressProps = {
-            percentage: this.state.percentage,
+            percent: this.state.percentage,
             strokeWidth: 14,
             className: styles.approveProgress,
-            counterClockwise: false,
-            initialAnimation: true,
-            styles: {
-            path: {
-                stroke: '#fff',
-                },
-            trail: {
-                stroke: 'rgba(255, 255, 255, 0.33)'
-                },
-            }
+            strokeColor: '#fff',
+            trailColor: 'rgba(255, 255, 255, 0.33)',
         };
-        console.log(this.state.percentage);
         return <Button {...props} className={cn(props.className, styles.hideText, styles.svgWrapper)}>
             {this.props.children}
             {disabled ? <CircularProgressbar {...progressProps}/> : null}

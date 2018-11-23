@@ -1,19 +1,20 @@
 import * as React from 'react';
-import 'react-circular-progressbar/dist/styles.css';
-import { default as ProgressBar } from 'react-circular-progressbar';
+import 'rc-progress/assets/index.css';
+import { Circle } from 'rc-progress';
 
 export const CircularProgressbar = (props: IProps) => {
-    return <ProgressBar {...props}/>
+    return <Circle {...props}/>
 };
 
 interface IProps {
-    percentage: number;
+    percent: number;
     className?: string;
-    text?: string;
     strokeWidth?: number;
-    background?: string;
-    backgroundPadding?: number;
-    initialAnimation?: boolean;
-    counterClockwise?: boolean;
-    styles?: Object;
+    strokeLinecap?: string;
+    strokeColor?: string;
+    trailWidth?: number;
+    trailColor?: string;
+    style?: Object;
+    gapDegree?: number;
+    gapPosition?: string;
 }
