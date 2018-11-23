@@ -255,6 +255,9 @@ export class MessageController extends EventEmitter {
             case 'bytes':
                 signedData = await this.signBytes(message.account.address, message.data);
                 break;
+            case 'pairing':
+                signedData = {...signedData, approved: 'OK'}
+                break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
         }
@@ -369,6 +372,10 @@ export class MessageController extends EventEmitter {
                 break;
             case 'bytes':
                 break;
+            case 'pairing':
+                if (!(typeof message.data.address === 'string' && typeof message.data.encryptedSeed === 'string'))
+                    throw new Error('Address and encryptedSeed are required for pairing')
+                break
             default:
                 throw new Error(`Incorrect type "${type}"`)
         }
