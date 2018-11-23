@@ -25,6 +25,7 @@ import {WindowManager} from './lib/WindowManger'
 
 const WAVESKEEPER_DEBUG = false;
 const IDLE_INTERVAL = 60;
+const isEdge = window.navigator.userAgent.indexOf("Edge") > -1
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
@@ -72,7 +73,9 @@ async function setupBackgroundService() {
 
     // connect to other contexts
     extension.runtime.onConnect.addListener(connectRemote);
-    extension.runtime.onConnectExternal.addListener(connectExternal);
+    if (!isEdge) {
+        extension.runtime.onConnectExternal.addListener(connectExternal)
+    }
 
     // update badge
     backgroundService.messageController.on('Update badge', text => {
@@ -92,11 +95,22 @@ async function setupBackgroundService() {
 
     // Idle management
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
-    extension.idle.onStateChanged.addListener(state => {
-        if (['active', 'idle'].indexOf(state) > -1){
-            backgroundService.walletController.lock()
-        }
-    });
+    if (!isEdge) {
+        extension.idle.onStateChanged.addListener(state => {
+            if (['active', 'idle'].indexOf(state) > -1) {
+                backgroundService.walletController.lock()
+            }
+        });
+    } else {
+        setInterval(() => {
+            extension.idle.queryState(IDLE_INTERVAL, (state) => {
+                if(["idle", "locked"].indexOf(state) > -1){
+                    backgroundService.walletController.lock()
+                }
+            })
+        }, 10000)
+    }
+
 
     // Connection handlers
     function connectRemote(remotePort) {
@@ -299,7 +313,7 @@ class BackgroundService extends EventEmitter {
             //publicState: async () => this._publicState(this.getState()),
         };
 
-        if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+        if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
             api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false);
             api.publicState = async () => this._publicState(this.getState())
         }
@@ -330,7 +344,7 @@ class BackgroundService extends EventEmitter {
         dnode.on('remote', (remote) => {
             // push account change event to the page
             const sendUpdate = remote.sendUpdate.bind(remote);
-            if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com'){
+            if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
                 this.on('update', function (state) {
                     const updatedPublicState = self._publicState(state);
                     // If public state changed call remote with new public state
