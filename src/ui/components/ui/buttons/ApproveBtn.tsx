@@ -40,10 +40,12 @@ export class ApproveBtn extends React.PureComponent {
     
         const progressProps = {
             percent: this.state.percentage,
-            strokeWidth: 14,
+            strokeWidth: 4,
             className: styles.approveProgress,
-            strokeColor: '#fff',
-            trailColor: 'rgba(255, 255, 255, 0.33)',
+            colors: ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'],
+            trackLineColor: 'rgba(255, 255, 255, 0.33)',
+            size: 30,
+            lineCap: 'round',
         };
         return <Button {...props} className={cn(props.className, styles.hideText, styles.svgWrapper)}>
             {this.props.children}
