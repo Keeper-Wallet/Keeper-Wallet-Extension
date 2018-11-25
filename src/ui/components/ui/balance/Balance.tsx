@@ -14,6 +14,16 @@ export const Balance = ({ balance, split, addSign=null, showAsset, isShortFormat
                 {children}
             </div>;
     }
+    
+    if (!balance.toTokens || !balance.toFormat) {
+        return <div>
+            N/A
+            {children}
+        </div>
+    }
+    
+    
+    
     const tokens = (isShortFormat ? balance.toFormat() : balance.toTokens()).split('.');
     const assetName = showAsset ? ASSETS_NAMES[balance.asset.id] || balance.asset.name : null;
 
