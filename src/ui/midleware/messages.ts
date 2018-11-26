@@ -1,9 +1,9 @@
 import { ACTION, updateActiveMessage } from '../actions';
 
-export const updateActiveMessageRed = store => next => action => {
+export const updateActiveMessageReducer = store => next => action => {
     const { messages, activeMessage } = store.getState();
     
-    if (activeMessage) {
+    if (activeMessage && action.type === ACTION.UPDATE_MESSAGES) {
         return next(action);
     }
     
@@ -11,7 +11,7 @@ export const updateActiveMessageRed = store => next => action => {
         store.dispatch(updateActiveMessage(action.payload[0]));
     }
     
-    if (action.type === ACTION.UPDATE_ACTIVE_MESSAGE && !action.payload && messages.length) {
+    if (action.type === ACTION.APPROVE_REJECT_CLEAR && !action.payload) {
         store.dispatch(updateActiveMessage(messages[0]));
     }
     

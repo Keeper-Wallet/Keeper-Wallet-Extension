@@ -16,7 +16,7 @@ const Loading = ({ children }) => {
     </div>;
 };
 
-const BalanceComponent = ({ balance, split, addSign=null, showAsset, isShortFormat, children, assets, ...props }: IProps) => {
+const BalanceComponent = ({ balance, split, getAsset, addSign=null, showAsset, isShortFormat, children, assets, ...props }: IProps) => {
     
     let balanceOut: Money;
     
@@ -27,7 +27,7 @@ const BalanceComponent = ({ balance, split, addSign=null, showAsset, isShortForm
             balanceOut = balance as Money;
             break;
         case !assets['WAVES']:
-             this.props.getAsset('WAVES');
+             getAsset('WAVES');
              return <Loading>{children}</Loading>;
         case (new BigNumber(balance as string)).isNaN() === false:
              balanceOut = Money.fromTokens(balance as string, assets['WAVES']);

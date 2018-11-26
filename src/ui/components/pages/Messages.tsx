@@ -72,7 +72,6 @@ class MessagesComponent extends React.Component {
     }
     
     cleanMessageStatus() {
-        this.props.updateActiveMessage();
         this.props.clearMessagesStatus();
         this.props.closeNotificationWindow();
         this.props.setTab(PAGES.ROOT);
