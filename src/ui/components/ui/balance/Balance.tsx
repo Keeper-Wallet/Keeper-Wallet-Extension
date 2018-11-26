@@ -1,31 +1,45 @@
 import * as React from 'react';
 import { ASSETS_NAMES } from '../../../appConfig';
-import { Money } from '@waves/data-entities';
+import { Money, BigNumber } from '@waves/data-entities';
 import * as styles from './balance.styl';
 import { Loader } from '../loader';
+import { connect } from 'react-redux';
+import { getAsset } from '../../../actions';
+
 
 const SEPARATOR = '.';
 
-export const Balance = ({ balance, split, addSign=null, showAsset, isShortFormat, children, ...props }: IProps) => {
+const Loading = ({ children }) => {
+    return <div>
+        <Loader/>
+        {children}
+    </div>;
+};
 
-    if (!balance) {
-        return <div>
-                <Loader/>
-                {children}
-            </div>;
+const BalanceComponent = ({ balance, split, addSign=null, showAsset, isShortFormat, children, assets, ...props }: IProps) => {
+    
+    let balanceOut: Money;
+    
+    switch (true) {
+        case !balance:
+            return <Loading>{children}</Loading>;
+        case balance instanceof Money:
+            balanceOut = balance as Money;
+            break;
+        case !assets['WAVES']:
+             this.props.getAsset('WAVES');
+             return <Loading>{children}</Loading>;
+        case (new BigNumber(balance as string)).isNaN() === false:
+             balanceOut = Money.fromTokens(balance as string, assets['WAVES']);
+             break;
+        default:
+            return <div>N/A</div>
     }
     
-    if (!balance.toTokens || !balance.toFormat) {
-        return <div>
-            N/A
-            {children}
-        </div>
-    }
     
     
-    
-    const tokens = (isShortFormat ? balance.toFormat() : balance.toTokens()).split('.');
-    const assetName = showAsset ? ASSETS_NAMES[balance.asset.id] || balance.asset.name : null;
+    const tokens = (isShortFormat ? balanceOut.toFormat() : balanceOut.toTokens()).split('.');
+    const assetName = showAsset ? ASSETS_NAMES[balanceOut.asset.id] || balanceOut.asset.name : null;
 
     if (!split) {
         return <div {...props}>{tokens.join(SEPARATOR)} {assetName} {children}</div>;
@@ -39,12 +53,17 @@ export const Balance = ({ balance, split, addSign=null, showAsset, isShortFormat
         </div>;
 };
 
+
+export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(BalanceComponent);
+
 interface IProps {
-    balance: Money;
+    balance: Money|string|BigNumber;
     split?: boolean;
     showAsset?: boolean;
     isShortFormat?: boolean;
     children?: any;
     addSign?: string;
     className?: string;
+    assets?: Object;
+    getAsset: (id: string) => void;
 }
