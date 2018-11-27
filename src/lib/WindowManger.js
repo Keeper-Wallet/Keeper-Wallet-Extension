@@ -33,7 +33,7 @@ export class WindowManager {
     }
 
     async closeWindow(){
-        const notificationWindow = await this._getNotificationWindow()
+        const notificationWindow = await this._getNotificationWindow();
         if (notificationWindow) extension.windows.remove(notificationWindow.id, console.error)
     }
 

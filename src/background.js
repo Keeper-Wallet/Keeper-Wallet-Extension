@@ -361,11 +361,16 @@ class BackgroundService extends EventEmitter {
         this.emit('update', this.getState())
     }
 
+    _getCurrentNtwork(account) {
+        return !account ? null : this.networkController.getNetworks().find((conf) => conf.code === account.networkCode);
+    }
+
     _publicState(state) {
         return {
             initialized: state.initialized,
             locked: state.locked,
             account: state.locked ? null : state.selectedAccount,
+            network: this._getCurrentNtwork(state.selectedAccount),
         }
     }
 }
