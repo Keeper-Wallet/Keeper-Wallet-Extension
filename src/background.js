@@ -366,10 +366,20 @@ class BackgroundService extends EventEmitter {
     }
 
     _publicState(state) {
+
+        let account = null;
+
+        if (!state.locked) {
+            account = {
+                ...state.selectedAccount,
+                balance: state.balances[state.selectedAccount.address] || 0,
+            };
+        }
+
         return {
             initialized: state.initialized,
             locked: state.locked,
-            account: state.locked ? null : state.selectedAccount,
+            account,
             network: this._getCurrentNtwork(state.selectedAccount),
         }
     }
