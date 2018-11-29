@@ -369,7 +369,7 @@ class BackgroundService extends EventEmitter {
 
         let account = null;
 
-        if (!state.locked) {
+        if (!state.locked && state.selectedAccount) {
             account = {
                 ...state.selectedAccount,
                 balance: state.balances[state.selectedAccount.address] || 0,
