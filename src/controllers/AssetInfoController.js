@@ -32,10 +32,12 @@ export class AssetInfoController {
     }
 
     async assetInfo(assetId) {
+        const {assets} = this.store.getState();
+        if (assetId === '' || assetId == null) return assets.WAVES;
+
         const network = this.getNetwork();
         const API_BASE = this.getNode();
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
-        let assets = this.store.getState().assets;
 
         if (!assets[network][assetId]) {
             let resp = await fetch(url)
