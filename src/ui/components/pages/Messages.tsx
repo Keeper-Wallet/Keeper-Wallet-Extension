@@ -13,6 +13,7 @@ class MessagesComponent extends React.Component {
 
     readonly state = {} as any;
     readonly props;
+    hasApproved: boolean;
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
     clearMessagesHandler = () => this.clearMessages();
@@ -58,6 +59,12 @@ class MessagesComponent extends React.Component {
 
     approve(e) {
         e.preventDefault();
+        
+        if (this.hasApproved) {
+            return;
+        }
+        
+        this.hasApproved = true;
         this.props.approve(this.state.activeMessage.id);
     }
     

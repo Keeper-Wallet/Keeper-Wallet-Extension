@@ -59,7 +59,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
 
     _downloadInMsEdge(data, name) {
         const blob = new Blob([data], { type: 'image/png' });
-        window.navigator.msSaveOrOpenBlob(blob, name);
+        window.navigator.msSaveOrOpenBlob(blob, `${name}.png` );
     }
 }
 
