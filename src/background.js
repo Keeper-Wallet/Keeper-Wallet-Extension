@@ -373,7 +373,12 @@ class BackgroundService extends EventEmitter {
     }
 
     _getCurrentNtwork(account) {
-        return !account ? null : this.networkController.getNetworks().find((conf) => conf.code === account.networkCode);
+        const networks = {
+            code: this.networkController.getNetworkCode(),
+            server: this.networkController.getNode(),
+            matcher: this.networkController.getMather()
+        };
+        return !account ? null : networks;
     }
 
     _publicState(state) {
