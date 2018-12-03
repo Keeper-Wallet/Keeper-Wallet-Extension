@@ -148,5 +148,3 @@ typings/
 test/sandbox.spec.js
 
 src/copied/_locales/extension_*.json
-
-package-lock.json
