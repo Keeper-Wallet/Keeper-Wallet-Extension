@@ -19,7 +19,7 @@ export class WindowManager {
             // create new notification popup
             await new Promise((resolve, reject) => {
                 extension.windows.create({
-                    url: 'home.html',
+                    url: 'notification.html',
                     type: 'popup',
                     width,
                     height,

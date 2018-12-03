@@ -49,8 +49,8 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
     plugins.push(new HtmlWebpackPlugin({
         title: PAGE_TITLE,
-        filename: 'home.html',
-        template: path.resolve(SOURCE_FOLDER, 'home.html'),
+        filename: 'notification.html',
+        template: path.resolve(SOURCE_FOLDER, 'notification.html'),
         hash: true,
         excludeChunks: ['background', 'contentscript', 'inpage'],
     }));

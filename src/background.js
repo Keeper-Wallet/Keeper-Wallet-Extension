@@ -91,7 +91,14 @@ async function setupBackgroundService() {
     // Notification window management
     const windowManager = new WindowManager();
     backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
-    backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
+    backgroundService.on('Close notification', () => {
+        if (isEdge) {
+            // Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
+            backgroundService.emit('closeEdgeNotificationWindow')
+        } else {
+            windowManager.closeWindow();
+        }
+    });
 
     // Idle management
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
@@ -104,7 +111,7 @@ async function setupBackgroundService() {
     } else {
         setInterval(() => {
             extension.idle.queryState(IDLE_INTERVAL, (state) => {
-                if(["idle", "locked"].indexOf(state) > -1){
+                if (["idle", "locked"].indexOf(state) > -1) {
                     backgroundService.walletController.lock()
                 }
             })
@@ -328,7 +335,11 @@ class BackgroundService extends EventEmitter {
         dnode.on('remote', (remote) => {
             // push updates to popup
             const sendUpdate = remote.sendUpdate.bind(remote);
-            this.on('update', sendUpdate)
+            this.on('update', sendUpdate);
+
+            //Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
+            const closeEdgeNotificationWindow = remote.closeEdgeNotificationWindow.bind(remote);
+            this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow)
         })
     }
 
