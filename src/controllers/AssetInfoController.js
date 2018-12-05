@@ -33,7 +33,7 @@ export class AssetInfoController {
 
     async assetInfo(assetId) {
         const {assets} = this.store.getState();
-        if (assetId === '' || assetId == null) return assets.WAVES;
+        if (assetId === '' || assetId == null) return assets.mainnet.WAVES;
 
         const network = this.getNetwork();
         const API_BASE = this.getNode();
