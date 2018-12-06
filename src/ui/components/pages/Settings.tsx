@@ -34,7 +34,7 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
     
-            <div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
+            {/*<div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
                         onClick={this.pairingHandler}>
@@ -44,7 +44,7 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
             
-            {/*<div className={`${styles.settingsMenuItem} ${styles.language}`}>
+            <div className={`${styles.settingsMenuItem} ${styles.language}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
                         onClick={this.langsHandler}>
