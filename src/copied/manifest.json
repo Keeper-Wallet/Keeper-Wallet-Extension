@@ -60,7 +60,6 @@
     "unlimitedStorage",
     "clipboardWrite",
     "idle",
-    "storage",
     "activeTab",
     "webRequest",
     "notifications",
