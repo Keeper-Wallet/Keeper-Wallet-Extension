@@ -1,4 +1,5 @@
 import 'babel-polyfill';
+import './analytics';
 import extension from 'extensionizer';
 import EventEmitter from 'events';
 import PortStream from './lib/port-stream.js';
