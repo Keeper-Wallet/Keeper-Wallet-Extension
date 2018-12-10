@@ -1,0 +1,72 @@
+{
+    "name": "__MSG_appName__",
+    "short_name": "__MSG_appName__",
+    "version": "1.0.3",
+    "manifest_version": 2,
+    "author": "support@wavesplatform.com",
+    "description": "__MSG_appDescription__",
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "windows": "Alt+Shift+K",
+                "mac": "Alt+Shift+K",
+                "chromeos": "Alt+Shift+K",
+                "linux": "Alt+Shift+K"
+            }
+        }
+    },
+    "icons": {
+        "16": "images/icon_16.png",
+        "20": "images/icon_20.png",
+        "128": "images/icon_128.png"
+    },
+    "applications": {
+        "gecko": {
+            "id": "support@wavesplatform.com"
+        }
+    },
+    "default_locale": "en",
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    },
+    "browser_action": {
+        "default_icon": {
+            "16": "images/icon_16.png",
+            "20": "images/icon_20.png",
+            "128": "images/icon_128.png"
+        },
+        "default_title": "Waves Keeper",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "file://*/*",
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "contentscript.js"
+            ],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ],
+    "permissions": [
+        "storage",
+        "unlimitedStorage",
+        "clipboardWrite",
+        "idle",
+        "activeTab",
+        "webRequest",
+        "notifications",
+        "signedInDevices"
+    ],
+    "web_accessible_resources": [
+        "inpage.js"
+    ],
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+}
