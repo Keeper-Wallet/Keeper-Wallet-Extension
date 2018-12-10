@@ -18,7 +18,9 @@
   "icons": {
     "16": "images/icon_16.png",
     "20": "images/icon_20.png",
-    "128": "images/icon_128.png"
+    "44": "images/icon_44.png",
+    "128": "images/icon_128.png",
+    "150": "images/icon_150.png"
   },
   "applications": {
     "gecko": {
@@ -63,7 +65,9 @@
     "activeTab",
     "webRequest",
     "notifications",
-    "signedInDevices"
+    "signedInDevices",
+    "tabs",
+    "background"
   ],
   "web_accessible_resources": [
     "inpage.js"

@@ -59,7 +59,7 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
         plugins.push(
             new DownloadJsonPlugin({
                 path: `${I18N_API}/${lng}/extension`,
-                filename: `src/copied/_locales/extension_${lng}.json`,
+                filename: `src/copied/_locales/${lng}/extension_${lng}.json`,
             })
         );
     });

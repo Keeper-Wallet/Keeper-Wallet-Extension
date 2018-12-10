@@ -5,7 +5,7 @@ import { I18N_NAME_SPACE, I18N_API_KEY, I18N_PROJECT_ID } from './appConfig';
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
-let backendPath = { loadPath: './_locales/{{ns}}_{{lng}}.json' } as any;
+let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}_{{lng}}.json' } as any;
 
 if (WAVESKEEPER_DEBUG) {
     backendPath = {
