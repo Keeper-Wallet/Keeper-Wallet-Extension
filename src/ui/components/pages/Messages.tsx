@@ -18,6 +18,7 @@ class MessagesComponent extends React.Component {
     approveHandler = (e) => this.approve(e);
     clearMessagesHandler = () => this.clearMessages();
     clearMessageStatusHandler = () => this.cleanMessageStatus();
+    clearMessageStatusHandlerNoClose = () => this.cleanMessageStatus(true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
@@ -33,10 +34,12 @@ class MessagesComponent extends React.Component {
     
         if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
+                                     hasNewMessages={this.props.hasNewMessages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
                                      signData={this.state.signData}
-                                     onClick={this.clearMessageStatusHandler}/>
+                                     onClick={this.clearMessageStatusHandler}
+                                     onNext={this.clearMessageStatusHandlerNoClose}/>
         }
         
         const { activeMessage, signData } = this.state;
@@ -78,10 +81,15 @@ class MessagesComponent extends React.Component {
         this.cleanMessageStatus();
     }
     
-    cleanMessageStatus() {
+    cleanMessageStatus(noCloseWindow: boolean = true) {
         this.props.clearMessagesStatus();
-        this.props.closeNotificationWindow();
+        
+        if (!noCloseWindow) {
+            this.props.closeNotificationWindow();
+        }
+        
         this.props.setTab(PAGES.ROOT);
+        this.hasApproved = false;
     }
     
     static getDerivedStateFromProps(props, state) {
@@ -222,7 +230,11 @@ const mapStateToProps = function (store) {
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
         activeMessage: store.activeMessage,
-        assets: store.assets
+        assets: store.assets,
+        hasNewMessages: (store.messages
+            .map(item => item.id)
+            .filter(id => id !== store.activeMessage.id)
+            .length > 0),
     };
 };
 
