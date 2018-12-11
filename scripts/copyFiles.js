@@ -4,7 +4,7 @@ const path = require('path');
 const zipFolder = require('./zipFolder');
 
 
-module.exports = function (platformName, options, isProduction) {
+module.exports = function (platformName, options, isProduction, onEnd) {
 
     const toCopy = options.copyFiles || [];
 
@@ -17,6 +17,7 @@ module.exports = function (platformName, options, isProduction) {
 
             isProduction ? zipFolder(to, `${to}.zip`) : null;
             console.log(`${platformName}: ${version} file compile done!`);
+            onEnd();
         });
     });
 };

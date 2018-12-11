@@ -37,8 +37,10 @@ class Background {
     }
 
     async getState() {
+        console.log('get new state');
         await this.initPromise;
         const data = await this.background.getState();
+        console.log('set new state');
         this._onUpdate(data);
         return data;
     }

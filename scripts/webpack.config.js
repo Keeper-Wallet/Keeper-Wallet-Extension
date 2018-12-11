@@ -22,9 +22,16 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
     const getPlatforms = () => {
         const platformsConfig = metaConf(BUILD_FOLDER, DIST_FOLDER, version);
-
+        let counter = PLATFORMS.length;
         PLATFORMS.forEach(platform => {
-            copyFiles(platform, platformsConfig[platform], isProduction);
+            copyFiles(platform, platformsConfig[platform], isProduction, () => {
+                counter--;
+                if (isProduction && counter === 0) {
+                    console.log('-= Build AppX for Edge =-');
+                    require('./edgeExt');
+                    console.log('-= Build AppX for Edge ended =-');
+                }
+            });
         });
     };
 
