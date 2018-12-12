@@ -135,6 +135,7 @@
 	"sign.customConfirmed": "Confirm a request!",
 	"sign.matcherConfirmed": "Sign a request to the matcher!",
 	"sign.matcherRejected": "Request has not been signed",
+	"sign.nextTransaction": "Next",
 	"sign.ok": "Okay",
 	"sign.reject": "Reject",
 	"sign.rejected": "Your transaction is rejected!",

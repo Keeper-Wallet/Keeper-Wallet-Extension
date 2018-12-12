@@ -87,7 +87,6 @@
     "activeTab",
     "webRequest",
     "notifications",
-    "signedInDevices",
     "tabs",
     "background"
   ],

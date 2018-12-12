@@ -81,7 +81,7 @@ class MessagesComponent extends React.Component {
         this.cleanMessageStatus();
     }
     
-    cleanMessageStatus(noCloseWindow: boolean = true) {
+    cleanMessageStatus(noCloseWindow: boolean = false) {
         this.props.clearMessagesStatus();
         
         if (!noCloseWindow) {
