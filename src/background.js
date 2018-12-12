@@ -24,7 +24,7 @@ import {WindowManager} from './lib/WindowManger'
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
-const isEdge = window.navigator.userAgent.indexOf("Edge") > -1
+const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 

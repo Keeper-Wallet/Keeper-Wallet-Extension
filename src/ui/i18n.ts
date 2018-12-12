@@ -7,7 +7,7 @@ const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
 let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}_{{lng}}.json' } as any;
 
-if (WAVESKEEPER_DEBUG) {
+if (false && WAVESKEEPER_DEBUG) {
     backendPath = {
         loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
         privatePath: 'https://locize.wvservices.com/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',

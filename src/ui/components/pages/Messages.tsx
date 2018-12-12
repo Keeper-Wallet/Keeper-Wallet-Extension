@@ -119,12 +119,12 @@ class MessagesComponent extends React.Component {
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => assets[id] === undefined);
         needGetAssets.forEach( id => props.getAsset(id));
-
+    
         if (needGetAssets.length) {
             return { loading, selectedAccount } ;
         }
         
-        loading = true;
+        loading = false;
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
         const txHash = activeMessage.messageHash;
         const config = getConfigByTransaction(signData);
