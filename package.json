@@ -30,7 +30,6 @@
     "debounce-stream": "^2.0.0",
     "del": "^3.0.0",
     "dnode": "^1.2.2",
-    "download-json-webpack-plugin": "^0.1.0",
     "events": "^3.0.0",
     "extensionizer": "^1.0.1",
     "i18next": "^11.6.0",
@@ -60,6 +59,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
+    "download-json-webpack-plugin": "^0.1.0",
     "awesome-typescript-loader": "^5.2.0",
     "babel": "^6.23.0",
     "babel-core": "^6.24.1",
