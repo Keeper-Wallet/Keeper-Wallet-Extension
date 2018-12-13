@@ -5,7 +5,7 @@ const DIST = './dist/edge';
 const EXT_DIST = './dist';
 const DIST_PATH = path.resolve(DIST);
 const ROOT_PATH = path.resolve(EXT_DIST);
-const distUtil = path.resolve('node_modules/.bin/manifoldjs');
+const distUtil = path.resolve('manifoldjs');
 
 const NAME = 'WavesKeeper';
 const PUBLISHER = 'WavesPlatform';
