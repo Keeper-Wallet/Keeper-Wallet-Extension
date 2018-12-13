@@ -167,6 +167,7 @@
 	"sign.transactionConfirmedBurn": "You have approved a Burn transaction.",
 	"sign.transactionFiled": "Your transaction is filed!",
 	"sign.transactionSend": "Your have send",
+	"sign.transactionSendCreateOrder": "You have approved a Create Order transaction",
 	"sign.transactionSendData.": "You have created a Data transaction",
 	"sign.transactionSendTransfer": "You have sent",
 	"sign.understand": "I understand",
