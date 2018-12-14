@@ -51,7 +51,9 @@ fs.writeFileSync(`${packDir}/appxmanifest.xml`, manifestReady);
 
 const manifestJson =  fs.readFileSync(`${packDir}/Extension/manifest.json`);
 const manifestJsonReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestJson.toString());
-fs.writeFileSync(`${packDir}/Extension/manifest.json`, manifestJsonReady);
+
+
+fs.writeFileSync(`${packDir}/Extension/manifest.json`, JSON.stringify(manifestOBG));
 
 ICONS.forEach(({ name, size }) => {
     const from = `${packDir}/Extension/images/icon_${size}.png`;
@@ -68,5 +70,9 @@ fs.copyFileSync(path.join(appXpath, 'edgeExtension.appx'), path.join(ROOT_PATH, 
 execSync(`rm -rf ${path.join(ROOT_PATH, NAME)}`);
 
 function replaceAll(str, search, replacement) {
-    return str.replace(new RegExp(search, 'g'), replacement);
+    try {
+        return str.replace(new RegExp(search, 'g'), replacement);
+    } catch (e) {
+        return str;
+    }
 }

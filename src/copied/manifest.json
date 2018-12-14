@@ -87,8 +87,7 @@
     "activeTab",
     "webRequest",
     "notifications",
-    "tabs",
-    "background"
+    "tabs"
   ],
   "web_accessible_resources": [
     "inpage.js"
