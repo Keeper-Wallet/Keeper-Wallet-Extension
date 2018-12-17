@@ -53,7 +53,7 @@ const manifestJson =  fs.readFileSync(`${packDir}/Extension/manifest.json`);
 const manifestJsonReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestJson.toString());
 
 
-fs.writeFileSync(`${packDir}/Extension/manifest.json`, JSON.stringify(manifestOBG));
+fs.writeFileSync(`${packDir}/Extension/manifest.json`, manifestJsonReady);
 
 ICONS.forEach(({ name, size }) => {
     const from = `${packDir}/Extension/images/icon_${size}.png`;
