@@ -21,7 +21,7 @@ class ConditionsComponent extends React.Component {
     state = { confirmDisabled: true };
 
     onClick(e) {
-        e.stopImmediatePropagation();
+        e.stopPropagation();
         e.preventDefault();
         this.props.setTab('new');
     }
