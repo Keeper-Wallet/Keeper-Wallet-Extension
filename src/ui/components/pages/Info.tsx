@@ -29,6 +29,7 @@ export class Info extends React.Component {
                     <li className={styles.discord}><a target="_blank" href="https://discord.gg/cnFmDyA"></a></li>
                     <li className={styles.twitter}><a target="_blank" href="https://twitter.com/wavesplatform"></a></li>
                     <li className={styles.facebook}><a target="_blank" href="https://www.facebook.com/wavesplatform"></a></li>
+                    <li className={styles.reddit}><a target="_blank" href="https://reddit.com/r/Wavesplatform/"></a></li>
                 </ul>
             </div>
 
