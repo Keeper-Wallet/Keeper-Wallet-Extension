@@ -316,6 +316,7 @@ export class MessageController extends EventEmitter {
             account,
             broadcast,
             id: uuid(),
+            ext_uuid: data && data.uid,
             origin,
             data,
             status: 'unapproved',

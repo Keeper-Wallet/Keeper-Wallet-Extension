@@ -20,6 +20,10 @@ export class NetworkController {
         this.store =  new ObservableStore(Object.assign({}, defaults, options.initState))
     }
 
+    getNetworkCode() {
+        return NETWORK_CONFIG[this.getNetwork()].code;
+    }
+
     getNetworks() {
         return NETWORKS.map(name => ({ ...NETWORK_CONFIG[name], name }));
     }

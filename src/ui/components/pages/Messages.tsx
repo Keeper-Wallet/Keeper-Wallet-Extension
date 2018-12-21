@@ -13,10 +13,12 @@ class MessagesComponent extends React.Component {
 
     readonly state = {} as any;
     readonly props;
+    hasApproved: boolean;
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
     clearMessagesHandler = () => this.clearMessages();
     clearMessageStatusHandler = () => this.cleanMessageStatus();
+    clearMessageStatusHandlerNoClose = () => this.cleanMessageStatus(true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
@@ -32,10 +34,12 @@ class MessagesComponent extends React.Component {
     
         if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
+                                     hasNewMessages={this.props.hasNewMessages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
                                      signData={this.state.signData}
-                                     onClick={this.clearMessageStatusHandler}/>
+                                     onClick={this.clearMessageStatusHandler}
+                                     onNext={this.clearMessageStatusHandlerNoClose}/>
         }
         
         const { activeMessage, signData } = this.state;
@@ -58,6 +62,12 @@ class MessagesComponent extends React.Component {
 
     approve(e) {
         e.preventDefault();
+        
+        if (this.hasApproved) {
+            return;
+        }
+        
+        this.hasApproved = true;
         this.props.approve(this.state.activeMessage.id);
     }
     
@@ -71,10 +81,15 @@ class MessagesComponent extends React.Component {
         this.cleanMessageStatus();
     }
     
-    cleanMessageStatus() {
+    cleanMessageStatus(noCloseWindow: boolean = false) {
         this.props.clearMessagesStatus();
-        this.props.closeNotificationWindow();
+        
+        if (!noCloseWindow) {
+            this.props.closeNotificationWindow();
+        }
+        
         this.props.setTab(PAGES.ROOT);
+        this.hasApproved = false;
     }
     
     static getDerivedStateFromProps(props, state) {
@@ -104,12 +119,12 @@ class MessagesComponent extends React.Component {
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => assets[id] === undefined);
         needGetAssets.forEach( id => props.getAsset(id));
-
+    
         if (needGetAssets.length) {
             return { loading, selectedAccount } ;
         }
         
-        loading = true;
+        loading = false;
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
         const txHash = activeMessage.messageHash;
         const config = getConfigByTransaction(signData);
@@ -215,7 +230,11 @@ const mapStateToProps = function (store) {
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
         activeMessage: store.activeMessage,
-        assets: store.assets
+        assets: store.assets,
+        hasNewMessages: (store.messages
+            .map(item => item.id)
+            .filter(id => id !== store.activeMessage.id)
+            .length > 0),
     };
 };
 

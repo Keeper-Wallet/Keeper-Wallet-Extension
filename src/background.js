@@ -22,10 +22,9 @@ import {
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 
-
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
-const isEdge = window.navigator.userAgent.indexOf("Edge") > -1
+const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
@@ -91,7 +90,14 @@ async function setupBackgroundService() {
     // Notification window management
     const windowManager = new WindowManager();
     backgroundService.on('Show notification', windowManager.showWindow.bind(windowManager));
-    backgroundService.on('Close notification', windowManager.closeWindow.bind(windowManager));
+    backgroundService.on('Close notification', () => {
+        if (isEdge) {
+            // Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
+            backgroundService.emit('closeEdgeNotificationWindow')
+        } else {
+            windowManager.closeWindow();
+        }
+    });
 
     // Idle management
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
@@ -104,7 +110,7 @@ async function setupBackgroundService() {
     } else {
         setInterval(() => {
             extension.idle.queryState(IDLE_INTERVAL, (state) => {
-                if(["idle", "locked"].indexOf(state) > -1){
+                if (["idle", "locked"].indexOf(state) > -1) {
                     backgroundService.walletController.lock()
                 }
             })
@@ -310,12 +316,14 @@ class BackgroundService extends EventEmitter {
             },
             pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
-            //publicState: async () => this._publicState(this.getState()),
+
+
         };
 
-        if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
+        api.publicState = async () => this._publicState(this.getState(), origin);
+
+        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
             api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false);
-            api.publicState = async () => this._publicState(this.getState())
         }
 
         return api
@@ -328,7 +336,11 @@ class BackgroundService extends EventEmitter {
         dnode.on('remote', (remote) => {
             // push updates to popup
             const sendUpdate = remote.sendUpdate.bind(remote);
-            this.on('update', sendUpdate)
+            this.on('update', sendUpdate);
+
+            //Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
+            const closeEdgeNotificationWindow = remote.closeEdgeNotificationWindow.bind(remote);
+            this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow)
         })
     }
 
@@ -340,21 +352,21 @@ class BackgroundService extends EventEmitter {
 
         const self = this;
         // Select public state from app state
-        let publicState = this._publicState(this.getState());
+        let publicState = this._publicState(this.getState(), origin);
         dnode.on('remote', (remote) => {
             // push account change event to the page
             const sendUpdate = remote.sendUpdate.bind(remote);
-            if (true || origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
-                this.on('update', function (state) {
-                    const updatedPublicState = self._publicState(state);
-                    // If public state changed call remote with new public state
-                    if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
-                        publicState = updatedPublicState;
-                        sendUpdate(publicState)
-                    }
-                })
-            }
-        })
+
+            this.on('update', function (state) {
+                const updatedPublicState = self._publicState(state, origin);
+                // If public state changed call remote with new public state
+                if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
+                    publicState = updatedPublicState;
+                    sendUpdate(publicState)
+                }
+            });
+
+        });
     }
 
     _privateSendUpdate() {
@@ -362,18 +374,31 @@ class BackgroundService extends EventEmitter {
     }
 
     _getCurrentNtwork(account) {
-        return !account ? null : this.networkController.getNetworks().find((conf) => conf.code === account.networkCode);
+        const networks = {
+            code: this.networkController.getNetworkCode(),
+            server: this.networkController.getNode(),
+            matcher: this.networkController.getMather()
+        };
+        return !account ? null : networks;
     }
 
-    _publicState(state) {
+    _publicState(state, originReq) {
 
         let account = null;
+        let messages = [];
 
-        if (!state.locked) {
+        if (!state.locked && state.selectedAccount) {
+
+            const address = state.selectedAccount.address;
+
             account = {
                 ...state.selectedAccount,
                 balance: state.balances[state.selectedAccount.address] || 0,
             };
+
+            messages = state.messages
+                .filter(({ account, origin }) => account.address === address && origin === originReq)
+                .map(({ id, status, ext_uuid }) => ({ id, status, uid: ext_uuid }));
         }
 
         return {
@@ -381,6 +406,7 @@ class BackgroundService extends EventEmitter {
             locked: state.locked,
             account,
             network: this._getCurrentNtwork(state.selectedAccount),
+            messages,
         }
     }
 }

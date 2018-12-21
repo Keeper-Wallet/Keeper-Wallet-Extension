@@ -23,7 +23,7 @@ export class FinalTransaction extends React.PureComponent {
     readonly props: any;
 
     render() {
-        const {transactionStatus} = this.props;
+        const { transactionStatus, hasNewMessages } = this.props;
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
@@ -54,12 +54,18 @@ export class FinalTransaction extends React.PureComponent {
             </div>
 
             <div className="margin-main-big">
-                <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick}>
+                <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick} className={styles.closeBtn}>
                     {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
                     {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
                 </Button>
             </div>
-
+    
+            { hasNewMessages ? <div className="margin-main-big">
+                <Button onClick={this.props.onNext} className={styles.nextBtn}>
+                    <Trans i18nKey='sign.nextTransaction'>Next</Trans>
+                </Button>
+            </div> : null }
+            
             {isSend ?
                 <div className="center">
                     <a className="link black" href={txLink} target="_blank">

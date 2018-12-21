@@ -94,12 +94,12 @@ export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
         background.deleteVault().then(
             () => {
-                store.dispatch(notificationDelete(true));
-                setTimeout(() => {
-                    store.dispatch(notificationDelete(false));
-                    store.dispatch(setTab(PAGES.ROOT));
-    
-                }, 1000);
+                // store.dispatch(notificationDelete(true));
+                // setTimeout(() => {
+                //     store.dispatch(notificationDelete(false));
+                //
+                // }, 1000);
+                store.dispatch(setTab(PAGES.ROOT));
             }
         );
         return null;

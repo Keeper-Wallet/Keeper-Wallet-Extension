@@ -12,7 +12,17 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
             ],
             manifest: {
                 add: {
-                    'background.scripts': ['background.js']
+                    'background.scripts': ['background.js'],
+                    'permissions': [
+                        "storage",
+                        "unlimitedStorage",
+                        "clipboardWrite",
+                        "idle",
+                        "activeTab",
+                        "webRequest",
+                        "notifications",
+                        "tabs"
+                    ]
                 },
                 remove: ['applications']
             }
@@ -26,7 +36,18 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
             ],
             manifest: {
                 add: {
-                    'background.scripts': ['background.js']
+                    'background.scripts': ['background.js'],
+                    'permissions': [
+                        "storage",
+                        "unlimitedStorage",
+                        "clipboardWrite",
+                        "idle",
+                        "activeTab",
+                        "webRequest",
+                        "notifications",
+                        "tabs",
+                        "background"
+                    ]
                 },
                 remove: []
             }
@@ -40,7 +61,17 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
             ],
             manifest: {
                 add: {
-                    'background.scripts': ['background.js']
+                    'background': {scripts: ['background.js']},
+                    'permissions': [
+                        "storage",
+                        "unlimitedStorage",
+                        "clipboardWrite",
+                        "idle",
+                        "activeTab",
+                        "webRequest",
+                        "notifications",
+                        "tabs"
+                    ]
                 },
                 remove: []
             }
@@ -55,7 +86,16 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
             ],
             manifest: {
                 add: {
-                    'permissions': ['storage', 'tabs', 'clipboardWrite', 'clipboardRead'],
+                    'permissions': [
+                        "storage",
+                        "unlimitedStorage",
+                        "clipboardWrite",
+                        "idle",
+                        "activeTab",
+                        "webRequest",
+                        "notifications",
+                        "tabs"
+                    ],
                     'background.scripts': ['background.js']
                 },
                 remove: []

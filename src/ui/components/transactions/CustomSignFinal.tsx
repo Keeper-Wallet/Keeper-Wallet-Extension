@@ -15,7 +15,7 @@ export class CustomSignFinal extends React.PureComponent {
             return <div>
                 <div className="margin-main headline2">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirm'>Your transaction is signed</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionApproved'>Your transaction is signed</Trans> : null}
                 </div>
                 <div className="basic500">
                     {isSend ? <Trans i18nKey='sign.transactionSendCustomSign'>Custom Sign is confirmed!</Trans> : null}

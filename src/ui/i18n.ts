@@ -5,7 +5,7 @@ import { I18N_NAME_SPACE, I18N_API_KEY, I18N_PROJECT_ID } from './appConfig';
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
-let backendPath = { loadPath: './_locales/{{ns}}_{{lng}}.json' } as any;
+let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}_{{lng}}.json' } as any;
 
 if (WAVESKEEPER_DEBUG) {
     backendPath = {
@@ -24,11 +24,11 @@ i18n
     .init({
         fallbackLng: 'en',
         appendNamespaceToCIMode: true,
-        saveMissing: true,
+        saveMissing: WAVESKEEPER_DEBUG,
         ns: [I18N_NAME_SPACE],
         defaultNS: I18N_NAME_SPACE,
 
-        debug: true,
+        debug: WAVESKEEPER_DEBUG,
         keySeparator: '.', // we use content as keys
         nsSeparator: '.', // we use content as keys
 
@@ -49,7 +49,7 @@ i18n
         },
 
         react: {
-            wait: true
+            wait: !WAVESKEEPER_DEBUG
         }
     });
 

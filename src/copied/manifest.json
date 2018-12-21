@@ -1,7 +1,7 @@
 {
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "manifest_version": 2,
   "author": "support@wavesplatform.com",
   "description": "__MSG_appDescription__",
@@ -18,7 +18,19 @@
   "icons": {
     "16": "images/icon_16.png",
     "20": "images/icon_20.png",
-    "128": "images/icon_128.png"
+    "24": "images/icon_24.png",
+    "30": "images/icon_30.png",
+    "42": "images/icon_42.png",
+    "44": "images/icon_44.png",
+    "50": "images/icon_50.png",
+    "54": "images/icon_54.png",
+    "70": "images/icon_70.png",
+    "90": "images/icon_90.png",
+    "120": "images/icon_120.png",
+    "128": "images/icon_128.png",
+    "150": "images/icon_150.png",
+    "210": "images/icon_210.png",
+    "270": "images/icon_270.png"
   },
   "applications": {
     "gecko": {
@@ -36,7 +48,19 @@
     "default_icon": {
       "16": "images/icon_16.png",
       "20": "images/icon_20.png",
-      "128": "images/icon_128.png"
+      "24": "images/icon_24.png",
+      "30": "images/icon_30.png",
+      "42": "images/icon_42.png",
+      "44": "images/icon_44.png",
+      "50": "images/icon_50.png",
+      "54": "images/icon_54.png",
+      "70": "images/icon_70.png",
+      "90": "images/icon_90.png",
+      "120": "images/icon_120.png",
+      "128": "images/icon_128.png",
+      "150": "images/icon_150.png",
+      "210": "images/icon_210.png",
+      "270": "images/icon_270.png"
     },
     "default_title": "Waves Keeper",
     "default_popup": "popup.html"
@@ -60,13 +84,13 @@
     "unlimitedStorage",
     "clipboardWrite",
     "idle",
-    "storage",
     "activeTab",
     "webRequest",
     "notifications",
-    "*://*.*/"
+    "tabs"
   ],
   "web_accessible_resources": [
     "inpage.js"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }

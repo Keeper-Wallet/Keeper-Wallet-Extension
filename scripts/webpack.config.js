@@ -22,9 +22,16 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
     const getPlatforms = () => {
         const platformsConfig = metaConf(BUILD_FOLDER, DIST_FOLDER, version);
-
+        let counter = PLATFORMS.length;
         PLATFORMS.forEach(platform => {
-            copyFiles(platform, platformsConfig[platform], isProduction);
+            copyFiles(platform, platformsConfig[platform], isProduction, () => {
+                counter--;
+                if (isProduction && counter === 0) {
+                    console.log('-= Build AppX for Edge =-');
+                    require('./edgeExt');
+                    console.log('-= Build AppX for Edge ended =-');
+                }
+            });
         });
     };
 
@@ -49,8 +56,8 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
     plugins.push(new HtmlWebpackPlugin({
         title: PAGE_TITLE,
-        filename: 'home.html',
-        template: path.resolve(SOURCE_FOLDER, 'home.html'),
+        filename: 'notification.html',
+        template: path.resolve(SOURCE_FOLDER, 'notification.html'),
         hash: true,
         excludeChunks: ['background', 'contentscript', 'inpage'],
     }));
@@ -59,7 +66,7 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
         plugins.push(
             new DownloadJsonPlugin({
                 path: `${I18N_API}/${lng}/extension`,
-                filename: `src/copied/_locales/extension_${lng}.json`,
+                filename: `src/copied/_locales/${lng}/extension_${lng}.json`,
             })
         );
     });

@@ -10,7 +10,10 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 export class Welcome extends React.Component {
     
     readonly props;
-    clickHandler = () => this.props.setTab(PAGES.CONDITIONS);
+    clickHandler = (e) => {
+        e.preventDefault();
+        this.props.setTab(PAGES.CONDITIONS);
+    };
     
     render() {
         return <div className={`${styles.content}`}>
