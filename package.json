@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
-    "@waves/signature-generator": "^1.1.8",
+    "@waves/signature-generator": "^1.1.9",
     "awesome-typescript-loader": "^5.2.0",
     "babel": "^6.23.0",
     "babel-core": "^6.24.1",
