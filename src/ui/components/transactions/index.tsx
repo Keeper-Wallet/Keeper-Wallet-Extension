@@ -35,7 +35,6 @@ import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
 import { UnknownFinal } from './UnknownFinal';
-import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
 
@@ -67,7 +66,7 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.component = CancelLease;
             config.final = CancelLeaseFinal;
             break;
-        case tx.type === SIGN_TYPE.CANCEL_ORDER && type === 'cancelOrder':
+        case tx.type === SIGN_TYPE.CANCEL_ORDER && (type === 'cancelOrder' || type === 'request'):
             config.type = 'cancel-order';
             config.component = CancelOrder;
             config.final = CancelOrderFinal;

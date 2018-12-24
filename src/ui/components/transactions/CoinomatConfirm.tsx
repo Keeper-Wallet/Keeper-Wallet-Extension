@@ -27,16 +27,9 @@ export class CoinomatConfirm extends SignClass {
     
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.coinomatTimeStamp'>Coinomat Time Stamp</Trans>
-                    </div>
-                    <div className={styles.txValue}>{tx.timestamp}</div>
-                </div>
-    
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.txTime'>TX Time</Trans>
                     </div>
-                    <div className={styles.txValue}><DateFormat value={tx.timestamp}/></div>
+                    <div className={styles.txValue}><DateFormat value={tx.timestamp * 1000}/></div>
                 </div>
                 
                 <div className={styles.txRow}>
