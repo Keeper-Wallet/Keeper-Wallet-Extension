@@ -39,97 +39,97 @@ import { SignClass } from './SignClass';
 
 export { FinalTransaction } from './FinalTransaction';
 
-export const getConfigByTransaction = tx => {
+export const getConfigByTransaction = (tx, type = null) => {
     const config = {
         type: null,
         component: null,
         final: null,
     };
     
-    switch (tx.type) {
-        case SIGN_TYPE.TRANSFER:
+    switch (true) {
+        case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
             config.type = 'transfer';
             config.component = Transfer;
             config.final = TransferFinal;
             break;
-        case SIGN_TYPE.AUTH:
+        case tx.type ===  SIGN_TYPE.AUTH && type === 'auth':
             config.type = 'auth';
             config.component = Auth;
             config.final = AuthFinal;
             break;
-        case SIGN_TYPE.BURN:
+        case tx.type ===  SIGN_TYPE.BURN && type === 'transaction':
             config.type = 'burn';
             config.component = Burn;
             config.final = BurnFinal;
             break;
-        case SIGN_TYPE.CANCEL_LEASING:
+        case tx.type === SIGN_TYPE.CANCEL_LEASING && type === 'transaction':
             config.type = 'cancel-leasing';
             config.component = CancelLease;
             config.final = CancelLeaseFinal;
             break;
-        case SIGN_TYPE.CANCEL_ORDER:
+        case tx.type === SIGN_TYPE.CANCEL_ORDER && type === 'cancelOrder':
             config.type = 'cancel-order';
             config.component = CancelOrder;
             config.final = CancelOrderFinal;
             break;
-        case SIGN_TYPE.CREATE_ALIAS:
+        case tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction':
             config.type = 'create-alias';
             config.component = Alias;
             config.final = AliasFinal;
             break;
-        case SIGN_TYPE.CREATE_ORDER:
+        case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':
             config.type = 'create-order';
             config.component = CreateOrder;
             config.final = CreateOrderFinal;
             break;
-        case SIGN_TYPE.DATA:
+        case tx.type === SIGN_TYPE.DATA && type === 'transaction':
             config.type = 'data';
             config.component = Data;
             config.final = DataFinal;
             break;
-        case SIGN_TYPE.ISSUE:
+        case tx.type === SIGN_TYPE.ISSUE && type === 'transaction':
             config.type = 'issue';
             config.component = Issure;
             config.final = IssureFinal;
             break;
-        case SIGN_TYPE.LEASE:
+        case tx.type === SIGN_TYPE.LEASE && type === 'transaction':
             config.type = 'lease';
             config.component = Lease;
             config.final = LeaseFinal;
             break;
-        case SIGN_TYPE.MASS_TRANSFER:
+        case tx.type === SIGN_TYPE.MASS_TRANSFER && type === 'transaction':
             config.type = 'mass_transfer';
             config.component = MassTransfer;
             config.final = MassTransferFinal;
             break;
-        case SIGN_TYPE.MATCHER_ORDERS:
+        case tx.type === SIGN_TYPE.MATCHER_ORDERS && type === 'request':
             config.type = 'matcher_orders';
             config.component = Matcher;
             config.final = MatcherFinal;
             break;
-        case SIGN_TYPE.COINOMAT_CONFIRMATION:
+        case tx.type === SIGN_TYPE.COINOMAT_CONFIRMATION && type === 'request':
             config.type = 'coinomat_confirm';
             config.component = CoinomatConfirm;
             config.final = CoinomatConfirmFinal;
             break;
-        case SIGN_TYPE.REISSUE:
+        case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
             config.type = 'reissue';
             config.component = ReIssure;
             config.final = ReIssureFinal;
             break;
-        case SIGN_TYPE.SET_SCRIPT:
+        case tx.type === SIGN_TYPE.SET_SCRIPT && type === 'transaction':
             config.type = 'set-script';
             config.component = SetScript;
             config.final = SetScriptFinal;
             break;
-        case SIGN_TYPE.SPONSORSHIP:
+        case tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction':
             const { minSponsoredAssetFee } = tx.data;
             const zero = minSponsoredAssetFee.cloneWithTokens(0);
             config.type = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
             config.component = SponsorShip;
             config.final = SponsorShipFinal;
             break;
-        case -1:
+        case tx.type === -1 && type === 'request':
             config.type = 'custom';
             config.component = CustomSign;
             config.final = CustomSignFinal;

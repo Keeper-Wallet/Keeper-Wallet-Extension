@@ -314,7 +314,7 @@ class BackgroundService extends EventEmitter {
             signRequest: async (data, from) => {
                 return await newMessage(data, 'request', from, false)
             },
-            pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
+            //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
 
 
@@ -323,7 +323,12 @@ class BackgroundService extends EventEmitter {
         api.publicState = async () => this._publicState(this.getState(), origin);
 
         if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
-            api.signBytes = async (data, from) => await newMessage(data, 'bytes', from, false);
+            api.signBytes = async (data, from) => {
+                if (!Array.isArray(data)) {
+                    throw new Error('Wrong data format');
+                }
+                await newMessage(data, 'bytes', from, false);
+            }
         }
 
         return api

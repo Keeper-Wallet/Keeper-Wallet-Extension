@@ -17,8 +17,16 @@ class MessagesComponent extends React.Component {
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
     clearMessagesHandler = () => this.clearMessages();
-    clearMessageStatusHandler = () => this.cleanMessageStatus();
-    clearMessageStatusHandlerNoClose = () => this.cleanMessageStatus(true);
+    clearMessageStatusHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.cleanMessageStatus();
+    };
+    clearMessageStatusHandlerNoClose = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.cleanMessageStatus(true);
+    };
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
@@ -43,7 +51,7 @@ class MessagesComponent extends React.Component {
         }
         
         const { activeMessage, signData } = this.state;
-        const conf = getConfigByTransaction(signData);
+        const conf = getConfigByTransaction(signData, this.props.activeMessage.type);
         const { component: Component, type } = conf;
 
         return <Component txType={type}
@@ -115,7 +123,7 @@ class MessagesComponent extends React.Component {
             return { ...state, balance, selectedAccount, assets, transactionStatus, loading};
         }
         
-        const sourceSignData = activeMessage.data;
+        const sourceSignData = activeMessage.data || {};
         const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
         const needGetAssets = Object.keys(parsedData.assets).filter(id => assets[id] === undefined);
         needGetAssets.forEach( id => props.getAsset(id));

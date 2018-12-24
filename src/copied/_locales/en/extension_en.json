@@ -1,6 +1,8 @@
 {
+	"Account address": "Account address",
 	"Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEEDs.": "Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEEDs.",
 	"If you forget your password, you must restore all your accounts from their SEEDs and set a new password.": "If you forget your password, you must restore all your accounts from their SEEDs and set a new password.",
+	"Wallet Seed": "Wallet Seed",
 	"accountInfo.address": "address",
 	"accountInfo.backUp": "backUp",
 	"accountInfo.cancel": "Cancel",

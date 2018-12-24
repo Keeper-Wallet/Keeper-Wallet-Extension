@@ -5,6 +5,7 @@ import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
 import { TransactionBottom } from './TransactionBottom';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { DateFormat } from '../ui';
 
 @translate(I18N_NAME_SPACE)
 export class CancelOrder extends SignClass {
@@ -32,6 +33,13 @@ export class CancelOrder extends SignClass {
                         <Trans i18nKey='transactions.txid'>TXID</Trans>
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
+                </div>
+                
+                <div className={styles.txRow}>
+                    <div className="tx-title tag1 basic500">
+                        <Trans i18nKey='transactions.txTime'>TX Time</Trans>
+                    </div>
+                    <div className={styles.txValue}><DateFormat value={tx.timestamp}/></div>
                 </div>
             </div>
     

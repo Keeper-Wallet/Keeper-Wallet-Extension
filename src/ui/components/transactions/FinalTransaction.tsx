@@ -52,19 +52,19 @@ export class FinalTransaction extends React.PureComponent {
                         <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>
             </div>
-
+    
+            { hasNewMessages ? <div className="margin-main-big">
+                <Button  type={BUTTON_TYPE.SUBMIT} onClick={this.props.onNext} className={styles.nextBtn}>
+                    <Trans i18nKey='sign.nextTransaction'>Next</Trans>
+                </Button>
+            </div> : null }
+            
             <div className="margin-main-big">
-                <Button type={BUTTON_TYPE.SUBMIT} onClick={this.props.onClick} className={styles.closeBtn}>
+                <Button onClick={this.props.onClick} className={styles.closeBtn}>
                     {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
                     {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
                 </Button>
             </div>
-    
-            { hasNewMessages ? <div className="margin-main-big">
-                <Button onClick={this.props.onNext} className={styles.nextBtn}>
-                    <Trans i18nKey='sign.nextTransaction'>Next</Trans>
-                </Button>
-            </div> : null }
             
             {isSend ?
                 <div className="center">

@@ -62,12 +62,19 @@ class CreateOrderComponent extends SignClass {
                     </div>
                     <div className={styles.txValue}>{this.props.txHash}</div>
                 </div>
-    
+                
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
                     </div>
                     <div className={styles.txValue}><Balance isShortFormat={true} balance={fee} showAsset={true}/></div>
+                </div>
+                
+                <div className={styles.txRow}>
+                    <div className="tx-title tag1 basic500">
+                        <Trans i18nKey='transactions.txTime'>TX Time</Trans>
+                    </div>
+                    <div className={styles.txValue}><DateFormat value={tx.timestamp}/></div>
                 </div>
             </div>
     

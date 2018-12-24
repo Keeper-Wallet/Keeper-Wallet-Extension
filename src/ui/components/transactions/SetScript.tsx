@@ -3,7 +3,7 @@ import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from './SignClass';
 import { TxIcon } from './TransactionIcon';
-import { Balance, Button, Copy, Modal } from '../ui';
+import { Balance, Button, Copy, DateFormat, Modal } from '../ui';
 import { TransactionBottom } from './TransactionBottom';
 import cn from 'classnames';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -61,7 +61,14 @@ export class SetScript extends SignClass {
                         </Button>: null }
                     </div>
                 </div>
-
+                
+                <div className={`${styles.txRow} margin-main`}>
+                    <div className="tx-title tag1 basic500">
+                        <Trans i18nKey='transactions.txid'>TXID</Trans>
+                    </div>
+                    <div className={styles.txValue}>{this.props.txHash}</div>
+                </div>
+                
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.fee'>Fee</Trans>
@@ -70,14 +77,14 @@ export class SetScript extends SignClass {
                         <Balance balance={tx.fee} isShortFormat={true} showAsset={true}/>
                     </div>
                 </div>
-
-                <div className={`${styles.txRow} margin-main`}>
+    
+                <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey='transactions.txid'>TXID</Trans>
+                        <Trans i18nKey='transactions.txTime'>TX Time</Trans>
                     </div>
-                    <div className={styles.txValue}>{this.props.txHash}</div>
+                    <div className={styles.txValue}><DateFormat value={tx.timestamp}/></div>
                 </div>
-
+                
                 <div className="font600 tag1 basic500 margin-main-min"><Trans i18nKey='transactions.scriptWarningHeader'>Warning: actions can lead to loss of access to your account</Trans></div>
                 <div className="tag1 basic500"><Trans i18nKey='transactions.scriptWarningDescription'>We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.</Trans></div>
 

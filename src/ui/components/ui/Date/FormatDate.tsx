@@ -45,7 +45,7 @@ const DateFromFormat = ({ value, format }) => {
         .map((type) => ({ index: format.indexOf(type), type }))
         .filter(c => c.index > -1)
         .sort((a, b) => a.index - b.index)
-        .reduce((prev, current) => {
+        .reduce((prev, current, ind) => {
             const { index } = current;
             if (index > prev.index) {
                 const res = format.slice(prev.index, index);
@@ -53,7 +53,7 @@ const DateFromFormat = ({ value, format }) => {
                 prev.data.push(<span key={res}>{res}</span>)
             }
             const Comp = TYPES[current.type];
-            prev.data.push(<Comp value={value} key={ current.type + prev.index }></Comp>);
+            prev.data.push(<Comp value={value} key={ current.type + prev.index + ind}></Comp>);
             prev.index += current.type.length;
             return prev;
         }, { data: [], index: 0 }).data
