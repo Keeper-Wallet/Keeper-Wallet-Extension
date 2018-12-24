@@ -32,7 +32,7 @@ export class Unknown extends SignClass {
                 </div>
             </div>
     
-            <TransactionBottom {...this.props}/>
+            <TransactionBottom {...this.props} hideApprove={true}/>
         </div>
     }
 }

@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, ApproveBtn } from '../ui';
 import { OriginWarning } from './OriginWarning';
 
-export const TransactionBottom = ({ message, approve, reject }) => {
+export const TransactionBottom = ({ message, approve, reject, hideApprove }) => {
     
     const isSend = message.broadcast;
     
@@ -13,13 +13,15 @@ export const TransactionBottom = ({ message, approve, reject }) => {
             <Trans i18nKey='sign.reject'>Reject</Trans>
         </Button>
         
-        <ApproveBtn onClick={approve} type={BUTTON_TYPE.SUBMIT}>
-            {
-                isSend ?
-                    <Trans i18nKey='sign.confirmButton'>Confirm</Trans> :
-                    <Trans i18nKey='sign.signButton'>Sign</Trans>
-            }
-        </ApproveBtn>
+        {
+            hideApprove ? null : <ApproveBtn onClick={approve} type={BUTTON_TYPE.SUBMIT}>
+                {
+                    isSend ?
+                        <Trans i18nKey='sign.confirmButton'>Confirm</Trans> :
+                        <Trans i18nKey='sign.signButton'>Sign</Trans>
+                }
+            </ApproveBtn>
+        }
         
         <OriginWarning message={message}/>
     </div>;
