@@ -4,3 +4,5 @@ export const NETWORK_CONFIG = {
 };
 
 export const NETWORKS = [ 'mainnet', 'testnet' ];
+
+export const BLACK_LIST_CONFIG = 'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json';

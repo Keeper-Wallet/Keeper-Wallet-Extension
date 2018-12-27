@@ -5,4 +5,5 @@ export {MessageController} from './MessageController';
 export {BalanceController} from './BalanceController';
 export {UiStateController} from './UiStateController';
 export {AssetInfoController} from './AssetInfoController';
-export {ExternalDeviceController} from './ExternalDeviceController'
+export {ExternalDeviceController} from './ExternalDeviceController';
+export {OriginController,PERMISSIONS} from './OriginController';
