@@ -1,6 +1,6 @@
 {
   "name": "waveskeeper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "scripts": {
     "start": "webpack --watch",

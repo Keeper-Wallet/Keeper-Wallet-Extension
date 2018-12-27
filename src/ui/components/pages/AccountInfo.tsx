@@ -39,7 +39,8 @@ class AccountInfoComponent extends React.Component {
         const { selectedAccount, activeAccount } = this.props;
         const isActive = selectedAccount.address === activeAccount.address;
         const { onCopyHandler } = this;
-
+        const { leaseBalance } = this.state;
+        const showLease = leaseBalance.gt(leaseBalance.cloneWithCoins(0));
         return <div className={styles.content}>
 
             <div className={`flex margin-main-big ${styles.wallet}`}>
@@ -55,6 +56,12 @@ class AccountInfoComponent extends React.Component {
                     </div>
                     <div className={`headline1 marginTop1 ${styles.balance}`}>
                         <Balance split={true} showAsset={true} balance={this.state.balance}/>
+                        <div className="basic500 body1">
+                            { showLease ?
+                                <span>(<Trans i18nKey='wallet.lease'>Leased</Trans> {leaseBalance.toFormat()})</span>:
+                                null
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,14 +233,22 @@ class AccountInfoComponent extends React.Component {
         }
         const assetInstance = new Asset(asset);
         const balancesMoney = {};
+        const leaseMoney = {};
 
-        Object.entries(balances)
-            .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
+        Object.entries<{ available: string, leasedOut: string }>(balances)
+            .forEach(([key, balance]) =>  {
+                if (!balance) {
+                    return null;
+                }
+                
+                balancesMoney[key] = new Money(balance.available, assetInstance);
+                leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+            });
     
         const { changeName: changeNameNotify } = props.notifications;
-    
         const balance = balancesMoney[selectedAccount.address];
-        return { balance, balances: balancesMoney, changeNameNotify };
+        const leaseBalance = leaseMoney[selectedAccount.address];
+        return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
     }
 }
 

@@ -49,6 +49,7 @@ class AssetsComponent extends React.Component {
         const activeProps = {
             account: this.props.activeAccount,
             balance: this.state.balances[activeAddress],
+            leaseBalance: this.state.lease[activeAddress],
             onSelect: this.onSelectHandler,
             onShowQr: this.showQrHandler,
             active: true,
@@ -60,6 +61,7 @@ class AssetsComponent extends React.Component {
                     account={account}
                     active={false}
                     balance={this.state.balances[account.address]}
+                    leaseBalance={this.state.lease[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}
                     onActive={this.onSetActiveHandler}/>)
@@ -189,17 +191,25 @@ class AssetsComponent extends React.Component {
 
         if (!asset) {
             props.getAsset('WAVES');
-            return { balances: {}, loading: false };
+            return { balances: {}, lease: {}, loading: false };
         }
         
         const assetInstance = new Asset(asset);
         const balancesMoney = {};
-        Object.entries(props.balances)
-            .forEach(([key, balance = 0]) =>  balancesMoney[key] = new Money(balance as number, assetInstance));
+        const leaseMoney = {};
+        
+        Object.entries<{ available: string, leasedOut: string }>(props.balances)
+            .forEach(([key, balance]) =>  {
+                if (!balance) {
+                    return null;
+                }
+            
+                balancesMoney[key] = new Money(balance.available, assetInstance);
+                leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+            });
 
         const { deleted: deletedNotify } = props.notifications;
-        
-        return { balances: balancesMoney, loading: false, deletedNotify };
+        return { balances: balancesMoney, lease: leaseMoney, loading: false, deletedNotify };
     }
 }
 

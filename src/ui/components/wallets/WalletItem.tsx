@@ -13,6 +13,7 @@ export const WalletItem = ({
         account = null,
         active = false,
         balance = null,
+        leaseBalance = null,
         children = [],
         ...props
     }) => {
