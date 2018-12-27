@@ -30,6 +30,7 @@ export class MessageController extends EventEmitter {
 
         // Get assetInfo method from AssetInfoController
         this.assetInfo = options.assetInfo;
+        this.setPermission = options.setPermission;
 
         this._updateBage(this.store.getState().messages);
     }
@@ -107,7 +108,6 @@ export class MessageController extends EventEmitter {
                 .then(this._broadcastMessage.bind(this))
                 .then(this._processSuccessPath.bind(this))
                 .catch(e => {
-                    log.error(e)
                     message.status = 'failed';
                     message.err = {
                         message: e.toString(),
@@ -131,6 +131,26 @@ export class MessageController extends EventEmitter {
         message.status = 'rejected';
         this._updateMessage(message);
         this.emit(`${message.id}:finished`, message)
+    }
+
+
+    rejectByOrigin(byOrigin) {
+        const { messages } = this.store.getState();
+        messages.forEach(({ id, origin }) => {
+            if (byOrigin === origin) {
+                this.reject(id);
+            }
+        });
+    }
+
+    rejectAllByTime() {
+        const time = Date.now();
+        const { messages } = this.store.getState();
+        messages.forEach(({ id, timestamp }) => {
+            if ((time - timestamp) > (2 * 60 * 60 * 1000)) { //TODO 2h in constants
+                this.reject(id);
+            }
+        });
     }
 
     // for debug purposes
@@ -256,7 +276,10 @@ export class MessageController extends EventEmitter {
                 signedData = await this.signBytes(message.account.address, message.data);
                 break;
             case 'pairing':
-                signedData = {...signedData, approved: 'OK'}
+                signedData = {...signedData, approved: 'OK'};
+                break;
+            case 'authOrigin':
+                this.setPermission(signedData.origin, signedData.permission);
                 break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)
@@ -372,11 +395,12 @@ export class MessageController extends EventEmitter {
                 result.messageHash = await this._getMessageHash(result);
                 break;
             case 'bytes':
+            case 'authOrigin':
                 break;
             case 'pairing':
                 if (!(typeof message.data.address === 'string' && typeof message.data.encryptedSeed === 'string'))
                     throw new Error('Address and encryptedSeed are required for pairing')
-                break
+                break;
             default:
                 throw new Error(`Incorrect type "${type}"`)
         }

@@ -135,7 +135,7 @@ class MessagesComponent extends React.Component {
         loading = false;
         const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
         const txHash = activeMessage.messageHash;
-        const config = getConfigByTransaction(signData);
+        const config = getConfigByTransaction(signData, activeMessage.type);
         return {
             transactionStatus,
             activeMessage,
