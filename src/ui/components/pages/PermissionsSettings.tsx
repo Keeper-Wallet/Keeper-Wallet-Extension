@@ -1,80 +1,96 @@
-import * as styles from './styles/langsSettings.styl';
+import * as styles from './styles/permissionsSettings.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
-import { setLocale, setUiState } from '../../actions';
+import { allowOrigin, deleteOrigin, disableOrigin } from '../../actions';
 import cn from 'classnames';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
-const Lang = ({ id, name, onSelect, selected }) => {
-    const className = cn(styles[id], styles.lang, {
-        [styles.selected]: selected
-    });
-    const iconClass = cn(styles.flagIcon, {
-        'selected-lang': selected,
-        [`flag-${id}-icon`]: !selected
-    });
-    
-    return <div className={className}>
-        <div className={`${styles.selectButton} fullwidth body1 left`} onClick={onSelect}>
-            <Trans i18nKey={`langsSettings.${id}`}>{name}</Trans>
+
+const OriginComponent = (params) => (
+    <div className={params.className}>
+        <div>{params.origin}</div>
+        <div>{params.status}</div>
+        <div>
+            { params.buttonAction }
+            { params.buttonDelete }
         </div>
-        <div className={iconClass}></div>
-    </div>;
-};
+    </div>
+);
 
 @translate(I18N_NAME_SPACE)
-class LangsSettingsComponent extends React.PureComponent {
+class PermissionsSettingsComponent extends React.PureComponent {
 
     readonly props;
-    confirmHandler = () => {
-        this.props.setUiState({ selectedLangs: true });
+    
+    allowHandler = (origin) => {
+        this.props.allowOrigin(origin);
+    };
+    
+    disableHandler = (origin) => {
+        this.props.disableOrigin(origin);
+    };
+    
+    deleteHandler = (origin) => {
+        this.props.deleteOrigin(origin);
     };
     
     render() {
         
-        const className = cn(styles.content, { 'introLangList': !this.props.selectedLangs });
+        const className = cn(styles.content);
+        const origins = Object.entries(this.props.origins);
         
         return <div className={className}>
-            {this.props.hideTitle ? null : <h2 className="title1 margin-main-big">
-                <Trans i18nKey='langsSettings.title'>Change the language</Trans>
-            </h2>}
-            <div className={styles.langsList}>
-                {
-                    this.props.langs.map(({ id, name }) => {
-                        return <Lang id={id}
-                                     key={id}
-                                     name={name}
-                                     onSelect={() => this.onSelect(id)}
-                                     selected={id === this.props.currentLocale}/>
-                    })
-                }
+            <h2 className="title1 margin-main-big">
+                <Trans i18nKey='permissionsSettings.title'>Permissions control</Trans>
+            </h2>
+            
+            <div>
+                {origins.map(([origin = '', status = []]) => {
+    
+                    const buttonDisable = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                  onClick={() => this.disableHandler(origin)}>
+                        <Trans i18nKey='permissionsSettings.button.disable'>Disallow</Trans>
+                    </Button>;
+                    
+                    const buttonEnable = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                 onClick={() => this.allowHandler(origin)}>
+                        <Trans i18nKey='permissionsSettings.button.enable'>Allow</Trans>
+                    </Button>;
+                    
+                    const buttonDelete = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                 onClick={() => this.deleteHandler(origin)}>
+                        <Trans i18nKey='permissionsSettings.button.delete'>Delete</Trans>
+                    </Button>;
+                    
+                    const myStatus = status && status[0];
+                    
+                    const params = {
+                        key: origin + myStatus,
+                        origin,
+                        status: myStatus,
+                        buttonAction: myStatus.includes('approved') ? buttonDisable : buttonEnable,
+                        buttonDelete,
+                    };
+                    
+                    return <OriginComponent { ...params } />
+                })}
             </div>
-            {!this.props.selectedLangs ? <Button className={styles.langsConfirm}
-                                                 onClick={this.confirmHandler}
-                                                 type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey='langsSettings.confirm'>Confirm</Trans>
-                </Button> : null}
         </div>
-    }
-
-    onSelect(lang) {
-        this.props.setLocale(lang);
     }
 }
 
 const mapStateToProps = function(store) {
     return {
-        currentLocale: store.currentLocale,
-        langs: store.langs,
-        selectedLangs: store.uiState.selectedLangs
+        origins: store.origins
     };
 };
 
 const actions = {
-    setUiState,
-    setLocale,
+    allowOrigin,
+    deleteOrigin,
+    disableOrigin,
 };
 
-export const LangsSettings = connect(mapStateToProps, actions)(LangsSettingsComponent);
+export const PermissionsSettings = connect(mapStateToProps, actions)(PermissionsSettingsComponent);

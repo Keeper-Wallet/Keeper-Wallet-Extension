@@ -30,7 +30,7 @@ class MessagesComponent extends React.Component {
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
-        if (this.state.loading) {
+        if (this.state.loading || this.state.approvePending) {
             return <Intro/>
         }
         

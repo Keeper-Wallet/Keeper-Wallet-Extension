@@ -16,6 +16,7 @@ export function updateState(state) {
         uiState = {},
         customNodes = {},
         customMatchers = {},
+        origins = {},
     } = state;
     const currentState = store.getState();
 
@@ -61,12 +62,19 @@ export function updateState(state) {
         });
     }
 
+    if (!equals(origins, currentState.origins)) {
+        actions.push({
+            type: ACTION.UPDATE_ORIGINS,
+            payload: origins,
+        });
+    }
+    
     const unapprovedMessages = messages.filter(msg => msg.status === 'unapproved');
     
     if (!equals(unapprovedMessages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
-            payload: unapprovedMessages
+            payload: { unapprovedMessages, messages },
         });
     }
     

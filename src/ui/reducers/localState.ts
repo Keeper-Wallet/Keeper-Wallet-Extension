@@ -1,13 +1,12 @@
 import { combineReducers } from 'redux';
-import { ACTION } from '../actions/constants';
-
+import { ACTION } from '../actions';
 import { pairing } from './pairing';
 
 function newUser(state = {}, action) {
      switch (action.type) {
          case ACTION.SET_PASSWORD_PENDING:
          case ACTION.SET_PASSWORD_UPDATE:
-             return {...state, ...action.payload };
+             return {...state, ...action.payload.unapprovedMessages };
     }
 
     return state;

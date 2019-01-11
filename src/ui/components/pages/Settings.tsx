@@ -17,6 +17,7 @@ class SettingsComponent extends React.Component {
     };
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
+    permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
@@ -34,6 +35,16 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
     
+            <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.permissionsHandler}>
+                    <div className='body1 left'>
+                        <Trans i18nKey='settings.permissions'>Change permissions</Trans>
+                    </div>
+                </Button>
+            </div>
+            
             {/*<div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}

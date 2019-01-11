@@ -16,6 +16,7 @@ export * from  './Settings';
 export * from  './Assets';
 export * from  './SelectedAccountQr';
 export * from  './NetworksSettings';
+export * from  './PermissionsSettings';
 export * from  './LangsSettings';
 export * from  './ChangePassword';
 export * from  './DeleteAccount';

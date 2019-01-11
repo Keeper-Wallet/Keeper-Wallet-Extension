@@ -17,12 +17,12 @@ import {
     NetworkController,
     MessageController,
     BalanceController,
-    OriginController,
+    PermissionsController,
     UiStateController,
     AssetInfoController,
     ExternalDeviceController
 } from './controllers';
-import { PERMISSIONS } from './controllers/OriginController';
+import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 
@@ -184,8 +184,8 @@ class BackgroundService extends EventEmitter {
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
 
-        this.originController = new OriginController({
-            initState: initState.originController,
+        this.permissionsController = new PermissionsController({
+            initState: initState.PermissionsController,
         });
 
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -209,7 +209,7 @@ class BackgroundService extends EventEmitter {
             broadcast: this.networkController.broadcast.bind(this.networkController),
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
-            setPermission: this.originController.setPermissions.bind(this.originController)
+            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController)
         });
 
 
@@ -220,7 +220,7 @@ class BackgroundService extends EventEmitter {
             NetworkController: this.networkController.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
-            OriginController: this.originController.store,
+            PermissionsController: this.permissionsController.store,
             UiStateController: this.uiStateController.store,
             AssetInfoController: this.assetInfoController.store
         });
@@ -286,11 +286,15 @@ class BackgroundService extends EventEmitter {
             // origin settings
             allowOrigin: async (origin) => {
                 this.messageController.rejectByOrigin(origin);
-                this.originController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
+                this.permissionsController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
             },
 
             disableOrigin: async (origin) => {
-                this.originController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+                this.permissionsController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+            },
+
+            deleteOrigin: async (origin) => {
+                this.permissionsController.deletePermission(origin);
             }
         }
     }
@@ -306,22 +310,30 @@ class BackgroundService extends EventEmitter {
             }
 
             //Check messages permissions
-            const canIUse = this.originController.hasPermission(origin, PERMISSIONS.APPROVED);
+            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
 
             if (!canIUse && canIUse != null) {
                 throw new Error('Api rejected by user');
             }
 
             if (canIUse === null) {
-                let messageId = this.originController.getMessageIdAccess(origin);
+                let messageId = this.permissionsController.getMessageIdAccess(origin);
 
                 if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin, permission: PERMISSIONS.APPROVED }, 'authOrigin', origin, selectedAccount, false);
-                    this.originController.setMessageIdAccess(origin, messageId);
+                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                    this.permissionsController.setMessageIdAccess(origin, messageId);
                 }
 
                 this.emit('Show notification');
-                await this.messageController.getMessageResult(messageId);
+                
+                await this.messageController.getMessageResult(messageId)
+                    .then(() => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                    })
+                    .catch((e) => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                        return Promise.reject(e);
+                });
             }
 
             const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
