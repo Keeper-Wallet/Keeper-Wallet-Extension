@@ -36,6 +36,7 @@ import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
 import { UnknownFinal } from './UnknownFinal';
 import { OriginAuth } from './OriginAuth';
+import { OriginAuthFinal } from './OriginAuthFinal';
 
 export { FinalTransaction } from './FinalTransaction';
 
@@ -50,7 +51,7 @@ export const getConfigByTransaction = (tx, type = null) => {
         case type === 'authOrigin':
             config.type = 'authOrigin';
             config.component = OriginAuth;
-            config.final = UnknownFinal;
+            config.final = OriginAuthFinal;
             break;
         case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
             config.type = 'transfer';
