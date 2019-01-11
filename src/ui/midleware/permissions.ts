@@ -14,11 +14,10 @@ const _permissionMW = (type, method, actionCb) => store => next => action => {
     if (action.type !== type) {
         return next(action);
     }
-    
     store.dispatch(pendingOrigin(true));
     background[method](action.payload)
         .then(() => {
-            clearTimeout(_timer);
+            clearTimeout(_timer);                                                        ``
             store.dispatch(actionCb(action.payload));
             store.dispatch(pendingOrigin(false));
             _timer = setTimeout(() => {

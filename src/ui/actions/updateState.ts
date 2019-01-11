@@ -48,7 +48,7 @@ export function updateState(state) {
         });
     }
 
-    if (uiState) {
+    if (!equals(uiState, currentState.uiState)) {
         actions.push({
             type: ACTION.UPDATE_UI_STATE,
             payload: uiState
@@ -102,10 +102,8 @@ export function updateState(state) {
             payload: { initialized, locked }
         });
     }
-
-    const hasNewBalance = Object.keys(balances).filter(key => balances[key] !== currentState.balances[key]).length;
-
-    if (hasNewBalance) {
+    
+    if (!equals(balances, currentState.balances)) {
         actions.push({
             type: ACTION.UPDATE_BALANCES,
             payload: balances

@@ -83,7 +83,8 @@ class PermissionsSettingsComponent extends React.PureComponent {
 
 const mapStateToProps = function(store) {
     return {
-        origins: store.origins
+        origins: store.origins,
+        permissions: store.permissions,
     };
 };
 

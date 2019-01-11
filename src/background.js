@@ -374,12 +374,13 @@ class BackgroundService extends EventEmitter {
 
         api.publicState = async () => this._publicState(this.getState(), origin);
 
-        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
+        if (origin === 'client.wavesplatform.com') {
             api.signBytes = async (data, from) => {
                 if (!Array.isArray(data)) {
                     throw new Error('Wrong data format');
                 }
-                await newMessage(data, 'bytes', from, false);
+
+                return await newMessage(data, 'bytes', from, false);
             }
         }
 
