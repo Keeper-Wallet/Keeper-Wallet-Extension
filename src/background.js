@@ -25,6 +25,8 @@ import {
 import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
+import { getAdapterByType } from '@waves/signature-adapter'
+
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
@@ -34,6 +36,8 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
 
+const Adapter = getAdapterByType('seed');
+const adapter = new Adapter('test seed for get seed adapter info');
 
 async function setupBackgroundService() {
     // Background service init
@@ -458,13 +462,13 @@ class BackgroundService extends EventEmitter {
                 .filter(({ account, origin }) => account.address === address && origin === originReq)
                 .map(({ id, status, ext_uuid }) => ({ id, status, uid: ext_uuid }));
         }
-
         return {
             initialized: state.initialized,
             locked: state.locked,
             account,
             network: this._getCurrentNtwork(state.selectedAccount),
             messages,
+            txVersion: adapter.getSignVersions(),
         }
     }
 }

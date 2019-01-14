@@ -31,6 +31,8 @@ import { SponsorShip } from './SponsorShip';
 import { SponsorShipFinal } from './SponsorShipFinal';
 import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
+import { SetAssetScript } from './SetAssetScript';
+import { SetAssetScriptFinal } from './SetAssetScriptFinal';
 import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
@@ -127,6 +129,11 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'set-script';
             config.component = SetScript;
             config.final = SetScriptFinal;
+            break;
+        case tx.type === SIGN_TYPE.SET_ASSET_SCRIPT && type === 'transaction':
+            config.type = 'set-asset-script';
+            config.component = SetAssetScript;
+            config.final = SetAssetScriptFinal;
             break;
         case tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction':
             const { minSponsoredAssetFee } = tx.data;

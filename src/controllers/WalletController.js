@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import * as SA from '@waves/signature-adapter';
 import *  as SG from '@waves/signature-generator'
 import {encrypt, decrypt} from '../lib/encryprtor';
 import {Seed} from '@waves/signature-generator'
