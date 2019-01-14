@@ -34,6 +34,12 @@ describe("MessageController", () => {
         }
     };
 
+    const txPackage = [
+        tx,
+        tx,
+        tx
+    ];
+
     const auth =  {
         name: 'avcd',
         data: 'hello',
@@ -63,11 +69,12 @@ describe("MessageController", () => {
 
     it('Should add correct messages to pipeline with correct metadata', async () => {
         await controller.newMessage(tx, 'transaction', origin, account);
+        await controller.newMessage(txPackage, 'transactionPackage', origin, account);
         await controller.newMessage(auth, 'auth', origin, account);
         await controller.newMessage(matcherRequest, 'request', origin, account);
-        await controller.newMessage(matcherRequest, 'request', origin, account);
+        await controller.newMessage(coinomatRequest, 'request', origin, account);
         const state = controller.store.getState();
-        expect(state.messages.length).to.eql(4);
+        expect(state.messages.length).to.eql(5);
         expect(state.messages[0].id).to.be.a('string');
         expect(state.messages[0].id).to.be.not.eql(state.messages[1].id);
         expect(state.messages[0].origin).to.eql(origin);
@@ -75,7 +82,9 @@ describe("MessageController", () => {
         expect(state.messages[0].status).to.eql('unapproved');
         expect(state.messages[0].timestamp).to.be.a('number');
         expect(state.messages[0].timestamp).to.be.lt(Date.now());
+        expect(state.messages[1].data.length).to.eql(3)
     });
+
 
     it('Shouldn\'t add invalid messages to pipeline', ()=>{
         return controller.newMessage({}, 'transaction', origin, account).should.eventually.be.rejected;

@@ -73,21 +73,37 @@ export class MessageController extends EventEmitter {
      * @returns {Promise<object>}
      */
     getMessageResult(id) {
-        return new Promise((resolve, reject) => {
-            this.once(`${id}:finished`, finishedMessage => {
-                switch (finishedMessage.status) {
-                    case 'signed':
-                    case 'published':
-                        return resolve(finishedMessage.data);
-                    case 'rejected':
-                        return reject(new Error('User denied message'));
-                    case 'failed':
-                        return reject(new Error(finishedMessage.err.message));
-                    default:
-                        return reject(new Error('Unknown error'))
-                }
-            })
-        })
+        let message;
+        try {
+            message = this._getMessageById(id)
+        } catch (e) {
+            return Promise.reject(e)
+        }
+        switch (message.status) {
+            case 'signed':
+            case 'published':
+                return resolve(message.data);
+            case 'rejected':
+                return reject(new Error('User denied message'));
+            case 'failed':
+                return reject(new Error(message.err.message));
+            default:
+                return new Promise((resolve, reject) => {
+                    this.once(`${id}:finished`, finishedMessage => {
+                        switch (finishedMessage.status) {
+                            case 'signed':
+                            case 'published':
+                                return resolve(finishedMessage.data);
+                            case 'rejected':
+                                return reject(new Error('User denied message'));
+                            case 'failed':
+                                return reject(new Error(finishedMessage.err.message));
+                            default:
+                                return reject(new Error('Unknown error'))
+                        }
+                    })
+                })
+        }
     }
 
     /**
@@ -189,9 +205,9 @@ export class MessageController extends EventEmitter {
         }
 
         if (Array.isArray(data)) {
-            data = [ ...data ];
+            data = [...data];
         } else {
-            data = { ...data };
+            data = {...data};
         }
 
         for (const key in data) {
@@ -232,6 +248,9 @@ export class MessageController extends EventEmitter {
             case 'transaction':
                 message.data.data = await this._transformData({...message.data.data});
                 return message;
+            case 'transactionPackage':
+                message.data = await Promise.all(message.data.map(async data => await this._transformData(data)));
+                return message;
             default:
                 return message
         }
@@ -239,12 +258,17 @@ export class MessageController extends EventEmitter {
     }
 
     async _signMessage(message) {
-        let signedData = message.data;
+        let signedData;
         switch (message.type) {
             case 'order':
             case 'cancelOrder':
             case 'transaction':
                 signedData = await this.signTx(message.account.address, message.data);
+                break;
+            case 'transactionPackage':
+                signedData = await Promise.all(message.data.map(txParams => {
+                    return this.signTx(message.account.address, txParams)
+                }));
                 break;
             case 'auth':
                 signedData = await this.auth(message.account.address, message.data);
@@ -298,16 +322,17 @@ export class MessageController extends EventEmitter {
     }
 
     /**
-     * Generates message hash. Throws if data is invalid
-     * @param {object} message - Message to approve
+     * Calculates hash of message data. It is TX id for transactions. Also used for auth and requests. Throws if data is invalid
+     * @param {object} data - data field from message
+     * @param {object} account - waveskeeper account
      * @returns {Promise<string>}
      */
-    async _getMessageHash(message) {
-        let signableData = await this._transformData({...message.data.data});
+    async _getMessageDataHash(data, account) {
+        let signableData = await this._transformData({...data.data});
         const Adapter = getAdapterByType('seed');
-        Adapter.initOptions({networkCode: networkByteFromAddress(message.account.address).charCodeAt(0)});
+        Adapter.initOptions({networkCode: networkByteFromAddress(account.address).charCodeAt(0)});
         const adapter = new Adapter('validation seed');
-        const signable = adapter.makeSignable({...message.data, data: signableData});
+        const signable = adapter.makeSignable({...data, data: signableData});
         return await signable.getId();
     }
 
@@ -328,6 +353,11 @@ export class MessageController extends EventEmitter {
 
     async _validateAndTransform(message) {
         let result = {...message};
+
+        if (message.data.successPath) {
+            result.successPath = message.data.successPath
+        }
+
         switch (message.type) {
             case 'auth':
                 result.data = {
@@ -340,25 +370,24 @@ export class MessageController extends EventEmitter {
                         icon: message.data.icon
                     }
                 };
-                result.messageHash = await this._getMessageHash(result);
-                if (message.data.successPath) {
-                    result.successPath = message.data.successPath
-                }
+                result.messageHash = await this._getMessageDataHash(result.data, message.account);
+                break;
+            case 'transactionPackage':
+                if (!Array.isArray(message.data)) throw new Error('Should contain array of txParams');
+                result.data = message.data.map(txParams => {
+                    const data = this._prepareTx(txParams.data, message.account);
+                    return {...txParams, data}
+                });
+                const validationPromises = result.data.map(data => this._getMessageDataHash(data, message.account));
+                await Promise.all(validationPromises);
                 break;
             case 'order':
-                if (message.data.matcherPublicKey == null) {
-                    result.data.matcherPublicKey = await this.getMatcherPublicKey()
-                }
+                result.data.data = this._prepareOrder(result.data.data, message.account);
+                result.messageHash = await this._getMessageDataHash(result.data, message.account);
+                break;
             case 'transaction':
-                const txDefaults = {
-                    timestamp: Date.now(),
-                    senderPublicKey: message.account.publicKey
-                };
-                result.data.data = {...txDefaults, ...result.data.data};
-                result.messageHash = await this._getMessageHash(result);
-                if (message.data.successPath) {
-                    result.successPath = message.data.successPath
-                }
+                result.data.data = this._prepareTx(result.data.data, message.account);
+                result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'cancelOrder':
                 result.amountAsset = message.data.amountAsset;
@@ -369,7 +398,7 @@ export class MessageController extends EventEmitter {
                     senderPublicKey: message.account.publicKey
                 };
                 result.data.data = {...requestDefaults, ...result.data.data};
-                result.messageHash = await this._getMessageHash(result);
+                result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'bytes':
                 break;
@@ -380,7 +409,28 @@ export class MessageController extends EventEmitter {
             default:
                 throw new Error(`Incorrect type "${type}"`)
         }
+
         return result
+    }
+
+    _prepareTx(txParams, account) {
+        const txDefaults = {
+            timestamp: Date.now(),
+            senderPublicKey: account.publicKey,
+            chainId: networkByteFromAddress(account.address).charCodeAt(0)
+        };
+        return {...txDefaults, ...txParams}
+    }
+
+    async _prepareOrder(orderParams, account) {
+        const orderDefaults = {
+            timestamp: Date.now(),
+            senderPublicKey: account.publicKey,
+            chainId: networkByteFromAddress(account.address).charCodeAt(0),
+            matcherPublicKey: await this.getMatcherPublicKey()
+
+        };
+        return {...orderDefaults, ...orderParams}
     }
 }
 

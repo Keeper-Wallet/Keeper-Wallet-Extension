@@ -24,7 +24,7 @@ describe('WalletController', () => {
 
     it('Should not init vault without password', () => {
         const controller = new WalletController();
-        expect(() => controller.initVault()).to.throw('Password is required')
+        expect(() => controller.initVault()).to.throw('Password is needed to init vault')
     });
 
     it('Should create controller from init state and lock/unlock it', () => {

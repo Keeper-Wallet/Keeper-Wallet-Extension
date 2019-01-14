@@ -305,6 +305,9 @@ class BackgroundService extends EventEmitter {
             signTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, false)
             },
+            signTransactionPackage: async (data, from) => {
+                return await newMessage(data, 'transactionPackage', from, false)
+            },
             signAndPublishTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, true)
             },
