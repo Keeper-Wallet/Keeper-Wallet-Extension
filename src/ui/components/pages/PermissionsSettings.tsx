@@ -6,6 +6,7 @@ import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { allowOrigin, deleteOrigin, disableOrigin } from '../../actions';
 import cn from 'classnames';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { Loader, Modal } from '../ui';
 
 
 const OriginComponent = (params) => (
@@ -40,11 +41,19 @@ class PermissionsSettingsComponent extends React.PureComponent {
         
         const className = cn(styles.content);
         const origins = Object.entries(this.props.origins);
+        const {
+            pending,
+            allowed,
+            disallowed,
+            deleted
+        } = this.props;
         
         return <div className={className}>
             <h2 className="title1 margin-main-big">
                 <Trans i18nKey='permissionsSettings.title'>Permissions control</Trans>
             </h2>
+            
+            <Loader hide={!pending}/>
             
             <div>
                 {origins.map(([origin = '', status = []]) => {
@@ -77,6 +86,16 @@ class PermissionsSettingsComponent extends React.PureComponent {
                     return <OriginComponent { ...params } />
                 })}
             </div>
+            
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={allowed || disallowed || deleted}
+                   showChildrenOnly={true}>
+                <div className='modal notification'>
+                    {allowed  ? <Trans i18nKey='permissionsSettings.notify.allowed'>Allowed!</Trans> : null}
+                    {disallowed  ? <Trans i18nKey='permissionsSettings.notify.disallowed'>Disallowed!</Trans> : null}
+                    {deleted ? <Trans i18nKey='permissionsSettings.notify.deleted'>Deleted!</Trans> : null}
+                </div>
+            </Modal>
         </div>
     }
 }
@@ -84,7 +103,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
 const mapStateToProps = function(store) {
     return {
         origins: store.origins,
-        permissions: store.permissions,
+        ...store.permissions,
     };
 };
 
