@@ -11,6 +11,17 @@ export class MassTransferFinal extends React.PureComponent {
     
     render() {
         const { tx, isApprove, isReject, isSend } = this.props;
+    
+        const transfers = Array.isArray(tx.data.transfers) ? tx.data.transfers : [];
+        const amount = transfers.reduce((acc, { amount }) => {
+            
+            if (typeof amount === 'number' || typeof amount === 'string') {
+                return acc.add(tx.data.totalAmount.cloneWithCoins(amount || 0));
+            }
+            
+            return acc.add(amount);
+            
+        }, tx.data.totalAmount.cloneWithTokens(0));
         
         if (isApprove) {
             return <div>
@@ -22,7 +33,7 @@ export class MassTransferFinal extends React.PureComponent {
                     <span>
                         {isSend ? <Trans i18nKey='sign.transactionSendMassTransfer'>You have sent</Trans>: null}
                         {!isSend ? <Trans i18nKey='sign.transactionConfirmMassTransfer'>You have approved a Mass Transfer transaction for</Trans> : null}
-                        <Balance balance={tx.data.totalAmount} isShortFormat={true} showAsset={true}/>
+                        <Balance balance={amount} isShortFormat={true} showAsset={true}/>
                     </span>
                 </div>
             </div>

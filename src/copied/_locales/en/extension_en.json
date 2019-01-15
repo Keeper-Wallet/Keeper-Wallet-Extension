@@ -154,6 +154,11 @@
 		"select": "Choose your address avatar",
 		"selectInfo": "This avatar is unique. You cannot change it later."
 	},
+	"originAuth": {
+		"allow": "Allow",
+		"deny": "Deny",
+		"title": "Allow access"
+	},
 	"pairing": {
 		"appInfo": "Download our mobile applications below:",
 		"scanInfo": "Scan the code below with your iPhone or Android device to pair it with your account.",
@@ -176,6 +181,7 @@
 		"approved": "Your transaction is approved!",
 		"auth": "Auth",
 		"authConfirmed": "Request has been signed!",
+		"authOriginOk": "Allow requests",
 		"authRejected": "Request has not been signed.",
 		"changeAccount": "Do you want to change your account?",
 		"changeAccountInfo": "If you change account, we will cancel the current transaction. After selecting a new active account, repeat the operation.",
@@ -223,6 +229,8 @@
 	},
 	"transactions": {
 		"assetId": "Asset ID",
+		"assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
+		"assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
 		"coinomatTimeStamp": "Coinomat Time Stamp",
 		"copied": "Copied!",
 		"copy": "Copy",
@@ -249,6 +257,7 @@
 		"scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
 		"scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
 		"sendTo": "Send to",
+		"setAssetScriptHeader": "Set Asset Script transaction",
 		"setSctiptHeader": "Script transaction",
 		"showAll": "Show all",
 		"signCustomRequest": "Sign a request",
@@ -257,6 +266,7 @@
 		"to": "To",
 		"transfersClose": "Hide",
 		"transfersShowAll": "Show All",
+		"txTime": "TX Time",
 		"txid": "TXID",
 		"waves": "WAVES"
 	},

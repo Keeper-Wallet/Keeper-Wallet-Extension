@@ -27,9 +27,13 @@ export class OriginAuth extends SignClass {
                 </div>
             </div>
     
+            <div className="font600 tag1 basic500 margin-main-min"><Trans i18nKey='transactions.permissionsWarning'>
+                The application will have access to your Waves address but will not expose your SEED or private key.
+                Never enter your secret phrase (SEED) on any website you are redirected to.</Trans></div>
+    
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey='originAuth.deny'>Deny</Trans>
+                    <Trans i18nKey='originAuth.block'>Block</Trans>
                 </Button>
                 <ApproveBtn onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='originAuth.allow'>Allow</Trans>

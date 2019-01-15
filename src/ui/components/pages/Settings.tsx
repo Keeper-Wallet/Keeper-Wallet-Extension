@@ -40,7 +40,7 @@ class SettingsComponent extends React.Component {
                         className={styles.settingsBtn}
                         onClick={this.permissionsHandler}>
                     <div className='body1 left'>
-                        <Trans i18nKey='settings.permissions'>Change permissions</Trans>
+                        <Trans i18nKey='settings.permissionsControl'>Permissions control</Trans>
                     </div>
                 </Button>
             </div>

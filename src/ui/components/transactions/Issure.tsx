@@ -1,7 +1,7 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, DateFormat } from '../ui';
+import { Balance, DateFormat, ShowScript } from '../ui';
 import { SignClass } from './SignClass';
 import { Asset, Money, BigNumber } from '@waves/data-entities';
 import { TxIcon } from './TransactionIcon';
@@ -35,6 +35,8 @@ export class Issure extends SignClass {
                     <Balance split={true} showAsset={true} balance={quantity} className={styles.txBalanceWrapper} />
                 </div>
     
+                <ShowScript script={tx.script} showNotify={true} optional={true}/>
+                
                 { tx.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.description'>Description</Trans>

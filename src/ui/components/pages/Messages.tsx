@@ -42,6 +42,7 @@ class MessagesComponent extends React.Component {
     
         if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
+                                     message={this.props.activeMessage}
                                      hasNewMessages={this.props.hasNewMessages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}

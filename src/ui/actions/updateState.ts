@@ -68,8 +68,7 @@ export function updateState(state) {
             payload: origins,
         });
     }
-    
-    const unapprovedMessages = messages.filter(msg => msg.status === 'unapproved');
+    const unapprovedMessages = messages.filter(msg => msg.status === 'unapproved' && msg.account.address === selectedAccount.address);
     
     if (!equals(unapprovedMessages, currentState.messages)) {
         actions.push({
