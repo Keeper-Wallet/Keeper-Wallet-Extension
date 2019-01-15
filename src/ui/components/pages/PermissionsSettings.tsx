@@ -1,21 +1,21 @@
 import * as styles from './styles/permissionsSettings.styl';
 import * as React from 'react'
-import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui/buttons';
-import { allowOrigin, deleteOrigin, disableOrigin } from '../../actions';
+import {connect} from 'react-redux';
+import {translate, Trans} from 'react-i18next';
+import {Button, BUTTON_TYPE} from '../ui/buttons';
+import {allowOrigin, deleteOrigin, disableOrigin} from '../../actions';
 import cn from 'classnames';
-import { I18N_NAME_SPACE } from '../../appConfig';
-import { Loader, Modal } from '../ui';
+import {I18N_NAME_SPACE} from '../../appConfig';
+import {Loader, Modal} from '../ui';
 
 
 const OriginComponent = (params) => (
-    <div className={params.className}>
+    <div className={`${params.className} ${styles.permissoinItem}`}>
         <div>{params.origin}</div>
-        <div>{params.status}</div>
+        <div className={styles.statusColor}>{params.status}</div>
         <div>
-            { params.buttonAction }
-            { params.buttonDelete }
+            {params.buttonAction}
+            {params.buttonDelete}
         </div>
     </div>
 );
@@ -24,21 +24,21 @@ const OriginComponent = (params) => (
 class PermissionsSettingsComponent extends React.PureComponent {
 
     readonly props;
-    
+
     allowHandler = (origin) => {
         this.props.allowOrigin(origin);
     };
-    
+
     disableHandler = (origin) => {
         this.props.disableOrigin(origin);
     };
-    
+
     deleteHandler = (origin) => {
         this.props.deleteOrigin(origin);
     };
-    
+
     render() {
-        
+
         const className = cn(styles.content);
         const origins = Object.entries(this.props.origins);
         const {
@@ -47,38 +47,44 @@ class PermissionsSettingsComponent extends React.PureComponent {
             disallowed,
             deleted
         } = this.props;
-        
+
         return <div className={className}>
-            <h2 className="title1 margin-main-big">
+            <h2 className="title1 center margin-main-big">
                 <Trans i18nKey='permissionsSettings.title'>Permissions control</Trans>
             </h2>
-            
+
             <Loader hide={!pending}/>
-            
-            { origins.length ? null : <div>
-                <Trans i18nKey='permissionsSettings.empty'>Nothing here</Trans>
+
+            {origins.length ? null : <div className={styles.emptyBlock}>
+                <div className={styles.icon}></div>
+                <div className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}>
+                    <Trans i18nKey='permissionsSettings.empty'>Nothing Here...</Trans>
+                </div>
             </div>}
-            
-            <div>
+
+            <div className={styles.permissoinList}>
                 {origins.map(([origin = '', status = []]) => {
-    
+
                     const buttonDisable = <Button type={BUTTON_TYPE.TRANSPARENT}
-                                                  onClick={() => this.disableHandler(origin)}>
-                        <Trans i18nKey='permissionsSettings.button.disable'>Disallow</Trans>
+                                                 onClick={() => this.disableHandler(origin)}
+                                                 className={`${styles.button} ${styles.disable}`}>
+                        <Trans i18nKey='permissionsSettings.button.disable'></Trans>
                     </Button>;
-                    
+
                     const buttonEnable = <Button type={BUTTON_TYPE.TRANSPARENT}
-                                                 onClick={() => this.allowHandler(origin)}>
-                        <Trans i18nKey='permissionsSettings.button.enable'>Allow</Trans>
+                                                 onClick={() => this.allowHandler(origin)}
+                                                 className={`${styles.button} ${styles.enable}`}>
+                        <Trans i18nKey='permissionsSettings.button.enable'></Trans>
                     </Button>;
-                    
+
                     const buttonDelete = <Button type={BUTTON_TYPE.TRANSPARENT}
-                                                 onClick={() => this.deleteHandler(origin)}>
-                        <Trans i18nKey='permissionsSettings.button.delete'>Delete</Trans>
+                                                 onClick={() => this.deleteHandler(origin)}
+                                                 className={`${styles.button} ${styles.delete}`}>
+                        <Trans i18nKey='permissionsSettings.button.delete'></Trans>
                     </Button>;
-                    
+
                     const myStatus = status && status[0];
-                    
+
                     const className = cn({
                         [styles.approved]: myStatus === 'approved',
                         [styles.rejected]: myStatus === 'rejected',
@@ -91,17 +97,17 @@ class PermissionsSettingsComponent extends React.PureComponent {
                         buttonAction: myStatus.includes('approved') ? buttonDisable : buttonEnable,
                         buttonDelete,
                     };
-                    
-                    return <OriginComponent { ...params } />
+
+                    return <OriginComponent {...params} />
                 })}
             </div>
-            
+
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}
                    showModal={allowed || disallowed || deleted}
                    showChildrenOnly={true}>
                 <div className='modal notification'>
-                    {allowed  ? <Trans i18nKey='permissionsSettings.notify.allowed'>Allowed!</Trans> : null}
-                    {disallowed  ? <Trans i18nKey='permissionsSettings.notify.disallowed'>Disallowed!</Trans> : null}
+                    {allowed ? <Trans i18nKey='permissionsSettings.notify.allowed'>Allowed!</Trans> : null}
+                    {disallowed ? <Trans i18nKey='permissionsSettings.notify.disallowed'>Disallowed!</Trans> : null}
                     {deleted ? <Trans i18nKey='permissionsSettings.notify.deleted'>Deleted!</Trans> : null}
                 </div>
             </Modal>
@@ -109,7 +115,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
     }
 }
 
-const mapStateToProps = function(store) {
+const mapStateToProps = function (store) {
     return {
         origins: store.origins,
         ...store.permissions,
