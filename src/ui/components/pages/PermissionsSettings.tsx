@@ -55,6 +55,10 @@ class PermissionsSettingsComponent extends React.PureComponent {
             
             <Loader hide={!pending}/>
             
+            { origins.length ? null : <div>
+                <Trans i18nKey='permissionsSettings.empty'>Nothing here</Trans>
+            </div>}
+            
             <div>
                 {origins.map(([origin = '', status = []]) => {
     
@@ -75,7 +79,12 @@ class PermissionsSettingsComponent extends React.PureComponent {
                     
                     const myStatus = status && status[0];
                     
+                    const className = cn({
+                        [styles.approved]: myStatus === 'approved',
+                        [styles.rejected]: myStatus === 'rejected',
+                    });
                     const params = {
+                        className,
                         key: origin + myStatus,
                         origin,
                         status: myStatus,
