@@ -50,8 +50,6 @@ export class OriginAuth extends SignClass {
                 </div>
             </div>
 
-
-    
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='originAuth.block'>Block</Trans>
@@ -60,7 +58,7 @@ export class OriginAuth extends SignClass {
                     <Trans i18nKey='originAuth.allow'>Allow</Trans>
                 </ApproveBtn>
         
-                <OriginWarning className="margin" message={message}/>
+                <OriginWarning message={message}/>
             </div>
         </div>
     }
