@@ -68,19 +68,16 @@ class PermissionsSettingsComponent extends React.PureComponent {
                     const buttonDisable = <Button type={BUTTON_TYPE.TRANSPARENT}
                                                  onClick={() => this.disableHandler(origin)}
                                                  className={`${styles.button} ${styles.disable}`}>
-                        <Trans i18nKey='permissionsSettings.button.disable'></Trans>
                     </Button>;
 
                     const buttonEnable = <Button type={BUTTON_TYPE.TRANSPARENT}
                                                  onClick={() => this.allowHandler(origin)}
                                                  className={`${styles.button} ${styles.enable}`}>
-                        <Trans i18nKey='permissionsSettings.button.enable'></Trans>
                     </Button>;
 
                     const buttonDelete = <Button type={BUTTON_TYPE.TRANSPARENT}
                                                  onClick={() => this.deleteHandler(origin)}
                                                  className={`${styles.button} ${styles.delete}`}>
-                        <Trans i18nKey='permissionsSettings.button.delete'></Trans>
                     </Button>;
 
                     const myStatus = status && status[0];
