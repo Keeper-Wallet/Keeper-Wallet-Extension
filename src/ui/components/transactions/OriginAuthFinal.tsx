@@ -8,6 +8,14 @@ export class OriginAuthFinal extends React.PureComponent {
     
     readonly props;
     
+    componentWillUpdate(props): void {
+        const { isApprove, hasNewMessages } = props;
+        
+        if (isApprove && hasNewMessages) {
+            this.props.onNext();
+        }
+    }
+
     render() {
         const { isApprove, isReject } = this.props;
 

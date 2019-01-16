@@ -10,6 +10,10 @@ import { OriginWarning } from './OriginWarning';
 @translate(I18N_NAME_SPACE)
 export class OriginAuth extends SignClass {
 
+    approveHandler = (e) => {
+        this.props.approve(e);
+    };
+    
     render() {
         const { message } = this.props;
         
@@ -35,7 +39,7 @@ export class OriginAuth extends SignClass {
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='originAuth.block'>Block</Trans>
                 </Button>
-                <ApproveBtn onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
+                <ApproveBtn onClick={this.approveHandler} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='originAuth.allow'>Allow</Trans>
                 </ApproveBtn>
         
