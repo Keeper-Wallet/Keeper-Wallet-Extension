@@ -20,20 +20,37 @@ export class OriginAuth extends SignClass {
         return <div className={styles.transaction}>
             {super.render()}
             <div className={styles.txScrollBox}>
-            
                 <div className={`${styles.txIcon} ${styles.txIconBig} margin-main`}>
                     <TxIcon txType={message.type}/>
                 </div>
 
-                <div className="headline2 center margin-main-large">
-                    <Trans i18nKey='originAuth.title'>Allow access</Trans>
-                    <div>{message.origin}</div>
+                <div className="center margin-main-large">
+                    <div className="headline2 margin-main">
+                        <Trans i18nKey='originAuth.title'>Allow access</Trans>
+                    </div>
+                    <div>
+                        <div className="margin-min body1 font400">{message.origin}</div>
+                        <div>
+                            <Trans i18nKey='originAuth.description'>wants to access your Waves Address</Trans>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`${styles.infoBlock} margin-main-large info-block body3 basic500 left`}>
+                    <div>
+                        <i className="inactive-account-icon"/>
+                    </div>
+                    <div>
+                        <Trans i18nKey='sign.signAccessInfo'>
+                            The application will have access to your Waves address but will not expose your SEED or
+                            private key.
+                            Never enter your secret phrase (SEED) on any website you are redirected to.
+                        </Trans>
+                    </div>
                 </div>
             </div>
-    
-            <div className="font600 tag1 basic500 margin-main-min"><Trans i18nKey='transactions.permissionsWarning'>
-                The application will have access to your Waves address but will not expose your SEED or private key.
-                Never enter your secret phrase (SEED) on any website you are redirected to.</Trans></div>
+
+
     
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
@@ -43,7 +60,7 @@ export class OriginAuth extends SignClass {
                     <Trans i18nKey='originAuth.allow'>Allow</Trans>
                 </ApproveBtn>
         
-                <OriginWarning message={message}/>
+                <OriginWarning className="margin" message={message}/>
             </div>
         </div>
     }
