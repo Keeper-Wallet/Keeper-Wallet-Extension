@@ -1,10 +1,10 @@
 ##Waves Keeper 
 
-#####version 1.0.7
+####version 1.0.7
 
 + Expiration requests
-+ Add black/white lists of origins
-+ Add custom origins permissions
++ Add black/white lists
++ Add user permissions
 + Add edit permissions page
 + Add smart asset transactions
 + Some design fixes
@@ -13,3 +13,4 @@
 + Update signature lib
 + Update dictionary JSON
 + Update api massTransfer tx format
++ Fix auth api

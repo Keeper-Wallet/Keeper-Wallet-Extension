@@ -33,9 +33,13 @@ async function setupInpageApi() {
 function setupClickInterceptor(inpageApi){
     document.addEventListener("click", (e)=> {
         const paymentApiResult = checkForPaymentApiLink(e);
-        if (paymentApiResult && processPaymentAPILink(paymentApiResult, inpageApi)) {
-            e.preventDefault();
-            e.stopPropagation();
+        try {
+            if (paymentApiResult && processPaymentAPILink(paymentApiResult, inpageApi)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        } catch (e) {
+            
         }
     })
 }
@@ -101,7 +105,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
             inpageApi.auth({
                 name: apiData.n,
                 data: apiData.d,
-                icon: apiData.i,
+                icon: apiData.i ? new URL(apiData.i, apiData.r).href : '',
                 referrer: apiData.r,
                 successPath: new URL(apiData.s || '', apiData.r).href,
             });

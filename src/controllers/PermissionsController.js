@@ -105,5 +105,8 @@ export class PermissionsController {
             this.updateState({ blacklist, whitelist })
         } catch (e) {
         }
+
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => this._getBlackList(), 30000);
     }
 }

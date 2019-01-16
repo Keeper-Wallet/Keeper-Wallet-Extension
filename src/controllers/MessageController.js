@@ -362,6 +362,7 @@ export class MessageController extends EventEmitter {
             case 'auth':
                 result.data = {
                     type: 1000,
+                    referrer: message.data.referrer,
                     data: {
                         data: message.data.data,
                         prefix: 'WavesWalletAuthentication',
