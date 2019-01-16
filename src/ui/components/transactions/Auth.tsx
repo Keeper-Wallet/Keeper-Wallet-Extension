@@ -13,14 +13,15 @@ export class Auth extends SignClass {
         const {data: tx} = this.props.signData;
         const origin = tx.host;
         const warningOrigin = {origin};
+        const { icon } = tx;
 
         return <div className={`${styles.txSign} ${styles.transaction} font400 center`}>
             {super.render()}
             <div className={styles.txScrollBox}>
                 {
-                    !tx.icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}/>
+                    !icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}/>
                         :
-                        <img className={styles.txBigIcon} src={tx.icon}/>
+                        <img className={styles.txBigIcon} src={icon}/>
                 }
                 <div className="body1 margin-main">
                     <span className={styles.appName}>{tx.name}</span>

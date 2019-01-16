@@ -156,6 +156,7 @@
 	},
 	"originAuth": {
 		"allow": "Allow",
+		"block": "Block",
 		"deny": "Deny",
 		"title": "Allow access"
 	},
@@ -163,6 +164,15 @@
 		"appInfo": "Download our mobile applications below:",
 		"scanInfo": "Scan the code below with your iPhone or Android device to pair it with your account.",
 		"scanPairing": "Scan Pairing Code"
+	},
+	"permissionsSettings": {
+		"button": {
+			"delete": "Delete",
+			"disable": "Disallow",
+			"enable": "Allow"
+		},
+		"empty": "Nothing here",
+		"title": "Permissions control"
 	},
 	"qrCode": {
 		"download": "Download QR code"
@@ -173,7 +183,11 @@
 		"logOut": "Log out",
 		"network": "Network",
 		"pairing": "Device Pairing",
-		"password": "Change password"
+		"password": "Change password",
+		"permissionsControl": "Permissions control"
+	},
+	"showScriptComponent": {
+		"copy": "Copy"
 	},
 	"sign": {
 		"action": "Action",
@@ -219,10 +233,11 @@
 		"transactionConfirmTransfer": "You have approved a Send transaction for",
 		"transactionConfirmed": "Your transaction is confirmed!",
 		"transactionConfirmedBurn": "You have approved a Burn transaction.",
-		"transactionFiled": "Your transaction is filed!",
+		"transactionFiled": "Your transaction is rejected!",
 		"transactionSend": "Your have send",
 		"transactionSendCreateOrder": "You have approved a Create Order transaction",
 		"transactionSendData": [],
+		"transactionSendMassTransfer": "You have sent",
 		"transactionSendTransfer": "You have sent",
 		"understand": "I understand",
 		"viewTransaction": "View transaction"
@@ -252,6 +267,7 @@
 		"order_buy": "buy",
 		"order_sell": "sell",
 		"originWarning": "wants to access your Waves Address",
+		"permissionsWarning": "The application will have access to your Waves address but will not expose your SEED or private key. Never enter your secret phrase (SEED) on any website you are redirected to.",
 		"reissuable": "Reissuable",
 		"script": "Script",
 		"scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
