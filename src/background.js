@@ -376,7 +376,36 @@ class BackgroundService extends EventEmitter {
 
         };
 
-        api.publicState = async () => this._publicState(this.getState(), origin);
+        api.publicState = async () => {
+            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+            const { selectedAccount } = this.getState();
+
+            if (!canIUse && canIUse != null) {
+                throw new Error('Api rejected by user');
+            }
+
+            if (canIUse === null) {
+                let messageId = this.permissionsController.getMessageIdAccess(origin);
+
+                if (!messageId) {
+                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                    this.permissionsController.setMessageIdAccess(origin, messageId);
+                }
+
+                this.emit('Show notification');
+
+                await this.messageController.getMessageResult(messageId)
+                    .then(() => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                    })
+                    .catch((e) => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                        return Promise.reject(e);
+                    });
+            }
+
+            return this._publicState(this.getState(), origin);
+        };
 
         if (origin === 'client.wavesplatform.com') {
             api.signBytes = async (data, from) => {
@@ -448,8 +477,9 @@ class BackgroundService extends EventEmitter {
 
         let account = null;
         let messages = [];
+        const canIUse = this.permissionsController.hasPermission(originReq, PERMISSIONS.APPROVED);
 
-        if (!state.locked && state.selectedAccount) {
+        if (!state.locked && state.selectedAccount && canIUse) {
 
             const address = state.selectedAccount.address;
 
@@ -462,6 +492,7 @@ class BackgroundService extends EventEmitter {
                 .filter(({ account, origin }) => account.address === address && origin === originReq)
                 .map(({ id, status, ext_uuid }) => ({ id, status, uid: ext_uuid }));
         }
+
         return {
             initialized: state.initialized,
             locked: state.locked,
