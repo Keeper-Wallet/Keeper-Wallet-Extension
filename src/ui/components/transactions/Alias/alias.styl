@@ -1,0 +1,24 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.alias
+  @extends .transaction
+
+.aliasCard
+  background: yellow;
+
+.aliasCard_collapsed
+  .origin
+    display: none;
+
+.aliasTitle
+.aliasInfo
+  display: block;
+
+.aliasTxIcon
+  @extends .txIcon
+
+.aliasTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+

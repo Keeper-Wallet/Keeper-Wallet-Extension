@@ -1,11 +1,12 @@
-import * as styles from './../pages/styles/transactions.styl';
+import * as styles from './alias.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { Balance, DateFormat } from '../ui';
-import { SignClass } from './SignClass';
-import { TxIcon } from './TransactionIcon';
-import { TransactionBottom } from './TransactionBottom';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import { Balance, DateFormat } from '../../ui';
+import { SignClass } from '../SignClass';
+import { AliasCard } from './AliasCard';
+import { TransactionBottom } from '../TransactionBottom';
+import { I18N_NAME_SPACE } from '../../../appConfig';
+import { TransactionWallet } from '../../wallets';
 
 
 @translate(I18N_NAME_SPACE)
@@ -14,17 +15,11 @@ export class Alias extends SignClass {
     render() {
         const { data: tx } = this.props.signData;
         
-        return <div className={styles.transaction}>
-            {super.render()}
+        return <div className={styles.alias}>
+            <div className={styles.aliasTxScrollBox}>
 
-            <div className={styles.txScrollBox}>
-
-                <div className={`${styles.txIcon} margin-main`}>
-                    <TxIcon txType={this.props.txType}/>
-                </div>
-
-                <div className={`${styles.txBalance} ${styles.block} center headline2`}>
-                    {tx.alias}
+                <div className={`margin-main`}>
+                    <AliasCard {...this.props}/>
                 </div>
                 
                 <div className={styles.txRow}>
@@ -51,7 +46,10 @@ export class Alias extends SignClass {
                 </div>
             </div>
             
-            <TransactionBottom {...this.props}/>
+            <TransactionBottom {...this.props}>
+                <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount}/>
+            </TransactionBottom>
+            
         </div>
     }
 }

@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, ApproveBtn } from '../ui';
 import { OriginWarning } from './OriginWarning';
 
-export const TransactionBottom = ({ message, approve, reject, hideApprove }) => {
+export const TransactionBottom = ({ message, approve, reject, hideApprove, children }) => {
     
     const isSend = message.broadcast;
     
@@ -22,7 +22,6 @@ export const TransactionBottom = ({ message, approve, reject, hideApprove }) => 
                 }
             </ApproveBtn>
         }
-        
-        <OriginWarning message={message}/>
+        { children }
     </div>;
 };

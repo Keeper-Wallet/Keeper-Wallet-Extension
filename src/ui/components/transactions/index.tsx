@@ -11,8 +11,7 @@ import { Issure } from './Issure';
 import { IssureFinal } from './IssureFinal';
 import { ReIssure } from './ReIssure';
 import { ReIssureFinal } from './ReIssureFinal';
-import { Alias } from './Alias';
-import { AliasFinal } from './AliasFinal';
+import alias from './Alias';
 import { Lease } from './Lease';
 import { LeaseFinal } from './LeaseFinal';
 import { CancelLease } from './CancelLease';
@@ -47,6 +46,8 @@ export const getConfigByTransaction = (tx, type = null) => {
         type: null,
         component: null,
         final: null,
+        card: null,
+        components: null,
     };
     
     switch (true) {
@@ -82,8 +83,10 @@ export const getConfigByTransaction = (tx, type = null) => {
             break;
         case tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction':
             config.type = 'create-alias';
-            config.component = Alias;
-            config.final = AliasFinal;
+            config.component = alias.Alias;
+            config.final = alias.AliasFinal;
+            config.card = alias.AliasCard;
+            config.components = alias;
             break;
         case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':
             config.type = 'create-order';

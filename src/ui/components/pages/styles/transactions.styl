@@ -47,13 +47,6 @@
     &Description + .txRow
       border-top: 0 none;
 
-  .txScrollBox
-    overflow: auto;
-    position: relative;
-    padding: 0 24px;
-    flex-grow: 1;
-    flex-shrink: 999;
-
   .toggleList
     border-top: 1px dashed $basic200;
 
@@ -66,17 +59,6 @@
       span
         margin-left: 3px;
         display: inline-block;
-
-  .txIcon
-    div
-      width: 48px;
-      height: 48px;
-      margin: 24px auto 0 auto;
-    &Big
-      div
-        width: 80px;
-        height: 80px;
-        margin: 64px auto 14px auto;
 
   .txBalance
     width: 100%;
@@ -176,3 +158,22 @@
   max-height: none;
   div:first-child
     max-height: none;
+
+
+.txIcon
+  div
+    width: 48px;
+    height: 48px;
+    margin: 24px auto 0 auto;
+  &Big
+    div
+      width: 80px;
+      height: 80px;
+      margin: 64px auto 14px auto;
+
+.txScrollBox
+  overflow: auto;
+  position: relative;
+  padding: 0 24px;
+  flex-grow: 1;
+  flex-shrink: 999;
