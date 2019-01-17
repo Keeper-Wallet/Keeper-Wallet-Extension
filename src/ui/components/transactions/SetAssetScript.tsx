@@ -57,7 +57,7 @@ export class SetAssetScript extends SignClass {
                         <i className="inactive-account-icon"/>
                     </div>
                     <div>
-                        <div className="font600 tag1 basic500 margin-main-min">
+                        <div className="font600 tag1 basic500 margin-min">
                             <Trans i18nKey='transactions.assetScriptWarningHeader'>
                                 Warning: actions can block transactions with your asset
                             </Trans>

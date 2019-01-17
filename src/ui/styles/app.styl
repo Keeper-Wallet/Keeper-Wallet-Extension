@@ -88,7 +88,6 @@ ul
 // typography
 :global .title1
   font-size: 24px;
-  font-weight: 400;
 
 :global .headline1
   font-size: 18px;
@@ -145,9 +144,6 @@ $layout-44 = 44px;
 
 :global .margin-main
   margin-bottom: $layout-14;
-
-:global .margin-main-min
-  margin-bottom: $layout-4;
 
 :global .margin-main-big
   margin-bottom: $layout-24;
@@ -302,6 +298,10 @@ $layout-44 = 44px;
 
         &:last-child
           margin-right: 0;
+
+:global .transactionContent
+  height: calc(100% - 159px);
+
 
 :global .info-block //with icon
   display: flex;

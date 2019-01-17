@@ -15,10 +15,14 @@ export class Alias extends SignClass {
     render() {
         const { data: tx } = this.props.signData;
         
-        return <div className={styles.alias}>
-            <div className={styles.aliasTxScrollBox}>
+        return <div className={styles.transaction}>
+            <div className={`${styles.aliasTxScrollBox} transactionContent`}>
 
-                <div className={`margin-main`}>
+                <div className="margin-main margin-main-top headline3 basic500">
+                    <Trans i18nKey='transactions.confirmationRequest'>Confirmation request</Trans>
+                </div>
+
+                <div className="margin-main">
                     <AliasCard {...this.props}/>
                 </div>
                 
