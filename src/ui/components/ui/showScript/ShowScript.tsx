@@ -21,6 +21,12 @@ export class ShowScript extends React.PureComponent {
     getScriptRef = (ref) => this.scriptEl = ref;
     
     componentDidMount() {
+        const { script, optional } = this.props;
+        
+        if (optional && !script) {
+            return null;
+        }
+    
         const scrollHeight = this.scriptEl.scrollHeight;
         const height = this.scriptEl.offsetHeight;
         const showResizeBtn = scrollHeight > height;
