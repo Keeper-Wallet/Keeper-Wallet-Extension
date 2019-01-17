@@ -1,7 +1,7 @@
 {
 	"accountInfo": {
-		"address": "address",
-		"backUp": "backUp",
+		"address": "Your address",
+		"backUp": "Backup phrase",
 		"cancel": "Cancel",
 		"copied": "Copied!",
 		"enter": "Enter",
@@ -10,8 +10,8 @@
 		},
 		"password": "Password",
 		"passwordError": "Incorrect password",
-		"privKey": "privKey",
-		"pubKey": "pubKey",
+		"privKey": "Private key",
+		"pubKey": "Public key",
 		"seed": "Backup phrase"
 	},
 	"assets": {
@@ -25,7 +25,7 @@
 		"inStorage": "Other accounts",
 		"lastUpdate": "Last update:",
 		"selectedModal": "Account selected",
-		"setActive": "set active!"
+		"setActive": "Set active!"
 	},
 	"backupSeed": {
 		"backupCarefully": "Please carefully write down these 15 words or copy them",
@@ -251,8 +251,10 @@
 		"assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
 		"assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
 		"coinomatTimeStamp": "Coinomat Time Stamp",
+		"confirmationRequest": "Confirmation request",
 		"copied": "Copied!",
 		"copy": "Copy",
+		"createAlias": "Create Alias",
 		"dataHash": "Data Hash",
 		"dataTransactionData": "Data",
 		"decimalPoints": "Decimal points",

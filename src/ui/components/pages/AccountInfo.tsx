@@ -40,7 +40,7 @@ class AccountInfoComponent extends React.Component {
         const isActive = selectedAccount.address === activeAccount.address;
         const { onCopyHandler } = this;
         const { leaseBalance } = this.state;
-        const showLease = leaseBalance.gt(leaseBalance.cloneWithCoins(0));
+        const showLease = leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
         return <div className={styles.content}>
 
             <div className={`flex margin-main-big ${styles.wallet}`}>
