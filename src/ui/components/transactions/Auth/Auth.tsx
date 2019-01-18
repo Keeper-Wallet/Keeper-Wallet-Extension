@@ -9,7 +9,6 @@ import { TransactionWallet } from '../../wallets';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui/buttons';
 import { OriginWarning } from '../OriginWarning';
 
-
 @translate(I18N_NAME_SPACE)
 export class Auth extends SignClass {
     

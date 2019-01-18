@@ -14,26 +14,24 @@
     padding: 10px;
     background: $white;
 
-    .cardHeader,
-    .cardHeaderColumn
-      display: flex;
-      align-items: center;
+.cardHeader
+  display: flex;
+  align-items: center;
 
-    .cardHeaderColumn
-      flex-direction: column;
-      text-align: center;
-      padding-left: 0;
+.cardContent
+  margin-top: 14px;
+  padding-left: 58px;
+  color: $basic500;
 
-    .cardContent,
-    .cardHeaderColumn
-      margin-top: 14px;
-      padding-left: 58px;
+.originAddress
+  font-size: 14px;
+  word-break: break-all;
+  text-decoration: underline;
 
-    .cardHeaderColumn
-      padding-left: 0;
-      text-align: center;
+.originDescription
+  font-size: 11px;
 
-  .txBalanceWrapper
+.txBalanceWrapper
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -194,6 +192,7 @@
 .txScrollBox
   overflow: auto;
   position: relative;
-  padding: 0 24px;
+  padding-left: 24px;
+  padding-right 24px;
   flex-grow: 1;
   flex-shrink: 999;

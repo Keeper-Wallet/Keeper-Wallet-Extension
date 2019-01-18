@@ -36,8 +36,6 @@ export class AliasCard extends React.PureComponent<IAlias> {
             </div>
 
             <div className={styles.cardContent}>
-                <div className={styles.aliasTitle}></div>
-                <div className={styles.aliasInfo}></div>
                 <div className={styles.origin}>
                     <OriginWarning message={message}/>
                 </div>
