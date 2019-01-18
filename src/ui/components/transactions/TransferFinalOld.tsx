@@ -5,7 +5,7 @@ import { Balance } from '../ui';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
-export class TransferFinal extends React.PureComponent {
+export class TransferFinalOld extends React.PureComponent {
 
     readonly props;
     

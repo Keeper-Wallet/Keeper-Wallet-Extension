@@ -3,10 +3,9 @@ import { SIGN_TYPE } from '@waves/signature-adapter';
 import auth from './Auth';
 import alias from './Alias';
 import originAuth from './OriginAuth';
+import transfer from './Transfer';
 
 
-import { Transfer } from './Transfer';
-import { TransferFinal } from './TransferFinal';
 import { MassTransfer } from './MassTransfer';
 import { MassTransferFinal } from './MassTransferFinal';
 
@@ -55,23 +54,33 @@ export const getConfigByTransaction = (tx, type = null) => {
     };
     
     switch (true) {
-        case type === 'authOrigin':
-            config.type = 'authOrigin';
+        case originAuth.isMe(tx, type):
+            config.type = originAuth.type;
             config.component = originAuth.message;
             config.final = originAuth.final;
             config.components = originAuth;
             break;
-        case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
-            config.type = 'transfer';
-            config.component = Transfer;
-            config.final = TransferFinal;
+        case transfer.isMe(tx, type):
+            config.type = transfer.type;
+            config.component = transfer.message;
+            config.final = transfer.final;
+            config.components = transfer;
             break;
-        case tx.type ===  SIGN_TYPE.AUTH && type === 'auth':
+        case auth.isMe(tx, type):
             config.type = auth.type;
             config.component = auth.message;
             config.final = auth.final;
             config.components = auth;
             break;
+        case alias.isMe(tx, type):
+            config.type = alias.type;
+            config.component = alias.message;
+            config.final = alias.final;
+            config.card = alias.card;
+            config.components = alias;
+            break;
+            
+            
         case tx.type ===  SIGN_TYPE.BURN && type === 'transaction':
             config.type = 'burn';
             config.component = Burn;
@@ -86,13 +95,6 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'cancel-order';
             config.component = CancelOrder;
             config.final = CancelOrderFinal;
-            break;
-        case tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction':
-            config.type = alias.type;
-            config.component = alias.message;
-            config.final = alias.final;
-            config.card = alias.card;
-            config.components = alias;
             break;
         case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':
             config.type = 'create-order';
