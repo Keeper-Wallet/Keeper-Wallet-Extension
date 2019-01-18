@@ -2,7 +2,7 @@ import { Alias } from './Alias';
 import { AliasCard } from './AliasCard';
 import { AliasFinal } from './AliasFinal';
 import { AliasInfo } from './AliasInfo';
-import { getAmount, getAssetsId, getFee, messageType } from './parseTx';
+import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
 
 const alias = {
     type: messageType,
@@ -13,6 +13,7 @@ const alias = {
     getAmount,
     getAssetsId,
     getFee,
+    isMe,
 };
 
 export default alias;

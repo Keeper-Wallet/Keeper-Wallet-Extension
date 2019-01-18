@@ -2,7 +2,7 @@ import { Auth } from './Auth';
 import { AuthCard } from './AuthCard';
 import { AuthFinal } from './AuthFinal';
 import { AuthInfo } from './AuthInfo';
-import { getAmount, getAssetsId, getFee, messageType } from './parseTx';
+import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
 
 const auth = {
     type: messageType,
@@ -13,6 +13,7 @@ const auth = {
     getAmount,
     getAssetsId,
     getFee,
+    isMe
 };
 
 export default auth;

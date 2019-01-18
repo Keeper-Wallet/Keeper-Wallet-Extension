@@ -1,32 +1,31 @@
-import * as styles from './auth.styl';
+import * as styles from './originAuth.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
-import { AuthCard } from './AuthCard';
-import { AuthInfo } from './AuthInfo';
+import { OriginAuthCard } from './OriginAuthCard';
+import { OriginAuthInfo } from './OriginAuthInfo';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui/buttons';
 
-
 @translate(I18N_NAME_SPACE)
-export class Auth extends SignClass {
+export class OriginAuth extends SignClass {
     
     render() {
         const { message, assets } = this.props;
     
         return <div className={styles.transaction}>
-            <div className={`${styles.authTxScrollBox} transactionContent`}>
+            <div className={`${styles.originAuthTxScrollBox} transactionContent`}>
 
                 <div className="margin-main margin-main-top headline3 basic500">
-                    <Trans i18nKey='transactions.signAccessWaves'>Sign in with Waves</Trans>
+                    <Trans i18nKey='transactions.allowAccess'>Allow access</Trans>
                 </div>
 
                 <div className="margin-main">
-                    <AuthCard {...this.props}/>
+                    <OriginAuthCard {...this.props}/>
                 </div>
                 
-                <AuthInfo message={message} assets={assets}/>
+                <OriginAuthInfo message={message} assets={assets}/>
             </div>
     
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
