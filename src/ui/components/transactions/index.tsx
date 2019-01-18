@@ -2,12 +2,11 @@ import { SIGN_TYPE } from '@waves/signature-adapter';
 
 import auth from './Auth';
 import alias from './Alias';
+import originAuth from './OriginAuth';
+
 
 import { Transfer } from './Transfer';
 import { TransferFinal } from './TransferFinal';
-
-
-
 import { MassTransfer } from './MassTransfer';
 import { MassTransferFinal } from './MassTransferFinal';
 
@@ -42,8 +41,7 @@ import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
 import { UnknownFinal } from './UnknownFinal';
-import { OriginAuth } from './OriginAuth';
-import { OriginAuthFinal } from './OriginAuthFinal';
+
 
 export { FinalTransaction } from './FinalTransaction';
 
@@ -59,8 +57,9 @@ export const getConfigByTransaction = (tx, type = null) => {
     switch (true) {
         case type === 'authOrigin':
             config.type = 'authOrigin';
-            config.component = OriginAuth;
-            config.final = OriginAuthFinal;
+            config.component = originAuth.message;
+            config.final = originAuth.final;
+            config.components = originAuth;
             break;
         case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
             config.type = 'transfer';

@@ -11,7 +11,7 @@ const NAME = 'WavesKeeper';
 const PUBLISHER = 'WavesPlatform';
 
 const REPLACE_PATTERN = {
-    "0.1.0.7": "0.0.0.0", //TODO delete after first release
+    "0.1.0.8": "1.0.8.0", //TODO delete after first release
     "INSERT-YOUR-PACKAGE-IDENTITY-NAME-HERE": NAME,
     "INSERT-YOUR-PACKAGE-IDENTITY-PUBLISHER-HERE": PUBLISHER,
     "INSERT-YOUR-PACKAGE-PROPERTIES-PUBLISHERDISPLAYNAME-HERE": PUBLISHER,
