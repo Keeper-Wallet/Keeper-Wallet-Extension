@@ -282,6 +282,7 @@
 		"setAssetScriptHeader": "Set Asset Script transaction",
 		"setSctiptHeader": "Script transaction",
 		"showAll": "Show all",
+		"signAccessWaves": "Sign in with Waves",
 		"signCustomRequest": "Sign a request",
 		"signToCoinomat": "Sign a request to the Coinomat",
 		"signToMatcher": "Sign a request to the Matcher",
