@@ -8,7 +8,6 @@ import { TransactionBottom } from '../TransactionBottom';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 
-
 @translate(I18N_NAME_SPACE)
 export class Alias extends SignClass {
     

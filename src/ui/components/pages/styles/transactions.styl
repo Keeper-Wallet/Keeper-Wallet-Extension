@@ -14,13 +14,24 @@
     padding: 10px;
     background: $white;
 
-    .cardHeader
+    .cardHeader,
+    .cardHeaderColumn
       display: flex;
       align-items: center;
 
-    .cardContent
+    .cardHeaderColumn
+      flex-direction: column;
+      text-align: center;
+      padding-left: 0;
+
+    .cardContent,
+    .cardHeaderColumn
       margin-top: 14px;
       padding-left: 58px;
+
+    .cardHeaderColumn
+      padding-left: 0;
+      text-align: center;
 
   .txBalanceWrapper
     display: flex;
@@ -168,7 +179,6 @@
   div:first-child
     max-height: none;
 
-
 .txIcon
   div
     width: 48px;
@@ -179,7 +189,7 @@
     div
       width: 80px;
       height: 80px;
-      margin: 64px auto 14px auto;
+      margin: 4px auto 14px auto;
 
 .txScrollBox
   overflow: auto;

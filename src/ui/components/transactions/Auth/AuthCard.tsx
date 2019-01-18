@@ -21,7 +21,7 @@ export class AuthCard extends React.PureComponent<IAUth> {
         );
         
         return <div className={className}>
-            <div className={styles.cardHeader}>
+            <div className={styles.cardHeaderColumn}>
                 <div className={styles.authTxIcon}>
                     {
                         !icon ? <div className={`${styles.txBigIcon} ${styles.iconMargin} signin-icon`}/>
@@ -37,7 +37,7 @@ export class AuthCard extends React.PureComponent<IAUth> {
                 </div>
             </div>
 
-            <div className={styles.cardContent}>
+            <div className={styles.cardContentColumn}>
                 <div className={styles.origin}>
                     <OriginWarning message={message}/>
                 </div>
