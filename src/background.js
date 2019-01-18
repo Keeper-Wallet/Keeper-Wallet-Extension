@@ -17,8 +17,12 @@ import {
     NetworkController,
     MessageController,
     BalanceController,
-    UiStateController, AssetInfoController, ExternalDeviceController
-} from './controllers'
+    OriginController,
+    UiStateController,
+    AssetInfoController,
+    ExternalDeviceController
+} from './controllers';
+import { PERMISSIONS } from './controllers/OriginController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 
@@ -179,6 +183,11 @@ class BackgroundService extends EventEmitter {
             getNode: this.networkController.getNode.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
+
+        this.originController = new OriginController({
+            initState: initState.originController,
+        });
+
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
 
         // AssetInfo. Provides information about assets
@@ -199,7 +208,8 @@ class BackgroundService extends EventEmitter {
             signBytes: this.walletController.signBytes.bind(this.walletController),
             broadcast: this.networkController.broadcast.bind(this.networkController),
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
-            assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController)
+            assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
+            setPermission: this.originController.setPermissions.bind(this.originController)
         });
 
 
@@ -210,6 +220,7 @@ class BackgroundService extends EventEmitter {
             NetworkController: this.networkController.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
+            OriginController: this.originController.store,
             UiStateController: this.uiStateController.store,
             AssetInfoController: this.assetInfoController.store
         });
@@ -270,7 +281,17 @@ class BackgroundService extends EventEmitter {
             assetInfo: async (assetId) => await this.assetInfoController.assetInfo(assetId),
 
             // window control
-            closeNotificationWindow: async () => this.emit('Close notification')
+            closeNotificationWindow: async () => this.emit('Close notification'),
+
+            // origin settings
+            allowOrigin: async (origin) => {
+                this.messageController.rejectByOrigin(origin);
+                this.originController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
+            },
+
+            disableOrigin: async (origin) => {
+                this.originController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+            }
         }
     }
 
@@ -282,6 +303,25 @@ class BackgroundService extends EventEmitter {
             // Proper public key check
             if (from && from !== selectedAccount.address) {
                 throw new Error('From address should match selected account address or be blank');
+            }
+
+            //Check messages permissions
+            const canIUse = this.originController.hasPermission(origin, PERMISSIONS.APPROVED);
+
+            if (!canIUse && canIUse != null) {
+                throw new Error('Api rejected by user');
+            }
+
+            if (canIUse === null) {
+                let messageId = this.originController.getMessageIdAccess(origin);
+
+                if (!messageId) {
+                    messageId = await this.messageController.newMessage({ origin, permission: PERMISSIONS.APPROVED }, 'authOrigin', origin, selectedAccount, false);
+                    this.originController.setMessageIdAccess(origin, messageId);
+                }
+
+                this.emit('Show notification');
+                await this.messageController.getMessageResult(messageId);
             }
 
             const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
