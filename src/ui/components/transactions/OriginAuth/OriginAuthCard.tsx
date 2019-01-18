@@ -5,8 +5,6 @@ import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TxIcon } from '../TransactionIcon';
 
-
-
 @translate(I18N_NAME_SPACE)
 export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
     
