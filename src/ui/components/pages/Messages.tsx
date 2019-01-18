@@ -61,6 +61,7 @@ class MessagesComponent extends React.Component {
                           pending={this.state.approvePending}
                           txHash={this.state.txHash}
                           signData={signData}
+                          assets={this.state.assets}
                           message={activeMessage}
                           selectedAccount={this.state.selectedAccount}
                           clearMessagesHandler={this.clearMessagesHandler }

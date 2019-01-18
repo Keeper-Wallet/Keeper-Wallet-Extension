@@ -1,17 +1,23 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
+
+import auth from './Auth';
+import alias from './Alias';
+
 import { Transfer } from './Transfer';
 import { TransferFinal } from './TransferFinal';
+
+
+
 import { MassTransfer } from './MassTransfer';
 import { MassTransferFinal } from './MassTransferFinal';
-import { Auth } from './Auth';
-import { AuthFinal } from './AuthFinal';
+
+
 import { Burn } from './Burn';
 import { BurnFinal } from './BurnFinal';
 import { Issure } from './Issure';
 import { IssureFinal } from './IssureFinal';
 import { ReIssure } from './ReIssure';
 import { ReIssureFinal } from './ReIssureFinal';
-import alias from './Alias';
 import { Lease } from './Lease';
 import { LeaseFinal } from './LeaseFinal';
 import { CancelLease } from './CancelLease';
@@ -62,9 +68,10 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = TransferFinal;
             break;
         case tx.type ===  SIGN_TYPE.AUTH && type === 'auth':
-            config.type = 'auth';
-            config.component = Auth;
-            config.final = AuthFinal;
+            config.type = auth.type;
+            config.component = auth.message;
+            config.final = auth.final;
+            config.components = auth;
             break;
         case tx.type ===  SIGN_TYPE.BURN && type === 'transaction':
             config.type = 'burn';
@@ -82,10 +89,10 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = CancelOrderFinal;
             break;
         case tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction':
-            config.type = 'create-alias';
-            config.component = alias.Alias;
-            config.final = alias.AliasFinal;
-            config.card = alias.AliasCard;
+            config.type = alias.type;
+            config.component = alias.message;
+            config.final = alias.final;
+            config.card = alias.card;
             config.components = alias;
             break;
         case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':

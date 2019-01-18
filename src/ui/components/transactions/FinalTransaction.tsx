@@ -40,7 +40,6 @@ export class FinalTransaction extends React.PureComponent {
         });
 
         return <div className={styles.txFinal}>
-            <HeadLogo/>
             <div className={className}></div>
 
             <div className={styles.finalTxContent}>

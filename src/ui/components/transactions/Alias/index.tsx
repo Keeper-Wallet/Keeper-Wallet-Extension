@@ -1,12 +1,15 @@
 import { Alias } from './Alias';
 import { AliasCard } from './AliasCard';
 import { AliasFinal } from './AliasFinal';
-import { getAmount, getAssetsId, getFee } from './parseTx';
+import { AliasInfo } from './AliasInfo';
+import { getAmount, getAssetsId, getFee, messageType } from './parseTx';
 
 const alias = {
-    Alias,
-    AliasCard,
-    AliasFinal,
+    type: messageType,
+    message: Alias,
+    card: AliasCard,
+    final: AliasFinal,
+    info: AliasInfo,
     getAmount,
     getAssetsId,
     getFee,
