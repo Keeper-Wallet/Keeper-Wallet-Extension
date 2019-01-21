@@ -3,6 +3,7 @@ export * from './input';
 export * from './avatar';
 export * from './error';
 export * from './balance/Balance';
+export * from './asset/Asset';
 export * from './copy';
 export * from './pills';
 export * from './modal/Modal';

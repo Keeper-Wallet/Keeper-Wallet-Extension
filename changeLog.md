@@ -1,5 +1,11 @@
 ##Waves Keeper 
 
+####version 1.0.8
+
++ Fix init badge on restart keeper
++ Refactor request and change design
++ Init cancel lease request (fetch transaction lease)
+
 ####version 1.0.7
 
 + Expiration requests

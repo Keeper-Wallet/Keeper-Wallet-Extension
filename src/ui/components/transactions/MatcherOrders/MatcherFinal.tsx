@@ -1,7 +1,6 @@
-import './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import { I18N_NAME_SPACE } from '../../../appConfig';
 
 @translate(I18N_NAME_SPACE)
 export class MatcherFinal extends React.PureComponent {
@@ -9,8 +8,8 @@ export class MatcherFinal extends React.PureComponent {
     readonly props;
     
     render() {
-        const { tx, isApprove, isReject, isSend } = this.props;
-
+        const { message, isApprove, isReject, isSend } = this.props;
+        
         if (isApprove) {
             return <div>
                 <div className="margin-main headline2">
@@ -19,13 +18,13 @@ export class MatcherFinal extends React.PureComponent {
                 </div>
             </div>
         }
-
+        
         if (isReject) {
             return <div className="margin-main-large headline2">
-                <Trans i18nKey='sign.matcherRejected'>Request has not been signed</Trans>
+                <Trans i18nKey='sign.authRejected'>Request has not been signed</Trans>
             </div>
         }
-
+        
         return null;
     }
 }

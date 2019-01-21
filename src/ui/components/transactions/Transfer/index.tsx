@@ -4,7 +4,7 @@ import { TransferFinal } from './TransferFinal';
 import { TransferInfo } from './TransferInfo';
 import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
 
-const alias = {
+const transfer = {
     type: messageType,
     message: Transfer,
     card: TransferCard,
@@ -16,4 +16,4 @@ const alias = {
     isMe,
 };
 
-export default alias;
+export default transfer;

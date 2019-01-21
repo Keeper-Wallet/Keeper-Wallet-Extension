@@ -45,7 +45,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main">
                     {isApprove || isReject ?
-                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast}/> : null}
+                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast} message={message}/> : null}
                     {isError ?
                         <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>

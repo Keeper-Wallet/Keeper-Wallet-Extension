@@ -4,30 +4,22 @@ import auth from './Auth';
 import alias from './Alias';
 import originAuth from './OriginAuth';
 import transfer from './Transfer';
+import burn from './Burn';
+import lease from './Lease';
+import cancelLease from './CancelLease';
+import createOrder from './CreateOrder';
+import cancelOrder from './CancelOrder';
+import matcher from './MatcherOrders';
+import coinomatConfirm from './CoinomatConfirm';
+
 
 
 import { MassTransfer } from './MassTransfer';
 import { MassTransferFinal } from './MassTransferFinal';
-
-
-import { Burn } from './Burn';
-import { BurnFinal } from './BurnFinal';
 import { Issure } from './Issure';
 import { IssureFinal } from './IssureFinal';
 import { ReIssure } from './ReIssure';
 import { ReIssureFinal } from './ReIssureFinal';
-import { Lease } from './Lease';
-import { LeaseFinal } from './LeaseFinal';
-import { CancelLease } from './CancelLease';
-import { CancelLeaseFinal } from './CancelLeaseFinal';
-import { CancelOrder } from './CancelOrder';
-import { CancelOrderFinal } from './CancelOrderFinal';
-import { CreateOrder } from './CreateOrder';
-import { CreateOrderFinal } from './CreateOrderFinal';
-import { Matcher } from './Matcher';
-import { MatcherFinal } from './MatcherFinal';
-import { CoinomatConfirm } from './CoinomatConfirm';
-import { CoinomatConfirmFinal } from './CoinomatConfirmFinal';
 import { Data } from './Data';
 import { DataFinal } from './DataFinal';
 import { SponsorShip } from './SponsorShip';
@@ -79,28 +71,51 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.card = alias.card;
             config.components = alias;
             break;
+        case burn.isMe(tx, type):
+            config.type = burn.type;
+            config.component = burn.message;
+            config.final = burn.final;
+            config.components = burn;
+            break;
+        case lease.isMe(tx, type):
+            config.type = lease.type;
+            config.component = lease.message;
+            config.final = lease.final;
+            config.components = lease;
+            break;
+        case cancelLease.isMe(tx, type):
+            config.type = cancelLease.type;
+            config.component = cancelLease.message;
+            config.final = cancelLease.final;
+            config.components = cancelLease;
+            break;
+        case createOrder.isMe(tx, type):
+            config.type = createOrder.type;
+            config.component = createOrder.message;
+            config.final = createOrder.final;
+            config.components = createOrder;
+            break;
+        case cancelOrder.isMe(tx, type):
+            config.type = cancelOrder.type;
+            config.component = cancelOrder.message;
+            config.final = cancelOrder.final;
+            config.components = cancelOrder;
+            break;
+        case matcher.isMe(tx, type):
+            config.type = matcher.type;
+            config.component = matcher.message;
+            config.final = matcher.final;
+            config.components = matcher;
+            break;
+        case coinomatConfirm.isMe(tx, type):
+            config.type = coinomatConfirm.type;
+            config.component = coinomatConfirm.message;
+            config.final = coinomatConfirm.final;
+            config.components = coinomatConfirm;
+            break;
             
             
-        case tx.type ===  SIGN_TYPE.BURN && type === 'transaction':
-            config.type = 'burn';
-            config.component = Burn;
-            config.final = BurnFinal;
-            break;
-        case tx.type === SIGN_TYPE.CANCEL_LEASING && type === 'transaction':
-            config.type = 'cancel-leasing';
-            config.component = CancelLease;
-            config.final = CancelLeaseFinal;
-            break;
-        case tx.type === SIGN_TYPE.CANCEL_ORDER && (type === 'cancelOrder' || type === 'request'):
-            config.type = 'cancel-order';
-            config.component = CancelOrder;
-            config.final = CancelOrderFinal;
-            break;
-        case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':
-            config.type = 'create-order';
-            config.component = CreateOrder;
-            config.final = CreateOrderFinal;
-            break;
+            
         case tx.type === SIGN_TYPE.DATA && type === 'transaction':
             config.type = 'data';
             config.component = Data;
@@ -111,25 +126,10 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.component = Issure;
             config.final = IssureFinal;
             break;
-        case tx.type === SIGN_TYPE.LEASE && type === 'transaction':
-            config.type = 'lease';
-            config.component = Lease;
-            config.final = LeaseFinal;
-            break;
         case tx.type === SIGN_TYPE.MASS_TRANSFER && type === 'transaction':
             config.type = 'mass_transfer';
             config.component = MassTransfer;
             config.final = MassTransferFinal;
-            break;
-        case tx.type === SIGN_TYPE.MATCHER_ORDERS && type === 'request':
-            config.type = 'matcher_orders';
-            config.component = Matcher;
-            config.final = MatcherFinal;
-            break;
-        case tx.type === SIGN_TYPE.COINOMAT_CONFIRMATION && type === 'request':
-            config.type = 'coinomat_confirm';
-            config.component = CoinomatConfirm;
-            config.final = CoinomatConfirmFinal;
             break;
         case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
             config.type = 'reissue';

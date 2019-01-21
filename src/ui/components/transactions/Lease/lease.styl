@@ -1,0 +1,17 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+
+.leaseTransactionCard
+  @extends .transaction-card
+
+.leaseCard_collapsed
+  .origin
+    display: none;
+
+.leaseTxIcon
+  @extends .txIcon
+
+.leaseTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;

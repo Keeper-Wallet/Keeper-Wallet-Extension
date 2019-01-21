@@ -31,6 +31,7 @@ export class MessageController extends EventEmitter {
 
         // Get assetInfo method from AssetInfoController
         this.assetInfo = options.assetInfo;
+        this.txInfo = options.txInfo;
         this.setPermission = options.setPermission;
         this.rejectAllByTime();
         this._updateBage(this.store.getState().messages);
@@ -134,6 +135,10 @@ export class MessageController extends EventEmitter {
         this.emit(`${message.id}:finished`, message);
     }
 
+
+    updateBadge() {
+        this._updateBage(this.store.getState().messages);
+    }
 
     rejectByOrigin(byOrigin) {
         const { messages } = this.store.getState();
@@ -389,6 +394,13 @@ export class MessageController extends EventEmitter {
                 result.messageHash = await this._getMessageHash(result);
                 if (message.data.successPath) {
                     result.successPath = message.data.successPath
+                }
+
+                switch (result.data.type) {
+                    case 9:
+                        result.lease = await this.txInfo(result.data.data.leaseId);
+                        break;
+
                 }
                 break;
             case 'cancelOrder':
