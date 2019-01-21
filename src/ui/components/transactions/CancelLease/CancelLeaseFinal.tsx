@@ -1,10 +1,9 @@
-import './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import { I18N_NAME_SPACE } from '../../../appConfig';
 
 @translate(I18N_NAME_SPACE)
-export class CreateOrderFinal extends React.PureComponent {
+export class CancelLeaseFinal extends React.PureComponent {
     
     readonly props;
     
@@ -15,11 +14,11 @@ export class CreateOrderFinal extends React.PureComponent {
             return <div>
                 <div className="margin-main headline2">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionApproved'>Your transaction is signed</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSendCreateOrder'>You have approved a Create Order transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmCreateOrder'>You have approved a Create Order transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendAlias'>An alias has been created.</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmAlias'>You have approved Alias creation.</Trans> : null}
                 </div>
             </div>
         }

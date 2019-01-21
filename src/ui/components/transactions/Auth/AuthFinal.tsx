@@ -8,7 +8,7 @@ export class AuthFinal extends React.PureComponent {
     readonly props;
     
     render() {
-        const { tx, isApprove, isReject, isSend } = this.props;
+        const { message, isApprove, isReject, isSend } = this.props;
         
         if (isApprove) {
             return <div>

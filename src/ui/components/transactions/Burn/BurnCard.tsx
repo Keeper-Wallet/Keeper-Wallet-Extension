@@ -1,4 +1,4 @@
-import * as styles from './transfer.styl';
+import * as styles from './burn.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
@@ -10,14 +10,14 @@ import { getMoney } from '../../../utils/converters';
 import { getAmount } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
-export class TransferCard extends React.PureComponent<ITransfer> {
+export class BurnCard extends React.PureComponent<IBurn> {
     
     render() {
         const className = cn(
-            styles.transferTransactionCard,
+            styles.burnTransactionCard,
             this.props.className,
             {
-                [styles.transferCard_collapsed]: this.props.collapsed
+                [styles.burnCard_collapsed]: this.props.collapsed
             },
         );
         
@@ -29,12 +29,12 @@ export class TransferCard extends React.PureComponent<ITransfer> {
         return <div className={className}>
 
             <div className={styles.cardHeader}>
-                <div className={styles.transferTxIcon}>
+                <div className={styles.burnTxIcon}>
                     <TxIcon txType={this.props.txType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.transfer'>Send</Trans>
+                        <Trans i18nKey='transactions.burn'>Token Burn</Trans>
                     </div>
                     <h1 className="headline1">
                         <Balance split={true}
@@ -57,7 +57,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
     }
 }
 
-interface ITransfer {
+interface IBurn {
     assets: any;
     className: string;
     collapsed: boolean;

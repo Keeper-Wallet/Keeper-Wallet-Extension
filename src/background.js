@@ -20,6 +20,7 @@ import {
     PermissionsController,
     UiStateController,
     AssetInfoController,
+    TxInfoController,
     ExternalDeviceController
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
@@ -89,7 +90,7 @@ async function setupBackgroundService() {
         extension.browserAction.setBadgeText({text});
         extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
     });
-
+    backgroundService.messageController.updateBadge();
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
         extension.tabs.create({url});
@@ -201,6 +202,11 @@ class BackgroundService extends EventEmitter {
             getNode: this.networkController.getNode.bind(this.networkController)
         });
 
+        this.txinfoController = new TxInfoController({
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getNode: this.networkController.getNode.bind(this.networkController)
+        });
+
         // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
         // Delegates different signing to walletController, broadcast and getMatcherPublicKey to networkController,
         // assetInfo for assetInfoController
@@ -213,6 +219,7 @@ class BackgroundService extends EventEmitter {
             broadcast: this.networkController.broadcast.bind(this.networkController),
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
+            txInfo: this.txinfoController.txInfo.bind(this.txinfoController),
             setPermission: this.permissionsController.setPermissions.bind(this.permissionsController)
         });
 

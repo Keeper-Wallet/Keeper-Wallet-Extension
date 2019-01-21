@@ -1,4 +1,4 @@
-import * as styles from './transfer.styl';
+import * as styles from './cancelOrder.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
@@ -10,14 +10,14 @@ import { getMoney } from '../../../utils/converters';
 import { getAmount } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
-export class TransferCard extends React.PureComponent<ITransfer> {
+export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
     
     render() {
         const className = cn(
-            styles.transferTransactionCard,
+            styles.cancelOrderTransactionCard,
             this.props.className,
             {
-                [styles.transferCard_collapsed]: this.props.collapsed
+                [styles.cancelOrderCard_collapsed]: this.props.collapsed
             },
         );
         
@@ -29,20 +29,15 @@ export class TransferCard extends React.PureComponent<ITransfer> {
         return <div className={className}>
 
             <div className={styles.cardHeader}>
-                <div className={styles.transferTxIcon}>
+                <div className={styles.cancelOrderTxIcon}>
                     <TxIcon txType={this.props.txType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.transfer'>Send</Trans>
+                        <Trans i18nKey='transactions.dex'>DEX</Trans>
                     </div>
                     <h1 className="headline1">
-                        <Balance split={true}
-                                 addSign='- '
-                                 showAsset={true}
-                                 balance={amount}
-                                 className={styles.txBalanceWrapper} 
-                        />
+                        <Trans i18nKey='transactions.orderCancel'>Cancel the order</Trans>
                     </h1>
                 </div>
             </div>
@@ -57,7 +52,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
     }
 }
 
-interface ITransfer {
+interface ICancelOrder {
     assets: any;
     className: string;
     collapsed: boolean;

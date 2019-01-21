@@ -16,5 +16,5 @@ export function getAmount(tx = null) {
 }
 
 export function isMe(tx: any, type: string) {
-    return tx.type = SIGN_TYPE.CREATE_ALIAS && type === 'transaction'
+    return tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction'
 }

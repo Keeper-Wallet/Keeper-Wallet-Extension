@@ -1,0 +1,38 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.matcherTransactionCard
+  @extends .transaction-card
+
+  .cardHeader,
+  .cardContent
+    flex-direction: column;
+    margin: 0;
+
+  .cardContent
+    padding-left: 0;
+    margin-bottom: 4px;
+    text-align: center;
+
+.matcherCard_collapsed
+  .origin
+    display: none;
+
+.matcherTxIcon
+  @extends .txIconBig
+
+.matcherTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.matcherOriginDescription
+  @extends .originDescription
+  color: $black;
+  font-size: 12px;
+
+.matcherOriginAddress
+  @extends .originAddress
+  padding-top:7px;
+  margin-bottom: 4px;
+  color: $black;
+  font-size: 14px;

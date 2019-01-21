@@ -4,7 +4,7 @@ import { OriginAuthFinal } from './OriginAuthFinal';
 import { OriginAuthInfo } from './OriginAuthInfo';
 import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
 
-const auth = {
+const originAuth = {
     type: messageType,
     message: OriginAuth,
     card: OriginAuthCard,
@@ -16,4 +16,4 @@ const auth = {
     isMe,
 };
 
-export default auth;
+export default originAuth;

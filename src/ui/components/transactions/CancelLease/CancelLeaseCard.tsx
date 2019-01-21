@@ -1,4 +1,4 @@
-import * as styles from './transfer.styl';
+import * as styles from './cancelLease.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
@@ -10,35 +10,35 @@ import { getMoney } from '../../../utils/converters';
 import { getAmount } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
-export class TransferCard extends React.PureComponent<ITransfer> {
+export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
     
     render() {
         const className = cn(
-            styles.transferTransactionCard,
+            styles.cancelLeaseTransactionCard,
             this.props.className,
             {
-                [styles.transferCard_collapsed]: this.props.collapsed
+                [styles.cancelLeaseCard_collapsed]: this.props.collapsed
             },
         );
         
         const { message, assets } = this.props;
         const { data = {} } = message;
+        
         const tx = { type: data.type, ...data.data };
-        const amount = getMoney(getAmount(tx), assets);
+        const amount = getMoney(getAmount(tx, message), assets);
         
         return <div className={className}>
 
             <div className={styles.cardHeader}>
-                <div className={styles.transferTxIcon}>
+                <div className={styles.cancelLeaseTxIcon}>
                     <TxIcon txType={this.props.txType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.transfer'>Send</Trans>
+                        <Trans i18nKey='transactions.cancelLease'>Cancel Lease</Trans>
                     </div>
                     <h1 className="headline1">
                         <Balance split={true}
-                                 addSign='- '
                                  showAsset={true}
                                  balance={amount}
                                  className={styles.txBalanceWrapper} 
@@ -57,7 +57,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
     }
 }
 
-interface ITransfer {
+interface ICancelLease {
     assets: any;
     className: string;
     collapsed: boolean;

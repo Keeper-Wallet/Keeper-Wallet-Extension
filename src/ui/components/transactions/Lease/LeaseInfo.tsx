@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
-import * as styles from './transfer.styl';
+import * as styles from './lease.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat } from '../../ui';
 import { getFee, getAssetsId, getAmount } from './parseTx';
@@ -8,7 +8,7 @@ import { getMoney } from '../../../utils/converters';
 
 
 @translate(I18N_NAME_SPACE)
-export class TransferInfo extends React.PureComponent<ITransferInfo> {
+export class LeaseInfo extends React.PureComponent<ILeaseInfo> {
     
     render() {
         
@@ -18,6 +18,13 @@ export class TransferInfo extends React.PureComponent<ITransferInfo> {
         
         const fee = getMoney(getFee(tx), assets);
         return <div>
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.nodeAddress'>Node address</Trans>
+                </div>
+                <div className={styles.txValue}>{tx.recipient}</div>
+            </div>
+            
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.txid'>TXID</Trans>
@@ -44,7 +51,7 @@ export class TransferInfo extends React.PureComponent<ITransferInfo> {
     }
 }
 
-interface ITransferInfo {
+interface ILeaseInfo {
     message: any;
     assets: any;
 }
