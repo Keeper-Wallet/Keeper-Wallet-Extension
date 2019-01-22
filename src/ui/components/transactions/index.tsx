@@ -14,13 +14,12 @@ import coinomatConfirm from './CoinomatConfirm';
 import massTransfer from './MassTransfer';
 import issue from './Issue';
 import reissue from './Reissue';
+import sponsorShip from './Sponsorship';
 
 
 
 import { Data } from './Data';
 import { DataFinal } from './DataFinal';
-import { SponsorShip } from './SponsorShip';
-import { SponsorShipFinal } from './SponsorShipFinal';
 import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
 import { SetAssetScript } from './SetAssetScript';
@@ -128,6 +127,12 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = reissue.final;
             config.components = reissue;
             break;
+        case sponsorShip.isMe(tx, type):
+            config.type = sponsorShip.type;
+            config.component = sponsorShip.message;
+            config.final = sponsorShip.final;
+            config.components = sponsorShip;
+            break;
             
             
             
@@ -145,13 +150,6 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'set-asset-script';
             config.component = SetAssetScript;
             config.final = SetAssetScriptFinal;
-            break;
-        case tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction':
-            const { minSponsoredAssetFee } = tx.data;
-            const zero = minSponsoredAssetFee.cloneWithTokens(0);
-            config.type = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
-            config.component = SponsorShip;
-            config.final = SponsorShipFinal;
             break;
         case tx.type === -1 && type === 'request':
             config.type = 'custom';
