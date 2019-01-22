@@ -8,7 +8,7 @@ export const PERMISSIONS = {
     APPROVED: 'approved',
 };
 
-export class OriginController {
+export class PermissionsController {
 
     constructor(options = {}) {
         const defaults = {
@@ -49,15 +49,25 @@ export class OriginController {
     hasPermission(origin, permission) {
         const permissions = this.getPermissions(origin);
 
-        if (permission.includes(PERMISSIONS.REJECTED)) {
+        if (permissions.includes(PERMISSIONS.REJECTED)) {
             return false;
         }
 
-        if (permission.includes(PERMISSIONS.ALL)) {
+        if (permissions.includes(PERMISSIONS.ALL)) {
             return true;
         }
 
         return permissions.includes(permission) ? true : null;
+    }
+
+    deletePermission(origin) {
+        const {  origins, ...other } = this.store.getState();
+
+        if (origins.hasOwnProperty(origin)) {
+            delete origins[origin];
+        }
+
+        this.store.updateState({ ...other, origins });
     }
 
     setPermissions(origin, permissions) {
@@ -95,5 +105,8 @@ export class OriginController {
             this.updateState({ blacklist, whitelist })
         } catch (e) {
         }
+
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => this._getBlackList(), 30000);
     }
 }

@@ -1,80 +1,128 @@
-import * as styles from './styles/langsSettings.styl';
+import * as styles from './styles/permissionsSettings.styl';
 import * as React from 'react'
-import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui/buttons';
-import { setLocale, setUiState } from '../../actions';
+import {connect} from 'react-redux';
+import {translate, Trans} from 'react-i18next';
+import {Button, BUTTON_TYPE} from '../ui/buttons';
+import {allowOrigin, deleteOrigin, disableOrigin} from '../../actions';
 import cn from 'classnames';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import {I18N_NAME_SPACE} from '../../appConfig';
+import {Loader, Modal} from '../ui';
 
-const Lang = ({ id, name, onSelect, selected }) => {
-    const className = cn(styles[id], styles.lang, {
-        [styles.selected]: selected
-    });
-    const iconClass = cn(styles.flagIcon, {
-        'selected-lang': selected,
-        [`flag-${id}-icon`]: !selected
-    });
-    
-    return <div className={className}>
-        <div className={`${styles.selectButton} fullwidth body1 left`} onClick={onSelect}>
-            <Trans i18nKey={`langsSettings.${id}`}>{name}</Trans>
+
+const OriginComponent = (params) => (
+    <div className={`${params.className} ${styles.permissoinItem}`}>
+        <div>{params.origin}</div>
+        <div className={styles.statusColor}>{params.status}</div>
+        <div>
+            {params.buttonAction}
+            {params.buttonDelete}
         </div>
-        <div className={iconClass}></div>
-    </div>;
-};
+    </div>
+);
 
 @translate(I18N_NAME_SPACE)
-class LangsSettingsComponent extends React.PureComponent {
+class PermissionsSettingsComponent extends React.PureComponent {
 
     readonly props;
-    confirmHandler = () => {
-        this.props.setUiState({ selectedLangs: true });
-    };
-    
-    render() {
-        
-        const className = cn(styles.content, { 'introLangList': !this.props.selectedLangs });
-        
-        return <div className={className}>
-            {this.props.hideTitle ? null : <h2 className="title1 margin-main-big">
-                <Trans i18nKey='langsSettings.title'>Change the language</Trans>
-            </h2>}
-            <div className={styles.langsList}>
-                {
-                    this.props.langs.map(({ id, name }) => {
-                        return <Lang id={id}
-                                     key={id}
-                                     name={name}
-                                     onSelect={() => this.onSelect(id)}
-                                     selected={id === this.props.currentLocale}/>
-                    })
-                }
-            </div>
-            {!this.props.selectedLangs ? <Button className={styles.langsConfirm}
-                                                 onClick={this.confirmHandler}
-                                                 type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey='langsSettings.confirm'>Confirm</Trans>
-                </Button> : null}
-        </div>
-    }
 
-    onSelect(lang) {
-        this.props.setLocale(lang);
+    allowHandler = (origin) => {
+        this.props.allowOrigin(origin);
+    };
+
+    disableHandler = (origin) => {
+        this.props.disableOrigin(origin);
+    };
+
+    deleteHandler = (origin) => {
+        this.props.deleteOrigin(origin);
+    };
+
+    render() {
+
+        const className = cn(styles.content);
+        const origins = Object.entries(this.props.origins);
+        const {
+            pending,
+            allowed,
+            disallowed,
+            deleted
+        } = this.props;
+
+        return <div className={className}>
+            <h2 className="title1 center margin-main-big">
+                <Trans i18nKey='permissionsSettings.title'>Permissions control</Trans>
+            </h2>
+
+            <Loader hide={!pending}/>
+
+            {origins.length ? null : <div className={styles.emptyBlock}>
+                <div className={styles.icon}></div>
+                <div className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}>
+                    <Trans i18nKey='permissionsSettings.empty'>Nothing Here...</Trans>
+                </div>
+            </div>}
+
+            <div className={styles.permissoinList}>
+                {origins.map(([origin = '', status = []]) => {
+
+                    const buttonDisable = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                 onClick={() => this.disableHandler(origin)}
+                                                 className={`${styles.button} ${styles.disable}`}>
+                    </Button>;
+
+                    const buttonEnable = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                 onClick={() => this.allowHandler(origin)}
+                                                 className={`${styles.button} ${styles.enable}`}>
+                    </Button>;
+
+                    const buttonDelete = <Button type={BUTTON_TYPE.TRANSPARENT}
+                                                 onClick={() => this.deleteHandler(origin)}
+                                                 className={`${styles.button} ${styles.delete}`}>
+                    </Button>;
+
+                    const myStatus = status && status[0];
+
+                    const className = cn({
+                        [styles.approved]: myStatus === 'approved',
+                        [styles.rejected]: myStatus === 'rejected',
+                    });
+                    const params = {
+                        className,
+                        key: origin + myStatus,
+                        origin,
+                        status: myStatus,
+                        buttonAction: myStatus.includes('approved') ? buttonDisable : buttonEnable,
+                        buttonDelete,
+                    };
+
+                    return <OriginComponent {...params} />
+                })}
+            </div>
+
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                   showModal={allowed || disallowed || deleted}
+                   showChildrenOnly={true}>
+                <div className='modal notification'>
+                    {allowed ? <Trans i18nKey='permissionsSettings.notify.allowed'>Allowed!</Trans> : null}
+                    {disallowed ? <Trans i18nKey='permissionsSettings.notify.disallowed'>Disallowed!</Trans> : null}
+                    {deleted ? <Trans i18nKey='permissionsSettings.notify.deleted'>Deleted!</Trans> : null}
+                </div>
+            </Modal>
+        </div>
     }
 }
 
-const mapStateToProps = function(store) {
+const mapStateToProps = function (store) {
     return {
-        currentLocale: store.currentLocale,
-        langs: store.langs,
-        selectedLangs: store.uiState.selectedLangs
+        origins: store.origins,
+        ...store.permissions,
     };
 };
 
 const actions = {
-    setUiState,
-    setLocale,
+    allowOrigin,
+    deleteOrigin,
+    disableOrigin,
 };
 
-export const LangsSettings = connect(mapStateToProps, actions)(LangsSettingsComponent);
+export const PermissionsSettings = connect(mapStateToProps, actions)(PermissionsSettingsComponent);

@@ -23,14 +23,16 @@ class MessagesComponent extends React.Component {
         this.cleanMessageStatus();
     };
     clearMessageStatusHandlerNoClose = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         this.cleanMessageStatus(true);
     };
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
-        if (this.state.loading) {
+        if (this.state.loading || this.state.approvePending) {
             return <Intro/>
         }
         
@@ -42,6 +44,7 @@ class MessagesComponent extends React.Component {
     
         if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
+                                     message={this.props.activeMessage}
                                      hasNewMessages={this.props.hasNewMessages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
@@ -62,6 +65,7 @@ class MessagesComponent extends React.Component {
                           selectedAccount={this.state.selectedAccount}
                           clearMessagesHandler={this.clearMessagesHandler }
                           clearMessageStatusHandler={this.clearMessageStatusHandler }
+                          clearMessageStatusHandlerNoClose={this.clearMessageStatusHandlerNoClose }
                           reject={this.rejectHandler}
                           approve={this.approveHandler}
                           selectAccount={this.selectAccountHandler}>

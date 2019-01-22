@@ -29,10 +29,8 @@ async function startUi() {
         }
     };
     const dnode = setupDnode(connectionStream, emitterApi, 'api');
-    console.log('Connect remote')
     const background = await new Promise(resolve => {
         dnode.once('remote', (background) => {
-            console.log('Connected remote')
 
             let backgroundWithPromises = transformMethods(cbToPromise, background);
             // Add event emitter api to background object
@@ -44,18 +42,18 @@ async function startUi() {
 
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
-        global.background = background
+        global.background = background;
+        console.log('inited');
     }
-
-    console.log('inited');
 
     // If popup is opened close notification window
     if (extension.extension.getViews({type: 'popup'}).length > 0) {
         await background.closeNotificationWindow();
     }
 
-    console.log('closed windows');
-
+    if (WAVESKEEPER_DEBUG) {
+        console.log('closed windows');
+    }
     // Initialize app
     initApp(background);
 }

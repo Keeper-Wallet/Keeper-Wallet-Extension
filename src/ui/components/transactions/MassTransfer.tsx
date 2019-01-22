@@ -13,7 +13,7 @@ const MIN_COUNT = 3;
 const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
     const data = transfers.slice(0, count).map(
         ({ recipient, amount }) => {
-            const money = amount instanceof Money ? amount : totalAmount.cloneWithTokens(amount);
+            const money = amount instanceof Money ? amount : totalAmount.cloneWithCoins(amount);
             return <div key={recipient} className={styles.txRow}>
                 <div className="tx-title-black">{recipient}</div>
                 <div className='tag1 basic500'>
@@ -60,7 +60,17 @@ export class MassTransfer extends SignClass {
     
     render() {
         const {data: tx} = this.props.signData;
-
+    
+        const amount = tx.transfers.reduce((acc, { amount }) => {
+        
+            if (typeof amount === 'number' || typeof amount === 'string') {
+                return acc.add(tx.totalAmount.cloneWithCoins(amount || 0));
+            }
+        
+            return acc.add(amount);
+        
+        }, tx.totalAmount.cloneWithTokens(0));
+        
         return <div className={styles.transaction}>
             {super.render()}
             <div className={styles.txScrollBox}>
@@ -70,12 +80,12 @@ export class MassTransfer extends SignClass {
                 </div>
 
                 <div className={`${styles.txBalance} center headline2`}>
-                    <Balance split={true} addSign='- ' showAsset={true} balance={tx.totalAmount} className={styles.txBalanceWrapper} />
+                    <Balance split={true} addSign='- ' showAsset={true} balance={amount} className={styles.txBalanceWrapper} />
                 </div>
 
                 <div>
                     <Transfers transfers={tx.transfers}
-                               totalAmount={tx.totalAmount}
+                               totalAmount={amount}
                                count={this.state.count}/>
                     
                     <ToggleList count={tx.transfers.length}

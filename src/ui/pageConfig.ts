@@ -23,7 +23,8 @@ import {
     Messages,
     ForgotPassword,
     SelectTxAccount,
-    PairingAccountQr
+    PairingAccountQr,
+    PermissionsSettings
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -58,6 +59,7 @@ export const PAGES = {
     CHANGE_PASSWORD: 'change_password_settings',
     DELETE_ACCOUNT: 'delete_account',
     PAIRING: 'pairing',
+    PERMISSIONS: 'origin_permisiions',
     MESSAGES: 'messages',
     FORGOT: 'forgot_password',
     CHANGE_TX_ACCOUNT: 'change_tx_account',
@@ -325,6 +327,17 @@ export const PAGES_CONF = {
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
+    },
+    [PAGES.PERMISSIONS]: {
+        component: PermissionsSettings,
         bottom: {
             hide: true,
         },

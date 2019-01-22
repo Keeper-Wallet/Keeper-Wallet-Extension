@@ -31,11 +31,14 @@ import { SponsorShip } from './SponsorShip';
 import { SponsorShipFinal } from './SponsorShipFinal';
 import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
+import { SetAssetScript } from './SetAssetScript';
+import { SetAssetScriptFinal } from './SetAssetScriptFinal';
 import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
 import { UnknownFinal } from './UnknownFinal';
 import { OriginAuth } from './OriginAuth';
+import { OriginAuthFinal } from './OriginAuthFinal';
 
 export { FinalTransaction } from './FinalTransaction';
 
@@ -50,7 +53,7 @@ export const getConfigByTransaction = (tx, type = null) => {
         case type === 'authOrigin':
             config.type = 'authOrigin';
             config.component = OriginAuth;
-            config.final = UnknownFinal;
+            config.final = OriginAuthFinal;
             break;
         case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
             config.type = 'transfer';
@@ -126,6 +129,11 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'set-script';
             config.component = SetScript;
             config.final = SetScriptFinal;
+            break;
+        case tx.type === SIGN_TYPE.SET_ASSET_SCRIPT && type === 'transaction':
+            config.type = 'set-asset-script';
+            config.component = SetAssetScript;
+            config.final = SetAssetScriptFinal;
             break;
         case tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction':
             const { minSponsoredAssetFee } = tx.data;

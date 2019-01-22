@@ -74,7 +74,6 @@ export class NetworkController {
 
             keyMap[url] = await resp.text()
         }
-        console.log(keyMap[url]);
         return keyMap[url];
     }
 

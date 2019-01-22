@@ -10,3 +10,4 @@ export * from './account';
 export * from './menu';
 export * from './messages';
 export * from './pairing';
+export * from './permissions';

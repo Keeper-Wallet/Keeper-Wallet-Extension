@@ -1,16 +1,36 @@
 import {ACTION} from './constants';
 
-export const approve = messageId => ({
-    type: ACTION.APPROVE,
-    payload: messageId
+export const allowOrigin = origin => ({
+    type: ACTION.PERMISSIONS.ALLOW,
+    payload: origin,
 });
 
-export const clearMessages = () => ({
-    type: ACTION.CLEAR_MESSAGES,
-    payload: null
+export const disableOrigin = origin => ({
+    type: ACTION.PERMISSIONS.DISALLOW,
+    payload: origin,
 });
 
-export const reject = messageId => ({
-    type: ACTION.REJECT,
-    payload: messageId
+export const deleteOrigin = origin => ({
+    type: ACTION.PERMISSIONS.DELETE,
+    payload: origin,
+});
+
+export const pendingOrigin = state => ({
+    type: ACTION.PERMISSIONS.PENDING,
+    payload: state,
+});
+
+export const allowOriginDone = state => ({
+    type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
+    payload: state,
+});
+
+export const disallowOriginDone = state => ({
+    type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
+    payload: state,
+});
+
+export const deleteOriginDone = state => ({
+    type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
+    payload: state,
 });

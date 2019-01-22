@@ -1,3 +1,5 @@
+export const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
+
 export const CONFIG = {
     SEED_MIN_LENGTH: 24,
     NAME_MIN_LENGTH: 1,

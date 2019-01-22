@@ -17,14 +17,16 @@ import {
     NetworkController,
     MessageController,
     BalanceController,
-    OriginController,
+    PermissionsController,
     UiStateController,
     AssetInfoController,
     ExternalDeviceController
 } from './controllers';
-import { PERMISSIONS } from './controllers/OriginController';
+import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
+import { getAdapterByType } from '@waves/signature-adapter'
+
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
@@ -34,6 +36,8 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
 
+const Adapter = getAdapterByType('seed');
+const adapter = new Adapter('test seed for get seed adapter info');
 
 async function setupBackgroundService() {
     // Background service init
@@ -184,8 +188,8 @@ class BackgroundService extends EventEmitter {
             getAccounts: this.walletController.getAccounts.bind(this.walletController)
         });
 
-        this.originController = new OriginController({
-            initState: initState.originController,
+        this.permissionsController = new PermissionsController({
+            initState: initState.PermissionsController,
         });
 
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -209,7 +213,7 @@ class BackgroundService extends EventEmitter {
             broadcast: this.networkController.broadcast.bind(this.networkController),
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
-            setPermission: this.originController.setPermissions.bind(this.originController)
+            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController)
         });
 
 
@@ -220,7 +224,7 @@ class BackgroundService extends EventEmitter {
             NetworkController: this.networkController.store,
             MessageController: this.messageController.store,
             BalanceController: this.balanceController.store,
-            OriginController: this.originController.store,
+            PermissionsController: this.permissionsController.store,
             UiStateController: this.uiStateController.store,
             AssetInfoController: this.assetInfoController.store
         });
@@ -286,11 +290,15 @@ class BackgroundService extends EventEmitter {
             // origin settings
             allowOrigin: async (origin) => {
                 this.messageController.rejectByOrigin(origin);
-                this.originController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
+                this.permissionsController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
             },
 
             disableOrigin: async (origin) => {
-                this.originController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+                this.permissionsController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+            },
+
+            deleteOrigin: async (origin) => {
+                this.permissionsController.deletePermission(origin);
             }
         }
     }
@@ -306,22 +314,30 @@ class BackgroundService extends EventEmitter {
             }
 
             //Check messages permissions
-            const canIUse = this.originController.hasPermission(origin, PERMISSIONS.APPROVED);
+            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
 
             if (!canIUse && canIUse != null) {
                 throw new Error('Api rejected by user');
             }
 
             if (canIUse === null) {
-                let messageId = this.originController.getMessageIdAccess(origin);
+                let messageId = this.permissionsController.getMessageIdAccess(origin);
 
                 if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin, permission: PERMISSIONS.APPROVED }, 'authOrigin', origin, selectedAccount, false);
-                    this.originController.setMessageIdAccess(origin, messageId);
+                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                    this.permissionsController.setMessageIdAccess(origin, messageId);
                 }
 
                 this.emit('Show notification');
-                await this.messageController.getMessageResult(messageId);
+                
+                await this.messageController.getMessageResult(messageId)
+                    .then(() => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                    })
+                    .catch((e) => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                        return Promise.reject(e);
+                });
             }
 
             const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
@@ -360,14 +376,44 @@ class BackgroundService extends EventEmitter {
 
         };
 
-        api.publicState = async () => this._publicState(this.getState(), origin);
+        api.publicState = async () => {
+            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+            const { selectedAccount } = this.getState();
 
-        if (origin === 'client.wavesplatform.com' || origin === 'chrome-ext.wvservices.com') {
+            if (!canIUse && canIUse != null) {
+                throw new Error('Api rejected by user');
+            }
+
+            if (canIUse === null) {
+                let messageId = this.permissionsController.getMessageIdAccess(origin);
+
+                if (!messageId) {
+                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                    this.permissionsController.setMessageIdAccess(origin, messageId);
+                }
+
+                this.emit('Show notification');
+
+                await this.messageController.getMessageResult(messageId)
+                    .then(() => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                    })
+                    .catch((e) => {
+                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                        return Promise.reject(e);
+                    });
+            }
+
+            return this._publicState(this.getState(), origin);
+        };
+
+        if (origin === 'client.wavesplatform.com') {
             api.signBytes = async (data, from) => {
                 if (!Array.isArray(data)) {
                     throw new Error('Wrong data format');
                 }
-                await newMessage(data, 'bytes', from, false);
+
+                return await newMessage(data, 'bytes', from, false);
             }
         }
 
@@ -431,8 +477,9 @@ class BackgroundService extends EventEmitter {
 
         let account = null;
         let messages = [];
+        const canIUse = this.permissionsController.hasPermission(originReq, PERMISSIONS.APPROVED);
 
-        if (!state.locked && state.selectedAccount) {
+        if (!state.locked && state.selectedAccount && canIUse) {
 
             const address = state.selectedAccount.address;
 
@@ -452,6 +499,7 @@ class BackgroundService extends EventEmitter {
             account,
             network: this._getCurrentNtwork(state.selectedAccount),
             messages,
+            txVersion: adapter.getSignVersions(),
         }
     }
 }

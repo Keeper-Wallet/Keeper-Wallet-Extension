@@ -4,22 +4,22 @@ import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
-export class DataFinal extends React.PureComponent {
+export class SetAssetScriptFinal extends React.PureComponent {
     
     readonly props;
     
     render() {
-        const { tx, isApprove, isReject, isSend } = this.props;
+        const { isApprove, isReject, isSend } = this.props;
         
         if (isApprove) {
             return <div>
                 <div className="margin-main headline2">
-                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionApproved'>Your transaction is signed</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is send!</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction is confirmed!</Trans>: null}
                 </div>
                 <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSendData'>You have created a Data transaction</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmData'>You have approved a Data transaction</Trans> : null}
+                    {isSend ? <Trans i18nKey='sign.transactionSendSetAssetScript'>You have created a asset script transaction</Trans> : null}
+                    {!isSend ? <Trans i18nKey='sign.transactionConfirmSetAssetScript'>You have approved a Set Asset Script transaction</Trans> : null}
                 </div>
             </div>
         }

@@ -50,10 +50,10 @@ const DateFromFormat = ({ value, format }) => {
             if (index > prev.index) {
                 const res = format.slice(prev.index, index);
                 prev.index += res.length;
-                prev.data.push(<span key={res}>{res}</span>)
+                prev.data.push(<span key={res + ind}>{res}</span>)
             }
             const Comp = TYPES[current.type];
-            prev.data.push(<Comp value={value} key={ current.type + prev.index + ind}></Comp>);
+            prev.data.push(<Comp value={value} key={ current.type + prev.index + ind }></Comp>);
             prev.index += current.type.length;
             return prev;
         }, { data: [], index: 0 }).data

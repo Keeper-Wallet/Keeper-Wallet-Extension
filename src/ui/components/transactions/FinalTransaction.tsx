@@ -23,16 +23,15 @@ export class FinalTransaction extends React.PureComponent {
     readonly props: any;
 
     render() {
-        const { transactionStatus, hasNewMessages } = this.props;
+        const { transactionStatus, hasNewMessages, message, selectedAccount } = this.props;
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
-        const message = transactionStatus.approveOk && transactionStatus.approveOk.message || {};
         const signData = this.props.signData;
         const config = this.props.config;
         const FinalComponent = config.final;
         const isSend = message.broadcast;
-        const network = message.account && message.account.networkCode;
+        const network = selectedAccount && selectedAccount.networkCode;
         const txLink = `https://${ network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
         const className = cn(styles.txBigIcon, 'margin-main', {
             'tx-reject-icon': isReject,
@@ -47,7 +46,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main">
                     {isApprove || isReject ?
-                        <FinalComponent tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast}/> : null}
+                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast}/> : null}
                     {isError ?
                         <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>
@@ -66,7 +65,7 @@ export class FinalTransaction extends React.PureComponent {
                 </Button>
             </div>
             
-            {isSend ?
+            {isSend && isApprove ?
                 <div className="center">
                     <a className="link black" href={txLink} target="_blank">
                         <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
