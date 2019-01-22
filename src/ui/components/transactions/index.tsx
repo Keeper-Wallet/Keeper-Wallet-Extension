@@ -11,11 +11,8 @@ import createOrder from './CreateOrder';
 import cancelOrder from './CancelOrder';
 import matcher from './MatcherOrders';
 import coinomatConfirm from './CoinomatConfirm';
+import massTransfer from './MassTransfer';
 
-
-
-import { MassTransfer } from './MassTransfer';
-import { MassTransferFinal } from './MassTransferFinal';
 import { Issure } from './Issure';
 import { IssureFinal } from './IssureFinal';
 import { ReIssure } from './ReIssure';
@@ -113,6 +110,12 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = coinomatConfirm.final;
             config.components = coinomatConfirm;
             break;
+        case massTransfer.isMe(tx, type):
+            config.type = massTransfer.type;
+            config.component = massTransfer.message;
+            config.final = massTransfer.final;
+            config.components = massTransfer;
+            break;
             
             
             
@@ -125,11 +128,6 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'issue';
             config.component = Issure;
             config.final = IssureFinal;
-            break;
-        case tx.type === SIGN_TYPE.MASS_TRANSFER && type === 'transaction':
-            config.type = 'mass_transfer';
-            config.component = MassTransfer;
-            config.final = MassTransferFinal;
             break;
         case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
             config.type = 'reissue';
