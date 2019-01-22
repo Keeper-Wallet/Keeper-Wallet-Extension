@@ -8,7 +8,7 @@ import { getMoney } from '../../../utils/converters';
 
 
 @translate(I18N_NAME_SPACE)
-export class IssueInfo extends React.PureComponent<ITransferInfo> {
+export class ReissueInfo extends React.PureComponent<ITransferInfo> {
     
     render() {
         const { message, assets } = this.props;
@@ -17,6 +17,14 @@ export class IssueInfo extends React.PureComponent<ITransferInfo> {
         
         const fee = getMoney(getFee(tx), assets);
         return <div>
+    
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.assetId'>Asset ID</Trans>
+                </div>
+                <div className={styles.txValue}>{tx.assetId}</div>
+            </div>
+            
             { tx.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>

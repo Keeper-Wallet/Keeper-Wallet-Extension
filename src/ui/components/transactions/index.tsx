@@ -12,12 +12,11 @@ import cancelOrder from './CancelOrder';
 import matcher from './MatcherOrders';
 import coinomatConfirm from './CoinomatConfirm';
 import massTransfer from './MassTransfer';
-import issure from './Issue';
+import issue from './Issue';
+import reissue from './Reissue';
 
 
 
-import { ReIssure } from './ReIssure';
-import { ReIssureFinal } from './ReIssureFinal';
 import { Data } from './Data';
 import { DataFinal } from './DataFinal';
 import { SponsorShip } from './SponsorShip';
@@ -117,11 +116,17 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = massTransfer.final;
             config.components = massTransfer;
             break;
-        case issure.isMe(tx, type):
-            config.type = issure.type;
-            config.component = issure.message;
-            config.final = issure.final;
-            config.components = issure;
+        case issue.isMe(tx, type):
+            config.type = issue.type;
+            config.component = issue.message;
+            config.final = issue.final;
+            config.components = issue;
+            break;
+        case reissue.isMe(tx, type):
+            config.type = reissue.type;
+            config.component = reissue.message;
+            config.final = reissue.final;
+            config.components = reissue;
             break;
             
             
@@ -130,11 +135,6 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'data';
             config.component = Data;
             config.final = DataFinal;
-            break;
-        case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
-            config.type = 'reissue';
-            config.component = ReIssure;
-            config.final = ReIssureFinal;
             break;
         case tx.type === SIGN_TYPE.SET_SCRIPT && type === 'transaction':
             config.type = 'set-script';
