@@ -1,0 +1,17 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+
+.massTransferTransactionCard
+  @extends .transaction-card
+
+.massTransferCard_collapsed
+  .origin
+    display: none;
+
+.massTransferTxIcon
+  @extends .txIcon
+
+.massTransferTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;

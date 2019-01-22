@@ -23,7 +23,7 @@ export class FinalTransaction extends React.PureComponent {
     readonly props: any;
 
     render() {
-        const { transactionStatus, hasNewMessages, message, selectedAccount } = this.props;
+        const { transactionStatus, hasNewMessages, message, selectedAccount, assets } = this.props;
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
@@ -45,7 +45,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main">
                     {isApprove || isReject ?
-                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast} message={message}/> : null}
+                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast} message={message} assets={assets}/> : null}
                     {isError ?
                         <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>

@@ -2,17 +2,17 @@ import { BigNumber, Money } from '@waves/data-entities';
 
 export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
     if (amount && amount.assetId ) {
-        const ref = new Money(0, assets[amount.assetId]);
-        
+        let amountResult = new Money(0, assets[amount.assetId]);
+
         if ('tokens' in amount) {
-            return ref.cloneWithTokens(amount.tokens);
+            amountResult = amountResult.cloneWithTokens(amount.tokens);
         }
         
         if ('coins' in amount) {
-            return ref.cloneWithCoins(amount.coins);
+            amountResult = amountResult.plus(amountResult.cloneWithCoins(amount.coins));
         }
         
-        return ref;
+        return amountResult;
     }
 };
 
@@ -36,7 +36,7 @@ export const getMoney = (amount: TAmount, assets) => {
 type TAmount = IMoneyLike|BigNumber|Money|string|number;
 
 interface IMoneyLike {
-    coins?: number|string;
-    tokens?: number|string;
+    coins?: number|string|BigNumber;
+    tokens?: number|string|BigNumber;
     assetId: string;
 }
