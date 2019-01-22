@@ -12,9 +12,10 @@ import cancelOrder from './CancelOrder';
 import matcher from './MatcherOrders';
 import coinomatConfirm from './CoinomatConfirm';
 import massTransfer from './MassTransfer';
+import issure from './Issue';
 
-import { Issure } from './Issure';
-import { IssureFinal } from './IssureFinal';
+
+
 import { ReIssure } from './ReIssure';
 import { ReIssureFinal } from './ReIssureFinal';
 import { Data } from './Data';
@@ -116,6 +117,12 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = massTransfer.final;
             config.components = massTransfer;
             break;
+        case issure.isMe(tx, type):
+            config.type = issure.type;
+            config.component = issure.message;
+            config.final = issure.final;
+            config.components = issure;
+            break;
             
             
             
@@ -123,11 +130,6 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.type = 'data';
             config.component = Data;
             config.final = DataFinal;
-            break;
-        case tx.type === SIGN_TYPE.ISSUE && type === 'transaction':
-            config.type = 'issue';
-            config.component = Issure;
-            config.final = IssureFinal;
             break;
         case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
             config.type = 'reissue';
