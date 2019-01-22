@@ -1,0 +1,63 @@
+import * as styles from './index.styl';
+import * as React from 'react'
+import { translate, Trans } from 'react-i18next';
+import { TxIcon } from '../TransactionIcon';
+import { I18N_NAME_SPACE } from '../../../appConfig';
+import * as cn from 'classnames';
+import { OriginWarning } from '../OriginWarning';
+import { messageType } from './parseTx';
+import { ShowScript } from '../../ui';
+
+
+const DataText = ({ script }) => ( script.split('\n').map((str) => <div>{str.replace(/\s/g, '&nbsp')}</div>) );
+
+@translate(I18N_NAME_SPACE)
+export class DataCard extends React.PureComponent<IData> {
+    
+    render() {
+        const className = cn(
+            styles.dataTransactionCard,
+            this.props.className,
+            {
+                [styles.dataCard_collapsed]: this.props.collapsed
+            },
+        );
+        
+        const { message, assets } = this.props;
+        const { data = {} } = message;
+        const tx = { type: data.type, ...data.data };
+        const script = tx.data.map(item => JSON.stringify(item, null, 4)).join('\n');
+        return <div className={className}>
+
+            <div className={styles.cardHeader}>
+                <div className={styles.dataTxIcon}>
+                    <TxIcon txType={messageType}/>
+                </div>
+                <div>
+                    <div className="basic500 body3 margin-min">
+                        <Trans i18nKey='transactions.dataTransaction'>Entry in blockchain</Trans>
+                    </div>
+                    <h1 className="headline1">
+                        <Trans i18nKey='transactions.dataTransactionName'>Data Transaction</Trans>
+                    </h1>
+                </div>
+            </div>
+            
+            <div className={styles.cardContent}>
+                <ShowScript script={script} />
+                
+                <div className={styles.origin}>
+                    <OriginWarning message={message}/>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+
+interface IData {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}

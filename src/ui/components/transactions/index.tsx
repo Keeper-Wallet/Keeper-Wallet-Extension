@@ -15,11 +15,9 @@ import massTransfer from './MassTransfer';
 import issue from './Issue';
 import reissue from './Reissue';
 import sponsorShip from './Sponsorship';
+import data from './Data';
 
 
-
-import { Data } from './Data';
-import { DataFinal } from './DataFinal';
 import { SetScript } from './SetScript';
 import { SetScriptFinal } from './SetScriptFinal';
 import { SetAssetScript } from './SetAssetScript';
@@ -133,14 +131,14 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = sponsorShip.final;
             config.components = sponsorShip;
             break;
-            
-            
-            
-        case tx.type === SIGN_TYPE.DATA && type === 'transaction':
-            config.type = 'data';
-            config.component = Data;
-            config.final = DataFinal;
+        case data.isMe(tx, type):
+            config.type = data.type;
+            config.component = data.message;
+            config.final = data.final;
+            config.components = data;
             break;
+            
+            
         case tx.type === SIGN_TYPE.SET_SCRIPT && type === 'transaction':
             config.type = 'set-script';
             config.component = SetScript;
