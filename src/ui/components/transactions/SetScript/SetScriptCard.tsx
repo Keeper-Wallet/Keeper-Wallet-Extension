@@ -11,25 +11,25 @@ import { ShowScript } from '../../ui';
 
 
 @translate(I18N_NAME_SPACE)
-export class DataCard extends React.PureComponent<IData> {
+export class SetScriptCard extends React.PureComponent<ISetScript> {
     
     render() {
         const className = cn(
-            styles.dataTransactionCard,
+            styles.setScriptTransactionCard,
             this.props.className,
             {
-                [styles.dataCard_collapsed]: this.props.collapsed
+                [styles.setScriptCard_collapsed]: this.props.collapsed
             },
         );
         
-        const { message, assets } = this.props;
+        const { message } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
-        const script = tx.data.map(item => JSON.stringify(item, null, 4)).join('\n');
+        const script = tx.script;
         return <div className={className}>
 
             <div className={styles.cardHeader}>
-                <div className={styles.dataTxIcon}>
+                <div className={styles.setScriptTxIcon}>
                     <TxIcon txType={messageType}/>
                 </div>
                 <div>
@@ -37,7 +37,7 @@ export class DataCard extends React.PureComponent<IData> {
                         <Trans i18nKey='transactions.dataTransaction'>Entry in blockchain</Trans>
                     </div>
                     <h1 className="headline1">
-                        <Trans i18nKey='transactions.dataTransactionName'>Data Transaction</Trans>
+                        <Trans i18nKey='transactions.setScriptTransaction'>Script transaction</Trans>
                     </h1>
                 </div>
             </div>
@@ -54,7 +54,7 @@ export class DataCard extends React.PureComponent<IData> {
     }
 }
 
-interface IData {
+interface ISetScript {
     assets: any;
     className?: string;
     collapsed: boolean;

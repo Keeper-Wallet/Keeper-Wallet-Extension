@@ -16,12 +16,11 @@ import issue from './Issue';
 import reissue from './Reissue';
 import sponsorShip from './Sponsorship';
 import data from './Data';
+import setScript from './SetScript';
+import assetScript from './AssetScript';
 
 
-import { SetScript } from './SetScript';
-import { SetScriptFinal } from './SetScriptFinal';
-import { SetAssetScript } from './SetAssetScript';
-import { SetAssetScriptFinal } from './SetAssetScriptFinal';
+
 import { CustomSign } from './CustomSign';
 import { CustomSignFinal } from './CustomSignFinal';
 import { Unknown } from './Unknown';
@@ -137,18 +136,21 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = data.final;
             config.components = data;
             break;
-            
-            
-        case tx.type === SIGN_TYPE.SET_SCRIPT && type === 'transaction':
-            config.type = 'set-script';
-            config.component = SetScript;
-            config.final = SetScriptFinal;
+        case setScript.isMe(tx, type):
+            config.type = setScript.type;
+            config.component = setScript.message;
+            config.final = setScript.final;
+            config.components = setScript;
             break;
-        case tx.type === SIGN_TYPE.SET_ASSET_SCRIPT && type === 'transaction':
-            config.type = 'set-asset-script';
-            config.component = SetAssetScript;
-            config.final = SetAssetScriptFinal;
+        case assetScript.isMe(tx, type):
+            config.type = assetScript.type;
+            config.component = assetScript.message;
+            config.final = assetScript.final;
+            config.components = assetScript;
             break;
+            
+
+
         case tx.type === -1 && type === 'request':
             config.type = 'custom';
             config.component = CustomSign;
