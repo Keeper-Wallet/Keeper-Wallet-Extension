@@ -41,7 +41,6 @@ export class BurnCard extends React.PureComponent<IBurn> {
                                  addSign='- '
                                  showAsset={true}
                                  balance={amount}
-                                 className={styles.txBalanceWrapper} 
                         />
                     </h1>
                 </div>

@@ -38,11 +38,11 @@ export class BurnInfo extends React.PureComponent<IBurnInfo> {
                 }</div>
             </div>
     
-            { asset.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+            { asset.description ? <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>
                 </div>
-                <div className={`${styles.txValue} plate fullwidth`}>{asset.description}</div>
+                <div className={styles.txValue}>{asset.description}</div>
             </div> : null }
             
             <div className={styles.txRow}>
