@@ -44,7 +44,7 @@ export class ShowScript extends React.PureComponent {
         }
         
         return <div className={`plate plate-with-controls break-all ${showAllClass}`}>
-            <div ref={this.getScriptRef} className={`${styles.txValue}`}>{script}</div>
+            <pre ref={this.getScriptRef} className={`${styles.codeScript}`}>{script}</pre>
             <div className="buttons-wrapper">
                 { script ? <Copy text={script} onCopy={this.onCopy}>
                     <Button>
