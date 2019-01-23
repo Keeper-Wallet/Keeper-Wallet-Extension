@@ -5,6 +5,8 @@
 + Fix init badge on restart keeper
 + Refactor request and change design
 + Init cancel lease request (fetch transaction lease)
++ Fix public state permissions on empty keeper
+
 
 ####version 1.0.7
 

@@ -385,9 +385,15 @@ class BackgroundService extends EventEmitter {
 
         api.publicState = async () => {
             const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
-            const { selectedAccount } = this.getState();
+            const state = this.getState();
+            const { selectedAccount, initialized } = state;
 
-            if (!canIUse && canIUse != null) {
+            if (!selectedAccount) {
+                const msg = !initialized ? 'Init Waves Keeper and add account' : 'Add Waves Keeper account';
+                throw new Error(msg);
+            }
+
+            if (!canIUse && canIUse != null ) {
                 throw new Error('Api rejected by user');
             }
 
