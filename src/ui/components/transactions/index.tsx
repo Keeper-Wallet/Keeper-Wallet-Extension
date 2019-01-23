@@ -1,5 +1,3 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
-
 import auth from './Auth';
 import alias from './Alias';
 import originAuth from './OriginAuth';
@@ -18,13 +16,7 @@ import sponsorShip from './Sponsorship';
 import data from './Data';
 import setScript from './SetScript';
 import assetScript from './AssetScript';
-
-
-
-import { CustomSign } from './CustomSign';
-import { CustomSignFinal } from './CustomSignFinal';
-import { Unknown } from './Unknown';
-import { UnknownFinal } from './UnknownFinal';
+import unknown from './Unknown';
 
 
 export { FinalTransaction } from './FinalTransaction';
@@ -148,17 +140,11 @@ export const getConfigByTransaction = (tx, type = null) => {
             config.final = assetScript.final;
             config.components = assetScript;
             break;
-            
-
-
-        case tx.type === -1 && type === 'request':
-            config.type = 'custom';
-            config.component = CustomSign;
-            config.final = CustomSignFinal;
         default:
-            config.type = 'unknown';
-            config.component = Unknown;
-            config.final = UnknownFinal;
+            config.type = unknown.type;
+            config.component = unknown.message;
+            config.final = unknown.final;
+            config.components = unknown;
     }
     
     return config;
