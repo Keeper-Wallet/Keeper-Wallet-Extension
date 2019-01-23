@@ -7,7 +7,7 @@ import { getFee, getAssetsId, getAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 import { Money } from '@waves/data-entities';
 
-const MIN_COUNT = 3;
+const MIN_COUNT = 0;
 
 const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
     
@@ -17,8 +17,8 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
         ({ recipient, amount }) => {
             const money = getMoney(amount, assets);
             return <div key={recipient} className={styles.txRow}>
-                <div className="tx-title-black">{recipient}</div>
-                <div className='tag1 basic500'>
+                <div className="body3 tx-title-black">{recipient}</div>
+                <div className='body3 submit400'>
                     <Balance isShortFormat={true} balance={money}/>
                 </div>
             </div>;
@@ -38,13 +38,16 @@ const ToggleList = ({ count, currentCount, onClick }) => {
         return null;
     }
     
-    return  <div className={`${styles.toggleList} margin-main`}>
+    return  <div className={styles.toggleList}>
         <Button onClick={toggle} type={BUTTON_TYPE.TRANSPARENT}>
             {!showAll ?
-                <Trans i18nKey='transactions.transfersClose'>Hide</Trans> :
-                <div>
+                <div className={styles.buttonTextCenter}>
+                    <Trans i18nKey='transactions.transfersClose'>Hide</Trans>
+                    <i className={styles.arrowUp}></i>
+                </div> :
+                <div className={styles.buttonTextCenter}>
                     <Trans i18nKey='transactions.transfersShowAll'>Show All</Trans>
-                    <span>({count - MIN_COUNT})</span>
+                    <i className={styles.arrowDown}></i>
                 </div>
             }
         </Button>
@@ -67,24 +70,14 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
         const tx = { type: data.type, ...data.data };
         const fee = getMoney(getFee(tx), assets);
         const amount = getMoney(getAmount(tx), assets);
-        
-        
+
         return <div>
-            <div>
-                <Transfers transfers={tx.transfers}
-                           totalAmount={amount}
-                           count={this.state.count}/>
-        
-                <ToggleList count={tx.transfers.length}
-                            currentCount={this.state.count}
-                            onClick={this.toggleShowRecipients}/>
-            </div>
-    
-            { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+
+            { tx.attachment ? <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>
                 </div>
-                <div className={`${styles.txValue} plate fullwidth`}>{tx.attachment}</div>
+                <div className={styles.txValue}>{tx.attachment}</div>
             </div> : null }
     
             <div className={styles.txRow}>
@@ -106,6 +99,27 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
                     <Trans i18nKey='transactions.txTime'>TX Time</Trans>
                 </div>
                 <div className={styles.txValue}><DateFormat value={tx.timestamp}/></div>
+            </div>
+
+            <div className="margin-main-top margin1 headline3 basic500">
+                <Trans i18nKey='transactions.details'>Details</Trans>
+            </div>
+
+            <div className={styles.expandableList}>
+                <div className={styles.expandableListHeader}>
+                    <span className={styles.expandableListCounter}>9</span>
+                    <span className={`headline3 ${styles.expandableListTitle}`}>
+                        <Trans i18nKey='transactions.recipients'>Recipients</Trans>
+                    </span>
+                    <ToggleList count={tx.transfers.length}
+                                currentCount={this.state.count}
+                                onClick={this.toggleShowRecipients}/>
+                </div>
+                <div className={styles.expandableListContent}>
+                    <Transfers transfers={tx.transfers}
+                               totalAmount={amount}
+                               count={this.state.count}/>
+                </div>
             </div>
         </div>;
     }

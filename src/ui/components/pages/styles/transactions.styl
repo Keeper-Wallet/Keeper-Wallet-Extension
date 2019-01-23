@@ -38,7 +38,6 @@
 
   .txRow
     width: 100%;
-    min-height: 60px;
     display: flex;
     padding: 10px 0;
     flex-direction: column;
@@ -72,18 +71,88 @@
     &Description + .txRow
       border-top: 0 none;
 
+  //.toggleList
+  //  border-top: 1px dashed $basic200;
+  //
+  //  button
+  //    color: $submit300;
+  //    font-size: 12px;
+  //    display: inline-block;
+  //    margin-top: 8px;
+  //
+  //    span
+  //      margin-left: 3px;
+  //      display: inline-block;
+
   .toggleList
-    border-top: 1px dashed $basic200;
+    line-height: 1em;
 
-    button
-      color: $submit300;
-      font-size: 12px;
+    .buttonTextCenter
+      display: flex;
+      align-items: center;
+
+    .arrowDown,
+    .arrowUp
       display: inline-block;
-      margin-top: 8px;
+      width: 14px;
+      height: 14px;
+      margin-left: 10px;
 
-      span
-        margin-left: 3px;
-        display: inline-block;
+    .arrowDown
+      background: url(../../../assets/img/arrow-down-14-basic-200.svg) center no-repeat;
+
+    .arrowUp
+      background: url(../../../assets/img/arrow-up-14-basic-200.svg) center no-repeat;
+
+  .expandableList
+    background-color: $white;
+    padding: 16px 10px 0;
+    border-radius: 4px;
+    border: 1px solid $basic100;
+    margin: 0 -10px 10px;
+
+    &Header
+      display: flex;
+      align-items: center;
+      padding: 0 0 16px;
+      justify-content: space-between;
+
+    &Title
+      flex-grow: 1;
+
+    &Counter
+      background: $submit400;
+      color: $white;
+      height: 20px;
+      min-width: 20px;
+      padding: 0 6px;
+      margin-right: 8px;
+      text-align: center;
+      line-height: 20px;
+      display: block;
+
+      border-radius: 10px;
+
+    .txRow
+      background: $basic50;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      width: 100%;
+      display: flex;
+      padding: 10px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      word-break: break-all;
+      text-align: left;
+      font-size: 12px;
+
+    .txRow + .txRow
+      border-top: 0 none;
+
+      &Splitted
+        display: flex;
+        justify-content: space-between;
 
   .txBalance
     width: 100%;
