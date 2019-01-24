@@ -43,7 +43,7 @@ export class FinalTransaction extends React.PureComponent {
         const isError = !!transactionStatus.approveError;
         const isShowNext = newMessages > 0;
         const isShowList = newMessages > 1;
-        const isShowClose = newMessages.length === 0;
+        const isShowClose = newMessages === 0;
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;
