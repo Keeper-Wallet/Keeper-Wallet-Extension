@@ -14,22 +14,12 @@ class MessagesComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
     hasApproved: boolean;
+    
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
-    clearMessagesHandler = () => this.clearMessages();
-    clearMessageStatusHandler = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.cleanMessageStatus();
-    };
-    clearMessageStatusHandlerNoClose = (e) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        this.cleanMessageStatus(true);
-    };
-    
+    closeHandler = () => this.props.closeNotificationWindow();
+    toListHandler = (e) => this.updateActiveMessages(e);
+    nextHandler = (e) => this.updateActiveMessages(e, true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
     render() {
@@ -47,11 +37,12 @@ class MessagesComponent extends React.Component {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
                                      message={this.props.activeMessage}
                                      assets={this.props.assets}
-                                     hasNewMessages={this.props.hasNewMessages}
+                                     messages={this.props.messages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
-                                     onClick={this.clearMessageStatusHandler}
-                                     onNext={this.clearMessageStatusHandlerNoClose}/>
+                                     onClose={this.closeHandler}
+                                     onNext={this.nextHandler}
+                                     onList={this.toListHandler}/>
         }
         
         const { activeMessage } = this.state;
@@ -64,9 +55,9 @@ class MessagesComponent extends React.Component {
                           assets={this.state.assets}
                           message={activeMessage}
                           selectedAccount={this.state.selectedAccount}
-                          clearMessagesHandler={this.clearMessagesHandler }
-                          clearMessageStatusHandler={this.clearMessageStatusHandler }
-                          clearMessageStatusHandlerNoClose={this.clearMessageStatusHandlerNoClose }
+                          onClose={this.closeHandler}
+                          onNext={this.nextHandler}
+                          onList={this.toListHandler}
                           reject={this.rejectHandler}
                           approve={this.approveHandler}
                           selectAccount={this.selectAccountHandler}>
@@ -89,18 +80,14 @@ class MessagesComponent extends React.Component {
         this.props.reject(this.state.activeMessage.id);
     }
     
-    clearMessages() {
-        this.props.clearMessages();
-        this.cleanMessageStatus();
-    }
+    updateActiveMessages( e, isNext = false) {
     
-    cleanMessageStatus(noCloseWindow: boolean = false) {
-        this.props.clearMessagesStatus();
-        
-        if (!noCloseWindow) {
-            this.props.closeNotificationWindow();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
         
+        this.props.clearMessagesStatus(!isNext);
         this.props.setTab(PAGES.ROOT);
         this.hasApproved = false;
     }
@@ -215,10 +202,6 @@ const mapStateToProps = function (store) {
         activeMessage: store.activeMessage,
         assets: store.assets,
         messages: store.messages,
-        hasNewMessages: (store.messages
-            .map(item => item.id)
-            .filter(id => id !== store.activeMessage.id)
-            .length > 0),
     };
 };
 

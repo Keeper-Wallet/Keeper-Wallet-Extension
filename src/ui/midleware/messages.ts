@@ -51,8 +51,8 @@ export const updateActiveMessageReducer = store => next => action => {
         return next(action);
     }
     
-    if (action.type === ACTION.APPROVE_REJECT_CLEAR && !action.payload) {
-        store.dispatch(updateActiveMessage(messages[0]));
+    if (action.type === ACTION.APPROVE_REJECT_CLEAR) {
+        store.dispatch(updateActiveMessage(action.payload ? null : messages[0]));
     }
     
     return next(action);
