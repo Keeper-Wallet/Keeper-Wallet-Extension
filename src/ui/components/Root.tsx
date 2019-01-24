@@ -89,9 +89,9 @@ class RootComponent extends React.Component {
         /**
          * Has notify - show confirm page
          */
-        const { messages, activeMessage } = nextProps;
+        const { messages, activeMessage, accounts } = nextProps;
         
-        if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT) {
+        if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT && accounts.length) {
             if (activeMessage) {
                 tab = PAGES.MESSAGES;
             } else if (messages.length) {
@@ -154,7 +154,6 @@ const mapStateToProps = function (store: any) {
         ui: store.uiState,
         messages: store.messages,
         activeMessage: store.activeMessage,
-        transactionStatus: store.localState.transactionStatus,
     };
 };
 
@@ -169,12 +168,6 @@ const actions = {
 export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 
 interface IProps {
-    transactionStatus: {
-        approvePending: any;
-        approveOk: any;
-        approveError: any;
-        rejectOk: any;
-    };
     locked: boolean;
     initialized: boolean;
     accounts: Array<any>;

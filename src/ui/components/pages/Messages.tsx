@@ -21,7 +21,11 @@ class MessagesComponent extends React.Component {
     toListHandler = (e) => this.updateActiveMessages(e);
     nextHandler = (e) => this.updateActiveMessages(e, true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
-
+    
+    componentDidCatch(error, info) {
+        this.reject()
+    }
+    
     render() {
         if (this.state.loading || this.state.approvePending) {
             return <Intro/>
@@ -75,8 +79,10 @@ class MessagesComponent extends React.Component {
         this.props.approve(this.state.activeMessage.id);
     }
     
-    reject(e) {
-        e.preventDefault();
+    reject(e = null) {
+        if (e) {
+            e.preventDefault();
+        }
         this.props.reject(this.state.activeMessage.id);
     }
     
