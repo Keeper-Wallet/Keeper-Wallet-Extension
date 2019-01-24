@@ -65,7 +65,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={className}></div>
             
             <div className={styles.finalTxContent}>
-                <div className="margin-main-top center margin-main">
+                <div className="margin-main-top center margin-main-big">
                     {isApprove || isReject ?
                         <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
                                         message={message} assets={assets}/> : null}

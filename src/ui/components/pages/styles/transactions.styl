@@ -71,19 +71,6 @@
     &Description + .txRow
       border-top: 0 none;
 
-  //.toggleList
-  //  border-top: 1px dashed $basic200;
-  //
-  //  button
-  //    color: $submit300;
-  //    font-size: 12px;
-  //    display: inline-block;
-  //    margin-top: 8px;
-  //
-  //    span
-  //      margin-left: 3px;
-  //      display: inline-block;
-
   .toggleList
     line-height: 1em;
 
@@ -186,10 +173,14 @@
 .txBigIcon
   width: 80px;
   height: 80px;
-  margin: 44px auto 4px auto;
+  margin: 0 auto 4px auto;
 
 .txFinal
   margin: 0 auto;
+  padding: 64px 0 0;
+  background: $basic50;
+  height: calc(100% - 48px);
+  position: relative;
 
   .finalTxContent
     margin: 0 24px;
@@ -198,6 +189,12 @@
     overflow: auto;
     max-height: 240px;
   }
+
+  .txWallet
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 
   .txInfoRow
     display: flex;
