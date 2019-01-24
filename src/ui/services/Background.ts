@@ -35,12 +35,26 @@ class Background {
         this.background = background;
         this._defer.resolve();
     }
-
+    
+    async allowOrigin(origin: string) {
+        await this.initPromise;
+        return this.background.allowOrigin(origin);
+    }
+    
+    async disableOrigin(origin: string) {
+        await this.initPromise;
+        return this.background.disableOrigin(origin);
+    }
+    
+    async deleteOrigin(origin: string) {
+        await this.initPromise;
+        return this.background.deleteOrigin(origin);
+    }
+    
+    
     async getState() {
-        console.log('get new state');
         await this.initPromise;
         const data = await this.background.getState();
-        console.log('set new state');
         this._onUpdate(data);
         return data;
     }

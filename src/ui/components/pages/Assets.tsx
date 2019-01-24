@@ -72,6 +72,9 @@ class AssetsComponent extends React.Component {
         });
 
         return <div className={styles.assets}>
+            <div className={styles.activeAccountTitle}>
+                <Trans i18nKey='assets.activeAccount'>Active account</Trans>
+            </div>
             <CSSTransitionGroup className={styles.activeAnimationSpan}
                                 transitionName="animate_active_wallet"
                                 transitionEnterTimeout={600}

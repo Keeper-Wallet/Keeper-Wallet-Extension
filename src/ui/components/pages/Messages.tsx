@@ -14,23 +14,20 @@ class MessagesComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
     hasApproved: boolean;
+    
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
-    clearMessagesHandler = () => this.clearMessages();
-    clearMessageStatusHandler = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.cleanMessageStatus();
-    };
-    clearMessageStatusHandlerNoClose = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.cleanMessageStatus(true);
-    };
+    closeHandler = () => this.props.closeNotificationWindow();
+    toListHandler = (e) => this.updateActiveMessages(e);
+    nextHandler = (e) => this.updateActiveMessages(e, true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
-
+    
+    componentDidCatch(error, info) {
+        this.reject()
+    }
+    
     render() {
-        if (this.state.loading) {
+        if (this.state.loading || this.state.approvePending) {
             return <Intro/>
         }
         
@@ -42,26 +39,29 @@ class MessagesComponent extends React.Component {
     
         if (approveOk || approveError || rejectOk) {
             return <FinalTransaction selectedAccount={this.props.selectedAccount}
-                                     hasNewMessages={this.props.hasNewMessages}
+                                     message={this.props.activeMessage}
+                                     assets={this.props.assets}
+                                     messages={this.props.messages}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
-                                     signData={this.state.signData}
-                                     onClick={this.clearMessageStatusHandler}
-                                     onNext={this.clearMessageStatusHandlerNoClose}/>
+                                     onClose={this.closeHandler}
+                                     onNext={this.nextHandler}
+                                     onList={this.toListHandler}/>
         }
         
-        const { activeMessage, signData } = this.state;
-        const conf = getConfigByTransaction(signData, this.props.activeMessage.type);
-        const { component: Component, type } = conf;
+        const { activeMessage } = this.state;
+        const conf = getConfigByTransaction(activeMessage);
+        const { message: Component, type } = conf;
 
         return <Component txType={type}
                           pending={this.state.approvePending}
                           txHash={this.state.txHash}
-                          signData={signData}
+                          assets={this.state.assets}
                           message={activeMessage}
                           selectedAccount={this.state.selectedAccount}
-                          clearMessagesHandler={this.clearMessagesHandler }
-                          clearMessageStatusHandler={this.clearMessageStatusHandler }
+                          onClose={this.closeHandler}
+                          onNext={this.nextHandler}
+                          onList={this.toListHandler}
                           reject={this.rejectHandler}
                           approve={this.approveHandler}
                           selectAccount={this.selectAccountHandler}>
@@ -79,30 +79,28 @@ class MessagesComponent extends React.Component {
         this.props.approve(this.state.activeMessage.id);
     }
     
-    reject(e) {
-        e.preventDefault();
+    reject(e = null) {
+        if (e) {
+            e.preventDefault();
+        }
         this.props.reject(this.state.activeMessage.id);
     }
     
-    clearMessages() {
-        this.props.clearMessages();
-        this.cleanMessageStatus();
-    }
+    updateActiveMessages( e, isNext = false) {
     
-    cleanMessageStatus(noCloseWindow: boolean = false) {
-        this.props.clearMessagesStatus();
-        
-        if (!noCloseWindow) {
-            this.props.closeNotificationWindow();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
         
+        this.props.clearMessagesStatus(!isNext);
         this.props.setTab(PAGES.ROOT);
         this.hasApproved = false;
     }
     
     static getDerivedStateFromProps(props, state) {
 
-        const { balance: sourceBalance, selectedAccount, assets, activeMessage } = props;
+        const { balance: sourceBalance, selectedAccount, assets, activeMessage, messages } = props;
         let loading = true;
     
         if (!assets || !assets['WAVES']) {
@@ -117,10 +115,9 @@ class MessagesComponent extends React.Component {
         const isExistMsg = activeMessage && state.activeMessage && activeMessage.id === state.activeMessage.id;
 
         if (isExistMsg) {
-            const assetInstance = new Asset(assets['WAVES']);
             const balance = Money.fromTokens(sourceBalance || 0, assetInstance);
             loading = false;
-            return { ...state, balance, selectedAccount, assets, transactionStatus, loading};
+            return { ...state, balance, selectedAccount, assets, transactionStatus, loading, messages};
         }
         
         const sourceSignData = activeMessage.data || {};
@@ -133,18 +130,17 @@ class MessagesComponent extends React.Component {
         }
         
         loading = false;
-        const signData = MessagesComponent.fillSignData(sourceSignData, parsedData.moneys, assets);
         const txHash = activeMessage.messageHash;
-        const config = getConfigByTransaction(signData);
+        const config = getConfigByTransaction(activeMessage);
         return {
             transactionStatus,
             activeMessage,
-            signData,
             config,
             txHash,
             balance,
             selectedAccount,
             assets,
+            messages,
             loading
         };
     }
@@ -202,34 +198,6 @@ class MessagesComponent extends React.Component {
 
         return { assets, moneys };
     }
-
-    static fillSignData(data, moneys, assets) {
-        const result = { ...data };
-
-        for (const { path, assetId, tokens, coins } of moneys) {
-
-            let obj = result;
-            const asset = assets[assetId];
-            let moneyInstance = null;
-            if (asset) {
-                moneyInstance = tokens != null ?  Money.fromTokens(tokens, new Asset(asset)) : Money.fromCoins(coins, new Asset(asset))
-            }
-            const key = path.pop();
-
-            for (const key of path) {
-                if (Array.isArray(obj[key])) {
-                    obj[key] = [ ...obj[key] ];
-                } else {
-                    obj[key] = { ...obj[key] };
-                }
-                 obj = obj[key];
-            }
-
-            obj[key] = moneyInstance || obj[key];
-        }
-
-        return result;
-    }
 }
 
 const mapStateToProps = function (store) {
@@ -239,10 +207,7 @@ const mapStateToProps = function (store) {
         selectedAccount: store.selectedAccount,
         activeMessage: store.activeMessage,
         assets: store.assets,
-        hasNewMessages: (store.messages
-            .map(item => item.id)
-            .filter(id => id !== store.activeMessage.id)
-            .length > 0),
+        messages: store.messages,
     };
 };
 

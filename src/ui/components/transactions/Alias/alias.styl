@@ -1,0 +1,17 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+
+.aliasTransactionCard
+  @extends .transaction-card
+
+.aliasCard_collapsed
+  .origin
+    display: none;
+
+.aliasTxIcon
+  @extends .txIcon
+
+.aliasTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;

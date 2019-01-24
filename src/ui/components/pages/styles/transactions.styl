@@ -5,15 +5,39 @@
   flex-direction: column;
   position: relative;
   height: 100%;
+  background: $basic50;
 
-  .txBalanceWrapper
+  &-card
+    margin: 0 -10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 #9ba6b266;
+    padding: 10px;
+    background: $white;
+
+.cardHeader
+  display: flex;
+  align-items: center;
+
+.cardContent
+  margin-top: 14px;
+  padding-left: 58px;
+  color: $basic500;
+
+.originAddress
+  font-size: 11px;
+  word-break: break-all;
+  text-decoration: underline;
+
+.originDescription
+  font-size: 11px;
+
+.txBalanceWrapper
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 
   .txRow
     width: 100%;
-    min-height: 60px;
     display: flex;
     padding: 10px 0;
     flex-direction: column;
@@ -47,36 +71,88 @@
     &Description + .txRow
       border-top: 0 none;
 
-  .txScrollBox
-    overflow: auto;
-    position: relative;
-    padding: 0 24px;
-    flex-grow: 1;
-    flex-shrink: 999;
+  //.toggleList
+  //  border-top: 1px dashed $basic200;
+  //
+  //  button
+  //    color: $submit300;
+  //    font-size: 12px;
+  //    display: inline-block;
+  //    margin-top: 8px;
+  //
+  //    span
+  //      margin-left: 3px;
+  //      display: inline-block;
 
   .toggleList
-    border-top: 1px dashed $basic200;
+    line-height: 1em;
 
-    button
-      color: $submit300;
-      font-size: 12px;
+    .buttonTextCenter
+      display: flex;
+      align-items: center;
+
+    .arrowDown,
+    .arrowUp
       display: inline-block;
-      margin-top: 8px;
+      width: 14px;
+      height: 14px;
+      margin-left: 10px;
 
-      span
-        margin-left: 3px;
-        display: inline-block;
+    .arrowDown
+      background: url(../../../assets/img/arrow-down-14-basic-200.svg) center no-repeat;
 
-  .txIcon
-    div
-      width: 48px;
-      height: 48px;
-      margin: 24px auto 0 auto;
-    &Big
-      div
-        width: 80px;
-        height: 80px;
-        margin: 64px auto 14px auto;
+    .arrowUp
+      background: url(../../../assets/img/arrow-up-14-basic-200.svg) center no-repeat;
+
+  .expandableList
+    background-color: $white;
+    padding: 16px 10px 0;
+    border-radius: 4px;
+    border: 1px solid $basic100;
+    margin: 0 -10px 10px;
+
+    &Header
+      display: flex;
+      align-items: center;
+      padding: 0 0 16px;
+      justify-content: space-between;
+
+    &Title
+      flex-grow: 1;
+
+    &Counter
+      background: $submit400;
+      color: $white;
+      height: 20px;
+      min-width: 20px;
+      padding: 0 6px;
+      margin-right: 8px;
+      text-align: center;
+      line-height: 20px;
+      display: block;
+
+      border-radius: 10px;
+
+    .txRow
+      background: $basic50;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      width: 100%;
+      display: flex;
+      padding: 10px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      word-break: break-all;
+      text-align: left;
+      font-size: 12px;
+
+    .txRow + .txRow
+      border-top: 0 none;
+
+      &Splitted
+        display: flex;
+        justify-content: space-between;
 
   .txBalance
     width: 100%;
@@ -98,7 +174,6 @@
 
 .txButtonsWrapper
   width: 100%;
-  flex-shring: 0;
   padding: 14px 14px 0 14px;
   background: $white;
   border-top: 1px solid $basic100;
@@ -162,12 +237,6 @@
   overflow: auto;
   max-height: 120px;
 
-  &::after
-    display: block;
-    width: 100%;
-    height: 14px;
-    content: '';
-
   div:first-child
     text-decoration: underline;
     padding-bottom: 2px;
@@ -176,3 +245,23 @@
   max-height: none;
   div:first-child
     max-height: none;
+
+.txIcon
+  div
+    width: 48px;
+    height: 48px;
+    margin: 0 10px 0 0;
+
+  &Big
+    div
+      width: 80px;
+      height: 80px;
+      margin: 4px auto 14px auto;
+
+.txScrollBox
+  overflow: auto;
+  position: relative;
+  padding-left: 24px;
+  padding-right 24px;
+  flex-grow: 1;
+  flex-shrink: 999;

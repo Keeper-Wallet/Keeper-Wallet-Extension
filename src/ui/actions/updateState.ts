@@ -16,6 +16,7 @@ export function updateState(state) {
         uiState = {},
         customNodes = {},
         customMatchers = {},
+        origins = {},
     } = state;
     const currentState = store.getState();
 
@@ -47,7 +48,7 @@ export function updateState(state) {
         });
     }
 
-    if (uiState) {
+    if (!equals(uiState, currentState.uiState)) {
         actions.push({
             type: ACTION.UPDATE_UI_STATE,
             payload: uiState
@@ -61,12 +62,27 @@ export function updateState(state) {
         });
     }
 
-    const unapprovedMessages = messages.filter(msg => msg.status === 'unapproved');
+    if (!equals(origins, currentState.origins)) {
+        actions.push({
+            type: ACTION.UPDATE_ORIGINS,
+            payload: origins,
+        });
+    }
+    
+    function isMyMessages(msg) {
+        try {
+            return msg.status === 'unapproved' && msg.account.address === selectedAccount.address;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    const unapprovedMessages = messages.filter(isMyMessages);
     
     if (!equals(unapprovedMessages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
-            payload: unapprovedMessages
+            payload: { unapprovedMessages, messages },
         });
     }
     
@@ -94,10 +110,8 @@ export function updateState(state) {
             payload: { initialized, locked }
         });
     }
-
-    const hasNewBalance = Object.keys(balances).filter(key => balances[key] !== currentState.balances[key]).length;
-
-    if (hasNewBalance) {
+    
+    if (!equals(balances, currentState.balances)) {
         actions.push({
             type: ACTION.UPDATE_BALANCES,
             payload: balances

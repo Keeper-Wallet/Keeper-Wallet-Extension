@@ -1,0 +1,23 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+
+.setScriptTransactionCard
+  @extends .transaction-card
+
+.setScriptCard_collapsed
+  .origin
+    display: none;
+
+.setScriptTxIcon
+  @extends .txIcon
+
+.setScriptTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.cardContent
+  padding-left: 0;
+
+.origin
+  padding-left: 58px;

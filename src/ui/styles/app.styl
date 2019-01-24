@@ -88,7 +88,7 @@ ul
 // typography
 :global .title1
   font-size: 24px;
-  font-weight: 400;
+  font-weight: normal;
 
 :global .headline1
   font-size: 18px;
@@ -140,11 +140,11 @@ $layout-44 = 44px;
 :global .centered
   margin: 0 auto;
 
+:global .margin-min
+  margin-bottom: $layout-4;
+
 :global .margin-main
   margin-bottom: $layout-14;
-
-:global .margin-main-min
-  margin-bottom: $layout-4;
 
 :global .margin-main-big
   margin-bottom: $layout-24;
@@ -206,6 +206,10 @@ $layout-44 = 44px;
   word-break: break-all;
 }
 
+:global .underline {
+  text-decoration: underline;
+}
+
 // misc
 :global .separator
   height: 1px;
@@ -253,6 +257,9 @@ $layout-44 = 44px;
     display: flex;
     flex-direction: column;
 
+    &-short
+      max-height: 76px;
+
     div:first-child
       max-height: 100px;
       overflow: auto;
@@ -295,6 +302,10 @@ $layout-44 = 44px;
 
         &:last-child
           margin-right: 0;
+
+:global .transactionContent
+  height: calc(100% - 160px);
+  padding-bottom: 14px;
 
 :global .info-block //with icon
   display: flex;

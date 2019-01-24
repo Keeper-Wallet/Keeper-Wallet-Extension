@@ -8,10 +8,6 @@ import {
     notificationDelete,
     notificationSelect,
     notificationChangeName,
-    approveError,
-    approveOk,
-    approvePending,
-    rejectOk,
     pairingLoading,
     pairingSetData,
 } from '../actions';
@@ -227,43 +223,3 @@ export const lock = store => next => action => {
     return next(action);
 };
 
-export const clearMessages = () => next => action => {
-    
-    if (ACTION.CLEAR_MESSAGES === action.type) {
-        background.clearMessages();
-        return;
-    }
-    
-    return next(action);
-};
-
-export const approve = store => next => action => {
-    if (action.type !== ACTION.APPROVE) {
-        return next(action);
-    }
-    const messageId = action.payload;
-    const { selectedAccount } = store.getState();
-    const { messages } = store.getState();
-    const message = messages.find(({ id }) => id === action.payload);
-    const res = background.approve(messageId, selectedAccount);
-    store.dispatch(approvePending(true));
-    res.then(
-        (res) => store.dispatch(approveOk({ res, message })),
-        (error) => store.dispatch(approveError({ error, message })),
-    ).then(
-        () => store.dispatch(approvePending(false))
-    )
-    
-};
-
-export const reject = store => next => action => {
-    if (action.type !== ACTION.REJECT) {
-        return next(action);
-    }
-    
-    background.reject(action.payload).then(
-        () => store.dispatch(rejectOk(action.payload))
-    ).then(
-        () => store.dispatch(approvePending(false))
-    );
-};

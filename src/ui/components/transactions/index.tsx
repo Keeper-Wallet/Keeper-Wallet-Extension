@@ -1,142 +1,46 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
-import { Transfer } from './Transfer';
-import { TransferFinal } from './TransferFinal';
-import { MassTransfer } from './MassTransfer';
-import { MassTransferFinal } from './MassTransferFinal';
-import { Auth } from './Auth';
-import { AuthFinal } from './AuthFinal';
-import { Burn } from './Burn';
-import { BurnFinal } from './BurnFinal';
-import { Issure } from './Issure';
-import { IssureFinal } from './IssureFinal';
-import { ReIssure } from './ReIssure';
-import { ReIssureFinal } from './ReIssureFinal';
-import { Alias } from './Alias';
-import { AliasFinal } from './AliasFinal';
-import { Lease } from './Lease';
-import { LeaseFinal } from './LeaseFinal';
-import { CancelLease } from './CancelLease';
-import { CancelLeaseFinal } from './CancelLeaseFinal';
-import { CancelOrder } from './CancelOrder';
-import { CancelOrderFinal } from './CancelOrderFinal';
-import { CreateOrder } from './CreateOrder';
-import { CreateOrderFinal } from './CreateOrderFinal';
-import { Matcher } from './Matcher';
-import { MatcherFinal } from './MatcherFinal';
-import { CoinomatConfirm } from './CoinomatConfirm';
-import { CoinomatConfirmFinal } from './CoinomatConfirmFinal';
-import { Data } from './Data';
-import { DataFinal } from './DataFinal';
-import { SponsorShip } from './SponsorShip';
-import { SponsorShipFinal } from './SponsorShipFinal';
-import { SetScript } from './SetScript';
-import { SetScriptFinal } from './SetScriptFinal';
-import { CustomSign } from './CustomSign';
-import { CustomSignFinal } from './CustomSignFinal';
-import { Unknown } from './Unknown';
-import { UnknownFinal } from './UnknownFinal';
+import auth from './Auth';
+import alias from './Alias';
+import originAuth from './OriginAuth';
+import transfer from './Transfer';
+import burn from './Burn';
+import lease from './Lease';
+import cancelLease from './CancelLease';
+import createOrder from './CreateOrder';
+import cancelOrder from './CancelOrder';
+import matcher from './MatcherOrders';
+import coinomatConfirm from './CoinomatConfirm';
+import massTransfer from './MassTransfer';
+import issue from './Issue';
+import reissue from './Reissue';
+import sponsorShip from './Sponsorship';
+import data from './Data';
+import setScript from './SetScript';
+import assetScript from './AssetScript';
+import unknown from './Unknown';
+
+const MESSAGES = [
+    auth,
+    alias,
+    originAuth,
+    transfer,
+    burn,
+    lease,
+    cancelLease,
+    createOrder,
+    cancelOrder,
+    matcher,
+    coinomatConfirm,
+    massTransfer,
+    issue,
+    reissue,
+    sponsorShip,
+    data,
+    setScript,
+    assetScript,
+];
 
 export { FinalTransaction } from './FinalTransaction';
 
-export const getConfigByTransaction = (tx, type = null) => {
-    const config = {
-        type: null,
-        component: null,
-        final: null,
-    };
-    
-    switch (true) {
-        case tx.type === SIGN_TYPE.TRANSFER && type === 'transaction':
-            config.type = 'transfer';
-            config.component = Transfer;
-            config.final = TransferFinal;
-            break;
-        case tx.type ===  SIGN_TYPE.AUTH && type === 'auth':
-            config.type = 'auth';
-            config.component = Auth;
-            config.final = AuthFinal;
-            break;
-        case tx.type ===  SIGN_TYPE.BURN && type === 'transaction':
-            config.type = 'burn';
-            config.component = Burn;
-            config.final = BurnFinal;
-            break;
-        case tx.type === SIGN_TYPE.CANCEL_LEASING && type === 'transaction':
-            config.type = 'cancel-leasing';
-            config.component = CancelLease;
-            config.final = CancelLeaseFinal;
-            break;
-        case tx.type === SIGN_TYPE.CANCEL_ORDER && (type === 'cancelOrder' || type === 'request'):
-            config.type = 'cancel-order';
-            config.component = CancelOrder;
-            config.final = CancelOrderFinal;
-            break;
-        case tx.type === SIGN_TYPE.CREATE_ALIAS && type === 'transaction':
-            config.type = 'create-alias';
-            config.component = Alias;
-            config.final = AliasFinal;
-            break;
-        case tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order':
-            config.type = 'create-order';
-            config.component = CreateOrder;
-            config.final = CreateOrderFinal;
-            break;
-        case tx.type === SIGN_TYPE.DATA && type === 'transaction':
-            config.type = 'data';
-            config.component = Data;
-            config.final = DataFinal;
-            break;
-        case tx.type === SIGN_TYPE.ISSUE && type === 'transaction':
-            config.type = 'issue';
-            config.component = Issure;
-            config.final = IssureFinal;
-            break;
-        case tx.type === SIGN_TYPE.LEASE && type === 'transaction':
-            config.type = 'lease';
-            config.component = Lease;
-            config.final = LeaseFinal;
-            break;
-        case tx.type === SIGN_TYPE.MASS_TRANSFER && type === 'transaction':
-            config.type = 'mass_transfer';
-            config.component = MassTransfer;
-            config.final = MassTransferFinal;
-            break;
-        case tx.type === SIGN_TYPE.MATCHER_ORDERS && type === 'request':
-            config.type = 'matcher_orders';
-            config.component = Matcher;
-            config.final = MatcherFinal;
-            break;
-        case tx.type === SIGN_TYPE.COINOMAT_CONFIRMATION && type === 'request':
-            config.type = 'coinomat_confirm';
-            config.component = CoinomatConfirm;
-            config.final = CoinomatConfirmFinal;
-            break;
-        case tx.type === SIGN_TYPE.REISSUE && type === 'transaction':
-            config.type = 'reissue';
-            config.component = ReIssure;
-            config.final = ReIssureFinal;
-            break;
-        case tx.type === SIGN_TYPE.SET_SCRIPT && type === 'transaction':
-            config.type = 'set-script';
-            config.component = SetScript;
-            config.final = SetScriptFinal;
-            break;
-        case tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction':
-            const { minSponsoredAssetFee } = tx.data;
-            const zero = minSponsoredAssetFee.cloneWithTokens(0);
-            config.type = minSponsoredAssetFee.gt(zero) ? 'sponsor_enable' : 'sponsor_disable';
-            config.component = SponsorShip;
-            config.final = SponsorShipFinal;
-            break;
-        case tx.type === -1 && type === 'request':
-            config.type = 'custom';
-            config.component = CustomSign;
-            config.final = CustomSignFinal;
-        default:
-            config.type = 'unknown';
-            config.component = Unknown;
-            config.final = UnknownFinal;
-    }
-    
-    return config;
+export const getConfigByTransaction = ({ data: tx, type = null}) => {
+    return MESSAGES.find((config) => config.isMe(tx, type)) || unknown;
 };
