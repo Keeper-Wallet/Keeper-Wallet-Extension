@@ -2,11 +2,9 @@ import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
-import { HeadLogo } from '../head/HeadLogo';
 import cn from 'classnames';
 import { TransactionWallet } from '../wallets';
-import { TxIcon } from './TransactionIcon';
-import { getConfigByTransaction } from './';
+import oauth from './OriginAuth';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 const Error = ({ approveError }) => {
@@ -57,6 +55,12 @@ export class FinalTransaction extends React.PureComponent {
             'tx-error-icon': isError
         });
         
+        if (config.type === oauth.type && !isShowClose) {
+            const method = isShowList ? 'onList' : 'onNext';
+            this.props[method]();
+            return null;
+        }
+        
         return <div className={styles.txFinal}>
             <div className={className}></div>
             
@@ -96,6 +100,7 @@ export class FinalTransaction extends React.PureComponent {
                         <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
                     </a>
                 </div> : null}
+            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
         </div>;
     }
 }
