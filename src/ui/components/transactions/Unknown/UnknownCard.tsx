@@ -4,6 +4,8 @@ import * as cn from 'classnames';
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TxIcon } from '../TransactionIcon';
+import { messageType } from './parseTx';
+
 
 
 
@@ -11,7 +13,7 @@ import { TxIcon } from '../TransactionIcon';
 export class UnknownCard extends React.PureComponent<IUnknown> {
     
     render() {
-        const { message, txType } = this.props;
+        const { message } = this.props;
         const { origin } = message;
         const className = cn(
             styles.unknownTransactionCard,
@@ -24,7 +26,7 @@ export class UnknownCard extends React.PureComponent<IUnknown> {
         return <div className={className}>
             <div className={styles.cardHeader}>
                 <div className={styles.unknownTxIcon}>
-                    <TxIcon txType={txType}/>
+                    <TxIcon txType={messageType}/>
                 </div>
             </div>
             
@@ -42,6 +44,5 @@ export class UnknownCard extends React.PureComponent<IUnknown> {
 interface IUnknown {
     className: string;
     collapsed: boolean;
-    txType: string;
     message: any;
 }

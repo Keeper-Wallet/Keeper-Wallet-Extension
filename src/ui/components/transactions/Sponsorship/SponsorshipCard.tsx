@@ -25,11 +25,11 @@ export class SponsorshipCard extends React.PureComponent<IIssue> {
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const assetFee = getMoney(getAssetFee(tx), assets);
-        const isSetSponored = assetFee.getTokens().gt(0);
+        const isSetSponsored = assetFee.getTokens().gt(0);
         const conf = {
-            key: isSetSponored ? 'setSponsored' : 'clearSponsored',
-            title: isSetSponored ? 'Set Sponsorship' : 'Disable Sponsorship',
-            icon: isSetSponored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable,
+            key: isSetSponsored ? 'setSponsored' : 'clearSponsored',
+            title: isSetSponsored ? 'Set Sponsorship' : 'Disable Sponsorship',
+            icon: isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable,
         };
         
         

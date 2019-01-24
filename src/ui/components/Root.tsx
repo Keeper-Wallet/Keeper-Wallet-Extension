@@ -89,10 +89,14 @@ class RootComponent extends React.Component {
         /**
          * Has notify - show confirm page
          */
-        const { activeMessage } = nextProps;
+        const { messages, activeMessage } = nextProps;
         
-        if (!nextProps.locked && activeMessage && tab !== PAGES.CHANGE_TX_ACCOUNT) {
-            tab = PAGES.MESSAGES;
+        if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT) {
+            if (activeMessage) {
+                tab = PAGES.MESSAGES;
+            } else if (messages.length) {
+                tab = PAGES.MESSAGES_LIST;
+            }
         }
     
         /**

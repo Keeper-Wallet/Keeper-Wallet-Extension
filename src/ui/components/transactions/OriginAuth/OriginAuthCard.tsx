@@ -4,12 +4,13 @@ import * as cn from 'classnames';
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TxIcon } from '../TransactionIcon';
+import { messageType } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
     
     render() {
-        const { message, txType } = this.props;
+        const { message } = this.props;
         const { origin } = message;
         const className = cn(
             styles.originAuthTransactionCard,
@@ -22,7 +23,7 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
         return <div className={className}>
             <div className={styles.cardHeader}>
                 <div className={styles.originAuthTxIcon}>
-                    <TxIcon txType={txType}/>
+                    <TxIcon txType={messageType}/>
                 </div>
             </div>
             
@@ -40,6 +41,5 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
 interface IOriginAuth {
     className: string;
     collapsed: boolean;
-    txType: string;
     message: any;
 }

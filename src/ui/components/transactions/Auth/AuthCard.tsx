@@ -54,6 +54,5 @@ export class AuthCard extends React.PureComponent<IAuth> {
 interface IAuth {
     className: string;
     collapsed: boolean;
-    txType: string;
     message: any;
 }

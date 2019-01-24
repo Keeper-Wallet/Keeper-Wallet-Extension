@@ -15,8 +15,12 @@ export const updateActiveMessageReducer = store => next => action => {
     if (action.type === ACTION.UPDATE_MESSAGES) {
         const { unapprovedMessages, messages } = action.payload;
         
-        if (!activeMessage) {
+        if (!activeMessage && unapprovedMessages.length === 1) {
             store.dispatch(updateActiveMessage(unapprovedMessages[0]));
+            return next(action);
+        }
+        
+        if (!activeMessage && unapprovedMessages.length) {
             return next(action);
         }
         
@@ -25,13 +29,7 @@ export const updateActiveMessageReducer = store => next => action => {
         if (activeMessageUpdated) {
             const { status } = activeMessageUpdated;
             store.dispatch(updateActiveMessage(activeMessageUpdated));
-    
-            // UNAPPROVED
-            // SIGNED
-            // PUBLISHED
-            // FAILED
-            // REJECTED
-            
+
             switch (status) {
                 case MSG_STATUSES.REJECTED:
                     store.dispatch(rejectOk(activeMessageUpdated.id));

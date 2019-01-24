@@ -42,6 +42,6 @@ export class CoinomatCard extends React.PureComponent<IMatcher> {
 interface IMatcher {
     className: string;
     collapsed: boolean;
-    txType: string;
+  
     message: any;
 }

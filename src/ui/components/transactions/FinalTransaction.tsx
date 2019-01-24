@@ -27,9 +27,9 @@ export class FinalTransaction extends React.PureComponent {
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
-        const signData = this.props.signData;
         const config = this.props.config;
         const FinalComponent = config.final;
+        const Card = config.card;
         const isSend = message.broadcast;
         const network = selectedAccount && selectedAccount.networkCode;
         const txLink = `https://${ network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
@@ -45,10 +45,11 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main">
                     {isApprove || isReject ?
-                        <FinalComponent hasNewMessages={hasNewMessages} onNext={this.props.onNext} tx={signData} isApprove={isApprove} isReject={isReject} isSend={message.broadcast} message={message} assets={assets}/> : null}
+                        <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast} message={message} assets={assets}/> : null}
                     {isError ?
                         <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                 </div>
+                <Card message={message} assets={assets} collapsed={false}/>
             </div>
     
             { hasNewMessages ? <div className="margin-main-big">

@@ -4,7 +4,7 @@ export const messageType = 'create-order';
 
 export function getAssetsId(tx): Array<string> {
     const assets = {};
-    const feeAssetId = tx.matcherFee && tx.matcherFee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
+    const feeAssetId = tx.matcherFee && tx.matcherFee.assetId ? tx.matcherFee.assetId : tx.feeAssetId || 'WAVES';
     const amountAssetId = tx.amount && tx.amount.assetId ? tx.amount.assetId : tx.amountAssetId || 'WAVES';
     const priceAssetId = tx.price && tx.price.assetId ? tx.price.assetId : tx.priceAssetId || 'WAVES';
     

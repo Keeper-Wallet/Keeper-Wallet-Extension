@@ -107,7 +107,7 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
 
             <div className={styles.expandableList}>
                 <div className={styles.expandableListHeader}>
-                    <span className={styles.expandableListCounter}>9</span>
+                    <span className={styles.expandableListCounter}>{tx.transfers.length}</span>
                     <span className={`headline3 ${styles.expandableListTitle}`}>
                         <Trans i18nKey='transactions.recipients'>Recipients</Trans>
                     </span>

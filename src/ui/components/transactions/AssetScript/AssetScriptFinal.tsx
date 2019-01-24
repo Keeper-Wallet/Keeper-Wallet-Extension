@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
-import { AssetScriptCard } from './AssetScriptCard';
 
 @translate(I18N_NAME_SPACE)
 export class AssetScriptFinal extends React.PureComponent {
@@ -9,7 +8,7 @@ export class AssetScriptFinal extends React.PureComponent {
     readonly props;
     
     render() {
-        const { isApprove, isReject, isSend, message, assets } = this.props;
+        const { isApprove, isReject, isSend } = this.props;
         
         if (isApprove) {
             return <div>
@@ -17,18 +16,12 @@ export class AssetScriptFinal extends React.PureComponent {
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
-                <div className="basic500">
-                    {isSend ? <Trans i18nKey='sign.transactionSendAlias'>An alias has been created.</Trans> : null}
-                    {!isSend ? <Trans i18nKey='sign.transactionConfirmAlias'>You have approved Alias creation.</Trans> : null}
-                </div>
-                <AssetScriptCard message={message} assets={assets} collapsed={true}/>
             </div>
         }
         
         if (isReject) {
             return <div className="margin-main-large headline2">
                 <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
-                <AssetScriptCard message={message} assets={assets} collapsed={true}/>
             </div>
         }
         

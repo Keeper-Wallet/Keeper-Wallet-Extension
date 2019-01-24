@@ -7,7 +7,7 @@ import * as cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { Balance, Asset } from '../../ui';
 import { getMoney } from '../../../utils/converters';
-import { getAmount, getPrice } from './parseTx';
+import { getAmount, getPrice, messageType } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
@@ -40,7 +40,7 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
 
             <div className={styles.cardHeader}>
                 <div className={styles.createOrderTxIcon}>
-                    <TxIcon txType={this.props.txType}/>
+                    <TxIcon txType={messageType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
@@ -76,6 +76,6 @@ interface ICreateOrder {
     assets: any;
     className: string;
     collapsed: boolean;
-    txType: string;
+  
     message: any;
 }

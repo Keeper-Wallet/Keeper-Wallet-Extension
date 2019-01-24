@@ -81,7 +81,7 @@ export class MessageController extends EventEmitter {
                 switch (finishedMessage.status) {
                     case MSG_STATUSES.SIGNED:
                     case MSG_STATUSES.PUBLISHED:
-                        return resolve(finishedMessage.data);
+                        return resolve(finishedMessage.result);
                     case MSG_STATUSES.REJECTED:
                         return reject(new Error('User denied message'));
                     case MSG_STATUSES.FAILED:
@@ -119,7 +119,7 @@ export class MessageController extends EventEmitter {
                 .finally(() => {
                     this._updateMessage(message);
                     this.emit(`${message.id}:finished`, message);
-                    message.status === MSG_STATUSES.FAILED ? reject(message.err.message) : resolve(message.data)
+                    message.status === MSG_STATUSES.FAILED ? reject(message.err.message) : resolve(message.result)
                 })
         })
     }
@@ -297,7 +297,7 @@ export class MessageController extends EventEmitter {
                 throw new Error(`Unknown message type ${message.type}`)
         }
         message.status = MSG_STATUSES.SIGNED;
-        message.data = signedData;
+        message.result = signedData;
         return message;
     }
 
@@ -308,7 +308,7 @@ export class MessageController extends EventEmitter {
 
         const broadcastResp = await this.broadcast(message);
         message.status = MSG_STATUSES.PUBLISHED;
-        message.data = broadcastResp;
+        message.result = broadcastResp;
         return message
     }
 

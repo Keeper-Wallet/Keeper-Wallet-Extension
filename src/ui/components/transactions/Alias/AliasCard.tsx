@@ -5,6 +5,7 @@ import { TxIcon } from '../TransactionIcon';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import * as cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
+import { messageType } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class AliasCard extends React.PureComponent<IAlias> {
@@ -25,7 +26,7 @@ export class AliasCard extends React.PureComponent<IAlias> {
 
             <div className={styles.cardHeader}>
                 <div className={styles.aliasTxIcon}>
-                    <TxIcon txType={this.props.txType}/>
+                    <TxIcon txType={messageType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
@@ -48,6 +49,5 @@ export class AliasCard extends React.PureComponent<IAlias> {
 interface IAlias {
     className: string;
     collapsed: boolean;
-    txType: string;
     message: any;
 }

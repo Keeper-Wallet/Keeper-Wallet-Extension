@@ -8,17 +8,12 @@ export class BurnFinal extends React.PureComponent {
     readonly props;
     
     render() {
-        const { isApprove, isReject, isSend, message } = this.props;
-        const { tx } = message;
+        const { isApprove, isReject, isSend } = this.props;
         if (isApprove) {
             return <div>
                 <div className="margin-main headline2">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
-                </div>
-                <div className="basic500">
-                    {isSend ? <span><Trans i18nKey='sign.transactionSendBurn'>You have burned</Trans> {tx.data.name}</span> : null}
-                    {!isSend ? <span><Trans i18nKey='sign.transactionConfirmedBurn'>You have approved a Burn transaction.</Trans></span> : null}
                 </div>
             </div>
         }
