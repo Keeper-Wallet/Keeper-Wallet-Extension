@@ -45,7 +45,7 @@ export class DataCard extends React.PureComponent<IData> {
             <div className={styles.cardContent}>
                 <ShowScript script={script} />
                 
-                <div className={styles.origin}>
+                <div className={`${styles.origin} margin-main-top`}>
                     <OriginWarning message={message}/>
                 </div>
             </div>

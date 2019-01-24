@@ -25,11 +25,11 @@ export class ReissueInfo extends React.PureComponent<ITransferInfo> {
                 <div className={styles.txValue}>{tx.assetId}</div>
             </div>
             
-            { tx.description ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+            { tx.description ? <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>
                 </div>
-                <div className={`${styles.txValue} plate fullwidth`}>{tx.description}</div>
+                <div className={styles.txValue}>{tx.description}</div>
             </div> : null }
     
             <div className={styles.txRow}>
