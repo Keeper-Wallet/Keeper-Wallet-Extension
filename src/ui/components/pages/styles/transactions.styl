@@ -169,6 +169,7 @@
 
   button
     margin-bottom: 14px;
+    max-width: 100%;
 
 .txBigIcon
   width: 80px;
@@ -185,16 +186,38 @@
   .finalTxContent
     margin: 0 24px;
 
-  .finalTxPlate {
+  .finalTxPlate
     overflow: auto;
     max-height: 240px;
-  }
 
-  .txWallet
-    margin: 0;
+  .txFooter
     position: absolute;
     bottom: 0;
+
+  &ButtonWrapper
+    background: $white;
+    border-top: 1px solid $basic100;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 14px 0;
+    position: absolute;
+    bottom: 58px;
     width: 100%;
+
+    button
+      margin: 0;
+
+    .buttonMargin
+      min-width: 12px;
+
+  .finalTxWallet
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+
+    .txWallet
+      border-bottom:2px solid red;
 
   .txInfoRow
     display: flex;
@@ -213,10 +236,19 @@
       line-height: 20px;
 
   .closeBtn
-    margin: 22px auto 0 auto;
+    margin: 0;
+    background: transparent;
+    color: $black;
+    border: 1px solid $basic200;
+    max-width: none;
+
+    &:hover
+      border: 1px solid $black;
+      background: transparent;
 
   .nextBtn
-    margin: 22px auto 0 auto;
+    margin: 0;
+    max-width: none;
 
 .txSign
   .infoBlock

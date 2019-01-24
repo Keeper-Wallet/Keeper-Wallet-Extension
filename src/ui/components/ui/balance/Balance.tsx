@@ -47,8 +47,8 @@ const BalanceComponent = ({ balance, split, getAsset, addSign=null, showAsset, i
 
     return <div {...props}>
         {addSign ? <span>{addSign}</span> : null}
-        <span className="font600">{tokens[0]}</span>{ tokens[1] ? <span>{SEPARATOR}{tokens[1]}</span> : null }
-        <span className={styles.assetNameMargin}>{assetName}</span>
+        <span className="font600">{tokens[0]}</span>{ tokens[1] ? <span className="font400">{SEPARATOR}{tokens[1]}</span> : null }
+        <span className={`${styles.assetNameMargin} font400`}>{assetName}</span>
         {children}
         </div>;
 };
