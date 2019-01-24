@@ -96,6 +96,7 @@ export class FinalTransaction extends React.PureComponent {
                         <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
                     </a>
                 </div> : null}
+            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
         </div>;
     }
 }

@@ -5,6 +5,7 @@ import { updateActiveMessage, getAsset, approve, reject, clearMessages } from '.
 import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { TransactionWallet } from '../wallets';
 
 
 const Messages = ({ messages, assets, onSelect }) => {
@@ -39,6 +40,8 @@ class MessageListComponent extends React.Component {
                 {messages.length} <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
             </div>
             <Messages messages={messages} assets={assets} onSelect={this.selectHandler}/>
+    
+            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
         </div>;
     }
     
