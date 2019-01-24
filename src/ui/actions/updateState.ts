@@ -70,7 +70,11 @@ export function updateState(state) {
     }
     
     function isMyMessages(msg) {
-        return  msg.status === 'unapproved' && msg.account.address === selectedAccount.address;
+        try {
+            return msg.status === 'unapproved' && msg.account.address === selectedAccount.address;
+        } catch (e) {
+            return false;
+        }
     }
     
     const unapprovedMessages = messages.filter(isMyMessages);

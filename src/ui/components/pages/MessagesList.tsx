@@ -8,13 +8,17 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 import { TransactionWallet } from '../wallets';
 
 
-const Messages = ({ messages, assets, onSelect }) => {
+const Messages = ({ messages, assets, onSelect, onReject }) => {
     return messages.map((message) => {
-        const config = getConfigByTransaction(message);
-        const Card = config.card;
-        return <div key={message.id} onClick={() => onSelect(message)}>
-            <Card message={message} assets={assets} collapsed={true}/>
-        </div>;
+        try {
+            const config = getConfigByTransaction(message);
+            const Card = config.card;
+            return <div key={message.id} onClick={() => onSelect(message)}>
+                <Card message={message} assets={assets} collapsed={true}/>
+            </div>;
+        } catch (e) {
+            return null;
+        }
     });
 };
 
@@ -39,7 +43,7 @@ class MessageListComponent extends React.Component {
             <div >
                 {messages.length} <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
             </div>
-            <Messages messages={messages} assets={assets} onSelect={this.selectHandler}/>
+            <Messages messages={messages} assets={assets} onSelect={this.selectHandler} onReject={this.props.reject}/>
     
             <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
         </div>;
