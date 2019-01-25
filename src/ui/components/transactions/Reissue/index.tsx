@@ -2,18 +2,15 @@ import { Reissue } from './Reissue';
 import { ReissueCard } from './ReissueCard';
 import { ReissueFinal } from './ReissueFinal';
 import { ReissueInfo } from './ReissueInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const transfer = {
-    type: messageType,
+    type: utils.messageType,
     message: Reissue,
     card: ReissueCard,
     final: ReissueFinal,
     info: ReissueInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+    ...utils,
 };
 
 export default transfer;

@@ -15,5 +15,7 @@ export const MSG_STATUSES = {
     REJECTED: 'rejected',
 };
 
+
+export const MAX_PACK_TXS = 8;
 export const DELETE_MSG_TIME = 30 * 60 * 1000;
 export const UPDATE_MSG_STATE_TIME = 30 * 1000;

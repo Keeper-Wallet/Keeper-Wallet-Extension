@@ -1,6 +1,8 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
+import { getMoney } from '../../../utils/converters';
 
 export const messageType = 'create-order';
+export const txType = 'order';
 
 export function getAssetsId(tx): Array<string> {
     const assets = {};
@@ -23,10 +25,26 @@ export function getAmount(tx = null) {
     return typeof tx.amount === 'object' ? tx.amount : { coins: tx.amount, assetId: 'WAVES' };
 }
 
+export function getAmountSign(tx) {
+    return tx.orderType === 'sell' ? '-' : '+';
+}
+
+
 export function getPrice(tx = null) {
     return typeof tx.price === 'object' ? tx.price : { coins: tx.price, assetId: 'WAVES' };
 }
 
+export function getPriceSign(tx) {
+    return tx.orderType === 'buy' ? '-' : '+';
+}
+
+export function getPriceAmount(tx, assets) {
+    const amount = getMoney(getAmount(tx), assets);
+    const price = getMoney(getPrice(tx), assets);
+    return amount.convertTo(price.asset, price.getTokens());
+}
+
+
 export function isMe(tx: any, type: string) {
-    return tx.type === SIGN_TYPE.CREATE_ORDER && type === 'order'
+    return tx.type === SIGN_TYPE.CREATE_ORDER && type === txType;
 }

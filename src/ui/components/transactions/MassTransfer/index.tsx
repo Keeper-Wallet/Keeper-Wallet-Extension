@@ -2,18 +2,15 @@ import { MassTransfer } from './MassTransfer';
 import { MassTransferCard } from './MassTransferCard';
 import { MassTransferFinal } from './MassTransferFinal';
 import { MassTransferInfo } from './MassTransferInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const transfer = {
-    type: messageType,
+    type: utils.messageType,
     message: MassTransfer,
     card: MassTransferCard,
     final: MassTransferFinal,
     info: MassTransferInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+        ...utils,
 };
 
 export default transfer;

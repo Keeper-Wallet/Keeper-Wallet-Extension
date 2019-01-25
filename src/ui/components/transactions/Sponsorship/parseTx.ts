@@ -1,6 +1,7 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
 
 export const messageType = 'sponsorship';
+export const txType = 'transaction';
 export const SPONSOR_MODE = {
     enable: 'sponsor_enable',
     disable : 'sponsor_disable',
@@ -24,6 +25,10 @@ export function getAmount(tx = null) {
     return { coins: 0, assetId: 'WAVES' };
 }
 
+export function getAmountSign() {
+    return '';
+}
+
 export function isMe(tx: any, type: string) {
-    return tx.type === SIGN_TYPE.SPONSORSHIP && type === 'transaction';
+    return tx.type === SIGN_TYPE.SPONSORSHIP && type === txType;
 }

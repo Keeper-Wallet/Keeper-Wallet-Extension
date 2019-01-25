@@ -2,6 +2,8 @@ import { SIGN_TYPE } from '@waves/signature-adapter';
 import { BigNumber } from '@waves/data-entities';
 
 export const messageType = 'mass_transfer';
+export const txType = 'transaction';
+
 
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
@@ -39,6 +41,10 @@ export function getAmount(tx) {
     return { coins, tokens, assetId };
 }
 
+export function getAmountSign() {
+    return '-';
+}
+
 export function isMe(tx: any, type: string) {
-    return tx.type === SIGN_TYPE.MASS_TRANSFER && type === 'transaction';
+    return tx.type === SIGN_TYPE.MASS_TRANSFER && type === txType;
 }

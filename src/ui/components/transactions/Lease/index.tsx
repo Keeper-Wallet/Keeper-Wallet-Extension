@@ -2,18 +2,14 @@ import { Lease } from './Lease';
 import { LeaseCard } from './LeaseCard';
 import { LeaseFinal } from './LeaseFinal';
 import { LeaseInfo } from './LeaseInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
-
+import * as utils from './parseTx';
 const lease = {
-    type: messageType,
+    type: utils.messageType,
     message: Lease,
     card: LeaseCard,
     final: LeaseFinal,
     info: LeaseInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+    ...utils,
 };
 
 export default lease;

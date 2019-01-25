@@ -2,18 +2,15 @@ import { Coinomat } from './Coinomat';
 import { CoinomatCard } from './CoinomatCard';
 import { CoinomatFinal } from './CoinomatFinal';
 import { CoinomatInfo } from './CoinomatInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const coinomat = {
-    type: messageType,
+    type: utils.messageType,
     message: Coinomat,
     card: CoinomatCard,
     final: CoinomatFinal,
     info: CoinomatInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe
+    ...utils,
 };
 
 export default coinomat;

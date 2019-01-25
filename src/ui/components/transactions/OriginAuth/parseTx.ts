@@ -1,4 +1,5 @@
 export const messageType = 'authOrigin';
+export const txType = 'authOrigin';
 
 export function getAssetsId(tx = null): Array<string> {
     return [];
@@ -12,6 +13,10 @@ export function getAmount(tx = null) {
     return { coins: 0, assetId: 'WAVES' };
 }
 
+export function getAmountSign() {
+    return '';
+}
+
 export function isMe(tx: any, type: string) {
-    return type === messageType
+    return type === txType
 }

@@ -7,7 +7,7 @@ import * as cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { Balance, Asset } from '../../ui';
 import { getMoney } from '../../../utils/converters';
-import { getAmount, getPrice, messageType } from './parseTx';
+import { getAmount, getPriceAmount, getPriceSign, getAmountSign, messageType, getPrice } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
@@ -24,16 +24,19 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
         const { message, assets } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
+        const isSell = tx.orderType === 'sell';
         const amount = getMoney(getAmount(tx), assets);
         const price = getMoney(getPrice(tx), assets);
-        const isSell = tx.orderType === 'sell';
+        
         let iGet;
-        let sign = '- ';
+        let sign = '';
+        
         if (!isSell) {
-            sign = '+ ';
+            sign = `${getAmountSign(tx)} `;
             iGet = amount;
         } else {
-            iGet = amount.convertTo(price.asset, price.getTokens());
+            sign = `${getPriceSign(tx)} `;
+            iGet = getPriceAmount(tx, assets);
         }
         
         return <div className={className}>

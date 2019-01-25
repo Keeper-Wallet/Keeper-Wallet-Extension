@@ -3,7 +3,7 @@ import { translate, Trans } from 'react-i18next';
 import * as styles from './createOrder.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat } from '../../ui';
-import { getFee, getAssetsId, getAmount, getPrice } from './parseTx';
+import { getFee, getAmount, getPrice, getPriceAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
 
@@ -21,7 +21,7 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
         let iGet;
     
         if (!isSell) {
-            iGet = amount.convertTo(price.asset, price.getTokens());
+            iGet = getPriceAmount(tx, assets);
         } else {
             iGet = amount;
         }

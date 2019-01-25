@@ -2,18 +2,15 @@ import { Burn } from './Burn';
 import { BurnCard } from './BurnCard';
 import { BurnFinal } from './BurnFinal';
 import { BurnInfo } from './BurnInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const burn = {
-    type: messageType,
+    type: utils.messageType,
     message: Burn,
     card: BurnCard,
     final: BurnFinal,
     info: BurnInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+    ...utils,
 };
 
 export default burn;

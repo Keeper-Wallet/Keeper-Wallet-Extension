@@ -1,6 +1,8 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
 
 export const messageType = 'burn';
+export const txType = 'transaction';
+
 
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
@@ -21,10 +23,14 @@ export function getAmount(tx = null) {
     if (tx.quantity) {
         tx.amount = tx.quantity;
     }
-    
     return typeof tx.amount === 'object' ? tx.amount : { coins: tx.amount, assetId: 'WAVES' };
 }
 
+export function getAmountSign() {
+    return '-';
+}
+
+
 export function isMe(tx: any, type: string) {
-    return tx.type === SIGN_TYPE.BURN && type === 'transaction'
+    return tx.type === SIGN_TYPE.BURN && type === txType;
 }

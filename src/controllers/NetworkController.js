@@ -78,7 +78,7 @@ export class NetworkController {
     }
 
     async broadcast(message){
-        const {data,  type} = message;
+        const {result,  type} = message;
         let API_BASE, url;
 
         switch (type) {
@@ -110,7 +110,7 @@ export class NetworkController {
             headers: {
                 "Content-Type": "application/json; charset=utf-8"
             },
-            body: data
+            body: result
         });
 
         switch (resp.status) {

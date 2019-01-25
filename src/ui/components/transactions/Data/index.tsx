@@ -2,18 +2,15 @@ import { Data } from './Data';
 import { DataCard } from './DataCard';
 import { DataFinal } from './DataFinal';
 import { DataInfo } from './DataInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const transfer = {
-    type: messageType,
+    type: utils.messageType,
     message: Data,
     card: DataCard,
     final: DataFinal,
     info: DataInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+    ...utils,
 };
 
 export default transfer;

@@ -16,6 +16,7 @@ import sponsorShip from './Sponsorship';
 import data from './Data';
 import setScript from './SetScript';
 import assetScript from './AssetScript';
+import packageTx from './Package';
 import unknown from './Unknown';
 
 const MESSAGES = [
@@ -37,6 +38,7 @@ const MESSAGES = [
     data,
     setScript,
     assetScript,
+    packageTx,
 ];
 
 export { FinalTransaction } from './FinalTransaction';

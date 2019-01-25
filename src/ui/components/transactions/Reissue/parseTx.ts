@@ -1,7 +1,7 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { Asset, Money } from '@waves/data-entities';
 
 export const messageType = 'reissue';
+export const txType = 'transaction';
 
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
@@ -20,6 +20,10 @@ export function getFee(tx) {
 
 export function getAmount(tx = null) {
     return typeof tx.quantity === 'object' ? tx.quantity : { coins: tx.quantity, assetId: tx.assetId };
+}
+
+export function getAmountSign() {
+    return '+';
 }
 
 export function isMe(tx: any, type: string) {

@@ -1,5 +1,5 @@
 import ObservableStore from 'obs-store';
-import { DELETE_MSG_TIME, UPDATE_MSG_STATE_TIME, MSG_STATUSES } from '../constants';
+import { DELETE_MSG_TIME, UPDATE_MSG_STATE_TIME, MSG_STATUSES, MAX_PACK_TXS } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
@@ -85,11 +85,11 @@ export class MessageController extends EventEmitter {
         switch (message.status) {
             case MSG_STATUSES.SIGNED:
             case MSG_STATUSES.PUBLISHED:
-                return resolve(message.result);
+                return Promise.resolve(message.result);
             case MSG_STATUSES.REJECTED:
-                return reject(new Error('User denied message'));
+                return Promise.reject(new Error('User denied message'));
             case MSG_STATUSES.FAILED:
-                return reject(new Error(message.err.message));
+                return Promise.reject(new Error(message.err.message));
             default:
                 return new Promise((resolve, reject) => {
                     this.once(`${id}:finished`, finishedMessage => {
@@ -315,6 +315,7 @@ export class MessageController extends EventEmitter {
                 signedData = {...signedData, approved: 'OK'};
                 break;
             case 'authOrigin':
+                signedData = {...signedData, approved: 'OK'};
                 this.setPermission(signedData.origin, signedData.permission);
                 break;
             default:
@@ -410,6 +411,13 @@ export class MessageController extends EventEmitter {
                 break;
             case 'transactionPackage':
                 if (!Array.isArray(message.data)) throw new Error('Should contain array of txParams');
+
+                const msgs = message.data.length;
+
+                if (!msgs || msgs > MAX_PACK_TXS) {
+                    throw new Error(`Max transactions in pac is ${MAX_PACK_TXS}`);
+                }
+
                 result.data = message.data.map(txParams => {
                     const data = this._prepareTx(txParams.data, message.account);
                     return {...txParams, data}

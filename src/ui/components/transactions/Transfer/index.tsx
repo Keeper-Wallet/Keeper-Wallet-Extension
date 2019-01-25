@@ -2,18 +2,15 @@ import { Transfer } from './Transfer';
 import { TransferCard } from './TransferCard';
 import { TransferFinal } from './TransferFinal';
 import { TransferInfo } from './TransferInfo';
-import { getAmount, getAssetsId, getFee, messageType, isMe } from './parseTx';
+import * as utils from './parseTx';
 
 const transfer = {
-    type: messageType,
+    type: utils.messageType,
     message: Transfer,
     card: TransferCard,
     final: TransferFinal,
     info: TransferInfo,
-    getAmount,
-    getAssetsId,
-    getFee,
-    isMe,
+    ...utils,
 };
 
 export default transfer;
