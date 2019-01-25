@@ -6,7 +6,7 @@ import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
 import { I18N_NAME_SPACE } from '../../appConfig';
 import { TransactionWallet } from '../wallets';
-
+import * as styles from './styles/messageList.styl';
 
 const Messages = ({ messages, assets, onSelect, onReject }) => {
     return messages.map((message) => {
@@ -14,7 +14,7 @@ const Messages = ({ messages, assets, onSelect, onReject }) => {
             const config = getConfigByTransaction(message);
             const Card = config.card;
             return <div key={message.id} onClick={() => onSelect(message)}>
-                <Card message={message} assets={assets} collapsed={true}/>
+                <Card className={styles.cardItem} message={message} assets={assets} collapsed={true}/>
             </div>;
         } catch (e) {
             return null;
@@ -36,16 +36,25 @@ class MessageListComponent extends React.Component {
         if (this.state.loading) {
             return <Intro/>
         }
-        
+
         const { messages, assets } = this.props;
         
-        return <div>
-            <div >
-                {messages.length} <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
+        return <div className={styles.messageList}>
+            <div className={styles.messageListHeader}>
+                {/*<div className={styles.arrowBackIcon}></div>*/}
+                <div className={styles.messageListTitle}>
+                    <span className={styles.messageListCounter}>{messages.length}</span>
+                    <span className="headline3">
+                        <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
+                    </span>
+                </div>
             </div>
+
+        <div className={styles.messageListScrollBox}>
             <Messages messages={messages} assets={assets} onSelect={this.selectHandler} onReject={this.props.reject}/>
-    
-            <TransactionWallet account={this.props.selectedAccount} hideButton={true}/>
+        </div>
+
+            <TransactionWallet className={styles.txWallet} account={this.props.selectedAccount} hideButton={true}/>
         </div>;
     }
     

@@ -1,0 +1,66 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.messageList
+  height: 100%;
+
+  &ScrollBox
+    @extends .txScrollBox
+    max-height: 495px;
+    height: 495px;
+    background: $basic50;
+    padding-top: 24px;
+    padding-bottom: 24px;
+
+  .cardContent
+    margin: 0;
+
+  .txWallet
+    margin: 0;
+    width: 100%;
+
+  &Header
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid $basic100;
+
+    //.arrowBackIcon
+    //  width: 24px;
+    //  height: 24px;
+    //  position: absolute;
+    //  top: 13px;
+    //  cursor: pointer;
+    //  border-radius: 4px;
+    //  left: 8px;
+    //  background: url(../../../assets/img/back-18-black.svg) center no-repeat;
+    //  &:hover
+    //    background-color: $basic100;
+
+   &Title
+     display: flex;
+     justify-content: center;
+     width: 100%;
+     font-weight: 400;
+
+  &Counter
+    background: $submit400;
+    color: $white;
+    height: 20px;
+    min-width: 20px;
+    padding: 0 6px;
+    margin-right: 8px;
+    text-align: center;
+    line-height: 20px;
+    display: block;
+    border-radius: 10px;
+
+  .cardItem
+    margin-bottom: 8px;
+    cursor: pointer;
+
+    & > div:not(:first-child)
+      display: none;

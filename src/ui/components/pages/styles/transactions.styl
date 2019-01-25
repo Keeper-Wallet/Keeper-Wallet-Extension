@@ -71,19 +71,6 @@
     &Description + .txRow
       border-top: 0 none;
 
-  //.toggleList
-  //  border-top: 1px dashed $basic200;
-  //
-  //  button
-  //    color: $submit300;
-  //    font-size: 12px;
-  //    display: inline-block;
-  //    margin-top: 8px;
-  //
-  //    span
-  //      margin-left: 3px;
-  //      display: inline-block;
-
   .toggleList
     line-height: 1em;
 
@@ -130,7 +117,6 @@
       text-align: center;
       line-height: 20px;
       display: block;
-
       border-radius: 10px;
 
     .txRow
@@ -182,22 +168,56 @@
 
   button
     margin-bottom: 14px;
+    max-width: 100%;
 
 .txBigIcon
   width: 80px;
   height: 80px;
-  margin: 44px auto 4px auto;
+  margin: 0 auto 4px auto;
 
 .txFinal
   margin: 0 auto;
+  padding: 64px 0 0;
+  background: $basic50;
+  height: calc(100% - 48px);
+  position: relative;
 
   .finalTxContent
     margin: 0 24px;
 
-  .finalTxPlate {
+  .finalTxPlate
     overflow: auto;
     max-height: 240px;
-  }
+    margin: 0 -10px;
+
+  .txFooter
+    position: absolute;
+    bottom: 0;
+
+  &ButtonWrapper
+    background: $white;
+    border-top: 1px solid $basic100;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 14px 0;
+    position: absolute;
+    bottom: 58px;
+    width: 100%;
+
+    button
+      margin: 0;
+
+    .buttonMargin
+      min-width: 12px;
+
+  .finalTxWallet
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+
+    .txWallet
+      border-bottom:2px solid red;
 
   .txInfoRow
     display: flex;
@@ -216,10 +236,19 @@
       line-height: 20px;
 
   .closeBtn
-    margin: 22px auto 0 auto;
+    margin: 0;
+    background: transparent;
+    color: $black;
+    border: 1px solid $basic200;
+    max-width: none;
+
+    &:hover
+      border: 1px solid $black;
+      background: transparent;
 
   .nextBtn
-    margin: 22px auto 0 auto;
+    margin: 0;
+    max-width: none;
 
 .txSign
   .infoBlock
