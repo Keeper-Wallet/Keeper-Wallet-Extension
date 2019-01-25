@@ -11,7 +11,7 @@ export class BurnFinal extends React.PureComponent {
         const { isApprove, isReject, isSend } = this.props;
         if (isApprove) {
             return <div>
-                <div className="margin-main headline2">
+                <div className="headline2">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
@@ -19,7 +19,7 @@ export class BurnFinal extends React.PureComponent {
         }
         
         if (isReject) {
-            return <div className="margin-main-large headline2">
+            return <div className="headline2">
                 <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }

@@ -50,7 +50,7 @@ export const TransactionWallet = ({
         }
     };
 
-    return <div className={`${className} ${styles.inner} ${styles.txWallet} flex`} onClick={clickHandler} {...props}>
+    return <div className={`${className} ${styles.inner} ${styles.txWallet} flex`} {...props}>
         <div className={styles.avatar}>
             <Avatar size={size} address={account.address}/>
         </div>
@@ -64,7 +64,7 @@ export const TransactionWallet = ({
             </div>
         </div>
 
-        <div className={styles.controls}>
+        <div className={styles.controls} onClick={clickHandler}>
             {children}
             { hideButton ? null :<Button onClick={selectHandler} className={iconClass}></Button> }
         </div>

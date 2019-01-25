@@ -22,7 +22,7 @@ class SelectTxAccountComponent extends React.PureComponent {
     
     render() {
         return <div className={styles.content}>
-            <TransactionWallet hideButton={true} account={this.props.selectAccount}>
+            <TransactionWallet className={styles.userWallet} hideButton={true} account={this.props.selectAccount}>
                 <div className={styles.closeIcon} onClick={this.props.onBack}></div>
             </TransactionWallet>
             <div className={styles.wrapper}>
