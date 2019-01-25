@@ -75,7 +75,7 @@ class MessageListComponent extends React.Component {
              (acc, message) => {
                  const { data } = message;
                  const txData = data.data ? data.data : data;
-                 const tx = { type: data.type, ...txData };
+                 const tx = txData;
                  const config = getConfigByTransaction(message);
                  const assetIds = config.getAssetsId(tx);
                  assetIds.forEach(item => {

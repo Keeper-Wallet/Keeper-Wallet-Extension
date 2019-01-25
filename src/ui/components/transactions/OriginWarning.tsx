@@ -3,6 +3,9 @@ import * as React from 'react';
 import {Trans} from 'react-i18next';
 
 export const OriginWarning = ({ message }) => {
+    if (!message.origin) {
+        return null;
+    }
     return <div>
         <div className={styles.originAddress}>{message.origin}</div>
         <div className={styles.originDescription}>

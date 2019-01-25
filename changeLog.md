@@ -7,6 +7,7 @@
 + Init cancel lease request (fetch transaction lease)
 + Fix public state permissions on empty keeper
 + Add list of waiting requests
++ Add batch of txs
 
 
 ####version 1.0.7

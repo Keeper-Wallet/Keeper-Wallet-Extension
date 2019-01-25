@@ -22,11 +22,15 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
         const { message, assets } = this.props;
         const { data = [] } = message;
         const txs = data.map(getTransactionData);
-        
+        const hashes = message.messageHash;
         return <div>
             {
                 txs.map(({ config, tx }, index) => {
-                    const message = { data: {...tx, data: tx }, type: 'transaction' };
+                    const message = {
+                        data: {...tx, data: tx },
+                        messageHash: hashes[index],
+                        type: 'transaction',
+                    };
                     return <div key={`${index}${config.messageType}`}>
                         <MessageItem config={config} assets={assets} message={message}/>
                     </div>;

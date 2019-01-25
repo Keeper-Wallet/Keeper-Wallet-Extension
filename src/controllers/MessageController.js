@@ -423,7 +423,7 @@ export class MessageController extends EventEmitter {
                     return {...txParams, data}
                 });
                 const validationPromises = result.data.map(data => this._getMessageDataHash(data, message.account));
-                await Promise.all(validationPromises);
+                result.messageHash = await Promise.all(validationPromises);
                 break;
             case 'order':
                 result.data.data = this._prepareOrder(result.data.data, message.account);
