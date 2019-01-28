@@ -41,6 +41,102 @@
       }
 ```
 
-+ Если кипер не проинициализирован в ответе будет ошибка вида  
-`{ message: "Init Waves Keeper and add account" }`
+ОШИБКИ
 
++ `{ message: "Init Waves Keeper and add account" }` - C  
++ `{ message: "Add Waves Keeper account"}` - вход в кипер произведен, но нет аккаунтов  
++ `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
+
+ОТВЕТЫ
+
+```
+{
+    "initialized": true,
+    "locked": true,
+    "account": {
+        "name": "foo",
+        "publicKey": "bar",
+        "address": "waves адресс",
+        "networkCode": "байт сети",
+        "balance": {
+            "available": "баланс в waves",
+            "leasedOut": "баланс в лизинге"
+        }
+    },
+    "network": {
+        "code": "W",
+        "server": "https://nodes.wavesplatform.com/",
+        "matcher": "https://matcher.wavesplatform.com/"
+    },
+    "messages": [],
+    "txVersion": {
+        "3": [ 2 ],
+        "4": [ 2 ],
+        "5": [ 2 ],
+        ...
+    }
+}
+```
++ `initialized` - boolean кипер проинициализирован   
++ `locked` - boolean кипер в режиме ожидания  
++ `account` - текущий аккаунт, если пользователь разрешит сайту доступ или null  
++ `network` - текущая сеть waves, адрес ноды и матчера    
++ `txVersion` - доступные версии транзакций для каждого типа   
+
+
+###signTransactionPackage
+Пакетная подпись транзакций.
+Иногда надо подписать сразу несколько транзакций, для удобства пользователя, 
+допускается подписывать до 7 транзакций одновременно, и разрешены только 
+определенные типы транзакций:  
+
+```
+    3 - выпуск токена
+    2 - перевод токенов
+    5 - перевыпуск токенов
+    6 - сжигание токенов
+    1` - создвние алиса на адрес в сети waves
+    1` - массовый перевод
+    1` - транзакция с данными
+```
+
+Пример:
+
+```
+    const tx = [{
+        type: 4,
+        data: {
+            amount: {
+               assetId: 'WAVES',
+               tokens: "1.567"
+            },
+            fee: {
+                assetId: 'WAVES',
+                tokens: "0.001"
+            },
+            recipient: 'test'
+    }},{
+        type: 4,
+        data: {
+            amount: {
+               assetId: 'WAVES',
+               tokens: "0.51"
+            },
+            fee: {
+                assetId: 'WAVES',
+                tokens: "0.001"
+            },
+            recipient: 'merry'
+        }
+    }];
+    
+    WavesKeeper.signTransactionPackage(tx)
+```
+
+Подписать 2 транзакции:
+    + перевода на алиас test 1.567 Waves
+    + перевода на алиас merry 0.1 Waves
+    
+ОТВЕТ
+
+массив из 2-х строк, подписанных и готовых к отправке транзакций.
