@@ -324,42 +324,52 @@ class BackgroundService extends EventEmitter {
         }
     }
 
-    getInpageApi(origin) {
-        const newMessage = async (data, type, from, broadcast) => {
-            const {selectedAccount} = this.getState();
+    async validatePermission(origin) {
+        const { selectedAccount } = this.getState();
 
-            if (!selectedAccount) throw new Error('WavesKeeper contains co accounts');
-            // Proper public key check
-            if (from && from !== selectedAccount.address) {
-                throw new Error('From address should match selected account address or be blank');
-            }
+        if (!selectedAccount) throw new Error('WavesKeeper has no accounts');
 
-            //Check messages permissions
-            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+        const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
 
-            if (!canIUse && canIUse != null) {
-                throw new Error('Api rejected by user');
-            }
+        if (!canIUse && canIUse != null) {
+            throw new Error('Api rejected by user');
+        }
 
-            if (canIUse === null) {
-                let messageId = this.permissionsController.getMessageIdAccess(origin);
+        if (canIUse === null) {
+            let messageId = this.permissionsController.getMessageIdAccess(origin);
 
-                if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
-                    this.permissionsController.setMessageIdAccess(origin, messageId);
+            if (messageId) {
+                const message = this.messageController.getMessageById(messageId);
+
+                if (message.account.address !== selectedAccount.address) {
+                    messageId = null;
                 }
 
-                this.emit('Show notification');
-                
-                await this.messageController.getMessageResult(messageId)
-                    .then(() => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
-                    })
-                    .catch((e) => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
-                        return Promise.reject(e);
-                });
             }
+            
+            if (!messageId) {
+                messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                this.permissionsController.setMessageIdAccess(origin, messageId);
+            }
+
+            this.emit('Show notification');
+
+            await this.messageController.getMessageResult(messageId)
+                .then(() => {
+                    this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                })
+                .catch((e) => {
+                    this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                    return Promise.reject(e);
+                });
+        }
+    }
+
+    getInpageApi(origin) {
+        const newMessage = async (data, type, from, broadcast) => {
+            const { selectedAccount } = this.getState();
+
+            await this.validatePermission(origin);
 
             const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
             this.emit('Show notification');
@@ -401,7 +411,6 @@ class BackgroundService extends EventEmitter {
         };
 
         api.publicState = async () => {
-            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
             const state = this.getState();
             const { selectedAccount, initialized } = state;
 
@@ -410,42 +419,20 @@ class BackgroundService extends EventEmitter {
                 throw new Error(msg);
             }
 
-            if (!canIUse && canIUse != null ) {
-                throw new Error('Api rejected by user');
-            }
-
-            if (canIUse === null) {
-                let messageId = this.permissionsController.getMessageIdAccess(origin);
-
-                if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
-                    this.permissionsController.setMessageIdAccess(origin, messageId);
-                }
-
-                this.emit('Show notification');
-
-                await this.messageController.getMessageResult(messageId)
-                    .then(() => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
-                    })
-                    .catch((e) => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
-                        return Promise.reject(e);
-                    });
-            }
+            await this.validatePermission(origin);
 
             return this._publicState(this.getState(), origin);
         };
 
-        if (origin === 'client.wavesplatform.com') {
-            api.signBytes = async (data, from) => {
-                if (!Array.isArray(data)) {
-                    throw new Error('Wrong data format');
-                }
-
-                return await newMessage(data, 'bytes', from, false);
-            }
-        }
+        // if (origin === 'client.wavesplatform.com') {
+        //     api.signBytes = async (data, from) => {
+        //         if (!Array.isArray(data)) {
+        //             throw new Error('Wrong data format');
+        //         }
+        //
+        //         return await newMessage(data, 'bytes', from, false);
+        //     }
+        // }
 
         return api
     }

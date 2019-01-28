@@ -5,7 +5,17 @@ const extendValues = (defaultValues, newValues) => {
     return Object.entries(defaultValues)
         .reduce((acc, [key, value]) => {
             try {
-                acc[key] = Array.isArray(value) ? [...value, ...(acc[key] || [])] : {...value, ...acc[key]};
+                switch (typeof value) {
+                    case 'number':
+                        acc[key] = Number(acc[key]) ? acc[key] : value;
+                        break;
+                    case 'string':
+                        acc[key] = typeof acc[key] === 'string' ? acc[key] : value;
+                        break;
+                    case 'object':
+                        acc[key] = Array.isArray(value) ? [...value, ...(acc[key] || [])] : {...value, ...acc[key]};
+                        break;
+                }
             } catch (e) {
                 acc[key] = value;
             }
@@ -34,7 +44,7 @@ export class RemoteConfigController {
 
     getPackConfig() {
         try {
-            const {pack_config} = this.store.getState().config;
+            const { pack_config } = this.store.getState().config;
             return extendValues(DEFAULT_CONFIG.PACK_CONFIG, pack_config);
         } catch (e) {
             return DEFAULT_CONFIG.PACK_CONFIG;

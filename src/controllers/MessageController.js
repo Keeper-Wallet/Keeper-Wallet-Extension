@@ -111,6 +111,10 @@ export class MessageController extends EventEmitter {
         }
     }
 
+    getMessageById(id) {
+        return this._getMessageById(id);
+    }
+
     /**
      * Approves message
      * @param {string} id - message id
@@ -393,7 +397,6 @@ export class MessageController extends EventEmitter {
 
     async _validateAndTransform(message) {
         let result = {...message};
-        const { max, allow_tx } = this.getPackConfig();
 
         if (message.data.successPath) {
             result.successPath = message.data.successPath
@@ -416,7 +419,7 @@ export class MessageController extends EventEmitter {
                 break;
             case 'transactionPackage':
                 if (!Array.isArray(message.data)) throw new Error('Should contain array of txParams');
-
+                const { max, allow_tx } = this.getPackConfig();
                 const {} = this.getMessagesConfig();
 
                 const msgs = message.data.length;
@@ -439,7 +442,7 @@ export class MessageController extends EventEmitter {
                 result.messageHash = await Promise.all(validationPromises);
                 break;
             case 'order':
-                result.data.data = this._prepareOrder(result.data.data, message.account);
+                result.data.data = await this._prepareOrder(result.data.data, message.account);
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'transaction':

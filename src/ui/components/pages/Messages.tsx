@@ -17,7 +17,10 @@ class MessagesComponent extends React.Component {
     
     rejectHandler = (e) => this.reject(e);
     approveHandler = (e) => this.approve(e);
-    closeHandler = () => this.props.closeNotificationWindow();
+    closeHandler = (e) => {
+        this.updateActiveMessages(e);
+        this.props.closeNotificationWindow();
+    };
     toListHandler = (e) => this.updateActiveMessages(e);
     nextHandler = (e) => this.updateActiveMessages(e, true);
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
