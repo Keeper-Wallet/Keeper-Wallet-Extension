@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import {NETWORK_CONFIG} from "../constants";
 import { BigNumber } from "@waves/data-entities";
 
 export class BalanceController {
@@ -12,6 +11,7 @@ export class BalanceController {
             pollInterval: options.pollInterval || 10000
         };
 
+        this.getNetworkConfig = options.getNetworkConfig;
         this.getAccounts = options.getAccounts;
         this.getNetwork = options.getNetwork;
         this.getNode = options.getNode;
@@ -36,7 +36,7 @@ export class BalanceController {
     }
 
     async updateBalances() {
-        const accounts = this.getAccounts().filter(account => account.networkCode === NETWORK_CONFIG[this.getNetwork()].code);
+        const accounts = this.getAccounts().filter(account => account.networkCode === this.getNetworkConfig()[this.getNetwork()].code);
         if (!this.active || accounts.length < 1) return;
 
         const data = await Promise.all(

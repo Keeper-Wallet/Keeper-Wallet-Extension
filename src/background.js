@@ -21,15 +21,15 @@ import {
     UiStateController,
     AssetInfoController,
     TxInfoController,
-    ExternalDeviceController
+    ExternalDeviceController,
+    RemoteConfigController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
+import { WAVESKEEPER_DEBUG } from  './constants';
 
-
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 
@@ -81,6 +81,7 @@ async function setupBackgroundService() {
 
     // connect to other contexts
     extension.runtime.onConnect.addListener(connectRemote);
+
     if (!isEdge) {
         extension.runtime.onConnectExternal.addListener(connectExternal)
     }
@@ -110,17 +111,18 @@ async function setupBackgroundService() {
 
     // Idle management
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
+
     if (!isEdge) {
         extension.idle.onStateChanged.addListener(state => {
             if (['active', 'idle'].indexOf(state) > -1) {
-                backgroundService.walletController.lock()
+                backgroundService.walletController.lock();
             }
         });
     } else {
         setInterval(() => {
             extension.idle.queryState(IDLE_INTERVAL, (state) => {
                 if (["idle", "locked"].indexOf(state) > -1) {
-                    backgroundService.walletController.lock()
+                    backgroundService.walletController.lock();
                 }
             })
         }, 10000)
@@ -131,7 +133,7 @@ async function setupBackgroundService() {
     function connectRemote(remotePort) {
         const processName = remotePort.name;
         if (processName === 'contentscript') {
-            connectExternal(remotePort)
+            connectExternal(remotePort);
         } else {
             const portStream = new PortStream(remotePort);
             backgroundService.setupUiConnection(portStream, processName);
@@ -154,9 +156,16 @@ class BackgroundService extends EventEmitter {
         this.store = new ComposableObservableStore(initState);
 
         // Controllers
+        this.remoteConfigController = new RemoteConfigController({
+            initState: initState.RemoteConfigController,
+        });
 
         // Network. Works with blockchain
-        this.networkController = new NetworkController({initState: initState.NetworkController});
+        this.networkController = new NetworkController({
+            initState: initState.NetworkController,
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
+            getNetworks: () => this.remoteConfigController.getNetworks(),
+        });
 
         // Preferences. Contains accounts, available accounts, selected language etc.
         this.preferencesController = new PreferencesController({
@@ -167,7 +176,6 @@ class BackgroundService extends EventEmitter {
 
         // On network change select accounts of this network
         this.networkController.store.subscribe(() => this.preferencesController.syncCurrentNetworkAccounts());
-
 
         // Ui State. Provides storage for ui application
         this.uiStateController = new UiStateController({initState: initState.UiStateController});
@@ -184,13 +192,15 @@ class BackgroundService extends EventEmitter {
         // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNode: this.networkController.getNode.bind(this.networkController),
-            getAccounts: this.walletController.getAccounts.bind(this.walletController)
+            getAccounts: this.walletController.getAccounts.bind(this.walletController),
         });
 
         this.permissionsController = new PermissionsController({
             initState: initState.PermissionsController,
+            remoteConfig: this.remoteConfigController,
         });
 
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -220,7 +230,9 @@ class BackgroundService extends EventEmitter {
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
             txInfo: this.txinfoController.txInfo.bind(this.txinfoController),
-            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController)
+            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController),
+            getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
+            getPackConfig: () => this.remoteConfigController.getPackConfig(),
         });
 
 
@@ -233,7 +245,8 @@ class BackgroundService extends EventEmitter {
             BalanceController: this.balanceController.store,
             PermissionsController: this.permissionsController.store,
             UiStateController: this.uiStateController.store,
-            AssetInfoController: this.assetInfoController.store
+            AssetInfoController: this.assetInfoController.store,
+            RemoteConfigController: this.remoteConfigController.store,
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update

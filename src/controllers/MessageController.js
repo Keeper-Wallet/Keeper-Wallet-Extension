@@ -1,16 +1,15 @@
 import ObservableStore from 'obs-store';
-import { DELETE_MSG_TIME, UPDATE_MSG_STATE_TIME, MSG_STATUSES, MAX_PACK_TXS } from '../constants';
+import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
-import {getAdapterByType} from "@waves/signature-adapter";
-import {BigNumber, Money} from '@waves/data-entities';
-import {networkByteFromAddress} from "../lib/cryptoUtil";
+import { getAdapterByType } from "@waves/signature-adapter";
+import { BigNumber, Money } from '@waves/data-entities';
+import { networkByteFromAddress } from "../lib/cryptoUtil";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
 export class MessageController extends EventEmitter {
-    MAX_MESSAGES = 100;
 
     constructor(options = {}) {
         super();
@@ -28,6 +27,9 @@ export class MessageController extends EventEmitter {
         // Broadcast and getMatcherPublicKey method from NetworkController
         this.broadcast = options.broadcast;
         this.getMatcherPublicKey = options.getMatcherPublicKey;
+
+        this.getMessagesConfig = options.getMessagesConfig;
+        this.getPackConfig = options.getPackConfig;
 
         // Get assetInfo method from AssetInfoController
         this.assetInfo = options.assetInfo;
@@ -54,7 +56,7 @@ export class MessageController extends EventEmitter {
 
         let messages = this.store.getState().messages;
 
-        while (messages.length > this.MAX_MESSAGES) {
+        while (messages.length > this.getMessagesConfig().max_messages) {
             const oldest = messages.filter(msg => Object.values(MSG_STATUSES).includes(msg.status))
                 .sort((a, b) => a.timestamp - b.timestamp)[0];
             if (oldest) {
@@ -102,7 +104,7 @@ export class MessageController extends EventEmitter {
                             case MSG_STATUSES.FAILED:
                                 return reject(new Error(finishedMessage.err.message));
                             default:
-                                return reject(new Error('Unknown error'))
+                                return reject(new Error('Unknown error'));
                         }
                     })
                 })
@@ -157,8 +159,8 @@ export class MessageController extends EventEmitter {
     }
 
     rejectByOrigin(byOrigin) {
-        const { messages } = this.store.getState();
-        messages.forEach(({ id, origin }) => {
+        const {messages} = this.store.getState();
+        messages.forEach(({id, origin}) => {
             if (byOrigin === origin) {
                 this.reject(id);
             }
@@ -166,10 +168,11 @@ export class MessageController extends EventEmitter {
     }
 
     rejectAllByTime() {
+        const { message_expiration_ms } = this.getMessagesConfig();
         const time = Date.now();
-        const { messages } = this.store.getState();
-        messages.forEach(({ id, timestamp, status }) => {
-            if ((time - timestamp) > DELETE_MSG_TIME && status === MSG_STATUSES.UNAPPROVED) {
+        const {messages} = this.store.getState();
+        messages.forEach(({id, timestamp, status}) => {
+            if ((time - timestamp) > message_expiration_ms && status === MSG_STATUSES.UNAPPROVED) {
                 this.reject(id);
             }
         });
@@ -193,7 +196,8 @@ export class MessageController extends EventEmitter {
 
     _updateMessagesByTimeout() {
         clearTimeout(this._updateTimer);
-        this._updateTimer = setTimeout(() => this.rejectAllByTime(), UPDATE_MSG_STATE_TIME)
+        const { update_messages_ms } = this.getMessagesConfig();
+        this._updateTimer = setTimeout(() => this.rejectAllByTime(), update_messages_ms)
     }
 
     _updateMessage(message) {
@@ -237,9 +241,9 @@ export class MessageController extends EventEmitter {
         }
 
         if (Array.isArray(data)) {
-            data = [ ...data ];
+            data = [...data];
         } else {
-            data = { ...data };
+            data = {...data};
         }
 
         for (const key in data) {
@@ -389,6 +393,7 @@ export class MessageController extends EventEmitter {
 
     async _validateAndTransform(message) {
         let result = {...message};
+        const { max, allow_tx } = this.getPackConfig();
 
         if (message.data.successPath) {
             result.successPath = message.data.successPath
@@ -412,10 +417,18 @@ export class MessageController extends EventEmitter {
             case 'transactionPackage':
                 if (!Array.isArray(message.data)) throw new Error('Should contain array of txParams');
 
+                const {} = this.getMessagesConfig();
+
                 const msgs = message.data.length;
 
-                if (!msgs || msgs > MAX_PACK_TXS) {
-                    throw new Error(`Max transactions in pac is ${MAX_PACK_TXS}`);
+                if (!msgs || msgs > max) {
+                    throw new Error(`Max transactions in pac is ${max}`);
+                }
+
+                const unavailableTx = message.data.filter(({ type }) => !allow_tx.includes(type));
+
+                if (unavailableTx.length) {
+                    throw new Error(`Tx type can be ${allow_tx.join(', ')}`);
                 }
 
                 result.data = message.data.map(txParams => {

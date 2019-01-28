@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import { BLACK_LIST_CONFIG } from "../constants";
 
 export const PERMISSIONS = {
     ALL: 'all',
@@ -19,8 +18,9 @@ export class PermissionsController {
 
         };
 
+        this.remoteConfig = options.remoteConfig;
         this.store = new ObservableStore({ ...defaults, ...options.initState});
-        this._getBlackList();
+        this._updateByConfig();
     }
 
     getMessageIdAccess(origin) {
@@ -75,12 +75,6 @@ export class PermissionsController {
         this.updateState({ origins: { [origin]: permissions } })
     }
 
-    getConfig() {
-        return fetch(BLACK_LIST_CONFIG)
-            .then(resp => resp.text())
-            .then(txt => JSON.parse(txt))
-    }
-
     updateState(state) {
         const {  origins: oldOrigins, inPending: oldInPending, ...oldState} = this.store.getState();
         const origins = { ...oldOrigins, ...(state.origins || {}) };
@@ -99,14 +93,9 @@ export class PermissionsController {
         this.store.updateState(newState);
     }
 
-    async _getBlackList() {
-        try {
-            const { blacklist, whitelist } = await this.getConfig();
-            this.updateState({ blacklist, whitelist })
-        } catch (e) {
-        }
-
-        clearTimeout(this._timer);
-        this._timer = setTimeout(() => this._getBlackList(), 30000);
+    _updateByConfig() {
+        const { blacklist, whitelist } = this.remoteConfig.store.getState();
+        this.updateState({ blacklist, whitelist });
+        this.remoteConfig.store.subscribe(({ blacklist, whitelist }) => this.updateState({ blacklist, whitelist }));
     }
 }

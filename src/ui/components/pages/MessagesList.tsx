@@ -58,7 +58,7 @@ class MessageListComponent extends React.Component {
         </div>;
     }
     
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
         const { messages, assets } = props;
         const needAssets = MessageListComponent.getAssets(messages, assets);
         needAssets.forEach( id => props.getAsset(id));

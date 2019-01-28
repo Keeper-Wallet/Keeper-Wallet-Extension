@@ -8,3 +8,4 @@ export { AssetInfoController } from './AssetInfoController';
 export { TxInfoController } from './TxInfoController';
 export { ExternalDeviceController } from './ExternalDeviceController';
 export { PermissionsController, PERMISSIONS } from './PermissionsController';
+export { RemoteConfigController } from './RemoteConfigController';
