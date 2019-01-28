@@ -7,20 +7,28 @@ import { clearMessagesStatus, clearMessages, updateActiveMessage, reject } from 
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { Intro } from './Intro';
 
 @translate(I18N_NAME_SPACE)
 class SelectTxAccountComponent extends React.PureComponent {
     
+    readonly state = { loading: false };
     readonly props;
+    
     onClick = () => {
         this.props.messages.forEach(({ id }) => this.props.reject(id));
-        this.props.updateActiveMessage();
-        this.props.clearMessagesStatus();
         this.props.clearMessages();
-        this.props.setTab(PAGES.ASSETS);
+        this.props.clearMessagesStatus();
+        this.props.updateActiveMessage();
+        this.setState({ loading: true });
     };
     
     render() {
+        
+        if (this.state.loading) {
+            return <Intro/>;
+        }
+        
         return <div className={styles.content}>
             <TransactionWallet className={styles.userWallet} hideButton={true} account={this.props.selectAccount}>
                 <div className={styles.closeIcon} onClick={this.props.onBack}></div>
@@ -41,12 +49,24 @@ class SelectTxAccountComponent extends React.PureComponent {
             </div>
         </div>;
     }
+    
+    static getDerivedStateFromProps(props, state) {
+        const { activeMessage, messages } = props;
+        
+        if (!activeMessage && messages.length === 0) {
+            props.setTab(PAGES.ASSETS);
+            return { loading: false };
+        }
+        
+        return state;
+    }
 }
 
 const mapStateToProps = (state) => {
     return {
         selectAccount: state.selectedAccount,
-        messages: state.messages
+        messages: state.messages,
+        activeMessage: state.activeMessage,
     };
 };
 
