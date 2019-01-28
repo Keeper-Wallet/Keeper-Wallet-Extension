@@ -1,7 +1,6 @@
 import ObservableStore from 'obs-store';
 import log from 'loglevel'
 import EventEmitter from 'events';
-import {NETWORK_CONFIG} from '../constants'
 
 export class PreferencesController extends EventEmitter{
     constructor(options = {}) {
@@ -13,7 +12,7 @@ export class PreferencesController extends EventEmitter{
             currentNetworkAccounts: [],
             selectedAccount: undefined
         };
-
+        this.getNetworkConfig = options.getNetworkConfig;
         const initState = Object.assign({}, defaults, options.initState);
         this.store = new ObservableStore(initState);
 
@@ -51,7 +50,7 @@ export class PreferencesController extends EventEmitter{
 
     syncCurrentNetworkAccounts(){
         const accounts = this.store.getState().accounts;
-        const currentNetworkAccounts = accounts.filter(account => account.networkCode === NETWORK_CONFIG[this.getNetwork()].code);
+        const currentNetworkAccounts = accounts.filter(account => account.networkCode === this.getNetworkConfig()[this.getNetwork()].code);
         this.store.updateState({currentNetworkAccounts});
 
         // Ensure we have selected account from current network

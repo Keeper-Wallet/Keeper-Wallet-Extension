@@ -27,7 +27,8 @@ export class NetworkController {
     }
 
     getNetworks() {
-        return this.configApi.getNetworks().map(name => ({...this.configApi.getNetworkConfig()[name], name}));
+        const networks = this.configApi.getNetworkConfig();
+        return this.configApi.getNetworks().map(name => ({ ...networks[name], name }));
     }
 
     setNetwork(network) {
@@ -55,8 +56,9 @@ export class NetworkController {
     }
 
     getNode() {
+        const networks = this.configApi.getNetworkConfig();
         const network = this.getNetwork();
-        return this.getCustomNodes()[network] || this.configApi.getNetworkConfig()[network].server;
+        return this.getCustomNodes()[network] || networks[network].server;
     }
 
     getCustomMatchers() {

@@ -1,5 +1,5 @@
 import * as styles from './script.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import cn from 'classnames';

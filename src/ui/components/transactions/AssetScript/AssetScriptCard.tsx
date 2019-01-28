@@ -43,7 +43,7 @@ export class AssetScriptCard extends React.PureComponent<ISetScript> {
             </div>
             
             <div className={styles.cardContent}>
-                <ShowScript script={script} />
+                <ShowScript script={script} showNotify={true}/>
 
                 <div className={`${styles.origin} margin-main-top`}>
                     <OriginWarning message={message}/>

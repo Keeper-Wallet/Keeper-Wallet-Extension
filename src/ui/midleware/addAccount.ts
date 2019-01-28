@@ -15,7 +15,9 @@ export const addAccount = store => next => action => {
                 store.dispatch(addUserReceive());
                 store.dispatch(setTab('assets'));
             },
-            (e) => store.dispatch(addUserReceive(e))
+            (e) => {
+                store.dispatch(addUserReceive(e))
+            }
         );
 
         store.dispatch(addUserSend());

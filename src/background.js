@@ -171,7 +171,8 @@ class BackgroundService extends EventEmitter {
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
-            getNetwork: this.networkController.getNetwork.bind(this.networkController)
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
         });
 
         // On network change select accounts of this network
