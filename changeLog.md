@@ -8,6 +8,7 @@
 + Fix public state permissions on empty keeper
 + Add list of waiting requests
 + Add batch of txs
++ Extends remote config
 
 
 ####version 1.0.7
