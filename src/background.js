@@ -339,9 +339,13 @@ class BackgroundService extends EventEmitter {
             let messageId = this.permissionsController.getMessageIdAccess(origin);
 
             if (messageId) {
-                const message = this.messageController.getMessageById(messageId);
+                try {
+                    const message = this.messageController.getMessageById(messageId);
 
-                if (message.account.address !== selectedAccount.address) {
+                    if (!message || message.account.address !== selectedAccount.address) {
+                        messageId = null;
+                    }
+                } catch (e) {
                     messageId = null;
                 }
 
