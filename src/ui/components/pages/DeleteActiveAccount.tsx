@@ -4,8 +4,9 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {Button} from '../ui/buttons';
 import {deleteActiveAccount} from '../../actions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate()
+@translate(I18N_NAME_SPACE)
 class DeleteActiveAccountComponent extends React.Component {
     props;
     onClickHandler = () => this.props.deleteActiveAccount(null);
