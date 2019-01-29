@@ -4,17 +4,17 @@
 и проведения транзакций в блокчейн сети Waves.
 
 
-##Waves Keeper API
+## Waves Keeper API
 
 На страницах броузера с установленным расширением 
 становятся доступным глобальный объект WavesKeeper 
 в котором вы найдете следующие методы:
 `auth`, `publicState`, `signAndPublishCancelOrder`, `signAndPublishOrder`, 
-`signAndPublishTransaction`, `signBytes`, `signCancelOrder`, `signOrder`, 
+`signAndPublishTransaction`, `signCancelOrder`, `signOrder`, 
 `signRequest`, `signTransaction`, `signTransactionPackage`.  
 > Все методы работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
-###publicState
+### publicState
 Если сайт доверенный, возвращает публичные данные кипера.
 
 Пример:
@@ -76,6 +76,7 @@
 + `locked` - boolean кипер в режиме ожидания  
 + `account` - текущий аккаунт, если пользователь разрешит сайту доступ или null  
 + `network` - текущая сеть waves, адрес ноды и матчера    
++ `messages` - статусы запросов на подпись    
 + `txVersion` - доступные версии транзакций для каждого типа   
 
 
@@ -86,7 +87,7 @@
 + `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
 
 
-###auth
+### auth
 Метод, для получения подписи авторизационных данных при подтверждении пользователя Waves.
 Работает аналогично протоколу авторизации [waves](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
 
@@ -156,7 +157,7 @@
 + `signature` - подпись
 + `version` - версия апи
 
-[Проверка подписи](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)
+Как [проверить подпись](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)?
 
 ОШИБКИ
 
@@ -165,7 +166,81 @@
 + ``{message: "Api rejected by user", code: 12}``сайт не является доверенным
 
 
-###signTransactionPackage
+### signTransaction
+Метод для подписи транзакций в сети Waves. 
+
+Пример:
+```
+    const txData = {
+        type: 4,
+        data: {
+            amount: {
+               assetId: 'WAVES',
+               tokens: "1.567"
+            },
+            fee: {
+                assetId: 'WAVES',
+                tokens: "0.001"
+            },
+            recipient: 'test'
+        }
+    };
+    WavesKeeper.signTransaction(txData).then((data) => {
+        //data - строка готовая для отсылки на ноду(сервер) сети Waves
+    }).catch((error) => { 
+        //Обработка ошибок
+    });
+```
+>  
+> Апи возвращает строки, а не объект, так как в javascript при работе с 8 байтными целыми происходит потеря точности.
+> 
+> Описание поддерживаемых типов транзакций вы найдете ниже
+
+В примере мы подписываем транзакцию на перевод токенов Waves на алиас `test` в сети Waves.  
+
+ОТВЕТ
+``{"version":2,"assetId":"","amount":156700000,"feeAssetId":"","fee":100000,"recipient":"получатель","attachment":"","timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}``
+
+ОШИБКИ
++ ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос
++ ``{message: "Api rejected by user", code: 12}`` - Сайт является не доверенным
++ ``{message: "Invalid data", data: "Причина", code: 9}`` - неверные/неполные данные запроса
+
+
+### signAndPublishTransaction
+Аналогичен `signTransaction`, только отправляет транзакцию в блокчейн
+
+Пример:
+```
+   const txData = {
+           type: 4,
+           data: {
+               amount: {
+                  assetId: 'WAVES',
+                  tokens: "1.567"
+               },
+               fee: {
+                   assetId: 'WAVES',
+                   tokens: "0.001"
+               },
+               recipient: 'test'
+           }
+       };
+       WavesKeeper.signAndPublishTransaction(txData).then((data) => {
+           //data - строка готовая для отсылки на ноду(сервер) сети Waves
+       }).catch((error) => { 
+           //Обработка ошибок
+       });
+```
+
+ОТВЕТ
+Возвращается строкой ответ от сети Waves - полное содержание прошедшей транзакции
+
+ОШИБКИ    
+``{message: "Filed request", data: "Описание ошибки", code: 15}`` - реквест подписали, но не смогли отправить дальше
+
+
+### signTransactionPackage
 Пакетная подпись транзакций.
 Иногда надо подписать сразу несколько транзакций, для удобства пользователя, 
 допускается подписывать до 7 транзакций одновременно, и разрешены только 

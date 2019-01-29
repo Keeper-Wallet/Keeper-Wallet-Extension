@@ -98,7 +98,7 @@ export class MessageController extends EventEmitter {
             case MSG_STATUSES.REJECTED:
                 return Promise.reject(ERRORS.USER_DENIED());
             case MSG_STATUSES.FAILED:
-                return Promise.reject(new KeeperError(message.err.message));
+                return Promise.reject(ERRORS.FILED_MSG(message.err.message));
             default:
                 return new Promise((resolve, reject) => {
                     this.once(`${id}:finished`, finishedMessage => {
@@ -109,7 +109,7 @@ export class MessageController extends EventEmitter {
                             case MSG_STATUSES.REJECTED:
                                 return reject(ERRORS.USER_DENIED());
                             case MSG_STATUSES.FAILED:
-                                return reject(new KeeperError(finishedMessage.err.message));
+                                return reject(ERRORS.FILED_MSG(finishedMessage.err.message));
                             default:
                                 return reject(ERRORS.UNKNOWN());
                         }
@@ -406,7 +406,7 @@ export class MessageController extends EventEmitter {
     async _validateAndTransform(message) {
         let result = {...message};
 
-        if (message.data.successPath) {
+        if (message.data && message.data.successPath) {
             result.successPath = message.data.successPath
         }
 
@@ -485,7 +485,7 @@ export class MessageController extends EventEmitter {
                 break;
             case 'pairing':
                 if (!(typeof message.data.address === 'string' && typeof message.data.encryptedSeed === 'string'))
-                    throw new Error('Address and encryptedSeed are required for pairing')
+                    throw new Error('Address and encryptedSeed are required for pairing');
                 break;
             default:
                 throw new Error(`Incorrect type "${type}"`)
