@@ -11,7 +11,7 @@
 в котором вы найдете следующие методы:
 `auth`, `publicState`, `signAndPublishCancelOrder`, `signAndPublishOrder`, 
 `signAndPublishTransaction`, `signCancelOrder`, `signOrder`, 
-`signRequest`, `signTransaction`, `signTransactionPackage`.  
+`signTransaction`, `signRequest`, `signTransactionPackage`, `on`.  
 > Все методы работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
 ### publicState
@@ -83,8 +83,22 @@
 ОШИБКИ
 
 + `{ message: "Init Waves Keeper and add account" }` - кипер не проинициализирован 
-+ `{ message: "Add Waves Keeper account"}` - вход в кипер произведен, но нет аккаунтов  
-+ `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
++ `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов  
++ `{ message: "User denied message" }` -  пользователь запретил сайту работать с кипером  
+
+### on
+Позволяет подписаться на евенты из кипера.  
+
+Поддерживает события:
+* `update` - подписаться на изменения стейта
+
+Пример:
+```
+   WavesKeeper.on('update', state => {
+        //state бъект как из WavesKeeper.publicState
+   });
+```
+Если сайт не доверенный события приходить не будут.
 
 
 ### auth
@@ -199,7 +213,7 @@
 В примере мы подписываем транзакцию на перевод токенов Waves на алиас `test` в сети Waves.  
 
 ОТВЕТ
-``{"version":2,"assetId":"","amount":156700000,"feeAssetId":"","fee":100000,"recipient":"получатель","attachment":"","timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}``
+``{"version":2,"assetId":"", "amount":156700000,"feeAssetId":"","fee":100000, "recipient":"получатель","attachment":"", "timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}``
 
 ОШИБКИ
 + ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос
@@ -208,7 +222,7 @@
 
 
 ### signAndPublishTransaction
-Аналогичен `signTransaction`, только отправляет транзакцию в блокчейн
+Аналогичен `signTransaction`, но плюс еще отправляет транзакцию в блокчейн.
 
 Пример:
 ```
