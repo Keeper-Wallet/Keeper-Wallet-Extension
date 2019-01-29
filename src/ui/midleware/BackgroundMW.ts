@@ -9,7 +9,7 @@ import {
     notificationSelect,
     notificationChangeName,
     pairingLoading,
-    pairingSetData,
+    pairingSetData, updateActiveMessage,
 } from '../actions';
 import { PAGES } from '../pageConfig';
 
@@ -90,6 +90,7 @@ export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
         background.deleteVault().then(
             () => {
+                store.dispatch(updateActiveMessage(null));
                 // store.dispatch(notificationDelete(true));
                 // setTimeout(() => {
                 //     store.dispatch(notificationDelete(false));
