@@ -366,12 +366,12 @@ class BackgroundService extends EventEmitter {
     }
 
     getInpageApi(origin) {
-        const newMessage = async (data, type, from, broadcast) => {
+        const newMessage = async (data, type, from, broadcast, title = '') => {
             const { selectedAccount } = this.getState();
 
             await this.validatePermission(origin);
 
-            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
+            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast, title);
             this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
         };
@@ -392,8 +392,8 @@ class BackgroundService extends EventEmitter {
             signTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, false)
             },
-            signTransactionPackage: async (data, from) => {
-                return await newMessage(data, 'transactionPackage', from, false)
+            signTransactionPackage: async (data, title, from) => {
+                return await newMessage(data, 'transactionPackage', from, false, title)
             },
             signAndPublishTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, true)

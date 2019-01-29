@@ -41,21 +41,20 @@ const Amounts = ({ amounts }) => {
 export class PackageCard extends React.PureComponent<IData> {
     
     render() {
-        const className = cn(
-            styles.dataTransactionCard,
-            this.props.className,
-            {
-                [styles.dataCard_collapsed]: this.props.collapsed
-            },
-        );
-        
-        const { message, assets } = this.props;
-        const { data = {} } = message;
+        const { message, assets, collapsed, className } = this.props;
+        const { data = {}, title = '' } = message;
         const tx = [ ...data ];
         const fees = getFees(tx, assets);
         const amounts = getAmounts(tx, assets);
+        const myClassName = cn(
+            styles.dataTransactionCard,
+            className,
+            {
+                [styles.dataCard_collapsed]: collapsed
+            },
+        );
         
-        return <div className={className}>
+        return <div className={myClassName}>
 
             <div className={styles.cardHeader}>
                 <div className={styles.dataTxIcon}>
@@ -64,7 +63,7 @@ export class PackageCard extends React.PureComponent<IData> {
                 
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.packTransactionGroup'>Group</Trans>
+                        {title && collapsed ? title : <Trans i18nKey='transactions.packTransactionGroup'>Group</Trans>}
                     </div>
                     <h1 className="headline1">
                         {tx.length} <Trans i18nKey='transactions.packTransactions'>transactions</Trans>

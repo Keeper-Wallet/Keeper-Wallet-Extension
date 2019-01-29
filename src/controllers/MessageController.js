@@ -49,10 +49,10 @@ export class MessageController extends EventEmitter {
      * @param {boolean} broadcast - Should this message be sent(node, matcher, somewhere else)
      * @returns {Promise<string>} id - message id
      */
-    async newMessage(data, type, origin, account, broadcast = false) {
+    async newMessage(data, type, origin, account, broadcast = false, title = '') {
         log.debug(`New message ${type}: ${JSON.stringify(data)}`);
 
-        const message = await this._generateMessage(data, type, origin, account, broadcast);
+        const message = await this._generateMessage(data, type, origin, account, broadcast, title);
 
         let messages = this.store.getState().messages;
 
@@ -380,7 +380,7 @@ export class MessageController extends EventEmitter {
         return await signable.getId();
     }
 
-    async _generateMessage(data, type, origin, account, broadcast) {
+    async _generateMessage(data, type, origin, account, broadcast, title) {
         const message = {
             account,
             broadcast,
@@ -390,7 +390,8 @@ export class MessageController extends EventEmitter {
             data,
             status: MSG_STATUSES.UNAPPROVED,
             timestamp: Date.now(),
-            type
+            type,
+            title,
         };
         return await this._validateAndTransform(message)
     }

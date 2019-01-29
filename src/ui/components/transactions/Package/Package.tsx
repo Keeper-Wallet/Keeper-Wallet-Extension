@@ -13,12 +13,12 @@ export class Package extends SignClass {
     
     render() {
         const { message, assets } = this.props;
-        
+        const { title } = message;
         return <div className={styles.transaction}>
             <div className={`${styles.dataTxScrollBox} transactionContent`}>
 
                 <div className="margin-main margin-main-top headline3 basic500">
-                    <Trans i18nKey='transactions.confirmationRequest'>Confirmation request</Trans>
+                    {title ? title : <Trans i18nKey='transactions.confirmationRequest'>Confirmation request</Trans>}
                 </div>
 
                 <div className="margin-main">

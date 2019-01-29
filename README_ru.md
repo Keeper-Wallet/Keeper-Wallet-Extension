@@ -27,7 +27,7 @@
         })
       
 ```
-*или*
+или
 ```
     const getPublicState = async state => {
         try {
@@ -43,7 +43,7 @@
 
 ОШИБКИ
 
-+ `{ message: "Init Waves Keeper and add account" }` - C  
++ `{ message: "Init Waves Keeper and add account" }` - кипер не проинициализирован 
 + `{ message: "Add Waves Keeper account"}` - вход в кипер произведен, но нет аккаунтов  
 + `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
 
@@ -95,14 +95,15 @@
     2 - перевод токенов
     5 - перевыпуск токенов
     6 - сжигание токенов
-    1` - создвние алиса на адрес в сети waves
-    1` - массовый перевод
-    1` - транзакция с данными
+    10 - создaние алиса на адрес в сети waves
+    11 - массовый перевод
+    12 - транзакция с данными
 ```
 
 Пример:
 
 ```
+    const name = 'For Test';
     const tx = [{
         type: 4,
         data: {
@@ -130,12 +131,13 @@
         }
     }];
     
-    WavesKeeper.signTransactionPackage(tx)
+    WavesKeeper.signTransactionPackage(tx, name)
 ```
 
 Подписать 2 транзакции:
-    + перевода на алиас test 1.567 Waves
-    + перевода на алиас merry 0.1 Waves
++ перевода на алиас test 1.567 Waves
++ перевода на алиас merry 0.1 Waves
+    
     
 ОТВЕТ
 
