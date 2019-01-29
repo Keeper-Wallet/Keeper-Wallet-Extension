@@ -1,6 +1,5 @@
 {
 	"accountInfo": {
-		"address": "Your address",
 		"backUp": "Backup phrase",
 		"cancel": "Cancel",
 		"copied": "Copied!",
@@ -183,6 +182,9 @@
 		"download": "Download QR code"
 	},
 	"settings": {
+		"autoClick": "Auto-click protection",
+		"autoClickDisable": "Disabled",
+		"autoClickEnable": "Enabled",
 		"delete": "Delete all accounts",
 		"langs": "Change language",
 		"logOut": "Log out",

@@ -15,7 +15,9 @@
 > Все методы работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
 ###publicState
+Если сайт доверенный, возвращает публичные данные кипера.
 
+Пример:
 ```
     WavesKeeper.publicState()
         .then(state => {
@@ -41,14 +43,7 @@
       }
 ```
 
-ОШИБКИ
-
-+ `{ message: "Init Waves Keeper and add account" }` - кипер не проинициализирован 
-+ `{ message: "Add Waves Keeper account"}` - вход в кипер произведен, но нет аккаунтов  
-+ `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
-
-ОТВЕТЫ
-
+ОТВЕТ
 ```
 {
     "initialized": true,
@@ -82,6 +77,92 @@
 + `account` - текущий аккаунт, если пользователь разрешит сайту доступ или null  
 + `network` - текущая сеть waves, адрес ноды и матчера    
 + `txVersion` - доступные версии транзакций для каждого типа   
+
+
+ОШИБКИ
+
++ `{ message: "Init Waves Keeper and add account" }` - кипер не проинициализирован 
++ `{ message: "Add Waves Keeper account"}` - вход в кипер произведен, но нет аккаунтов  
++ `{message: "User denied message"}` -  пользователь запретил сайту работать с кипером  
+
+
+###auth
+Метод, для получения подписи авторизационных данных при подтверждении пользователя Waves.
+Работает аналогично протоколу авторизации [waves](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
+
+Пример:
+```
+    const authData = { data: "Auth on my site" };
+    Waves.auth(authData)
+        .then(auth => {
+            console.log(state); //вывод в консоль результата
+            /*...обработка данных */
+        }).catch(error => {
+            console.error(error); //вывод в консоль результата
+            /*...обработка ошибок */
+        })
+      
+```
+или
+```
+    const getAuthData = async authData => {
+        try {
+            const state = await WavesKeeper.auth(authData);
+            console.log(state); //вывод в консоль результата
+            /*...обработка данных */
+        } catch(error) {
+            console.error(error); //вывод в консоль результата
+            /*...обработка ошибок */
+        }
+    }
+    
+    const authData = { data: "Auth on my site" };
+    getAuthData(authData);
+```
+
+`auth` может принимать на вход следующие данные
++ `name` - название сервиса (не обязательное поле)
++ `data` - строка с любыми данными (обязательное поле)
++ `referrer` - полный url до сайта для редиректа (не обязательное поле)
++ `icon` - путь до лого, относительно `referrer` или origin сайта (не обязательное поле)
++ `successPath` - относительный путь до апи аунтификации сайта (не обязательное поле)
+
+Например
+```
+    const authData = { 
+        data: "Generated string from server",
+        name: "My test App",
+        icon: "/img/icons/waves_logo.svg",
+        referrer: "https://client.wavesplatform.com/",
+        successPath: "login"
+    };
+    
+    WavesKeeper.auth(authData).then((data) => {
+        //data - данные от кипера
+        //проверка подписи и сохранение адреса...
+        console.log(data);
+    }).catch((error) => {
+        //обработка ошибки
+    });
+    
+    
+```
+При удачном подтверждении кипер в происе вернет объект содержащий данные для проверки подписи:
++ `host` - хост, запросивший подпись
++ `name` - название приложения запрашивающее подпись
++ `prefix` - префикс учавствующий в подписи
++ `address` - адрес в сети Waves
++ `publicKey` - публичный ключ пользователя
++ `signature` - подпись
++ `version` - версия апи
+
+[Проверка подписи](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)
+
+ОШИБКИ
+
++ ``{message: "Invalid data", data: "[{"field":"data","type":"string","message":"field is required"}]", code: 9}`` - в данных на подпись есть ошибки  
++ ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос  
++ ``{message: "Api rejected by user", code: 12}``сайт не является доверенным
 
 
 ###signTransactionPackage

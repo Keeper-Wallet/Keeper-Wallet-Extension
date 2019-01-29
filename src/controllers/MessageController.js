@@ -6,6 +6,7 @@ import EventEmitter from 'events'
 import { getAdapterByType } from "@waves/signature-adapter";
 import { BigNumber, Money } from '@waves/data-entities';
 import { networkByteFromAddress } from "../lib/cryptoUtil";
+import { ERRORS } from '../lib/KeeperError';
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -52,7 +53,13 @@ export class MessageController extends EventEmitter {
     async newMessage(data, type, origin, account, broadcast = false, title = '') {
         log.debug(`New message ${type}: ${JSON.stringify(data)}`);
 
-        const message = await this._generateMessage(data, type, origin, account, broadcast, title);
+        let message;
+        try {
+            message = await this._generateMessage(data, type, origin, account, broadcast, title);
+        } catch (e) {
+            throw ERRORS.REQUEST_ERROR(e.message);
+        }
+
 
         let messages = this.store.getState().messages;
 
@@ -89,9 +96,9 @@ export class MessageController extends EventEmitter {
             case MSG_STATUSES.PUBLISHED:
                 return Promise.resolve(message.result);
             case MSG_STATUSES.REJECTED:
-                return Promise.reject(new Error('User denied message'));
+                return Promise.reject(ERRORS.USER_DENIED());
             case MSG_STATUSES.FAILED:
-                return Promise.reject(new Error(message.err.message));
+                return Promise.reject(new KeeperError(message.err.message));
             default:
                 return new Promise((resolve, reject) => {
                     this.once(`${id}:finished`, finishedMessage => {
@@ -100,11 +107,11 @@ export class MessageController extends EventEmitter {
                             case MSG_STATUSES.PUBLISHED:
                                 return resolve(finishedMessage.result);
                             case MSG_STATUSES.REJECTED:
-                                return reject(new Error('User denied message'));
+                                return reject(ERRORS.USER_DENIED());
                             case MSG_STATUSES.FAILED:
-                                return reject(new Error(finishedMessage.err.message));
+                                return reject(new KeeperError(finishedMessage.err.message));
                             default:
-                                return reject(new Error('Unknown error'));
+                                return reject(ERRORS.UNKNOWN());
                         }
                     })
                 })
@@ -355,9 +362,9 @@ export class MessageController extends EventEmitter {
                     break;
                 case 'auth':
                     //url.searchParams.append('d', message.data.data);
-                    url.searchParams.append('p', message.data.publicKey);
-                    url.searchParams.append('s', message.data.signature);
-                    url.searchParams.append('a', message.data.address);
+                    url.searchParams.append('p', message.result.publicKey);
+                    url.searchParams.append('s', message.result.signature);
+                    url.searchParams.append('a', message.result.address);
                     this.emit('Open new tab', url.href);
                     break;
             }
@@ -405,6 +412,13 @@ export class MessageController extends EventEmitter {
 
         switch (message.type) {
             case 'auth':
+                try {
+                    result.successPath = result.successPath ?
+                        (new URL(result.successPath, message.data.referrer || 'https://' + message.origin)).href :
+                        null;
+                } catch (e) {
+                    result.successPath = null;
+                }
                 result.data = {
                     type: 1000,
                     referrer: message.data.referrer,

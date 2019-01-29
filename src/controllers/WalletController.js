@@ -170,11 +170,15 @@ export class WalletController {
         const wallet = this._findWallet(address);
         const signature = await wallet.signRequest(authData);
         const {publicKey} = wallet.getAccount();
+        const { host, name, prefix, version } = authData.data;
         return {
-            ...authData.data,
+            host,
+            name,
+            prefix,
             address,
             publicKey,
-            signature
+            signature,
+            version
         }
     }
 

@@ -23,6 +23,7 @@ export class AuthCard extends React.PureComponent<IAuth> {
         const { message } = this.props;
         const { data, origin } = message;
         const tx = { type: data.type, ...data.data };
+        const { referrer } = data;
         const { icon, name } = tx;
         const className = cn(
             styles.authTransactionCard,
@@ -32,9 +33,17 @@ export class AuthCard extends React.PureComponent<IAuth> {
             },
         );
         
+        let myIcon;
+        
+        try {
+            myIcon = new URL(icon, referrer);
+        } catch (e) {
+            myIcon = null;
+        }
+        
         return <div className={className}>
             <div className={styles.cardHeader}>
-                <Icon icon={icon}/>
+                <Icon icon={myIcon}/>
                 <div>
                     <div className="body1 font600 margin-min">{name}</div>
                 </div>

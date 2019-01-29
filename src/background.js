@@ -6,6 +6,7 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
+import {ERRORS} from './lib/KeeperError';
 import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
@@ -327,12 +328,12 @@ class BackgroundService extends EventEmitter {
     async validatePermission(origin) {
         const { selectedAccount } = this.getState();
 
-        if (!selectedAccount) throw new Error('WavesKeeper has no accounts');
+        if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
 
         const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
 
         if (!canIUse && canIUse != null) {
-            throw new Error('Api rejected by user');
+            throw ERRORS.API_DENIED();
         }
 
         if (canIUse === null) {
@@ -419,8 +420,7 @@ class BackgroundService extends EventEmitter {
             const { selectedAccount, initialized } = state;
 
             if (!selectedAccount) {
-                const msg = !initialized ? 'Init Waves Keeper and add account' : 'Add Waves Keeper account';
-                throw new Error(msg);
+                throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
             }
 
             await this.validatePermission(origin);
