@@ -1,6 +1,7 @@
-##Waves Keeper 
+## Waves Keeper
 
-####version 1.0.8
+
+#### version 1.0.8
 
 + Fix init badge on restart keeper
 + Refactor requests and change design
@@ -10,9 +11,11 @@
 + Add batch of txs
 + Extends remote config
 + Add autoClick disable setting
++ Add ru documentation
++ Refactor errors
 
-
-####version 1.0.7
+***
+#### version 1.0.7
 
 + Expiration requests
 + Add black/white lists
