@@ -2,8 +2,8 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui/buttons';
-import { lock } from '../../actions';
+import { Button, BUTTON_TYPE, PowerButton } from '../ui/buttons';
+import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -21,6 +21,9 @@ class SettingsComponent extends React.Component {
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
+    toggleAutoLockHandler = () => {
+        this.props.setUiState({ autoClickProtection: !this.props.autoClickProtection });
+    };
 
     render() {
         return <div className={styles.content}>
@@ -74,7 +77,7 @@ class SettingsComponent extends React.Component {
                     </div>
                 </Button>
             </div>
-
+            
             <div className={`${styles.settingsMenuItem} ${styles.logout} margin4`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
@@ -84,6 +87,20 @@ class SettingsComponent extends React.Component {
                     </div>
                 </Button>
             </div>
+    
+            <div className={`${styles.settingsMenuItem} margin4`}>
+                <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
+                <div className='body1 left'>
+                    <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
+                    <div>
+                        {
+                            this.props.autoClickProtection ?
+                                <Trans i18nKey='settings.autoClickDisable'>Disabled</Trans> :
+                                <Trans i18nKey='settings.autoClickEnable'>Enabled</Trans>
+                        }
+                    </div>
+                </div>
+            </div>
 
             <Button type={BUTTON_TYPE.WARNING} onClick={this.deleteHandler}>
                 <Trans i18nKey='settings.delete'>Delete all accounts</Trans>
@@ -92,8 +109,10 @@ class SettingsComponent extends React.Component {
     }
 }
 
-const mapStateToProps = function() {
-    return {};
+const mapStateToProps = function(store) {
+    return {
+        autoClickProtection: store.uiState && store.uiState.autoClickProtection
+    };
 };
 
-export const Settings = connect(mapStateToProps, { lock })(SettingsComponent);
+export const Settings = connect(mapStateToProps, { lock, setUiState })(SettingsComponent);

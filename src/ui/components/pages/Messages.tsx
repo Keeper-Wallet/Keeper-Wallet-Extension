@@ -57,6 +57,7 @@ class MessagesComponent extends React.Component {
         const { message: Component, type } = conf;
 
         return <Component txType={type}
+                          autoClickProtection={this.props.autoClickProtection}
                           pending={this.state.approvePending}
                           txHash={this.state.txHash}
                           assets={this.state.assets}
@@ -137,14 +138,14 @@ class MessagesComponent extends React.Component {
         const config = getConfigByTransaction(activeMessage);
         return {
             transactionStatus,
+            selectedAccount,
             activeMessage,
             config,
             txHash,
             balance,
-            selectedAccount,
             assets,
             messages,
-            loading
+            loading,
         };
     }
 
@@ -205,6 +206,7 @@ class MessagesComponent extends React.Component {
 
 const mapStateToProps = function (store) {
     return {
+        autoClickProtection: store.uiState && store.uiState.autoClickProtection,
         transactionStatus: store.localState.transactionStatus,
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,

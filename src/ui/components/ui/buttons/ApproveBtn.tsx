@@ -21,22 +21,8 @@ export class ApproveBtn extends React.PureComponent {
 
     render() {
         const { disabled } = this.state;
-        const props = { ...this.props, disabled };
-    
-    
-        interface IProps {
-            percent: number;
-            className?: string;
-            strokeWidth?: number;
-            strokeLinecap?: string;
-            strokeColor?: string;
-            trailWidth?: number;
-            trailColor?: string;
-            style?: Object;
-            gapDegree?: number;
-            gapPosition?: string;
-        }
-    
+        const { autoClickProtection, ...props } = this.props;
+        const myProps = { ...props, disabled };
     
         const progressProps = {
             percent: this.state.percentage,
@@ -47,13 +33,16 @@ export class ApproveBtn extends React.PureComponent {
             size: 30,
             lineCap: 'round',
         };
-        return <Button {...props} className={cn(props.className, styles.hideText, styles.svgWrapper)}>
+        return <Button {...myProps} className={cn(myProps.className, styles.hideText, styles.svgWrapper)}>
             {this.props.children}
             {disabled ? <CircularProgressbar {...progressProps}/> : null}
         </Button>;
     }
 
     _updateInterval(currentTime) {
+        if (this.props.autoClickProtection) {
+            return null;
+        }
         const timerEnd = this.state.timerEnd || currentTime + CONFIG.MESSAGES_CONFIRM_TIMEOUT;
         this.setState({ timerEnd, currentTime });
         if (timerEnd >= currentTime) {
@@ -64,7 +53,8 @@ export class ApproveBtn extends React.PureComponent {
 
     static getDerivedStateFromProps(props, state) {
         const { timerEnd, currentTime } = state;
-        const disabled = !timerEnd || timerEnd > currentTime;
+        const autoClickProtection = props.autoClickProtection;
+        const disabled = (!timerEnd || timerEnd > currentTime) && !autoClickProtection;
         const percentage = !timerEnd ? 0 : 100 - Math.floor((timerEnd - currentTime) / CONFIG.MESSAGES_CONFIRM_TIMEOUT * 100);
         return { ...props, disabled, timerEnd, percentage };
     }
