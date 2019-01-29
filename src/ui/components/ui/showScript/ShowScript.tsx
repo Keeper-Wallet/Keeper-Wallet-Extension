@@ -11,7 +11,7 @@ import { Modal } from '..';
 @translate(I18N_NAME_SPACE)
 export class ShowScript extends React.PureComponent {
     
-    readonly props: { script: string, optional?: boolean, showNotify?: boolean, className?: string };
+    readonly props: { script: string, optional?: boolean, showNotify?: boolean, className?: string, hideScript?: boolean };
     readonly state = { showAllScript: false, showCopied: false, showResizeBtn: false };
     protected scriptEl: HTMLDivElement;
     protected _t;
@@ -21,9 +21,9 @@ export class ShowScript extends React.PureComponent {
     getScriptRef = (ref) => this.scriptEl = ref;
     
     componentDidMount() {
-        const { script, optional } = this.props;
+        const { script, optional, hideScript } = this.props;
         
-        if (optional && !script) {
+        if (hideScript || optional && !script) {
             return null;
         }
     

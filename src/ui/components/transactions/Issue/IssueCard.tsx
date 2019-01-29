@@ -47,7 +47,7 @@ export class IssueCard extends React.PureComponent<IIssue> {
             </div>
 
             <div className={styles.cardContent}>
-                <ShowScript script={tx.script} showNotify={true} optional={true}/>
+                <ShowScript script={tx.script} showNotify={true} optional={true} hideScript={this.props.collapsed}/>
                 
                 <div className={styles.origin}>
                     <OriginWarning message={message}/>

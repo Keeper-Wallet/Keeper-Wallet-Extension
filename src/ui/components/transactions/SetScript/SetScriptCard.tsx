@@ -43,7 +43,7 @@ export class SetScriptCard extends React.PureComponent<ISetScript> {
             </div>
             
             <div className={styles.cardContent}>
-                <ShowScript script={script} showNotify={true}/>
+                <ShowScript script={script} showNotify={true} hideScript={this.props.collapsed}/>
                 
                 <div className={`${styles.origin} margin-main-top`}>
                     <OriginWarning message={message}/>
