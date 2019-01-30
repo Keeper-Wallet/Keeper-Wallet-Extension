@@ -383,7 +383,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я создал свой ассет!!!');
+        console.log('Ура! Я создал свой ассет!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -393,7 +393,7 @@ MoneyLike может иметь вид:
 которые будут на вашем балансе 10000.00 Best Token
 
 
-### [Тип 4 TRANSFER - передача токена](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api/asset-transactions/public-functions.html#section-0c8edc11ae61814aebb41d3eeccbb831)  
+### [Тип 4 TRANSFER - передача ассетов](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api/asset-transactions/public-functions.html#section-0c8edc11ae61814aebb41d3eeccbb831)  
 
 + `amount` MoneyLike - количество,
 + `recipient` string - адрес получателя или алиас
@@ -414,7 +414,7 @@ MoneyLike может иметь вид:
             recipient: "merry"
         }
     }).then((tx) => {
-         console.log('Ура я довыпустил токен!!!');
+         console.log('Ура! Я смог отправить Waves!!!');
     }).catch((error) => {
          console.error('Что-то пошло не так', error);
     });
@@ -446,7 +446,7 @@ MoneyLike может иметь вид:
                 }
            }
       }).then((tx) => {
-           console.log('Ура я довыпустил токен!!!');
+           console.log('Ура! Я довыпустил ассет!!!');
       }).catch((error) => {
            console.error('Что-то пошло не так', error);
       });
@@ -479,7 +479,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я сжег лишнее!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -509,7 +509,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я смог передать в лизинг!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -537,7 +537,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я отменил лизинг!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -565,7 +565,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я теперь с алиасом!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -599,7 +599,7 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я друзьям отправил приветов!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
@@ -634,10 +634,60 @@ MoneyLike может иметь вид:
              }
         }
    }).then((tx) => {
-        console.log('Ура я сжег токен!!!');
+        console.log('Ура! Я сохранил данные!!!');
    }).catch((error) => {
         console.error('Что-то пошло не так', error);
    });
 ```
 
 В случае успеха в стейте будут хранится новые данные.
+
+
+### [Тип 13 SET SCRIPT - скриптовать акаунт](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-11573fe1c896857a6d3fcfcf6cf6571d)  
++ `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+Для снятия скрипта поле `script` равно ``.
+[Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 13,
+        data: {
+             script: '',
+             "fee": {
+                 "tokens": "0.04",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура! Я отменил скрипт!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха удалится скрипт с аккаунта.
+
+ПРИМЕР2:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 13,
+        data: {
+             script: 'base64:AQa3b8tH',
+             "fee": {
+                 "tokens": "0.01",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура! Я поставил скрипт!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха на аккаунте будет новый скрипт.
