@@ -96,7 +96,7 @@
 
 Пример:
 ```
-   WavesKeeper.on('update', state => {
+   WavesKeeper.on("update", state => {
         //state бъект как из WavesKeeper.publicState
    });
 ```
@@ -191,14 +191,14 @@
         type: 4,
         data: {
             amount: {
-               assetId: 'WAVES',
+               assetId: "WAVES",
                tokens: "1.567"
             },
             fee: {
-                assetId: 'WAVES',
+                assetId: "WAVES",
                 tokens: "0.001"
             },
-            recipient: 'test'
+            recipient: "test"
         }
     };
     WavesKeeper.signTransaction(txData).then((data) => {
@@ -215,7 +215,7 @@
 В примере мы подписываем транзакцию на перевод токенов Waves на алиас `test` в сети Waves.  
 
 ОТВЕТ
-``{"version":2,"assetId":"", "amount":156700000,"feeAssetId":"","fee":100000, "recipient":"получатель","attachment":"", "timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}``
+``{"version":2,"assetId":"", "amount":156700000,"feeAssetId":"",fee:100000, "recipient":"получатель","attachment":"", "timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}``
 
 ОШИБКИ
 + ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос
@@ -232,14 +232,14 @@
            type: 4,
            data: {
                amount: {
-                  assetId: 'WAVES',
+                  assetId: "WAVES",
                   tokens: "1.567"
                },
                fee: {
-                   assetId: 'WAVES',
+                   assetId: "WAVES",
                    tokens: "0.001"
                },
-               recipient: 'test'
+               recipient: "test"
            }
        };
        WavesKeeper.signAndPublishTransaction(txData).then((data) => {
@@ -274,31 +274,31 @@
 ПРИМЕР:
 
 ```
-    const name = 'For Test';
+    const name = "For Test";
     const tx = [{
         type: 4,
         data: {
             amount: {
-               assetId: 'WAVES',
+               assetId: "WAVES",
                tokens: "1.567"
             },
             fee: {
-                assetId: 'WAVES',
+                assetId: "WAVES",
                 tokens: "0.001"
             },
-            recipient: 'test'
+            recipient: "test"
     }},{
         type: 4,
         data: {
             amount: {
-               assetId: 'WAVES',
+               assetId: "WAVES",
                tokens: "0.51"
             },
             fee: {
-                assetId: 'WAVES',
+                assetId: "WAVES",
                 tokens: "0.001"
             },
-            recipient: 'merry'
+            recipient: "merry"
         }
     }];
     
@@ -344,8 +344,8 @@
 > MoneyLike - цена
 
 MoneyLike может иметь вид:  
-* ``{ tokens: 1, assetid: 'WAVES' }``
-* ``{ coins: 100000000, assetid: 'WAVES' }``; 
+* ``{ tokens: 1, assetid: "WAVES" }``
+* ``{ coins: 100000000, assetid: "WAVES" }``; 
   
 В обоих записях указана одинаковая цена 1 WAVES. Можно свободно перевести `coins` в `tokens` и  обратно,
 зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`  
@@ -361,7 +361,7 @@ MoneyLike может иметь вид:
 + `precision`  [0 - 8]  число - точность,
 + `reissuable` true|false - возможно перевыпускать,
 + `fee` MoneyLike -комиссия 
-+ `*script`: строка - Asset script
++ `*script` string - [скрипт для ассета](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 + `*senderPublicKey` строка - публичный ключ отправителя в base58
 + `*timestamp` число/строка - время в мс
 
@@ -377,15 +377,15 @@ MoneyLike может иметь вид:
              "quantity": 1000000,
              "precision": 2,
              "reissuable": true,
-             "fee": {
+             fee: {
                  "tokens": "1",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я создал свой ассет!!!');
+        console.log("Ура! Я создал свой ассет!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -414,9 +414,9 @@ MoneyLike может иметь вид:
             recipient: "merry"
         }
     }).then((tx) => {
-         console.log('Ура! Я смог отправить Waves!!!');
+         console.log("Ура! Я смог отправить Waves!!!");
     }).catch((error) => {
-         console.error('Что-то пошло не так', error);
+         console.error("Что-то пошло не так", error);
     });
 
 ```
@@ -440,15 +440,15 @@ MoneyLike может иметь вид:
                 "quantity": 1000,
                 "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
                 "reissuable": true,
-                "fee": {
+                fee: {
                     "tokens": "1",
                     "assetId": "WAVES"
                 }
            }
       }).then((tx) => {
-           console.log('Ура! Я довыпустил ассет!!!');
+           console.log("Ура! Я довыпустил ассет!!!");
       }).catch((error) => {
-           console.error('Что-то пошло не так', error);
+           console.error("Что-то пошло не так", error);
       });
 ```
 
@@ -473,15 +473,15 @@ MoneyLike может иметь вид:
         data: {
              "quantity": 1000,
              "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
-             "fee": {
+             fee: {
                  "tokens": "0.001",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я сжег лишнее!!!');
+        console.log("Ура! Я сжег лишнее!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -503,15 +503,15 @@ MoneyLike может иметь вид:
         data: {
              "amount": 1000,
              "recipient": "merry",
-             "fee": {
+             fee: {
                  "tokens": "0.001",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я смог передать в лизинг!!!');
+        console.log("Ура! Я смог передать в лизинг!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -531,15 +531,15 @@ MoneyLike может иметь вид:
         type: 9,
         data: {
              leaseId: "6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS",
-             "fee": {
+             fee: {
                  "tokens": "0.001",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я отменил лизинг!!!');
+        console.log("Ура! Я отменил лизинг!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -558,16 +558,16 @@ MoneyLike может иметь вид:
    WavesKeeper.signAndPublishTransaction({
         type: 10,
         data: {
-             alias: 'testAlias',
-             "fee": {
+             alias: "testAlias",
+             fee: {
                  "tokens": "0.001",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я теперь с алиасом!!!');
+        console.log("Ура! Я теперь с алиасом!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -575,7 +575,7 @@ MoneyLike может иметь вид:
 
 
 ### [Тип 11 MASS TRANSFER - массовая рассылка ассета](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-bccba990c89ceec7ef3751e8e763ecc6)  
-+ `totalAmount` moneyLike - итого отошлется // можно не считать сумму и вставить { assetId: 'id отправляемого ассета', coins: 0}, 
++ `totalAmount` moneyLike - итого отошлется // можно не считать сумму и вставить { assetId: "id отправляемого ассета", coins: 0}, 
 + `transfers` массив объектов
     + { `recipient`: string - адрес/алиас, amount: number/string/moneyLike }
 + `fee` MoneyLike -комиссия 
@@ -588,20 +588,20 @@ MoneyLike может иметь вид:
    WavesKeeper.signAndPublishTransaction({
         type: 11,
         data: {
-             totalAmount: { assetId: 'WAVES', coins: 0},
+             totalAmount: { assetId: "WAVES", coins: 0},
              transfers: [
-                { recipient: 'alias1', amount: '200000' },
-                { recipient: 'alias2', amount: '200000' },
+                { recipient: "alias1", amount: "200000" },
+                { recipient: "alias2", amount: "200000" },
              ],
-             "fee": {
+             fee: {
                  "tokens": "0.002",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я друзьям отправил приветов!!!');
+        console.log("Ура! Я друзьям отправил приветов!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -610,7 +610,7 @@ MoneyLike может иметь вид:
 
 ### [Тип 12 DATA TRANSACTION - сохранение данных](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-f6e7a2443d41af2a0ef8b4c4c33ba6b3)  
 + `data` массив объектов 
-    +   `type` /'binary'/string/'integer'/'boolean' - тип, 
+    +   `type` /"binary"/string/"integer"/"boolean" - тип, 
     +   `key` string - название поля 
     +   `value` /string/string/number/boolean зависит от типа 
 + `fee` MoneyLike -комиссия 
@@ -623,20 +623,20 @@ MoneyLike может иметь вид:
         type: 12,
         data: {
              data: [
-                  { key: 'string', value: 'testVal', type: 'string' },
-                  { key: 'binary', value: 'base64:AbCd', type: 'binary' },
-                  { key: 'integer', value: 20, type: 'integer' },
-                  { key: 'boolean', value: false, type: 'boolean' },
+                  { key: "string", value: "testVal", type: "string" },
+                  { key: "binary", value: "base64:AbCd", type: "binary" },
+                  { key: "integer", value: 20, type: "integer" },
+                  { key: "boolean", value: false, type: "boolean" },
              ],
-             "fee": {
+             fee: {
                  "tokens": "0.01",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я сохранил данные!!!');
+        console.log("Ура! Я сохранил данные!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -657,16 +657,16 @@ MoneyLike может иметь вид:
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
-             script: '',
-             "fee": {
+             script: "",
+             fee: {
                  "tokens": "0.04",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я отменил скрипт!!!');
+        console.log("Ура! Я отменил скрипт!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
@@ -677,17 +677,82 @@ MoneyLike может иметь вид:
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
-             script: 'base64:AQa3b8tH',
-             "fee": {
+             script: "base64:AQa3b8tH",
+             fee: {
                  "tokens": "0.01",
                  "assetId": "WAVES"
              }
         }
    }).then((tx) => {
-        console.log('Ура! Я поставил скрипт!!!');
+        console.log("Ура! Я поставил скрипт!!!");
    }).catch((error) => {
-        console.error('Что-то пошло не так', error);
+        console.error("Что-то пошло не так", error);
    });
 ```
 
-В случае успеха на аккаунте будет новый скрипт.
+В случае успеха на аккаунте будет новый скрипт 
+разрешающий на аккаунте любые транзакции без подписи (будте осторожны!).
+
+
+### [Тип 14 Sponsored Fee Transaction - Спонсорство](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-730bd9c8fe7e7628ba840d36df3c726e)  
+
++ `minSponsoredAssetFee` MoneyLike - цена коммисии в ассете.
++ `fee` MoneyLike - комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 14,
+        data: {
+             minSponsoredAssetFee: {
+                assetId: "6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS", 
+                tokens: 0.1
+             },
+             fee: {
+                 "tokens": "1",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log("Ура! Я стал спонсором!!!");
+   }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+   });
+```
+
+В случае успеха, в ассете можно платить комиссию за трансфер
+
+
+### [Тип 15 SET ASSET SCRIPT - скрипт на ассет](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-9459bb3757b06f2d75f1a07f24f873ce)  
++ `assetId` string - id ассета
++ `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+Снятие скрипта невозможно, только записать новый.
+[Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 15,
+        data: {
+             assetId: "",
+             script: "base64:AQa3b8tH",
+             fee: {
+                 "tokens": "0.01",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log("Ура! Я переставил скрипт на ассете!!!");
+   }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+   });
+```
+
+В случае успеха на ассете будет переписан скрипт 
