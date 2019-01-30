@@ -321,7 +321,8 @@
 ## [Транзакции](https://docs.wavesplatform.com/en/development-and-api/client-libraries/waves-transactions.html)
 У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты), 
 любая прошедшая транзакция меняет эти данные.  
-В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html).  
+В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html). 
+  
 `signTransaction`, `signAndPublishTransaction` принимают транзакцию в следующем виде 
 ```
 {
@@ -696,7 +697,7 @@ MoneyLike может иметь вид:
 
 ### [Тип 14 Sponsored Fee Transaction - Спонсорство](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-730bd9c8fe7e7628ba840d36df3c726e)  
 
-+ `minSponsoredAssetFee` MoneyLike - цена коммисии в ассете.
++ `minSponsoredAssetFee` MoneyLike - цена комиссии в ассете.
 + `fee` MoneyLike - комиссия 
 + `*senderPublicKey` строка - публичный ключ отправителя в base58
 + `*timestamp` число/строка - время в мс
@@ -758,6 +759,8 @@ MoneyLike может иметь вид:
 В случае успеха на ассете будет переписан скрипт 
 
 
+### [Как расчитать комиссию](https://docs.wavesplatform.com/en/technical-details/transactions-fees.html)
+
 ***
 
 ### signOrder
@@ -782,4 +785,5 @@ MoneyLike может иметь вид:
 
 ### signRequest
 Метод Waves Keeper для подписи типизированных данных, для подтверждения запросов на разных сервисах
+
 
