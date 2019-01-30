@@ -26,6 +26,7 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
         
         const tx = { type: data.type, ...data.data };
         const amount = getMoney(getAmount(tx, message), assets);
+        const hasLease = !amount.getCoins().isNaN();
         
         return <div className={className}>
 

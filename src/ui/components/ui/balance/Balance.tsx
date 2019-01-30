@@ -23,7 +23,7 @@ const BalanceComponent = ({ balance, split, getAsset, addSign=null, showAsset, i
     switch (true) {
         case !balance:
             return <Loading>{children}</Loading>;
-        case balance instanceof Money:
+        case balance instanceof Money && !balance.getTokens().isNaN():
             balanceOut = balance as Money;
             break;
         case !assets['WAVES']:

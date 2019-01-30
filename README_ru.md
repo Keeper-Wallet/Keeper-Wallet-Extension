@@ -262,17 +262,16 @@
 допускается подписывать до 7 транзакций одновременно, и разрешены только 
 определенные типы транзакций:  
 
-```
-    3 - выпуск токена
-    2 - перевод токенов
-    5 - перевыпуск токенов
-    6 - сжигание токенов
-    10 - создaние алиса на адрес в сети waves
-    11 - массовый перевод
-    12 - транзакция с данными
-```
+* `    3 - выпуск токена`  
+* `    4 - перевод токенов`  
+* `    5 - перевыпуск токенов`  
+* `    6 - сжигание токенов`  
+* `    10 - создaние алиса на адрес в сети waves`  
+* `    11 - массовый перевод`  
+* `    12 - транзакция с данными`  
 
-Пример:
+
+ПРИМЕР:
 
 ```
     const name = 'For Test';
@@ -319,7 +318,7 @@
 Аналогично `signTransaction`.
 
 
-## Транзакции
+## [Транзакции](https://docs.wavesplatform.com/en/development-and-api/client-libraries/waves-transactions.html)
 У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты), 
 любая прошедшая транзакция меняет эти данные.  
 В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html).  
@@ -349,7 +348,8 @@ MoneyLike может иметь вид:
 * ``{ coins: 100000000, assetid: 'WAVES' }``; 
   
 В обоих записях указана одинаковая цена 1 WAVES. Можно свободно перевести `coins` в `tokens` и  обратно,
-зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`
+зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`  
+Если в поле указаны дополнительные типы кроме MoneyLike, например string/MoneyLike , сумма указывается числом в `coins`.
   
 ***
 
@@ -439,6 +439,7 @@ MoneyLike может иметь вид:
            data: {
                 "quantity": 1000,
                 "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
+                "reissuable": true,
                 "fee": {
                     "tokens": "1",
                     "assetId": "WAVES"
@@ -451,7 +452,7 @@ MoneyLike может иметь вид:
       });
 ```
 
-В случае успеха мы выпускаем новыйй ассет в количестве 1000000 шт.
+В случае успеха мы довыпускаем новыйй ассет в количестве 1000000 `coins`.
 которые будут на вашем балансе 10000.00 Best Token
 
 
@@ -484,7 +485,159 @@ MoneyLike может иметь вид:
    });
 ```
 
-В случае успеха сжигается 1000 шт. 
+В случае успеха сжигается 1000 `coins`. 
 
 
+### [Тип 8 LEASE - Передача в лизинг](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-423d9cffbd0e1a0b1298bf22c176fac3)  
 
++ `recipient` string - адрес получателя или алиас,
++ `amount` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 8,
+        data: {
+             "amount": 1000,
+             "recipient": "merry",
+             "fee": {
+                 "tokens": "0.001",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха передается в лизинг 0.00001000 Waves.
+
+
+### [Тип 9 LEASE CANCEL - отмена лизинга](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-92869b0109414c29eb600dfc6caf4520)  
+
++ `leaseId` string - id транзакции лизинга,
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 9,
+        data: {
+             leaseId: "6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS",
+             "fee": {
+                 "tokens": "0.001",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха отменяется лизинг.
+
+
+### [Тип 10 CREATE ALIAS - создание алиаса для адреса](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-e4657fe644ac2cf0d4e382fe676f0477)  
+
++ `alias`[4, 30] string - имя
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 10,
+        data: {
+             alias: 'testAlias',
+             "fee": {
+                 "tokens": "0.001",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха для адреса создается алиас (дополнительное имя).
+
+
+### [Тип 11 MASS TRANSFER - массовая рассылка ассета](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-bccba990c89ceec7ef3751e8e763ecc6)  
++ `totalAmount` moneyLike - итого отошлется // можно не считать сумму и вставить { assetId: 'id отправляемого ассета', coins: 0}, 
++ `transfers` массив объектов
+    + { `recipient`: string - адрес/алиас, amount: number/string/moneyLike }
++ `fee` MoneyLike -комиссия 
++ `attachment` [,140 bytes в base58] string - доп информация
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 11,
+        data: {
+             totalAmount: { assetId: 'WAVES', coins: 0},
+             transfers: [
+                { recipient: 'alias1', amount: '200000' },
+                { recipient: 'alias2', amount: '200000' },
+             ],
+             "fee": {
+                 "tokens": "0.002",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха на адреса alias1, alias2 прийдет по 0.002 Waves.
+
+
+### [Тип 12 DATA TRANSACTION - сохранение данных](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-f6e7a2443d41af2a0ef8b4c4c33ba6b3)  
++ `data` массив объектов 
+    +   `type` /'binary'/string/'integer'/'boolean' - тип, 
+    +   `key` string - название поля 
+    +   `value` /string/string/number/boolean зависит от типа 
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ПРИМЕР:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 12,
+        data: {
+             data: [
+                  { key: 'string', value: 'testVal', type: 'string' },
+                  { key: 'binary', value: 'base64:AbCd', type: 'binary' },
+                  { key: 'integer', value: 20, type: 'integer' },
+                  { key: 'boolean', value: false, type: 'boolean' },
+             ],
+             "fee": {
+                 "tokens": "0.01",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха в стейте будут хранится новые данные.
