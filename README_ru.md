@@ -1,8 +1,8 @@
 # Waves Keeper v1.0.8
 
 Приложение для хранения данных пользователя  
-и проведения транзакций в блокчейн сети Waves.
-
+и проведения транзакций в блокчейн сети Waves.  
+[Информация о сети Waves](https://docs.wavesplatform.com/en/)
 
 ## Waves Keeper API
 
@@ -12,7 +12,7 @@
 `auth`, `publicState`, `signAndPublishCancelOrder`, `signAndPublishOrder`, 
 `signAndPublishTransaction`, `signCancelOrder`, `signOrder`, 
 `signTransaction`, `signRequest`, `signTransactionPackage`, `on`.  
-> Все методы работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+> Все методы кроме `on` работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
 ### publicState
 Если сайт доверенный, возвращает публичные данные кипера.
@@ -31,7 +31,7 @@
 ```
 или
 ```
-    const getPublicState = async state => {
+    const getPublicState = async () => {
         try {
             const state = await WavesKeeper.publicState();
             console.log(state); //вывод в консоль результата
@@ -41,6 +41,8 @@
             /*...обработка ошибок */
         }
       }
+      
+      const result = await getPublicState();
 ```
 
 ОТВЕТ
@@ -74,7 +76,7 @@
 ```
 + `initialized` - boolean кипер проинициализирован   
 + `locked` - boolean кипер в режиме ожидания  
-+ `account` - текущий аккаунт, если пользователь разрешит сайту доступ или null  
++ `account` - текущий аккаунт, если пользователь разрешит сайту доступ, или null  
 + `network` - текущая сеть waves, адрес ноды и матчера    
 + `messages` - статусы запросов на подпись    
 + `txVersion` - доступные версии транзакций для каждого типа   
@@ -312,3 +314,177 @@
 ОТВЕТ
 
 массив из 2-х строк, подписанных и готовых к отправке транзакций.
+
+ОШИБКИ
+Аналогично `signTransaction`.
+
+
+## Транзакции
+У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты), 
+любая прошедшая транзакция меняет эти данные.  
+В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html).  
+`signTransaction`, `signAndPublishTransaction` принимают транзакцию в следующем виде 
+```
+{
+    type: number //тип транзакции,
+    data: {
+        ... //данные транзакции
+    }
+}
+```
+
+Условные обозначения
+
+> \* - необязательное поле, данные подставятся автоматически из WavesKeeper.  
+> [x,y] - oграничение длины от x, до y.   
+> [,x] - oграничение длины до x.  
+> [y,] - oграничение длины от y.  
+> [x-y] - число от x до y.
+> x/y - x или y.
+> (JLM) - JAVA LONG MAX =  9 223 372 036 854 775 807  
+> MoneyLike - цена
+
+MoneyLike может иметь вид:  
+* ``{ tokens: 1, assetid: 'WAVES' }``
+* ``{ coins: 100000000, assetid: 'WAVES' }``; 
+  
+В обоих записях указана одинаковая цена 1 WAVES. Можно свободно перевести `coins` в `tokens` и  обратно,
+зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`
+  
+***
+
+### [Тип 3 ISSUE - выпуск токена](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-8b6593d26c82bcc46ea77e373128b6f3)  
+
++ `name` [4, 16] строка - Название токена,
++ `description` [0, 1000] строка - Описание токена,
++ `quantity` [0 - (JLM)]  число/строка - количество,
++ `precision`  [0 - 8]  число - точность,
++ `reissuable` true|false - возможно перевыпускать,
++ `fee` MoneyLike -комиссия 
++ `*script`: строка - Asset script
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ 
+ПРИМЕР:
+
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 3,
+        data: {
+             "name": "Best Token",
+             "description": "Greate token",
+             "quantity": 1000000,
+             "precision": 2,
+             "reissuable": true,
+             "fee": {
+                 "tokens": "1",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я создал свой ассет!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха мы выпускаем новыйй ассет в количестве 1000000 шт.
+которые будут на вашем балансе 10000.00 Best Token
+
+
+### [Тип 4 TRANSFER - передача токена](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api/asset-transactions/public-functions.html#section-0c8edc11ae61814aebb41d3eeccbb831)  
+
++ `amount` MoneyLike - количество,
++ `recipient` string - адрес получателя или алиас
++ `attachment`[,140 bytes в base58] string - доп информация
++ `fee` MoneyLike - комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+
+ПРИМЕР:
+
+```
+    WavesKeeper.signAndPublishTransaction({
+        type: 4,
+        data: {
+            amount: { tokens: "3.3333333", assetId: "WAVES" },
+            fee: { tokens: "0.001", assetId: "WAVES"},
+            recipient: "merry"
+        }
+    }).then((tx) => {
+         console.log('Ура я довыпустил токен!!!');
+    }).catch((error) => {
+         console.error('Что-то пошло не так', error);
+    });
+
+```
+
+### [Тип 5 REISSUE - довыпуск токенов](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-2afead90ebe874ae06338a9253b0dc9d)  
+
++ `assetId` строка - "Id ассета",
++ `quantity` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `reissuable` false - запретить перевыпускать
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ 
+ПРИМЕР:
+
+```
+      WavesKeeper.signAndPublishTransaction({
+           type: 5,
+           data: {
+                "quantity": 1000,
+                "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
+                "fee": {
+                    "tokens": "1",
+                    "assetId": "WAVES"
+                }
+           }
+      }).then((tx) => {
+           console.log('Ура я довыпустил токен!!!');
+      }).catch((error) => {
+           console.error('Что-то пошло не так', error);
+      });
+```
+
+В случае успеха мы выпускаем новыйй ассет в количестве 1000000 шт.
+которые будут на вашем балансе 10000.00 Best Token
+
+
+### [Тип 6 BURN - сжигание токена](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-423d9cffbd0e1a0b1298bf22c176fac3)  
+
++ `assetId` строка - Id ассета,
++ `quantity` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `fee` MoneyLike -комиссия 
++ `*senderPublicKey` строка - публичный ключ отправителя в base58
++ `*timestamp` число/строка - время в мс
+
+ 
+ПРИМЕР:
+
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 6,
+        data: {
+             "quantity": 1000,
+             "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
+             "fee": {
+                 "tokens": "0.001",
+                 "assetId": "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log('Ура я сжег токен!!!');
+   }).catch((error) => {
+        console.error('Что-то пошло не так', error);
+   });
+```
+
+В случае успеха сжигается 1000 шт. 
+
+
+

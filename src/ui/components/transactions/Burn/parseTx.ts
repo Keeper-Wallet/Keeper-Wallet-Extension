@@ -23,7 +23,14 @@ export function getAmount(tx = null) {
     if (tx.quantity) {
         tx.amount = tx.quantity;
     }
-    return typeof tx.amount === 'object' ? tx.amount : { coins: tx.amount, assetId: 'WAVES' };
+    
+    if (typeof tx.amount === 'object') {
+        const { coins, tokens, assetId } = tx.amount;
+        
+        return { coins, tokens, assetId: tx.assetId || assetId };
+    }
+    
+    return { coins: tx.amount, assetId: tx.assetId || 'WAVES' };
 }
 
 export function getAmountSign() {
