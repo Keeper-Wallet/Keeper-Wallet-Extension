@@ -6,13 +6,24 @@
 
 ## Waves Keeper API
 
-На страницах броузера с установленным расширением 
+На страницах браузера с установленным расширением 
 становятся доступным глобальный объект WavesKeeper 
 в котором вы найдете следующие методы:
-`auth`, `publicState`, `signAndPublishCancelOrder`, `signAndPublishOrder`, 
-`signAndPublishTransaction`, `signCancelOrder`, `signOrder`, 
-`signTransaction`, `signRequest`, `signTransactionPackage`, `on`.  
+- `auth` 
+- `publicState`
+- `signAndPublishCancelOrder`
+- `signAndPublishOrder` 
+- `signAndPublishTransaction`
+- `signCancelOrder`
+- `signOrder`, 
+- `signTransaction`
+- `signRequest`
+- `signTransactionPackage`
+- `on`
+
 > Все методы кроме `on` работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+
+## Описание методов
 
 ### publicState
 Если сайт доверенный, возвращает публичные данные кипера.
@@ -74,22 +85,24 @@
     }
 }
 ```
-+ `initialized` - boolean кипер проинициализирован   
-+ `locked` - boolean кипер в режиме ожидания  
-+ `account` - текущий аккаунт, если пользователь разрешит сайту доступ, или null  
-+ `network` - текущая сеть waves, адрес ноды и матчера    
-+ `messages` - статусы запросов на подпись    
-+ `txVersion` - доступные версии транзакций для каждого типа   
+Описание возвращаемых полей
+| Название    | Тип поля | Описание                                                       |                                                                    |
+|-------------|----------|----------------------------------------------------------------|--------------------------------------------------------------------|
+| initialized | boolean  | Проинициализирован ли Waves Keeper                             |                                                                    |
+| locked      | boolean  | Находился ли Waves Keeper в режиме ожидания                    |                                                                    |
+| account     | Object\  | null                                                           | текущий аккаунт, если пользователь разрешит сайту доступ, или null |
+| network     | Object   | Информация о текущей сети Waves, содержит адрес ноды и матчера |                                                                    |
+| messages    | Array    | Сатусы запросов на подпись                                     |                                                                    |
+| txVersion   | Object   | Доступные версии транзакций для каждого типа                   |                                                                    |
 
-
-ОШИБКИ
+Возможные ошибки
 
 + `{ message: "Init Waves Keeper and add account" }` - кипер не проинициализирован 
 + `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов  
 + `{ message: "User denied message" }` -  пользователь запретил сайту работать с кипером  
 
 ### on
-Позволяет подписаться на евенты из кипера.  
+Позволяет подписаться на события из Waves Keeper.  
 
 Поддерживает события:
 * `update` - подписаться на изменения стейта
@@ -100,12 +113,12 @@
         //state бъект как из WavesKeeper.publicState
    });
 ```
-Если сайт не доверенный события приходить не будут.
+Если сайт не является доверенным, то события приходить не будут.
 
 
 ### auth
-Метод, для получения подписи авторизационных данных при подтверждении пользователя Waves.
-Работает аналогично протоколу авторизации [waves](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
+Метод для получения подписи авторизационных данных при подтверждении пользователя Waves.
+Работает аналогично [протоколу авторизации waves](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
 
 Пример:
 ```
@@ -173,7 +186,7 @@
 + `signature` - подпись
 + `version` - версия апи
 
-Как [проверить подпись](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)?
+[Как проверить подпись](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)?
 
 ОШИБКИ
 
