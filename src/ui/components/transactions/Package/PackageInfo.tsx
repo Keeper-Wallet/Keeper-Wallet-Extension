@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
-import * as styles from './index.styl';
+import * as styles from '../../transactions.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { getTransactionData } from './parseTx';
-
+import { Button, BUTTON_TYPE } from "../../ui";
 
 const MessageItem = ({ message, config, assets }) => {
     const Card = config.card;
@@ -13,7 +13,6 @@ const MessageItem = ({ message, config, assets }) => {
         <Info message={message} assets={assets}/>
     </div>;
 };
-
 
 @translate(I18N_NAME_SPACE)
 export class PackageInfo extends React.PureComponent<IPackInfo> {
