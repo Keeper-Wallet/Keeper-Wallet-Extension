@@ -253,7 +253,8 @@
 Возвращается строкой ответ от сети Waves - полное содержание прошедшей транзакции
 
 ОШИБКИ    
-``{message: "Filed request", data: "Описание ошибки", code: 15}`` - реквест подписали, но не смогли отправить дальше
++ Аналогично `signTransaction`  
++ ``{message: "Filed request", data: "Описание ошибки", code: 15}`` - реквест подписали, но не смогли отправить дальше
 
 
 ### signTransactionPackage
@@ -266,7 +267,7 @@
 * `    4 - перевод токенов`  
 * `    5 - перевыпуск токенов`  
 * `    6 - сжигание токенов`  
-* `    10 - создaние алиса на адрес в сети waves`  
+* `    10 - создaние алиса   на адрес в сети waves`  
 * `    11 - массовый перевод`  
 * `    12 - транзакция с данными`  
 
@@ -356,15 +357,15 @@ MoneyLike может иметь вид:
 
 ### [Тип 3 ISSUE - выпуск токена](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-8b6593d26c82bcc46ea77e373128b6f3)  
 
-+ `name` [4, 16] строка - Название токена,
-+ `description` [0, 1000] строка - Описание токена,
-+ `quantity` [0 - (JLM)]  число/строка - количество,
-+ `precision`  [0 - 8]  число - точность,
++ `name` [4, 16] string - Название токена,
++ `description` [0, 1000] string - Описание токена,
++ `quantity` [0 - (JLM)]  number/string - количество,
++ `precision`  [0 - 8]  number - точность,
 + `reissuable` true|false - возможно перевыпускать,
 + `fee` MoneyLike -комиссия 
 + `*script` string - [скрипт для ассета](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
  
 ПРИМЕР:
@@ -400,8 +401,8 @@ MoneyLike может иметь вид:
 + `recipient` string - адрес получателя или алиас
 + `attachment`[,140 bytes в base58] string - доп информация
 + `fee` MoneyLike - комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 
 ПРИМЕР:
@@ -424,12 +425,12 @@ MoneyLike может иметь вид:
 
 ### [Тип 5 REISSUE - довыпуск токенов](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-2afead90ebe874ae06338a9253b0dc9d)  
 
-+ `assetId` строка - "Id ассета",
-+ `quantity` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `assetId` string - "Id ассета",
++ `quantity` [0 - (JLM)]  number/string/MoneyLike - количество,
 + `reissuable` false - запретить перевыпускать
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
  
 ПРИМЕР:
@@ -459,11 +460,11 @@ MoneyLike может иметь вид:
 
 ### [Тип 6 BURN - сжигание токена](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-423d9cffbd0e1a0b1298bf22c176fac3)  
 
-+ `assetId` строка - Id ассета,
-+ `quantity` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `assetId` string - Id ассета,
++ `quantity` [0 - (JLM)]  number/string/MoneyLike - количество,
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
  
 ПРИМЕР:
@@ -492,10 +493,10 @@ MoneyLike может иметь вид:
 ### [Тип 8 LEASE - Передача в лизинг](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-423d9cffbd0e1a0b1298bf22c176fac3)  
 
 + `recipient` string - адрес получателя или алиас,
-+ `amount` [0 - (JLM)]  число/строка/MoneyLike - количество,
++ `amount` [0 - (JLM)]  number/string/MoneyLike - количество,
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 ПРИМЕР:
 ```
@@ -523,8 +524,8 @@ MoneyLike может иметь вид:
 
 + `leaseId` string - id транзакции лизинга,
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 ПРИМЕР:
 ```
@@ -551,8 +552,8 @@ MoneyLike может иметь вид:
 
 + `alias`[4, 30] string - имя
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 ПРИМЕР:
 ```
@@ -581,8 +582,8 @@ MoneyLike может иметь вид:
     + { `recipient`: string - адрес/алиас, amount: number/string/moneyLike }
 + `fee` MoneyLike -комиссия 
 + `attachment` [,140 bytes в base58] string - доп информация
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 ПРИМЕР:
 ```
@@ -611,12 +612,12 @@ MoneyLike может иметь вид:
 
 ### [Тип 12 DATA TRANSACTION - сохранение данных](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-f6e7a2443d41af2a0ef8b4c4c33ba6b3)  
 + `data` массив объектов 
-    +   `type` /"binary"/string/"integer"/"boolean" - тип, 
+    +   `type` "binary"/string/"integer"/"boolean" - тип, 
     +   `key` string - название поля 
     +   `value` /string/string/number/boolean зависит от типа 
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 ПРИМЕР:
 ```
@@ -647,8 +648,8 @@ MoneyLike может иметь вид:
 ### [Тип 13 SET SCRIPT - скриптовать акаунт](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-11573fe1c896857a6d3fcfcf6cf6571d)  
 + `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 Для снятия скрипта поле `script` равно ``.
 [Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
@@ -699,8 +700,8 @@ MoneyLike может иметь вид:
 
 + `minSponsoredAssetFee` MoneyLike - цена комиссии в ассете.
 + `fee` MoneyLike - комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 
 ПРИМЕР:
@@ -731,8 +732,8 @@ MoneyLike может иметь вид:
 + `assetId` string - id ассета
 + `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 + `fee` MoneyLike -комиссия 
-+ `*senderPublicKey` строка - публичный ключ отправителя в base58
-+ `*timestamp` число/строка - время в мс
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
 
 Снятие скрипта невозможно, только записать новый.
 [Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
@@ -764,16 +765,113 @@ MoneyLike может иметь вид:
 ***
 
 ### signOrder
-Метод Waves Keeper для подписи ордера на матчер
+Метод Waves Keeper для подписи ордера в матчер
+Принимает на вход объект похожий на транзакцию вида
+```
+    {
+        type: 1002,
+        data: {
+            ...данные
+        }
+    }
+```
+
++ `amount` MoneyLike - количество
++ `price`  MoneyLike - цена
++ `orderType` 'sell'/'buy' - тип ордера
++ `matcherFee` MoneyLike - комиссия (мин 0.003 Waves),
++ `matcherPublicKey` string публичный ключ exchange сервиса
++ `expiration` string/number - время жизни ордера
++ `*timestamp` string/number щее время- теку
++ `*senderPublicKey` string публичный ключ в base58
+
+ПРИМЕР:
+```
+   WavesKeeper.signOrder({
+        type: 1002,
+        data: {
+             matcherPublicKey: "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy",
+             orderType: "sell",
+             expiration: Date.now() + 100000,
+             amount: {
+                 tokens: "100",
+                 assetId: "WAVES"
+             },
+             price: {
+                 tokens: "0.01",
+                 assetId: "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS"
+             },
+             matcherFee: {
+                 tokens: "0.03",
+                 assetId: "WAVES"
+             }
+        }
+   }).then((tx) => {
+        console.log("Ура! Я подписал ордер!!!");
+   }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+   });
+```
+
+ОТВЕТ:
+  Строка с данными для отправки на матчер.
+
+ОШИБКИ:
+
++ ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
++ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
 ### signAndPublishOrder
 Метод Waves Keeper создания ордера на матчер работает идентично `signOrder`, 
 но еще пытается отослать данные на матчер
 
+ОТВЕТ:
+  Строка ответ матчера об успешной постановке ордера.
+
+ОШИБКИ:
++ аналогично `signOrder`  
++ ``{message: "Filed request", data: "Описание ошибки", code: 15}`` - реквест подписали, но не смогли отправить дальше
+
 
 ### signCancelOrder
 Метод Waves Keeper подпись отмены ордера на матчер 
+Принимает на вход объект похожий на транзакцию вида
+```
+    {
+        type: 1003,
+        data: {
+            ...данные
+        }
+    }
+```
+
+
++ `id` string - id ордера
++ `*senderPublicKey` string публичный ключ в base58
+
+
+ПРИМЕР:
+```
+    WavesKeeper.signCancelOrder({
+        {
+        	type: 1003,
+        	data: {
+        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
+        	}
+        }
+    });
+```
+
+ОТВЕТ:
+  Строка с данными для отправки на матчер.
+  
+ОШИБКИ:
+
++ ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
++ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
 
@@ -781,9 +879,90 @@ MoneyLike может иметь вид:
 Метод Waves Keeper для отмены ордера на матчер, работает идентично `signCancelOrder`, 
 но еще пытается отослать данные на матчер  
 
+ПРИМЕР:
+```
+    WavesKeeper.signAndPublishCancelOrder({
+        {
+        	type: 1003,
+        	data: {
+        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
+        	}
+        }
+    }).then(() => {
+        console.log('Ура! Я отменил ордер');
+    }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+    })
+```
+ОТВЕТ:
+Данные пришедшие с матчера
+
+ОШИБКИ:
++ аналогично `signCancelOrder`  
++ ``{message: "Filed request", data: "Описание ошибки", code: 15}`` - реквест подписали, но не смогли отправить дальше
+
 
 
 ### signRequest
 Метод Waves Keeper для подписи типизированных данных, для подтверждения запросов на разных сервисах
+Принимает на вход объект похожий на транзакцию вида
+```
+    {
+        type: number,
+        data: {
+            ...данные
+        }
+    }
+```
+
+В данный момент метод поддерживает следующие типы:
+    
+#### 1001 - подпись данных для запроса на матчер за своими ордерами
+
++ `timestamp` number/string
++ `*senderPublicKey` string публичный ключ в base58
+
+ПРИМЕР: 
+```
+    WavesKeeper.signRequest({
+        {
+            type: 1001,
+            data: {
+                timestamp: 234234242423423
+            }
+        }
+    });
+```
+ОТВЕТ:
+  Строка c подписью в base58.
+  
+ОШИБКИ:
+
++ ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
++ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
+#### 1004 - подпись данных для запроса к Coinomat
+
++ `timestamp` number/string
+
+ПРИМЕР: 
+```
+    WavesKeeper.signRequest({
+        {
+            type: 1004,
+            data: {
+                timestamp: 234234242423423
+            }
+        }
+    });
+```
+ОТВЕТ:
+  Строка c подписью в base58.
+  
+ОШИБКИ:
+
++ ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
++ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
