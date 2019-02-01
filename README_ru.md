@@ -85,15 +85,15 @@
     }
 }
 ```
+
 Описание возвращаемых полей
-| Название    | Тип поля | Описание                                                       |                                                                    |
-|-------------|----------|----------------------------------------------------------------|--------------------------------------------------------------------|
-| initialized | boolean  | Проинициализирован ли Waves Keeper                             |                                                                    |
-| locked      | boolean  | Находился ли Waves Keeper в режиме ожидания                    |                                                                    |
-| account     | Object\  | null                                                           | текущий аккаунт, если пользователь разрешит сайту доступ, или null |
-| network     | Object   | Информация о текущей сети Waves, содержит адрес ноды и матчера |                                                                    |
-| messages    | Array    | Сатусы запросов на подпись                                     |                                                                    |
-| txVersion   | Object   | Доступные версии транзакций для каждого типа                   |                                                                    |
+
++ `initialized` - boolean кипер проинициализирован   
++ `locked` - boolean кипер в режиме ожидания  
++ `account` - текущий аккаунт, если пользователь разрешит сайту доступ, или null  
++ `network` - текущая сеть waves, адрес ноды и матчера    
++ `messages` - статусы запросов на подпись    
++ `txVersion` - доступные версии транзакций для каждого типа   
 
 Возможные ошибки
 
@@ -151,6 +151,7 @@
 ```
 
 `auth` может принимать на вход следующие данные
+
 + `name` - название сервиса (не обязательное поле)
 + `data` - строка с любыми данными (обязательное поле)
 + `referrer` - полный url до сайта для редиректа (не обязательное поле)
@@ -178,6 +179,7 @@
     
 ```
 При удачном подтверждении кипер в происе вернет объект содержащий данные для проверки подписи:
+
 + `host` - хост, запросивший подпись
 + `name` - название приложения запрашивающее подпись
 + `prefix` - префикс учавствующий в подписи
@@ -285,7 +287,7 @@
 * `    12 - транзакция с данными`  
 
 
-ПРИМЕР:
+Пример:
 
 ```
     const name = "For Test";
@@ -381,7 +383,7 @@ MoneyLike может иметь вид:
 + `*timestamp` number/string - время в мс
 
  
-ПРИМЕР:
+Пример:
 
 ```
    WavesKeeper.signAndPublishTransaction({
@@ -418,7 +420,7 @@ MoneyLike может иметь вид:
 + `*timestamp` number/string - время в мс
 
 
-ПРИМЕР:
+Пример:
 
 ```
     WavesKeeper.signAndPublishTransaction({
@@ -446,7 +448,7 @@ MoneyLike может иметь вид:
 + `*timestamp` number/string - время в мс
 
  
-ПРИМЕР:
+Пример:
 
 ```
       WavesKeeper.signAndPublishTransaction({
@@ -480,7 +482,7 @@ MoneyLike может иметь вид:
 + `*timestamp` number/string - время в мс
 
  
-ПРИМЕР:
+Пример:
 
 ```
    WavesKeeper.signAndPublishTransaction({
@@ -511,7 +513,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 8,
@@ -540,7 +542,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 9,
@@ -568,7 +570,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 10,
@@ -598,7 +600,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 11,
@@ -632,7 +634,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 12,
@@ -667,7 +669,7 @@ MoneyLike может иметь вид:
 Для снятия скрипта поле `script` равно ``.
 [Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 13,
@@ -687,7 +689,7 @@ MoneyLike может иметь вид:
 
 В случае успеха удалится скрипт с аккаунта.
 
-ПРИМЕР2:
+Пример2:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 13,
@@ -717,7 +719,7 @@ MoneyLike может иметь вид:
 + `*timestamp` number/string - время в мс
 
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 14,
@@ -751,7 +753,7 @@ MoneyLike может иметь вид:
 Снятие скрипта невозможно, только записать новый.
 [Разаработка скрипта в RIDE](https://ide.wavesplatform.com/)
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signAndPublishTransaction({
         type: 15,
@@ -798,7 +800,7 @@ MoneyLike может иметь вид:
 + `*timestamp` string/number щее время- теку
 + `*senderPublicKey` string публичный ключ в base58
 
-ПРИМЕР:
+Пример:
 ```
    WavesKeeper.signOrder({
         type: 1002,
@@ -865,7 +867,7 @@ MoneyLike может иметь вид:
 + `*senderPublicKey` string публичный ключ в base58
 
 
-ПРИМЕР:
+Пример:
 ```
     WavesKeeper.signCancelOrder({
         {
@@ -892,7 +894,7 @@ MoneyLike может иметь вид:
 Метод Waves Keeper для отмены ордера на матчер, работает идентично `signCancelOrder`, 
 но еще пытается отослать данные на матчер  
 
-ПРИМЕР:
+Пример:
 ```
     WavesKeeper.signAndPublishCancelOrder({
         {
@@ -935,7 +937,7 @@ MoneyLike может иметь вид:
 + `timestamp` number/string
 + `*senderPublicKey` string публичный ключ в base58
 
-ПРИМЕР: 
+Пример: 
 ```
     WavesKeeper.signRequest({
         {
@@ -960,7 +962,7 @@ MoneyLike может иметь вид:
 
 + `timestamp` number/string
 
-ПРИМЕР: 
+Пример: 
 ```
     WavesKeeper.signRequest({
         {
