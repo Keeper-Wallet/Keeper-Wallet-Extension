@@ -7,7 +7,7 @@ export const OriginWarning = ({ message }) => {
         return null;
     }
     return <div>
-        <a href={`http://${message.origin}`} target="_blank" className={styles.originAddress}>{message.origin}</a>
+        <div className={styles.originAddress}>{message.origin}</div>
         <div className={styles.originDescription}>
             <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>
         </div>
