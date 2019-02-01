@@ -68,7 +68,7 @@ export class PackageCard extends React.PureComponent<IData> {
                         {tx.length} <Trans i18nKey='transactions.packTransactions'>transactions</Trans>
                     </h1>
 
-                    <div className={styles.amounts}margin-main>
+                    <div className={styles.amounts}>
                         <Amounts amounts={amounts}/>
                     </div>
                 </div>
