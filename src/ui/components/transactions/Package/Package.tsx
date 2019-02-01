@@ -28,7 +28,12 @@ export class Package extends SignClass {
             return null;
         }
 
-        this.container.querySelector('.autoScrollToo').scrollIntoView();
+        const element = this.container.querySelector('.autoScrollToo');
+        const to = element.getBoundingClientRect().top;
+        this.container.scroll({
+            top: to - 60,
+            behavior: 'smooth'
+        });
         this.setState({ needScroll: false });
     }
     
