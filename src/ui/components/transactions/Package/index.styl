@@ -79,19 +79,36 @@
   border-radius: 4px;
   border: 1px solid $basic100;
   padding: 12px;
+  margin: 0 -10px;
 
   .icons
     position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
 
-    .iconItem
-      position: absolute;
+    .icon
       left: 0;
-      border: 2px solid $white;
+      border: 2px solid #fff;
+      width: 28px;
+      height: 28px;
+      top: 50%;
+      z-index: 1;
+      border-radius: 50%;
+
+      &:not(:last-child) {
+        margin-left: -9px;
+      }
 
   .button
     display: flex;
     justify-content: center;
     flex-grow: 0;
+
+    span
+      curso: pointer;
 
   .arrowDown,
   .arrowUp

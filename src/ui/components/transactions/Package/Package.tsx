@@ -35,13 +35,20 @@ export class Package extends SignClass {
 
                 <div className={styles.toggleList}>
                     <div className={styles.icons}>
-                        <span className={`${styles.iconItem} issue-transaction-icon`}></span>
-                        <span className={`${styles.iconItem} data-transaction-icon`}></span>
-                        <span className={`${styles.iconItem} issue-transaction-icon`}></span>
+                        <span className={`${styles.icon} issue-transaction-icon`}></span>
+                        <span className={`${styles.icon} data-transaction-icon`}></span>
+                        <span className={`${styles.icon} issue-transaction-icon`}></span>
+                        <span className={`${styles.icon} data-transaction-icon`}></span>
+                        <span className={`${styles.icon} issue-transaction-icon`}></span>
+                        <span className={`${styles.icon} data-transaction-icon`}></span>
+                        <span className={`${styles.icon} issue-transaction-icon`}></span>
                     </div>
                     <div className={styles.button}>
-                        <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans>
-                        <i className={styles.arrowDown}/>
+                        <span>
+                            <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> {/* i.arrowUp */}
+                            {/* <Trans i18nKey='transactions.hideTransactions'Show transactions</Trans>  --- i.arrowDown  */}
+                            <i className={styles.arrowUp}/>
+                        </span>
                     </div>
                 </div>
 
