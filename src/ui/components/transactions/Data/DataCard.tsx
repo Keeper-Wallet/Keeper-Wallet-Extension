@@ -42,7 +42,7 @@ export class DataCard extends React.PureComponent<IData> {
                 </div>
             </div>
             
-            <div className={styles.cardContent}>
+            <div className={`${styles.cardContent} marginTop1`}>
                 <ShowScript script={script} optional={true} hideScript={this.props.collapsed}/>
                 
                 <div className={`${styles.origin} margin-main-top`}>
