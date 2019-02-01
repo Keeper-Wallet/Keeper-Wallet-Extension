@@ -50,13 +50,13 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
                 }) : null
             }
     
-            <div className={styles.toggleList}>
+            <div className={styles.toggleList} onClick={this.toggleHandler}>
                 <div className={styles.icons}>
                     {
                         txs.map(({ config }, index) => <TxIcon className={styles.icon} txType={config.type} key={index}/>)
                     }
                 </div>
-                <div className={styles.button} onClick={this.toggleHandler}>
+                <div className={styles.button}>
                         <span>
                             { isOpened ?
                                 <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> :

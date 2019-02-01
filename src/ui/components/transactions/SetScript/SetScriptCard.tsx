@@ -41,8 +41,8 @@ export class SetScriptCard extends React.PureComponent<ISetScript> {
                     </h1>
                 </div>
             </div>
-            
-            <div className={styles.cardContent}>
+
+            <div className={`${styles.cardContent} marginTop1`}>
                 <ShowScript script={script} showNotify={true} hideScript={this.props.collapsed}/>
                 
                 <div className={`${styles.origin} margin-main-top`}>
