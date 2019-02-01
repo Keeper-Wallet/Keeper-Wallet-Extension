@@ -28,6 +28,10 @@ class SettingsComponent extends React.Component {
     render() {
         return <div className={styles.content}>
 
+            <div className={`${styles.title1} title1`}>
+                <Trans i18nKey='settings.settings'>Settings</Trans>
+            </div>
+
             <div className={`${styles.settingsMenuItem} ${styles.network}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
@@ -77,22 +81,14 @@ class SettingsComponent extends React.Component {
                     </div>
                 </Button>
             </div>
-            
-            <div className={`${styles.settingsMenuItem} ${styles.logout} margin4`}>
-                <Button type='transparent'
-                        className={styles.settingsBtn}
-                        onClick={this.lock}>
-                    <div className='body1 left'>
-                        <Trans i18nKey='settings.logOut'>Log out</Trans>
-                    </div>
-                </Button>
-            </div>
-    
-            <div className={`${styles.settingsMenuItem} margin4`}>
+
+            <div className={`${styles.clickProtection} tag1` }>
                 <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
-                <div className='body1 left'>
-                    <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
+                <div className='left'>
                     <div>
+                        <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
+                    </div>
+                    <div className="submit400">
                         {
                             this.props.autoClickProtection ?
                                 <Trans i18nKey='settings.autoClickDisable'>Disabled</Trans> :
@@ -100,11 +96,31 @@ class SettingsComponent extends React.Component {
                         }
                     </div>
                 </div>
+                {/*</div>
+                    <div className={styles.helper}>
+                        <i className={styles.helpIcon}>?</i>
+                        <div className={styles.tooltop}>
+                    </div>
+                 </div>*/}
             </div>
 
-            <Button type={BUTTON_TYPE.WARNING} onClick={this.deleteHandler}>
-                <Trans i18nKey='settings.delete'>Delete all accounts</Trans>
-            </Button>
+            <div className={`${styles.settingsFooter} tag1`}>
+                <div className={styles.buttonsWrapper}>
+                    <div>
+                        <div className={styles.deleteAccounts} onClick={this.deleteHandler}>
+                            <i className={styles.icon}></i>
+                            <span><Trans i18nKey='settings.deleteAccounts'>Delete accounts</Trans></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className={styles.logout} onClick={this.lock}>
+                            <i className={styles.icon}></i>
+                            <span><Trans i18nKey='settings.logOut'>Log out</Trans></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     }
 }

@@ -2,8 +2,15 @@
 
 .content
   width: 100%;
+  max-height: calc(100% - 196px);
+  height: 100%;
   position: relative;
-  padding: 110px 60px;
+  padding: 60px 0 0;
+
+  .title1
+    margin: 0 auto 24px auto;
+    max-width: 236px;
+    width: 100%;
 
 .settingsMenuItem
   border-bottom: 1px solid $accent50;
@@ -12,6 +19,9 @@
   display: block;
   background-position: center right;
   background-repeat: no-repeat;
+  max-width: 236px;
+  width: 100%;
+  margin: 0 auto;
 
   button.settingsBtn
     opacity: .6;
@@ -30,8 +40,6 @@
     background-image: url(../../../assets/img/language-14-basic-200.svg);
   &.password
     background-image: url(../../../assets/img/password-14-basic-200.svg);
-  &.logout
-    background-image: url(../../../assets/img/logout-14-basic-200.svg);
   &.permissions
     background-image: url(../../../assets/img/permission-14-basic-200.svg);
 
@@ -42,3 +50,64 @@
     position: absolute;
     right: 0;
     top: 0;
+
+.clickProtection,
+.settingsFooter
+  display: flex;
+  position: fixed;
+  width: 100%;
+
+.clickProtection
+  max-width: 236px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 84px;
+  line-height: 1.5em;
+  padding-top: 10px;
+  height: 64px;
+
+.settingsFooter
+  background: $basic50;
+  justify-content: center;
+  bottom: 0;
+  left: 0;
+
+.buttonsWrapper
+  display: flex;
+  justify-content: space-between;
+  height: 86px;
+  width: 100%;
+  max-width: 236px;
+
+  & > div
+    display: flex;
+    flex-basis: 50%;
+    justify-content: space-around;
+    align-items: center;
+
+  .icon
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin-bottom: 6px;
+
+.deleteAccounts,
+.logout
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: transparent;
+  border: 0 none;
+  font-size: 11px;
+  padding: 10px;
+
+.deleteAccounts
+  .icon
+    background: url(../../../assets/img/delete-18-error-400.svg) center no-repeat;
+
+.logout
+  .icon
+    background: url(../../../assets/img/logout-18-submit-400.svg) center no-repeat;

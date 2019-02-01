@@ -8,9 +8,6 @@ export function PowerButton({ className, onClick, enabled, children, ...props }:
     
     const btnClassName = cn(
         className,
-        styles.button,
-        styles.transparent,
-        styles.icon,
         myStyles.powerBtn,
         {
             [myStyles.powerBtnOn]: enabled,
