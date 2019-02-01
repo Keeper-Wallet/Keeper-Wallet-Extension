@@ -8,11 +8,10 @@ import { OriginWarning } from '../OriginWarning';
 import { messageType, getFees, getAmounts } from './parseTx';
 import { Balance } from '../../ui';
 
-
 const Fees = ({ fees }) => {
     const moneys = Object.values(fees);
     
-    return <div>
+    return <div className="margin-main">
         {
             moneys.map((fee: any) => {
                 return <div key={fee.asset.id}>
@@ -54,40 +53,41 @@ export class PackageCard extends React.PureComponent<IData> {
             },
         );
         
-        return <div className={myClassName}>
+        return <div className={`${myClassName} ${styles.packageTransactionCard}`}>
 
             <div className={styles.cardHeader}>
                 <div className={styles.dataTxIcon}>
                     <TxIcon txType={messageType}/>
                 </div>
-                
+
                 <div>
                     <div className="basic500 body3 margin-min">
                         {title && collapsed ? title : <Trans i18nKey='transactions.packTransactionGroup'>Group</Trans>}
                     </div>
-                    <h1 className="headline1">
+                    <h1 className="headline1 margin-main">
                         {tx.length} <Trans i18nKey='transactions.packTransactions'>transactions</Trans>
                     </h1>
-                    
-                    <h1 className="headline1">
+
+                    <div className={styles.amounts}margin-main>
                         <Amounts amounts={amounts}/>
-                    </h1>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <div className="basic500 body3">
+            <div className={styles.origin}>
+                <div className="basic500 body3 margin-min margin-main-top">
                     <Trans i18nKey='transactions.packTransactionsFees'>Fees</Trans>
                 </div>
-                <Fees fees={fees}/>
+                <div className="margin-min">
+                    <Fees fees={fees}/>
+                </div>
             </div>
-            
+
             <div className={styles.cardContent}>
                 <div className={`${styles.origin} margin-main-top`}>
                     <OriginWarning message={message}/>
                 </div>
             </div>
-
         </div>
     }
 }
