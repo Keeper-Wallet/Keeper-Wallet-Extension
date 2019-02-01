@@ -45,7 +45,7 @@ export class Package extends SignClass {
                     <PackageCard {...this.props}/>
                 </div>
 
-                <div className="margin1 headline3 basic500 autoScrollToo">
+                <div className="margin1 marginTop3 headline3 basic500 autoScrollToo">
                     <Trans i18nKey='transaction.details'>Details</Trans>
                 </div>
 

@@ -44,7 +44,6 @@
 
 .packageTxShadow
   position: relative;
-  margin-bottom: 34px;
 
   &::before,
   &::after
@@ -92,14 +91,17 @@
     .icon
       left: 0;
       border: 2px solid #fff;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       top: 50%;
       z-index: 1;
       border-radius: 50%;
+      margin-bottom: 0;
+      background-size: cover;
+      background-color: $white;
 
       &:not(:last-child) {
-        margin-left: -9px;
+        margin-left: -15px;
       }
 
   .button

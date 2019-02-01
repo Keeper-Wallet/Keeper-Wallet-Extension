@@ -53,7 +53,7 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
             <div className={styles.toggleList}>
                 <div className={styles.icons}>
                     {
-                        txs.map(({ config }, index) => <TxIcon txType={config.type} key={index}/>)
+                        txs.map(({ config }, index) => <TxIcon className={styles.icon} txType={config.type} key={index}/>)
                     }
                 </div>
                 <div className={styles.button} onClick={this.toggleHandler}>
