@@ -45,7 +45,7 @@ export class Package extends SignClass {
                     </div>
                     <div className={styles.button}>
                         <span>
-                            <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> {/* i.arrowUp */}
+                            <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> {/*  i.arrowUp */}
                             {/* <Trans i18nKey='transactions.hideTransactions'Show transactions</Trans>  --- i.arrowDown  */}
                             <i className={styles.arrowUp}/>
                         </span>
