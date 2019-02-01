@@ -100,7 +100,7 @@ export class FinalTransaction extends React.PureComponent {
                         <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
                     </a>
                 </div> : null}
-            {isSend && isApprove ? <TransactionWallet account={this.props.selectedAccount} hideButton={true}/> :
+            {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
                 <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
         </div>;
     }
