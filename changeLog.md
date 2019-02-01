@@ -9,6 +9,7 @@
 + Add list of waiting requests
 + Add batch of txs
 + Extends remote config
++ Add autoClick disable setting
 
 
 ####version 1.0.7
