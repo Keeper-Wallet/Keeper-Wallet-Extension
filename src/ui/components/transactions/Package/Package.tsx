@@ -29,7 +29,7 @@ export class Package extends SignClass {
                     <Trans i18nKey='transaction.details'>Details</Trans>
                 </div>
 
-                <div className={styles.packageInfo}>
+                <div className={styles.packageInfo}> {/* expandable container */}
                     <PackageInfo message={message} assets={assets}/>
                 </div>
 
