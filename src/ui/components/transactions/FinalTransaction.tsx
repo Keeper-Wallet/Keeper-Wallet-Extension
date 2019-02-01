@@ -95,7 +95,7 @@ export class FinalTransaction extends React.PureComponent {
             </div>
 
             {isSend && isApprove ?
-                <div className="center">
+                <div className="center margin-main-big-top">
                     <a className="link black" href={txLink} target="_blank">
                         <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
                     </a>
