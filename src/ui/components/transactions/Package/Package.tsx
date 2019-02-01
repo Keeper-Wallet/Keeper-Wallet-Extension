@@ -7,16 +7,36 @@ import { PackageInfo } from './PackageInfo';
 import { TransactionBottom } from '../TransactionBottom';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
-import { Button, BUTTON_TYPE } from "../../ui";
 
 @translate(I18N_NAME_SPACE)
 export class Package extends SignClass {
+    
+    readonly state = { needScroll: false };
+    container: HTMLDivElement;
+    needScroll: false;
+
+    getContainerRef = (ref) => {
+        this.container = ref;
+    };
+    
+    autoScrollHandler = (isShow) => {
+        this.setState({ needScroll: isShow });
+    };
+    
+    componentDidUpdate(): void {
+        if (!this.state.needScroll) {
+            return null;
+        }
+
+        this.container.querySelector('.autoScrollToo').scrollIntoView();
+        this.setState({ needScroll: false });
+    }
     
     render() {
         const { message, assets } = this.props;
         const { title } = message;
         return <div className={styles.transaction}>
-            <div className={`${styles.dataTxScrollBox} transactionContent`}>
+            <div className={`${styles.dataTxScrollBox} transactionContent`} ref={this.getContainerRef}>
 
                 <div className="margin-main margin-main-top headline3 basic500">
                     {title ? title : <Trans i18nKey='transactions.confirmationRequest'>Confirmation request</Trans>}
@@ -25,33 +45,15 @@ export class Package extends SignClass {
                     <PackageCard {...this.props}/>
                 </div>
 
-                <div className="margin1 headline3 basic500">
+                <div className="margin1 headline3 basic500 autoScrollToo">
                     <Trans i18nKey='transaction.details'>Details</Trans>
                 </div>
 
                 <div className={styles.packageInfo}> {/* expandable container */}
-                    <PackageInfo message={message} assets={assets}/>
+                    <PackageInfo message={message}
+                                 assets={assets} 
+                                 onToggle={this.autoScrollHandler}/>
                 </div>
-
-                <div className={styles.toggleList}>
-                    <div className={styles.icons}>
-                        <span className={`${styles.icon} issue-transaction-icon`}></span>
-                        <span className={`${styles.icon} data-transaction-icon`}></span>
-                        <span className={`${styles.icon} issue-transaction-icon`}></span>
-                        <span className={`${styles.icon} data-transaction-icon`}></span>
-                        <span className={`${styles.icon} issue-transaction-icon`}></span>
-                        <span className={`${styles.icon} data-transaction-icon`}></span>
-                        <span className={`${styles.icon} issue-transaction-icon`}></span>
-                    </div>
-                    <div className={styles.button}>
-                        <span>
-                            <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> {/*  i.arrowUp */}
-                            {/* <Trans i18nKey='transactions.hideTransactions'Show transactions</Trans>  --- i.arrowDown  */}
-                            <i className={styles.arrowUp}/>
-                        </span>
-                    </div>
-                </div>
-
             </div>
 
             <TransactionBottom {...this.props}>

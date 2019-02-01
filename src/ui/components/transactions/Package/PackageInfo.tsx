@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
-import * as styles from '../../transactions.styl';
+import * as styles from './index.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { getTransactionData } from './parseTx';
-import { Button, BUTTON_TYPE } from "../../ui";
+import { TxIcon } from '../TransactionIcon';
 
 const MessageItem = ({ message, config, assets }) => {
     const Card = config.card;
@@ -17,14 +17,28 @@ const MessageItem = ({ message, config, assets }) => {
 @translate(I18N_NAME_SPACE)
 export class PackageInfo extends React.PureComponent<IPackInfo> {
     
+    readonly state = { isOpened: false };
+
+    toggleHandler = () => {
+        const isOpened = !this.state.isOpened;
+        this.setState({ isOpened });
+    };
+    
+    componentDidUpdate(_, prevState): void {
+        if (this.state.isOpened !== prevState.isOpened) {
+            this.props.onToggle(this.state.isOpened);
+        }
+    }
+    
     render() {
         const { message, assets } = this.props;
+        const { isOpened } = this.state;
         const { data = [] } = message;
         const txs = data.map(getTransactionData);
         const hashes = message.messageHash;
         return <div>
             {
-                txs.map(({ config, tx }, index) => {
+                isOpened ? txs.map(({ config, tx }, index) => {
                     const message = {
                         data: {...tx, data: tx },
                         messageHash: hashes[index],
@@ -33,8 +47,26 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
                     return <div key={`${index}${config.messageType}`}>
                         <MessageItem config={config} assets={assets} message={message}/>
                     </div>;
-                })
+                }) : null
             }
+    
+            <div className={styles.toggleList}>
+                <div className={styles.icons}>
+                    {
+                        txs.map(({ config }, index) => <TxIcon txType={config.type} key={index}/>)
+                    }
+                </div>
+                <div className={styles.button} onClick={this.toggleHandler}>
+                        <span>
+                            { isOpened ?
+                                <Trans i18nKey='transactions.hideTransactions'>Hide transactions</Trans> :
+                                <Trans i18nKey='transactions.showTransactions'>Show transactions</Trans>
+                            }
+                            <i className={isOpened ? styles.arrowUp : styles.arrowDown}/>
+                        </span>
+                </div>
+            </div>
+            
         </div>;
     }
 }
@@ -42,4 +74,5 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
 interface IPackInfo {
     message: any;
     assets: any;
+    onToggle?: (isOpen: boolean) => void;
 }
