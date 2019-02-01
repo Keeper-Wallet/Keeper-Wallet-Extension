@@ -17,7 +17,7 @@ class DeleteActiveAccountComponent extends React.Component {
                 <Trans i18nKey='deleteAccount.attention'>Attention!</Trans>
             </h2>
             <div className="margin4 body1">
-                <Trans i18nkey='deleteAccount.warn'>
+                <Trans i18nKey='deleteAccount.warn'>
                     Deleting an account will lead to its irretrievable loss!
                 </Trans>
             </div>

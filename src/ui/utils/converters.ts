@@ -5,11 +5,11 @@ export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
         let amountResult = new Money(0, assets[amount.assetId]);
 
         if ('tokens' in amount) {
-            amountResult = amountResult.cloneWithTokens(amount.tokens);
+            amountResult = amountResult.cloneWithTokens(amount.tokens || 0);
         }
         
         if ('coins' in amount) {
-            amountResult = amountResult.plus(amountResult.cloneWithCoins(amount.coins));
+            amountResult = amountResult.plus(amountResult.cloneWithCoins(amount.coins || 0));
         }
         
         return amountResult;

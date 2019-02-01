@@ -11,7 +11,7 @@ export const BigLogo = ({ className='', noTitle=false }) => {
         <div className={styles.bigLogoImg}></div>
         {
             noTitle ? null : <div className={styles.bigLogoTitle}>
-                    <Trans i18nKey='ui.logo-title'>Keep your Waves keys safe online</Trans>
+                    <Trans i18nKey='ui.logoTitle'>Keep your Waves keys safe online</Trans>
                 </div>
         }
     </div>

@@ -18,7 +18,7 @@ class ForgotPasswordComponent extends React.Component {
                 <Trans i18nKey='forgotPassword.attention'>Attention!</Trans>
             </h2>
             <div className="body1">
-                <Trans i18nkey='forgotPassword.warn'>
+                <Trans i18nKey='forgotPassword.warn'>
                     If you forget your password, you must restore all your accounts from their SEEDs and set a new password.
                 </Trans>
             </div>

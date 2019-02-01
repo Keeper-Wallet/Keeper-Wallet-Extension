@@ -486,7 +486,7 @@ MoneyLike может иметь вид:
 ### [Тип 6 BURN - сжигание токена](https://docs.wavesplatform.com/en/platform-features/assets-custom-tokens.html#section-423d9cffbd0e1a0b1298bf22c176fac3)  
 
 + `assetId` string - Id ассета,
-+ `quantity` [0 - (JLM)]  number/string/MoneyLike - количество,
++ `amount` [0 - (JLM)]  number/string/MoneyLike - количество,
 + `fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
@@ -498,8 +498,8 @@ MoneyLike может иметь вид:
    WavesKeeper.signAndPublishTransaction({
         type: 6,
         data: {
-             "quantity": 1000,
-             "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
+             amount: 1000,
+             assetId: "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
              fee: {
                  "tokens": "0.001",
                  "assetId": "WAVES"
