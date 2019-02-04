@@ -8,7 +8,7 @@ import { I18N_NAME_SPACE } from '../../../appConfig';
 const Icon = (props) => (
     <div className={styles.authTxIcon}>
         {
-            props.icon ?
+            props.canUseIcon ?
                 <img className={styles.txBigIcon} src={props.icon}/> :
                 <div className={cn(styles.txBigIcon, styles.iconMargin, 'signin-icon')}/>
         }
@@ -19,12 +19,31 @@ const Icon = (props) => (
 @translate(I18N_NAME_SPACE)
 export class AuthCard extends React.PureComponent<IAuth> {
     
+    readonly state = { canUseIcon: false, icon: null };
+    
+    componentDidMount(): void {
+        const { message } = this.props;
+        const { data } = message;
+        const tx = data.data;
+        let icon;
+    
+        try {
+            icon = new URL(tx.icon, data.referrer).href;
+        } catch (e) {
+            icon = null;
+        }
+        
+        const img = document.createElement('image');
+        
+        img.onload = () => this.setState({ icon, canUseIcon: true });
+    }
+    
     render() {
+        const { canUseIcon, icon } = this.state;
         const { message } = this.props;
         const { data, origin } = message;
         const tx = { type: data.type, ...data.data };
-        const { referrer } = data;
-        const { icon, name } = tx;
+        const { name } = tx;
         const className = cn(
             styles.authTransactionCard,
             this.props.className,
@@ -33,17 +52,9 @@ export class AuthCard extends React.PureComponent<IAuth> {
             },
         );
         
-        let myIcon;
-        
-        try {
-            myIcon = new URL(icon, referrer);
-        } catch (e) {
-            myIcon = null;
-        }
-        
         return <div className={className}>
             <div className={styles.cardHeader}>
-                <Icon icon={myIcon}/>
+                <Icon icon={icon} canUseIcon={canUseIcon}/>
                 <div>
                     <div className="body1 font600 margin-min">{name}</div>
                 </div>
