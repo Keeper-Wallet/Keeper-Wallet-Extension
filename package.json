@@ -15,6 +15,7 @@
     ]
   },
   "dependencies": {
+    "@babel/core": "^7.2.2",
     "@types/react": "^16.4.11",
     "@types/react-dom": "^16.0.7",
     "@types/react-redux": "^6.0.6",
@@ -94,7 +95,6 @@
     "url-loader": "^1.1.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.9.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-livereload-plugin": "^2.1.1"
