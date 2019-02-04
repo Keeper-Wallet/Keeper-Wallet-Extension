@@ -87,13 +87,12 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
             manifest: {
                 add: {
                     'permissions': [
-                        "storage",
+                        "https://*/*",
+                        "http://*/*",
                         "unlimitedStorage",
                         "clipboardWrite",
-                        "idle",
+                        "clipboardRead",
                         "activeTab",
-                        "webRequest",
-                        "notifications",
                         "tabs"
                     ],
                     'background.scripts': ['background.js']

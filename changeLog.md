@@ -13,6 +13,7 @@
 + Add autoClick disable setting
 + Add ru documentation
 + Refactor errors
++ Opera build scripts update.
 
 ***
 #### version 1.0.7

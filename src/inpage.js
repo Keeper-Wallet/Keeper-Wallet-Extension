@@ -107,7 +107,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
                 data: apiData.d,
                 icon: apiData.i || '',
                 referrer: apiData.r,
-                successPath: apiData.s,
+                successPath: apiData.s || '/',
             });
             break;
         case 'send':
