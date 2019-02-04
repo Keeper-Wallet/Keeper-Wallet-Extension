@@ -111,3 +111,54 @@
 .logout
   .icon
     background: url(../../../assets/img/logout-18-submit-400.svg) center no-repeat;
+
+.helper
+  margin-top: 7px;
+  position: relative;
+  width: 14px;
+  overflow: visible;
+
+  &:hover
+    .tooltip
+      display: block;
+
+.helpIcon
+  color: $white;
+  background: $black;
+  border-radius: 50%;
+  font-style: normal;
+  width: 14px;
+  height: 14px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transform: translateX(-2px);
+
+.powerBtnState
+  flex-grow: 1;
+
+.tooltip
+  display: none;
+  background: $black;
+  color: $white;
+  border-radius: 2px;
+  padding: 10px;
+  position: absolute;
+  bottom: 20px;
+  right: 0;
+  width: 236px;
+  font-size: 14px;
+
+  &::after
+    display: block;
+    content: '';
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    background: $black;
+    right: 5px;
+    transform: rotate(45deg);
+    bottom: -3px;
+    z-index: -1;
+

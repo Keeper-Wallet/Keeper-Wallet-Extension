@@ -83,8 +83,10 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.clickProtection} tag1` }>
+
                 <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
-                <div className='left'>
+
+                <div className={`${styles.powerBtnState} left`}>
                     <div>
                         <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
                     </div>
@@ -96,19 +98,23 @@ class SettingsComponent extends React.Component {
                         }
                     </div>
                 </div>
-                {/*</div>
+
+                <div>
                     <div className={styles.helper}>
                         <i className={styles.helpIcon}>?</i>
-                        <div className={styles.tooltop}>
+                        <div className={styles.tooltip}>
+                            <Trans i18nKey='settings.toolitpContent'>Protect yourself from Clicker Trojans threats</Trans>
+                        </div>
                     </div>
-                 </div>*/}
+                </div>
+
             </div>
 
             <div className={`${styles.settingsFooter} tag1`}>
                 <div className={styles.buttonsWrapper}>
                     <div>
                         <div className={styles.deleteAccounts} onClick={this.deleteHandler}>
-                            <i className={styles.icon}></i>
+                            <i className={styles.icon}>?</i>
                             <span><Trans i18nKey='settings.deleteAccounts'>Delete accounts</Trans></span>
                         </div>
                     </div>
