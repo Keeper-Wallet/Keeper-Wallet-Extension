@@ -83,9 +83,7 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.clickProtection} tag1` }>
-
                 <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
-
                 <div className={`${styles.powerBtnState} left`}>
                     <div>
                         <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
@@ -98,7 +96,6 @@ class SettingsComponent extends React.Component {
                         }
                     </div>
                 </div>
-
                 <div>
                     <div className={styles.helper}>
                         <i className={styles.helpIcon}>?</i>
@@ -107,7 +104,6 @@ class SettingsComponent extends React.Component {
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div className={`${styles.settingsFooter} tag1`}>
