@@ -3,6 +3,9 @@ import * as ReactDOM from 'react-dom';
 import * as styles from './modal.styl';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { translate, Trans } from 'react-i18next';
+import { I18N_NAME_SPACE } from '../../../appConfig';
+
 
 const ModalWrapper = (props) => {
     let Item;
@@ -36,7 +39,7 @@ const ModalWrapper = (props) => {
     </CSSTransitionGroup>
 };
 
-
+@translate(I18N_NAME_SPACE)
 export class Modal extends React.PureComponent {
     readonly props: IProps;
     onclickOut = event => this._onClickOut(event);
