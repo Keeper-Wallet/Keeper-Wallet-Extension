@@ -21,7 +21,10 @@ class AccountInfoComponent extends React.Component {
     getSeed = (cb) => this.getAccountInfo('seed', cb);
     getPrivate = (cb) => this.getAccountInfo('privateKey', cb);
     
-    confirmPassword = () => this.deffer.resolve(this.state.password);
+    confirmPassword = (e) => {
+        e.preventDefault();
+        this.deffer.resolve(this.state.password);
+    };
     rejectPassword = () => this.deffer.reject();
     inputPassword = (event) => this.setState({ password: event.target.value, passwordError: false });
     setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
@@ -118,7 +121,8 @@ class AccountInfoComponent extends React.Component {
             <Modal animation={Modal.ANIMATION.FLASH}
                    showModal={this.state.showPassword}
                    showChildrenOnly={true}>
-                <div className={`modal ${styles.enterPasswordModal}`}>
+                <form className={`modal ${styles.enterPasswordModal}`}
+                      onClick={this.confirmPassword}>
                     <i className={`lock-icon ${styles.lockIcon}`}></i>
 
                     <div className='margin1 relative'>
@@ -139,15 +143,14 @@ class AccountInfoComponent extends React.Component {
                     </div>
 
                     <Button disabled={this.state.passwordError || !this.state.password}
-                            className='margin-main-big' type='submit' 
-                            onClick={this.confirmPassword}>
+                            className='margin-main-big' type='submit'>
                         <Trans i18nKey='accountInfo.enter'>Enter</Trans>
                     </Button>
                     <Button onClick={this.rejectPassword}>
                         <Trans i18nKey='accountInfo.cancel'>Cancel</Trans>
                     </Button>
 
-                </div>
+                </form>
             </Modal>
             
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}

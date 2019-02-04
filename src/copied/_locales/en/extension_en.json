@@ -100,9 +100,11 @@
 		"viaSeed": "Via SEED or Encoded"
 	},
 	"importSeed": {
+		"address": "Account address",
 		"importAccount": "Import Account",
 		"importSeed": "Welcome Back",
-		"inputSeed": "Your seed is the 15 words you saved when creating your account"
+		"inputSeed": "Your seed is the 15 words you saved when creating your account",
+		"newSeed": "Wallet Seed"
 	},
 	"info": {
 		"joinUs": "Join the Waves Community",
@@ -188,10 +190,9 @@
 		"autoClickDisable": "Disabled",
 		"autoClickEnable": "Enabled",
 		"delete": "Delete all accounts",
-		"deleteAccounts": "Enabled",
+		"deleteAccounts": "Delete accounts",
 		"langs": "Change language",
 		"logOut": "Log out",
-		"logout": "Enabled",
 		"network": "Network",
 		"pairing": "Device Pairing",
 		"password": "Change password",
