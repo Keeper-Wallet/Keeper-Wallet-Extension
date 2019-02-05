@@ -15,6 +15,12 @@
     margin-bottom: 4px;
     text-align: center;
 
+  .smallCardContent
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+
 .originAuthCard_collapsed
   .origin
     display: none;
@@ -23,6 +29,9 @@
   @extends .txIconBig
   div
     margin-bottom: 4px;
+
+.originAuthTxIconSmall
+  @extends .txIcon
 
 .originAuthTxScrollBox
   @extends .txScrollBox

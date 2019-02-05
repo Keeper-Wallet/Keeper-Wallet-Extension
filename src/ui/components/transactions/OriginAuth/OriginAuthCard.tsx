@@ -10,29 +10,48 @@ import { messageType } from './parseTx';
 export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
     
     render() {
-        const { message } = this.props;
+        const { message, collapsed } = this.props;
         const { origin } = message;
         const className = cn(
             styles.originAuthTransactionCard,
             this.props.className,
-            {
-                [styles.authCard_collapsed]: this.props.collapsed
-            },
         );
         
         return <div className={className}>
             <div className={styles.cardHeader}>
-                <div className={styles.originAuthTxIcon}>
-                    <TxIcon txType={messageType}/>
-                </div>
+                {   collapsed ?
+                    <React.Fragment>
+                        <div className={styles.smallCardContent}>
+                            <div className={styles.originAuthTxIconSmall}>
+                                <TxIcon txType={messageType} small={true}/>
+                            </div>
+                            <div>
+                                <div className="basic500 body3 margin-min ellipsis">
+                                    {origin}
+                                </div>
+                                <h1 className="headline1">
+                                    <Trans i18nKey='transactions.allowAccessTitle'>Allow access</Trans>
+                                </h1>
+                            </div>
+                        </div>
+
+                    </React.Fragment> :
+
+                    <div className={styles.originAuthTxIcon}>
+                        <TxIcon txType={messageType}/>
+                    </div>
+                }
             </div>
-            
-            <div className={styles.cardContent}>
-                <div className={styles.originAuthOriginAddress}>{origin}</div>
-                <div className={styles.originAuthOriginDescription}>
-                    <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>
-                </div>
-            </div>
+            {
+                collapsed ? null :
+
+                    <div className={styles.cardContent}>
+                        <div className={styles.originAuthOriginAddress}>{origin}</div>
+                        <div className={styles.originAuthOriginDescription}>
+                            <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>
+                        </div>
+                    </div>
+            }
         </div>
         
     }

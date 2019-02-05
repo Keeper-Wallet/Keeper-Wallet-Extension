@@ -14,12 +14,22 @@
     margin-bottom: 4px;
     text-align: center;
 
+  .smallCardContent
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+
 .authCard_collapsed
   .origin
     display: none;
 
 .authTxIcon
   @extends .txIconBig
+
+.authTxIconSmall
+  @extends .txIcon
+  background-size: cover;
 
 .authTxScrollBox
   @extends .txScrollBox
