@@ -41,7 +41,6 @@ export const updateActiveMessageReducer = store => next => action => {
                     store.dispatch(approvePending(false));
                     break;
                 case MSG_STATUSES.FAILED:
-                    debugger;
                     store.dispatch(approvePending(false));
                     store.dispatch(approveError({ error: activeMessageUpdated.err.message, message: activeMessageUpdated }));
                     break;
@@ -52,7 +51,8 @@ export const updateActiveMessageReducer = store => next => action => {
     }
     
     if (action.type === ACTION.APPROVE_REJECT_CLEAR) {
-        store.dispatch(updateActiveMessage(action.payload ? null : messages[0]));
+        const message = messages.find(({ id }) => id !== activeMessage.id);
+        store.dispatch(updateActiveMessage(action.payload ? null : message));
     }
     
     return next(action);

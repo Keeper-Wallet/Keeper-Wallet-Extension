@@ -3,7 +3,7 @@ import { translate, Trans } from 'react-i18next';
 import * as styles from './transfer.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat } from '../../ui';
-import { getFee, getAssetsId, getAmount } from './parseTx';
+import { getFee, getAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
 
@@ -17,12 +17,20 @@ export class TransferInfo extends React.PureComponent<ITransferInfo> {
         const tx = { type: data.type, ...data.data };
         
         const fee = getMoney(getFee(tx), assets);
+        const amount = getMoney(getAmount(tx), assets);
         return <div>
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.sendTo'>Send to</Trans>
                 </div>
                 <div className={styles.txValue}>{tx.recipient}</div>
+            </div>
+    
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.assetId'>Asset ID</Trans>
+                </div>
+                <div className={styles.txValue}>{amount.asset.id}</div>
             </div>
             
             { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>

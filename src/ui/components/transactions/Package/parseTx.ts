@@ -13,14 +13,14 @@ export function getTransactionData(item) {
 
 export function getAssetsId(tx): Array<string> {
     if (!Array.isArray(tx)) {
-        return [];
+        return ['WAVES'];
     }
     
     const assets = tx.reduce((acc, item) => {
         const { tx, config } = getTransactionData(item);
         config.getAssetsId(tx).forEach(item => acc.add(item));
         return acc;
-    }, new Set());
+    }, new Set(['WAVES']));
     
     return Array.from(assets);
 }
