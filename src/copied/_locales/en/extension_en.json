@@ -1,6 +1,5 @@
 {
 	"accountInfo": {
-		"address": "Your address",
 		"backUp": "Backup phrase",
 		"cancel": "Cancel",
 		"copied": "Copied!",
@@ -197,7 +196,8 @@
 		"pairing": "Device Pairing",
 		"password": "Change password",
 		"permissionsControl": "Permissions control",
-		"settings": "Settings"
+		"settings": "Settings",
+		"toolitpContent": "Protect yourself from Clicker Trojans threats"
 	},
 	"showScriptComponent": {
 		"copied": "Copied!",
@@ -222,7 +222,7 @@
 		"matcherConfirmed": "Sign a request to the matcher!",
 		"matcherRejected": "Request has not been signed",
 		"nextTransaction": "Next",
-		"ok": "Okay",
+		"ok": "Close",
 		"pendingList": "Pending list",
 		"reject": "Reject",
 		"rejected": "Your transaction is rejected!",
@@ -269,6 +269,7 @@
 	},
 	"transactions": {
 		"allowAccess": "Allow access",
+		"allowAccessTitle": "Allow access",
 		"amountPerTransaction": "Amount per transaction",
 		"assetId": "Asset ID",
 		"assetScriptTransaction": "Set Asset Script transaction",

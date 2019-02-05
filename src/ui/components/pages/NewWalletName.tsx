@@ -42,6 +42,7 @@ class NewWalletNameComponent extends React.Component {
                            onChange={this.onChange}
                            value={this.props.account.name || ''}
                            maxLength='32'
+                           autoFocus={true}
                            error={this.state.error}
                            onBlur={this.onBlur}/>
                     <Error show={this.state.error} errors={this.state.errors}/>
@@ -62,7 +63,7 @@ class NewWalletNameComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
 
     _onChange(e) {

@@ -5,7 +5,7 @@ export const txType = 'cancelOrder';
 
 
 export function getAssetsId(tx): Array<string> {
-    return [];
+    return ['WAVES'];
 }
 
 export function getFee(tx) {

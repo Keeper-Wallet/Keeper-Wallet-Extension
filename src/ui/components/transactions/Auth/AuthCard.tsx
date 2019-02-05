@@ -8,7 +8,7 @@ import {I18N_NAME_SPACE} from '../../../appConfig';
 const Icon = (props) => (
     <div className={props.small ? styles.authTxIconSmall : styles.authTxIcon}>
         {
-            props.icon ?
+            props.canUseIcon ?
                 <img className={props.small ? styles.authTxIconSmall : styles.authTxIcon} src={props.icon}/> :
                 <div className={cn(
                     'signin-icon', {
@@ -24,12 +24,31 @@ const Icon = (props) => (
 @translate(I18N_NAME_SPACE)
 export class AuthCard extends React.PureComponent<IAuth> {
 
+    readonly state = { canUseIcon: false, icon: null };
+
+    componentDidMount(): void {
+        const { message } = this.props;
+        const { data } = message;
+        const tx = data.data;
+        let icon;
+
+        try {
+            icon = new URL(tx.icon, data.referrer).href;
+        } catch (e) {
+            icon = null;
+        }
+
+        const img = document.createElement('image');
+
+        img.onload = () => this.setState({ icon, canUseIcon: true });
+    }
+
     render() {
+        const { canUseIcon, icon } = this.state;
         const {message, collapsed} = this.props;
         const {data, origin} = message;
         const tx = {type: data.type, ...data.data};
-        const {referrer} = data;
-        const {icon, name} = tx;
+        const { name } = tx;
         const className = cn(
             styles.authTransactionCard,
             this.props.className,
@@ -38,21 +57,13 @@ export class AuthCard extends React.PureComponent<IAuth> {
             },
         );
 
-        let myIcon;
-
-        try {
-            myIcon = new URL(icon, referrer);
-        } catch (e) {
-            myIcon = null;
-        }
-
         return <div className={className}>
             <div className={styles.cardHeader}>
                 {collapsed ?
                     <React.Fragment>
                         <div className={styles.smallCardContent}>
                             <div className={styles.originAuthTxIconSmall}>
-                                <Icon icon={myIcon} small={true}/>
+                                <Icon icon={icon} canUseIcon={canUseIcon} small={true}/>
                             </div>
                             <div>
                                 <div className="basic500 body3 margin-min ellipsis">
@@ -67,7 +78,10 @@ export class AuthCard extends React.PureComponent<IAuth> {
                     </React.Fragment> :
 
                     <div className={styles.originAuthTxIcon}>
-                        <Icon icon={myIcon}/>
+                        <Icon icon={icon} canUseIcon={canUseIcon}/>
+                        <div>
+                            <div className="body1 font600 margin-min">{name}</div>
+                        </div>
                     </div>
                 }
             </div>
@@ -76,7 +90,6 @@ export class AuthCard extends React.PureComponent<IAuth> {
                     null :
 
                     <div className={styles.cardContent}>
-                        { name ? <div className={styles.originAuthOriginAddress}>{name}</div> : null }
                         <div className={styles.originAuthOriginAddress}>{origin}</div>
                         <div className={styles.originAuthOriginDescription}>
                             <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>

@@ -72,6 +72,13 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
         const amount = getMoney(getAmount(tx), assets);
 
         return <div>
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.assetId'>Asset ID</Trans>
+                </div>
+                <div className={styles.txValue}>{amount.asset.id}</div>
+            </div>
+            
             { tx.attachment ? <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>

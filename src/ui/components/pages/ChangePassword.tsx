@@ -46,7 +46,7 @@ class ChangePasswordComponent extends React.PureComponent {
 
 
     componentDidMount() {
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
 
     render() {
@@ -64,6 +64,7 @@ class ChangePasswordComponent extends React.PureComponent {
                                value={this.state.oldValue}
                                className="margin1"
                                type="password"
+                               autoFocus={true}
                                onChange={this.onChangeOld}
                                onBlur={this.onOldBlur}
                                error={!!(this.state.oldError || this.state.passwordError)}

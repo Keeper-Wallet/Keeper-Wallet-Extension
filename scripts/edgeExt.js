@@ -42,34 +42,38 @@ const ICONS = [
 if (fs.existsSync(`${DIST_PATH}/_locales/index.json`)) {
     execSync(`rm ${DIST_PATH}/_locales/index.json`);
 }
+try {
+    execSync(`${distUtil} -s ${NAME} -d ${ROOT_PATH} -l debug -p edgeextension -f edgeextension -m ${DIST_PATH}/manifest.json`);
 
-execSync(`${distUtil} -s ${NAME} -d ${ROOT_PATH} -l debug -p edgeextension -f edgeextension -m ${DIST_PATH}/manifest.json`);
+    const packDir = path.resolve(path.join(ROOT_PATH, NAME, '/edgeextension/manifest'));
 
-const packDir = path.resolve(path.join(ROOT_PATH, NAME, '/edgeextension/manifest'));
+    const manifestXML = fs.readFileSync(`${packDir}/appxmanifest.xml`);
+    const manifestReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestXML.toString());
+    fs.writeFileSync(`${packDir}/appxmanifest.xml`, manifestReady);
 
-const manifestXML = fs.readFileSync(`${packDir}/appxmanifest.xml`);
-const manifestReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestXML.toString());
-fs.writeFileSync(`${packDir}/appxmanifest.xml`, manifestReady);
-
-const manifestJson =  fs.readFileSync(`${packDir}/Extension/manifest.json`);
-const manifestJsonReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestJson.toString());
+    const manifestJson = fs.readFileSync(`${packDir}/Extension/manifest.json`);
+    const manifestJsonReady = Object.entries(REPLACE_PATTERN).reduce((acc, [key, replacer]) => replaceAll(acc, key, replacer), manifestJson.toString());
 
 
-fs.writeFileSync(`${packDir}/Extension/manifest.json`, manifestJsonReady);
+    fs.writeFileSync(`${packDir}/Extension/manifest.json`, manifestJsonReady);
 
-ICONS.forEach(({ name, size }) => {
-    const from = `${packDir}/Extension/images/icon_${size}.png`;
-    const to = `${packDir}/Assets/${name}`;
-    fs.copyFileSync(from, to);
-});
+    ICONS.forEach(({name, size}) => {
+        const from = `${packDir}/Extension/images/icon_${size}.png`;
+        const to = `${packDir}/Assets/${name}`;
+        fs.copyFileSync(from, to);
+    });
 
-execSync(`${distUtil} -s ${NAME} -d ${ROOT_PATH} -l debug -p edgeextension package ${packDir}`);
+    execSync(`${distUtil} -s ${NAME} -d ${ROOT_PATH} -l debug -p edgeextension package ${packDir}`);
 
-const appXpath = path.resolve(path.join(ROOT_PATH, NAME, '/edgeextension/package'));
+    const appXpath = path.resolve(path.join(ROOT_PATH, NAME, '/edgeextension/package'));
 
-fs.copyFileSync(path.join(appXpath, 'edgeExtension.appx'), path.join(ROOT_PATH, 'edgeExtension.appx'));
+    fs.copyFileSync(path.join(appXpath, 'edgeExtension.appx'), path.join(ROOT_PATH, 'edgeExtension.appx'));
 
-execSync(`rm -rf ${path.join(ROOT_PATH, NAME)}`);
+    execSync(`rm -rf ${path.join(ROOT_PATH, NAME)}`);
+} catch (e) {
+    console.error('No Edge Package build');
+}
+
 
 function replaceAll(str, search, replacement) {
     try {

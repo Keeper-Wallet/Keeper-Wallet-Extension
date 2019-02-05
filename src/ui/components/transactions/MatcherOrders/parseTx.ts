@@ -4,7 +4,7 @@ export const messageType = 'matcher_orders';
 export const txType = 'request';
 
 export function getAssetsId(tx = null): Array<string> {
-    return [];
+    return ['WAVES'];
 }
 
 export function getFee(tx = null) {

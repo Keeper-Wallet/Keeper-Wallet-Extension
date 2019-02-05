@@ -20,10 +20,7 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
             },
         );
         
-        const { message, assets } = this.props;
-        const { data = {} } = message;
-        const tx = { type: data.type, ...data.data };
-        const amount = getMoney(getAmount(tx), assets);
+        const { message } = this.props;
         
         return <div className={className}>
 
