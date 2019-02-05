@@ -269,6 +269,7 @@
 	},
 	"transactions": {
 		"allowAccess": "Allow access",
+		"allowAccessTitle": "Allow access",
 		"amountPerTransaction": "Amount per transaction",
 		"assetId": "Asset ID",
 		"assetScriptTransaction": "Set Asset Script transaction",
