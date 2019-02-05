@@ -38,9 +38,9 @@ export class AuthCard extends React.PureComponent<IAuth> {
             icon = null;
         }
 
-        const img = document.createElement('image');
-
+        const img = document.createElement('img');
         img.onload = () => this.setState({ icon, canUseIcon: true });
+        img.src = icon;
     }
 
     render() {

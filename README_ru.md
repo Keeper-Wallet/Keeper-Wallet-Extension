@@ -880,11 +880,9 @@ MoneyLike может иметь вид:
 Пример:
 ```
     WavesKeeper.signCancelOrder({
-        {
-        	type: 1003,
-        	data: {
-        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
-        	}
+        type: 1003,
+        data: {
+            id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
         }
     });
 ```
@@ -907,11 +905,9 @@ MoneyLike может иметь вид:
 Пример:
 ```
     WavesKeeper.signAndPublishCancelOrder({
-        {
-        	type: 1003,
-        	data: {
-        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
-        	}
+        type: 1003,
+        data: {
+        	id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
         }
     }).then(() => {
         console.log('Ура! Я отменил ордер');
@@ -950,11 +946,9 @@ MoneyLike может иметь вид:
 Пример: 
 ```
     WavesKeeper.signRequest({
-        {
-            type: 1001,
-            data: {
-                timestamp: 234234242423423
-            }
+        type: 1001,
+        data: {
+            timestamp: 234234242423423
         }
     });
 ```
@@ -975,11 +969,9 @@ MoneyLike может иметь вид:
 Пример: 
 ```
     WavesKeeper.signRequest({
-        {
-            type: 1004,
-            data: {
-                timestamp: 234234242423423
-            }
+        type: 1004,
+        data: {
+            timestamp: 234234242423423
         }
     });
 ```
