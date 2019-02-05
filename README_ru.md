@@ -371,8 +371,8 @@
 > MoneyLike - цена
 
 MoneyLike может иметь вид:  
-* ``{ tokens: 1, assetid: "WAVES" }``
-* ``{ coins: 100000000, assetid: "WAVES" }``; 
+* ``{ tokens: 1, assetId: "WAVES" }``
+* ``{ coins: 100000000, assetId: "WAVES" }``; 
   
 В обоих записях указана одинаковая цена 1 WAVES. Можно свободно перевести `coins` в `tokens` и  обратно,
 зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`  
