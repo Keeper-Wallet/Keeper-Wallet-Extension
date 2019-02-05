@@ -14,9 +14,18 @@
     margin-bottom: 4px;
     text-align: center;
 
+  .smallCardContent
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+
 .matcherCard_collapsed
   .origin
     display: none;
+
+.matcherTxIconSmall
+  @extends .txIcon
 
 .matcherTxIcon
   @extends .txIconBig

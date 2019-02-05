@@ -53,7 +53,6 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
                     </div>
             }
         </div>
-        
     }
 }
 
