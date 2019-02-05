@@ -28,7 +28,7 @@ class ImportSeedComponent extends React.Component {
     }
 
     componentDidMount(){
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
     
     render () {
@@ -48,6 +48,7 @@ class ImportSeedComponent extends React.Component {
 
                 <Input error={this.state.error && this.state.showError}
                     ref={this.getRef}
+                    autoFocus={true}
                     onChange={this.onChange}
                     onBlur={this.inputBlurHandler}
                     onFocus={this.inputFocusHandler}
