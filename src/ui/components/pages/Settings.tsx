@@ -110,7 +110,7 @@ class SettingsComponent extends React.Component {
                 <div className={styles.buttonsWrapper}>
                     <div>
                         <div className={styles.deleteAccounts} onClick={this.deleteHandler}>
-                            <i className={styles.icon}>?</i>
+                            <i className={styles.icon}></i>
                             <span><Trans i18nKey='settings.deleteAccounts'>Delete accounts</Trans></span>
                         </div>
                     </div>
