@@ -62,7 +62,10 @@ export class FinalTransaction extends React.PureComponent {
         }
 
         return <div className={styles.txFinal}>
+
             <div className={className}></div>
+
+            <div className={styles.txFinalContentWrapper}>
 
             <div className={styles.finalTxContent}>
                 <div className="margin-main-top center margin-main-big">
@@ -102,6 +105,9 @@ export class FinalTransaction extends React.PureComponent {
                 </div> : null}
             {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
                 <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
-        </div>;
+
+
+            </div>
+                </div>;
     }
 }
