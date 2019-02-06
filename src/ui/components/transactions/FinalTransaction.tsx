@@ -102,7 +102,6 @@ export class FinalTransaction extends React.PureComponent {
 
                     </div>
 
-
                     {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
                         <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
                 </div>
