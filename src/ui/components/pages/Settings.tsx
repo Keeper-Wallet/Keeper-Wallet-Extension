@@ -22,7 +22,7 @@ class SettingsComponent extends React.Component {
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
     toggleAutoLockHandler = () => {
-        this.props.setUiState({ autoClickProtection: this.props.autoClickProtection });
+        this.props.setUiState({ autoClickProtection: !this.props.autoClickProtection });
     };
 
     render() {
