@@ -63,8 +63,12 @@
 :global .set-asset-script-transaction-icon
   background: url(../assets/img/transactions/t-setassetscript-48.svg) center no-repeat;
 
-:global .authOrigin-transaction-icon
+:global .authOrigin-transaction-icon,
+:global .authOrigin-transaction-icon-small
   background: url(../assets/img/transactions/t-access-80.svg) center no-repeat;
+
+:global .authOrigin-transaction-icon-small
+  background-size: cover;
 
 :global .transfer-transaction-icon
   background: url(../assets/img/transactions/t-send-48.svg) center no-repeat;
@@ -108,9 +112,15 @@
 :global .set-script-transaction-icon
   background: url(../assets/img/transactions/t-setscript-48.svg) center no-repeat;
 
+:global .transactionPackage-transaction-icon
+  background: url(../assets/img/transactions/t-grouptrans-48) center no-repeat;
+
 :global .coinomat_confirm-transaction-icon,
+:global .coinomat_confirm-transaction-icon-small,
 :global .matcher_orders-transaction-icon,
+:global .matcher_orders-transaction-icon-small,
 :global .auth-transaction-icon
+:global .auth-transaction-icon-small
   background: url(../assets/img/userimg-browsershare-80-submit-300.svg) center no-repeat;
   background-size: cover;
 

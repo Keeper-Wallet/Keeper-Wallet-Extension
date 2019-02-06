@@ -15,8 +15,12 @@ export const updateActiveMessageReducer = store => next => action => {
     if (action.type === ACTION.UPDATE_MESSAGES) {
         const { unapprovedMessages, messages } = action.payload;
         
-        if (!activeMessage) {
+        if (!activeMessage && unapprovedMessages.length === 1) {
             store.dispatch(updateActiveMessage(unapprovedMessages[0]));
+            return next(action);
+        }
+        
+        if (!activeMessage && unapprovedMessages.length) {
             return next(action);
         }
         
@@ -25,13 +29,7 @@ export const updateActiveMessageReducer = store => next => action => {
         if (activeMessageUpdated) {
             const { status } = activeMessageUpdated;
             store.dispatch(updateActiveMessage(activeMessageUpdated));
-    
-            // UNAPPROVED
-            // SIGNED
-            // PUBLISHED
-            // FAILED
-            // REJECTED
-            
+
             switch (status) {
                 case MSG_STATUSES.REJECTED:
                     store.dispatch(rejectOk(activeMessageUpdated.id));
@@ -43,7 +41,6 @@ export const updateActiveMessageReducer = store => next => action => {
                     store.dispatch(approvePending(false));
                     break;
                 case MSG_STATUSES.FAILED:
-                    debugger;
                     store.dispatch(approvePending(false));
                     store.dispatch(approveError({ error: activeMessageUpdated.err.message, message: activeMessageUpdated }));
                     break;
@@ -53,8 +50,9 @@ export const updateActiveMessageReducer = store => next => action => {
         return next(action);
     }
     
-    if (action.type === ACTION.APPROVE_REJECT_CLEAR && !action.payload) {
-        store.dispatch(updateActiveMessage(messages[0]));
+    if (action.type === ACTION.APPROVE_REJECT_CLEAR) {
+        const message = messages.find(({ id }) => id !== activeMessage.id);
+        store.dispatch(updateActiveMessage(action.payload ? null : message));
     }
     
     return next(action);

@@ -23,10 +23,13 @@ describe('AssetInfoController', () => {
 
     });
 
-    it('Should return undefined on undefined asset id', async () => {
-        const info = await controller.assetInfo('WAVES1');
-        //console.log(info)
-        expect(info).to.be.undefined
+    it('Should throw on wrong asset id', async () => {
+        try {
+            const info = await controller.assetInfo('WAVES1');
+            assert(false, 'Case didn\'t fail')
+        }catch (e) {
+            expect(e.message).to.eql('Could not find info for asset with id: WAVES1. Failed to find issue transaction by ID')
+        }
     });
 });
 

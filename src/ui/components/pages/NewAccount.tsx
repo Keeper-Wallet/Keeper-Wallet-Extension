@@ -37,13 +37,14 @@ class NewAccountComponent extends React.PureComponent {
     onChangeSecond = e => this._onChangeInputs(this.state.firstValue, e.target.value);
     onSubmit = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (!this.state.passwordError && this.state.firstValue) {
             this.props.createNew(this.state.firstValue);
         }
     };
     
     componentDidMount() {
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
     
     render() {
@@ -64,6 +65,7 @@ class NewAccountComponent extends React.PureComponent {
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
                                error={!!this.state.firstError}
+                               autoFocus={true}
                                autoComplete="off"/>
                         
                         <Error show={this.state.firstError}>

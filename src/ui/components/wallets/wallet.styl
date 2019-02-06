@@ -161,11 +161,12 @@
 // custom wallet design in transactions
 .txWallet
   border-radius: 0;
+  width: calc(100% + 28px);
   flex-wrap: nowrap;
   box-shadow: none;
-  height: 48px;
+  height: 58px;
+  margin: -14px -14px 0 -14px;
   cursor: default;
-  margin: 0;
   border-bottom: 1px solid $basic100;
 
   .avatar
@@ -192,7 +193,9 @@
       border-radius: 0;
 
       &:hover
-        background-color: transparent !important; // todo @uIsk / remove !important
+        background-color: transparent !important;
+
+// todo @uIsk / remove !important
 
 .bigWalet
   &.txWallet

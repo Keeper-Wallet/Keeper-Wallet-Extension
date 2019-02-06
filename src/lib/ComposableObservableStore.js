@@ -12,7 +12,7 @@ class ComposableObservableStore extends ObservableStore {
    * @param {Object} [config] - Map of internal state keys to child stores
    */
   constructor (initState, config) {
-    super(initState)
+    super(initState);
     this.updateStructure(config)
   }
 
@@ -22,12 +22,12 @@ class ComposableObservableStore extends ObservableStore {
    * @param {Object} [config] - Map of internal state keys to child stores
    */
   updateStructure (config) {
-    this.config = config
-    this.removeAllListeners()
+    this.config = config;
+    this.removeAllListeners();
     for (const key in config) {
       // set initial substore state
-      const state = config[key].getState()
-      this.updateState({ [key]: state })
+      const state = config[key].getState();
+      this.updateState({ [key]: state });
 
       // subscribe to substore update
       config[key].subscribe((state) => {
@@ -43,7 +43,7 @@ class ComposableObservableStore extends ObservableStore {
    * @returns {Object} - Object containing merged child store state
    */
   getFlatState () {
-    let flatState = {}
+    let flatState = {};
     for (const key in this.config) {
       flatState = { ...flatState, ...this.config[key].getState() }
     }

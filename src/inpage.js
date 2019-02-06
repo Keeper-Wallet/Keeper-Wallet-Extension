@@ -105,9 +105,9 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
             inpageApi.auth({
                 name: apiData.n,
                 data: apiData.d,
-                icon: apiData.i ? new URL(apiData.i, apiData.r).href : '',
-                referrer: apiData.r,
-                successPath: new URL(apiData.s || '', apiData.r).href,
+                icon: apiData.i || '',
+                referrer: apiData.r || `${location.origin}`,
+                successPath: apiData.s || '/',
             });
             break;
         case 'send':

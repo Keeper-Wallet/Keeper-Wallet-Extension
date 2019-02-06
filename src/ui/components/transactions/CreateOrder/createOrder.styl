@@ -1,0 +1,17 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+
+.createOrderTransactionCard
+  @extends .transaction-card
+
+.createOrderCard_collapsed
+  .origin
+    display: none;
+
+.createOrderTxIcon
+  @extends .txIcon
+
+.createOrderTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;

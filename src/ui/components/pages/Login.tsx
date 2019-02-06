@@ -25,7 +25,7 @@ class LoginComponent extends React.Component {
     forgotHandler = (e) => this.props.setTab(PAGES.FORGOT);
 
     componentDidMount() {
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
 
     render() {
@@ -43,6 +43,7 @@ class LoginComponent extends React.Component {
                            ref={this.getRef}
                            onChange={this.onChange}
                            error={this.state.passwordError}
+                           autoFocus={true}
                            autoComplete="off"
                     />
                     <Error show={this.state.passwordError}>

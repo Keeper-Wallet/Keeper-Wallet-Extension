@@ -57,6 +57,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
                            onBlur={this.blurHandler}
                            error={this.state.error}
                            value={this.state.newName} maxLength='26'
+                           autoFocus={true}
                     />
                     <Error show={this.state.error} errors={this.state.errors}/>
                 </div>
@@ -69,7 +70,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
     }
     
     componentDidMount() {
-        this.inputEl.focus();
+        //this.inputEl.focus();
     }
     
     onBlur() {

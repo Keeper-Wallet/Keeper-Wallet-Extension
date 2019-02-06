@@ -1,5 +1,5 @@
 import * as styles from './script.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import cn from 'classnames';
@@ -11,7 +11,7 @@ import { Modal } from '..';
 @translate(I18N_NAME_SPACE)
 export class ShowScript extends React.PureComponent {
     
-    readonly props: { script: string, optional?: boolean, showNotify?: boolean, className?: string };
+    readonly props: { script: string, optional?: boolean, showNotify?: boolean, className?: string, hideScript?: boolean };
     readonly state = { showAllScript: false, showCopied: false, showResizeBtn: false };
     protected scriptEl: HTMLDivElement;
     protected _t;
@@ -21,9 +21,9 @@ export class ShowScript extends React.PureComponent {
     getScriptRef = (ref) => this.scriptEl = ref;
     
     componentDidMount() {
-        const { script, optional } = this.props;
+        const { script, optional, hideScript } = this.props;
         
-        if (optional && !script) {
+        if (hideScript || optional && !script) {
             return null;
         }
     
@@ -43,8 +43,8 @@ export class ShowScript extends React.PureComponent {
             return null;
         }
         
-        return <div className={`plate plate-with-controls break-all ${showAllClass}`}>
-            <div ref={this.getScriptRef} className={`${styles.txValue}`}>{script}</div>
+        return <div className={`plate plate-with-controls plate-with-controls-short break-all ${showAllClass}`}>
+            <pre ref={this.getScriptRef} className={`${styles.codeScript} body3`}>{script}</pre>
             <div className="buttons-wrapper">
                 { script ? <Copy text={script} onCopy={this.onCopy}>
                     <Button>

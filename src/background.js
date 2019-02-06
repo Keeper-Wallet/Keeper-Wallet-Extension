@@ -6,6 +6,7 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
+import {ERRORS} from './lib/KeeperError';
 import {createStreamSink} from './lib/createStreamSink';
 import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
@@ -20,15 +21,16 @@ import {
     PermissionsController,
     UiStateController,
     AssetInfoController,
-    ExternalDeviceController
+    TxInfoController,
+    ExternalDeviceController,
+    RemoteConfigController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
 import {WindowManager} from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
+import { WAVESKEEPER_DEBUG } from  './constants';
 
-
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 const IDLE_INTERVAL = 60;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 
@@ -80,6 +82,7 @@ async function setupBackgroundService() {
 
     // connect to other contexts
     extension.runtime.onConnect.addListener(connectRemote);
+
     if (!isEdge) {
         extension.runtime.onConnectExternal.addListener(connectExternal)
     }
@@ -89,7 +92,7 @@ async function setupBackgroundService() {
         extension.browserAction.setBadgeText({text});
         extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
     });
-
+    backgroundService.messageController.updateBadge();
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
         extension.tabs.create({url});
@@ -109,17 +112,18 @@ async function setupBackgroundService() {
 
     // Idle management
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
+
     if (!isEdge) {
         extension.idle.onStateChanged.addListener(state => {
             if (['active', 'idle'].indexOf(state) > -1) {
-                backgroundService.walletController.lock()
+                backgroundService.walletController.lock();
             }
         });
     } else {
         setInterval(() => {
             extension.idle.queryState(IDLE_INTERVAL, (state) => {
                 if (["idle", "locked"].indexOf(state) > -1) {
-                    backgroundService.walletController.lock()
+                    backgroundService.walletController.lock();
                 }
             })
         }, 10000)
@@ -130,7 +134,7 @@ async function setupBackgroundService() {
     function connectRemote(remotePort) {
         const processName = remotePort.name;
         if (processName === 'contentscript') {
-            connectExternal(remotePort)
+            connectExternal(remotePort);
         } else {
             const portStream = new PortStream(remotePort);
             backgroundService.setupUiConnection(portStream, processName);
@@ -153,20 +157,27 @@ class BackgroundService extends EventEmitter {
         this.store = new ComposableObservableStore(initState);
 
         // Controllers
+        this.remoteConfigController = new RemoteConfigController({
+            initState: initState.RemoteConfigController,
+        });
 
         // Network. Works with blockchain
-        this.networkController = new NetworkController({initState: initState.NetworkController});
+        this.networkController = new NetworkController({
+            initState: initState.NetworkController,
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
+            getNetworks: () => this.remoteConfigController.getNetworks(),
+        });
 
         // Preferences. Contains accounts, available accounts, selected language etc.
         this.preferencesController = new PreferencesController({
             initState: initState.PreferencesController,
             initLangCode: options.langCode,
-            getNetwork: this.networkController.getNetwork.bind(this.networkController)
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
         });
 
         // On network change select accounts of this network
         this.networkController.store.subscribe(() => this.preferencesController.syncCurrentNetworkAccounts());
-
 
         // Ui State. Provides storage for ui application
         this.uiStateController = new UiStateController({initState: initState.UiStateController});
@@ -183,13 +194,15 @@ class BackgroundService extends EventEmitter {
         // Balance. Polls balances for accounts
         this.balanceController = new BalanceController({
             initState: initState.BalanceController,
+            getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNode: this.networkController.getNode.bind(this.networkController),
-            getAccounts: this.walletController.getAccounts.bind(this.walletController)
+            getAccounts: this.walletController.getAccounts.bind(this.walletController),
         });
 
         this.permissionsController = new PermissionsController({
             initState: initState.PermissionsController,
+            remoteConfig: this.remoteConfigController,
         });
 
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -197,6 +210,11 @@ class BackgroundService extends EventEmitter {
         // AssetInfo. Provides information about assets
         this.assetInfoController = new AssetInfoController({
             initState: initState.AssetInfoController,
+            getNetwork: this.networkController.getNetwork.bind(this.networkController),
+            getNode: this.networkController.getNode.bind(this.networkController)
+        });
+
+        this.txinfoController = new TxInfoController({
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNode: this.networkController.getNode.bind(this.networkController)
         });
@@ -213,7 +231,10 @@ class BackgroundService extends EventEmitter {
             broadcast: this.networkController.broadcast.bind(this.networkController),
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
-            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController)
+            txInfo: this.txinfoController.txInfo.bind(this.txinfoController),
+            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController),
+            getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
+            getPackConfig: () => this.remoteConfigController.getPackConfig(),
         });
 
 
@@ -226,7 +247,8 @@ class BackgroundService extends EventEmitter {
             BalanceController: this.balanceController.store,
             PermissionsController: this.permissionsController.store,
             UiStateController: this.uiStateController.store,
-            AssetInfoController: this.assetInfoController.store
+            AssetInfoController: this.assetInfoController.store,
+            RemoteConfigController: this.remoteConfigController.store,
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -303,44 +325,58 @@ class BackgroundService extends EventEmitter {
         }
     }
 
-    getInpageApi(origin) {
-        const newMessage = async (data, type, from, broadcast) => {
-            const {selectedAccount} = this.getState();
+    async validatePermission(origin) {
+        const { selectedAccount } = this.getState();
 
-            if (!selectedAccount) throw new Error('WavesKeeper contains co accounts');
-            // Proper public key check
-            if (from && from !== selectedAccount.address) {
-                throw new Error('From address should match selected account address or be blank');
-            }
+        if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
 
-            //Check messages permissions
-            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+        const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
 
-            if (!canIUse && canIUse != null) {
-                throw new Error('Api rejected by user');
-            }
+        if (!canIUse && canIUse != null) {
+            throw ERRORS.API_DENIED();
+        }
 
-            if (canIUse === null) {
-                let messageId = this.permissionsController.getMessageIdAccess(origin);
+        if (canIUse === null) {
+            let messageId = this.permissionsController.getMessageIdAccess(origin);
 
-                if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
-                    this.permissionsController.setMessageIdAccess(origin, messageId);
+            if (messageId) {
+                try {
+                    const message = this.messageController.getMessageById(messageId);
+
+                    if (!message || message.account.address !== selectedAccount.address) {
+                        messageId = null;
+                    }
+                } catch (e) {
+                    messageId = null;
                 }
 
-                this.emit('Show notification');
-                
-                await this.messageController.getMessageResult(messageId)
-                    .then(() => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
-                    })
-                    .catch((e) => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
-                        return Promise.reject(e);
-                });
+            }
+            
+            if (!messageId) {
+                messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                this.permissionsController.setMessageIdAccess(origin, messageId);
             }
 
-            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast);
+            this.emit('Show notification');
+
+            await this.messageController.getMessageResult(messageId)
+                .then(() => {
+                    this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                })
+                .catch((e) => {
+                    this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                    return Promise.reject(e);
+                });
+        }
+    }
+
+    getInpageApi(origin) {
+        const newMessage = async (data, type, from, broadcast, title = '') => {
+            const { selectedAccount } = this.getState();
+
+            await this.validatePermission(origin);
+
+            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast, title);
             this.emit('Show notification');
             return await this.messageController.getMessageResult(messageId)
         };
@@ -361,6 +397,9 @@ class BackgroundService extends EventEmitter {
             signTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, false)
             },
+            signTransactionPackage: async (data, title, from) => {
+                return await newMessage(data, 'transactionPackage', from, false, title)
+            },
             signAndPublishTransaction: async (data, from) => {
                 return await newMessage(data, 'transaction', from, true)
             },
@@ -377,45 +416,27 @@ class BackgroundService extends EventEmitter {
         };
 
         api.publicState = async () => {
-            const canIUse = this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
-            const { selectedAccount } = this.getState();
+            const state = this.getState();
+            const { selectedAccount, initialized } = state;
 
-            if (!canIUse && canIUse != null) {
-                throw new Error('Api rejected by user');
+            if (!selectedAccount) {
+                throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
             }
 
-            if (canIUse === null) {
-                let messageId = this.permissionsController.getMessageIdAccess(origin);
-
-                if (!messageId) {
-                    messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
-                    this.permissionsController.setMessageIdAccess(origin, messageId);
-                }
-
-                this.emit('Show notification');
-
-                await this.messageController.getMessageResult(messageId)
-                    .then(() => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
-                    })
-                    .catch((e) => {
-                        this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
-                        return Promise.reject(e);
-                    });
-            }
+            await this.validatePermission(origin);
 
             return this._publicState(this.getState(), origin);
         };
 
-        if (origin === 'client.wavesplatform.com') {
-            api.signBytes = async (data, from) => {
-                if (!Array.isArray(data)) {
-                    throw new Error('Wrong data format');
-                }
-
-                return await newMessage(data, 'bytes', from, false);
-            }
-        }
+        // if (origin === 'client.wavesplatform.com') {
+        //     api.signBytes = async (data, from) => {
+        //         if (!Array.isArray(data)) {
+        //             throw new Error('Wrong data format');
+        //         }
+        //
+        //         return await newMessage(data, 'bytes', from, false);
+        //     }
+        // }
 
         return api
     }

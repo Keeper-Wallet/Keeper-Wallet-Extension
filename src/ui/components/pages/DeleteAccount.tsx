@@ -4,8 +4,9 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import {Button} from '../ui/buttons';
 import { deleteAccount } from '../../actions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate()
+@translate(I18N_NAME_SPACE)
 class DeleteAccountComponent extends React.Component {
     props;
     onClickHandler = () => this.props.deleteAccount(null);
@@ -16,7 +17,7 @@ class DeleteAccountComponent extends React.Component {
                 <Trans i18nKey='deleteUser.attention'>Attention!</Trans>
             </h2>
             <div className="margin4 body1">
-                <Trans i18nkey='deleteUser.warn'>
+                <Trans i18nKey='deleteUser.warn'>
                     Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEEDs.
                 </Trans>
             </div>

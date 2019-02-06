@@ -2,8 +2,8 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui/buttons';
-import { lock } from '../../actions';
+import { Button, BUTTON_TYPE, PowerButton } from '../ui/buttons';
+import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -21,9 +21,16 @@ class SettingsComponent extends React.Component {
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
+    toggleAutoLockHandler = () => {
+        this.props.setUiState({ autoClickProtection: !this.props.autoClickProtection });
+    };
 
     render() {
         return <div className={styles.content}>
+
+            <div className={`${styles.title1} title1`}>
+                <Trans i18nKey='settings.settings'>Settings</Trans>
+            </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.network}`}>
                 <Button type='transparent'
@@ -75,25 +82,55 @@ class SettingsComponent extends React.Component {
                 </Button>
             </div>
 
-            <div className={`${styles.settingsMenuItem} ${styles.logout} margin4`}>
-                <Button type='transparent'
-                        className={styles.settingsBtn}
-                        onClick={this.lock}>
-                    <div className='body1 left'>
-                        <Trans i18nKey='settings.logOut'>Log out</Trans>
+            <div className={`${styles.clickProtection} tag1` }>
+                <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
+                <div className={`${styles.powerBtnState} left`}>
+                    <div>
+                        <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
                     </div>
-                </Button>
+                    <div className="submit400">
+                        {
+                            this.props.autoClickProtection ?
+                                <Trans i18nKey='settings.autoClickDisable'>Disabled</Trans> :
+                                <Trans i18nKey='settings.autoClickEnable'>Enabled</Trans>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div className={styles.helper}>
+                        <i className={styles.helpIcon}>?</i>
+                        <div className={styles.tooltip}>
+                            <Trans i18nKey='settings.toolitpContent'>Protect yourself from Clicker Trojans threats</Trans>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <Button type={BUTTON_TYPE.WARNING} onClick={this.deleteHandler}>
-                <Trans i18nKey='settings.delete'>Delete all accounts</Trans>
-            </Button>
+            <div className={`${styles.settingsFooter} tag1`}>
+                <div className={styles.buttonsWrapper}>
+                    <div>
+                        <div className={styles.deleteAccounts} onClick={this.deleteHandler}>
+                            <i className={styles.icon}></i>
+                            <span><Trans i18nKey='settings.deleteAccounts'>Delete accounts</Trans></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className={styles.logout} onClick={this.lock}>
+                            <i className={styles.icon}></i>
+                            <span><Trans i18nKey='settings.logOut'>Log out</Trans></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     }
 }
 
-const mapStateToProps = function() {
-    return {};
+const mapStateToProps = function(store) {
+    return {
+        autoClickProtection: store.uiState && store.uiState.autoClickProtection
+    };
 };
 
-export const Settings = connect(mapStateToProps, { lock })(SettingsComponent);
+export const Settings = connect(mapStateToProps, { lock, setUiState })(SettingsComponent);

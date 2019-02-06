@@ -57,6 +57,7 @@ class AssetsComponent extends React.Component {
         
         const wallets = this.getFilteredAndSortedAccounts(activeAddress)
             .map((account) => (
+                account ?
                 <WalletItem
                     account={account}
                     active={false}
@@ -64,7 +65,7 @@ class AssetsComponent extends React.Component {
                     leaseBalance={this.state.lease[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}
-                    onActive={this.onSetActiveHandler}/>)
+                    onActive={this.onSetActiveHandler}/> : null)
             );
 
         const scrollClassName = cn('scroll-container', {
@@ -144,7 +145,7 @@ class AssetsComponent extends React.Component {
             return data;
         }).filter(Boolean);
         delete hash[activeAddress];
-        this._sorted = [...this._sorted, ...Object.values(hash)];
+        this._sorted = [...this._sorted, ...Object.values(hash).filter(Boolean)];
         
         if (this._currentActive === activeAddress) {
             return this._sorted;

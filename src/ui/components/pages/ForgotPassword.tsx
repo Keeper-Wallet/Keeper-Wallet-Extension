@@ -4,8 +4,9 @@ import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import { deleteAccount } from '../../actions';
+import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate()
+@translate(I18N_NAME_SPACE)
 class ForgotPasswordComponent extends React.Component {
     props;
     onClickHandler = () => this.props.deleteAccount(null);
@@ -17,7 +18,7 @@ class ForgotPasswordComponent extends React.Component {
                 <Trans i18nKey='forgotPassword.attention'>Attention!</Trans>
             </h2>
             <div className="body1">
-                <Trans i18nkey='forgotPassword.warn'>
+                <Trans i18nKey='forgotPassword.warn'>
                     If you forget your password, you must restore all your accounts from their SEEDs and set a new password.
                 </Trans>
             </div>

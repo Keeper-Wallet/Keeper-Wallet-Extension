@@ -12,6 +12,7 @@ const Errors = ({ errors, show }) => {
     }
     
     return errors.map(({ key, msg }) => {
+        key = key.replace(/\s/g, '');
         return <Trans i18nKey={key} key={key}>{msg}</Trans>
     });
 };

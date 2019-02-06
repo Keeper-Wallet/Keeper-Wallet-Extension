@@ -1,0 +1,49 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.coinomatTransactionCard
+  @extends .transaction-card
+
+  .cardHeader,
+  .cardContent
+    flex-direction: column;
+    margin: 0;
+
+  .cardContent
+    padding-left: 0;
+    margin-bottom: 4px;
+    text-align: center;
+
+.coinomatCard_collapsed
+  .origin
+    display: none;
+
+.matcherTxIcon
+  @extends .txIconBig
+  div
+    margin-bottom: 4px;
+
+.matcherTxIconSmall
+  @extends .txIcon
+
+.smallCardContent
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+
+.coinomatTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.coinomatOriginDescription
+  @extends .originDescription
+  color: $black;
+  font-size: 12px;
+
+.coinomatOriginAddress
+  @extends .originAddress
+  padding-top:7px;
+  margin-bottom: 4px;
+  color: $black;
+  font-size: 14px;

@@ -4,6 +4,7 @@ import cn from 'classnames';
 
 export const BUTTON_TYPE = {
     SUBMIT: 'submit',
+    GENERAL: 'submit',
     TRANSPARENT: 'transparent',
     ICON: 'icon',
     WARNING: 'warning',
@@ -17,6 +18,7 @@ export function Button({ className, type, withIcon, children, ...props }: IProps
         styles.button,
         {
             [styles.submit]: type === BUTTON_TYPE.SUBMIT,
+            [styles.submit]: type === BUTTON_TYPE.GENERAL,
             [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
             [styles.icon]: withIcon,
             [styles.warning]: type === BUTTON_TYPE.WARNING,
