@@ -85,8 +85,6 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    flex-direction: row-reverse;
 
     .icon
       left: 0;
@@ -95,14 +93,27 @@
       height: 32px;
       top: 50%;
       z-index: 1;
+      position: relative;
       border-radius: 50%;
       margin-bottom: 0;
       background-size: cover;
       background-color: $white;
 
-      &:not(:last-child) {
+      &:nth-child(2)
+        z-index: 2;
+      &:nth-child(3)
+        z-index: 3;
+      &:nth-child(4)
+        z-index: 4;
+      &:nth-child(5)
+        z-index: 5;
+      &:nth-child(6)
+        z-index: 6;
+      &:nth-child(7)
+        z-index: 7;
+
+      &:not(:first-child)
         margin-left: -15px;
-      }
 
   .button
     display: flex;

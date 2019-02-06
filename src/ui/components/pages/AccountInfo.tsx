@@ -59,9 +59,9 @@ class AccountInfoComponent extends React.Component {
                     </div>
                     <div className={`headline1 marginTop1 ${styles.balance}`}>
                         <Balance split={true} showAsset={true} balance={this.state.balance}/>
-                        <div className="basic500 body1">
+                        <div className="basic500 body3 margin-min-top">
                             { showLease ?
-                                <span>(<Trans i18nKey='wallet.lease'>Leased</Trans> {leaseBalance.toFormat()})</span>:
+                                <span>(<Trans i18nKey='wallet.lease'>Leased</Trans> {leaseBalance.toFormat()})</span> :
                                 null
                             }
                         </div>
