@@ -18,7 +18,7 @@ export class Welcome extends React.Component {
     render() {
         return <div className={`${styles.content}`}>
             <BigLogo className="margin-main-large" />
-            <Button type={BUTTON_TYPE.SUBMIT} onClick={this.clickHandler} className="margin-main-big">
+            <Button type={BUTTON_TYPE.GENERAL} onClick={this.clickHandler} className="margin-main-big">
                 <Trans i18nKey='welcome.getStarted'>Get Started</Trans>
             </Button>
             <div className="basic500 body3">

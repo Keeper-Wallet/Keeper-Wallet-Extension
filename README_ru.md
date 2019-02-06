@@ -188,7 +188,7 @@
     
     
 ```
-При удачном подтверждении кипер в происе вернет объект содержащий данные для проверки подписи:
+При удачном подтверждении кипер в Promise вернет объект содержащий данные для проверки подписи:
 
 + `host` - хост, запросивший подпись
 + `name` - название приложения запрашивающее подпись
@@ -371,8 +371,8 @@
 > MoneyLike - цена
 
 MoneyLike может иметь вид:  
-* ``{ tokens: 1, assetid: "WAVES" }``
-* ``{ coins: 100000000, assetid: "WAVES" }``; 
+* ``{ tokens: 1, assetId: "WAVES" }``
+* ``{ coins: 100000000, assetId: "WAVES" }``; 
   
 В обоих записях указана одинаковая цена 1 WAVES. Можно свободно перевести `coins` в `tokens` и  обратно,
 зная в каком ассете указана цена и получив его точность `tokens = coins / (10 ** precision)`  
@@ -880,11 +880,9 @@ MoneyLike может иметь вид:
 Пример:
 ```
     WavesKeeper.signCancelOrder({
-        {
-        	type: 1003,
-        	data: {
-        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
-        	}
+        type: 1003,
+        data: {
+            id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
         }
     });
 ```
@@ -907,11 +905,9 @@ MoneyLike может иметь вид:
 Пример:
 ```
     WavesKeeper.signAndPublishCancelOrder({
-        {
-        	type: 1003,
-        	data: {
-        		id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
-        	}
+        type: 1003,
+        data: {
+        	id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
         }
     }).then(() => {
         console.log('Ура! Я отменил ордер');
@@ -950,11 +946,9 @@ MoneyLike может иметь вид:
 Пример: 
 ```
     WavesKeeper.signRequest({
-        {
-            type: 1001,
-            data: {
-                timestamp: 234234242423423
-            }
+        type: 1001,
+        data: {
+            timestamp: 234234242423423
         }
     });
 ```
@@ -975,11 +969,9 @@ MoneyLike может иметь вид:
 Пример: 
 ```
     WavesKeeper.signRequest({
-        {
-            type: 1004,
-            data: {
-                timestamp: 234234242423423
-            }
+        type: 1004,
+        data: {
+            timestamp: 234234242423423
         }
     });
 ```
