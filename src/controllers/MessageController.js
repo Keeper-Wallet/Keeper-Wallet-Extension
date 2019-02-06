@@ -440,7 +440,7 @@ export class MessageController extends EventEmitter {
                 const msgs = message.data.length;
 
                 if (!msgs || msgs > max) {
-                    throw new Error(`Max transactions in pac is ${max}`);
+                    throw new Error(`Max transactions in pack is ${max}`);
                 }
 
                 const unavailableTx = message.data.filter(({ type }) => !allow_tx.includes(type));
@@ -461,6 +461,10 @@ export class MessageController extends EventEmitter {
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'transaction':
+                if (!result.data.type || result.data.type >= 1000) {
+                    throw ERRORS.REQUEST_ERROR(result.data);
+                }
+
                 result.data.data = this._prepareTx(result.data.data, message.account);
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 switch (result.data.type) {
