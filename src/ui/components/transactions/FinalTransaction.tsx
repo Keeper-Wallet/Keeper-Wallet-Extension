@@ -74,6 +74,13 @@ export class FinalTransaction extends React.PureComponent {
                                 <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                         </div>
                         <Card message={message} assets={assets} collapsed={false}/>
+
+                        {isSend && isApprove ?
+                            <div className="center margin-main-big-top">
+                                <a className="link black" href={txLink} target="_blank">
+                                    <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
+                                </a>
+                            </div> : null}
                     </div>
 
                     <div className={styles.txFinalButtonWrapper}>
@@ -95,12 +102,7 @@ export class FinalTransaction extends React.PureComponent {
 
                     </div>
 
-                    {isSend && isApprove ?
-                        <div className="center margin-main-big-top">
-                            <a className="link black" href={txLink} target="_blank">
-                                <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
-                            </a>
-                        </div> : null}
+
                     {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
                         <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
                 </div>
