@@ -461,7 +461,7 @@ export class MessageController extends EventEmitter {
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'transaction':
-                if (!result.data.type) {
+                if (!result.data.type || result.data.type >= 1000) {
                     throw ERRORS.REQUEST_ERROR(result.data);
                 }
 

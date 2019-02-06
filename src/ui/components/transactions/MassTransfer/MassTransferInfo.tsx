@@ -3,9 +3,8 @@ import { translate, Trans } from 'react-i18next';
 import * as styles from './massTransfer.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat, Button, BUTTON_TYPE } from '../../ui';
-import { getFee, getAssetsId, getAmount } from './parseTx';
+import { getFee, getAmount, getTransferAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
-import { Money } from '@waves/data-entities';
 
 const MIN_COUNT = 0;
 
@@ -15,7 +14,7 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
     
     const data = transfers.slice(0, count).map(
         ({ recipient, amount }) => {
-            const money = getMoney(amount, assets);
+            const money = getMoney(getTransferAmount(amount, totalAmount.asset.id), assets);
             return <div key={recipient} className={styles.txRow}>
                 <div className="body3 tx-title-black">{recipient}</div>
                 <div className='body3 submit400'>
