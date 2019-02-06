@@ -218,7 +218,7 @@
 		"changeAccount": "Do you want to change your account?",
 		"changeAccountInfo": "If you change account, we will cancel the current transaction. After selecting a new active account, repeat the operation.",
 		"coinomatConfirmed": "Sign a request to the coinomat!",
-		"confirmButton": "Confirm",
+		"confirmButton": "Approve",
 		"customConfirmed": "Confirm a request!",
 		"matcherConfirmed": "Sign a request to the matcher!",
 		"matcherRejected": "Request has not been signed",

@@ -244,7 +244,7 @@
 
 ОШИБКИ
 + ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос
-+ ``{message: "Api rejected by user", code: 12}`` - Сайт является не доверенным
++ ``{message: "Api rejected by user", code: 12}`` - cайт является не доверенным
 + ``{message: "Invalid data", data: "Причина", code: 9}`` - неверные/неполные данные запроса
 
 
@@ -844,7 +844,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -893,7 +893,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -958,7 +958,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -981,5 +981,5 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса

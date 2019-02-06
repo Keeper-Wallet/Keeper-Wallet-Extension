@@ -2,7 +2,6 @@ import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react'
 import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, ApproveBtn } from '../ui';
-import { OriginWarning } from './OriginWarning';
 
 export const TransactionBottom = ({ message, approve, reject, hideApprove, children, autoClickProtection }) => {
     
