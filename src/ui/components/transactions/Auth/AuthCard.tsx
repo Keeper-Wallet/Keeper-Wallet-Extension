@@ -28,12 +28,12 @@ export class AuthCard extends React.PureComponent<IAuth> {
 
     componentDidMount(): void {
         const { message } = this.props;
-        const { data } = message;
+        const { data, origin } = message;
         const tx = data.data;
         let icon;
 
         try {
-            icon = new URL(tx.icon, data.referrer).href;
+            icon = new URL(tx.icon, data.referrer || `https://${origin}`).href;
         } catch (e) {
             icon = null;
         }
