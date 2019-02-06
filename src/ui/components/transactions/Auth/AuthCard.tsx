@@ -66,7 +66,7 @@ export class AuthCard extends React.PureComponent<IAuth> {
                                 <Icon icon={icon} canUseIcon={canUseIcon} small={true}/>
                             </div>
                             <div>
-                                <div className="basic500 body3 margin-min ellipsis">
+                                <div className="basic500 body3 margin-min origin-ellipsis">
                                     {name || origin}
                                 </div>
                                 <h1 className="headline1">

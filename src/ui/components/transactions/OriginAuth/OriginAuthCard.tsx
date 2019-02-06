@@ -26,7 +26,7 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
                                 <TxIcon txType={messageType} small={true}/>
                             </div>
                             <div>
-                                <div className="basic500 body3 margin-min ellipsis">
+                                <div className="basic500 body3 margin-min origin-ellipsis">
                                     {origin}
                                 </div>
                                 <h1 className="headline1">
