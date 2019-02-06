@@ -1,4 +1,5 @@
-# Waves Keeper v1.0.8
+# Waves Keeper v1.0.8        
+[en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
 и проведения транзакций в блокчейн сети Waves.  
@@ -244,7 +245,7 @@
 
 ОШИБКИ
 + ``{message: "User denied message", code: 10}`` - пользователь отклонил запрос
-+ ``{message: "Api rejected by user", code: 12}`` - Сайт является не доверенным
++ ``{message: "Api rejected by user", code: 12}`` - cайт является не доверенным
 + ``{message: "Invalid data", data: "Причина", code: 9}`` - неверные/неполные данные запроса
 
 
@@ -844,7 +845,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -893,7 +894,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -958,7 +959,7 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса
 
 
@@ -981,5 +982,5 @@ MoneyLike может иметь вид:
 ОШИБКИ:
 
 + ``{ message: "User denied message", code: 10 }`` - пользователь отклонил запрос
-+ ``{ message: "Api rejected by user", code: 12 }`` - Сайт является не доверенным
++ ``{ message: "Api rejected by user", code: 12 }`` - cайт является не доверенным
 + ``{ message: "Invalid data", data: "Причина", code: 9 }`` - неверные/неполные данные запроса

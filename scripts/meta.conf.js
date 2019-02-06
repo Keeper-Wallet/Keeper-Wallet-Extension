@@ -89,10 +89,12 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
                     'permissions': [
                         "https://*/*",
                         "http://*/*",
+                        "storage",
                         "unlimitedStorage",
                         "clipboardWrite",
                         "clipboardRead",
                         "activeTab",
+                        "idle",
                         "tabs"
                     ],
                     'background.scripts': ['background.js']
