@@ -1,4 +1,5 @@
-**Waves Keeper v1.0.8**
+# Waves Keeper v1.0.8 
+en | [ru](https://github.com/wavesplatform/waveskeeper/blob/master/README_ru.md)
 
 Waves Keeper is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
 
