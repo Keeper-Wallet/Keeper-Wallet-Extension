@@ -124,7 +124,7 @@
 
 .helpIcon
   color: $white;
-  background: $black;
+  background: rgba(0, 0, 0, 0.8);
   border-radius: 50%;
   font-style: normal;
   width: 14px;
@@ -140,7 +140,7 @@
 
 .tooltip
   display: none;
-  background: $black;
+  background: rgba(0, 0, 0, 0.8);
   color: $white;
   border-radius: 2px;
   padding: 10px;
@@ -153,12 +153,12 @@
   &::after
     display: block;
     content: '';
-    width: 10px;
-    height: 10px;
     position: absolute;
-    background: $black;
     right: 5px;
-    transform: rotate(45deg);
-    bottom: -3px;
+    bottom: -5px;
     z-index: -1;
-
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid rgba(0, 0, 0, 0.8);
