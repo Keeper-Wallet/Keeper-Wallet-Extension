@@ -11,7 +11,7 @@
 + Add batch of txs
 + Extends remote config
 + Add autoClick disable setting
-+ Add ru documentation
++ Add ru/en documentation
 + Refactor errors
 + Opera build scripts update.
 
