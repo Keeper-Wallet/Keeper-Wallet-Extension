@@ -57,7 +57,7 @@ class ConfirmBackupComponent extends React.Component {
             {showClear ? (
                 <div className={`center tag1 ${styles.clearSeed}`}>
                     <Button type='transparent' onClick={this.onClear}>
-                        <span className="submit400"><Trans i18nKey='confirmBackup.clear'>Clear</Trans></span>
+                        <span className="submit400"><Trans i18nKey='confirmBackup.clear'>Clear</Trans> </span>
                         <Trans i18nKey='confirmBackup.selectAgain'> and tap again</Trans>
                     </Button>
                 </div>

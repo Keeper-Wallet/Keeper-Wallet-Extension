@@ -73,6 +73,7 @@ export class FinalTransaction extends React.PureComponent {
                             {isError ?
                                 <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
                         </div>
+
                         <Card message={message} assets={assets} collapsed={false}/>
 
                         {isSend && isApprove ?
@@ -83,27 +84,30 @@ export class FinalTransaction extends React.PureComponent {
                             </div> : null}
                     </div>
 
-                    <div className={styles.txFinalButtonWrapper}>
+                    <div className={styles.txFinalFooterWrapper}>
+                        <div className={styles.txFinalButtonWrapper}>
 
-                        {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
-                            <Trans i18nKey='sign.pendingList'>Pending list</Trans>
-                        </Button> : null}
+                            {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
+                                <Trans i18nKey='sign.pendingList'>Pending list</Trans>
+                            </Button> : null}
 
-                        {isShowNext && isShowList ? <div className={styles.buttonMargin}></div> : null}
+                            {isShowNext && isShowList ? <div className={styles.buttonMargin}></div> : null}
 
-                        {isShowNext ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
-                            <Trans i18nKey='sign.nextTransaction'>Next transaction</Trans>
-                        </Button> : null}
+                            {isShowNext ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
+                                <Trans i18nKey='sign.nextTransaction'>Next transaction</Trans>
+                            </Button> : null}
 
-                        {isShowClose ? <Button onClick={onClose} className={styles.closeBtn}>
-                            {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
-                            {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
-                        </Button> : null}
+                            {isShowClose ? <Button onClick={onClose} className={styles.closeBtn}>
+                                {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
+                                {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
+                            </Button> : null}
 
+                        </div>
+
+                        {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
+                            <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
                     </div>
 
-                    {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
-                        <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
                 </div>
             </div>;
     }

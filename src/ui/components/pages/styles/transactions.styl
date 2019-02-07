@@ -184,6 +184,12 @@
   position: relative;
   overflow: auto;
 
+  &FooterWrapper {
+    position: sticky;
+    z-index: 1000;
+    bottom: 0;
+  }
+
   .finalTxContent
     margin: 0 24px;
     min-height: 291px;
@@ -206,8 +212,6 @@
     display: flex;
     justify-content: space-between;
     padding: 8px 14px 0;
-    position: sticky;
-    bottom: 58px;
     width: 100%;
 
     button
@@ -219,8 +223,6 @@
   .finalTxWallet
     margin: 0;
     width: 100%;
-    position: sticky;
-    bottom: 0;
 
     .txWallet
       border-bottom:2px solid red;

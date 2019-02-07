@@ -1,4 +1,5 @@
-# Waves Keeper v1.0.8
+# Waves Keeper v1.0.8        
+[en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
 и проведения транзакций в блокчейн сети Waves.  

@@ -5,6 +5,15 @@ export const messageType = 'mass_transfer';
 export const txType = 'transaction';
 
 
+export function getTransferAmount(amount, assetId) {
+    if (typeof amount === 'object') {
+        amount.assetId = assetId;
+        return amount;
+    }
+    
+    return { coins: amount, assetId };
+}
+
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
     const amountAssetId = tx.totalAmount && tx.totalAmount.assetId ? tx.totalAmount.assetId : tx.assetId || 'WAVES';

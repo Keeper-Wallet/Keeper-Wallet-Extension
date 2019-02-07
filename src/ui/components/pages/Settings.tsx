@@ -83,14 +83,14 @@ class SettingsComponent extends React.Component {
             </div>
 
             <div className={`${styles.clickProtection} tag1` }>
-                <PowerButton onClick={this.toggleAutoLockHandler} enabled={!this.props.autoClickProtection}/>
+                <PowerButton onClick={this.toggleAutoLockHandler} enabled={this.props.autoClickProtection}/>
                 <div className={`${styles.powerBtnState} left`}>
                     <div>
                         <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
                     </div>
                     <div className="submit400">
                         {
-                            this.props.autoClickProtection ?
+                            !this.props.autoClickProtection ?
                                 <Trans i18nKey='settings.autoClickDisable'>Disabled</Trans> :
                                 <Trans i18nKey='settings.autoClickEnable'>Enabled</Trans>
                         }

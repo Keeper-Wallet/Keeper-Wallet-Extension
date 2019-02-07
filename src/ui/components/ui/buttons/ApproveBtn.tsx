@@ -40,7 +40,7 @@ export class ApproveBtn extends React.PureComponent {
     }
 
     _updateInterval(currentTime) {
-        if (this.props.autoClickProtection) {
+        if (!this.props.autoClickProtection) {
             return null;
         }
         const timerEnd = this.state.timerEnd || currentTime + CONFIG.MESSAGES_CONFIRM_TIMEOUT;
@@ -54,7 +54,7 @@ export class ApproveBtn extends React.PureComponent {
     static getDerivedStateFromProps(props, state) {
         const { timerEnd, currentTime } = state;
         const autoClickProtection = props.autoClickProtection;
-        const disabled = (!timerEnd || timerEnd > currentTime) && !autoClickProtection;
+        const disabled = (!timerEnd || timerEnd > currentTime) && autoClickProtection;
         const percentage = !timerEnd ? 0 : 100 - Math.floor((timerEnd - currentTime) / CONFIG.MESSAGES_CONFIRM_TIMEOUT * 100);
         return { ...props, disabled, timerEnd, percentage };
     }
