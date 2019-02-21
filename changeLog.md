@@ -1,5 +1,8 @@
 ## Waves Keeper
 
+#### version 1.0.9
++ Event on init page api
+
 
 #### version 1.0.8
 
