@@ -425,7 +425,8 @@ MoneyLike может иметь вид:
 
 + `amount` MoneyLike - количество,
 + `recipient` string - адрес получателя или алиас
-+ `attachment`[,140 bytes в base58] string - доп информация
++ `attachment`[,140 bytes] string - доп информация
++ `bytesAttachment`[,140 bytes] Array – доп информация в байтах
 + `fee` MoneyLike - комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс

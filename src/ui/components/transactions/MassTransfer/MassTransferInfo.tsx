@@ -2,7 +2,7 @@ import * as React from 'react';
 import { translate, Trans } from 'react-i18next';
 import * as styles from './massTransfer.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
-import { Balance, DateFormat, Button, BUTTON_TYPE } from '../../ui';
+import { Balance, DateFormat, Button, BUTTON_TYPE, Attachment } from '../../ui';
 import { getFee, getAmount, getTransferAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
@@ -77,12 +77,12 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
                 </div>
                 <div className={styles.txValue}>{amount.asset.id}</div>
             </div>
-            
-            { tx.attachment ? <div className={styles.txRow}>
+    
+            { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                 <div className="tx-title tag1 basic500">
-                    <Trans i18nKey='transactions.description'>Description</Trans>
+                    <Trans i18nKey='transactions.attachment'>Attachment</Trans>
                 </div>
-                <div className={styles.txValue}>{tx.attachment}</div>
+                <Attachment className={`${styles.txValue} plate fullwidth`} attachment={tx.attachment}/>
             </div> : null }
     
             <div className={styles.txRow}>

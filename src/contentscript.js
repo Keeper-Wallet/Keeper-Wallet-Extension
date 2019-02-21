@@ -33,9 +33,8 @@ function injectBundle() {
         const script2 = document.createElement('script');
         script2.src = extension.extension.getURL('inpage.js');
         container.insertBefore(script2, container.children[0]);
-        script.onload = () => {
-            script.parentElement.removeChild(script);
-        };
+
+        script.parentElement.removeChild(script);
 
         script2.onload = () => {
             script2.parentElement.removeChild(script2);

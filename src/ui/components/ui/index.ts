@@ -12,3 +12,4 @@ export * from './loader';
 export * from './Date/FormatDate';
 export * from './animations/Animate';
 export * from './showScript/ShowScript';
+export * from './attachment/Attachment';

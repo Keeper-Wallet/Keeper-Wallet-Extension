@@ -140,7 +140,7 @@ async function setupBackgroundService() {
             backgroundService.setupUiConnection(portStream, processName);
         }
     }
-                                                                                       F
+
     function connectExternal(remotePort) {
         const portStream = new PortStream(remotePort);
         const origin = url.parse(remotePort.sender.url).hostname;

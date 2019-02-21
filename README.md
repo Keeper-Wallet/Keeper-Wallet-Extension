@@ -486,7 +486,8 @@ In case of a success, we are issuing a new asset in the quantity of 1,000,000, a
 
 *   `amount` MoneyLike - amount,
 *   `recipient` string – recipient's address or alias
-*   `attachment`[,140 bytes в base58] string – additional info
+*   `attachment`[,140 bytes] string – additional info in text
+*   `bytesAttachment`[,140 bytes] Array – additional info in bytes
 *   `fee` MoneyLike - fee
 *   `*senderPublicKey` string – sender's public key in base58
 *   `*timestamp` number/string – time in ms
