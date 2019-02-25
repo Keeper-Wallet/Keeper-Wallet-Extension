@@ -128,6 +128,11 @@
 	},
 	"networkSettings": {
 		"cancel": "Cancel",
+<<<<<<< HEAD
+=======
+		"matcherError": "Incorrect matcher address",
+		"nodeUrlEmpty": "URL is required",
+>>>>>>> KEEPER-52-attach-uint8array
 		"saveAndApply": "Save and apply",
 		"title": "Network"
 	},
@@ -284,6 +289,7 @@
 		"assetScriptTransaction": "Set Asset Script transaction",
 		"assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
 		"assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
+		"attachment": "Attachment",
 		"burn": "Token Burn",
 		"cancelLease": "Cancel Lease",
 		"clearSponsored": "Disable Sponsorship",
