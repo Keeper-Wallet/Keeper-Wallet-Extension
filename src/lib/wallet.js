@@ -4,6 +4,23 @@ import create from 'parse-json-bignumber';
 const {stringify, parse} = create({BigNumber});
 
 export class Wallet {
+
+    /**
+     * user
+     * @type {
+     * {
+     *  address: string,
+     *  seed: string,
+     *  networkCode: string,
+     *  name: string,
+     *  publicKey: string,
+     *  type: string,
+     *  network: string
+     *  }
+     *}
+     */
+    user = null;
+
     constructor(user) {
         if (!user) throw new Error('user required');
         this.user = user
@@ -20,6 +37,10 @@ export class Wallet {
             params = this.user.seed;
         }
         return new Adapter(params)
+    }
+
+    isMyNetwork(network) {
+        return network === this.user.network;
     }
 
     getAccount() {

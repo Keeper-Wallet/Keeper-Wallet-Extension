@@ -10,7 +10,7 @@ async function setupInpageApi() {
         name: 'waves_keeper_page',
         target: 'waves_keeper_content',
     });
-    
+
     const eventEmitter = new EventEmitter();
     const emitterApi = {
         sendUpdate: async state => eventEmitter.emit('update', state)
@@ -25,9 +25,7 @@ async function setupInpageApi() {
             resolve(remoteWithPromises)
         })
     });
-    const _inited =  global.WavesKeeper._inited;
-    global.WavesKeeper = global.Waves = { ...inpageApi, onInit: cb => cb(inpageApi) };
-    _inited(inpageApi);
+    global.WavesKeeper = global.Waves = { ...inpageApi };
     setupClickInterceptor(inpageApi);
 }
 
@@ -40,7 +38,7 @@ function setupClickInterceptor(inpageApi){
                 e.stopPropagation();
             }
         } catch (e) {
-            
+
         }
     })
 }
@@ -50,7 +48,7 @@ function checkForPaymentApiLink(e) {
 
     const check = (node) => {
         const href = node.href;
-        
+
         if (!node.href) {
             return false;
         }

@@ -133,8 +133,25 @@ export class WalletController {
         return SG.Seed.encryptSeedPhrase(seed, this.password)
     }
 
-    updateNetworkCode(network, code) {
+    updateNetworkCode(network) {
+        const code = this.getNetworkCode(network);
+        const networkByte = code.charCodeAt(0);
+        SG.config.set({ networkByte });
+        const wallets = this.getWalletsByNetwork(network);
+        wallets.forEach(wallet => {
+            const seed = new SG.Seed(wallet.user.seed);
+            wallet.user.network = network;
+            wallet.user.networkCode = code;
+            wallet.user.address = seed.address;
+        });
 
+        if (wallets.length) {
+            this._saveWallets();
+        }
+    }
+
+    getWalletsByNetwork(network) {
+        return this.wallets.filter(wallet => wallet.isMyNetwork(network));
     }
 
     _migrateWalletsNetwork() {
@@ -142,6 +159,12 @@ export class WalletController {
             acc[net.code] = net.name;
             return acc;
         }, Object.create(null));
+
+        const wallets = this.wallets.map(wallet => wallet.serialize());
+
+        if (!wallets.find(item => !item.network)) {
+            return null;
+        }
 
         const walletsData = this.wallets.map(wallet => {
             const data = wallet.serialize();
@@ -152,7 +175,9 @@ export class WalletController {
             return data;
         });
 
-        this.store.updateState({vault: encrypt(walletsData, this.password)})
+
+        this.wallets = walletsData.map(user => new Wallet(user));
+        this._saveWallets();
     }
 
     /**
