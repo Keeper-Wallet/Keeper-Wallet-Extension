@@ -198,6 +198,7 @@ class BackgroundService extends EventEmitter {
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNode: this.networkController.getNode.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController),
+            getCode: this.networkController.getNetworkCode.bind(this.networkController),
         });
 
         this.permissionsController = new PermissionsController({

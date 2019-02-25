@@ -94,7 +94,6 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     render(): React.ReactNode {
         
         const networkClassName = cn(
-            styles.network,
             'basic500',
             {
                 [styles.disabledNet]: this.props.noChangeNetwork,
@@ -106,15 +105,16 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         const net = selectedNet ? networkHash[selectedNet.name] : null;
         
         return (
-            <div className={networkClassName}
-                 onClick={this.selectFromNetworksHandler}
-                 key={currentNetwork}>
-                
-                <Trans className={styles.networkBottom}
-                       i18nKey={key(currentNetwork)}>
-                    {currentNetwork}
-                </Trans>
-                
+            <div className={styles.network}>
+                <div className={networkClassName}
+                     onClick={this.selectFromNetworksHandler}
+                     key={currentNetwork}>
+                    
+                    <Trans className={styles.networkBottom}
+                           i18nKey={key(currentNetwork)}>
+                        {currentNetwork}
+                    </Trans>
+                </div>
                 <Networks isShow={showNetworks}
                           networks={this.props.networks}
                           selectedNet={this.props.currentNetwork}
@@ -128,10 +128,11 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                         networkCode={net && net.code}
                         onClose={() => this.setState({ net: null, showSettings: false })}
                         onSave={({ matcher, node, code, name }) => {
-                            this.props.customMatcher({ matcher, network: name });
-                            this.props.customNodes({ node, network: name });
+                            this.props.setCustomMatcher({ matcher, network: name });
+                            this.props.setCustomNode({ node, network: name });
                             this.props.setCustomCode({ code, network: name });
                             this.setNewNetwork(name);
+                            this.setState({ net: null, showSettings: false });
                         }}
                     />
                 </Modal>

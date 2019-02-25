@@ -127,6 +127,8 @@ export class WalletController {
         return SG.Seed.encryptSeedPhrase(seed, this.password)
     }
 
+    updateWaletsNetwork
+
     /**
      * Signs transaction
      * @param {string} address - wallet address

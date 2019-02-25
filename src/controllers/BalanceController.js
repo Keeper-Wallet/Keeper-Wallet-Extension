@@ -15,6 +15,7 @@ export class BalanceController {
         this.getAccounts = options.getAccounts;
         this.getNetwork = options.getNetwork;
         this.getNode = options.getNode;
+        this.getCode = options.getCode;
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
         this.poller = undefined;
         this.restartPolling();
@@ -36,7 +37,7 @@ export class BalanceController {
     }
 
     async updateBalances() {
-        const accounts = this.getAccounts().filter(account => account.networkCode === this.getNetworkConfig()[this.getNetwork()].code);
+        const accounts = this.getAccounts().filter(account => account.networkCode === this.getCode());
         if (!this.active || accounts.length < 1) return;
 
         const data = await Promise.all(

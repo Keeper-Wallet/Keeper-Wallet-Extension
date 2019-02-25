@@ -59,7 +59,7 @@ export async function getNetworkByte(url: string): Promise<string> {
 
 export async function getMatcherPublicKey(url: string): Promise<string> {
     const response = await getUrl(url);
-    const pk = await response.text();
+    const pk = await response.json();
     const publicKeyBytes = SG.libs.base58.decode(pk);
     if (publicKeyBytes.length === 32) {
         return pk;
@@ -93,7 +93,7 @@ async function getUrl(urlString: string, path = '', required = true): Promise<Re
         return Promise.reject();
     }
     
-    url.pathname = path;
+    url.pathname = path || url.pathname;
     
     return fetch(url.href);
 }

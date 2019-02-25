@@ -36,6 +36,7 @@
 		"saveBackup": "Save backup phrase"
 	},
 	"bottom": {
+		"custom": "custom",
 		"mainnet": "Mainnet",
 		"testnet": "Testnet"
 	},
@@ -125,11 +126,18 @@
 	"messageList": {
 		"pendingConfirm": "Pending confirmation"
 	},
+	"networkSettings": {
+		"cancel": "Cancel",
+		"saveAndApply": "Save and apply",
+		"title": "Network"
+	},
 	"networksSettings": {
 		"copied": "Copied!",
 		"matcher": "Matcher address",
 		"network": "Network",
 		"node": "Node address",
+		"node_code": "Network Prefix",
+		"node_code_hint": "You must specify 1 character",
 		"save": "Save",
 		"savedModal": "Saved!",
 		"setDefault": "Set Default",

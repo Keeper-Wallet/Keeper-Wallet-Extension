@@ -76,6 +76,7 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
         
         Promise.all([nodeValidator, matcherValidator])
             .then(() => this.saveData())
+            .catch(() => {})
     };
     
     private saveData() {
@@ -98,17 +99,23 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
     private validateNode() {
         const { node } = this.state;
     
-        getNetworkByte(node)
+        return getNetworkByte(node)
             .then(networkCode => this.setState({ nodeError: false, networkCode }))
-            .catch(() => this.setState({ nodeError: true }))
+            .catch(() => {
+                this.setState({ nodeError: true });
+                return Promise.reject();
+            })
     }
     
     private validateMatcher() {
         const { matcher } = this.state;
     
-        getMatcherPublicKey(matcher)
+        return getMatcherPublicKey(matcher)
             .then(() => this.setState({ matcherError: false }))
-            .catch(() => this.setState({ matcherError: true }))
+            .catch(() => {
+                this.setState({ matcherError: true });
+                return Promise.reject();
+            });
     }
     
     static getDerivedStateFromProps(props: INetworkSettings, state: IState): IState {
