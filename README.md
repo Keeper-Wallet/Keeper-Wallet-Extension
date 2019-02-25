@@ -157,7 +157,7 @@ Example:
     const authData = { data: "Auth on my site" };
     Waves.auth(authData)
         .then(auth => {
-            console.log(state); //displaying the result on the console
+            console.log(auth); //displaying the result on the console
             /*...processing data */
         }).catch(error => {
             console.error(error); // displaying the result on the console
@@ -761,7 +761,7 @@ In case of a success, new data will be stored in the state.
 
 
 
-*   `script` string - [scriptт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+*   `script` string - [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 *   `fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms

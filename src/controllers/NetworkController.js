@@ -65,9 +65,9 @@ export class NetworkController {
         return this.store.getState().customCodes;
     }
 
-    getNetworkCode() {
+    getNetworkCode(network) {
         const networks = this.configApi.getNetworkConfig();
-        const network = this.getNetwork();
+        network = network || this.getNetwork();
         return this.getCustomCodes()[network] || networks[network].code;
     }
 
@@ -75,9 +75,9 @@ export class NetworkController {
         return this.store.getState().customNodes;
     }
 
-    getNode() {
+    getNode(network) {
         const networks = this.configApi.getNetworkConfig();
-        const network = this.getNetwork();
+        network = network || this.getNetwork();
         return this.getCustomNodes()[network] || networks[network].server;
     }
 
@@ -85,8 +85,8 @@ export class NetworkController {
         return this.store.getState().customMatchers;
     }
 
-    getMather() {
-        const network = this.getNetwork();
+    getMather(network) {
+        network = network || this.getNetwork();
         return this.getCustomMatchers()[network] || this.configApi.getNetworkConfig()[network].matcher;
     }
 

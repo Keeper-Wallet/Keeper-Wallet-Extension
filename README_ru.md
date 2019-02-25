@@ -136,7 +136,7 @@
     const authData = { data: "Auth on my site" };
     Waves.auth(authData)
         .then(auth => {
-            console.log(state); //вывод в консоль результата
+            console.log(auth); //вывод в консоль результата
             /*...обработка данных */
         }).catch(error => {
             console.error(error); //вывод в консоль результата

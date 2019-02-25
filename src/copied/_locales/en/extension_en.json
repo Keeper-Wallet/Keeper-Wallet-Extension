@@ -128,11 +128,8 @@
 	},
 	"networkSettings": {
 		"cancel": "Cancel",
-<<<<<<< HEAD
-=======
 		"matcherError": "Incorrect matcher address",
 		"nodeUrlEmpty": "URL is required",
->>>>>>> KEEPER-52-attach-uint8array
 		"saveAndApply": "Save and apply",
 		"title": "Network"
 	},

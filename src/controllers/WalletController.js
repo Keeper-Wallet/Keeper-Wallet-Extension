@@ -13,8 +13,10 @@ export class WalletController {
         this.store = new ObservableStore(initState);
         this.store.updateState({locked: true});
         this.password = null;
-        this.wallets = []
-        //this.getNetwork = opts.getNetwork
+        this.wallets = [];
+        this.getNetwork = options.getNetwork;
+        this.getNetworks = options.getNetworks;
+        this.getNetworkCode = options.getNetworkCode;
     }
 
     // Public
@@ -23,13 +25,16 @@ export class WalletController {
         let user;
         switch (options.type) {
             case 'seed':
-                SG.config.set({networkByte: options.networkCode.charCodeAt(0)});
+                const networkCode = this.getNetworkCode(options.network);
+                const networkByte = networkCode.charCodeAt(0);
+                SG.config.set({ networkByte });
                 const seed = new SG.Seed(options.seed);
                 user = {
                     seed: seed.phrase,
                     publicKey: seed.keyPair.publicKey,
                     address: seed.address,
                     networkCode: options.networkCode,
+                    network: options.network,
                     type: options.type,
                     name: options.name
                 };
@@ -66,6 +71,7 @@ export class WalletController {
     unlock(password) {
         this._restoreWallets(password);
         this.password = password;
+        this._migrateWalletsNetwork();
         this.store.updateState({locked: false})
     }
 
@@ -127,7 +133,27 @@ export class WalletController {
         return SG.Seed.encryptSeedPhrase(seed, this.password)
     }
 
-    updateWaletsNetwork
+    updateNetworkCode(network, code) {
+
+    }
+
+    _migrateWalletsNetwork() {
+        const networks = this.getNetworks().reduce((acc, net) => {
+            acc[net.code] = net.name;
+            return acc;
+        }, Object.create(null));
+
+        const walletsData = this.wallets.map(wallet => {
+            const data = wallet.serialize();
+            if (!data.network) {
+                data.network = networks[data.networkCode]
+            }
+
+            return data;
+        });
+
+        this.store.updateState({vault: encrypt(walletsData, this.password)})
+    }
 
     /**
      * Signs transaction
