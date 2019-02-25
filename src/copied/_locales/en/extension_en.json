@@ -36,6 +36,7 @@
 		"saveBackup": "Save backup phrase"
 	},
 	"bottom": {
+		"custom": "custom",
 		"mainnet": "Mainnet",
 		"testnet": "Testnet"
 	},
@@ -125,11 +126,20 @@
 	"messageList": {
 		"pendingConfirm": "Pending confirmation"
 	},
+	"networkSettings": {
+		"cancel": "Cancel",
+		"matcherError": "Incorrect matcher address",
+		"nodeUrlEmpty": "URL is required",
+		"saveAndApply": "Save and apply",
+		"title": "Network"
+	},
 	"networksSettings": {
 		"copied": "Copied!",
 		"matcher": "Matcher address",
 		"network": "Network",
 		"node": "Node address",
+		"node_code": "Network Prefix",
+		"node_code_hint": "You must specify 1 character",
 		"save": "Save",
 		"savedModal": "Saved!",
 		"setDefault": "Set Default",
@@ -276,6 +286,7 @@
 		"assetScriptTransaction": "Set Asset Script transaction",
 		"assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
 		"assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
+		"attachment": "Attachment",
 		"burn": "Token Burn",
 		"cancelLease": "Cancel Lease",
 		"clearSponsored": "Disable Sponsorship",
