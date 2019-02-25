@@ -21,7 +21,7 @@ export const DEFAULT_CONFIG = {
     CONFIG: {
         update_ms: 30000,
     },
-    NETWORKS: [ 'mainnet', 'testnet' ],
+    NETWORKS: [ 'mainnet', 'testnet', 'custom' ],
     NETWORK_CONFIG: {
         testnet: {
             code: 'T', server: 'https://pool.testnet.wavesnodes.com/',
@@ -31,6 +31,10 @@ export const DEFAULT_CONFIG = {
             code: 'W', server: 'https://nodes.wavesplatform.com/',
             matcher: 'https://matcher.wavesplatform.com/',
         },
+        custom: {
+            code: '', server: '',
+            matcher: '',
+        }
     },
     MESSAGES_CONFIG: {
         message_expiration_ms: 30 * 60 * 1000,

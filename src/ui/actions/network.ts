@@ -8,16 +8,23 @@ export const setNetwork = (netName) => {
     }
 };
 
-export const setCustomNode = (url) => {
+export const setCustomNode = payload => {
     return {
         type: ACTION.CHANGE_NODE,
-        payload: url
+        payload
     }
 };
 
-export const setCustomMatcher = (url) => {
+export const setCustomCode = payload => {
+    return {
+        type: ACTION.CHANGE_NETWORK_CODE,
+        payload
+    }
+};
+
+export const setCustomMatcher = payload => {
     return {
         type: ACTION.CHANGE_MATCHER,
-        payload: url
+        payload
     }
 };

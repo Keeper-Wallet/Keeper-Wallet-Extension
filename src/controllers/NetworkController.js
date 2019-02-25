@@ -9,21 +9,24 @@ export class NetworkController {
             currentNetwork: WAVESKEEPER_DEBUG ? 'testnet' : 'mainnet',
             customNodes: {
                 mainnet: null,
-                testnet: null
+                testnet: null,
+                custom: null,
             },
             customMatchers: {
                 mainnet: null,
-                testnet: null
+                testnet: null,
+                custom: null,
+            },
+            customCodes: {
+                mainnet: null,
+                testnet: null,
+                custom: null,
             }
         };
 
-        const {initState, getNetworkConfig, getNetworks} = options;
-        this.store = new ObservableStore({...defaults, ...initState});
-        this.configApi = {getNetworkConfig, getNetworks};
-    }
-
-    getNetworkCode() {
-        return this.configApi.getNetworkConfig()[this.getNetwork()].code;
+        const { initState, getNetworkConfig, getNetworks } = options;
+        this.store = new ObservableStore({ ...defaults, ...initState });
+        this.configApi = { getNetworkConfig, getNetworks };
     }
 
     getNetworks() {
@@ -32,7 +35,7 @@ export class NetworkController {
     }
 
     setNetwork(network) {
-        this.store.updateState({currentNetwork: network});
+        this.store.updateState({ currentNetwork: network });
     }
 
     getNetwork() {
@@ -40,15 +43,32 @@ export class NetworkController {
     }
 
     setCustomNode(url, network = 'mainnet') {
-        let {customNodes} = this.store.getState();
+        let { customNodes } = this.store.getState();
         customNodes[network] = url;
-        this.store.updateState({customNodes});
+        this.store.updateState({ customNodes });
     }
 
     setCustomMatcher(url, network = 'mainnet') {
-        let {customMatchers} = this.store.getState();
+        let { customMatchers } = this.store.getState();
         customMatchers[network] = url;
-        this.store.updateState({customMatchers});
+        this.store.updateState({ customMatchers });
+    }
+
+    setCustomCode(code, network = 'mainnet') {
+        let { customCodes } = this.store.getState();
+        customCodes[network] = code;
+        this.store.updateState({ customCodes });
+    }
+
+
+    getCustomCodes() {
+        return this.store.getState().customCodes;
+    }
+
+    getNetworkCode() {
+        const networks = this.configApi.getNetworkConfig();
+        const network = this.getNetwork();
+        return this.getCustomCodes()[network] || networks[network].code;
     }
 
     getCustomNodes() {
@@ -82,7 +102,7 @@ export class NetworkController {
     }
 
     async broadcast(message) {
-        const {result, type} = message;
+        const { result, type } = message;
         let API_BASE, url;
 
         switch (type) {
@@ -98,7 +118,7 @@ export class NetworkController {
                 url = new URL('matcher/orderbook', API_BASE).toString();
                 break;
             case 'cancelOrder':
-                const {amountId, priceId} = message;
+                const { amountId, priceId } = message;
                 API_BASE = this.getMather();
                 if (!API_BASE) {
                     throw new Error('Matcher not set. Cannot send order')

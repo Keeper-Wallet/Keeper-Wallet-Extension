@@ -1,0 +1,77 @@
+@import '../../../../styles/colors.styl'
+
+/**
+  Hack to mack chrome
+ */
+@keyframes showNetworks
+  5%
+    transform: translateY(-800px);
+  90%
+    opacity: 1;
+    transform: translateY(-800px);
+  100%
+    transform: translateY(0px);
+    opacity: 1;
+
+@keyframes hideNetworks
+  5%
+    transform: translateY(0px);
+  15%
+    transform: translateY(-800px);
+  20%
+    opacity: 0.001;
+    transform: translateY(-800px);
+  100%
+    opacity: 0.001;
+    transform: translateY(-800px);
+
+
+.network
+  background: url(../../../../assets/img/network-14-basic-500.svg) left center no-repeat;
+  padding-left: 22px;
+  flex-grow: 0;
+  cursor: pointer;
+
+.networkBottom
+  border-bottom: 1px dotted $basic500;
+
+.selectNetworks
+  position: absolute;
+  bottom: -8px;
+  left: 6px;
+  background-color: white;
+  padding: 2px 8px;
+  box-shadow: 0 2px 6px 0 #9ba6b266;
+  border-radius: 5px;
+  z-index: 10;
+  width: 100px;
+  opacity: 0.001;
+  transform: translateY(-800px);
+  animation-fill-mode: both;
+  animation-duration: 0.1s;
+  animation-timing-function: linear;
+  animation-name: hideNetworks;
+
+  &.isShow
+    animation-name: showNetworks;
+
+.chooseNetwork
+  padding: 6px 5px 6px 20px;
+  width: 100%;
+  font-weight: 400;
+
+  &:not(:first-child)
+    border-top: 1px solid $accent50;
+
+  span
+    border-bottom: 0 none;
+
+.selectedNet
+  cursor: default;
+  background: url(../../../../assets/img/network-14-black.svg) left center no-repeat;
+
+  span
+    color: $black;
+
+.disabledNet
+  opacity: 0.5;

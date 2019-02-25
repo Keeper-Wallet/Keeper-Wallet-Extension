@@ -298,6 +298,7 @@ class BackgroundService extends EventEmitter {
             setNetwork: async (network) => this.networkController.setNetwork(network),
             getNetworks: async () => this.networkController.getNetworks(),
             setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
+            setCustomCode: async (code, network) => this.networkController.setCustomCode(code, network),
             setCustomMatcher: async (url, network) => this.networkController.setCustomMatcher(url, network),
 
             // external devices
@@ -445,8 +446,8 @@ class BackgroundService extends EventEmitter {
             this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
 
             dnode.on('end', () => {
-                this.off('update', sendUpdate);
-                this.off('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
+                this.removeListener('update', sendUpdate);
+                this.removeListener('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
             });
         };
 
@@ -477,7 +478,7 @@ class BackgroundService extends EventEmitter {
                 this.on('update', updateHandler);
 
             dnode.on('end', () => {
-                this.off('update', updateHandler);
+                this.removeListener('update', updateHandler);
             });
         };
 

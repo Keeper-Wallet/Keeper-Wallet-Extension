@@ -8,9 +8,9 @@ export function networkByteFromAddress(address: string): string {
     return String.fromCharCode(rawNetworkByte);
 }
 
-export function addressFromPublicKey(pk: string, network: 'mainnet'|'testnet'): string {
+export function addressFromPublicKey(pk: string, byte: string): string {
     const publicKeyBytes = SG.libs.base58.decode(pk);
-    const prefix = Uint8Array.from([SG.ADDRESS_VERSION, network === 'mainnet' ? SG.MAINNET_BYTE : SG.TESTNET_BYTE]);
+    const prefix = Uint8Array.from([SG.ADDRESS_VERSION, byte.charCodeAt(0)]);
     const publicKeyHashPart = Uint8Array.from(hashChain(publicKeyBytes).slice(0, 20));
     const rawAddress = SG.utils.concatUint8Arrays(prefix, publicKeyHashPart);
     const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
@@ -40,7 +40,33 @@ export async function getTxId(adapter: SeedAdapter, tx: TSignData): Promise<stri
     return await adapter.makeSignable(tx).getId();
 }
 
+export async function getNetworkByte(url: string): Promise<string> {
+    const response = await getUrl(url, 'blocks/last', true);
+    const { generator } = await response.json();
+    
+    if (!generator) {
+        throw new Error('Incorrect node url');
+    }
+    
+    const networkCode = networkByteFromAddress(generator);
+    
+    if (!networkCode) {
+        throw new Error('Incorrect node byte');
+    }
+    
+    return networkCode;
+}
 
+export async function getMatcherPublicKey(url: string): Promise<string> {
+    const response = await getUrl(url);
+    const pk = await response.text();
+    const publicKeyBytes = SG.libs.base58.decode(pk);
+    if (publicKeyBytes.length === 32) {
+        return pk;
+    }
+    
+    throw new Error('Invalid matcher public key');
+}
 
 function blake2b(input): Uint8Array {
     return SG.libs.blake2b.blake2b(input, null, 32);
@@ -52,4 +78,22 @@ function keccak(input): Uint8Array {
 
 function hashChain(input): Uint8Array {
     return keccak(blake2b(input));
+}
+
+async function getUrl(urlString: string, path = '', required = true): Promise<Response> {
+    let url: URL;
+    
+    if (required && !urlString) {
+        return Promise.reject();
+    }
+    
+    try {
+        url = new URL(urlString);
+    } catch (e) {
+        return Promise.reject();
+    }
+    
+    url.pathname = path;
+    
+    return fetch(url.href);
 }

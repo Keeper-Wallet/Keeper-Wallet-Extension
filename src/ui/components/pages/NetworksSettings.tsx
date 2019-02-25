@@ -100,7 +100,7 @@ class NetworksSettingsComponent extends React.PureComponent {
         }
         
         if (hasChanges) {
-            this.props.setCustomNode(node);
+            this.props.setCustomNode({ node, network: this.props.currentNetwork });
         }
     }
     
@@ -113,17 +113,17 @@ class NetworksSettingsComponent extends React.PureComponent {
         }
         
         if (hasChangesMatcher) {
-            this.props.setCustomMatcher(matcher);
+            this.props.setCustomMatcher({ matcher, network: this.props.currentNetwork });
         }
     }
 
     setDefaultNode() {
-        this.props.setCustomNode(null);
+        this.props.setCustomNode({ node: null, network: this.props.currentNetwork });
         this.setState({ node: this.state.defaultNode });
     }
     
     setDefaultMatcher() {
-        this.props.setCustomMatcher(null);
+        this.props.setCustomMatcher({ matcher: null, network: this.props.currentNetwork });
         this.setState({ matcher: this.state.defaultMatcher });
     }
     

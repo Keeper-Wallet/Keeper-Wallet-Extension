@@ -9,7 +9,11 @@
     "lib": [
       "ES2017",
       "DOM"
-    ]
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["./src"]
+    }
   },
   "include": [
     "./src/**/*"

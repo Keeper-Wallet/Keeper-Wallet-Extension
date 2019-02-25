@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const metaConf = require('./meta.conf');
 const WebpackCustomActions = require('./WebpackCustomActionsPlugin');
+const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const copyFiles = require('./copyFiles');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -85,8 +86,9 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
             path: BUILD_FOLDER,
             publicPath: './'
         },
-        
+
         resolve: {
+            plugins: [new TsConfigPathsPlugin({ /*configFile: "./path/to/tsconfig.json" */ })],
             extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".css",".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
         },
 

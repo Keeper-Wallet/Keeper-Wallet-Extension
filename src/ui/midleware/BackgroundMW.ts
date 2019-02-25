@@ -174,8 +174,8 @@ export const changeName = store => next => action => {
 
 export const setCustomNode = store => next => action => {
     if (ACTION.CHANGE_NODE === action.type) {
-        const { currentNetwork } = store.getState();
-        background.setCustomNode(action.payload, currentNetwork);
+        const { node, network } = action.payload;
+        background.setCustomNode(node, network);
         return null;
     }
 
@@ -184,8 +184,8 @@ export const setCustomNode = store => next => action => {
 
 export const setCustomMatcher = store => next => action => {
     if (ACTION.CHANGE_MATCHER === action.type) {
-        const { currentNetwork } = store.getState();
-        background.setCustomMatcher(action.payload, currentNetwork);
+        const { matcher, network } = action.payload;
+        background.setCustomMatcher(matcher, network);
         return null;
     }
     
