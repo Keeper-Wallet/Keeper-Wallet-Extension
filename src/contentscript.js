@@ -8,33 +8,17 @@ if (shouldInject()) {
     setupConnection();
 }
 
-
-function initKeeper() {
-    let cbs = [];
-    window.WavesKeeper = window.Waves = {
-        on: function (event, cb) { cbs.push({ event, cb }) },
-        _inited: function (api) {
-            cbs.forEach(function ({ event, cb }) {
-                api.on(event, cb);
-            });
-            cbs = [];
-        }
-    };
-}
-
 function injectBundle() {
     try {
         // inject in-page script
-        const script = document.createElement('script');
+        // const script = document.createElement('script');
         const container = document.head || document.documentElement;
-        script.innerHTML = '(' + initKeeper.toString() + ')()';
-        container.insertBefore(script, container.children[0]);
+        // script.innerHTML = '(' + initKeeper.toString() + ')()';
+        // container.insertBefore(script, container.children[0]);
 
         const script2 = document.createElement('script');
         script2.src = extension.extension.getURL('inpage.js');
         container.insertBefore(script2, container.children[0]);
-
-        script.parentElement.removeChild(script);
 
         script2.onload = () => {
             script2.parentElement.removeChild(script2);
