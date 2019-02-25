@@ -445,8 +445,8 @@ class BackgroundService extends EventEmitter {
             this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
 
             dnode.on('end', () => {
-                this.off('update', sendUpdate);
-                this.off('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
+                this.removeListener('update', sendUpdate);
+                this.removeListener('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
             });
         };
 
@@ -477,7 +477,7 @@ class BackgroundService extends EventEmitter {
                 this.on('update', updateHandler);
 
             dnode.on('end', () => {
-                this.off('update', updateHandler);
+                this.removeListener('update', updateHandler);
             });
         };
 
