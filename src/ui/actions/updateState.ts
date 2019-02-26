@@ -15,6 +15,7 @@ export function updateState(state) {
         balances = [],
         uiState = {},
         customNodes = {},
+        customCodes = {},
         customMatchers = {},
         origins = {},
     } = state;
@@ -31,6 +32,13 @@ export function updateState(state) {
         actions.push({
             type: ACTION.UPDATE_NODES,
             payload: customNodes
+        });
+    }
+    
+    if (!equals(currentState.customCodes, customCodes)) {
+        actions.push({
+            type: ACTION.UPDATE_CODES,
+            payload: customCodes
         });
     }
     
@@ -71,7 +79,7 @@ export function updateState(state) {
     
     function isMyMessages(msg) {
         try {
-            return msg.status === 'unapproved' && (msg.account.address === selectedAccount.address);
+            return msg.status === 'unapproved' && (msg.account.address === selectedAccount.address && msg.account.network === selectedAccount.network);
         } catch (e) {
             return false;
         }

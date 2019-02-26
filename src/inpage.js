@@ -25,13 +25,9 @@ async function setupInpageApi() {
             resolve(remoteWithPromises)
         })
     });
-<<<<<<< HEAD
-    global.WavesKeeper = global.Waves = { ...inpageApi };
-=======
 
     global.WavesKeeper = global.Waves = { ...inpageApi };
 
->>>>>>> KEEPER-52-attach-uint8array
     setupClickInterceptor(inpageApi);
 }
 

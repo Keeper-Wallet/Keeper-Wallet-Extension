@@ -45,15 +45,15 @@ export class WalletController {
 
         const wallet = new Wallet(user);
 
-        this._checkForDuplicate(wallet.getAccount().address);
+        this._checkForDuplicate(wallet.getAccount().address, user.network);
 
         this.wallets.push(wallet);
         this._saveWallets()
     }
 
-    removeWallet(address) {
+    removeWallet(address, network) {
         if (this.store.getState().locked) throw new Error('App is locked');
-        const index = this.wallets.findIndex(wallet => wallet.getAccount().address === address);
+        const index = this.getWalletsByNetwork(network).findIndex(wallet => wallet.getAccount().address === address);
         this.wallets.splice(index, 1);
         this._saveWallets();
     }
@@ -106,18 +106,18 @@ export class WalletController {
      * @param {string} password - application password
      * @returns {string} encrypted seed
      */
-    exportAccount(address, password) {
+    exportAccount(address, password, network) {
         if (!password) throw new Error('Password is required');
         this._restoreWallets(password);
 
-        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
-        if (!wallet) throw new Error(`Wallet not found for address: ${address}`);
+        const wallet = this.getWalletsByNetwork(network).find(wallet => wallet.getAccount().address === address);
+        if (!wallet) throw new Error(`Wallet not found for address: ${address} in ${network}`);
         return wallet.getSecret();
     }
 
-    exportSeed(address) {
-        const wallet = this._findWallet(address);
-        if (!wallet) throw new Error(`Wallet not found for address: ${address}`);
+    exportSeed(address, network) {
+        const wallet = this._findWallet(address, network);
+        if (!wallet) throw new Error(`Wallet not found for address: ${address} in ${network}`);
         const seed = new Seed(wallet.user.seed);
         return seed.encrypt(this.password, 5000);
     }
@@ -127,22 +127,24 @@ export class WalletController {
      * @param {string} address - wallet address
      * @returns {string} encrypted seed
      */
-    encryptedSeed(address) {
-        const wallet = this._findWallet(address);
+    encryptedSeed(address, network) {
+        const wallet = this._findWallet(address, network);
         const seed = wallet.getSecret();
         return SG.Seed.encryptSeedPhrase(seed, this.password)
     }
 
-    updateNetworkCode(network) {
-        const code = this.getNetworkCode(network);
+    updateNetworkCode(network, code) {
+        code = code || this.getNetworkCode(network);
         const networkByte = code.charCodeAt(0);
         SG.config.set({ networkByte });
         const wallets = this.getWalletsByNetwork(network);
         wallets.forEach(wallet => {
-            const seed = new SG.Seed(wallet.user.seed);
-            wallet.user.network = network;
-            wallet.user.networkCode = code;
-            wallet.user.address = seed.address;
+            if (wallet.user.networkCode !== code) {
+                const seed = new SG.Seed(wallet.user.seed);
+                wallet.user.network = network;
+                wallet.user.networkCode = code;
+                wallet.user.address = seed.address;
+            }
         });
 
         if (wallets.length) {
@@ -186,8 +188,8 @@ export class WalletController {
      * @param {object} tx - transaction to sign
      * @returns {Promise<string>} signed transaction as json string
      */
-    async signTx(address, tx) {
-        const wallet = this._findWallet(address);
+    async signTx(address, tx, network) {
+        const wallet = this._findWallet(address, network);
         return await wallet.signTx(tx);
     }
 
@@ -197,8 +199,8 @@ export class WalletController {
      * @param {array} bytes - array of bytes
      * @returns {Promise<string>} signed transaction as json string
      */
-    async signBytes(address, bytes) {
-        const wallet = this._findWallet(address);
+    async signBytes(address, bytes, network) {
+        const wallet = this._findWallet(address, network);
         return await wallet.signBytes(bytes);
     }
 
@@ -208,8 +210,8 @@ export class WalletController {
      * @param {object} request - transaction to sign
      * @returns {Promise<string>} signature
      */
-    async signRequest(address, request) {
-        const wallet = this._findWallet(address);
+    async signRequest(address, request, network) {
+        const wallet = this._findWallet(address, network);
         return wallet.signRequest(request);
     }
 
@@ -219,8 +221,8 @@ export class WalletController {
      * @param {object} authData - object, representing auth request
      * @returns {Promise<object>} object, representing auth response
      */
-    async auth(address, authData) {
-        const wallet = this._findWallet(address);
+    async auth(address, authData, network) {
+        const wallet = this._findWallet(address, network);
         const signature = await wallet.signRequest(authData);
         const {publicKey} = wallet.getAccount();
         const { host, name, prefix, version } = authData.data;
@@ -236,8 +238,8 @@ export class WalletController {
     }
 
     // Private
-    _checkForDuplicate(address) {
-        if (this.getAccounts().find(account => account.address === address)) {
+    _checkForDuplicate(address, network) {
+        if (this.getWalletsByNetwork(network).find(account => account.address === address )) {
             throw new Error(`Account with address ${address} already exists`)
         }
     }
@@ -252,9 +254,9 @@ export class WalletController {
         this.wallets = decryptedData.map(user => new Wallet(user));
     }
 
-    _findWallet(address) {
+    _findWallet(address, network) {
         if (this.store.getState().locked) throw new Error('App is locked');
-        const wallet = this.wallets.find(wallet => wallet.getAccount().address === address);
+        const wallet = this.getWalletsByNetwork(network).find(wallet => wallet.getAccount().address === address);
         if (!wallet) throw new Error(`Wallet not found for address ${address}`);
         return wallet;
     }

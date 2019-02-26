@@ -8,7 +8,6 @@ if (shouldInject()) {
     setupConnection();
 }
 
-<<<<<<< HEAD
 
 // function initKeeper() {
 //     let cbs = [];
@@ -25,16 +24,9 @@ if (shouldInject()) {
 
 function injectBundle() {
     try {
-        // // inject in-page script
-        // const script = document.createElement('script');
-        // const container = document.head || document.documentElement;
-=======
-function injectBundle() {
-    try {
         // inject in-page script
         // const script = document.createElement('script');
         const container = document.head || document.documentElement;
->>>>>>> KEEPER-52-attach-uint8array
         // script.innerHTML = '(' + initKeeper.toString() + ')()';
         // container.insertBefore(script, container.children[0]);
 
@@ -42,11 +34,6 @@ function injectBundle() {
         script2.src = extension.extension.getURL('inpage.js');
         container.insertBefore(script2, container.children[0]);
 
-<<<<<<< HEAD
-        // script.parentElement.removeChild(script);
-
-=======
->>>>>>> KEEPER-52-attach-uint8array
         script2.onload = () => {
             script2.parentElement.removeChild(script2);
         };

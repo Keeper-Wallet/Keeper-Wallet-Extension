@@ -40,48 +40,51 @@ export class PreferencesController extends EventEmitter{
             return Object.assign(
                 {name: `Account ${i + 1}`},
                 account,
-                oldAccounts.find(oldAcc => oldAcc.address === account.address),
+                oldAccounts.find(oldAcc => oldAcc.address === account.address && oldAcc.network === account.network),
             )
         });
-        this.store.updateState({accounts});
+        this.store.updateState({ accounts });
 
         this.syncCurrentNetworkAccounts();
     }
 
     syncCurrentNetworkAccounts(){
         const accounts = this.store.getState().accounts;
-        const currentNetworkAccounts = accounts.filter(account => account.networkCode === this.getNetworkConfig()[this.getNetwork()].code);
-        this.store.updateState({currentNetworkAccounts});
+        const currentNetworkAccounts = accounts.filter(account => account.network === this.getNetwork());
+        this.store.updateState({ currentNetworkAccounts });
 
         // Ensure we have selected account from current network
         let selectedAccount = this.store.getState().selectedAccount;
-        if (!selectedAccount || !currentNetworkAccounts.find(account => account.address === selectedAccount.address)){
+        if (!selectedAccount ||
+            !currentNetworkAccounts.find(account => account.address === selectedAccount.address &&
+            account.network === selectedAccount.network
+        )){
             const addressToSelect = currentNetworkAccounts.length > 0 ? currentNetworkAccounts[0].address : undefined;
             this.selectAccount(addressToSelect)
         }
     }
 
-    addLabel(address, label) {
+    addLabel(address, label, network) {
         const accounts = this.store.getState().accounts;
-        const index = accounts.findIndex(current => current.address === address);
+        const index = accounts.findIndex(current => current.address === address && current.network === network);
         if (index === -1){
-            throw new Error(`Account with address "${address}" not found`)
+            throw new Error(`Account with address "${address}" in ${network} not found`)
         }
         accounts[index].name = label;
         this.store.updateState({accounts})
     }
 
-    selectAccount(address) {
+    selectAccount(address, network) {
         let selectedAccount = this.store.getState().selectedAccount;
-        if (!selectedAccount || selectedAccount.address !== address) {
-            selectedAccount = this._getAccountByAddress(address);
-            this.store.updateState({selectedAccount});
+        if (!selectedAccount || selectedAccount.address !== address || selectedAccount.network !== network) {
+            selectedAccount = this._getAccountByAddress(address, network);
+            this.store.updateState({ selectedAccount });
             this.emit('accountChange');
         }
     }
 
-    _getAccountByAddress(address) {
+    _getAccountByAddress(address, network) {
         const accounts = this.store.getState().accounts;
-        return accounts.find(account => account.address === address)
+        return accounts.find(account => account.address === address && account.network === network)
     }
 }

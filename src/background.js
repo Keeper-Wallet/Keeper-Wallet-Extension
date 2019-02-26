@@ -276,15 +276,15 @@ class BackgroundService extends EventEmitter {
 
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
-            selectAccount: async (publicKey) => this.preferencesController.selectAccount(publicKey),
-            editWalletName: async (address, name) => this.preferencesController.addLabel(address, name),
+            selectAccount: async (address, network) => this.preferencesController.selectAccount(address, network),
+            editWalletName: async (address, name, network) => this.preferencesController.addLabel(address, name, network),
 
             // ui state
             setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
             addWallet: async (account) => this.walletController.addWallet(account),
-            removeWallet: async (publicKey) => this.walletController.removeWallet(publicKey),
+            removeWallet: async (address, network) => this.walletController.removeWallet(address, network),
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
             initVault: async (password) => this.walletController.initVault(password),
@@ -293,8 +293,8 @@ class BackgroundService extends EventEmitter {
                 await this.walletController.deleteVault();
             },
             newPassword: async (oldPassword, newPassword) => this.walletController.newPassword(oldPassword, newPassword),
-            exportAccount: async (address, password) => this.walletController.exportAccount(address, password),
-            encryptedSeed: async (address) => this.walletController.encryptedSeed(address),
+            exportAccount: async (address, password, network) => this.walletController.exportAccount(address, password, network),
+            encryptedSeed: async (address, network) => this.walletController.encryptedSeed(address, network),
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
@@ -305,7 +305,10 @@ class BackgroundService extends EventEmitter {
             setNetwork: async (network) => this.networkController.setNetwork(network),
             getNetworks: async () => this.networkController.getNetworks(),
             setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
-            setCustomCode: async (code, network) => this.networkController.setCustomCode(code, network),
+            setCustomCode: async (code, network) => {
+                this.walletController.updateNetworkCode(network, code);
+                this.networkController.setCustomCode(code, network)
+            },
             setCustomMatcher: async (url, network) => this.networkController.setCustomMatcher(url, network),
 
             // external devices

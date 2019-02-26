@@ -16,6 +16,7 @@ export const activeMessage =  createSimpleReducer(null, ACTION.UPDATE_ACTIVE_MES
 export const balances =  createSimpleReducer({}, ACTION.UPDATE_BALANCES);
 export const currentLocale =  createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes =  createSimpleReducer({}, ACTION.UPDATE_NODES);
+export const customCodes =  createSimpleReducer({}, ACTION.UPDATE_CODES);
 export const customMatcher =  createSimpleReducer({}, ACTION.UPDATE_MATCHER);
 export const langs =  createSimpleReducer({}, ACTION.UPDATE_LANGS);
 export const origins =  createSimpleReducer({}, ACTION.UPDATE_ORIGINS);
