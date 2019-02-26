@@ -1,6 +1,7 @@
 import { SeedAdapter, TSignData } from '@waves/signature-adapter';
 import * as SG from '@waves/signature-generator';
 import { utils } from '@waves/signature-generator';
+import { networks } from '../reducers/updateState';
 
 
 export function networkByteFromAddress(address: string): string {
@@ -58,7 +59,7 @@ export async function getNetworkByte(url: string): Promise<string> {
 }
 
 export async function getMatcherPublicKey(url: string): Promise<string> {
-    const response = await getUrl(url);
+    const response = await getUrl(url, '/matcher');
     const pk = await response.json();
     const publicKeyBytes = SG.libs.base58.decode(pk);
     if (publicKeyBytes.length === 32) {
@@ -97,3 +98,13 @@ async function getUrl(urlString: string, path = '', required = true): Promise<Re
     
     return fetch(url.href);
 }
+
+export const validateNode = async (url: string, networkCode: string) => {
+    const code = await getNetworkByte(url);
+    
+    if (networkCode && code !== networkCode) {
+        throw new Error('Invalid code')
+    }
+    
+    return code;
+};

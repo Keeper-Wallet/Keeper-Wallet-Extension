@@ -37,7 +37,8 @@ export class BalanceController {
     }
 
     async updateBalances() {
-        const accounts = this.getAccounts().filter(account => account.networkCode === this.getCode());
+        const currentNetwork = this.getNetwork();
+        const accounts = this.getAccounts().filter(({ network }) => network === currentNetwork);
         if (!this.active || accounts.length < 1) return;
 
         const data = await Promise.all(
@@ -48,7 +49,7 @@ export class BalanceController {
                     const available = new BigNumber(wavesBalances.available);
                     const regular = new BigNumber(wavesBalances.regular);
                     const leasedOut = regular.minus(available);
-                    return { available: available.toString(), leasedOut: leasedOut.toString(), address };
+                    return { available: available.toString(), leasedOut: leasedOut.toString(), address, network: currentNetwork };
                 } catch (e) {
                     return null;
                 }

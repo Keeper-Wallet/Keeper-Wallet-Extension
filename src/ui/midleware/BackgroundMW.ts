@@ -17,9 +17,9 @@ export const pairingData = store => next => action => {
     if (action.type !== ACTION.PAIRING.GET_SEED) {
         return next(action);
     }
-    
+    const { currentNetwork } = store.getState();
     store.dispatch(pairingLoading(true));
-    background.exportSeed(action.payload).then(
+    background.exportSeed(action.payload, currentNetwork).then(
         (data) => {
             store.dispatch(pairingSetData(data));
             store.dispatch(pairingLoading(false));
@@ -47,7 +47,8 @@ export const updateLang = store => next => action => {
 
 export const selectAccount = store => next => action => {
     if (action.type === ACTION.SELECT_ACCOUNT && store.getState().selectedAccount.address !== action.payload.address) {
-        background.selectAccount(action.payload.address).then(
+        const { currentNetwork } = store.getState();
+        background.selectAccount(action.payload.address, currentNetwork).then(
             () => {
                 store.dispatch(notificationSelect(true));
                 setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
@@ -61,10 +62,10 @@ export const selectAccount = store => next => action => {
 
 export const deleteActiveAccount = store => next => action => {
     if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
-        const { selectedAccount, localState } = store.getState();
+        const { selectedAccount, localState, currentNetwork } = store.getState();
         const selected =  localState.assets.account ?  localState.assets.account.address : selectedAccount.address;
         
-        background.removeWallet(selected).then(
+        background.removeWallet(selected, currentNetwork).then(
             () => {
                 store.dispatch(notificationDelete(true));
                 setTimeout(() => {
@@ -160,7 +161,9 @@ export const getAsset = store => next => action => {
 export const changeName = store => next => action => {
     if (action.type === ACTION.CHANGE_ACCOUNT_NAME) {
         const { address, name } = action.payload;
-        background.editWalletName(address, name).then(
+        const { currentNetwork } = store.getState();
+    
+        background.editWalletName(address, name, currentNetwork).then(
             () => {
                 store.dispatch(notificationChangeName(true));
                 setTimeout(() => store.dispatch(notificationChangeName(false)), 1000);
@@ -176,6 +179,16 @@ export const setCustomNode = store => next => action => {
     if (ACTION.CHANGE_NODE === action.type) {
         const { node, network } = action.payload;
         background.setCustomNode(node, network);
+        return null;
+    }
+
+    return next(action);
+};
+
+export const setCustomCode = store => next => action => {
+    if (ACTION.CHANGE_NETWORK_CODE === action.type) {
+        const { code, network } = action.payload;
+        background.setCustomCode(code, network);
         return null;
     }
 

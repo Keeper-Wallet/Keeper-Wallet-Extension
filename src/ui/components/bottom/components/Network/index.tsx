@@ -66,11 +66,28 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         }
     };
     
+    editClickHandler = () => this.setState(
+        {
+            showSettings: true,
+            net: this.state.networkHash[this.props.currentNetwork]
+        }
+    );
+    
     setNewNetwork = (net) => {
         if (net) {
             this.props.loading(true);
             setTimeout(() => this.props.loading(false), 1000);
             this.props.setNetwork(net);
+        }
+    };
+    
+    saveSettingsHandler = ({ matcher, node, code, name }) => {
+        this.props.setCustomMatcher({ matcher, network: name });
+        this.props.setCustomNode({ node, network: name });
+        this.props.setCustomCode({ code, network: name });
+        this.setState({ net: null, showSettings: false });
+        if (name !== this.props.currentNetwork) {
+            this.setNewNetwork(name);
         }
     };
     
@@ -95,12 +112,13 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         
         const networkClassName = cn(
             'basic500',
+            styles.inlineBlock,
             {
                 [styles.disabledNet]: this.props.noChangeNetwork,
             }
         );
         
-        const { networkHash, showSettings, net: selectedNet, showNetworks } = this.state;
+        const { networkHash, showSettings, net: selectedNet, showNetworks, showEdit } = this.state;
         const currentNetwork = this.props.currentNetwork || 'mainnet';
         const net = selectedNet ? networkHash[selectedNet.name] : null;
         
@@ -115,6 +133,14 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                         {currentNetwork}
                     </Trans>
                 </div>
+                {
+                    showEdit ?
+                        <div className={styles.editBtn}
+                             onClick={this.editClickHandler}>
+                            <Trans i18nKey='bottom.network.edit'>Edit</Trans>
+                        </div> :
+                        null
+                }
                 <Networks isShow={showNetworks}
                           networks={this.props.networks}
                           selectedNet={this.props.currentNetwork}
@@ -127,14 +153,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                         matcher={net && net.matcher}
                         networkCode={net && net.code}
                         onClose={() => this.setState({ net: null, showSettings: false })}
-                        onSave={({ matcher, node, code, name }) => {
-                            this.props.setCustomMatcher({ matcher, network: name });
-                            this.props.setCustomNode({ node, network: name });
-                            this.props.setCustomCode({ code, network: name });
-                            this.setNewNetwork(name);
-                            this.setState({ net: null, showSettings: false });
-                        }}
-                    />
+                        onSave={this.saveSettingsHandler}/>
                 </Modal>
             </div>
         );
@@ -157,6 +176,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         }, Object.create(null));
         
         return {
+            showEdit: props.currentNetwork === 'custom' && !state.showSettings,
             networkHash,
         };
     }

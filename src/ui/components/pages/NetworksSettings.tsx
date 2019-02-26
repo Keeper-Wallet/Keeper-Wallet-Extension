@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import { setCustomNode, setCustomMatcher } from '../../actions';
+import { setCustomNode, setCustomMatcher, setCustomCode } from '../../actions';
 import {Trans, translate} from 'react-i18next';
-import { Button, BUTTON_TYPE, Copy, Input, Modal } from '../ui';
+import { Button, BUTTON_TYPE, Copy, Input, Modal, Error } from '../ui';
 import * as styles from './styles/settings.styl';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { getNetworkByte, getMatcherPublicKey } from 'ui/utils/waves';
 
 @translate(I18N_NAME_SPACE)
 class NetworksSettingsComponent extends React.PureComponent {
@@ -14,12 +15,20 @@ class NetworksSettingsComponent extends React.PureComponent {
     _tSave;
     _tSetDefault;
 
-    onInputHandler = (event) => this.setState({ node: event.target.value });
-    onInputMatcherHandler = (event) => this.setState({ matcher: event.target.value });
-    onSaveNodeHandler = () => {
-        this.saveNode();
-        this.saveMatcher();
-        this.onSave();
+    onInputHandler = (event) => this.setState({ node: event.target.value, nodeError: false });
+    onInputMatcherHandler = (event) => this.setState({ matcher: event.target.value, matcherError: false });
+    onSaveNodeHandler = async () => {
+        this.setState({ validateData: true });
+        try {
+            await this.validate();
+            this.saveNode();
+            this.saveMatcher();
+            this.saveCode();
+            this.onSave();
+        } catch (e) {
+        
+        }
+        this.setState({ validateData: false });
     };
     saveDefault = () => {
         this.setDefaultNode();
@@ -29,7 +38,43 @@ class NetworksSettingsComponent extends React.PureComponent {
     
     copyHandler = () => this.onCopy();
 
+    async validate() {
+        let hasErrors = false;
+        const { node, matcher } = this.state;
+        const { networks, currentNetwork } = this.props;
+        const { code } = networks.find(({ name }) => name === currentNetwork);
+        
+        try {
+            const newCode = await getNetworkByte(node);
+            this.setState({ newCode });
+            if (code && code !== newCode) {
+                throw new Error('Incorrect node network byte');
+            }
+    
+        } catch (e) {
+             this.setState({ nodeError: true });
+             hasErrors = true;
+        }
+        
+        try {
+            await getMatcherPublicKey(matcher);
+        } catch (e) {
+            this.setState({ matcherError: true });
+            hasErrors = true;
+        }
+        
+        if (hasErrors) {
+            throw new Error('invalid node or matcher');
+        }
+    }
+    
     render() {
+        
+        const { nodeError, matcherError, validateData, showSetDefaultBtn } = this.state;
+        
+        const disableSave = nodeError || matcherError || validateData;
+        const disableForm = validateData;
+        
         return <div className={styles.networkTab}>
             <h2 className="title1 margin-main-big">
                 <Trans i18nKey='networksSettings.network'>Network</Trans>
@@ -42,7 +87,10 @@ class NetworksSettingsComponent extends React.PureComponent {
                     </Copy>
                     <Trans i18nKey='networksSettings.node'>Node address</Trans>
                 </label>
-                <Input id='node_address' value={this.state.node} onChange={this.onInputHandler}/>
+                <Input disable={disableForm ? 'true' : ''} id='node_address' value={this.state.node} onChange={this.onInputHandler}/>
+                <Error show={nodeError}>
+                    <Trans i18nKey="networkSettings.nodeError">Incorrect node address</Trans>
+                </Error>
             </div>
     
             <div className="margin-main-big relative">
@@ -52,12 +100,15 @@ class NetworksSettingsComponent extends React.PureComponent {
                     </Copy>
                     <Trans i18nKey='networksSettings.matcher'>Matcher address</Trans>
                 </label>
-                <Input id='matcher_address' value={this.state.matcher} onChange={this.onInputMatcherHandler}/>
+                <Input disable={disableForm ? 'true' : ''} id='matcher_address' value={this.state.matcher} onChange={this.onInputMatcherHandler}/>
+                <Error show={matcherError}>
+                    <Trans i18nKey="networkSettings.matcherError">Incorrect matcher address</Trans>
+                </Error>
             </div>
 
             <div>
                 <Button type={BUTTON_TYPE.SUBMIT}
-                        disabled={!(this.state.hasChanges || this.state.hasChangesMatcher)}
+                        disabled={disableSave || !(this.state.hasChanges || this.state.hasChangesMatcher)}
                         className="margin-main-big"
                         onClick={this.onSaveNodeHandler}>
                     <Trans i18nKey='networksSettings.save'>Save</Trans>
@@ -65,10 +116,10 @@ class NetworksSettingsComponent extends React.PureComponent {
             </div>
 
             <div>
-                <Button disabled={this.state.isDefault && this.state.isDefaultMatcher}
+                { showSetDefaultBtn ? <Button disabled={disableSave || this.state.isDefault && this.state.isDefaultMatcher}
                         onClick={this.saveDefault}>
                     <Trans i18nKey='networksSettings.setDefault'>Set Default</Trans>
-                </Button>
+                </Button> : null }
             </div>
 
             <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied} showChildrenOnly={true}>
@@ -117,6 +168,14 @@ class NetworksSettingsComponent extends React.PureComponent {
         }
     }
 
+    saveCode() {
+        const { networks, currentNetwork } = this.props;
+        const { code } = networks.find(({ name }) => name === currentNetwork);
+        if (!code) {
+            this.props.setCustomCode( { code: this.state.newCode, network: currentNetwork });
+        }
+    }
+    
     setDefaultNode() {
         this.props.setCustomNode({ node: null, network: this.props.currentNetwork });
         this.setState({ node: this.state.defaultNode });
@@ -165,7 +224,8 @@ class NetworksSettingsComponent extends React.PureComponent {
         
         return {
             node, defaultNode, currentNode, hasChanges, isDefault, isCurrent,
-            matcher, defaultMatcher, currentMatcher, hasChangesMatcher, isDefaultMatcher, isCurrentMatcher
+            matcher, defaultMatcher, currentMatcher, hasChangesMatcher, isDefaultMatcher, isCurrentMatcher,
+            showSetDefaultBtn: props.currentNetwork !== 'custom'
         };
     }
 }
@@ -182,7 +242,8 @@ const mapToProps = (store) => {
 
 const actions = {
     setCustomNode,
-    setCustomMatcher
+    setCustomMatcher,
+    setCustomCode
 };
 
 export const NetworksSettings = connect(mapToProps, actions)(NetworksSettingsComponent);

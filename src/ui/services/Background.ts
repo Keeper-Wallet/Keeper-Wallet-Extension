@@ -69,9 +69,9 @@ class Background {
         return this.background.setUiState(newUiState);
     }
 
-    async selectAccount(address): Promise<void> {
+    async selectAccount(address, network): Promise<void> {
         await this.initPromise;
-        return this.background.selectAccount(address);
+        return this.background.selectAccount(address, network);
     }
 
     async addWallet(data): Promise<void> {
@@ -79,10 +79,10 @@ class Background {
         return this.background.addWallet(data);
     }
 
-    async removeWallet(address): Promise<void> {
+    async removeWallet(address, network): Promise<void> {
         await this.initPromise;
         if (address) {
-            return this.background.removeWallet(address);
+            return this.background.removeWallet(address, network);
         }
     
         return this.deleteVault();
@@ -113,19 +113,19 @@ class Background {
         return this.background.initVault(password);
     }
 
-    async exportAccount(address, password): Promise<void> {
+    async exportAccount(address, password, network): Promise<void> {
         await this.initPromise;
-        return this.background.exportAccount(address, password);
+        return this.background.exportAccount(address, password, network);
     }
     
-    async exportSeed(address): Promise<void> {
+    async exportSeed(address, network): Promise<void> {
         await this.initPromise;
-        return this.background.encryptedSeed(address);
+        return this.background.encryptedSeed(address, network);
     }
 
-    async editWalletName(address, name) {
+    async editWalletName(address, name, network) {
         await this.initPromise;
-        return this.background.editWalletName(address, name);
+        return this.background.editWalletName(address, name, network);
     }
 
     async newPassword(oldPassword, newPassword): Promise<void> {
@@ -138,9 +138,9 @@ class Background {
         return this.background.clearMessages();
     }
 
-    async approve(messageId, address): Promise<any> {
+    async approve(messageId, address, network): Promise<any> {
         await this.initPromise;
-        return this.background.approve(messageId, address);
+        return this.background.approve(messageId, address, network);
     }
 
     async reject(messageId): Promise<void> {
@@ -163,6 +163,11 @@ class Background {
     async setCustomNode(url, network): Promise<void> {
         await this.initPromise;
         return this.background.setCustomNode(url, network);
+    }
+    
+    async setCustomCode(code, network): Promise<void> {
+        await this.initPromise;
+        return this.background.setCustomCode(code, network);
     }
     
     async setCustomMatcher(url, network): Promise<void> {

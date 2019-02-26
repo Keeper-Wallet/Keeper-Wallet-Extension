@@ -307,7 +307,8 @@ class BackgroundService extends EventEmitter {
             setCustomNode: async (url, network) => this.networkController.setCustomNode(url, network),
             setCustomCode: async (code, network) => {
                 this.walletController.updateNetworkCode(network, code);
-                this.networkController.setCustomCode(code, network)
+                this.networkController.setCustomCode(code, network);
+                this.balanceController.restartPolling();
             },
             setCustomMatcher: async (url, network) => this.networkController.setCustomMatcher(url, network),
 

@@ -71,7 +71,7 @@ class AccountInfoComponent extends React.Component {
 
             <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
                 <Button onClick={this.setActiveAccount}
-                        disabled={isActive} 
+                        disabled={isActive}
                         className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
                         type="interface">
                     {isActive ? <Trans i18nKey='ur.activeNow'>Active now</Trans> :
@@ -213,7 +213,7 @@ class AccountInfoComponent extends React.Component {
         
         return this.deffer.promise
             .then((password) => {
-            return background.exportAccount(address, password);
+            return background.exportAccount(address, password, this.props.network);
         });
     }
     
@@ -264,7 +264,8 @@ const mapStateToProps = function (store: any) {
         activeAccount: store.accounts.find(({ address }) => address === activeAccount),
         balances: store.balances,
         assets: store.assets,
-        notifications: store.localState.notifications
+        notifications: store.localState.notifications,
+        network: store.currentNetwork,
     };
 };
 

@@ -49,8 +49,9 @@ export class PreferencesController extends EventEmitter{
     }
 
     syncCurrentNetworkAccounts(){
+        const network =this.getNetwork();
         const accounts = this.store.getState().accounts;
-        const currentNetworkAccounts = accounts.filter(account => account.network === this.getNetwork());
+        const currentNetworkAccounts = accounts.filter(account => account.network === network);
         this.store.updateState({ currentNetworkAccounts });
 
         // Ensure we have selected account from current network
@@ -60,7 +61,7 @@ export class PreferencesController extends EventEmitter{
             account.network === selectedAccount.network
         )){
             const addressToSelect = currentNetworkAccounts.length > 0 ? currentNetworkAccounts[0].address : undefined;
-            this.selectAccount(addressToSelect)
+            this.selectAccount(addressToSelect, network)
         }
     }
 

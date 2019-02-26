@@ -23,6 +23,9 @@ export class AssetInfoController {
                 },
                 testnet: {
                     WAVES
+                },
+                custom: {
+                    WAVES
                 }
             }
         };
@@ -32,15 +35,15 @@ export class AssetInfoController {
     }
 
     async assetInfo(assetId) {
-        const {assets} = this.store.getState();
-        if (assetId === '' || assetId == null) return assets.mainnet.WAVES;
+        const { assets } = this.store.getState();
+        if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES') return WAVES;
 
         const network = this.getNetwork();
         const API_BASE = this.getNode();
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
         if (!assets[network][assetId]) {
-            let resp = await fetch(url)
+            let resp = await fetch(url);
             switch (resp.status) {
                 case 200:
                     let assetInfo = await resp.text()

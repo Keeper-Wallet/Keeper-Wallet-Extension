@@ -73,8 +73,8 @@ export const approve = store => next => action => {
         return next(action);
     }
     const messageId = action.payload;
-    const { selectedAccount } = store.getState();
-    background.approve(messageId, selectedAccount);
+    const { selectedAccount, currentNetwork } = store.getState();
+    background.approve(messageId, selectedAccount, currentNetwork);
     store.dispatch(approvePending(true));
 };
 
