@@ -37,9 +37,8 @@ class LoginComponent extends React.Component {
                 <div className={`left input-title basic500 tag1`}>
                     <Trans i18nKey="login.password">Password</Trans>
                 </div>
-                <div className="margin1 relative">
+                <div className="margin-main-big relative">
                     <Input type="password"
-                           className="margin1"
                            ref={this.getRef}
                            onChange={this.onChange}
                            error={this.state.passwordError}

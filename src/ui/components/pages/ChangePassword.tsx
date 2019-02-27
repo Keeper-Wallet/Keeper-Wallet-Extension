@@ -56,13 +56,12 @@ class ChangePasswordComponent extends React.PureComponent {
                     <Trans i18nKey='changePassword.changeTitle'>Change password</Trans>
                 </h2>
                 <div>
-                    <div className="margin1 relative">
+                    <div className="margin-main-big relative">
                         <div className="basic500 tag1 input-title">
                             <Trans i18nKey='changePassword.oldPassword'>Old password</Trans>
                         </div>
                         <Input id='old'
                                value={this.state.oldValue}
-                               className="margin1"
                                type="password"
                                autoFocus={true}
                                onChange={this.onChangeOld}
@@ -77,13 +76,12 @@ class ChangePasswordComponent extends React.PureComponent {
 
                     </div>
 
-                    <div className="margin1 relative">
+                    <div className="margin-main-big relative">
                         <div className="basic500 tag1 input-title">
                             <Trans i18nKey='changePassword.newPassword'>New password</Trans>
                         </div>
                         <Input id='first'
                                value={this.state.firstValue}
-                               className="margin1"
                                type="password"
                                onBlur={this.onFirstBlur}
                                onChange={this.onChangeFist}
@@ -94,13 +92,12 @@ class ChangePasswordComponent extends React.PureComponent {
                         </Error>
                     </div>
 
-                    <div className="margin1 relative">
+                    <div className="margin-main-big relative">
                         <div className="basic500 tag1 input-title">
                             <Trans i18nKey='changePassword.confirmPassword'>Confirm password</Trans>
                         </div>
                         <Input id='second'
                                value={this.state.secondValue}
-                               className="margin1"
                                type="password"
                                onBlur={this.onSecondBlur}
                                onChange={this.onChangeSecond}

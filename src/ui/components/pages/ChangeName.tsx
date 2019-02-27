@@ -44,15 +44,13 @@ class ChangeAccountNameComponent extends React.PureComponent {
             <div className="body1 font400 margin-main-big">{this.props.account.name}</div>
             
             <div className="separator margin-main-big"></div>
-            
             <form onSubmit={this.onSubmit}>
                 <div className="tag1 basic500 input-title">
                     <Trans i18nKey='changeName.newName'>New account name</Trans>
                 </div>
                 
-                <div className="margin1 relative">
+                <div className="margin-main-big relative">
                     <Input ref={this.getRef}
-                           className="margin1"
                            onInput={this.setNewNameHandler}
                            onBlur={this.blurHandler}
                            error={this.state.error}
