@@ -310,21 +310,21 @@ export class MessageController extends EventEmitter {
             case 'order':
             case 'cancelOrder':
             case 'transaction':
-                signedData = await this.signTx(message.account.address, message.data);
+                signedData = await this.signTx(message.account.address, message.data, message.account.network);
                 break;
             case 'transactionPackage':
                 signedData = await Promise.all(message.data.map(txParams => {
-                    return this.signTx(message.account.address, txParams)
+                    return this.signTx(message.account.address, txParams, message.account.network);
                 }));
                 break;
             case 'auth':
-                signedData = await this.auth(message.account.address, message.data);
+                signedData = await this.auth(message.account.address, message.data, message.account.network);
                 break;
             case 'request':
-                signedData = await this.signRequest(message.account.address, message.data);
+                signedData = await this.signRequest(message.account.address, message.data, message.account.network);
                 break;
             case 'bytes':
-                signedData = await this.signBytes(message.account.address, message.data);
+                signedData = await this.signBytes(message.account.address, message.data, message.account.network);
                 break;
             case 'pairing':
                 signedData = {...signedData, approved: 'OK'};
