@@ -324,15 +324,15 @@ class BackgroundService extends EventEmitter {
             // origin settings
             allowOrigin: async (origin) => {
                 this.messageController.rejectByOrigin(origin);
-                this.permissionsController.setPermissions(origin, [ PERMISSIONS.APPROVED ]);
+                this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
             },
 
             disableOrigin: async (origin) => {
-                this.permissionsController.setPermissions(origin, [ PERMISSIONS.REJECTED ]);
+                this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
             },
 
             deleteOrigin: async (origin) => {
-                this.permissionsController.deletePermission(origin);
+                this.permissionsController.deletePermissions(origin);
             }
         }
     }
@@ -373,10 +373,10 @@ class BackgroundService extends EventEmitter {
 
             await this.messageController.getMessageResult(messageId)
                 .then(() => {
-                    this.messageController.setPermission(origin, [PERMISSIONS.APPROVED]);
+                    this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
                 })
                 .catch((e) => {
-                    this.messageController.setPermission(origin, [PERMISSIONS.REJECTED]);
+                    this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
                     return Promise.reject(e);
                 });
         }

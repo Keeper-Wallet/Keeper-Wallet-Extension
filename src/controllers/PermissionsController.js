@@ -1,10 +1,21 @@
 import ObservableStore from 'obs-store';
+import { BigNumber } from "@waves/data-entities/dist/libs/bignumber";
 
 export const PERMISSIONS = {
     ALL: 'all',
-    SIGN_API: 'signApi',
+    USE_API: 'useApi',
     REJECTED: 'rejected',
     APPROVED: 'approved',
+    AUTO_SIGN: 'allowAutoSign',
+};
+
+const findPermissionFabric = permission => item => {
+    if (typeof item === 'string') {
+        return item === permission;
+    }
+
+    const { type } = item;
+    return type === permission;
 };
 
 export class PermissionsController {
@@ -14,8 +25,7 @@ export class PermissionsController {
             origins: {},
             blacklist: [],
             whitelist: [],
-            inPending: {}
-
+            inPending: {},
         };
 
         this.remoteConfig = options.remoteConfig;
@@ -34,16 +44,23 @@ export class PermissionsController {
 
     getPermissions(origin) {
         const { origins, blacklist, whitelist } = this.store.getState();
-        
+
         if (blacklist.includes(origin)) {
             return [ PERMISSIONS.REJECTED ];
         }
 
         if (whitelist.includes(origin)) {
-            return [ PERMISSIONS.ALL ];
+            return [ PERMISSIONS.APPROVED ];
         }
-        
+
         return origins[origin] || [];
+    }
+
+    getPermission(origin, permission) {
+        const permissions = this.getPermissions(origin);
+        const permissionType = typeof permission === 'string' ? permission : permission.type;
+        const findPermission = findPermissionFabric(permissionType);
+        return permissions.find(findPermission);
     }
 
     hasPermission(origin, permission) {
@@ -57,10 +74,10 @@ export class PermissionsController {
             return true;
         }
 
-        return permissions.includes(permission) ? true : null;
+        return !!this.getPermission(origin, permission);
     }
 
-    deletePermission(origin) {
+    deletePermissions(origin) {
         const {  origins, ...other } = this.store.getState();
 
         if (origins.hasOwnProperty(origin)) {
@@ -73,6 +90,43 @@ export class PermissionsController {
     setPermissions(origin, permissions) {
         this.setMessageIdAccess(origin, null);
         this.updateState({ origins: { [origin]: permissions } })
+    }
+
+    setPermission(origin, permission) {
+        if (this.hasPermission(origin, permission)) {
+            return null;
+        }
+
+        const permissions = [ ...this.getPermissions(origin) || []];
+        permissions.push(permission);
+        this.setPermissions(origin, permissions);
+    }
+
+    deletePermission(origin, permission) {
+        if (!this.hasPermission(origin, permission)) {
+            return null;
+        }
+        const permissionType = typeof permission === 'string' ? permission : permission.type;
+        const findPermission = findPermissionFabric(permissionType);
+        const permissions = this.getPermissions(origin).filter(item => !findPermission(item));
+        this.setPermissions(origin, permissions);
+    }
+
+    canApprove(origin, tx) {
+        const permission = this.getPermission(origin, PERMISSIONS.AUTO_SIGN);
+
+        if (!permission) {
+            return false;
+        }
+
+        const currentTime = Date.now();
+        let { totalAmount = 0, interval = 0, approved = [] }  = permission;
+
+        approved = approved.filter(({ time }) => currentTime - time < interval );
+        const total = new BigNumber(totalAmount);
+        const amount = approved.reduce((acc, { amount }) => acc.plus(new BigNumber(amount)), new BigNumber(0));
+
+        debugger;
     }
 
     updateState(state) {
