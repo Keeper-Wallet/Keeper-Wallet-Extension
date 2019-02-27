@@ -10,7 +10,7 @@ export class PreferencesController extends EventEmitter{
             currentLocale: options.initLangCode || 'en',
             accounts: [],
             currentNetworkAccounts: [],
-            selectedAccount: undefined
+            selectedAccount: undefined,
         };
         this.getNetworkConfig = options.getNetworkConfig;
         const initState = Object.assign({}, defaults, options.initState);
@@ -19,9 +19,8 @@ export class PreferencesController extends EventEmitter{
         this.getNetwork = options.getNetwork
     }
 
-
     setCurrentLocale(key) {
-        this.store.updateState({currentLocale: key})
+        this.store.updateState({currentLocale: key});
     }
 
     // addAccount(account) {
@@ -86,6 +85,6 @@ export class PreferencesController extends EventEmitter{
 
     _getAccountByAddress(address, network) {
         const accounts = this.store.getState().accounts;
-        return accounts.find(account => account.address === address && account.network === network)
+        return accounts.find(account => account.address === address && account.network === network);
     }
 }

@@ -34,8 +34,14 @@ export class MessageController extends EventEmitter {
 
         // Get assetInfo method from AssetInfoController
         this.assetInfo = options.assetInfo;
+
+        //tx by txId
         this.txInfo = options.txInfo;
+
+        // permissions
         this.setPermission = options.setPermission;
+        this.canAutoApprove = options.canAutoApprove;
+
         this.rejectAllByTime();
         this._updateBage(this.store.getState().messages);
     }
@@ -75,7 +81,11 @@ export class MessageController extends EventEmitter {
         log.debug(`Generated message ${JSON.stringify(message)}`);
         messages.push(message);
         this._updateStore(messages);
-        return message.id
+
+        if (this.canAutoApprove(message.origin, message.data)) {
+            this.approve(message.id);
+        }
+        return message.id;
     }
 
     // Todo: Find appropriate name. What if message has already been finished?

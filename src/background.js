@@ -161,6 +161,11 @@ class BackgroundService extends EventEmitter {
             initState: initState.RemoteConfigController,
         });
 
+        this.permissionsController = new PermissionsController({
+            initState: initState.PermissionsController,
+            remoteConfig: this.remoteConfigController,
+        });
+
         // Network. Works with blockchain
         this.networkController = new NetworkController({
             initState: initState.NetworkController,
@@ -190,6 +195,7 @@ class BackgroundService extends EventEmitter {
             getNetworks: this.networkController.getNetworks.bind(this.networkController),
         });
 
+
         this.walletController.store.subscribe(state => {
             if (!state.locked || !state.initialized) {
                 const accounts = this.walletController.getAccounts();
@@ -205,11 +211,6 @@ class BackgroundService extends EventEmitter {
             getNode: this.networkController.getNode.bind(this.networkController),
             getAccounts: this.walletController.getAccounts.bind(this.walletController),
             getCode: this.networkController.getNetworkCode.bind(this.networkController),
-        });
-
-        this.permissionsController = new PermissionsController({
-            initState: initState.PermissionsController,
-            remoteConfig: this.remoteConfigController,
         });
 
         this.networkController.store.subscribe(() => this.balanceController.updateBalances());
@@ -242,6 +243,7 @@ class BackgroundService extends EventEmitter {
             setPermission: this.permissionsController.setPermissions.bind(this.permissionsController),
             getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
             getPackConfig: () => this.remoteConfigController.getPackConfig(),
+            canAutoApprove: (origin, tx) => this.permissionsController.canApprove(origin, tx),
         });
 
 
