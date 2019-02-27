@@ -98,7 +98,7 @@ class SettingsComponent extends React.Component {
                 </div>
                 <div>
                     <div className={styles.helper}>
-                        <i className={styles.helpIcon}>?</i>
+                        <i className={`helpIcon ${styles.helpIcon}`}></i>
                         <div className={styles.tooltip}>
                             <Trans i18nKey='settings.toolitpContent'>Protect yourself from Clicker Trojans threats</Trans>
                         </div>
