@@ -88,11 +88,11 @@ class SettingsComponent extends React.Component {
                     <div>
                         <Trans i18nKey='settings.autoClick'>Auto-click protection</Trans>
                     </div>
-                    <div className="submit400">
+                    <div>
                         {
                             !this.props.autoClickProtection ?
-                                <Trans i18nKey='settings.autoClickDisable'>Disabled</Trans> :
-                                <Trans i18nKey='settings.autoClickEnable'>Enabled</Trans>
+                                <span className="basic500"><Trans i18nKey='settings.autoClickDisable'>Disabled</Trans></span> :
+                                <span className="submit400"><Trans i18nKey='settings.autoClickEnable'>Enabled</Trans></span>
                         }
                     </div>
                 </div>
