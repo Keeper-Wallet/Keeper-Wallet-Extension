@@ -1,0 +1,29 @@
+@import '../../../../../styles/colors.styl';
+
+.tabs
+  position: relative;
+  margin: 20px 10px;
+  display: flex;
+  justify-content: space-around;
+
+.tab
+  display: inline-flex;
+  position: relative;
+  color: $basic500;
+  cursor: pointer;
+
+.tab:before
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  content: ' ';
+  margin-right: 8px;
+  background-color: $basic500;
+
+.selected
+  color: $black;
+  cursor: default;
+
+.selected:before
+  background-color: $success400;

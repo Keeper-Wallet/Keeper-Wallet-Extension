@@ -82,10 +82,14 @@ export class MessageController extends EventEmitter {
         messages.push(message);
         this._updateStore(messages);
 
+        let showNotification = true;
+
         if (this.canAutoApprove(message.origin, message.data)) {
+            showNotification = false;
             this.approve(message.id);
         }
-        return message.id;
+
+        return { id: message.id, showNotification };
     }
 
     // Todo: Find appropriate name. What if message has already been finished?

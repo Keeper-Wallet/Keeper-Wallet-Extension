@@ -1,12 +1,13 @@
-import * as styles from './styles/permissionsSettings.styl';
+import * as styles from './permissionsSettings.styl';
 import * as React from 'react'
-import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
-import {Button, BUTTON_TYPE} from '../ui/buttons';
-import {allowOrigin, deleteOrigin, disableOrigin} from '../../actions';
+import { connect } from 'react-redux';
+import { translate, Trans } from 'react-i18next';
+import { Button, BUTTON_TYPE } from 'ui/components/ui/buttons';
+import { allowOrigin, deleteOrigin, disableOrigin } from 'ui/actions';
 import cn from 'classnames';
-import {I18N_NAME_SPACE} from '../../appConfig';
-import {Loader, Modal} from '../ui';
+import { I18N_NAME_SPACE } from 'ui/appConfig';
+import { Loader, Modal } from 'ui/components/ui';
+import { Tabs } from './components';
 
 
 const OriginComponent = (params) => (
@@ -22,23 +23,29 @@ const OriginComponent = (params) => (
 
 @translate(I18N_NAME_SPACE)
 class PermissionsSettingsComponent extends React.PureComponent {
-
+    
+    readonly state = { originsList: 'customList' };
     readonly props;
-
+    
     allowHandler = (origin) => {
         this.props.allowOrigin(origin);
     };
-
+    
     disableHandler = (origin) => {
         this.props.disableOrigin(origin);
     };
-
+    
     deleteHandler = (origin) => {
         this.props.deleteOrigin(origin);
     };
-
+    
     render() {
-
+        const tabs = ['customList', 'whiteList'].map(name => (
+            {
+                item: <Trans key={name} i18nKey={`permission.${name}`}>{name}</Trans>,
+                name
+            }
+        ));
         const className = cn(styles.content);
         const origins = Object.entries(this.props.origins);
         const {
@@ -47,41 +54,45 @@ class PermissionsSettingsComponent extends React.PureComponent {
             disallowed,
             deleted
         } = this.props;
-
+        
         return <div className={className}>
             <h2 className="title1 center margin-main-big">
                 <Trans i18nKey='permissionsSettings.title'>Permissions control</Trans>
             </h2>
-
+            
             <Loader hide={!pending}/>
-
+            
             {origins.length ? null : <div className={styles.emptyBlock}>
                 <div className={styles.icon}></div>
                 <div className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}>
                     <Trans i18nKey='permissionsSettings.empty'>Nothing Here...</Trans>
                 </div>
             </div>}
-
+            
+            <Tabs tabs={tabs}
+                  currentTab={this.state.originsList}
+                  onSelectTab={originsList => this.setState({ originsList })}/>
+            
             <div className={styles.permissoinList}>
                 {origins.map(([origin = '', status = []]) => {
-
+                    
                     const buttonDisable = <Button type={BUTTON_TYPE.TRANSPARENT}
-                                                 onClick={() => this.disableHandler(origin)}
-                                                 className={`${styles.button} ${styles.disable}`}>
+                                                  onClick={() => this.disableHandler(origin)}
+                                                  className={`${styles.button} ${styles.disable}`}>
                     </Button>;
-
+                    
                     const buttonEnable = <Button type={BUTTON_TYPE.TRANSPARENT}
                                                  onClick={() => this.allowHandler(origin)}
                                                  className={`${styles.button} ${styles.enable}`}>
                     </Button>;
-
+                    
                     const buttonDelete = <Button type={BUTTON_TYPE.TRANSPARENT}
                                                  onClick={() => this.deleteHandler(origin)}
                                                  className={`${styles.button} ${styles.delete}`}>
                     </Button>;
-
+                    
                     const myStatus = status && status[0];
-
+                    
                     const className = cn({
                         [styles.approved]: myStatus === 'approved',
                         [styles.rejected]: myStatus === 'rejected',
@@ -94,11 +105,11 @@ class PermissionsSettingsComponent extends React.PureComponent {
                         buttonAction: myStatus.includes('approved') ? buttonDisable : buttonEnable,
                         buttonDelete,
                     };
-
+                    
                     return <OriginComponent {...params} />
                 })}
             </div>
-
+            
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}
                    showModal={allowed || disallowed || deleted}
                    showChildrenOnly={true}>

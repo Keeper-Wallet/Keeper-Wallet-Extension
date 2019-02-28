@@ -390,8 +390,12 @@ class BackgroundService extends EventEmitter {
 
             await this.validatePermission(origin);
 
-            const messageId = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast, title);
-            this.emit('Show notification');
+            const { id: messageId, showNotification } = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast, title);
+
+            if (showNotification) {
+                this.emit('Show notification');
+            }
+
             return await this.messageController.getMessageResult(messageId)
         };
 
