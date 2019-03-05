@@ -9,8 +9,11 @@
 .tab
   display: inline-flex;
   position: relative;
-  color: $basic500;
   cursor: pointer;
+
+  span
+    color: $basic500;
+    border-bottom: 1px dotted $basic500;
 
 .tab:before
   position: relative;
@@ -19,11 +22,13 @@
   height: 14px;
   content: ' ';
   margin-right: 8px;
-  background-color: $basic500;
+  background: url(../../../../../assets/img/check-14-basic-200.svg) center no-repeat;
 
 .selected
-  color: $black;
   cursor: default;
+  span
+    color: $black;
+    border-bottom: 1px dotted $black;
 
-.selected:before
-  background-color: $success400;
+  &:before
+    background: url(../../../../../assets/img/check-14-success-400.svg) center no-repeat;

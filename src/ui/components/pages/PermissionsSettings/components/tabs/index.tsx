@@ -24,7 +24,7 @@ export class Tabs extends React.PureComponent<IProps, IState> {
                              onClick={this.selectHandler(name)}
                              className={cn(styles.tab, {[styles.selected]: selected === name})}
                         >
-                            {item}
+                            <span>{item}</span>
                         </div>
                     ))
                 }

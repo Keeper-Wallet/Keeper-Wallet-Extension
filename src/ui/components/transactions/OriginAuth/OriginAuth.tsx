@@ -16,9 +16,11 @@ export class OriginAuth extends SignClass {
     
     render() {
         const { message, assets } = this.props;
-        const title = <span className={styles.collapsedTitle}><Trans i18nKey='permissionSettings.modal.title'>
-            Permission details
-        </Trans></span>;
+        const title = <span className={styles.collapsedTitle}>
+            <Trans i18nKey='permissionSettings.modal.title'>
+                Permission details
+            </Trans>
+        </span>;
         
         const { interval, type, totalAmount } = this.state;
         const amount = totalAmount * 10 ** 8;

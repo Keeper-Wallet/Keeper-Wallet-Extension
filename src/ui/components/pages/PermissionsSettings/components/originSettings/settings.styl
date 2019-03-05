@@ -1,17 +1,13 @@
 @import '../../../../../styles/colors.styl';
 
-
 .settings
   position: relative;
   margin: 64px 40px;
+  padding: 0 24px;
   border-radius: 5px;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
   background-color: $white;
   height: 468px;
-
-.margin24
-  margin-right: 24px;
-  margin-left: 24px;
 
 .bottomBtns
   position: absolute;
@@ -30,32 +26,38 @@
 .title:before
   width: 20px;
   height: 20px;
-  background-color: $info400;
   position: absolute;
-  content: ' ';
   border-radius: 10px;
-  content: ' ';
+  content: '';
   top: -24px;
-
+  background: url(../../../../../assets/img/setting-14-white.svg) center no-repeat $info400;
 
 .description
-  width: 100%;
   position: relative;
   background-color: $basic50;
+  color: $basic500;
   padding: 10px 24px;
-  margin-top: 24px;
+  margin: 24px -24px 0 -24px;
+  width: calc(100% + 48px);
 
 .selectTime
   margin-top: 34px;
 
 .amountInput
   padding-right: 60px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  position: relative;
 
 .waves
   color: $submit400;
   position: absolute;
   right: 14px;
   bottom: 14px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
 .cancelBtn
   transition: all 0.3s;
@@ -67,13 +69,11 @@
   max-width: 240px;
   height: 40px;
   margin-top: 14px;
-  margin-left: 24px;
-  margin-right: 24px;
 
 .btnWrapper
   display: flex;
-  margin: 0 24px;
   justify-content: space-between;
+  width: calc(100% - 48px);
 
 .btnDivider
   width: 0;

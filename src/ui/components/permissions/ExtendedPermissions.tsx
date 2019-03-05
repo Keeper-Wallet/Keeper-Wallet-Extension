@@ -96,14 +96,14 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
                     </Trans>
                 </div>
                 
-                <Select className={cn(styles.selectTime, styles.margin24)}
+                <Select className={cn(styles.selectTime, styles.margin12)}
                         selectList={timeList}
                         selected={this.state.selected}
                         description={<Trans i18nKey='permissionSettings.modal.time'>Resolution time</Trans>}
                         onSelectItem={this.selectTimeHandler}/>
     
                 {
-                    !this.state.interval ? null : <div className={cn(styles.amount, styles.margin24)}>
+                    !this.state.interval ? null : <div className={cn(styles.amount, styles.margin12)}>
                         <div className='left input-title basic500 tag1'>
                             <Trans i18nKey='permissionSettings.modal.amount'>Spending limit</Trans>
                         </div>

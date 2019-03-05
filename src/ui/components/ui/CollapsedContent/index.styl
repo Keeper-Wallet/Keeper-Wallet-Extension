@@ -1,6 +1,8 @@
 .collapsed
   position: relative;
-  width: 100%;
+  width: calc(100% + 24px);
+  margin: 0 -12px;
+  padding: 0 12px;
 
 .content
   width: 100%;
@@ -9,15 +11,17 @@
 .title
   height: 40px;
   width: 100%;
+  font-size: 14px;
 
   &:after
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 14px;
+    height: 14px;
     content: ' ';
-    background-color: aquamarine;
-    right: 0px;
+    background: url(../../../assets/img/arrow-down-14-basic-200.svg) center no-repeat;
+    right: 14px;
+    top: 13px;
 
 .open
   .title:after
-    background-color: red;
+    background: url(../../../assets/img/arrow-up-14-basic-200.svg) center no-repeat;

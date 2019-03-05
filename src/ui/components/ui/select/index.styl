@@ -9,6 +9,24 @@
   position: relative;
 
 .list
+  box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
+  background: $white;
+  border-radius: 4px;
+  margin-top: 2px;
+  position: absolute;
+  z-index: 50;
+  width: 100%;
+
+.listItem
+  height: 40px;
+  cursor: pointer;
+  line-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+
+  &:hover
+    background: $basic50;
+
 .selectInput
   position: relative;
   width: 100%;
@@ -17,19 +35,18 @@
   background-color: $white;
   padding: 0 14px;
   cursor: pointer;
-
-.selectInput
   height: 40px;
-  line-height: 35px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
 
-.list
-  box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
-  margin-top: 2px;
-  position: absolute;
-  z-index: 50;
-
-.listItem
-  height: 40px;
-  cursor: pointer;
-  line-height: 35px;
-
+  &:before
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: url(../../../assets/img/select-14-black.svg) center no-repeat;
+    right: 14px;
+    top: 50%;
+    display: block;
+    transform: translateY(-50%);
