@@ -12,6 +12,8 @@ import { ExtendedPermission } from 'ui/components/permissions';
 @translate(I18N_NAME_SPACE)
 export class OriginAuth extends SignClass {
     
+    getRef = el => this.setState({ el });
+    
     render() {
         const { message, assets } = this.props;
         const title = <span className={styles.collapsedTitle}><Trans i18nKey='permissionSettings.modal.title'>
@@ -23,7 +25,7 @@ export class OriginAuth extends SignClass {
         const approvePermissions = !this.state.interval || !amount ? null : { origin: message.origin, params: { interval, totalAmount: amount, type } };
         
         return <div className={styles.transaction}>
-            <div className={`${styles.originAuthTxScrollBox} transactionContent`}>
+            <div className={`${styles.originAuthTxScrollBox} transactionContent`} ref={this.getRef}>
 
                 <div className="margin-main margin-main-top headline3 basic500">
                     <Trans i18nKey='transactions.allowAccess'>Allow access</Trans>
@@ -35,7 +37,7 @@ export class OriginAuth extends SignClass {
                 
                 <OriginAuthInfo message={message} assets={assets}/>
                 
-                <CollapsedContent className={styles.collapsed} titleElement={title}>
+                <CollapsedContent className={styles.collapsed} titleElement={title} scrollElement={this.state.el}>
                     <ExtendedPermission className={styles.collapsedContent}
                                         originName={message.origin}
                                         autoSign={null}

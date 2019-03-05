@@ -6,6 +6,13 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
     
     readonly state = { isShowed: false };
     
+    myRef: any;
+    
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef()
+    }
+    
     toggleHandler = () => {
         const isShowed = !this.state.isShowed;
         this.setState({ isShowed });
@@ -14,6 +21,10 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
     componentDidUpdate(): void {
     
         const { isShowed } = this.state;
+        
+        if (isShowed && this.props.scrollElement) {
+            this.scrollToMyRef();
+        }
         
         if (isShowed && this.props.onOpen) {
             this.props.onOpen();
@@ -29,7 +40,7 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
         const className = cn(styles.collapsed, this.props.className, { [styles.open]: this.state.isShowed });
         
         return (
-            <div className={className}>
+            <div className={className} ref={this.myRef}>
                 <div className={styles.title}
                      onClick={this.toggleHandler}>
                     {this.props.titleElement}
@@ -44,10 +55,15 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
         );
     }
     
+    scrollToMyRef = () => window.setTimeout(() => this.props.scrollElement.scrollTo({
+        top: this.myRef.current.offsetTop,
+        behavior: "smooth"
+    }), 0);
 }
 
 
 interface IProps extends React.ComponentProps<'div'> {
+    scrollElement: HTMLElement;
     titleElement: string|React.ReactElement<any>;
     onOpen?: () => void;
     onClose?: () => void;
