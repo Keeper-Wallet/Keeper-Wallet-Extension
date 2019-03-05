@@ -7,6 +7,7 @@ import { getAdapterByType } from "@waves/signature-adapter";
 import { BigNumber, Money } from '@waves/data-entities';
 import { networkByteFromAddress } from "../lib/cryptoUtil";
 import { ERRORS } from '../lib/KeeperError';
+import { PERMISSIONS } from './PermissionsController';
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -195,7 +196,7 @@ export class MessageController extends EventEmitter {
     rejectAllByTime() {
         const { message_expiration_ms } = this.getMessagesConfig();
         const time = Date.now();
-        const {messages} = this.store.getState();
+        const { messages } = this.store.getState();
         messages.forEach(({id, timestamp, status}) => {
             if ((time - timestamp) > message_expiration_ms && status === MSG_STATUSES.UNAPPROVED) {
                 this.reject(id);
@@ -345,7 +346,7 @@ export class MessageController extends EventEmitter {
                 break;
             case 'authOrigin':
                 signedData = {...signedData, approved: 'OK'};
-                this.setPermission(signedData.origin, signedData.permission);
+                this.setPermission(message.origin, PERMISSIONS.APPROVED);
                 break;
             default:
                 throw new Error(`Unknown message type ${message.type}`)

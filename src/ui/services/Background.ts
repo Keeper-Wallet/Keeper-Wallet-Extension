@@ -51,6 +51,11 @@ class Background {
         return this.background.deleteOrigin(origin);
     }
     
+    async setAutoSign(origin: string, options: { interval: number, totalAmount: number}) {
+        await this.initPromise;
+        return this.background.setAutoSign(origin, options);
+    }
+    
     
     async getState() {
         await this.initPromise;

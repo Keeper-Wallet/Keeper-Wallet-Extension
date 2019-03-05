@@ -5,6 +5,11 @@ export const allowOrigin = origin => ({
     payload: origin,
 });
 
+export const setAutoOrigin = origin => ({
+    type: ACTION.PERMISSIONS.SET_AUTO,
+    payload: origin,
+});
+
 export const disableOrigin = origin => ({
     type: ACTION.PERMISSIONS.DISALLOW,
     payload: origin,
@@ -25,12 +30,22 @@ export const allowOriginDone = state => ({
     payload: state,
 });
 
+export const autoOriginDone = state => ({
+    type: ACTION.PERMISSIONS.CONFIRMED_AUTO,
+    payload: state,
+});
+
 export const disallowOriginDone = state => ({
     type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
     payload: state,
 });
 
 export const deleteOriginDone = state => ({
+    type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
+    payload: state,
+});
+
+export const setOriginAutoSignDone = state => ({
     type: ACTION.PERMISSIONS.CONFIRMED_ALLOW,
     payload: state,
 });

@@ -1,0 +1,65 @@
+@import '../../../../../styles/colors.styl';
+
+.permissionList
+  overflow-y: auto;
+  padding-bottom: 38px;
+
+.emptyBlock
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -70%);
+
+  .icon
+    width: 80px;
+    height: 80px;
+    background: url(../../../../../assets/img/userimg-empty-80.svg) center no-repeat;
+
+
+.permissionItem
+  padding: 14px 38px;
+  position: relative;
+  border-radius: 4px;
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  line-height: 1.17em;
+  font-weight: 400;
+
+.approved
+  background: $basic50;
+  .statusColor
+    color: $submit400;
+    font-size: 11px;
+    margin-top: 5px;
+
+.rejected
+  .statusColor
+    color: $basic500;
+    font-size: 11px;
+    margin-top: 5px;
+
+.button
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &.disable
+    left: 14px;
+    background: url(../../../../../assets/img/permission-disabled-14-basic-200.svg) center no-repeat;
+
+  &.enable
+    left: 14px;
+    background: url(../../../../../assets/img/permission-enabled-14-submit-400.svg) center no-repeat;
+
+  &.icon
+    left: 14px;
+    background: url(../../../../../assets/img/activeasset-18-basic-500.svg) center no-repeat;
+    cursor: default;
+
+  &.settings
+    right: 14px
+    width: 18px;
+    height: 18px;
+    background: url(../../../../../assets/img/setting-18-black.svg) center no-repeat;

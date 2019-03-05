@@ -6,14 +6,22 @@ import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
-import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui/buttons';
+import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent } from 'ui/components/ui';
+import { ExtendedPermission } from 'ui/components/permissions';
 
 @translate(I18N_NAME_SPACE)
 export class OriginAuth extends SignClass {
     
     render() {
         const { message, assets } = this.props;
-    
+        const title = <span className={styles.collapsedTitle}><Trans i18nKey='permissionSettings.modal.title'>
+            Permission details
+        </Trans></span>;
+        
+        const { interval, type, totalAmount } = this.state;
+        const amount = totalAmount * 10 ** 8;
+        const approvePermissions = !this.state.interval || !amount ? null : { origin: message.origin, params: { interval, totalAmount: amount, type } };
+        
         return <div className={styles.transaction}>
             <div className={`${styles.originAuthTxScrollBox} transactionContent`}>
 
@@ -26,13 +34,21 @@ export class OriginAuth extends SignClass {
                 </div>
                 
                 <OriginAuthInfo message={message} assets={assets}/>
+                
+                <CollapsedContent className={styles.collapsed} titleElement={title}>
+                    <ExtendedPermission className={styles.collapsedContent}
+                                        originName={message.origin}
+                                        autoSign={null}
+                                        onChangePerms={perms => this.setState(perms)}
+                    />
+                </CollapsedContent>
             </div>
     
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                     <Trans i18nKey='sign.reject'>Reject</Trans>
                 </Button>
-                <ApproveBtn onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
+                <ApproveBtn onClick={(e) => this.props.approve(e, approvePermissions)} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.auth'>Auth</Trans>
                 </ApproveBtn>
     
@@ -41,3 +57,5 @@ export class OriginAuth extends SignClass {
         </div>
     }
 }
+
+

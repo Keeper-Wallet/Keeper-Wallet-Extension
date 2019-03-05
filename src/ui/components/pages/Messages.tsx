@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow } from '../../actions';
+import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow, setAutoOrigin } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
@@ -16,7 +16,7 @@ class MessagesComponent extends React.Component {
     hasApproved: boolean;
     
     rejectHandler = (e) => this.reject(e);
-    approveHandler = (e) => this.approve(e);
+    approveHandler = (e, params) => this.approve(e, params);
     closeHandler = (e) => {
         this.updateActiveMessages(e);
         this.props.closeNotificationWindow();
@@ -26,7 +26,7 @@ class MessagesComponent extends React.Component {
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
     
     componentDidCatch(error, info) {
-        this.reject()
+        this.reject();
     }
     
     render() {
@@ -72,11 +72,15 @@ class MessagesComponent extends React.Component {
         </Component>;
     }
 
-    approve(e) {
+    approve(e, params?) {
         e.preventDefault();
         
         if (this.hasApproved) {
             return;
+        }
+        
+        if (params) {
+            this.props.setAutoOrigin(params);
         }
         
         this.hasApproved = true;
@@ -220,10 +224,11 @@ const actions = {
     closeNotificationWindow,
     clearMessagesStatus,
     updateActiveMessage,
+    setAutoOrigin,
     clearMessages,
     getAsset,
     approve,
-    reject
+    reject,
 };
 
 export const Messages = connect(mapStateToProps, actions)(MessagesComponent);

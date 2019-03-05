@@ -1,0 +1,23 @@
+.collapsed
+  position: relative;
+  width: 100%;
+
+.content
+  width: 100%;
+  position: relative;
+
+.title
+  height: 40px;
+  width: 100%;
+
+  &:after
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    content: ' ';
+    background-color: aquamarine;
+    right: 0px;
+
+.open
+  .title:after
+    background-color: red;

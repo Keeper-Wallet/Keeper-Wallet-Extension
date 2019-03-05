@@ -1,5 +1,6 @@
 import ObservableStore from 'obs-store';
 import { BigNumber } from "@waves/data-entities/dist/libs/bignumber";
+import { uniq } from 'ramda';
 
 export const PERMISSIONS = {
     ALL: 'all',
@@ -66,11 +67,15 @@ export class PermissionsController {
     hasPermission(origin, permission) {
         const permissions = this.getPermissions(origin);
 
-        if (permissions.includes(PERMISSIONS.REJECTED)) {
-            return false;
+        if (!permissions.length) {
+            return null;
         }
 
-        if (permissions.includes(PERMISSIONS.ALL)) {
+        if (permissions.includes(PERMISSIONS.REJECTED)) {
+            return permission === PERMISSIONS.REJECTED;
+        }
+
+        if (permissions.includes(PERMISSIONS.ALL) || permissions.includes(permission)) {
             return true;
         }
 
@@ -79,6 +84,11 @@ export class PermissionsController {
 
     deletePermissions(origin) {
         const { origins, ...other } = this.store.getState();
+        const { whitelist, blacklist } = other;
+
+        if ( whitelist.includes(origin) || blacklist.includes(origin) ) {
+            return null;
+        }
 
         if (origins.hasOwnProperty(origin)) {
             delete origins[origin];
@@ -89,7 +99,7 @@ export class PermissionsController {
 
     setPermissions(origin, permissions) {
         this.setMessageIdAccess(origin, null);
-        this.updateState({ origins: { [origin]: permissions } })
+        this.updateState({ origins: { [origin]: permissions } });
     }
 
     setPermission(origin, permission) {
@@ -103,13 +113,34 @@ export class PermissionsController {
     }
 
     deletePermission(origin, permission) {
-        if (!this.hasPermission(origin, permission)) {
-            return null;
-        }
         const permissionType = typeof permission === 'string' ? permission : permission.type;
         const findPermission = findPermissionFabric(permissionType);
         const permissions = this.getPermissions(origin).filter(item => !findPermission(item));
         this.setPermissions(origin, permissions);
+    }
+
+    setAutoApprove(origin, { interval, totalAmount }) {
+        if (!interval || !totalAmount) {
+            this.deletePermission(origin, PERMISSIONS.AUTO_SIGN);
+            return null;
+        }
+
+        const autoSign = this.getPermission(origin, PERMISSIONS.AUTO_SIGN);
+
+        if (!autoSign) {
+            this.updatePermission(origin, {
+                type: PERMISSIONS.AUTO_SIGN,
+                approved: [],
+                totalAmount,
+                interval
+            });
+
+            return null;
+        }
+
+
+        const newAutoSign = { ...autoSign, interval, totalAmount };
+        this.updatePermission(origin, newAutoSign);
     }
 
     canApprove(origin, tx) {
@@ -152,6 +183,9 @@ export class PermissionsController {
         const whitelist = state.whitelist || oldState.whitelist;
         const blacklist = state.blacklist || oldState.blacklist;
         const inPending = { ...oldInPending, ...(state.inPending || {}) };
+        Object.keys(origins).forEach(key => {
+            origins[key] = uniq(origins[key] || []);
+        });
         const newState = {
             ...oldState,
             ...state,
@@ -164,10 +198,36 @@ export class PermissionsController {
         this.store.updateState(newState);
     }
 
+    _updateBlackWhitelist() {
+        const { blacklist, whitelist } = this.store.getState();
+        this._updatePermissionByList(whitelist, PERMISSIONS.APPROVED, 'whiteList');
+        this._updatePermissionByList(blacklist, PERMISSIONS.REJECTED, 'blackList');
+    }
+
+    _updatePermissionByList(list, permission, type) {
+        const { origins } = this.store.getState();
+        const newOrigins = list.reduce((acc, origin) => {
+            const permissions = acc[origin] || [];
+            if (!permissions.includes(permission)) {
+                permissions.push(permission);
+            }
+            if (!permissions.includes(type)) {
+                permissions.push(type);
+            }
+            acc[origin] = permissions;
+            return acc;
+        }, { ...origins });
+
+        this.updateState({ origins: newOrigins });
+    }
+
     _updateByConfig() {
         const { blacklist, whitelist } = this.remoteConfig.store.getState();
         this.updateState({ blacklist, whitelist });
-        this.remoteConfig.store.subscribe(({ blacklist, whitelist }) => this.updateState({ blacklist, whitelist }));
+        this.remoteConfig.store.subscribe(({ blacklist, whitelist }) => {
+            this.updateState({ blacklist, whitelist });
+            this._updateBlackWhitelist();
+        });
     }
 }
 

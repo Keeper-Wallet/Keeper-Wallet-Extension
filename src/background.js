@@ -240,7 +240,7 @@ class BackgroundService extends EventEmitter {
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
             assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
             txInfo: this.txinfoController.txInfo.bind(this.txinfoController),
-            setPermission: this.permissionsController.setPermissions.bind(this.permissionsController),
+            setPermission: this.permissionsController.setPermission.bind(this.permissionsController),
             getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
             getPackConfig: () => this.remoteConfigController.getPackConfig(),
             canAutoApprove: (origin, tx) => this.permissionsController.canApprove(origin, tx),
@@ -326,15 +326,21 @@ class BackgroundService extends EventEmitter {
             // origin settings
             allowOrigin: async (origin) => {
                 this.messageController.rejectByOrigin(origin);
+                this.permissionsController.deletePermission(origin, PERMISSIONS.REJECTED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
             },
 
             disableOrigin: async (origin) => {
+                this.permissionsController.deletePermission(origin, PERMISSIONS.APPROVED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
             },
 
             deleteOrigin: async (origin) => {
                 this.permissionsController.deletePermissions(origin);
+            },
+            // extended permission autoSign
+            setAutoSign: async ({ origin, params }) => {
+                this.permissionsController.setAutoApprove(origin, params);
             }
         }
     }
@@ -367,7 +373,8 @@ class BackgroundService extends EventEmitter {
             }
 
             if (!messageId) {
-                messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                const result = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                messageId = result.id;
                 this.permissionsController.setMessageIdAccess(origin, messageId);
             }
 

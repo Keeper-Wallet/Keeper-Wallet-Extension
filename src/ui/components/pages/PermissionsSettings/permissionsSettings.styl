@@ -7,61 +7,9 @@
   overflow: auto;
   height: calc(100% - 48px);
 
-  .button
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    background: yellow;
-    top: 50%;
-    transform: translateY(-50%);
-
-    &.enable
-      left: 14px;
-      background: url(../../../assets/img/permission-disabled-14-basic-200.svg) center no-repeat;
-
-    &.disable
-      left: 14px;
-      background: url(../../../assets/img/permission-enabled-14-submit-400.svg) center no-repeat;
-
-    &.delete
-      right: 14px
-      width: 18px;
-      height: 18px;
-      background: url(../../../assets/img/close-18-black.svg) center no-repeat;
-
-.approved
-  background: $basic50;
-  .statusColor
-    color: $submit400;
-    font-size: 11px;
-    margin-top: 5px;
-
-.rejected
-  .statusColor
-    color: $basic500;
-    font-size: 11px;
-    margin-top: 5px;
-
-.permissoinList
-  overflow-y: auto;
-  padding-bottom: 38px;
-
-.permissoinItem
-  padding: 14px 38px;
-  position: relative;
-  border-radius: 4px;
-  margin: 0 0 8px 0;
-  font-size: 12px;
-  line-height: 1.17em;
-  font-weight: 400;
-
-.emptyBlock
+.cover {
+  width: 100%;
+  height: 100%
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -70%);
-
-  .icon
-    width: 80px;
-    height: 80px;
-    background: url(../../../assets/img/userimg-empty-80.svg) center no-repeat;
+  background-color: rgba(0, 0, 0, 0.3);
+}
