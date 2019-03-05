@@ -36,8 +36,11 @@
 		"saveBackup": "Save backup phrase"
 	},
 	"bottom": {
-		"custom": "custom",
+		"custom": "Custom",
 		"mainnet": "Mainnet",
+		"network": {
+			"edit": "Edit"
+		},
 		"testnet": "Testnet"
 	},
 	"changeName": {
@@ -128,7 +131,9 @@
 	},
 	"networkSettings": {
 		"cancel": "Cancel",
+		"customNetwork": "network",
 		"matcherError": "Incorrect matcher address",
+		"nodeError": "Incorrect node address",
 		"nodeUrlEmpty": "URL is required",
 		"saveAndApply": "Save and apply",
 		"title": "Network"
@@ -137,6 +142,8 @@
 		"copied": "Copied!",
 		"matcher": "Matcher address",
 		"network": "Network",
+		"networkPrefix": "You must specify 1 character",
+		"networkPrefixDescri[ption": "Network prefix",
 		"node": "Node address",
 		"node_code": "Network Prefix",
 		"node_code_hint": "You must specify 1 character",
@@ -183,13 +190,35 @@
 		"scanInfo": "Scan the code below with your iPhone or Android device to pair it with your account.",
 		"scanPairing": "Scan Pairing Code"
 	},
+	"permission": {
+		"customList": "customList",
+		"whiteList": "whiteList"
+	},
+	"permissionSettings": {
+		"modal": {
+			"amount": "Spending limit",
+			"cancel": "Cancel",
+			"delete": "Delete",
+			"description": "This allows <1>{{originName}}</1> to automatically sign transactions on your behalf.",
+			"save": "Save",
+			"time": "Resolution time",
+			"time15m": "For 15 minutes",
+			"time30m": "For 30 minutes",
+			"time60m": "For 1 hour",
+			"timeOff": "Don't automatically sign",
+			"title": "Permission details"
+		}
+	},
 	"permissionsSettings": {
+		"approvedOrigin": "Approved",
+		"automaticOrigin": "+ Automatic signing",
 		"button": {
 			"delete": "Delete",
 			"disable": "Disallow",
 			"enable": "Allow"
 		},
 		"empty": "Nothing here",
+		"rejectedOrigin": "Rejected",
 		"title": "Permissions control"
 	},
 	"qrCode": {
@@ -328,6 +357,9 @@
 		"packTransactionGroup": "Group",
 		"packTransactions": "transactions",
 		"packTransactionsFees": "Fees",
+		"permission": {
+			"details": "Permission details"
+		},
 		"permissionsWarning": "The application will have access to your Waves address but will not expose your SEED or private key. Never enter your secret phrase (SEED) on any website you are redirected to.",
 		"price": "Price",
 		"recipients": "Recipients",

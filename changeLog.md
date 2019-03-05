@@ -1,5 +1,11 @@
 ## Waves Keeper
 
+#### version 1.1.0
++ Add custom node for developer
++ Add auto sign transactions, with limits by time and tokens
++ Some visual bug fixes 
+
+
 #### version 1.0.9
 + Fix memory leaks
 + Attachment as byte Array in tx type 4 and type 11 
