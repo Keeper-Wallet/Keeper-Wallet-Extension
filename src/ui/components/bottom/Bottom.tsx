@@ -9,11 +9,8 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 const key = (key) => `bottom.${key}`;
 
 const Networks = ({isShow, onSelect, selectedNet, networks}) => {
-    if (!isShow) {
-        return null;
-    }
-
-    return <div className={styles.selectNetworks}>{
+    const classNames = cn(styles.selectNetworks, { [styles.isShow]: isShow });
+    return <div className={classNames}>{
         networks.map((net) => {
             const currentNetwork = net.name;
             const selected = selectedNet === currentNetwork;

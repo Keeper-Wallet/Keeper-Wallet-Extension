@@ -351,7 +351,7 @@ class BackgroundService extends EventEmitter {
                 }
 
             }
-            
+
             if (!messageId) {
                 messageId = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
                 this.permissionsController.setMessageIdAccess(origin, messageId);
@@ -428,32 +428,29 @@ class BackgroundService extends EventEmitter {
             return this._publicState(this.getState(), origin);
         };
 
-        // if (origin === 'client.wavesplatform.com') {
-        //     api.signBytes = async (data, from) => {
-        //         if (!Array.isArray(data)) {
-        //             throw new Error('Wrong data format');
-        //         }
-        //
-        //         return await newMessage(data, 'bytes', from, false);
-        //     }
-        // }
-
         return api
     }
 
-    setupUiConnection(connectionStream, origin) {
+    setupUiConnection(connectionStream) {
         const api = this.getApi();
         const dnode = setupDnode(connectionStream, api, 'api');
 
-        dnode.on('remote', (remote) => {
+        const remoteHandler = (remote) => {
             // push updates to popup
             const sendUpdate = remote.sendUpdate.bind(remote);
             this.on('update', sendUpdate);
 
             //Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
             const closeEdgeNotificationWindow = remote.closeEdgeNotificationWindow.bind(remote);
-            this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow)
-        })
+            this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
+
+            dnode.on('end', () => {
+                this.removeListener('update', sendUpdate);
+                this.removeListener('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
+            });
+        };
+
+        dnode.on('remote', remoteHandler);
     }
 
     setupPageConnection(connectionStream, origin) {
@@ -461,24 +458,33 @@ class BackgroundService extends EventEmitter {
 
         const inpageApi = this.getInpageApi(origin);
         const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
-
         const self = this;
-        // Select public state from app state
-        let publicState = this._publicState(this.getState(), origin);
-        dnode.on('remote', (remote) => {
+
+        const onRemoteHandler = (remote) => {
             // push account change event to the page
             const sendUpdate = remote.sendUpdate.bind(remote);
 
-            this.on('update', function (state) {
+            const updateHandler = function (state) {
                 const updatedPublicState = self._publicState(state, origin);
                 // If public state changed call remote with new public state
                 if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
                     publicState = updatedPublicState;
                     sendUpdate(publicState)
                 }
-            });
+            };
 
-        });
+
+                this.on('update', updateHandler);
+
+            dnode.on('end', () => {
+                this.removeListener('update', updateHandler);
+            });
+        };
+
+
+        // Select public state from app state
+        let publicState = this._publicState(this.getState(), origin);
+        dnode.on('remote', onRemoteHandler);
     }
 
     _privateSendUpdate() {

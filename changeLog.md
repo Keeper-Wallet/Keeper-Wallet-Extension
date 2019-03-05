@@ -1,5 +1,10 @@
 ## Waves Keeper
 
+#### version 1.0.9
++ Event on init page api
++ Fix memory leaks
++ Attachment as byte Array in tx type 4 and type 11 
+
 
 #### version 1.0.8
 

@@ -7,10 +7,10 @@ setupInpageApi().catch(e => log.error(e));
 
 async function setupInpageApi() {
     const connectionStream = new LocalMessageDuplexStream({
-        name: 'page',
-        target: 'content',
+        name: 'waves_keeper_page',
+        target: 'waves_keeper_content',
     });
-    
+
     const eventEmitter = new EventEmitter();
     const emitterApi = {
         sendUpdate: async state => eventEmitter.emit('update', state)
@@ -26,7 +26,8 @@ async function setupInpageApi() {
         })
     });
 
-    global.WavesKeeper = global.Waves = inpageApi;
+    global.WavesKeeper = global.Waves = { ...inpageApi };
+
     setupClickInterceptor(inpageApi);
 }
 
@@ -39,18 +40,17 @@ function setupClickInterceptor(inpageApi){
                 e.stopPropagation();
             }
         } catch (e) {
-            
+
         }
     })
 }
-
 
 function checkForPaymentApiLink(e) {
     let node = e.target;
 
     const check = (node) => {
         const href = node.href;
-        
+
         if (!node.href) {
             return false;
         }
