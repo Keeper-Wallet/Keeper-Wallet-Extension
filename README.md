@@ -238,7 +238,7 @@ If the verification is successful, Waves Keeper will return in the promise an ob
 *   `signature` - signature
 *   `version` – API version
 
-[How to verify a signature](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html#section-2adf854e6133a03ce3003956df1f5c3b)?
+[How to verify a signature](https://docs.wavesplatform.com/en/waves-api-and-sdk/client-api/auth-api.html#how-to-check-signature-validity)?
 
 ERRORS
 
