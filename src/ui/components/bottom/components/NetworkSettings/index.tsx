@@ -18,8 +18,11 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
         return <div className={styles.networkSettings}>
             <div className={styles.contentBox}>
                 <div>
-                    <h2 className="title1 center margin-main-big"><Trans i18nKey={key(name)}>{name}</Trans> <Trans
-                        i18nKey="networkSettings.title">Network</Trans></h2>
+                    <i className="networkIconActive" ></i>
+                    <h2 className="headline2 margin-main-big">
+                        <span className="capitalize">
+                            <Trans i18nKey={key(name)}>{name}</Trans>
+                        </span> <Trans i18nKey="networkSettings.customNetwork">network</Trans></h2>
                 </div>
                 
                 <div className={styles.dotsDivider}/>
@@ -49,16 +52,17 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
                             <Trans i18nKey="networkSettings.matcherError">Incorrect matcher address</Trans>
                         </Error>
                     </div>
-                
                 </div>
                 
                 <div>
-                    <Button type={BUTTON_TYPE.GENERAL} onClick={this.saveHandler}>
+                    <Button type={BUTTON_TYPE.GENERAL} onClick={this.saveHandler} className="margin-main-big relative">
                         <Trans i18nKey="networkSettings.saveAndApply">Save and apply</Trans>
                     </Button>
-                    <Button onClick={this.state.onClose}>
-                        <Trans i18nKey="networkSettings.cancel">Cancel</Trans>
-                    </Button>
+                    <div className="center">
+                        <Button onClick={this.state.onClose} type="transparent">
+                            <Trans i18nKey="networkSettings.cancel">Cancel</Trans>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>;

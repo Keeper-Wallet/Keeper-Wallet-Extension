@@ -1,8 +1,6 @@
 @import '../../../../styles/colors.styl'
 
-/**
-  Hack to mack chrome
- */
+/* Hack to mack chrome */
 @keyframes showNetworks
   5%
     transform: translateY(-800px);
@@ -25,15 +23,14 @@
     opacity: 0.001;
     transform: translateY(-800px);
 
-
 .network
-  background: url(../../../../assets/img/network-14-basic-500.svg) left center no-repeat;
-  padding-left: 22px;
   flex-grow: 0;
   cursor: pointer;
 
 .networkBottom
+  margin-top: 3px;
   border-bottom: 1px dotted $basic500;
+  text-transform: capitalize;
 
 .selectNetworks
   position: absolute;
@@ -56,9 +53,21 @@
     animation-name: showNetworks;
 
 .chooseNetwork
-  padding: 6px 5px 6px 20px;
+  padding: 6px 5px;
   width: 100%;
   font-weight: 400;
+  display: flex;
+  align-items: center;
+  color: $basic500;
+  text-transform: capitalize;
+
+  &:hover
+    color: $black;
+    .networkIcon
+      display: none;
+    .networkIconActive
+      display: inline-block;
+
 
   &:not(:first-child)
     border-top: 1px solid $accent50;
@@ -66,19 +75,34 @@
   span
     border-bottom: 0 none;
 
+.networkIconActive
+  display: none;
+
+.networkIcon,
+.networkIconActive
+  margin-right: 8px;
+
 .selectedNet
   cursor: default;
-  background: url(../../../../assets/img/network-14-black.svg) left center no-repeat;
+  color: $black;
 
-  span
-    color: $black;
+  .networkIcon
+    display: none;
+  .networkIconActive
+    display: block;
 
 .disabledNet
   opacity: 0.5;
 
-.inlineBlock
-  display: inline-block
-
 .editBtn
-  margin 0 5px;
+  border: 1px solid $basic200;
+  background: $basic100;
+  margin 0 10px -3px 10px;
+  padding: 2px 6px;
   display: inline-block;
+  font-size: 11px;
+  border-radius: 4px;
+  transition: .3s;
+
+  &:hover
+    background: $basic200;

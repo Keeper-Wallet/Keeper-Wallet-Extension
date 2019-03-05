@@ -25,8 +25,7 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
             const className = cn(
                 styles.chooseNetwork,
                 {
-                    'basic500': selected,
-                    [styles.selectedNet]: selected,
+                    [styles.selectedNet]: selected
                 }
             );
             
@@ -36,6 +35,8 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
             };
             
             return <div onClick={onSelectNet} className={className} key={currentNetwork}>
+                <i className={`networkIcon ${styles.networkIcon}`}></i>
+                <i className={`networkIconActive ${styles.networkIconActive}`}></i>
                 <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
             </div>
         })
@@ -112,7 +113,6 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         
         const networkClassName = cn(
             'basic500',
-            styles.inlineBlock,
             {
                 [styles.disabledNet]: this.props.noChangeNetwork,
             }
@@ -123,15 +123,16 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         const net = selectedNet ? networkHash[selectedNet.name] : null;
         
         return (
-            <div className={styles.network}>
-                <div className={networkClassName}
+            <div className={`${styles.network} flex`}>
+                <div className={`${networkClassName} flex`}
                      onClick={this.selectFromNetworksHandler}
                      key={currentNetwork}>
-                    
-                    <Trans className={styles.networkBottom}
-                           i18nKey={key(currentNetwork)}>
-                        {currentNetwork}
-                    </Trans>
+                    <i className={`networkIcon ${styles.networkIcon}`}></i>
+                    <span className={styles.networkBottom}>
+                        <Trans i18nKey={key(currentNetwork)}>
+                            {currentNetwork}
+                        </Trans>
+                    </span>
                 </div>
                 {
                     showEdit ?

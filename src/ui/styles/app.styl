@@ -127,6 +127,9 @@ ul
   &:hover
     text-decoration: none;
 
+:global .capitalize
+  text-transform: capitalize;
+
 // layout
 $layout-4 = 4px;
 $layout-10 = 10px;
@@ -247,11 +250,10 @@ $layout-44 = 44px;
   justify-content: center;
   font-size: 12px;
 
-:global .origin-ellipsis {
+:global .origin-ellipsis
   max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
-}
 
 // blocks
 
@@ -332,6 +334,7 @@ $layout-44 = 44px;
     flex-grow: 1;
 
 // modals, errors, notifications
+
 :global .tooltip
   background: $black;
   color: $white;

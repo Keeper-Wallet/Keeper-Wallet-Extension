@@ -7,7 +7,6 @@ import { setNetwork, loading } from '../../actions';
 import { I18N_NAME_SPACE } from '../../appConfig';
 import { Network } from './components';
 
-
 @translate(I18N_NAME_SPACE)
 class BottomComponent extends React.Component {
     
@@ -24,7 +23,6 @@ class BottomComponent extends React.Component {
                 [styles.hidden]: hideNet
             });
 
-        
         return <div className={className}>
             <Network noChangeNetwork={this.props.noChangeNetwork}/>
             
