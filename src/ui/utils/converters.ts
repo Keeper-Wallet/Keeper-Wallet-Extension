@@ -1,8 +1,8 @@
 import { BigNumber, Money } from '@waves/data-entities';
 
 export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
-    if (amount && amount.assetId ) {
-        let amountResult = new Money(0, assets[amount.assetId]);
+    if (amount) {
+        let amountResult = new Money(0, assets[amount.assetId || 'WAVES']);
 
         if ('tokens' in amount) {
             amountResult = amountResult.cloneWithTokens(amount.tokens || 0);
@@ -26,7 +26,7 @@ export const getMoney = (amount: TAmount, assets) => {
         return new Money(amount, assets['WAVES']);
     }
     
-    if (typeof amount === 'object' && amount && amount.assetId ) {
+    if (typeof amount === 'object' && (amount.tokens || amount.coins) ) {
         return moneyLikeToMoney(amount as IMoneyLike, assets);
     }
     
@@ -40,3 +40,4 @@ interface IMoneyLike {
     tokens?: number|string|BigNumber;
     assetId: string;
 }
+
