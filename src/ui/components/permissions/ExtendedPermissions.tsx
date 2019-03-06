@@ -87,7 +87,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
         
         const { originName } = this.props;
         const className = cn(styles.settings, styles.inModal, this.props.className);
-        
+        const value = (this.state.interval ? this.state.totalAmount : '') || '';
         return (
             <div className={className}>
                 <div className={styles.description}>
@@ -102,15 +102,17 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
                         description={<Trans i18nKey='permissionSettings.modal.time'>Resolution time</Trans>}
                         onSelectItem={this.selectTimeHandler}/>
     
-                {
-                    !this.state.interval ? null : <div className={cn(styles.amount, styles.margin12)}>
+                <div className={cn(styles.amount, styles.margin12)}>
                         <div className='left input-title basic500 tag1'>
                             <Trans i18nKey='permissionSettings.modal.amount'>Spending limit</Trans>
                         </div>
-                        <Input onChange={this.amountHandler} className={styles.amountInput} value={this.state.totalAmount || ''} placeholder={0}/>
+                        <Input disabled={!this.state.interval}
+                               onChange={this.amountHandler}
+                               className={styles.amountInput}
+                               value={value} placeholder={0}/>
                         <div className={styles.waves}>Waves</div>
-                    </div>
-                }
+                 </div>
+                
             </div>
             );
     }
