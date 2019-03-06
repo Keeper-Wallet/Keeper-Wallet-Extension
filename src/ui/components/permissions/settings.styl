@@ -22,12 +22,22 @@
 
 .amountInput
   padding-right: 60px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  position: relative;
 
 .waves
   color: $submit400;
   position: absolute;
   right: 14px;
   bottom: 14px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+input[disabled] + .waves
+  color: $submit200;
 
 .cancelBtn
   transition: all 0.3s;

@@ -25,10 +25,17 @@ textarea
   &.error:hover
     border: 1px solid $error400;
 
-  &[disabled]
+  &[disabled] {
     background: $basic50;
-    &:hover
+    color: $basic500;
+    &::-webkit-input-placeholder {color: $basic500;}
+    &::-moz-placeholder {color: $basic500;}
+    &:-moz-placeholder {color: $basic500;}
+    &:-ms-input-placeholder {color: $basic500;}
+    &:hover {
       border: 1px solid $basic100;
+    }
+  }
 
 .textarea
   padding: 14px;
