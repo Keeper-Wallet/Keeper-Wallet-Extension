@@ -83,9 +83,18 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     };
     
     saveSettingsHandler = ({ matcher, node, code, name }) => {
-        this.props.setCustomMatcher({ matcher, network: name });
-        this.props.setCustomNode({ node, network: name });
-        this.props.setCustomCode({ code, network: name });
+        if (matcher) {
+            this.props.setCustomMatcher({ matcher, network: name });
+        }
+        
+        if (node) {
+            this.props.setCustomNode({ node, network: name });
+        }
+        
+        if (code) {
+            this.props.setCustomCode({ code, network: name });
+        }
+        
         this.setState({ net: null, showSettings: false });
         if (name !== this.props.currentNetwork) {
             this.setNewNetwork(name);
@@ -183,9 +192,10 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     }
 }
 
-const mapStateToProps = ({ currentNetwork, networks, customNodes, customMatcher }) => ({
+const mapStateToProps = ({ currentNetwork, networks, customNodes, customMatcher, customCodes }) => ({
     currentNetwork,
     customMatcher,
+    customCodes,
     customNodes,
     networks,
 });

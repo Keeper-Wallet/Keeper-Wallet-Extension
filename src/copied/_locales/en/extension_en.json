@@ -82,7 +82,8 @@
 	},
 	"deleteAccount": {
 		"attention": "Attention!",
-		"delete": "Delete account"
+		"delete": "Delete account",
+		"warn": "Deleting an account will lead to its irretrievable loss!"
 	},
 	"deleteUser": {
 		"attention": "Attention!",
@@ -191,8 +192,8 @@
 		"scanPairing": "Scan Pairing Code"
 	},
 	"permission": {
-		"customList": "customList",
-		"whiteList": "whiteList"
+		"customList": "Custom list",
+		"whiteList": "White list"
 	},
 	"permissionSettings": {
 		"modal": {

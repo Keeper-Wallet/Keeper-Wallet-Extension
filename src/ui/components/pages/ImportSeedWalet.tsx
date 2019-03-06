@@ -2,7 +2,7 @@ import * as styles from './styles/importSeed.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { Seed } from '@waves/signature-generator';
+import { Seed, config } from '@waves/signature-generator';
 import { newAccountSelect, clearSeedErrors } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
@@ -89,6 +89,10 @@ class ImportSeedComponent extends React.Component {
 
     _changeHandler(e) {
         const phrase = e.target.value || '';
+        const networkCode = this.props.customCodes[this.props.currentNetwork] ||
+            this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
+        
+        config.set({ networkByte: networkCode.charCodeAt(0) });
         let seed = { address: '', phrase: '' };
 
         if (phrase.length >= 24) {
@@ -113,7 +117,11 @@ const actions = {
 const mapStateToProps = function(store: any) {
     return {
         account: store.localState.newAccount,
-        accounts: store.accounts
+        accounts: store.accounts,
+        customCodes: store.customCodes,
+        networks: store.networks,
+        currentNetwork: store.currentNetwork,
+        
     };
 };
 

@@ -113,7 +113,12 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
     
     private validateMatcher() {
         const { matcher } = this.state;
-    
+        
+        if (!matcher) {
+            this.setState({ matcherError: false });
+            return null;
+        }
+        
         return getMatcherPublicKey(matcher)
             .then(() => this.setState({ matcherError: false }))
             .catch(() => {
