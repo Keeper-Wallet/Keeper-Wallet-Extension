@@ -33,7 +33,7 @@ export class WalletController {
                     seed: seed.phrase,
                     publicKey: seed.keyPair.publicKey,
                     address: seed.address,
-                    networkCode: options.networkCode,
+                    networkCode: options.networkCode || networkCode,
                     network: options.network,
                     type: options.type,
                     name: options.name
