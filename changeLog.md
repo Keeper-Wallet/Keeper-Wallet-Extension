@@ -1,5 +1,9 @@
 ## Waves Keeper
 
+#### version 1.1.1
++ Fix delete wallet
++ Fix auth protocol host
+
 
 #### version 1.1.0
 + Add custom node for developer

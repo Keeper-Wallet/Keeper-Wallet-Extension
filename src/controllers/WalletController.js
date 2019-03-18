@@ -53,7 +53,8 @@ export class WalletController {
 
     removeWallet(address, network) {
         if (this.store.getState().locked) throw new Error('App is locked');
-        const index = this.getWalletsByNetwork(network).findIndex(wallet => wallet.getAccount().address === address);
+        const wallet = this.getWalletsByNetwork(network).find(wallet => wallet.getAccount().address === address);
+        const index = this.wallets.indexOf(wallet);
         this.wallets.splice(index, 1);
         this._saveWallets();
     }
