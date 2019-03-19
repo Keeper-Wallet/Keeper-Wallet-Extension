@@ -23,8 +23,19 @@ class ImportSeedComponent extends React.Component {
     constructor({ isNew, ...props }) {
         super(props);
         const value = isNew ? '' : this.props.account && this.props.account.phrase;
-        const error = this._validate(value, true);
-        this.state = { value, error, showError: false };
+        const networkCode = this.props.customCodes[this.props.currentNetwork] ||
+            this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
+    
+        config.set({ networkByte: networkCode.charCodeAt(0) });
+    
+        let seed = { address: '', phrase: '' };
+    
+        if (value.length >= 24) {
+            seed = new Seed(value.trim());
+        }
+        
+        const error = this._validate({ phrase: value, address: seed.address }, true);
+        this.state = { value, error, showError: false, existError: false };
     }
 
     componentDidMount(){
@@ -46,7 +57,7 @@ class ImportSeedComponent extends React.Component {
                     <Trans i18nKey='importSeed.newSeed'>Wallet Seed</Trans>
                 </div>
 
-                <Input error={this.state.error && this.state.showError}
+                <Input error={(this.state.error || this.state.existError) && this.state.showError }
                     ref={this.getRef}
                     autoFocus={true}
                     onChange={this.onChange}
@@ -66,7 +77,7 @@ class ImportSeedComponent extends React.Component {
 
                 <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
-                <Button type="submit" disabled={this.state.error}>
+                <Button type="submit" disabled={this.state.error || this.state.existError}>
                     <Trans i18nKey='importSeed.importAccount'>Import Account</Trans>
                 </Button>
             </form>
@@ -79,12 +90,13 @@ class ImportSeedComponent extends React.Component {
         this.props.setTab(PAGES.ACCOUNT_NAME_SEED);
     }
 
-    _validate(value = '', noSetState?) {
-        const error = value.length < 25;
+    _validate({ phrase = '', address} , noSetState?) {
+        const error = phrase.length < 25;
+        const existError = !!(this.props.accounts || []).find(({ address: addr }) => address === addr);
         if (!noSetState) {
-            this.setState({ error });
+            this.setState({ error, existError });
         }
-        return error;
+        return error || existError;
     }
 
     _changeHandler(e) {
@@ -100,7 +112,7 @@ class ImportSeedComponent extends React.Component {
         }
 
         this.setState({ value: phrase });
-        this._validate(phrase);
+        this._validate({ phrase, address: seed.address });
         this.props.newAccountSelect({ ...seed, seed: seed.phrase, type: 'seed', name: '', hasBackup: true});
     }
 
