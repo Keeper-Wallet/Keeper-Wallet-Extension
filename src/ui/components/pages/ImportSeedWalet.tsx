@@ -6,6 +6,7 @@ import { Seed, config } from '@waves/signature-generator';
 import { newAccountSelect, clearSeedErrors } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
+import { Error } from '../ui/error';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -70,7 +71,7 @@ class ImportSeedComponent extends React.Component {
                         this.props.t('importSeed.inputSeed', 'Your seed is the 15 words you saved when creating your account')
                     }/>
 
-
+                <Error></Error>
                 <div className={'tag1 basic500 input-title'}>
                     <Trans i18nKey='importSeed.address'>Account address</Trans>
                 </div>
