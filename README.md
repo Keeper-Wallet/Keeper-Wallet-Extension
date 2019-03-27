@@ -1029,10 +1029,10 @@ Example:
             id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'
         }
     }).then(() => {
-        console.log('Hurray! I've cancelled an order');
+        console.log("Hurray! I've cancelled an order");
     }).catch((error) => {
         console.error("Something went wrong", error);
-    })
+    });
 ```
 
 
