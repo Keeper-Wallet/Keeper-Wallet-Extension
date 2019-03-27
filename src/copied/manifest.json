@@ -91,6 +91,5 @@
   ],
   "web_accessible_resources": [
     "inpage.js"
-  ],
-  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+  ]
 }
