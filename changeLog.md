@@ -2,6 +2,7 @@
 
 #### version 1.1.2
 + Remove Google Analytics
++ Update package,json meta data
 
 #### version 1.1.1
 + Fix delete wallet
