@@ -1,10 +1,9 @@
 ## Waves Keeper
 
-#### version 1.1.2
-+ Remove Google Analytics
-+ Update package,json meta data
 
 #### version 1.1.1
++ Remove Google Analytics
++ Update package,json meta data
 + Fix delete wallet
 + Fix auth protocol host
 
