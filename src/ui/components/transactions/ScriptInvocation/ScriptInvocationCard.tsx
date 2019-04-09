@@ -1,65 +1,70 @@
-import * as styles from './index.styl';
+import * as styles from './scriptInvocation.styl';
 import * as React from 'react'
 import { translate, Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import * as cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
-import { messageType } from './parseTx';
-import { ShowScript } from '../../ui';
-
+import { Balance, ShowScript } from '../../ui';
+import { getMoney } from '../../../utils/converters';
+import { getAmount, messageType } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
-export class DataCard extends React.PureComponent<IData> {
+export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
     
     render() {
         const className = cn(
-            styles.dataTransactionCard,
+            styles.scriptInvocationTransactionCard,
             this.props.className,
             {
-                [styles.dataCard_collapsed]: this.props.collapsed
+                [styles.scriptInvocationCard_collapsed]: this.props.collapsed
             },
         );
         
         const { message } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
-        const script = tx.data.map(item => JSON.stringify(item, null, 4)).join('\n');
+        const script = (tx.call.args || []).map(item => `type: "${item.type}", value: "${item.value}"`).join('\n');
+        
         return <div className={className}>
-
+            
             <div className={styles.cardHeader}>
-                <div className={styles.dataTxIcon}>
+                <div className={styles.scriptInvocationTxIcon}>
                     <TxIcon txType={messageType}/>
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.dataTransaction'>Entry in blockchain</Trans>
+                        <Trans i18nKey='transactions.scriptInvocation'>Entry in blockchain</Trans>
                     </div>
                     <h1 className="headline1">
-                        <Trans i18nKey='transactions.dataTransactionName'>Data Transaction</Trans>
+                        <Trans i18nKey='transactions.scriptInvocationName'>Script Invocation</Trans>
                     </h1>
                 </div>
             </div>
             
             <div className={`${styles.cardContent} marginTop1`}>
+                <div className="basic500 body3 margin-min">
+                    <Trans i18nKey='transactions.scriptInvocationFunction'>Function</Trans>
+                </div>
+                <div className="body3 margin-min">{tx.call && tx.call.function || 'Default'}</div>
                 <ShowScript className={styles.dataScript}
                             script={script}
                             optional={true}
                             showNotify={true}
                             hideScript={this.props.collapsed}/>
-                
-                <div className={`${styles.origin} margin-main-top`}>
+
+                <div className={`${styles.origin}`}>
                     <OriginWarning message={message}/>
                 </div>
             </div>
-
+            
         </div>
     }
 }
 
-interface IData {
+interface IMassTransfer {
     assets: any;
-    className?: string;
+    className: string;
     collapsed: boolean;
     message: any;
 }

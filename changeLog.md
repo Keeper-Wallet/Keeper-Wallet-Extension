@@ -1,6 +1,12 @@
 ## Waves Keeper
 
 
+#### version 1.1.2
++ Add script invocation type: 16
++ Add initial promise
++ Update documentation
+
+
 #### version 1.1.1
 + Remove Google Analytics
 + Update package,json meta data

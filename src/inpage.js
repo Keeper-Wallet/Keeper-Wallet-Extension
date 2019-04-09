@@ -5,7 +5,23 @@ import EventEmitter from 'events';
 
 setupInpageApi().catch(e => log.error(e));
 
+
 async function setupInpageApi() {
+
+    const createDeffer = () => {
+        const def = {};
+        def.propmise = new Promise((res, rej) => {
+            def.resolve = res;
+            def.reject = rej;
+        });
+
+        return def;
+    };
+
+    const def = createDeffer();
+    const waves = { initialPromise: def.propmise };
+    global.WavesKeeper = global.Waves = waves;
+
     const connectionStream = new LocalMessageDuplexStream({
         name: 'waves_keeper_page',
         target: 'waves_keeper_content',
@@ -13,7 +29,7 @@ async function setupInpageApi() {
 
     const eventEmitter = new EventEmitter();
     const emitterApi = {
-        sendUpdate: async state => eventEmitter.emit('update', state)
+        sendUpdate: async state => eventEmitter.emit('update', state),
     };
     const dnode = setupDnode(connectionStream, emitterApi, 'inpageApi');
 
@@ -26,9 +42,11 @@ async function setupInpageApi() {
         })
     });
 
-    global.WavesKeeper = global.Waves = { ...inpageApi };
-
     setupClickInterceptor(inpageApi);
+
+    Object.assign(waves, inpageApi);
+    def.resolve(waves);
+
 }
 
 function setupClickInterceptor(inpageApi){

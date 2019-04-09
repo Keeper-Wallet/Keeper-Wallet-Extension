@@ -16,6 +16,7 @@ import sponsorShip from './Sponsorship';
 import data from './Data';
 import setScript from './SetScript';
 import assetScript from './AssetScript';
+import scriptInvocation from './ScriptInvocation';
 import packageTx from './Package';
 import unknown from './Unknown';
 
@@ -38,6 +39,7 @@ const MESSAGES = [
     data,
     setScript,
     assetScript,
+    scriptInvocation,
     packageTx,
 ];
 

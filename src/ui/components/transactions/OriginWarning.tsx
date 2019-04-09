@@ -9,12 +9,12 @@ export class OriginWarning extends React.PureComponent<{ message: any }> {
         if (!message.origin) {
             return null;
         }
-        return <div>
+        return <React.Fragment>
             <div className={styles.originAddress}>{message.origin}</div>
             <div className={styles.originDescription}>
                 <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>
             </div>
-        </div>
+        </React.Fragment>
     }
     
 }
