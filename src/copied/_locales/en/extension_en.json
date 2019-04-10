@@ -297,7 +297,7 @@
 		"transactionConfirmed": "Your transaction is confirmed!",
 		"transactionConfirmedBurn": "You have approved a Burn transaction.",
 		"transactionFiled": "Your transaction is rejected!",
-		"transactionSend": "Your have send",
+		"transactionSend": "Your have sent",
 		"transactionSendAlias": "An alias has been created.",
 		"transactionSendCreateOrder": "You have approved a Create Order transaction",
 		"transactionSendData": [],

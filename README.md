@@ -168,7 +168,7 @@ Example:
 
 ```
     const authData = { data: "Auth on my site" };
-    Waves.auth(authData)
+    WavesKeeper.auth(authData)
         .then(auth => {
             console.log(auth); //displaying the result on the console
             /*...processing data */
