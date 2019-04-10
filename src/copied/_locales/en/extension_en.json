@@ -369,6 +369,8 @@
 		"reissuable": "Reissuable",
 		"script": "Script",
 		"scriptInvocation": "Script invocation",
+		"scriptInvocationFunction": "Function",
+		"scriptInvocationName": "Script Invocation",
 		"scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
 		"scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
 		"sendTo": "Send to",

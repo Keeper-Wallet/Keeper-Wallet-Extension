@@ -898,7 +898,7 @@ Example:
 In case of a success, the asset's script will be reset.
 
 
-### [Тип 16 SCRIPT INVOCATION - call account script function]()  
+### [Тип 16 SCRIPT INVOCATION - call account script function *(testnet only)]()  
 + `dappAddress` string – address script account
 + `fee` MoneyLike – fee 
 + `call` object –
