@@ -8,10 +8,53 @@ import { Button } from '../buttons';
 import { Modal } from '..';
 
 
+const ContentScript = ({ script, getScriptRef }) =>
+    <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>{script}</pre>;
+    
+const Data = ({ data, getScriptRef }) => {
+    return (
+        <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
+            <div className={cn('basic500', styles.headRow)}>
+                <div className={styles.dataItemData}>Key</div>
+                <div className={styles.dataItemData}>Type</div>
+                <div className={styles.dataItemData}>Value</div>
+            </div>
+            {
+                (data || []).map((item, index) => (
+                    <div key={index} className={cn(styles.dataRow)}>
+                        <div title={item.key} className={styles.dataItemData}>{item.key}</div>
+                        <div title={item.type} className={styles.dataItemData}>{item.type}</div>
+                        <div title={String(item.value)} className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</div>
+                    </div>
+                ))
+            }
+        </div>
+    );
+};
+
+const DataNoKey = ({ data, getScriptRef }) => {
+    return (
+        <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
+            <div className={cn('basic500', styles.headRow)}>
+                <div className={styles.dataItem}>Type</div>
+                <div className={styles.dataItem}>Value</div>
+            </div>
+            {
+                (data || []).map((item, index) => (
+                    <div key={index} className={cn(styles.dataRow)}>
+                        <div className={styles.dataItem}>{item.type}</div>
+                        <div title={String(item.value)} className={styles.dataItem}>{JSON.stringify(item.value)}</div>
+                    </div>
+                ))
+            }
+        </div>
+    );
+};
+
 @translate(I18N_NAME_SPACE)
 export class ShowScript extends React.PureComponent {
     
-    readonly props: { script: string, optional?: boolean, showNotify?: boolean, className?: string, hideScript?: boolean };
+    readonly props: { noKey?: boolean, data?: Array<any>, isData?: boolean, script?: string, optional?: boolean, showNotify?: boolean, className?: string, hideScript?: boolean };
     readonly state = { showAllScript: false, showCopied: false, showResizeBtn: false };
     protected scriptEl: HTMLDivElement;
     protected _t;
@@ -21,9 +64,9 @@ export class ShowScript extends React.PureComponent {
     getScriptRef = (ref) => this.scriptEl = ref;
     
     componentDidMount() {
-        const { script, optional, hideScript } = this.props;
+        const { script, optional, hideScript, data } = this.props;
         
-        if (hideScript || optional && !script) {
+        if (hideScript || optional && !(script || data && data.length)) {
             return null;
         }
     
@@ -34,21 +77,33 @@ export class ShowScript extends React.PureComponent {
     }
     
     render() {
-        const { script, optional } = this.props;
+        const { script, optional, data, isData, noKey } = this.props;
         const showAllClass = cn(this.props.className, {
                 [styles.showAllScript]: this.state.showAllScript
             });
         
-        if (optional && !script) {
+        const hasScript = script || data && data.length;
+        
+        if (optional && !hasScript) {
             return null;
         }
         
-        return <div className={`plate plate-with-controls plate-with-controls-short break-all ${showAllClass}`}>
-            <pre ref={this.getScriptRef} className={`${styles.codeScript} body3`}>{script}</pre>
+        const toCopy = !isData ? script : JSON.stringify(data || [], null, 4);
+        
+        return <div className={`plate plate-with-controls break-all ${showAllClass}`}>
+            {
+                !isData && <ContentScript getScriptRef={this.getScriptRef} script={script}/>
+            }
+            {
+                isData && !noKey && <Data data={data} getScriptRef={this.getScriptRef}/>
+            }
+            {
+                isData && noKey && <DataNoKey data={data} getScriptRef={this.getScriptRef}/>
+            }
             <div className="buttons-wrapper">
-                { script ? <Copy text={script} onCopy={this.onCopy}>
+                { hasScript ? <Copy text={toCopy} onCopy={this.onCopy}>
                     <Button>
-                        <Trans i18nKey='showScriptComponent.copy'>Copy</Trans>
+                        <Trans i18nKey='showScriptComponent.copyCode'>Copy code</Trans>
                     </Button>
                 </Copy> : null }
                 { this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>

@@ -24,7 +24,6 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
         const { message } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
-        const script = (tx.call.args || []).map(item => `type: "${item.type}", value: "${item.value}"`).join('\n');
         
         return <div className={className}>
             
@@ -48,7 +47,9 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
                 </div>
                 <div className="body3 margin-min">{tx.call && tx.call.function || 'Default'}</div>
                 <ShowScript className={styles.dataScript}
-                            script={script}
+                            isData={true}
+                            noKey={true}
+                            data={tx.call.args || []}
                             optional={true}
                             showNotify={true}
                             hideScript={this.props.collapsed}/>

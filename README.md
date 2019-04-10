@@ -750,8 +750,8 @@ Field:
         type: 12,
         data: {
              data: [
-                  { key: "string", value: "testVal", type: "string" },
-                  { key: "binary", value: "base64:AbCd", type: "binary" },
+                  { key: "string", value: "testVdfgdgf dfgdfgdfg dfg dfg al", type: "string" },
+                  { key: "binary", value: "base64:AbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCd", type: "binary" },
                   { key: "integer", value: 20, type: "integer" },
                   { key: "boolean", value: false, type: "boolean" },
              ],
@@ -811,7 +811,7 @@ Example 2:
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
-             script: "base64:AQa3b8tH",
+             script: "base64:AQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tH",
              fee: {
                  "tokens": "0.01",
                  "assetId": "WAVES"

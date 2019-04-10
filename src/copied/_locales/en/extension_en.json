@@ -243,6 +243,7 @@
 	"showScriptComponent": {
 		"copied": "Copied!",
 		"copy": "Copy",
+		"copyCode": "Copy code",
 		"hide": "Hide",
 		"showAll": "Show all"
 	},

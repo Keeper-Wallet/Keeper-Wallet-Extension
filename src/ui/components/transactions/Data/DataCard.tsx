@@ -24,7 +24,6 @@ export class DataCard extends React.PureComponent<IData> {
         const { message } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
-        const script = tx.data.map(item => JSON.stringify(item, null, 4)).join('\n');
         return <div className={className}>
 
             <div className={styles.cardHeader}>
@@ -43,7 +42,8 @@ export class DataCard extends React.PureComponent<IData> {
             
             <div className={`${styles.cardContent} marginTop1`}>
                 <ShowScript className={styles.dataScript}
-                            script={script}
+                            data={tx.data || []}
+                            isData={true}
                             optional={true}
                             showNotify={true}
                             hideScript={this.props.collapsed}/>
