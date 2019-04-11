@@ -13,6 +13,7 @@ const ContentScript = ({ script, getScriptRef }) =>
     
 const Data = ({ data, getScriptRef }) => {
     return (
+        <div>
         <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
             <div className={cn('basic500', styles.headRow)}>
                 <div className={styles.dataItemData}>Key</div>
@@ -29,11 +30,13 @@ const Data = ({ data, getScriptRef }) => {
                 ))
             }
         </div>
+        </div>
     );
 };
 
 const DataNoKey = ({ data, getScriptRef }) => {
     return (
+        <div>
         <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
             <div className={cn('basic500', styles.headRow)}>
                 <div className={styles.dataItem}>Type</div>
@@ -47,6 +50,7 @@ const DataNoKey = ({ data, getScriptRef }) => {
                     </div>
                 ))
             }
+        </div>
         </div>
     );
 };
