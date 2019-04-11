@@ -57,6 +57,8 @@ export function cbToPromise(fn, context) {
 }
 
 export function promiseToCb(fn, context) {
+    const noop = () => {};
+
     return (...args) => {
 
         const lastArg = args[args.length - 1];
@@ -66,7 +68,7 @@ export function promiseToCb(fn, context) {
             callback = lastArg;
             args.pop()
         } else {
-            callback = () => {};
+            callback = noop;
         }
         fn.apply(context, args)
             .then(result => setImmediate(callback, null, result))

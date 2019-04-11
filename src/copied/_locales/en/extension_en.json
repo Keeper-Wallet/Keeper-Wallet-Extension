@@ -106,6 +106,7 @@
 	},
 	"importSeed": {
 		"address": "Account address",
+		"existError": "Seed already exist",
 		"importAccount": "Import Account",
 		"importSeed": "Welcome Back",
 		"inputSeed": "Your seed is the 15 words you saved when creating your account",
@@ -369,6 +370,7 @@
 		"recipients": "Recipients",
 		"reissuable": "Reissuable",
 		"script": "Script",
+		"scriptAddress": "Script address",
 		"scriptInvocation": "Script invocation",
 		"scriptInvocationFunction": "Function",
 		"scriptInvocationName": "Script Invocation",
