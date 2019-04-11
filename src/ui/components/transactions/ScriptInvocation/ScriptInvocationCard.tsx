@@ -24,6 +24,7 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
         const { message } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
+        const functionName = tx.call && tx.call.function || 'Default';
         
         return <div className={className}>
             
@@ -41,11 +42,11 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
                 </div>
             </div>
             
-            <div className={`${styles.cardContent} marginTop1`}>
-                <div className="basic500 body3 margin-min">
+            <div className={cn(styles.cardContent, 'marginTop1')}>
+                <div className={cn("basic500 body3 margin-min", styles.origin)}>
                     <Trans i18nKey='transactions.scriptInvocationFunction'>Function</Trans>
                 </div>
-                <div className="body3 margin-min">{tx.call && tx.call.function || 'Default'}</div>
+                <div className={cn('body3 margin2', styles.functionTitle, styles.origin)} title={functionName}>{functionName}</div>
                 <ShowScript className={styles.dataScript}
                             isData={true}
                             noKey={true}

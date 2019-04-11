@@ -43,11 +43,7 @@ const ToggleList = ({ count, currentCount, onClick }) => {
 export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
     
     readonly state = Object.create(null);
-    
-    toggleShowRecipients = (count) => {
-        this.setState({ count });
-    };
-    
+
     render() {
         
         const { message, assets } = this.props;
@@ -59,9 +55,9 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
         return <div>
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
-                    <Trans i18nKey='transactions.function'>Function</Trans>
+                    <Trans i18nKey='transactions.scriptAddress'>Script address</Trans>
                 </div>
-                <div className={styles.txValue}>{tx.call.function}</div>
+                <div className={styles.txValue}>{tx.dappAddress}</div>
             </div>
             {   tx.payment && tx.payment.length &&
                 <div className={styles.txRow}>
