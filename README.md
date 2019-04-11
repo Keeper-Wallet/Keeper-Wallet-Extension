@@ -9,7 +9,7 @@ Waves Keeper is designed for convenience, so users can sign transactions with ju
 
 **Waves Keeper API**
 
-On browser pages that operate under the http/https with Waves Keeper extension installed, Waves Keeper global object becomes available, featuring the following methods:
+On browser pages that operate under the http/https (not worked local pages with file:// protocol) with Waves Keeper extension installed, Waves Keeper global object becomes available, featuring the following methods:
 
 
 
@@ -26,6 +26,19 @@ On browser pages that operate under the http/https with Waves Keeper extension i
 *   `on`
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+
+On initialize window.WavesKeeper has not api methods. 
+You can use WavesKeeper.initialPromise for waiting end initializing api.
+Example:
+```
+    WavesKeeper.initialPromise
+        .then((keeperApi) => { 
+            /*...init app*/
+            keeperApi.publicState().then( state => startApp(state));
+        })
+      
+```
 
 In Waves Keeper, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except "`on"`), the user will see a request to allow that website's access to Waves Keeper. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and an error message will be displayed in response to all requests `{message: "Api rejected by user", code: 12}.` The users won't see new notifications. To grant access, the user will mark the website as trusted in the interface.
 
@@ -155,7 +168,7 @@ Example:
 
 ```
     const authData = { data: "Auth on my site" };
-    Waves.auth(authData)
+    WavesKeeper.auth(authData)
         .then(auth => {
             console.log(auth); //displaying the result on the console
             /*...processing data */
@@ -737,8 +750,8 @@ Field:
         type: 12,
         data: {
              data: [
-                  { key: "string", value: "testVal", type: "string" },
-                  { key: "binary", value: "base64:AbCd", type: "binary" },
+                  { key: "string", value: "testVdfgdgf dfgdfgdfg dfg dfg al", type: "string" },
+                  { key: "binary", value: "base64:AbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCdAbCd", type: "binary" },
                   { key: "integer", value: 20, type: "integer" },
                   { key: "boolean", value: false, type: "boolean" },
              ],
@@ -798,7 +811,7 @@ Example 2:
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
-             script: "base64:AQa3b8tH",
+             script: "base64:AQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tHAQa3b8tH",
              fee: {
                  "tokens": "0.01",
                  "assetId": "WAVES"
@@ -854,8 +867,8 @@ In case of a success, a transfer fee can be paid in the asset.
 
 
 *   `assetId` string – asset ID
-*   `script` string - [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-*   `fee` MoneyLike -fee
+*   `script` string – [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+*   `fee` MoneyLike – fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -882,8 +895,48 @@ Example:
    });
 ```
 
-
 In case of a success, the asset's script will be reset.
+
+
+### [Тип 16 SCRIPT INVOCATION - call account script function *(testnet only)]()  
++ `dappAddress` string – address script account
++ `fee` MoneyLike – fee 
++ `call` object –
+    + `function` string function name
+    + `args` array
+        +   `type` "binary"/string/"integer"/"boolean" - type, 
+        +   `value` /string/string/number/boolean - value for type 
++ `*payment` array MoneyLike (at now can use only 1 payment)
++ `*senderPublicKey` string - public key in base58
++ `*timestamp` number/string - number/string – time in ms
+
+Example:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 16,
+        data: {
+             fee: {
+                 "tokens": "0.05",
+                 "assetId": "WAVES"
+             },
+             dappAddress: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
+             call: {
+             		function: 'tellme',
+             		args: [
+             		    { 
+             		      "type": "string", 
+             		      "value": "Will?"
+             		    }]
+             	}, payment: [{assetId: "WAVES", tokens: 2}]
+        }
+   }).then((tx) => {
+        console.log("Ура! Я выполнил скрипт!!!");
+   }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+   });
+```
+
+In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU` 
 
 **[Calculating transaction fees](https://docs.wavesplatform.com/en/technical-details/transactions-fees.html)**
 

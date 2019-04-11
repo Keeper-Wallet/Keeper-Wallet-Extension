@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.0        
+# Waves Keeper v1.1.2        
 [en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
@@ -7,7 +7,7 @@
 
 ## Waves Keeper API
 
-На страницах браузера, работающим по протоколам http/https, 
+На страницах браузера, работающим по протоколам http/https (не работает на локальных страничках по протоколу file://), 
 с установленным расширением Waves Keeper
 становятся доступным глобальный объект WavesKeeper 
 в котором вы найдете следующие методы:
@@ -24,6 +24,19 @@
 - `on`
 
 > Все методы кроме `on` работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+
+При загрузке страницы в объекте WavesKeeper нет методов апи до окончания инициализации плагина. 
+Для облегчения работы с WavesKeeper при инициализации в window.WavesKeeper есть initialPromise
+который отрабатывает в момент окончания инициализации.
+Пример:
+```
+    WavesKeeper.initialPromise
+        .then((keeperApi) => { 
+            /*...инициализация работы приложения с WavesKeeper*/
+            keeperApi.publicState().then( state => startApp(state));
+        })
+      
+```
 
 В Waves Keeper, для большей безопасности и удобства использования, 
 каждый новый сайт использующий API должен быть разрешен пользователем.
@@ -134,7 +147,7 @@
 Пример:
 ```
     const authData = { data: "Auth on my site" };
-    Waves.auth(authData)
+    WavesKeeper.auth(authData)
         .then(auth => {
             console.log(auth); //вывод в консоль результата
             /*...обработка данных */
@@ -785,6 +798,46 @@ MoneyLike может иметь вид:
 
 В случае успеха на ассете будет переписан скрипт 
 
+
+### [Тип 16 SCRIPT INVOCATION - выполнение функций скрипта *(только testnet)]()  
++ `dappAddress` string адрес контракта
++ `fee` MoneyLike комиссия 
++ `call` объект слкдующей структуры
+    + `function` string название функции
+    + `args` массив аргументов вида
+        +   `type` "binary"/string/"integer"/"boolean" - тип, 
+        +   `value` /string/string/number/boolean зависит от типа 
++ `*payment` массив MoneyLike (пока поддерживается 1 платеж)
++ `*senderPublicKey` string - публичный ключ отправителя в base58
++ `*timestamp` number/string - время в мс
+
+Пример:
+```
+   WavesKeeper.signAndPublishTransaction({
+        type: 16,
+        data: {
+             fee: {
+                 "tokens": "0.05",
+                 "assetId": "WAVES"
+             },
+             dappAddress: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
+             call: {
+             		function: 'tellme',
+             		args: [
+             		    { 
+             		      "type": "string", 
+             		      "value": "Will?"
+             		    }]
+             	}, payment: [{assetId: "WAVES", tokens: 2}]
+        }
+   }).then((tx) => {
+        console.log("Ура! Я выполнил скрипт!!!");
+   }).catch((error) => {
+        console.error("Что-то пошло не так", error);
+   });
+```
+
+В случае успеха будет запущен скрипт 
 
 ### [Как расчитать комиссию](https://docs.wavesplatform.com/en/technical-details/transactions-fees.html)
 

@@ -106,6 +106,7 @@
 	},
 	"importSeed": {
 		"address": "Account address",
+		"existError": "Seed already exist",
 		"importAccount": "Import Account",
 		"importSeed": "Welcome Back",
 		"inputSeed": "Your seed is the 15 words you saved when creating your account",
@@ -243,6 +244,7 @@
 	"showScriptComponent": {
 		"copied": "Copied!",
 		"copy": "Copy",
+		"copyCode": "Copy code",
 		"hide": "Hide",
 		"showAll": "Show all"
 	},
@@ -296,7 +298,7 @@
 		"transactionConfirmed": "Your transaction is confirmed!",
 		"transactionConfirmedBurn": "You have approved a Burn transaction.",
 		"transactionFiled": "Your transaction is rejected!",
-		"transactionSend": "Your have send",
+		"transactionSend": "Your have sent",
 		"transactionSendAlias": "An alias has been created.",
 		"transactionSendCreateOrder": "You have approved a Create Order transaction",
 		"transactionSendData": [],
@@ -334,6 +336,7 @@
 		"details": "Details",
 		"dex": "DEX",
 		"fee": "Fee",
+		"function": "Function",
 		"hashId": "Request hash",
 		"hide": "hide",
 		"hideTransactions": "Hide transactions",
@@ -358,6 +361,7 @@
 		"packTransactionGroup": "Group",
 		"packTransactions": "transactions",
 		"packTransactionsFees": "Fees",
+		"payment": "Payment",
 		"permission": {
 			"details": "Permission details"
 		},
@@ -366,6 +370,10 @@
 		"recipients": "Recipients",
 		"reissuable": "Reissuable",
 		"script": "Script",
+		"scriptAddress": "Script address",
+		"scriptInvocation": "Script invocation",
+		"scriptInvocationFunction": "Function",
+		"scriptInvocationName": "Script Invocation",
 		"scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
 		"scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
 		"sendTo": "Send to",

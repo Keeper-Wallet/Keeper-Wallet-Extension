@@ -261,7 +261,6 @@ export class MessageController extends EventEmitter {
     }
 
     async _transformData(data) {
-
         if (!data || typeof data !== 'object' || data instanceof BigNumber || data instanceof Money) {
             return data;
         }
@@ -278,9 +277,10 @@ export class MessageController extends EventEmitter {
             }
 
             // Validate fields containing assetId
-            if (['assetId', 'amountAsset', 'priceAsset'].includes(key)) {
+            if (['assetId', 'amountAsset', 'priceAsset', 'feeAssetId'].includes(key)) {
                 await this.assetInfo(data[key]);
             }
+
             // Convert moneyLike fields
             const field = data[key];
 
@@ -292,8 +292,9 @@ export class MessageController extends EventEmitter {
                 } else if (field.hasOwnProperty('coins') && field.hasOwnProperty('assetId')) {
                     const asset = await this.assetInfo(data[key].assetId);
                     data[key] = Money.fromCoins(field.coins, asset)
-                } else if (Array.isArray(field)) {
-                    data[key] = await Promise.all(data[key].map((item) => this._transformData(item)));
+                } else if (field.hasOwnProperty('amount') && field.hasOwnProperty('assetId')) {
+                    const asset = await this.assetInfo(data[key].assetId);
+                    data[key] = Money.fromCoins(field.amount, asset);
                 } else {
                     data[key] = await this._transformData(field);
                 }
