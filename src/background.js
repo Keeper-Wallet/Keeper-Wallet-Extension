@@ -453,7 +453,7 @@ class BackgroundService extends EventEmitter {
             return this._publicState(this.getState(), origin);
         };
 
-        return api
+        return api;
     }
 
     setupUiConnection(connectionStream) {

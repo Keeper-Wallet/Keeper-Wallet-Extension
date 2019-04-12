@@ -1,6 +1,9 @@
 ## Waves Keeper
 
 
+#### version 1.1.3
++ Fix bug with attachments from waves lib
+
 #### version 1.1.2
 + Add script invocation type: 16
 + Add initial promise
