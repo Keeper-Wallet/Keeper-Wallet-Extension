@@ -1,21 +1,21 @@
 import * as i18n from 'i18next';
 import { reactI18nextModule } from 'react-i18next';
 import { default as Locize } from 'i18next-locize-backend';
-import { I18N_NAME_SPACE, I18N_API_KEY, I18N_PROJECT_ID, WAVESKEEPER_DEBUG } from './appConfig';
+import { I18N_NAME_SPACE, WAVESKEEPER_DEBUG } from './appConfig';
 
 
-let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}_{{lng}}.json' } as any;
+let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}.{{lng}}.json' } as any;
 
-if (WAVESKEEPER_DEBUG) {
-    backendPath = {
-        loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-        //privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-        //pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-        //getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
-        //addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-        //updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    };
-}
+// if (WAVESKEEPER_DEBUG) {
+//     backendPath = {
+//         loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+//         //privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+//         //pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+//         //getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
+//         //addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+//         //updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+//     };
+// }
 
 i18n
     .use(reactI18nextModule)
@@ -32,8 +32,8 @@ i18n
         nsSeparator: '.', // we use content as keys
 
         backend: {
-            projectId: I18N_PROJECT_ID,
-            apiKey: I18N_API_KEY,
+            projectId: '',
+            apiKey: '',
             referenceLng: 'en',
             ...backendPath
         },

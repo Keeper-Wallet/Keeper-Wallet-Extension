@@ -149,4 +149,4 @@ test/sandbox.spec.js
 
 src/copied/_locales/extension_*.json
 
-scripts/lokalise.js
+config.json

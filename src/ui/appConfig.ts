@@ -9,8 +9,6 @@ export const CONFIG = {
 };
 
 export const I18N_NAME_SPACE = 'extension';
-export const I18N_PROJECT_ID = '30ffe655-de56-4196-b274-5edc3080c724';
-export const I18N_API_KEY = '5af41ced-a862-4947-a079-2c7999367925';
 
 export const ASSETS = {
     "EUR": "Gtb1WRznfchDnTh37ezoDTJ4wcoKaRsKqKjJjy7nm2zU",
