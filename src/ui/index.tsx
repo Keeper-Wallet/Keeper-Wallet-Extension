@@ -17,6 +17,7 @@ export async function initApp(background: any) {
     backgroundService.on(updateState);
     backgroundService.getNetworks();
     backgroundService.getState();
+    document.addEventListener('mousemove', () => backgroundService.updateIdle());
 }
 
 

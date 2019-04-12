@@ -24,6 +24,7 @@ import {
     TxInfoController,
     ExternalDeviceController,
     RemoteConfigController,
+    IdleController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
@@ -31,7 +32,7 @@ import {WindowManager} from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
 import { WAVESKEEPER_DEBUG } from  './constants';
 
-
+const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
@@ -108,6 +109,8 @@ async function setupBackgroundService() {
         }
     });
 
+
+    backgroundService.idleController = new IdleController({ backgroundService });
 
     // Connection handlers
     function connectRemote(remotePort) {
@@ -254,7 +257,14 @@ class BackgroundService extends EventEmitter {
         return {
             // state
             getState: async () => this.getState(),
-
+            updateIdle: async () => this.idleController.update(),
+            setIdleOptions: async ({ type }) => {
+                const config = this.remoteConfigController.getIdleConfig();
+                if (!(Object.keys(config)).includes(type)) {
+                    throw ERRORS.UNKNOWN_IDLE();
+                }
+                this.idleController.setOptions({ type, interval: config[type] });
+            },
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (address, network) => this.preferencesController.selectAccount(address, network),

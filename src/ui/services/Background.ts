@@ -7,6 +7,7 @@ class Background {
     onUpdateCb: Array<(state) => void> = [];
     _defer;
     _assetsStore;
+    _lastUpdateIdle = Date.now();
     
     constructor() {
         this._assetsStore = {};
@@ -34,6 +35,16 @@ class Background {
         background.on('update', this._onUpdate.bind(this));
         this.background = background;
         this._defer.resolve();
+    }
+    
+    async updateIdle() {
+        const now = Date.now();
+        if (now - this._lastUpdateIdle < 10000) {
+            return  null;
+        }
+        this._lastUpdateIdle = now;
+        await this.initPromise;
+        return  this.background.updateIdle();
     }
     
     async allowOrigin(origin: string) {

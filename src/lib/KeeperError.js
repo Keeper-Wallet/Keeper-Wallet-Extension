@@ -9,6 +9,7 @@
  *  "14": {msg: string, name: string},
  *  "15": {msg: string, name: string},
  *  "16": {msg: string, name: string},
+ *  "17": {msg: string, name: string},
  *  "10": {msg: string, name: string}
  *  }}
  */
@@ -22,6 +23,7 @@ const ERRORS_DATA = {
     14: { msg: 'Add Waves Keeper account', name: 'EMPTY_KEEPER' },
     15: { msg: 'Filed request', name: 'FILED_MSG' },
     16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
+    17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
 };
 
 const DEF_CODE = 11;
@@ -45,6 +47,7 @@ class KeeperError extends Error {
  *    "API_DENIED": (function(*=): KeeperError)
  *    "INIT_KEEPER": (function(*=): KeeperError)
  *    "EMPTY_KEEPER": (function(*=): KeeperError)
+ *    "UNKNOWN_IDLE": (function(*=): KeeperError)
  *    "FILED_MSG": (function(*=): KeeperError)
  *    "UNKNOWN_TX": (function(*=): KeeperError)
  *  }
