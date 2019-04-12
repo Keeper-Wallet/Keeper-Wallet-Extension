@@ -13,7 +13,7 @@ const PUBLISHER_NAME = 'WavesPlatform';
 const NAME = 'WavesKeeper';
 
 const REPLACE_PATTERN = {
-    "0.1.1.2": "1.1.2.0", //TODO delete after first release
+    "0.1.1.3": "1.1.3.0", //TODO delete after first release
     "INSERT-YOUR-PACKAGE-IDENTITY-NAME-HERE": PACKAGE_IDENTITY_NAME,
     "INSERT-YOUR-PACKAGE-IDENTITY-PUBLISHER-HERE": PACKAGE_IDENTITY_PUBLISHER,
     "INSERT-YOUR-PACKAGE-PROPERTIES-PUBLISHERDISPLAYNAME-HERE": PUBLISHER_NAME,
@@ -23,6 +23,11 @@ const REPLACE_PATTERN = {
     "__MSG_appName__": "Waves Keeper",
     "__MSG_appDescription__": "Manage your private keys securely",
 };
+
+const manifest = JSON.stringify(fs.readSync(`${DIST}/manifest.json`));
+const version = manifest.version;
+
+REPLACE_PATTERN[`0.${version}`] = `${version}.0`;
 
 const ICONS = [
     {
@@ -42,6 +47,7 @@ const ICONS = [
 if (fs.existsSync(`${DIST_PATH}/_locales/index.json`)) {
     execSync(`rm ${DIST_PATH}/_locales/index.json`);
 }
+
 try {
     execSync(`${distUtil} -s ${NAME} -d ${ROOT_PATH} -l debug -p edgeextension -f edgeextension -m ${DIST_PATH}/manifest.json`);
 
