@@ -1,8 +1,8 @@
 import { SeedAdapter, TSignData } from '@waves/signature-adapter';
 import * as SG from '@waves/signature-generator';
-import { utils } from '@waves/signature-generator';
-import { networks } from '../reducers/updateState';
+import { utils, libs } from '@waves/signature-generator';
 
+import { pipe, identity, isNil, ifElse, concat } from 'ramda';
 
 export function networkByteFromAddress(address: string): string {
     const rawNetworkByte = SG.libs.base58.decode(address)[1];
@@ -108,3 +108,24 @@ export const validateNode = async (url: string, networkCode: string) => {
     
     return code;
 };
+
+
+const bytesToBase58 = libs.base58.encode;
+const bytesToString = libs.converters.byteArrayToString;
+
+export const bytesToSafeString = ifElse(
+    pipe(
+        identity,
+        bytesToString,
+        isNil,
+    ),
+    pipe(
+        identity,
+        bytesToBase58,
+        concat('base58:')
+    ),
+    pipe(
+        identity,
+        bytesToString
+    )
+)
