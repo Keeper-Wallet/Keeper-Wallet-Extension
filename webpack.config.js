@@ -2,11 +2,14 @@ const conf = require('./scripts/webpack.config');
 const prodConf = require('./scripts/webpack.prod.config');
 const defConf = require('./scripts/webpack.dev.config');
 const getVersion = require('./scripts/getVersion');
+const buildConfig = require('./config.json');
 
-const DIST = 'dist';
-const LANGS = ['en'];
-const PAGE_TITLE = 'Waves Keeper';
-const PLATFORMS = ['chrome', 'firefox', 'opera', 'edge'];
+const config = { ...buildConfig };
+
+const DIST = config.DIST || 'dist';
+const LANGS = config.LANGS || ['en'];
+const PAGE_TITLE = config.PAGE_TITLE || 'Waves Keeper';
+const PLATFORMS = config.PLATFORMS || ['chrome', 'firefox', 'opera', 'edge'];
 
 module.exports = () => {
     const version = getVersion();
@@ -22,7 +25,6 @@ module.exports = () => {
                 DIST,
                 PLATFORMS,
                 LANGS,
-                I18N_API,
                 PAGE_TITLE,
                 isProduction,
             })

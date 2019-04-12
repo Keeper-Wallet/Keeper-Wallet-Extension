@@ -7,12 +7,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const copyFiles = require('./copyFiles');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const DownloadJsonPlugin = require('download-json-webpack-plugin');
+const getLocales = require('./lokalise');
 
 
-module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isProduction }) => {
+module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, isProduction }) => {
 
-    const SOURCE_FOLDER = path.resolve(__dirname,'../' ,'src');
+    const SOURCE_FOLDER = path.resolve(__dirname, '../', 'src');
     const DIST_FOLDER = path.resolve(__dirname, '../', DIST);
     const BUILD_FOLDER = path.resolve(DIST_FOLDER, 'build');
     const COPY = [{
@@ -45,7 +45,7 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
     plugins.push(new CopyWebpackPlugin(COPY));
 
-    plugins.push(new ExtractTextPlugin({filename: 'index.css', allChunks: true}));
+    plugins.push(new ExtractTextPlugin({ filename: 'index.css', allChunks: true }));
 
     plugins.push(new HtmlWebpackPlugin({
         title: PAGE_TITLE,
@@ -62,15 +62,10 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
         hash: true,
         excludeChunks: ['background', 'contentscript', 'inpage'],
     }));
-
-    LANGS.forEach(lng => {
-        plugins.push(
-            new DownloadJsonPlugin({
-                path: `${I18N_API}/${lng}/extension`,
-                filename: `src/copied/_locales/${lng}/extension_${lng}.json`,
-            })
-        );
-    });
+    plugins.push(new WebpackCustomActions({
+        onBuildStart: [() => getLocales(LANGS, 'src/copied/_locales')
+        ]
+    }));
 
     plugins.push(new WebpackCustomActions({ onBuildEnd: [getPlatforms] }));
 
@@ -89,7 +84,7 @@ module.exports = ({ version, DIST, LANGS, PAGE_TITLE, PLATFORMS, I18N_API, isPro
 
         resolve: {
             plugins: [new TsConfigPathsPlugin({ /*configFile: "./path/to/tsconfig.json" */ })],
-            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".css",".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".styl", ".css", ".png", ".jpg", ".gif", ".svg", ".woff", ".woff2", ".ttf", ".otf"]
         },
 
         plugins,

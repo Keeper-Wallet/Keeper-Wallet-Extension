@@ -53,7 +53,6 @@ function getFile(url, locales, path) {
 function unzipFile(response, locales, path ) {
     return response && response.pipe(unzipper.Parse())
         .on('entry', function (entry) {
-            console.log(entry.path);
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
 
@@ -78,8 +77,5 @@ function unzipFile(response, locales, path ) {
             entry.pipe(fs.createWriteStream(`${path}/${fileName}`));
         });
 }
-
-
-getLocales(['en'], '../src/copied/_locales');
 
 module.exports = getLocales;

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
-const path  = require('path');
+const path = require('path');
 const DIST = './dist/edge';
 const EXT_DIST = './dist';
 const DIST_PATH = path.resolve(DIST);
@@ -13,7 +13,6 @@ const PUBLISHER_NAME = 'WavesPlatform';
 const NAME = 'WavesKeeper';
 
 const REPLACE_PATTERN = {
-    "0.1.1.3": "1.1.3.0", //TODO delete after first release
     "INSERT-YOUR-PACKAGE-IDENTITY-NAME-HERE": PACKAGE_IDENTITY_NAME,
     "INSERT-YOUR-PACKAGE-IDENTITY-PUBLISHER-HERE": PACKAGE_IDENTITY_PUBLISHER,
     "INSERT-YOUR-PACKAGE-PROPERTIES-PUBLISHERDISPLAYNAME-HERE": PUBLISHER_NAME,
@@ -24,7 +23,7 @@ const REPLACE_PATTERN = {
     "__MSG_appDescription__": "Manage your private keys securely",
 };
 
-const manifest = JSON.stringify(fs.readSync(`${DIST}/manifest.json`));
+const manifest = JSON.parse(fs.readFileSync(`${DIST}/manifest.json`));
 const version = manifest.version;
 
 REPLACE_PATTERN[`0.${version}`] = `${version}.0`;
@@ -63,7 +62,7 @@ try {
 
     fs.writeFileSync(`${packDir}/Extension/manifest.json`, manifestJsonReady);
 
-    ICONS.forEach(({name, size}) => {
+    ICONS.forEach(({ name, size }) => {
         const from = `${packDir}/Extension/images/icon_${size}.png`;
         const to = `${packDir}/Assets/${name}`;
         fs.copyFileSync(from, to);
