@@ -4,10 +4,9 @@ const defConf = require('./scripts/webpack.dev.config');
 const getVersion = require('./scripts/getVersion');
 
 const DIST = 'dist';
-const LANGS = ['ru', 'en'];
+const LANGS = ['en'];
 const PAGE_TITLE = 'Waves Keeper';
 const PLATFORMS = ['chrome', 'firefox', 'opera', 'edge'];
-const I18N_API = 'https://api.locize.io/30ffe655-de56-4196-b274-5edc3080c724/latest';
 
 module.exports = () => {
     const version = getVersion();
@@ -16,7 +15,7 @@ module.exports = () => {
     }
     const isProduction = process.env.NODE_ENV === 'production';
     const configFn = isProduction ? prodConf : defConf;
-    const config = configFn(
+    return configFn(
         {
             ...conf({
                 version,
@@ -28,6 +27,4 @@ module.exports = () => {
                 isProduction,
             })
         });
-
-    return config;
 };

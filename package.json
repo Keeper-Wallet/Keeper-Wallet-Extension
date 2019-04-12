@@ -98,6 +98,7 @@
     "stylus-loader": "^3.0.2",
     "typescript": "^3.0.1",
     "typings-for-css-modules-loader": "^1.7.0",
+    "unzipper": "^0.9.11",
     "url-loader": "^1.1.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
