@@ -31,8 +31,6 @@ import {WindowManager} from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
 import { WAVESKEEPER_DEBUG } from  './constants';
 
-const IDLE_INTERVAL = 60;
-const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
@@ -109,25 +107,6 @@ async function setupBackgroundService() {
             windowManager.closeWindow();
         }
     });
-
-    // Idle management
-    extension.idle.setDetectionInterval(IDLE_INTERVAL);
-
-    if (!isEdge) {
-        extension.idle.onStateChanged.addListener(state => {
-            if (['active', 'idle'].indexOf(state) > -1) {
-                backgroundService.walletController.lock();
-            }
-        });
-    } else {
-        setInterval(() => {
-            extension.idle.queryState(IDLE_INTERVAL, (state) => {
-                if (["idle", "locked"].indexOf(state) > -1) {
-                    backgroundService.walletController.lock();
-                }
-            })
-        }, 10000)
-    }
 
 
     // Connection handlers
