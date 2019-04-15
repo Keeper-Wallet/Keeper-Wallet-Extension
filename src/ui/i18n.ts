@@ -23,7 +23,7 @@ i18n
     .init({
         fallbackLng: 'en',
         appendNamespaceToCIMode: true,
-        saveMissing: WAVESKEEPER_DEBUG,
+        saveMissing: false,
         ns: [I18N_NAME_SPACE],
         defaultNS: I18N_NAME_SPACE,
 

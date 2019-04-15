@@ -11,54 +11,18 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 class SettingsGeneralComponent extends React.Component {
 
     readonly props;
-    lock = () => {
-        this.props.setTab(null);
-        this.props.lock();
-    };
-    networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
-    permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
-    deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
-    toggleAutoLockHandler = () => {
-        this.props.setUiState({ autoClickProtection: !this.props.autoClickProtection });
-    };
 
     render() {
+        const { idle } = this.props;
         
-        const selectList = [
-            {
-                id: 'idle',
-                text: 'Idle mode',
-                value: 'idle',
-            },
-            {
-                id: '5m',
-                text: '5 min',
-                value: 5 * 1000 * 60,
-            },
-            {
-                id: '10m',
-                text: '10 min',
-                value: 10 * 1000 * 60,
-            },
-            {
-                id: '20m',
-                text: '20 min',
-                value: 20 * 1000 * 60,
-            },
-            {
-                id: '40m',
-                text: '40 min',
-                value: 40 * 1000 * 60,
-            },
-            {
-                id: '1h',
-                text: '1 hour',
-                value: 60 * 1000 * 60,
-            }
-        ];
+        const selectList = Object.entries(idle).map(([id, value]) => ({
+            id,
+            value,
+            text: <Trans i18nKey={`settings.time_${id}`} key={id}>{id}</Trans>
+        }));
         
         return <div className={styles.content}>
 
@@ -113,7 +77,8 @@ class SettingsGeneralComponent extends React.Component {
 
 const mapStateToProps = function(store) {
     return {
-        autoClickProtection: store.uiState && store.uiState.autoClickProtection
+        autoClickProtection: store.uiState && store.uiState.autoClickProtection,
+        idle: store.config && store.config.idle || {},
     };
 };
 

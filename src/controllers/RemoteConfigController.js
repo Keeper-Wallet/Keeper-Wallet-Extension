@@ -136,6 +136,7 @@ export class RemoteConfigController {
                 networks = DEFAULT_CONFIG.NETWORKS,
                 network_config = DEFAULT_CONFIG.NETWORK_CONFIG,
                 messages_config = DEFAULT_CONFIG.MESSAGES_CONFIG,
+                idle = DEFAULT_CONFIG.IDLE,
                 pack_config = DEFAULT_CONFIG.PACK_CONFIG,
             } = await this.fetchConfig();
 
@@ -143,6 +144,7 @@ export class RemoteConfigController {
                 blacklist,
                 whitelist,
                 config: {
+                    idle,
                     networks,
                     network_config,
                     messages_config,
