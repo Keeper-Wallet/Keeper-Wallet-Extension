@@ -238,6 +238,12 @@
         "password": "Change password",
         "permissionsControl": "Permissions control",
         "settings": "Settings",
+        "time_10m": "10 min",
+        "time_1h": "1 hour",
+        "time_20m": "20 min",
+        "time_40m": "40 min",
+        "time_5m": "5 min",
+        "time_idle": "Browser session end",
         "toolitpContent": "Protect yourself from Clicker Trojans threats"
     },
     "showScriptComponent": {
