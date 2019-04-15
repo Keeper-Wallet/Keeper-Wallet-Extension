@@ -9,13 +9,13 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
 class SettingsGeneralComponent extends React.Component {
-
+    
     readonly props;
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
     setIdle = (id) => this.props.setIdle(id);
-
+    
     render() {
         const { idle } = this.props;
         
@@ -24,24 +24,24 @@ class SettingsGeneralComponent extends React.Component {
             value,
             text: <Trans i18nKey={`settings.time_${id}`} key={id}>{id}</Trans>
         }));
-
+        
         return <div className={styles.content}>
-
+            
             <div className={`${styles.title1} title1`}>
                 <Trans i18nKey='settings.general'>General</Trans>
             </div>
-
-         
-                <div className="margin-main-big">
-                    <Select description={<Trans i18nKey='settings.sessionTimeout'>Session Timeout in</Trans>}
-                            selectList={selectList as any}
-                            selected={this.props.idleOptions.type}
-                            onSelectItem={this.setIdle}
-                    >
-                    
-                    </Select>
-                </div>
-
+            
+            
+            <div className="margin-main-big">
+                <Select description={<Trans i18nKey='settings.sessionTimeout'>Session Timeout in</Trans>}
+                        selectList={selectList as any}
+                        selected={this.props.idleOptions.type}
+                        onSelectItem={this.setIdle}
+                >
+                
+                </Select>
+            </div>
+            
             {/*<div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
                     <Button type='transparent'
                             className={styles.settingsBtn}
@@ -61,7 +61,7 @@ class SettingsGeneralComponent extends React.Component {
                         </div>
                     </Button>
                 </div>*/}
-
+            
             <div className={`${styles.settingsMenuItem} ${styles.password}`}>
                 <Button type={BUTTON_TYPE.TRANSPARENT}
                         className={styles.settingsBtn}
@@ -71,12 +71,12 @@ class SettingsGeneralComponent extends React.Component {
                     </div>
                 </Button>
             </div>
-
+        
         </div>
     }
 }
 
-const mapStateToProps = function(store) {
+const mapStateToProps = function (store) {
     return {
         autoClickProtection: store.uiState && store.uiState.autoClickProtection,
         idle: store.config && store.config.idle || {},
@@ -87,4 +87,4 @@ const mapStateToProps = function(store) {
 export const SettingsGeneral = connect(
     mapStateToProps,
     { lock, setUiState, setIdle }
-    )(SettingsGeneralComponent);
+)(SettingsGeneralComponent);
