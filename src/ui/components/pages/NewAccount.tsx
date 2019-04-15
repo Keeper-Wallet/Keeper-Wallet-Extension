@@ -53,6 +53,7 @@ class NewAccountComponent extends React.PureComponent {
                 <h2 className={`title1 margin3 left`}>
                     <Trans i18nKey='newAccount.protect'>Protect Your Account</Trans>
                 </h2>
+
                 <div>
                     <div className='margin1 relative'>
                         <div className={`basic500 tag1 left input-title`}>
