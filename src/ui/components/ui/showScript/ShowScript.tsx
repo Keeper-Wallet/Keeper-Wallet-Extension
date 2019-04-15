@@ -7,36 +7,33 @@ import { Copy } from '../copy';
 import { Button } from '../buttons';
 import { Modal } from '..';
 
-
 const ContentScript = ({ script, getScriptRef }) =>
     <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>{script}</pre>;
     
 const Data = ({ data, getScriptRef }) => {
     return (
-        <div>
-        <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
-            <div className={cn('basic500', styles.headRow)}>
-                <div className={styles.dataItemData}>Key</div>
-                <div className={styles.dataItemData}>Type</div>
-                <div className={styles.dataItemData}>Value</div>
+        
+            <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
+                <div className={cn('basic500', styles.headRow)}>
+                    <div className={styles.dataItemData}>Key</div>
+                    <div className={styles.dataItemData}>Type</div>
+                    <div className={styles.dataItemData}>Value</div>
+                </div>
+                {
+                    (data || []).map((item, index) => (
+                        <div key={index} className={cn(styles.dataRow)}>
+                            <div title={item.key} className={styles.dataItemData}>{item.key}</div>
+                            <div title={item.type} className={styles.dataItemData}>{item.type}</div>
+                            <div title={String(item.value)} className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</div>
+                        </div>
+                    ))
+                }
             </div>
-            {
-                (data || []).map((item, index) => (
-                    <div key={index} className={cn(styles.dataRow)}>
-                        <div title={item.key} className={styles.dataItemData}>{item.key}</div>
-                        <div title={item.type} className={styles.dataItemData}>{item.type}</div>
-                        <div title={String(item.value)} className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</div>
-                    </div>
-                ))
-            }
-        </div>
-        </div>
     );
 };
 
 const DataNoKey = ({ data, getScriptRef }) => {
     return (
-        <div>
         <div ref={getScriptRef} className={cn(styles.data, styles.dataTable)}>
             <div className={cn('basic500', styles.headRow)}>
                 <div className={styles.dataItem}>Type</div>
@@ -50,7 +47,6 @@ const DataNoKey = ({ data, getScriptRef }) => {
                     </div>
                 ))
             }
-        </div>
         </div>
     );
 };
