@@ -101,6 +101,7 @@ class AssetsComponent extends React.Component {
                         </CSSTransitionGroup>
                     </div>
                 </div>
+
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
