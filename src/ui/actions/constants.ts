@@ -86,7 +86,9 @@ export const ACTION = {
         CONFIRMED_DELETE: 'PERMISSIONS.CONFIRMED_DELETE',
     },
     REMOTE_CONFIG: {
-        SET_CONFIG: 'SET_CONFIG'
+        SET_CONFIG: 'SET_CONFIG',
+        UPDATE_IDLE: 'UPDATE_IDLE',
+        SET_IDLE: 'SET_IDLE',
     }
 };
 

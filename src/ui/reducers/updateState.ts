@@ -22,6 +22,7 @@ export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);
 export const customMatcher = createSimpleReducer({}, ACTION.UPDATE_MATCHER);
 export const langs = createSimpleReducer({}, ACTION.UPDATE_LANGS);
 export const origins = createSimpleReducer({}, ACTION.UPDATE_ORIGINS);
+export const idleOptions = createSimpleReducer({}, ACTION.REMOTE_CONFIG.UPDATE_IDLE);
 
 export const messages = (store = [], action: any) => {
     if (ACTION.UPDATE_MESSAGES === action.type) {

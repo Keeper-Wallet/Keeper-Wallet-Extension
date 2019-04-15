@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, Select } from '../ui';
-import { lock, setUiState } from '../../actions';
+import { lock, setUiState, setIdle } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -14,6 +14,7 @@ class SettingsGeneralComponent extends React.Component {
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
+    setIdle = (id) => this.props.setIdle(id);
 
     render() {
         const { idle } = this.props;
@@ -34,7 +35,8 @@ class SettingsGeneralComponent extends React.Component {
                 <div>
                     <Select description={<Trans i18nKey='settings.sessionTimeout'>Session Timeout in</Trans>}
                             selectList={selectList as any}
-                            selected={'idle'}
+                            selected={this.props.idleOptions.type}
+                            onSelectItem={this.setIdle}
                     >
                     
                     </Select>
@@ -79,7 +81,11 @@ const mapStateToProps = function(store) {
     return {
         autoClickProtection: store.uiState && store.uiState.autoClickProtection,
         idle: store.config && store.config.idle || {},
+        idleOptions: store.idleOptions,
     };
 };
 
-export const SettingsGeneral = connect(mapStateToProps, { lock, setUiState })(SettingsGeneralComponent);
+export const SettingsGeneral = connect(
+    mapStateToProps,
+    { lock, setUiState, setIdle }
+    )(SettingsGeneralComponent);

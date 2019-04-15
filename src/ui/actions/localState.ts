@@ -31,3 +31,5 @@ export const rejectOk = createMVAction(ACTION.REJECT_OK);
 export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);
 export const closeNotificationWindow = createMVAction(ACTION.CLOSE_WINDOW);
 export const updateActiveMessage = createMVAction(ACTION.UPDATE_ACTIVE_MESSAGE);
+export const setIdle = createMVAction(ACTION.REMOTE_CONFIG.SET_IDLE);
+export const updateIdle = createMVAction(ACTION.REMOTE_CONFIG.UPDATE_IDLE);

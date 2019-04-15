@@ -19,6 +19,7 @@ export function updateState(state) {
         customMatchers = {},
         origins = {},
         config = {},
+        idleOptions = {},
     } = state;
     const currentState = store.getState();
 
@@ -33,6 +34,13 @@ export function updateState(state) {
         actions.push({
             type: ACTION.REMOTE_CONFIG.SET_CONFIG,
             payload: config,
+        });
+    }
+    
+    if (!equals(currentState.idleOptions, idleOptions)) {
+        actions.push({
+            type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
+            payload: idleOptions,
         });
     }
     

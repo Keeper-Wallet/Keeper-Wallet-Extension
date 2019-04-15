@@ -39,12 +39,17 @@ class Background {
     
     async updateIdle() {
         const now = Date.now();
-        if (now - this._lastUpdateIdle < 10000) {
+        if (now - this._lastUpdateIdle < 9000) {
             return  null;
         }
         this._lastUpdateIdle = now;
         await this.initPromise;
         return  this.background.updateIdle();
+    }
+    
+    async setIdleOptions(options: { type: string }) {
+        await this.initPromise;
+        return this.background.setIdleOptions(options);
     }
     
     async allowOrigin(origin: string) {

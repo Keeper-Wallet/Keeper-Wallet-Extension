@@ -31,7 +31,7 @@ export class IdleController {
 
     update() {
         this.lastUpdate = Date.now();
-        console.log(this.lastUpdate);
+        this.start();
     }
 
     _tmrMode() {
@@ -41,9 +41,9 @@ export class IdleController {
 
         clearTimeout(this.tmr);
 
-        const time = Date.now() - this.lastUpdate -this.options.interval;
+        const time = Date.now() - this.lastUpdate - this.options.interval;
         if (time > 0) {
-            this._lock();
+            this._lock('locked');
         }
 
         this.tmr = setTimeout(() => this.start(), 10000);

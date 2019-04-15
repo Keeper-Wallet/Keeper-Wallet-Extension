@@ -2,10 +2,10 @@ const request = require('request');
 const config = require('../config.json');
 const https = require('https');
 const fs = require('fs');
-const unzipper = require('unzipper');
+const unZipper = require('unzipper');
 
 
-var options = { method: 'POST',
+const options = { method: 'POST',
     url: 'https://api.lokalise.co/api2/projects/371458875c7d357054bbd8.44472567/files/download',
     headers: { 'x-api-token': config.lokaliseApiKey, 'content-type': 'application/json' },
     body: { format: 'json', original_filenames: true },
@@ -30,7 +30,9 @@ function getLocales(locales = [], path = './') {
                 return onError(error);
             }
 
-            getFile(body.bundle_url, locales, path)
+            const { bundle_url } = body;
+
+            getFile(bundle_url, locales, path)
                 .then(onDone)
                 .catch(onError);
         });
@@ -40,7 +42,7 @@ function getLocales(locales = [], path = './') {
 
 function getFile(url, locales, path) {
     const parse = res => {
-        unzipFile(res, locales, path);
+        return unzipFile(res, locales, path);
     };
 
     return new Promise((resolve, reject) => {
@@ -51,16 +53,16 @@ function getFile(url, locales, path) {
 }
 
 function unzipFile(response, locales, path ) {
-    return response && response.pipe(unzipper.Parse())
+    return response && response.pipe(unZipper.Parse())
         .on('entry', function (entry) {
-            var fileName = entry.path;
-            var type = entry.type; // 'Directory' or 'File'
+            const fileName = entry.path;
+            const type = entry.type; // 'Directory' or 'File'
 
             const existLocales = locales.filter(lang => fileName.includes(`${lang}/`));
 
             if (!existLocales.length) {
                 console.warn('[skip lang]', fileName);
-                return;
+                return entry;
             }
 
             if (type === 'Directory') {
@@ -70,11 +72,11 @@ function unzipFile(response, locales, path ) {
                     fs.mkdirSync(name);
                 }
 
-                return;
+                return entry;
             }
 
             console.log('[get lang]', fileName);
-            entry.pipe(fs.createWriteStream(`${path}/${fileName}`));
+            return entry.pipe(fs.createWriteStream(`${path}/${fileName}`));
         });
 }
 
