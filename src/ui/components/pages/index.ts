@@ -25,3 +25,4 @@ export * from './ForgotPassword';
 export * from './SelectTxAccount';
 export * from './PairingAccountQr';
 export * from './MessagesList';
+export * from './SettingsGeneral';
