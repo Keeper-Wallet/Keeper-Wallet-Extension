@@ -78,6 +78,40 @@
   color: $white;
   height: 22px;
 
+.notifier
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 4px 6px 0 #9ba6b266;
+  background: $white;
+  position: absolute;
+  bottom: 38px;
+  right: 14px;
+  border-radius: 50%;
+  z-index: 20;
+  transition: 0.25s;
+  cursor: pointer;
+  background: url(../../../assets/img/waitinglist-18-black.svg) center 22px no-repeat $white;
+
+  &:hover
+    bottom: 44px;
+
+  .counter
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: $submit400;
+    position: absolute;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    color: $white;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+
+
 @keyframes :global(animation-show)
   0%
     opacity: 0;

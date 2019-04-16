@@ -3,6 +3,11 @@
 .content
   padding: 14px;
 
+.accountIcon
+  width: 24px;
+  height: 24px;
+  position: absolute;
+
 .wallet
   width: 100%;
   background: $white;
@@ -23,12 +28,15 @@
   .controls
     margin-top: 0;
     position: absolute;
-    bottom: 18px;
+    bottom: 19px;
     right: 14px;
-    border: 1px dashed $basic200;
     display: block;
-    border-radius: 2px;
     font-size: 12px;
+    width: 26px;
+    height: 26px;
+    border: 1px dashed $basic200;
+    border-radius: 2px;
+    z-index: 1;
 
     .accountIconTooltip
       display: none;
@@ -38,21 +46,15 @@
       top: -42px;
 
     &:hover
-      background-color: $basic50;
       border: 1px solid $basic200;
 
       .accountIconTooltip
         display: block;
         opacity: 1;
 
-    div, .accountIcon
-      padding: 0;
-      border: 0 none;
-
-    .accountIcon
-      position: relative;
-      &:hover
-        background-color: $basic100;
+  .accountIcon
+    &:hover
+      background-color: $basic50;
 
 .activeWallet
   width: 100%;
@@ -74,50 +76,74 @@
       right: 0;
       display: flex;
       border-color: transparent;
-
-      .accountIconTooltip
-        display: none;
+      background-color: transparent;
 
       &:hover
-        background-color: transparent;
         border-color: transparent;
+        background-color: transparent;
+
+      .accountIconTooltip
+         display: none;
+
+      .account-icon
+         top: 18px;
+         left: 14px;
+
+        &:hover
+          background-color: transparent;
+          border-color: transparent;
 
       div
-        padding: 0 8px 0 28px;
         background-color: $basic50;
         border: 0.5px solid  $basic100;
         height: 26px;
         border-radius: 2px;
-        margin-right: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: normal;
 
-        &:not(:last-child):hover
+        &:hover
           background-color: $basic100;
+
+        &.buttonDefault
+          padding: 0 8px 0 28px;
+
+        &.button24
+          width: 26px;
+          height: 26px;
+          background-position: center;
+          background-color: transparent;
+          border: 0 none;
+          &:hover
+            background-color: transparent;
 
       .accountIcon
         position: absolute;
         padding: 0;
-        right: 0;
-        bottom: 0;
+        right: -2px;
+        top: -54px;
         width: 30px;
         height: 26px;
         background-color: transparent;
         border-color: transparent;
         margin-right: 0;
 
+        &:hover
+          border-color: transparent;
+          background-color: transparent
+
 .activeWalletSelected
   &.activeAccountHeader
     width: auto;
 
-.accountIcon
-  width: 28px;
-  height: 26px;
-
 .title
   color: $disabled200;
+
+.activeWAlletBtnSeparator
+  flex-grow: 1;
+  cursor: default;
+  background: none transparent;
 
 .activeAccountHeader
   color: $white;
@@ -150,13 +176,24 @@
   div
     height: 16px;
 
+.walletIconBlack,
+.transactionsIconBlack,
+.copyIconBlack
+  cursor: pointer;
+  margin-right: 8px;
+
+.walletIconBlack
+  background: url(../../assets/img/gowallet-14-black.svg) 8px 5px no-repeat;
+
+.transactionsIconBlack
+  background: url(../../assets/img/explorer-14-black.svg) 8px 5px no-repeat;
+
 .showQrIcon
-  background: url(../../assets/img/qr-14-black.svg) 8px 5px no-repeat;
+  cursor: pointer;
+  background: url(../../assets/img/qr-14-black.svg) no-repeat transparent;
 
 .copyIconBlack
-  display: block;
-  cursor: pointer;
-  background: url(../../assets/img/copy-14-black.svg) 8px 5px no-repeat $basic50;
+  background: url(../../assets/img/copy-14-black.svg) no-repeat transparent;
 
 // custom wallet design in transactions
 .txWallet

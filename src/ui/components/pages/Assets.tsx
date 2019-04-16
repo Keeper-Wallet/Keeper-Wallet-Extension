@@ -128,6 +128,10 @@ class AssetsComponent extends React.Component {
                 </div>
             </Modal>
             
+            <div className={styles.notifier}>
+                <i className={styles.counter}>5</i>
+            </div>
+            
         </div>
     }
 

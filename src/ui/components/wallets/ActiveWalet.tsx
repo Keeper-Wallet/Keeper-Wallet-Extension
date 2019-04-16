@@ -26,14 +26,13 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
 
     return <div className={className} {...props}>
         <WalletItem {...walletItemProps} key={account.address}>
+            <div className={`${styles.walletIconBlack} ${styles.buttonDefault}`}><Trans i18nKey='ui.wallet'>Wallet</Trans></div>
+            <div className={`${styles.transactionsIconBlack} ${styles.buttonDefault}`}><Trans i18nKey='ui.transactions'>Transactions</Trans></div>
+            <span className={styles.activeWAlletBtnSeparator}></span>
             <Copy onCopy={onCopy} text={account.address}>
-                <div className={styles.copyIconBlack}>
-                    <Trans i18nKey='ur.copyAddress'>Copy address</Trans>
-                </div>
+                <div className={`${styles.copyIconBlack} ${styles.button24}`}></div>
             </Copy>
-            <div className={styles.showQrIcon} onClick={onShowQr}>
-                <Trans i18nKey='ui.showQR'>Show QR</Trans>
-            </div>
+            <div className={`${styles.showQrIcon} ${styles.button24}`} onClick={onShowQr}></div>
         </WalletItem>
     </div>;
 }
