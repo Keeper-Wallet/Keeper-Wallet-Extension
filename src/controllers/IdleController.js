@@ -22,6 +22,7 @@ export class IdleController {
     setOptions(options) {
         this.options = { ...this.options, ...options };
         this.backgroundService.preferencesController.setIdleOptions(this.options);
+        this.start();
     }
 
     start() {
@@ -42,6 +43,7 @@ export class IdleController {
         clearTimeout(this.tmr);
 
         const time = Date.now() - this.lastUpdate - this.options.interval;
+        console.log(Date.now(), this.lastUpdate, this.options.interval, time);
         if (time > 0) {
             this._lock('locked');
         }

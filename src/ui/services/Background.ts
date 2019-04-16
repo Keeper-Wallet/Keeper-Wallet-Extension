@@ -39,7 +39,7 @@ class Background {
     
     async updateIdle() {
         const now = Date.now();
-        if (now - this._lastUpdateIdle < 9000) {
+        if (now - this._lastUpdateIdle < 4000) {
             return  null;
         }
         this._lastUpdateIdle = now;

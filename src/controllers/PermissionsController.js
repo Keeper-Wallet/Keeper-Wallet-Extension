@@ -9,6 +9,7 @@ export const PERMISSIONS = {
     REJECTED: 'rejected',
     APPROVED: 'approved',
     AUTO_SIGN: 'allowAutoSign',
+    GET_MESSAGES: 'allowMessages',
 };
 
 const findPermissionFabric = permission => item => {
