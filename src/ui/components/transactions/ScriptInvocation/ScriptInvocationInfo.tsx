@@ -23,7 +23,7 @@ const ToggleList = ({ count, currentCount, onClick }) => {
         return null;
     }
     
-    return  <div className={styles.toggleList}>
+    return <div className={styles.toggleList}>
         <Button onClick={toggle} type={BUTTON_TYPE.TRANSPARENT}>
             {!showAll ?
                 <div className={styles.buttonTextCenter}>
