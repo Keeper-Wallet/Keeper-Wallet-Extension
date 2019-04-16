@@ -2,6 +2,8 @@
 
 .showAllScript
   max-height: none;
+  &  div:first-child
+    max-height: none;
 
 .codeScript
   display: flex;
@@ -10,13 +12,17 @@
   white-space: normal;
   color: $black;
 
+  padding-right: 14px;
+  margin-right: 10px;
+
 .data
   overflow: hidden;
   color: $black;
+  .dataItemDataLast
+    flex-grow: 1;
 
 .headRow,
 .dataRow
-  display: flex;
   width: 100%;
   margin-bottom: 2px;
   white-space: nowrap;
@@ -27,7 +33,17 @@
   text-overflow: ellipsis;
 
 .dataItemData
-  width: 25%;
+  width: 23.3%;
+  min-width: 23%;
+  padding: 2px 7px 2px 0;
 
-.dataItemDataLast
-  width: 50%;
+.dataTable
+  width: 100%;
+  td
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0;
+
+.dataContainer
+  max-height: 110px;
