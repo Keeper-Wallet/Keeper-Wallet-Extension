@@ -1,6 +1,8 @@
-export const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production'
+export const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
 export const CONFIG_URL = 'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json';
+
+export const allowMatcher = ['dex.tokenomica.com', 'vfa.tokenomica.com'];
 
 export const MSG_STATUSES = {
     UNAPPROVED: 'unapproved',
@@ -53,5 +55,5 @@ export const DEFAULT_CONFIG = {
         '20m': 20 * 60 * 1000,
         '40m': 40 * 60 * 1000,
         '1h': 60 * 60 * 1000,
-    }
+    },
 };

@@ -1,6 +1,7 @@
 import ObservableStore from 'obs-store';
 import { BigNumber } from "@waves/data-entities/dist/libs/bignumber";
 import { uniq } from 'ramda';
+import { allowMatcher } from '../constants';
 
 export const PERMISSIONS = {
     ALL: 'all',
@@ -143,7 +144,20 @@ export class PermissionsController {
         this.updatePermission(origin, newAutoSign);
     }
 
+    matcherOrdersAllow(origin, tx) {
+        if (!allowMatcher.filter(item => origin.includes(item)).length) {
+            return false;
+        }
+
+        return ['1001', '1002', '1003'].includes(String(tx.type).trim());
+    }
+
     canApprove(origin, tx) {
+
+        if (this.matcherOrdersAllow(origin, tx)) {
+            return true;
+        }
+
         const permission = this.getPermission(origin, PERMISSIONS.AUTO_SIGN);
 
         if (!permission) {
