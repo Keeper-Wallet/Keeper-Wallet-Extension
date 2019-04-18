@@ -39,10 +39,10 @@ class AccountInfoComponent extends React.Component {
             this.passInputEl.focus();
         }
     };
+    
     onDeleteHandler = () => {
         this.props.setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
     };
-    
     
     render() {
         const { selectedAccount, activeAccount } = this.props;

@@ -5,6 +5,8 @@ import * as styles from './wallet.styl';
 import { WalletItem } from './';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { getExplorerUrls } from "../../utils/waves";
+import { selectedAccount } from "../../reducers/updateState";
 
 export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQr = null, onSelect = null, active, account, balance, ...props}) {
 
@@ -13,7 +15,8 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
     if (!account) {
         return null;
     }
-
+    
+    const { activeAccount } = this.props;
     const walletItemProps = {
         className: 'center',
         account,
@@ -23,22 +26,9 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
         onSelect,
     };
     
-    let walletLink;
-    let activeAddressLink;
-
-    (function() {
-        if (account.network == 'mainnet') {
-            walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
-            activeAddressLink = 'https://wavesexplorer.com/address/' + account.address;
-        } else if  (account.network == 'testnet') {
-            walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper'
-            activeAddressLink = false;
-        } else {
-            walletLink = false;
-            activeAddressLink = false;
-        };
-    })();
-    
+    const { address, network } = activeAccount;
+    const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
+  
     return <div className={className} {...props}>
         <WalletItem {...walletItemProps} key={account.address}>
             
