@@ -30,8 +30,11 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
         if (account.network == 'mainnet') {
             walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
             activeAddressLink = 'https://wavesexplorer.com/address/' + account.address;
-        } else {
+        } else if  (account.network == 'testnet') {
             walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper'
+            activeAddressLink = false;
+        } else {
+            walletLink = false;
             activeAddressLink = false;
         };
     })();
@@ -39,14 +42,14 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
     return <div className={className} {...props}>
         <WalletItem {...walletItemProps} key={account.address}>
             
-            <a href={walletLink}
+            {walletLink ? <a href={walletLink}
                target="_blank"
                className="walletIconBlack button button-wallet">
-               <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+               <Trans i18nKey='ui.wallet'>Wallet</Trans></a> : null}
             
             {activeAddressLink ? <a href={activeAddressLink} target="_blank"
-                   className="transactionsIconBlack button button-wallet">
-                   <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
+               className="transactionsIconBlack button button-wallet">
+               <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
             
             <span className={styles.activeWAlletBtnSeparator}></span>
             
@@ -57,7 +60,8 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
                 <Trans i18nKey='copyAddress'>Copy address</Trans>
             </div>
             
-            <div className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip" onClick={onShowQr}></div>
+            <div className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
+                 onClick={onShowQr}></div>
             <div className={`${styles.wallerShowQrTooltip} tooltip`}>
                 <Trans i18nKey='showQR'>Show QR</Trans>
             </div>

@@ -53,9 +53,12 @@ class AccountInfoComponent extends React.Component {
              if (activeAccount.network == 'mainnet') {
                  walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
                  activeAddressLink = 'https://wavesexplorer.com/address/' + activeAccount.address;
-             } else {
-                 walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper'
+             } else if (activeAccount.network == 'testnet') {
+                 walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper';
                  activeAddressLink = false;
+             } else {
+                walletLink = false;
+                activeAddressLink = false;
              };
          })();
         
@@ -87,9 +90,10 @@ class AccountInfoComponent extends React.Component {
                 </div>
     
                 <div className={`margin-main-big ${styles.buttonsWrapper}`}>
-                    
-                    <a href={walletLink} target="_blank" className="button walletIconBlack button-wallet">
-                       <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+    
+                    {walletLink ?<a href={walletLink} target="_blank"
+                                           className="button walletIconBlack button-wallet">
+                       <Trans i18nKey='ui.wallet'>Wallet</Trans></a> : null}
     
                     {activeAddressLink ? <a href={activeAddressLink} target="_blank"
                         className="transactionsIconBlack button button-wallet">
