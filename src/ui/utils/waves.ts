@@ -9,6 +9,26 @@ export function networkByteFromAddress(address: string): string {
     return String.fromCharCode(rawNetworkByte);
 }
 
+export function getExplorerUrls(network: string, address: string) {
+    
+    const result = {
+        walletLink: null,
+        activeAddressLink: null,
+    };
+    
+    switch (network) {
+        case 'mainnet':
+            result.walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
+            result.activeAddressLink = `https://wavesexplorer.com/address/${address}`;
+            break;
+        case 'testnet':
+            result.walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper';
+            break;
+    }
+    
+    return result;
+}
+
 export function addressFromPublicKey(pk: string, byte: string): string {
     const publicKeyBytes = SG.libs.base58.decode(pk);
     const prefix = Uint8Array.from([SG.ADDRESS_VERSION, byte.charCodeAt(0)]);

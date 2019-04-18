@@ -10,6 +10,7 @@ import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
 import { I18N_NAME_SPACE } from '../../appConfig';
 import { BUTTON_TYPE } from '../ui/buttons';
+import { getExplorerUrls } from 'ui/utils/waves';
 
 @translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
@@ -49,36 +50,21 @@ class AccountInfoComponent extends React.Component {
         const { onCopyHandler } = this;
         const { leaseBalance } = this.state;
         const showLease = leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
-        
-        let walletLink;
-        let activeAddressLink;
-        
-        (function () {
-            if (activeAccount.network == 'mainnet') {
-                walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
-                activeAddressLink = 'https://wavesexplorer.com/address/' + activeAccount.address;
-            } else if (activeAccount.network == 'testnet') {
-                walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper';
-                activeAddressLink = false;
-            } else {
-                walletLink = false;
-                activeAddressLink = false;
-            }
-            ;
-        })();
+        const { address, network, name, publicKey } = selectedAccount;
+        const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
         
         return <div className={styles.content}>
             
             <div className="relative">
                 
                 <div className={`flex margin-main-big ${styles.wallet}`}>
-                    <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
+                    <Avatar className={styles.avatar} address={address} size={48}/>
                     <div className={styles.accountData}>
                         <div>
                             <Button type='transparent'
                                     className={styles.accountName}
                                     onClick={this.editNameHandler}>
-                                <span className={`basic500 body1`}>{selectedAccount.name}</span>
+                                <span className={`basic500 body1`}>{name}</span>
                                 <i className={styles.editIcon}></i>
                             </Button>
                         </div>
@@ -96,23 +82,34 @@ class AccountInfoComponent extends React.Component {
                 
                 <div className={`margin-main-big ${styles.buttonsWrapper}`}>
                     
-                    {walletLink ? <a href={walletLink} target="_blank"
-                                     className="button walletIconBlack button-wallet">
-                        <Trans i18nKey='ui.wallet'>Wallet</Trans></a> : null}
+                    {
+                        walletLink &&
+                        <a href={walletLink} target="_blank"
+                           className="button walletIconBlack button-wallet">
+                            <Trans i18nKey='ui.wallet'>Wallet</Trans>
+                        </a>
+                    }
                     
-                    {activeAddressLink ? <a href={activeAddressLink} target="_blank"
-                                            className="transactionsIconBlack button button-wallet">
-                        <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
+                    {
+                        activeAddressLink &&
+                        <a href={activeAddressLink} target="_blank"
+                           className="transactionsIconBlack button button-wallet">
+                            <Trans i18nKey='ui.transactions'>Transactions</Trans>
+                        </a>
+                    }
                     
                     <span className={styles.walletBtnSeparator}/>
+                    
                     <Button onClick={this.setActiveAccount} disabled={isActive}
                             type={BUTTON_TYPE.CUSTOM}
-                            className={isActive ? styles.activeAccount : styles.inActiveAccount}/>
+                            className={isActive ? styles.activeAccount : styles.inActiveAccount}
+                    />
                     
                     <div className="relative">
                         <Button type={BUTTON_TYPE.CUSTOM}
                                 className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
-                                onClick={this.showQrHandler}/>
+                                onClick={this.showQrHandler}
+                        />
                         <div className={`${styles.wallerShowQrTooltip} tooltip`}>
                             <Trans i18nKey='showQR'>Show QR</Trans>
                         </div>
@@ -127,7 +124,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.address'>Your address</Trans>
                 </div>
                 <div className="input-like tag1">
-                    <CopyText text={selectedAccount.address} showCopy={true} showText={true} onCopy={onCopyHandler}/>
+                    <CopyText text={address} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
             
@@ -136,7 +133,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
                 <div className={`input-like tag1 ${styles.ellipsis}`}>
-                    <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
+                    <CopyText text={publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
             
