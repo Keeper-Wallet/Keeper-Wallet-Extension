@@ -6,7 +6,6 @@ import { WalletItem } from './';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
-
 export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQr = null, onSelect = null, active, account, balance, ...props}) {
 
     className = cn(styles.activeWallet, className, { [styles.activeWalletSelected]: active });
@@ -23,16 +22,46 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
         active,
         onSelect,
     };
+    
+    let activeAddressLink;
 
+    (function() {
+        if (account.network == 'testnet') {
+            activeAddressLink = 'https://wavesexplorer.com/testnet/address/' + account.address;
+        } else if (account.network == 'mainnet') {
+            activeAddressLink = 'https://wavesexplorer.com/address/' + account.address;
+        } else {
+            alert('Plese choice MainNet or TestNet');
+        };
+    })();
+    
     return <div className={className} {...props}>
         <WalletItem {...walletItemProps} key={account.address}>
-            <div className={`${styles.walletIconBlack} ${styles.buttonDefault}`}><Trans i18nKey='ui.wallet'>Wallet</Trans></div>
-            <div className={`${styles.transactionsIconBlack} ${styles.buttonDefault}`}><Trans i18nKey='ui.transactions'>Transactions</Trans></div>
+            
+            <a href="https://client.wavesplatform.com/import/waveskeeper"
+               target="_blank"
+               className="walletIconBlack button button-wallet">
+               <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+            
+            <a href={activeAddressLink}
+               target="_blank"
+               className="transactionsIconBlack button button-wallet">
+               <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
+            
             <span className={styles.activeWAlletBtnSeparator}></span>
+            
             <Copy onCopy={onCopy} text={account.address}>
-                <div className={`${styles.copyIconBlack} ${styles.button24}`}></div>
+                <div className="button button-wallet button-wallet-iconOnly copyIconBlack showTooltip"></div>
             </Copy>
-            <div className={`${styles.showQrIcon} ${styles.button24}`} onClick={onShowQr}></div>
+            <div className={`${styles.walletCopyTooltip} tooltip`}>
+                <Trans i18nKey='copyAddress'>Copy address</Trans>
+            </div>
+            
+            <div className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip" onClick={onShowQr}></div>
+            <div className={`${styles.wallerShowQrTooltip} tooltip`}>
+                <Trans i18nKey='showQR'>Show QR</Trans>
+            </div>
+            
         </WalletItem>
     </div>;
 }

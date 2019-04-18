@@ -22,6 +22,25 @@
   cursor: pointer;
   height: 64px;
 
+  .walletCopyTooltip //right
+    right: 35px;
+    white-space: nowrap;
+    top: -38px;
+
+  .makeActiveTooltip,
+  .wallerShowQrTooltip
+    right: 0;
+    white-space: nowrap;
+    top: -38px;
+
+  .wallerShowQrTooltip
+    top: auto;
+    bottom: -40px;
+
+    &::after
+      top: -2px;
+      bottom: auto;
+
   .balanceWrapper
     justify-content: flex-start;
 
@@ -38,23 +57,12 @@
     border-radius: 2px;
     z-index: 1;
 
-    .accountIconTooltip
-      display: none;
-      right: 0;
-      white-space: nowrap;
-      opacity: 0;
-      top: -42px;
-
     &:hover
       border: 1px solid $basic200;
 
-      .accountIconTooltip
-        display: block;
-        opacity: 1;
-
-  .accountIcon
-    &:hover
-      background-color: $basic50;
+    .accountIcon
+      &:hover
+        background-color: $basic50;
 
 .activeWallet
   width: 100%;
@@ -82,9 +90,6 @@
         border-color: transparent;
         background-color: transparent;
 
-      .accountIconTooltip
-         display: none;
-
       .account-icon
          top: 18px;
          left: 14px;
@@ -92,31 +97,6 @@
         &:hover
           background-color: transparent;
           border-color: transparent;
-
-      div
-        background-color: $basic50;
-        border: 0.5px solid  $basic100;
-        height: 26px;
-        border-radius: 2px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: normal;
-
-        &:hover
-          background-color: $basic100;
-
-        &.buttonDefault
-          padding: 0 8px 0 28px;
-
-        &.button24
-          width: 26px;
-          height: 26px;
-          background-position: center;
-          background-color: transparent;
-          border: 0 none;
-          &:hover
-            background-color: transparent;
 
       .accountIcon
         position: absolute;
@@ -175,25 +155,6 @@
 
   div
     height: 16px;
-
-.walletIconBlack,
-.transactionsIconBlack,
-.copyIconBlack
-  cursor: pointer;
-  margin-right: 8px;
-
-.walletIconBlack
-  background: url(../../assets/img/gowallet-14-black.svg) 8px 5px no-repeat;
-
-.transactionsIconBlack
-  background: url(../../assets/img/explorer-14-black.svg) 8px 5px no-repeat;
-
-.showQrIcon
-  cursor: pointer;
-  background: url(../../assets/img/qr-14-black.svg) no-repeat transparent;
-
-.copyIconBlack
-  background: url(../../assets/img/copy-14-black.svg) no-repeat transparent;
 
 // custom wallet design in transactions
 .txWallet
