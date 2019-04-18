@@ -79,14 +79,27 @@ class NotificationsComponent extends React.Component {
                 </div>
                 
                 <div>
-                    <Button type={BUTTON_TYPE.INTERFACE}>
-                        <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
-                    </Button>
+                    {
+                        this.state.hasMessages &&
+                        <Button type={BUTTON_TYPE.INTERFACE}>
+                            <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
+                        </Button>
+                    }
                     
-                    <Button type={BUTTON_TYPE.GENERAL}>
-                        <Trans i18nKey='notifications.nextBtn'>Next</Trans>
-                    </Button>
-    
+                    {
+                        this.state.hasNotifications &&
+                        <Button type={BUTTON_TYPE.GENERAL}>
+                            <Trans i18nKey='notifications.nextBtn'>Next</Trans>
+                        </Button>
+                    }
+                    
+                    {
+                        this.state.showClose &&
+                        <Button type={BUTTON_TYPE.GENERAL}>
+                            <Trans i18nKey='notifications.closeBtn'>Close</Trans>
+                        </Button>
+                    }
+                    
                     <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount} hideButton={false}/>
                 </div>
             </div>
@@ -94,16 +107,22 @@ class NotificationsComponent extends React.Component {
     }
     
     static getDerivedStateFromProps(props, state) {
-        const { origins, activeNotification, messages } = props;
+        const { origins, activeNotification, messages, notifications } = props;
         const origin = activeNotification[0].origin;
         const perms = origins[origin];
         const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
-
+        const hasMessages =  messages.length > 0;
+        const hasNotifications =  notifications.length > 0;
+        
+        
         return {
             canShowNotify,
             messages,
             activeNotification,
             origin,
+            hasMessages,
+            hasNotifications,
+            showClose: !hasNotifications && !hasMessages
         };
     }
 }
@@ -114,6 +133,7 @@ const mapStateToProps = function (store) {
         activeNotification: store.activeNotification,
         origins: store.origins,
         messages: store.messages,
+        notifications: store.notifications,
     };
 };
 
