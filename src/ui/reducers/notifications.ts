@@ -10,6 +10,15 @@ export const activeNotification = (store = null, { type, payload }) => {
             if (!store && payload.length === 1) {
                 return payload[0];
             }
+            
+            if (store) {
+                const { origin } = store[0];
+                const newItem = payload.find(([item]) => item.origin === origin);
+                if (newItem) {
+                    return  newItem;
+                }
+            }
+            
             break;
         case ACTION.NOTIFICATIONS.SET_ACTIVE:
             return payload;

@@ -234,7 +234,8 @@ class BackgroundService extends EventEmitter {
         this.notificationsController = new NotificationsController({
             initState: initState.NotificationsController,
             getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
-            canShowNotification: () => true,
+            canShowNotification: (origin) => this.permissionsController.canUseNotification(origin),
+            setNotificationPermissions: (origin, canUse, time) => this.permissionsController.setNotificationPermissions(origin, canUse, time),
         });
 
 
@@ -348,6 +349,13 @@ class BackgroundService extends EventEmitter {
             // extended permission autoSign
             setAutoSign: async ({ origin, params }) => {
                 this.permissionsController.setAutoApprove(origin, params);
+            },
+            setNotificationPermissions: async ({ origin, canUse }) => {
+                if (canUse) {
+                    this.permissionsController.setNotificationPermissions(origin, true, 0);
+                } else {
+                    this.permissionsController.deletePermission(origin, PERMISSIONS.USE_NOTIFICATION);
+                }
             }
         }
     }
@@ -413,22 +421,29 @@ class BackgroundService extends EventEmitter {
             return await this.messageController.getMessageResult(messageId)
         };
 
-        const newNotification = async (data) => {
+        const newNotification = (data) => {
             const { selectedAccount } = this.getState();
             const myData = { ...data };
-            const result = await this.notificationsController.newNotification({
-                address: selectedAccount.address,
-                message: myData.message,
-                origin: origin,
-                status: MSG_STATUSES.NEW_NOTIFICATION,
-                timestamp: Date.now(),
-                title: myData.title,
-                type: 'simple'
-            }).id;
+            try {
+                const result = this.notificationsController.newNotification({
+                    address: selectedAccount.address,
+                    message: myData.message,
+                    origin: origin,
+                    status: MSG_STATUSES.NEW_NOTIFICATION,
+                    timestamp: Date.now(),
+                    title: myData.title,
+                    type: 'simple'
+                }).id;
 
-            this.emit('Show notification');
+                if (result) {
+                    this.emit('Show notification');
+                }
 
-            return result;
+                return result;
+            } catch (e) {
+                debugger;
+                throw e;
+            }
         };
 
         const api = {

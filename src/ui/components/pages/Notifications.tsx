@@ -10,6 +10,7 @@ import {
     clearMessagesStatus,
     clearMessages,
     closeNotificationWindow,
+    setShowNotification,
     setAutoOrigin
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -44,6 +45,11 @@ class NotificationsComponent extends React.Component {
     
     };
     
+    toggleCanShowHandler = ( e ) => {
+        const canUse = e.target.checked;
+        this.props.setShowNotification({ origin: this.state.origin, canUse });
+    };
+    
     nextHandler = (e) => {
     
     };
@@ -66,7 +72,7 @@ class NotificationsComponent extends React.Component {
                     )
                 }
                 <div>
-                    <Input id='checkbox_noshow' type={'checkbox'}/>
+                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify} onChange={this.toggleCanShowHandler}/>
                     <label htmlFor='checkbox_noshow'>
                         <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
                     </label>
@@ -88,13 +94,16 @@ class NotificationsComponent extends React.Component {
     }
     
     static getDerivedStateFromProps(props, state) {
-        
-        
-        const { messages, activeNotification } = props;
-        
+        const { origins, activeNotification, messages } = props;
+        const origin = activeNotification[0].origin;
+        const perms = origins[origin];
+        const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
+
         return {
+            canShowNotify,
             messages,
             activeNotification,
+            origin,
         };
     }
 }
@@ -103,12 +112,14 @@ const mapStateToProps = function (store) {
     return {
         selectedAccount: store.selectedAccount,
         activeNotification: store.activeNotification,
+        origins: store.origins,
         messages: store.messages,
     };
 };
 
 const actions = {
     closeNotificationWindow,
+    setShowNotification,
 };
 
 export const Notifications = connect(mapStateToProps, actions)(NotificationsComponent);

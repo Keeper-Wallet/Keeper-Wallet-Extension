@@ -49,6 +49,14 @@ export const deleteNotifications = store => next => action => {
     background.deleteNotifications(action.payload);
 };
 
+export const setNotificationPerms = store => next => action => {
+    if (action.type !== ACTION.NOTIFICATIONS.SET_PERMS) {
+        return next(action);
+    }
+    
+    background.setNotificationPermissions(action.payload);
+};
+
 export const setIdle = store => next => action => {
     
     if (action.type !== ACTION.REMOTE_CONFIG.SET_IDLE) {

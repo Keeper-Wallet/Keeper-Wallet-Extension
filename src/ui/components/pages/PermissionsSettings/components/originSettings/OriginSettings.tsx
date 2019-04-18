@@ -43,19 +43,30 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         selected: null,
         canSave: false,
         edited: false,
+        notifications: null,
+        canShowNotifications: null,
+    };
+    
+    canUseNotificationsHandler = (e) => {
+        this.setState({ canShowNotifications: e.target.checked });
+        this.calculateCanSave(this.state.interval, this.state.totalAmount, e.target.checked);
     };
     
     selectTimeHandler = time => {
         const { value } = CONFIG.list.find(({ id }) => id === time);
         this.setState({ interval: value, edited: true, selected: time });
-        this.calculateCanSave(value, this.state.totalAmount);
+        this.calculateCanSave(value, this.state.totalAmount, this.state.canShowNotifications);
     };
     
-    calculateCanSave(newInterval, newTotalAmount): void {
+    calculateCanSave(newInterval, newTotalAmount, newCanShowNotifications): void {
         const sign = OriginSettingsComponent._getAutoSign(this.props.autoSign);
         let canSave = false;
         
         newTotalAmount = newInterval ? newTotalAmount : '';
+        
+        if (newCanShowNotifications !== !!this.state.notifications) {
+            canSave = true;
+        }
         
         if (Number(sign.interval) !== Number(newInterval)) {
             canSave = true;
@@ -71,7 +82,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         
         this.setState({ canSave });
         
-        this.props.onChangePerms({ type: 'allowAutoSign', totalAmount: newTotalAmount, interval: newInterval  })
+        this.props.onChangePerms({ type: 'allowAutoSign', totalAmount: newTotalAmount, interval: newInterval })
     }
     
     deleteHandler = () => {
@@ -79,9 +90,9 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     };
     
     saveHandler = () => {
-        const { interval, totalAmount } = this.state;
+        const { interval, totalAmount, canShowNotifications } = this.state;
         const data = { interval: Number(interval) || null, totalAmount: Number(totalAmount) * (10 ** 8) || null };
-        this.props.onSave(data, this.props.originName);
+        this.props.onSave(data, this.props.originName, canShowNotifications);
     };
     
     amountHandler = (event) => {
@@ -91,11 +102,11 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         if (parsedValue[1]) {
             parsedValue[1] = parsedValue[1].slice(0, 8);
         }
-
+        
         const newValue = parsedValue.join('.');
         
         this.setState({ totalAmount: parsedValue.join('.'), edited: true });
-        this.calculateCanSave(this.state.interval, newValue);
+        this.calculateCanSave(this.state.interval, newValue, this.state.canShowNotifications);
     };
     
     render(): React.ReactNode {
@@ -112,6 +123,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         const { originName } = this.props;
         const className = cn(styles.settings, styles.inModal, this.props.className);
         const value = (this.state.interval ? this.state.totalAmount : '') || '';
+        
         return (
             <div className={className}>
                 <h2 className={cn(styles.title)}>
@@ -120,7 +132,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                 
                 <div className={styles.description}>
                     <Trans i18nKey='permissionSettings.modal.description' originName={originName}>
-                        This allows {{originName}} to automatically sign transactions on your behalf.
+                        This allows {{ originName }} to automatically sign transactions on your behalf.
                     </Trans>
                 </div>
                 
@@ -129,17 +141,24 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         selected={this.state.selected}
                         description={<Trans i18nKey='permissionSettings.modal.time'>Resolution time</Trans>}
                         onSelectItem={this.selectTimeHandler}/>
-    
+                
                 <div className={cn(styles.amount)}>
-                        <div className='left input-title basic500 tag1'>
-                            <Trans i18nKey='permissionSettings.modal.amount'>Spending limit</Trans>
-                        </div>
-                        <Input disabled={!this.state.interval}
-                               onChange={this.amountHandler}
-                               className={styles.amountInput}
-                               value={value}
-                               placeholder={0}/>
-                        <div className={styles.waves}>Waves</div>
+                    <div className='left input-title basic500 tag1'>
+                        <Trans i18nKey='permissionSettings.modal.amount'>Spending limit</Trans>
+                    </div>
+                    <Input disabled={!this.state.interval}
+                           onChange={this.amountHandler}
+                           className={styles.amountInput}
+                           value={value}
+                           placeholder={0}/>
+                    <div className={styles.waves}>Waves</div>
+                </div>
+                
+                <div>
+                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotifications} onChange={this.canUseNotificationsHandler}/>
+                    <label htmlFor='checkbox_noshow'>
+                        <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
+                    </label>
                 </div>
                 
                 <div className={cn(styles.bottomBtns)}>
@@ -161,7 +180,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                     </Button>
                 </div>
             </div>
-            );
+        );
     }
     
     static _getAutoSign(autoSign: TAutoAuth): TAutoAuth {
@@ -175,7 +194,12 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     static getDerivedStateFromProps(props: IProps, state: IState): Partial<IState> {
         const { interval = null, totalAmount } = OriginSettingsComponent._getAutoSign(props.autoSign);
         const selected = CONFIG.list.find(({ value }) => value === interval).id;
-        return { ...state, interval, totalAmount: totalAmount, selected };
+        const notifications = props.permissions.find((item: TNotification) => item && item.type === 'useNotifications') as TNotification;
+        let canShowNotifications = state.canShowNotifications;
+        if (canShowNotifications === null && !!notifications) {
+            canShowNotifications = true;
+        }
+        return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };
     }
 }
 
@@ -187,13 +211,13 @@ interface IProps extends React.ComponentProps<'div'> {
     autoSign: TAutoAuth;
     permissions: Array<TPermission>;
     originName: string;
-    onSave?: (params: Partial<TAutoAuth>, origin: string) => void;
+    onSave?: (params: Partial<TAutoAuth>, origin: string, canShowNotifications: boolean) => void;
     onClose?: () => void;
     onDelete?: (origin: string) => void;
     onChangePerms?: (permission: TAutoAuth) => void;
 }
 
-type TPermission = string|TAutoAuth
+type TPermission = string | TAutoAuth | TNotification;
 
 type TAutoAuth = {
     type: 'allowAutoSign';
@@ -203,12 +227,19 @@ type TAutoAuth = {
 };
 
 
+type TNotification = {
+    type: 'useNotifications',
+    time: number,
+}
+
 interface IState {
-    interval: number|null;
-    totalAmount: number|null;
+    interval: number | null;
+    totalAmount: number | null;
     canSave: boolean;
     edited: boolean;
     selected: string;
+    notifications: TNotification;
+    canShowNotifications: boolean | null;
 }
 
 

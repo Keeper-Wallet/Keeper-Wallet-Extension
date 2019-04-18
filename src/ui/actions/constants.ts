@@ -95,6 +95,7 @@ export const ACTION = {
         SET_SHOWED: 'NOTIFICATIONS_SET_SHOWED',
         DELETE: 'NOTIFICATIONS_DELETE',
         SET_ACTIVE: 'SET_ACTIVE',
+        SET_PERMS: 'SET_PERMS',
     }
 };
 

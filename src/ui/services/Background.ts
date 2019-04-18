@@ -69,6 +69,11 @@ class Background {
         return this.background.setAutoSign(origin, options);
     }
     
+    async setNotificationPermissions(options: { origin: string, canUse: boolean }) {
+        await this.initPromise;
+        return this.background.setNotificationPermissions(options);
+    }
+    
     
     async getState() {
         await this.initPromise;

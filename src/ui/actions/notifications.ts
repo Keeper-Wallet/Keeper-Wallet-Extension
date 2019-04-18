@@ -29,4 +29,10 @@ export function setActiveNotification(id) {
     };
 }
 
+export function setShowNotification(options) {
+    return {
+        type: ACTION.NOTIFICATIONS.SET_PERMS,
+        payload: options,
+    }
+}
 

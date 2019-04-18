@@ -24,6 +24,7 @@ export class NotificationsController extends EventEmitter {
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
         this.getMessagesConfig = options.getMessagesConfig;
         this.canShowNotification = options.canShowNotification;
+        this.setNotificationPermissions = options.setNotificationPermissions;
 
         this.deleteAllByTime();
     }
@@ -40,32 +41,26 @@ export class NotificationsController extends EventEmitter {
      * @param {string} data.status
      * @return {Promise<{ id }>}
      */
-    async newNotification(data) {
+    newNotification(data) {
         log.debug(`New notification ${data.type}: ${JSON.stringify(data)}`);
 
-        let notification;
-        try {
-            notification = await this._generateMessage(data);
-        } catch (e) {
-            throw ERRORS.NOTIFICATION_ERROR(e.message);
+        if (!data || !data.origin || !data.title) {
+            throw ERRORS.NOTIFICATION_DATA_ERROR();
         }
 
+        this.canShowNotification(data.origin);
+
+        const notification = this._generateMessage(data);
 
         let notifications = this.store.getState().notifications;
 
-        while (notifications.length > this.getMessagesConfig().max_messages) {
-            const oldest = notifications.sort((a, b) => a.timestamp - b.timestamp)[0];
-            if (oldest) {
-                this._deleteMessage(oldest.id)
-            } else {
-                break;
-            }
-        }
+        this._deleteNotificationsByLimit(notifications, this.getMessagesConfig().max_messages);
 
-        log.debug(`Generated message ${JSON.stringify(notification)}`);
+        log.debug(`Generated notification ${JSON.stringify(notification)}`);
+
         notifications.push(notification);
         this._updateStore(notifications);
-
+        this.setNotificationPermissions(data.origin, true, Date.now());
         return { id: notification.id };
     }
 
@@ -93,7 +88,7 @@ export class NotificationsController extends EventEmitter {
      */
     getGroupNotificationsByAccount(account) {
         const notifications = this.getNotificationsByAccount(account);
-        return [ ...notifications ].reverse().reduce((acc, item) => {
+        return [...notifications].reverse().reduce((acc, item) => {
             if (!acc.hash[item.origin]) {
                 acc.hash[item.origin] = [];
                 acc.items.push(acc.hash[item.origin]);
@@ -102,7 +97,7 @@ export class NotificationsController extends EventEmitter {
             acc.hash[item.origin].push(item);
 
             return acc;
-        }, {items: [], hash: {}}).items;
+        }, { items: [], hash: {} }).items;
     }
 
     /**
@@ -114,7 +109,7 @@ export class NotificationsController extends EventEmitter {
         const { notifications } = this.store.getState();
         const toDelete = [];
         notifications.forEach(({ id, timestamp, status }) => {
-            if ((time - timestamp) > message_expiration_ms && status === MSG_STATUSES.UNAPPROVED) {
+            if ((time - timestamp) > message_expiration_ms) {
                 toDelete.push(id);
             }
         });
@@ -151,12 +146,10 @@ export class NotificationsController extends EventEmitter {
      * @param {string} data.type
      * @param {string} data.timestamp
      * @param {string} data.address
-     * @return {Promise<*>}
+     * @return {any}
      * @private
      */
-    async _generateMessage({ address, origin, title, type, timestamp, message }) {
-        this.canShowNotification(origin);
-
+    _generateMessage({ address, origin, title, type, timestamp, message }) {
         return {
             type,
             title,
@@ -179,6 +172,21 @@ export class NotificationsController extends EventEmitter {
         if (newNotifications.length !== notifications.length) {
             this._updateStore(newNotifications);
         }
+    }
+
+    _deleteNotificationsByLimit(notifications, limit) {
+        const toDelete = [];
+
+        while (notifications.length > limit) {
+            const oldest = notifications.sort((a, b) => a.timestamp - b.timestamp)[0];
+            if (oldest) {
+                toDelete.push(oldest.id);
+            } else {
+                break;
+            }
+        }
+
+        this._deleteMessages(toDelete);
     }
 
     /**
