@@ -2,6 +2,7 @@ import { ACTION } from '../actions/constants';
 
 export * from './localState';
 export * from './remoteConfig';
+export * from './notifications';
 
 const MAX_HISTORY = 10;
 

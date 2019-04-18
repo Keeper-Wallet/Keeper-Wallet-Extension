@@ -108,7 +108,7 @@ class MessagesComponent extends React.Component {
     
     static getDerivedStateFromProps(props, state) {
 
-        const { balance: sourceBalance, selectedAccount, assets, activeMessage, messages } = props;
+        const { balance: sourceBalance, selectedAccount, assets, activeMessage, messages, notifications } = props;
         let loading = true;
     
         if (!assets || !assets['WAVES']) {
@@ -125,7 +125,7 @@ class MessagesComponent extends React.Component {
         if (isExistMsg) {
             const balance = Money.fromTokens(sourceBalance || 0, assetInstance);
             loading = false;
-            return { ...state, balance, selectedAccount, assets, transactionStatus, loading, messages};
+            return { balance, selectedAccount, assets, transactionStatus, loading, messages, notifications };
         }
         
         const sourceSignData = activeMessage.data || {};
@@ -149,6 +149,7 @@ class MessagesComponent extends React.Component {
             balance,
             assets,
             messages,
+            notifications,
             loading,
         };
     }
@@ -217,6 +218,7 @@ const mapStateToProps = function (store) {
         activeMessage: store.activeMessage,
         assets: store.assets,
         messages: store.messages,
+        notifications: store.notifications,
     };
 };
 

@@ -89,13 +89,15 @@ class RootComponent extends React.Component {
         /**
          * Has notify - show confirm page
          */
-        const { messages, activeMessage, accounts } = nextProps;
+        const { messages, notifications, activeMessage, activeNotification, accounts } = nextProps;
         
         if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT && accounts.length) {
             if (activeMessage) {
                 tab = PAGES.MESSAGES;
-            } else if (messages.length) {
+            } else if (messages.length + notifications.length > 1) {
                 tab = PAGES.MESSAGES_LIST;
+            } else if (activeNotification) {
+                tab = PAGES.NOTIFICATIONS
             }
         }
     
@@ -153,7 +155,9 @@ const mapStateToProps = function (store: any) {
         backTabs: store.backTabs,
         ui: store.uiState,
         messages: store.messages,
+        notifications: store.notifications,
         activeMessage: store.activeMessage,
+        activeNotification: store.activeNotification,
     };
 };
 
@@ -178,7 +182,9 @@ interface IProps {
     tab: string;
     backTabs: Array<string>;
     messages: Array<any>;
+    notifications: Array<any>;
     activeMessage: any;
+    activeNotification: any;
     loading: boolean;
     ui: any;
 }

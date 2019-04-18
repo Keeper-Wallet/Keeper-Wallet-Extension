@@ -41,7 +41,7 @@ export class NotificationsController extends EventEmitter {
      * @return {Promise<{ id }>}
      */
     async newNotification(data) {
-        log.debug(`New notification ${type}: ${JSON.stringify(data)}`);
+        log.debug(`New notification ${data.type}: ${JSON.stringify(data)}`);
 
         let notification;
         try {
@@ -51,7 +51,7 @@ export class NotificationsController extends EventEmitter {
         }
 
 
-        let notifications = this.store.getState().messages;
+        let notifications = this.store.getState().notifications;
 
         while (notifications.length > this.getMessagesConfig().max_messages) {
             const oldest = notifications.sort((a, b) => a.timestamp - b.timestamp)[0];
@@ -70,6 +70,42 @@ export class NotificationsController extends EventEmitter {
     }
 
     /**
+     * @param {Array<string>} ids
+     */
+    deleteNotifications(ids) {
+        this._deleteMessages(ids);
+    }
+
+    /**
+     * @param {object} account
+     * @return {T[]}
+     */
+    getNotificationsByAccount(account) {
+        if (!account || !account.address) {
+            return [];
+        }
+        return this.store.getState().notifications.filter(notification => notification.address === account.address);
+    }
+
+    /**
+     * @param account
+     * @return {Array}
+     */
+    getGroupNotificationsByAccount(account) {
+        const notifications = this.getNotificationsByAccount(account);
+        return [ ...notifications ].reverse().reduce((acc, item) => {
+            if (!acc.hash[item.origin]) {
+                acc.hash[item.origin] = [];
+                acc.items.push(acc.hash[item.origin]);
+            }
+
+            acc.hash[item.origin].push(item);
+
+            return acc;
+        }, {items: [], hash: {}}).items;
+    }
+
+    /**
      * @return {void}
      */
     deleteAllByTime() {
@@ -83,14 +119,15 @@ export class NotificationsController extends EventEmitter {
             }
         });
 
-        this._deleteMessages(ids);
+        this._deleteMessages(toDelete);
         this._updateMessagesByTimeout();
     }
 
     /**
+     * @param {string} id
      * @param {"showed_notify" | "new_notify"} status
      */
-    setMessageStatus(status) {
+    setMessageStatus(id, status) {
         const { notifications } = this.store.getState();
         const index = notifications.findIndex(msg => msg.id === id);
         if (index > -1) {
@@ -140,7 +177,7 @@ export class NotificationsController extends EventEmitter {
         const { notifications } = this.store.getState();
         const newNotifications = notifications.filter(({ id }) => !ids.includes(id));
         if (newNotifications.length !== notifications.length) {
-            this._updateStore(notifications);
+            this._updateStore(newNotifications);
         }
     }
 

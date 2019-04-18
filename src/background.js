@@ -6,15 +6,17 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
-import {ERRORS} from './lib/KeeperError';
-import {createStreamSink} from './lib/createStreamSink';
-import {getFirstLangCode} from './lib/get-first-lang-code';
+import { ERRORS } from './lib/KeeperError';
+import { MSG_STATUSES } from './constants';
+import { createStreamSink } from './lib/createStreamSink';
+import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
-import {ComposableObservableStore} from './lib/ComposableObservableStore';
+import { ComposableObservableStore } from './lib/ComposableObservableStore';
 import LocalStore from './lib/local-store';
 import {
     PreferencesController,
     WalletController,
+    NotificationsController,
     NetworkController,
     MessageController,
     BalanceController,
@@ -27,10 +29,10 @@ import {
     IdleController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
-import {setupDnode} from './lib/dnode-util';
-import {WindowManager} from './lib/WindowManger'
+import { setupDnode } from './lib/dnode-util';
+import { WindowManager } from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
-import { WAVESKEEPER_DEBUG } from  './constants';
+import { WAVESKEEPER_DEBUG } from './constants';
 
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -88,13 +90,13 @@ async function setupBackgroundService() {
 
     // update badge
     backgroundService.messageController.on('Update badge', text => {
-        extension.browserAction.setBadgeText({text});
-        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
+        extension.browserAction.setBadgeText({ text });
+        extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
     });
     backgroundService.messageController.updateBadge();
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
-        extension.tabs.create({url});
+        extension.tabs.create({ url });
     });
 
     // Notification window management
@@ -167,7 +169,7 @@ class BackgroundService extends EventEmitter {
         this.networkController.store.subscribe(() => this.preferencesController.syncCurrentNetworkAccounts());
 
         // Ui State. Provides storage for ui application
-        this.uiStateController = new UiStateController({initState: initState.UiStateController});
+        this.uiStateController = new UiStateController({ initState: initState.UiStateController });
 
         // Wallet. Wallet creation, app locking, signing method
         this.walletController = new WalletController({
@@ -228,6 +230,13 @@ class BackgroundService extends EventEmitter {
             canAutoApprove: (origin, tx) => this.permissionsController.canApprove(origin, tx),
         });
 
+        // Notifications
+        this.notificationsController = new NotificationsController({
+            initState: initState.NotificationsController,
+            getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
+            canShowNotification: () => true,
+        });
+
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
@@ -240,6 +249,7 @@ class BackgroundService extends EventEmitter {
             UiStateController: this.uiStateController.store,
             AssetInfoController: this.assetInfoController.store,
             RemoteConfigController: this.remoteConfigController.store,
+            NotificationsController: this.notificationsController.store,
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -249,7 +259,10 @@ class BackgroundService extends EventEmitter {
 
 
     getState() {
-        return this.store.getFlatState()
+        const state = this.store.getFlatState();
+        const { selectedAccount } = state;
+        const myNotifications = this.notificationsController.getGroupNotificationsByAccount(selectedAccount);
+        return { ...state, myNotifications };
     }
 
     getApi() {
@@ -265,6 +278,7 @@ class BackgroundService extends EventEmitter {
                 }
                 this.idleController.setOptions({ type, interval: config[type] });
             },
+
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (address, network) => this.preferencesController.selectAccount(address, network),
@@ -291,6 +305,10 @@ class BackgroundService extends EventEmitter {
             clearMessages: async () => this.messageController.clearMessages(),
             approve: async (messageId, address) => await this.messageController.approve(messageId, address),
             reject: async (messageId) => this.messageController.reject(messageId),
+
+            // notifications
+            setReadNotification: async (id) => this.notificationsController.setMessageStatus(id, MSG_STATUSES.SHOWED_NOTIFICATION),
+            deleteNotifications: async (ids) => this.notificationsController.deleteNotifications(ids),
 
             // network
             setNetwork: async (network) => this.networkController.setNetwork(network),
@@ -395,6 +413,24 @@ class BackgroundService extends EventEmitter {
             return await this.messageController.getMessageResult(messageId)
         };
 
+        const newNotification = async (data) => {
+            const { selectedAccount } = this.getState();
+            const myData = { ...data };
+            const result = await this.notificationsController.newNotification({
+                address: selectedAccount.address,
+                message: myData.message,
+                origin: origin,
+                status: MSG_STATUSES.NEW_NOTIFICATION,
+                timestamp: Date.now(),
+                title: myData.title,
+                type: 'simple'
+            }).id;
+
+            this.emit('Show notification');
+
+            return result;
+        };
+
         const api = {
             signOrder: async (data, from) => {
                 return await newMessage(data, 'order', from, false)
@@ -423,8 +459,10 @@ class BackgroundService extends EventEmitter {
             signRequest: async (data, from) => {
                 return await newMessage(data, 'request', from, false)
             },
+            notification: async (data) => {
+                return await newNotification(data);
+            },
             //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
-
 
 
         };
@@ -488,7 +526,7 @@ class BackgroundService extends EventEmitter {
             };
 
 
-                this.on('update', updateHandler);
+            this.on('update', updateHandler);
 
             dnode.on('end', () => {
                 this.removeListener('update', updateHandler);
@@ -502,7 +540,7 @@ class BackgroundService extends EventEmitter {
     }
 
     _privateSendUpdate() {
-        this.emit('update', this.getState())
+        this.emit('update', this.getState());
     }
 
     _getCurrentNtwork(account) {

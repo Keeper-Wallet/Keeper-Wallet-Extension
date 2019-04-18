@@ -89,6 +89,12 @@ export const ACTION = {
         SET_CONFIG: 'SET_CONFIG',
         UPDATE_IDLE: 'UPDATE_IDLE',
         SET_IDLE: 'SET_IDLE',
+    },
+    NOTIFICATIONS: {
+        SET: 'NOTIFICATIONS_SET',
+        SET_SHOWED: 'NOTIFICATIONS_SET_SHOWED',
+        DELETE: 'NOTIFICATIONS_DELETE',
+        SET_ACTIVE: 'SET_ACTIVE',
     }
 };
 

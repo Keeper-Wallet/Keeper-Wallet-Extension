@@ -40,6 +40,15 @@ export const changeLang = store => next => action => {
     return next(action);
 };
 
+
+export const deleteNotifications = store => next => action => {
+    if (action.type !== ACTION.NOTIFICATIONS.DELETE) {
+        return next(action);
+    }
+    
+    background.deleteNotifications(action.payload);
+};
+
 export const setIdle = store => next => action => {
     
     if (action.type !== ACTION.REMOTE_CONFIG.SET_IDLE) {

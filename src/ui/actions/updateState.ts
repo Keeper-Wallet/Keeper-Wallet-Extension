@@ -20,6 +20,7 @@ export function updateState(state) {
         origins = {},
         config = {},
         idleOptions = {},
+        myNotifications = [],
     } = state;
     const currentState = store.getState();
 
@@ -29,7 +30,14 @@ export function updateState(state) {
             payload: state.networks
         });
     }
-
+    
+    if (!equals(currentState.notifications, myNotifications)) {
+        actions.push({
+            type: ACTION.NOTIFICATIONS.SET,
+            payload: myNotifications,
+        });
+    }
+    
     if (!equals(currentState.config, config)) {
         actions.push({
             type: ACTION.REMOTE_CONFIG.SET_CONFIG,

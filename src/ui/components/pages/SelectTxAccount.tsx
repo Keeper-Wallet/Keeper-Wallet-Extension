@@ -51,9 +51,9 @@ class SelectTxAccountComponent extends React.PureComponent {
     }
     
     static getDerivedStateFromProps(props, state) {
-        const { activeMessage, messages } = props;
+        const { activeMessage, messages, activeNotification, notifications } = props;
         
-        if (!activeMessage && messages.length === 0) {
+        if (!activeMessage && messages.length === 0 && !activeNotification && notifications.length === 0) {
             props.setTab(PAGES.ASSETS);
             return { loading: false };
         }
@@ -66,7 +66,9 @@ const mapStateToProps = (state) => {
     return {
         selectAccount: state.selectedAccount,
         messages: state.messages,
+        notifications: state.notifications,
         activeMessage: state.activeMessage,
+        activeNotification: state.activeNotification,
     };
 };
 

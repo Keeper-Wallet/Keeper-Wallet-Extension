@@ -211,6 +211,11 @@ class Background {
         }
     }
 
+    async deleteNotifications(ids) {
+        await this.initPromise;
+        return this.background.deleteNotifications(ids);
+    }
+    
     async getUserList(type: string, from: number, to: number): Promise<any> {
         await this.initPromise;
         return this.background.getUserList(type, from, to);
