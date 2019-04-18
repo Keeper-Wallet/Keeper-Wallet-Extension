@@ -13,7 +13,7 @@ import { BUTTON_TYPE } from "../ui/buttons";
 
 @translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
-
+    
     readonly props;
     readonly state = { } as any;
     passInputEl: Input;
@@ -38,15 +38,29 @@ class AccountInfoComponent extends React.Component {
             this.passInputEl.focus();
         }
     };
-
+    
     render() {
         const { selectedAccount, activeAccount } = this.props;
         const isActive = selectedAccount.address === activeAccount.address;
         const { onCopyHandler } = this;
         const { leaseBalance } = this.state;
         const showLease = leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
+        
+         let walletLink;
+         let activeAddressLink;
+        
+         (function() {
+             if (activeAccount.network == 'mainnet') {
+                 walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
+                 activeAddressLink = 'https://wavesexplorer.com/address/' + activeAccount.address;
+             } else {
+                 walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper'
+                 activeAddressLink = false;
+             };
+         })();
+        
         return <div className={styles.content}>
-
+            
             <div className="relative">
             
                 <div className={`flex margin-main-big ${styles.wallet}`}>
@@ -73,18 +87,28 @@ class AccountInfoComponent extends React.Component {
                 </div>
     
                 <div className={`margin-main-big ${styles.buttonsWrapper}`}>
-                    <a href="https://client.wavesplatform.com/" target="_blank" className="button walletIconBlack button-wallet">
-                        <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
-                    <a href="https://wavesexplorer.com/" target="_blank" className="button transactionsIconBlack button-wallet">
-                        <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
+                    
+                    <a href={walletLink} target="_blank" className="button walletIconBlack button-wallet">
+                       <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+    
+                    {activeAddressLink ? <a href={activeAddressLink} target="_blank"
+                        className="transactionsIconBlack button button-wallet">
+                        <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
+                    
                     <span className={styles.walletBtnSeparator}></span>
                     <Button onClick={this.setActiveAccount} disabled={isActive}
                             type={BUTTON_TYPE.CUSTOM}
                             className={isActive ? styles.activeAccount : styles.inActiveAccount}></Button>
         
-                    <Button type={BUTTON_TYPE.CUSTOM}
-                            className="button button-wallet button-wallet-iconOnly showQrIcon"
-                            onClick={this.showQrHandler}></Button>
+                    <div className="relative">
+                        <Button type={BUTTON_TYPE.CUSTOM}
+                                className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
+                                onClick={this.showQrHandler}></Button>
+                        <div className={`${styles.wallerShowQrTooltip} tooltip`}>
+                            <Trans i18nKey='showQR'>Show QR</Trans>
+                        </div>
+                    </div>
+                    
                 </div>
 
             </div>
