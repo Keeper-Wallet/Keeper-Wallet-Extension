@@ -44,10 +44,9 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
                className="walletIconBlack button button-wallet">
                <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
             
-            {activeAddressLink ? <a href={activeAddressLink}
-                   target="_blank"
+            {activeAddressLink ? <a href={activeAddressLink} target="_blank"
                    className="transactionsIconBlack button button-wallet">
-                    <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
+                   <Trans i18nKey='ui.transactions'>Transactions</Trans></a> : null}
             
             <span className={styles.activeWAlletBtnSeparator}></span>
             
