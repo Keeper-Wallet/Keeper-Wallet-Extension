@@ -9,6 +9,7 @@ import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { BUTTON_TYPE } from "../ui/buttons";
 
 @translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
@@ -46,40 +47,46 @@ class AccountInfoComponent extends React.Component {
         const showLease = leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
         return <div className={styles.content}>
 
-            <div className={`flex margin-main-big ${styles.wallet}`}>
-                <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
-                <div className={styles.accountData}>
-                    <div>
-                        <Button type='transparent'
-                                className={styles.accountName}
-                                onClick={this.editNameHandler} >
-                            <span className={`basic500 body1`}>{selectedAccount.name}</span>
-                            <i className={styles.editIcon}></i>
-                        </Button>
-                    </div>
-                    <div className={`headline1 marginTop1 ${styles.balance}`}>
-                        <Balance split={true} showAsset={true} balance={this.state.balance}/>
-                        <div className="basic500 body3 margin-min-top">
-                            { showLease ?
-                                <span>(<Trans i18nKey='wallet.lease'>Leased</Trans> {leaseBalance.toFormat()})</span> :
-                                null
+            <div className="relative">
+            
+                <div className={`flex margin-main-big ${styles.wallet}`}>
+                    <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
+                    <div className={styles.accountData}>
+                        <div>
+                            <Button type='transparent'
+                                    className={styles.accountName}
+                                    onClick={this.editNameHandler} >
+                                <span className={`basic500 body1`}>{selectedAccount.name}</span>
+                                <i className={styles.editIcon}></i>
+                            </Button>
+                        </div>
+                        <div className={`headline1 marginTop1 ${styles.balance}`}>
+                            <Balance split={true} showAsset={true} balance={this.state.balance}/>
+                            
+                            { showLease ? <div className={`${styles.reservedBalance} margin-main-big-top`}>
+                                    <span>{leaseBalance.toFormat()}</span>
+                                    <span className="basic500 font300"><Trans i18nKey='wallet.lease'>Leased</Trans></span>
+                                </div> : null
                             }
                         </div>
                     </div>
                 </div>
-            </div>
+    
+                <div className={`margin-main-big ${styles.buttonsWrapper}`}>
+                    <a href="https://client.wavesplatform.com/" target="_blank" className="button walletIconBlack button-wallet">
+                        <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+                    <a href="https://wavesexplorer.com/" target="_blank" className="button transactionsIconBlack button-wallet">
+                        <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
+                    <span className={styles.walletBtnSeparator}></span>
+                    <Button onClick={this.setActiveAccount} disabled={isActive}
+                            type={BUTTON_TYPE.CUSTOM}
+                            className={isActive ? styles.activeAccount : styles.inActiveAccount}></Button>
+        
+                    <Button type={BUTTON_TYPE.CUSTOM}
+                            className="button button-wallet button-wallet-iconOnly showQrIcon"
+                            onClick={this.showQrHandler}></Button>
+                </div>
 
-            <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
-                <Button onClick={this.setActiveAccount}
-                        disabled={isActive}
-                        className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
-                        type="interface">
-                    {isActive ? <Trans i18nKey='ur.activeNow'>Active now</Trans> :
-                    <Trans i18nKey='ur.unactive'>Make active</Trans>}
-                </Button>
-                <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface" onClick={this.showQrHandler}>
-                    <Trans i18nKey='ui.showQR'>Show QR</Trans>
-                </Button>
             </div>
 
             <div className="margin-main-big">
@@ -117,7 +124,16 @@ class AccountInfoComponent extends React.Component {
                     <CopyText type='key' getText={this.getSeed} showCopy={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
-
+    
+            <div className={styles.accountInfoFooter}>
+                <div className={styles.deleteButton}>
+                    <div className={`${styles.deleteIcon} delete-icon`}></div>
+                    <div>
+                        <Trans i18nKey='deleteAccount.delete'>Delete account</Trans>
+                    </div>
+                </div>
+            </div>
+            
             <Modal animation={Modal.ANIMATION.FLASH}
                    showModal={this.state.showPassword}
                    showChildrenOnly={true}>

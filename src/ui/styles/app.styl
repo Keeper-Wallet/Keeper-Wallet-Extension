@@ -353,7 +353,7 @@ $layout-44 = 44px;
     height: 10px;
     content: '';
     transform: rotate(45deg);
-    right: 10px;
+    right: 7px;
     bottom: -2px;
     position: absolute;
 
@@ -370,6 +370,15 @@ $layout-44 = 44px;
   height: 100%;
   top: 0;
   left: 0;
+
+:global .tooltip
+  display: none;
+  opacity: 0;
+  z-index: 10;
+
+:global .showTooltip:not(.active-account-icon):hover + .tooltip
+  display: block;
+  opacity: 1;
 
 :global .notification
   display: block;

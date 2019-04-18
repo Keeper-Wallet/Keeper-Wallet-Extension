@@ -15,10 +15,12 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
     
     render() {
         const address = this.props.selectedAccount.address;
+        const name = this.props.selectedAccount.name;
         const isEdge = window.navigator && typeof window.navigator.msSaveOrOpenBlob === 'function';
         return <div className={`center ${styles.content}`}>
-            <Avatar className="margin1" size={48} address={address}/>
-            <div className="body1 basic500 margin4">{address}</div>
+    
+            <div className="input-title fullwidth tag1">{name}</div>
+            <div className="tag1 basic500 margin-main">{address}</div>
             
             <QRCode ref={this.getQrRef}
                     width={200}
@@ -27,14 +29,13 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
                     quality={1}
                     margin={1}
                     type='image/png'
-                    text={address}/>
+                    text={address} />
             
-            {isEdge ? null :
-                <Button type='submit' withIcon={true} className={`${styles.downloadQr}`} onClick={this.downloadHandler}>
-                    <div>
-                        <Trans i18nKey='qrCode.download'>Download QR code</Trans>
-                    </div>
-                </Button>}
+            {isEdge ? null : <Button type="submitTiny" className={`${styles.downloadQr}`} onClick={this.downloadHandler}>
+                        <div>
+                            <Trans i18nKey='qrCode.download'>Download QR code</Trans>
+                        </div>
+                    </Button>}
         </div>;
     }
     
