@@ -10,6 +10,8 @@ export const MSG_STATUSES = {
     PUBLISHED: 'published',
     FAILED: 'failed',
     REJECTED: 'rejected',
+    SHOWED_NOTIFICATION: 'showed_notify',
+    NEW_NOTIFICATION: 'new_notify',
 };
 
 export const STATUS = {
@@ -48,7 +50,6 @@ export const DEFAULT_CONFIG = {
         allow_tx: [3, 4, 5, 6, 7, 10, 11, 12],
     },
     IDLE: {
-        'test': 10000,
         'idle': 0,
         '5m': 5 * 60 * 1000,
         '10m': 10 * 60 * 1000,

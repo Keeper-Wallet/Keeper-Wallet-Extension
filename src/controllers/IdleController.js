@@ -22,6 +22,7 @@ export class IdleController {
     setOptions(options) {
         this.options = { ...this.options, ...options };
         this.backgroundService.preferencesController.setIdleOptions(this.options);
+        this.start();
     }
 
     start() {
@@ -30,6 +31,7 @@ export class IdleController {
     }
 
     update() {
+        clearTimeout(this.tmr);
         this.lastUpdate = Date.now();
         this.start();
     }
@@ -46,7 +48,7 @@ export class IdleController {
             this._lock('locked');
         }
 
-        this.tmr = setTimeout(() => this.start(), 10000);
+        this.tmr = setTimeout(() => this.start(), 5000);
     }
 
     _idleMode() {

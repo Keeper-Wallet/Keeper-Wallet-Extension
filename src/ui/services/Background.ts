@@ -5,9 +5,11 @@ class Background {
     background: any;
     initPromise: Promise<void>;
     onUpdateCb: Array<(state) => void> = [];
+    updatedByUser = false;
     _defer;
     _assetsStore;
-    _lastUpdateIdle = Date.now();
+    _lastUpdateIdle = 0;
+    _tmr;
     
     constructor() {
         this._assetsStore = {};
@@ -38,13 +40,8 @@ class Background {
     }
     
     async updateIdle() {
-        const now = Date.now();
-        if (now - this._lastUpdateIdle < 9000) {
-            return  null;
-        }
-        this._lastUpdateIdle = now;
-        await this.initPromise;
-        return  this.background.updateIdle();
+        this.updatedByUser = true;
+        this._updateIdle();
     }
     
     async setIdleOptions(options: { type: string }) {
@@ -219,6 +216,21 @@ class Background {
         return this.background.getUserList(type, from, to);
     }
 
+    async _updateIdle() {
+        const now = Date.now();
+        clearTimeout(this._tmr);
+        this._tmr = setTimeout(() => this._updateIdle(), 4000);
+        
+        if (!this.updatedByUser || now - this._lastUpdateIdle < 4000) {
+            return  null;
+        }
+        
+        this.updatedByUser = false;
+        this._lastUpdateIdle = now;
+        await this.initPromise;
+        return  this.background.updateIdle();
+    }
+    
     _onUpdate(state: IState) {
         for (const cb of this.onUpdateCb) {
             cb(state);

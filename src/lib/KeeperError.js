@@ -24,6 +24,7 @@ const ERRORS_DATA = {
     15: { msg: 'Filed request', name: 'FILED_MSG' },
     16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
     17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
+    18: { msg: 'Can\'t sent notification', name: 'NOTIFICATION_ERROR' },
 };
 
 const DEF_CODE = 11;
@@ -50,6 +51,7 @@ class KeeperError extends Error {
  *    "UNKNOWN_IDLE": (function(*=): KeeperError)
  *    "FILED_MSG": (function(*=): KeeperError)
  *    "UNKNOWN_TX": (function(*=): KeeperError)
+ *    "NOTIFICATION_ERROR": (function(*=): KeeperError)
  *  }
  * }
  */
