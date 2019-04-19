@@ -64,19 +64,19 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         
         newTotalAmount = newInterval ? newTotalAmount : '';
         
-        if (newCanShowNotifications !== !!this.state.notifications) {
+        if(newCanShowNotifications !== !!this.state.notifications) {
             canSave = true;
         }
         
-        if (Number(sign.interval) !== Number(newInterval)) {
+        if(Number(sign.interval) !== Number(newInterval)) {
             canSave = true;
         }
         
-        if (Number(sign.totalAmount || 0) !== Number(newTotalAmount || 0)) {
+        if(Number(sign.totalAmount || 0) !== Number(newTotalAmount || 0)) {
             canSave = true;
         }
         
-        if (!Number(newTotalAmount) && Number(newInterval)) {
+        if(!Number(newTotalAmount) && Number(newInterval)) {
             canSave = false;
         }
         
@@ -99,7 +99,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         const { value } = event.target;
         const parsedValue = value.replace(/[^0-9.]/g, '')
             .split('.').slice(0, 2);
-        if (parsedValue[1]) {
+        if(parsedValue[1]) {
             parsedValue[1] = parsedValue[1].slice(0, 8);
         }
         
@@ -154,37 +154,39 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                     <div className={styles.waves}>Waves</div>
                 </div>
                 
-                <div>
-                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotifications} onChange={this.canUseNotificationsHandler}/>
+                <div className="flex margin-main-big margin-main-big-top">
+                    <Input id='checkbox_noshow'
+                           type={'checkbox'}
+                           checked={this.state.canShowNotifications}
+                           onChange={this.canUseNotificationsHandler}
+                    />
                     <label htmlFor='checkbox_noshow'>
                         <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
                     </label>
                 </div>
                 
-                <div className={cn(styles.bottomBtns)}>
-                    <div className={styles.btnWrapper}>
-                        {
-                            !inWhiteList ? <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
-                                <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
-                            </Button> : null
-                        }
-                        {
-                            !inWhiteList ? <div className={styles.btnDivider}/> : null
-                        }
-                        <Button type={BUTTON_TYPE.GENERAL} disabled={!this.state.canSave} onClick={this.saveHandler}>
-                            <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
-                        </Button>
-                    </div>
-                    <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
-                        <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
+                <div>
+                    {
+                        !inWhiteList ? <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
+                            <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
+                        </Button> : null
+                    }
+                    {
+                        !inWhiteList ? <div className={styles.btnDivider}/> : null
+                    }
+                    <Button type={BUTTON_TYPE.GENERAL} disabled={!this.state.canSave} onClick={this.saveHandler}>
+                        <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
                     </Button>
                 </div>
+                <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
+                    <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
+                </Button>
             </div>
         );
     }
     
     static _getAutoSign(autoSign: TAutoAuth): TAutoAuth {
-        if (!autoSign || typeof autoSign === 'string') {
+        if(!autoSign || typeof autoSign === 'string') {
             return { type: 'allowAutoSign', totalAmount: null, interval: null };
         }
         
@@ -196,7 +198,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         const selected = CONFIG.list.find(({ value }) => value === interval).id;
         const notifications = props.permissions.find((item: TNotification) => item && item.type === 'useNotifications') as TNotification;
         let canShowNotifications = state.canShowNotifications;
-        if (canShowNotifications === null && !!notifications) {
+        if(canShowNotifications === null && !!notifications) {
             canShowNotifications = true;
         }
         return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };

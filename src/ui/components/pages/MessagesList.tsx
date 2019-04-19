@@ -106,8 +106,7 @@ class MessageListComponent extends React.Component {
                 <div className={''}>
                     <Notifications notifications={notifications}
                                    onShow={this.selectNotificationHandler}
-                                   onDelete={this.deleteNotifications}
-                    />
+                                   onDelete={this.deleteNotifications}/>
                 </div>
                 
                 <div>

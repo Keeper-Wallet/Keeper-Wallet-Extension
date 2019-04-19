@@ -68,7 +68,7 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
             </div>
-
+            
             <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
                 <Button onClick={this.setActiveAccount}
                         disabled={isActive}
