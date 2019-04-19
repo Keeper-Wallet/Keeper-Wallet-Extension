@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Input, DateFormat, Button, BUTTON_TYPE } from 'ui/components/ui';
 import { translate, Trans } from 'react-i18next';
+import { setActiveNotification } from 'ui/actions';
 import {
     updateActiveMessage,
     getAsset,
@@ -11,7 +12,8 @@ import {
     clearMessages,
     closeNotificationWindow,
     setShowNotification,
-    setAutoOrigin
+    setAutoOrigin,
+    deleteNotifications,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -48,13 +50,15 @@ class NotificationsComponent extends React.Component {
         this.props.setTab(PAGES.MESSAGES_LIST);
     };
     
-    toggleCanShowHandler = ( e ) => {
+    toggleCanShowHandler = (e) => {
         const canUse = e.target.checked;
         this.props.setShowNotification({ origin: this.state.origin, canUse });
     };
     
     nextHandler = (e) => {
-    
+        const nextNotification = this.state.notifications.filter(([item]) => item.origin !== this.state.origin)[0];
+        this._deleteMessages();
+        this.props.setActiveNotification(nextNotification || null);
     };
     
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
@@ -70,12 +74,13 @@ class NotificationsComponent extends React.Component {
                 {
                     activeNotification
                         .map(notification => (
-                            <NotificationItem notification={notification} key={notification.id}/>
+                                <NotificationItem notification={notification} key={notification.id}/>
+                            )
                         )
-                    )
                 }
                 <div>
-                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify} onChange={this.toggleCanShowHandler}/>
+                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify}
+                           onChange={this.toggleCanShowHandler}/>
                     <label htmlFor='checkbox_noshow'>
                         <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
                     </label>
@@ -103,14 +108,15 @@ class NotificationsComponent extends React.Component {
                         </Button>
                     }
                     
-                    <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount} hideButton={false}/>
+                    <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount}
+                                       hideButton={false}/>
                 </div>
             </div>
         );
     }
     
     _deleteMessages() {
-    
+        return this.props.deleteNotifications(this.state.activeNotification.map(({ id }) => id));
     }
     
     static getDerivedStateFromProps(props, state) {
@@ -118,9 +124,8 @@ class NotificationsComponent extends React.Component {
         const origin = activeNotification[0].origin;
         const perms = origins[origin];
         const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
-        const hasMessages =  messages.length > 0;
-        const hasNotifications =  notifications.length > 0;
-        
+        const hasMessages = messages.length > 0;
+        const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
         
         return {
             canShowNotify,
@@ -129,6 +134,7 @@ class NotificationsComponent extends React.Component {
             origin,
             hasMessages,
             hasNotifications,
+            notifications,
             showClose: !hasNotifications && !hasMessages
         };
     }
@@ -147,6 +153,8 @@ const mapStateToProps = function (store) {
 const actions = {
     closeNotificationWindow,
     setShowNotification,
+    setActiveNotification,
+    deleteNotifications,
 };
 
 export const Notifications = connect(mapStateToProps, actions)(NotificationsComponent);

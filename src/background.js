@@ -32,7 +32,6 @@ import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import { getAdapterByType } from '@waves/signature-adapter';
-import { libs } from '@waves/signature-generator';
 import { WAVESKEEPER_DEBUG } from './constants';
 
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
@@ -56,7 +55,7 @@ async function setupBackgroundService() {
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService;
-        //global.libs = libs;
+        global.libs = libs;
     }
 
     // setup state persistence

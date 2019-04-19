@@ -25,6 +25,7 @@ export class FinalTransaction extends React.PureComponent {
             transactionStatus,
             selectedAccount,
             messages,
+            notifications,
             message,
             onClose,
             onNext,
@@ -42,8 +43,8 @@ export class FinalTransaction extends React.PureComponent {
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
         const isShowNext = newMessages > 0;
-        const isShowList = newMessages > 1;
-        const isShowClose = newMessages === 0;
+        const isShowList = newMessages + notifications.length > 1;
+        const isShowClose = newMessages + notifications.length === 0;
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;

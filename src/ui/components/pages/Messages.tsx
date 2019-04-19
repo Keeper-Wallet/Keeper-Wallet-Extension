@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow, setAutoOrigin } from '../../actions';
+import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow, setAutoOrigin, setShowNotification } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
@@ -45,6 +45,7 @@ class MessagesComponent extends React.Component {
                                      message={this.props.activeMessage}
                                      assets={this.props.assets}
                                      messages={this.props.messages}
+                                     notifications={this.props.notifications}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
                                      onClose={this.closeHandler}
@@ -80,7 +81,15 @@ class MessagesComponent extends React.Component {
         }
         
         if (params) {
-            this.props.setAutoOrigin(params);
+            const { notifyPermissions, approvePermissions } = params;
+            
+            if (approvePermissions) {
+                this.props.setAutoOrigin(approvePermissions);
+            }
+            
+            if (notifyPermissions) {
+                this.props.setShowNotification(notifyPermissions);
+            }
         }
         
         this.hasApproved = true;
@@ -223,6 +232,7 @@ const mapStateToProps = function (store) {
 };
 
 const actions = {
+    setShowNotification,
     closeNotificationWindow,
     clearMessagesStatus,
     updateActiveMessage,
