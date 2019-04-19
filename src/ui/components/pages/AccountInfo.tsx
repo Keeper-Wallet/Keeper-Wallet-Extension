@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {Trans, translate} from 'react-i18next';
+import { connect } from 'react-redux';
+import { Trans, translate } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, CopyText, Modal, Input, Error, Button, Balance } from '../ui';
 import background from '../../services/Background';
@@ -9,12 +9,14 @@ import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { Seed } from '@waves/signature-generator';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { BUTTON_TYPE } from '../ui/buttons';
+import { getExplorerUrls } from 'ui/utils/waves';
 
 @translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
-
+    
     readonly props;
-    readonly state = { } as any;
+    readonly state = {} as any;
     passInputEl: Input;
     copiedTimer;
     deffer;
@@ -37,69 +39,102 @@ class AccountInfoComponent extends React.Component {
             this.passInputEl.focus();
         }
     };
-
+    
+    onDeleteHandler = () => {
+        this.props.setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
+    };
+    
     render() {
         const { selectedAccount, activeAccount } = this.props;
         const isActive = selectedAccount.address === activeAccount.address;
         const { onCopyHandler } = this;
         const { leaseBalance } = this.state;
         const showLease = leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
+        const { address, network, name, publicKey } = selectedAccount;
+        const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
+        
         return <div className={styles.content}>
-
-            <div className={`flex margin-main-big ${styles.wallet}`}>
-                <Avatar className={styles.avatar} address={selectedAccount.address} size={48}/>
-                <div className={styles.accountData}>
-                    <div>
-                        <Button type='transparent'
-                                className={styles.accountName}
-                                onClick={this.editNameHandler} >
-                            <span className={`basic500 body1`}>{selectedAccount.name}</span>
-                            <i className={styles.editIcon}></i>
-                        </Button>
-                    </div>
-                    <div className={`headline1 marginTop1 ${styles.balance}`}>
-                        <Balance split={true} showAsset={true} balance={this.state.balance}/>
-                        <div className="basic500 body3 margin-min-top">
-                            { showLease ?
-                                <span>(<Trans i18nKey='wallet.lease'>Leased</Trans> {leaseBalance.toFormat()})</span> :
-                                null
+            
+            <div className="relative">
+                
+                <div className={`flex margin-main-big ${styles.wallet}`}>
+                    <Avatar className={styles.avatar} address={address} size={48}/>
+                    <div className={styles.accountData}>
+                        <div>
+                            <Button type='transparent'
+                                    className={styles.accountName}
+                                    onClick={this.editNameHandler}>
+                                <span className={`basic500 body1`}>{name}</span>
+                                <i className={styles.editIcon}></i>
+                            </Button>
+                        </div>
+                        <div className={`headline1 marginTop1 ${styles.balance}`}>
+                            <Balance split={true} showAsset={true} balance={this.state.balance}/>
+                            
+                            {showLease ? <div className={`${styles.reservedBalance} margin-main-big-top`}>
+                                <span>{leaseBalance.toFormat()}</span>
+                                <span className="basic500 font300"><Trans i18nKey='wallet.lease'>Leased</Trans></span>
+                            </div> : null
                             }
                         </div>
                     </div>
                 </div>
+                
+                <div className={`margin-main-big ${styles.buttonsWrapper}`}>
+                    
+                    {
+                        walletLink &&
+                        <a href={walletLink} target="_blank"
+                           className="button walletIconBlack button-wallet">
+                            <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
+                    }
+                    
+                    {
+                        activeAddressLink &&
+                        <a href={activeAddressLink} target="_blank"
+                           className="transactionsIconBlack button button-wallet">
+                            <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
+                    }
+                    
+                    <span className={styles.walletBtnSeparator}/>
+                    
+                    <Button onClick={this.setActiveAccount} disabled={isActive}
+                            type={BUTTON_TYPE.CUSTOM}
+                            className={isActive ? styles.activeAccount : styles.inActiveAccount}
+                    />
+                    
+                    <div className="relative">
+                        <Button type={BUTTON_TYPE.CUSTOM}
+                                className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
+                                onClick={this.showQrHandler}
+                        />
+                        <div className={`${styles.wallerShowQrTooltip} tooltip`}>
+                            <Trans i18nKey='showQR'>Show QR</Trans>
+                        </div>
+                    </div>
+                
+                </div>
+            
             </div>
             
-            <div className={`buttons-wrapper margin-main-big ${styles.buttonsWrapper}`}>
-                <Button onClick={this.setActiveAccount}
-                        disabled={isActive}
-                        className={`margin-main-big ${isActive ? styles.activeAccount : styles.inActiveAccount}`}
-                        type="interface">
-                    {isActive ? <Trans i18nKey='ur.activeNow'>Active now</Trans> :
-                    <Trans i18nKey='ur.unactive'>Make active</Trans>}
-                </Button>
-                <Button className={`margin-main-big ${styles.showQrIcon}`} type="interface" onClick={this.showQrHandler}>
-                    <Trans i18nKey='ui.showQR'>Show QR</Trans>
-                </Button>
-            </div>
-
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.address'>Your address</Trans>
                 </div>
                 <div className="input-like tag1">
-                    <CopyText text={selectedAccount.address} showCopy={true} showText={true} onCopy={onCopyHandler}/>
+                    <CopyText text={address} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
-
+            
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.pubKey'>Public key</Trans>
                 </div>
                 <div className={`input-like tag1 ${styles.ellipsis}`}>
-                    <CopyText text={selectedAccount.publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
+                    <CopyText text={publicKey} showCopy={true} showText={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
-
+            
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.privKey'>Private key</Trans>
@@ -108,7 +143,7 @@ class AccountInfoComponent extends React.Component {
                     <CopyText type='key' getText={this.getPrivate} showCopy={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
-
+            
             <div className="margin-main-big">
                 <div className="input-title basic500 tag1">
                     <Trans i18nKey='accountInfo.backUp'>Backup phrase</Trans>
@@ -117,14 +152,23 @@ class AccountInfoComponent extends React.Component {
                     <CopyText type='key' getText={this.getSeed} showCopy={true} onCopy={onCopyHandler}/>
                 </div>
             </div>
-
+            
+            <div className={styles.accountInfoFooter}>
+                <div className={styles.deleteButton} onClick={this.onDeleteHandler}>
+                    <div className={`${styles.deleteIcon} delete-icon`}/>
+                    <div>
+                        <Trans i18nKey='deleteAccount.delete'>Delete account</Trans>
+                    </div>
+                </div>
+            </div>
+            
             <Modal animation={Modal.ANIMATION.FLASH}
                    showModal={this.state.showPassword}
                    showChildrenOnly={true}>
                 <form className={`modal ${styles.enterPasswordModal}`}
                       onClick={this.confirmPassword}>
-                    <i className={`lock-icon ${styles.lockIcon}`}></i>
-
+                    <i className={`lock-icon ${styles.lockIcon}`}/>
+                    
                     <div className='margin1 relative'>
                         <div className='basic500 tag1 input-title'>
                             <Trans i18nKey='accountInfo.password'>Password</Trans>
@@ -134,14 +178,14 @@ class AccountInfoComponent extends React.Component {
                                error={this.state.passwordError}
                                className='margin1'
                                onChange={this.inputPassword}/>
-
+                        
                         <Error show={this.state.passwordError}>
                             <div className='error'>
                                 <Trans i18nKey='accountInfo.passwordError'>Incorrect password</Trans>
                             </div>
                         </Error>
                     </div>
-
+                    
                     <Button disabled={this.state.passwordError || !this.state.password}
                             className='margin-main-big' type='submit'>
                         <Trans i18nKey='accountInfo.enter'>Enter</Trans>
@@ -149,7 +193,7 @@ class AccountInfoComponent extends React.Component {
                     <Button onClick={this.rejectPassword}>
                         <Trans i18nKey='accountInfo.cancel'>Cancel</Trans>
                     </Button>
-
+                
                 </form>
             </Modal>
             
@@ -160,7 +204,7 @@ class AccountInfoComponent extends React.Component {
                     <Trans i18nKey='accountInfo.copied'>Copied!</Trans>
                 </div>
             </Modal>
-    
+            
             <Modal animation={Modal.ANIMATION.FLASH_SCALE}
                    showModal={this.state.changeNameNotify}
                    showChildrenOnly={true}>
@@ -170,17 +214,17 @@ class AccountInfoComponent extends React.Component {
             </Modal>
         </div>
     }
-
+    
     setCopiedModal() {
         clearTimeout(this.copiedTimer);
         this.setState({ showCopied: true });
         this.copiedTimer = setTimeout(() => this.setState({ showCopied: false }), 1000);
     }
-
+    
     showErrorModal() {
         this.setState({ passwordError: true });
     }
-
+    
     async getAccountInfo(field, cb) {
         const address = this.props.selectedAccount.address;
         this.deffer = {} as any;
@@ -190,7 +234,7 @@ class AccountInfoComponent extends React.Component {
         });
         
         this.setState({ showPassword: true });
-    
+        
         this.waitPassword(address)
             .then(this.onGetAccount(field, cb))
             .catch((e) => {
@@ -200,11 +244,11 @@ class AccountInfoComponent extends React.Component {
                     this.getAccountInfo(field, cb);
                     return null;
                 }
-    
+                
                 this.setState({ showPassword: false, passwordError: false });
             });
     }
-
+    
     private waitPassword(address) {
         this.deffer.promise = new Promise((res, rej) => {
             this.deffer.resolve = res;
@@ -213,11 +257,11 @@ class AccountInfoComponent extends React.Component {
         
         return this.deffer.promise
             .then((password) => {
-            return background.exportAccount(address, password, this.props.network);
-        });
+                return background.exportAccount(address, password, this.props.network);
+            });
     }
     
-    private onGetAccount(field, cb){
+    private onGetAccount(field, cb) {
         return (data) => {
             this.setState({ showPassword: false, passwordError: false });
             const seed = new Seed(data);
@@ -229,7 +273,7 @@ class AccountInfoComponent extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const { selectedAccount, assets, balances } = props;
         const asset = assets['WAVES'];
-
+        
         if (!asset) {
             props.getAsset('WAVES');
             return { balance: null };
@@ -237,9 +281,9 @@ class AccountInfoComponent extends React.Component {
         const assetInstance = new Asset(asset);
         const balancesMoney = {};
         const leaseMoney = {};
-
+        
         Object.entries<{ available: string, leasedOut: string }>(balances)
-            .forEach(([key, balance]) =>  {
+            .forEach(([key, balance]) => {
                 if (!balance) {
                     return null;
                 }
@@ -247,7 +291,7 @@ class AccountInfoComponent extends React.Component {
                 balancesMoney[key] = new Money(balance.available, assetInstance);
                 leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
             });
-    
+        
         const { changeName: changeNameNotify } = props.notifications;
         const balance = balancesMoney[selectedAccount.address];
         const leaseBalance = leaseMoney[selectedAccount.address];
@@ -257,8 +301,8 @@ class AccountInfoComponent extends React.Component {
 
 const mapStateToProps = function (store: any) {
     const activeAccount = store.selectedAccount.address;
-    const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
-
+    const selected = store.localState.assets.account ? store.localState.assets.account.address : activeAccount;
+    
     return {
         selectedAccount: store.accounts.find(({ address }) => address === selected),
         activeAccount: store.accounts.find(({ address }) => address === activeAccount),

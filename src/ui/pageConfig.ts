@@ -284,7 +284,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-            deleteAccount: true,
+            deleteAccount: false,
         }
     },
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {

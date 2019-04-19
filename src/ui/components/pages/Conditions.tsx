@@ -50,7 +50,10 @@ class ConditionsComponent extends React.Component {
                 
             </div>
 
-            <Button className="centered" onClick={this.onClick.bind(this)} type={BUTTON_TYPE.GENERAL} disabled={this.state.confirmDisabled}>
+            <Button className="centered"
+                    onClick={this.onClick.bind(this)}
+                    type={BUTTON_TYPE.GENERAL}
+                    disabled={this.state.confirmDisabled}>
                 <Trans className="text" i18nKey='conditions.accept'>Accept</Trans>
             </Button>
 
