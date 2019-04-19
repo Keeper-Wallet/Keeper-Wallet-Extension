@@ -2,7 +2,7 @@
 
 .bottom {
   position: absolute;
-  bottom: 14px;
+  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -10,7 +10,10 @@
   width: 100%;
   padding: 0 14px;
   font-size: 12px;
-
+  z-index: 10;
+  box-shadow: 0 -1px 4px 0 #00000019;
+  height: 34px;
+  background: $basic50;
 }
 
 .hidden
