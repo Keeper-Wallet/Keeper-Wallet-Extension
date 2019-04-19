@@ -30,8 +30,9 @@ import {
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
-import { WindowManager } from './lib/WindowManger'
-import { getAdapterByType } from '@waves/signature-adapter'
+import { WindowManager } from './lib/WindowManger';
+import { getAdapterByType } from '@waves/signature-adapter';
+import { libs } from '@waves/signature-generator';
 import { WAVESKEEPER_DEBUG } from './constants';
 
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
@@ -54,7 +55,8 @@ async function setupBackgroundService() {
 
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
-        global.background = backgroundService
+        global.background = backgroundService;
+        //global.libs = libs;
     }
 
     // setup state persistence
@@ -475,6 +477,15 @@ class BackgroundService extends EventEmitter {
                 return await newMessage(data, 'request', from, false)
             },
             notification: async (data) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                await this.validatePermission(origin);
+
                 return await newNotification(data);
             },
             //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
