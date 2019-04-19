@@ -8,11 +8,11 @@ import oauth from './OriginAuth';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 const Error = ({ approveError }) => {
-    return <div>
-        <div className="headline2 margin-main-big">
+    return <div className={`plate ${styles.finalTxPlate}`}>
+        <div className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}>
             <Trans i18nKey='sign.someError'>Something went wrong</Trans>
         </div>
-        <div className={`plate body3 ${styles.finalTxPlate}`}>{JSON.stringify(approveError.error, null, 4)}</div>
+        <div className={`body3 ${styles.finalTxPlate}`}>{JSON.stringify(approveError.error, null, 4)}</div>
     </div>;
 };
 
@@ -66,7 +66,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={className}></div>
                 <div className={styles.txFinalContentWrapper}>
                     <div className={styles.finalTxContent}>
-                        <div className="margin-main-top center margin-main-big">
+                        <div className="margin-main-top margin-main-big">
                             {isApprove || isReject ?
                                 <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
                                                 message={message} assets={assets}/> : null}
