@@ -6,7 +6,6 @@ import { WalletItem } from './';
 import cn from 'classnames';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import { getExplorerUrls } from "../../utils/waves";
-import { selectedAccount } from "../../reducers/updateState";
 
 export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQr = null, onSelect = null, active, account, balance, ...props}) {
 
@@ -16,7 +15,6 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
         return null;
     }
     
-    const { activeAccount } = this.props;
     const walletItemProps = {
         className: 'center',
         account,
@@ -26,7 +24,7 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
         onSelect,
     };
     
-    const { address, network } = activeAccount;
+    const { address, network } = account;
     const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
   
     return <div className={className} {...props}>
@@ -44,14 +42,14 @@ export function ActiveWallet({className = '', leaseBalance, onCopy=null, onShowQ
             <span className={styles.activeWAlletBtnSeparator}></span>
             
             <Copy onCopy={onCopy} text={account.address}>
-                <div className="button button-wallet button-wallet-iconOnly copyIconBlack showTooltip"></div>
+                <div className="button button-wallet button-wallet-iconOnly copyIconBlack showTooltip" />
             </Copy>
             <div className={`${styles.walletCopyTooltip} tooltip`}>
                 <Trans i18nKey='copyAddress'>Copy address</Trans>
             </div>
             
             <div className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
-                 onClick={onShowQr}></div>
+                 onClick={onShowQr} />
             <div className={`${styles.wallerShowQrTooltip} tooltip`}>
                 <Trans i18nKey='showQR'>Show QR</Trans>
             </div>

@@ -86,16 +86,14 @@ class AccountInfoComponent extends React.Component {
                         walletLink &&
                         <a href={walletLink} target="_blank"
                            className="button walletIconBlack button-wallet">
-                            <Trans i18nKey='ui.wallet'>Wallet</Trans>
-                        </a>
+                            <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
                     }
                     
                     {
                         activeAddressLink &&
                         <a href={activeAddressLink} target="_blank"
                            className="transactionsIconBlack button button-wallet">
-                            <Trans i18nKey='ui.transactions'>Transactions</Trans>
-                        </a>
+                            <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
                     }
                     
                     <span className={styles.walletBtnSeparator}/>

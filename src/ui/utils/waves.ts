@@ -23,6 +23,7 @@ export function getExplorerUrls(network: string, address: string) {
             break;
         case 'testnet':
             result.walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper';
+            result.activeAddressLink = `https://wavesexplorer.com/testnet/address/${address}`;
             break;
     }
     
