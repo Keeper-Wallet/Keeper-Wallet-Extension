@@ -37,12 +37,15 @@ class NotificationsComponent extends React.Component {
     
     readonly state = {} as any;
     readonly props;
-    hasApproved: boolean;
     
-    closeHandler = (e) => this.props.closeNotificationWindow();
+    closeHandler = (e) => {
+        this._deleteMessages();
+        this.props.closeNotificationWindow();
+    };
     
     toListHandler = () => {
-    
+        this._deleteMessages();
+        this.props.setTab(PAGES.MESSAGES_LIST);
     };
     
     toggleCanShowHandler = ( e ) => {
@@ -81,21 +84,21 @@ class NotificationsComponent extends React.Component {
                 <div>
                     {
                         this.state.hasMessages &&
-                        <Button type={BUTTON_TYPE.INTERFACE}>
+                        <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
                             <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
                         </Button>
                     }
                     
                     {
                         this.state.hasNotifications &&
-                        <Button type={BUTTON_TYPE.GENERAL}>
+                        <Button type={BUTTON_TYPE.GENERAL} onClick={this.nextHandler}>
                             <Trans i18nKey='notifications.nextBtn'>Next</Trans>
                         </Button>
                     }
                     
                     {
                         this.state.showClose &&
-                        <Button type={BUTTON_TYPE.GENERAL}>
+                        <Button type={BUTTON_TYPE.GENERAL} onClick={this.closeHandler}>
                             <Trans i18nKey='notifications.closeBtn'>Close</Trans>
                         </Button>
                     }
@@ -104,6 +107,10 @@ class NotificationsComponent extends React.Component {
                 </div>
             </div>
         );
+    }
+    
+    _deleteMessages() {
+    
     }
     
     static getDerivedStateFromProps(props, state) {
