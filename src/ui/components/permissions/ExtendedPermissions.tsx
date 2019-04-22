@@ -120,8 +120,13 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
                         <div className={styles.waves}>Waves</div>
                  </div>
                 
-                <div>
-                    <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.showNotify} onChange={this.changeShowNotifyHandler}/>
+
+                <div className="flex margin-main-big margin-main-big-top">
+                    <Input id='checkbox_noshow'
+                           type={'checkbox'}
+                           checked={this.state.showNotify}
+                           onChange={this.changeShowNotifyHandler}
+                    />
                     <label htmlFor='checkbox_noshow'>
                         <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
                     </label>

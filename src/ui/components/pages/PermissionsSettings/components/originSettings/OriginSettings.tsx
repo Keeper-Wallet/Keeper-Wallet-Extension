@@ -126,6 +126,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         
         return (
             <div className={className}>
+                
                 <h2 className={cn(styles.title)}>
                     <Trans i18nKey='permissionSettings.modal.title'>Permission details</Trans>
                 </h2>
@@ -165,22 +166,26 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                     </label>
                 </div>
                 
-                <div>
-                    {
-                        !inWhiteList ? <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
+                
+                {!inWhiteList ? <div className="buttons-wrapper">
+                        <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
                             <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
-                        </Button> : null
-                    }
-                    {
-                        !inWhiteList ? <div className={styles.btnDivider}/> : null
-                    }
-                    <Button type={BUTTON_TYPE.GENERAL} disabled={!this.state.canSave} onClick={this.saveHandler}>
+                        </Button>
+                        
+                        <Button className={styles.test} type={BUTTON_TYPE.GENERAL} disabled={!this.state.canSave}
+                                onClick={this.saveHandler}>
+                            <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+                        </Button>
+                    </div> :
+                    <Button className={styles.test} type={BUTTON_TYPE.GENERAL} disabled={!this.state.canSave}
+                            onClick={this.saveHandler}>
                         <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
-                    </Button>
-                </div>
+                    </Button>}
+                
                 <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
                     <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
                 </Button>
+                
             </div>
         );
     }
