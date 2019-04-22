@@ -4,20 +4,18 @@
 .messageList
   height: 100%;
   background: $basic50;
+  padding: 0 14px 0;
 
   &ScrollBox
     @extends .txScrollBox
-    max-height: 495px;
-    height: 495px;
+    max-height: 510px;
+    height: 510px;
     padding-top: 24px;
-    padding-bottom: 24px;
+    padding-bottom: 64px;
+    margin: 0 -14px 0;
 
   .cardContent
     margin: 0;
-
-  .txWallet
-    margin: 0;
-    width: 100%;
 
   &Header
     height: 48px;
@@ -29,23 +27,24 @@
     border-bottom: 1px solid $basic100;
     background: $white;
 
-   &Title
-     display: flex;
-     justify-content: center;
-     width: 100%;
-     font-weight: 400;
+  &Title
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-weight: 400;
 
   .txWallet
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
+    margin: 0;
 
   .btnDivider
     min-width: 14px;
 
   &Content
-    padding: 24px 14px 0;
+    padding: 0 14px;
     background: $basic50;
     height: 100%;
     overflow: auto;
@@ -64,8 +63,11 @@
     display: block;
     border-radius: 10px;
 
+  .walletWrapper
+    padding: 14px;
+
   .cardItem
-    margin-bottom: 8px;
+    margin-top: 8px;
     cursor: pointer;
 
     & > div:not(:first-child)
@@ -91,10 +93,9 @@
     background: $white;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 #9ba6b266;
-    margin-left: -14px;
-    margin-right: -14px;
     padding: 10px;
     flex-wrap: wrap;
+
     .messageText
       display: block;
       word-break: break-word;

@@ -13,6 +13,11 @@
     padding: 10px;
     background: $white;
 
+.cardClose
+  background: url(../../../assets/img/close-18-basic-500.svg) center no-repeat;
+  width: 18px;
+  height: 18px;
+
 .cardHeader
   display: flex;
   align-items: center;
@@ -190,7 +195,7 @@
   }
 
   .finalTxContent
-    margin: 0 24px;
+    margin: 0 14px;
     min-height: 291px;
     padding-bottom: 14px;
 
@@ -222,9 +227,6 @@
   .finalTxWallet
     margin: 0;
     width: 100%;
-
-    .txWallet
-      border-bottom:2px solid red;
 
   .txInfoRow
     display: flex;
@@ -307,7 +309,13 @@
 .txScrollBox
   overflow: auto;
   position: relative;
-  padding-left: 24px;
-  padding-right 24px;
+  padding-left: 14px;
+  padding-right 14px;
   flex-grow: 1;
   flex-shrink: 999;
+
+.messageTransactionIcon
+  background: url(../../../assets/img/t-message-48.svg) center no-repeat;
+  width: 48px;
+  height: 48px;
+  margin: 0 10px 0 0;

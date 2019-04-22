@@ -94,7 +94,7 @@ class MessageListComponent extends React.Component {
                     {/*    </div>*/}
                     {/*</div>*/}
                     
-                    {!hasNewMessages ? <div className="flex margin-1">
+                    {hasNewMessages ? <div className="flex margin-1 margin-main-big-top">
                         <div className="basic500">
                             <Trans i18nKey='messageList.messages'>Messages</Trans>
                         </div>
@@ -109,7 +109,7 @@ class MessageListComponent extends React.Component {
                                        onDelete={this.deleteNotifications}/>
                     </div>
     
-                    <div className="input-title basic500">
+                    <div className="basic500 margin-main-big-top">
                         <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
                     </div>
     
@@ -118,10 +118,12 @@ class MessageListComponent extends React.Component {
                                   onReject={this.props.reject}/>
                     </div>
                     
-                    <TransactionWallet className={styles.txWallet} account={this.props.selectedAccount}
+                </div>
+                <div className={styles.walletWrapper} >
+                    <TransactionWallet className={styles.txWallet}
+                                       account={this.props.selectedAccount}
                                        hideButton={true}/>
                 </div>
-                
             </div>
         );
     }
@@ -172,7 +174,7 @@ const mapStateToProps = function(store) {
 
 const hasNewMessages = function(store) {
     return {
-        notifications: store.notifications > 0
+        hasNewMessages: store.messages.length > 0,
     };
 };
 

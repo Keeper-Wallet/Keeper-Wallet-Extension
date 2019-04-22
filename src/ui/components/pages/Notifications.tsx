@@ -24,7 +24,7 @@ const NotificationItem = ({ notification }) => (
     <div className={`margin-main-big`}>
         <div className={`${styles.messageItemInner} margin-2`}>
             <div className="flex">
-                <div className={styles.messageIcon} />
+                <div className={styles.messageIcon}/>
                 <div className={styles.messageTitle}>
                     <div className="basic500">{notification && notification.origin}</div>
                     <h2 className="">{notification && notification.title}</h2>
@@ -77,50 +77,57 @@ class NotificationsComponent extends React.Component {
     render() {
         const { activeNotification } = this.state;
         return (
-            <div className={styles.messageList}>
-                <div className={styles.messageListScrollBox}>
-                    {
-                        activeNotification
-                            .map(notification => (
-                                    <NotificationItem notification={notification} key={notification.id}/>
+            <div>
+                
+                <div className={styles.messageList}>
+                    <div className={styles.messageListScrollBox}>
+                        {
+                            activeNotification
+                                .map(notification => (
+                                        <NotificationItem notification={notification} key={notification.id}/>
+                                    )
                                 )
-                            )
-                    }
-                    
-                    <div className={`margin-main-big margin-main-big-top flex ${styles.allowNotification}`}>
-                        <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify}
-                               onChange={this.toggleCanShowHandler}/>
-                        <label htmlFor='checkbox_noshow'>
-                            <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
-                        </label>
-                    </div>
-                    
-                    <div className="margin-main-big-top;">
-                        {
-                            this.state.hasMessages &&
-                            <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
-                                <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
-                            </Button>
                         }
                         
-                        {
-                            this.state.hasNotifications &&
-                            <Button type={BUTTON_TYPE.GENERAL} onClick={this.nextHandler}>
-                                <Trans i18nKey='notifications.nextBtn'>Next</Trans>
-                            </Button>
-                        }
+                        <div className={`margin-main-big margin-main-big-top flex ${styles.allowNotification}`}>
+                            <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify}
+                                   onChange={this.toggleCanShowHandler}/>
+                            <label htmlFor='checkbox_noshow'>
+                                <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
+                            </label>
+                        </div>
                         
-                        {
-                            this.state.showClose &&
-                            <Button type={BUTTON_TYPE.GENERAL} onClick={this.closeHandler}>
-                                <Trans i18nKey='notifications.closeBtn'>Close</Trans>
-                            </Button>
-                        }
+                        <div className="margin-main-big-top">
+                            {
+                                this.state.hasMessages &&
+                                <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
+                                    <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
+                                </Button>
+                            }
+                            
+                            {
+                                this.state.hasNotifications &&
+                                <Button type={BUTTON_TYPE.GENERAL} onClick={this.nextHandler}>
+                                    <Trans i18nKey='notifications.nextBtn'>Next</Trans>
+                                </Button>
+                            }
+                            
+                            {
+                                this.state.showClose &&
+                                <Button type={BUTTON_TYPE.GENERAL} onClick={this.closeHandler}>
+                                    <Trans i18nKey='notifications.closeBtn'>Close</Trans>
+                                </Button>
+                            }
+                        </div>
                     </div>
+    
+                    <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount}
+                                       hideButton={false}/>
+                    
                 </div>
                 
-                <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount}
-                                   hideButton={false}/>
+                
+            
             </div>
         );
     }
