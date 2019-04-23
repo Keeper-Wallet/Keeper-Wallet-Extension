@@ -2,17 +2,40 @@
 @import '../../pages/styles/transactions.styl';
 
 .messageList
+  position: relative;
   height: 100%;
   background: $basic50;
-  padding: 0 14px 0;
+
+  &WithHeader
+    background: yellow;
+
+  &Inner
+    background: slategray;
+    height: calc(100% - 32px);
+
+  .walletWrapper
+    padding: 14px;
+    position: absolute;
+    bottom: 2px;
+    margin: 0;
+    width: 100%;
+
+  .notificationButtons
+    position: fixed;
+    bottom: 58px;
+    left: 0;
+    background: #ffc0cb;
+    padding: 8px 14px 10px;
+    width: 100%;
+
+  .&WithHeader
+    padding-top: 48px;
+    background: pink;
 
   &ScrollBox
     @extends .txScrollBox
-    max-height: 510px;
-    height: 510px;
-    padding-top: 24px;
-    padding-bottom: 64px;
-    margin: 0 -14px 0;
+    max-height: 436px;
+    padding: 24px 14px;
 
   .cardContent
     margin: 0;
@@ -22,6 +45,7 @@
     display: flex;
     align-items: center;
     padding: 0 14px;
+    margin: 0 -14px;
     text-align: center;
     position: relative;
     border-bottom: 1px solid $basic100;
@@ -33,23 +57,17 @@
     width: 100%;
     font-weight: 400;
 
-  .txWallet
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    margin: 0;
-
   .btnDivider
     min-width: 14px;
 
-  &Content
-    padding: 0 14px;
-    background: $basic50;
-    height: 100%;
-    overflow: auto;
-    max-height: calc(100% - 104px);
-    padding-bottom: 24px;
+  //&Content
+  //  padding: 0 14px;
+  //  margin: 0 -14px;
+  //  background: $basic50;
+  //  height: 100%;
+  //  overflow: auto;
+  //  max-height: calc(100% - 104px);
+  //  padding-bottom: 24px;
 
   &Counter
     background: $submit400;
@@ -63,9 +81,6 @@
     display: block;
     border-radius: 10px;
 
-  .walletWrapper
-    padding: 14px;
-
   .cardItem
     margin-top: 8px;
     cursor: pointer;
@@ -74,8 +89,7 @@
       display: none;
 
   .clearAllBtn
-    color: $basic500;
-    oadding: 4px 6px;
+    padding: 4px 6px;
     background: $basic100;
     border-radius: 4px;
 
@@ -85,7 +99,7 @@
     margin: 0 10px;
 
   .timestamp
-    margin: 14px 0 0;
+    margin: 14px 10px;
     padding: 10px 0;
     border-bottom: 1px dashed $basic200;
 

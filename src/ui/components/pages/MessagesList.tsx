@@ -23,7 +23,7 @@ const Messages = ({ messages, assets, onSelect, onReject }) => {
             return <div key={message.id} onClick={() => onSelect(message)}>
                 <Card className={styles.cardItem} message={message} assets={assets} collapsed={true}/>
             </div>;
-        } catch (e) {
+        } catch(e) {
             return null;
         }
     });
@@ -37,7 +37,7 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
                 <NotificationCard onShow={onShow} notifications={group} collapsed={true}
                                   deleteNotifications={onDelete}/>
             </div>;
-        } catch (e) {
+        } catch(e) {
             return null;
         }
     });
@@ -65,15 +65,15 @@ class MessageListComponent extends React.Component {
     readonly selectNotificationHandler = (notification) => this.props.setActiveNotification(notification);
     
     render() {
-        if (this.state.loading) {
+        if(this.state.loading) {
             return <Intro/>
         }
         
         const { messages, notifications, assets } = this.props;
         
         return (
-            <div className={styles.messageList}>
-                
+            <div className={`${styles.messageList}`}>
+    
                 <div className={styles.messageListHeader}>
                     <div className={styles.messageListTitle}>
                         <span className={styles.messageListCounter}>{messages.length + notifications.length}</span>
@@ -83,51 +83,43 @@ class MessageListComponent extends React.Component {
                     </div>
                 </div>
                 
-                <div className={styles.messageListContent}>
-                    {/*<div className={styles.messageListHeader}>*/}
-                    {/*    /!*<div className={styles.arrowBackIcon}></div>*!/*/}
-                    {/*    <div className={styles.messageListTitle}>*/}
-                    {/*        <span className={styles.messageListCounter}>{messages.length}</span>*/}
-                    {/*        <span className="headline3">*/}
-                    {/*        <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>*/}
-                    {/*    </span>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-                    
+                <div className={styles.messageListScrollBox}>
                     {
                         hasNewMessages &&
-                        <div className="flex margin-1 margin-main-big-top">
+                        <div className="flex margin-1">
                             <div className="basic500">
                                 <Trans i18nKey='messageList.messages'>Messages</Trans>
                             </div>
                             <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.deleteAll}
-                                    className={styles.clearAllBtn}>
+                                    className={`${styles.clearAllBtn} body3 basic500`}>
                                 <Trans i18nKey='messageList.clearAllMessages'>Clear all</Trans>
                             </Button>
                         </div>
                     }
-                    
+        
                     <div className="basic-500">
                         <Notifications notifications={notifications}
                                        onShow={this.selectNotificationHandler}
                                        onDelete={this.deleteNotifications}/>
                     </div>
-                    
+        
                     <div className="basic500 margin-main-big-top">
                         <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
                     </div>
-                    
+        
                     <div className={'basic-500'}>
                         <Messages messages={messages} assets={assets} onSelect={this.selectHandler}
                                   onReject={this.props.reject}/>
                     </div>
-                
                 </div>
+                
                 <div className={styles.walletWrapper}>
                     <TransactionWallet className={styles.txWallet}
                                        account={this.props.selectedAccount}
                                        hideButton={true}/>
                 </div>
+            
+            
             </div>
         );
     }
@@ -137,7 +129,7 @@ class MessageListComponent extends React.Component {
         const needAssets = MessageListComponent.getAssets(messages, assets);
         needAssets.forEach(id => props.getAsset(id));
         
-        if (needAssets.length > 0) {
+        if(needAssets.length > 0) {
             return { loading: true };
         }
         
@@ -153,7 +145,7 @@ class MessageListComponent extends React.Component {
                 const config = getConfigByTransaction(message);
                 const assetIds = config.getAssetsId(tx);
                 assetIds.forEach(item => {
-                    if (!assetsHash[item]) {
+                    if(!assetsHash[item]) {
                         acc[item] = null
                     }
                 });
@@ -165,7 +157,7 @@ class MessageListComponent extends React.Component {
     }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function(store) {
     return {
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
@@ -176,7 +168,7 @@ const mapStateToProps = function (store) {
     };
 };
 
-const hasNewMessages = function (store) {
+const hasNewMessages = function(store) {
     return {
         hasNewMessages: store.messages.length > 0,
     };
