@@ -13,11 +13,13 @@ export class NotificationCard extends React.PureComponent<INotification> {
         event.stopPropagation();
         event.preventDefault();
         const ids = this.props.notifications.map(({ id }) => id);
-        this.props.deleteNotifications(ids)
+        this.props.deleteNotifications(ids);
     };
     
-    showHandler = () => {
-        this.props.onShow && this.props.onShow(this.props.notifications[0].origin)
+    showHandler = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        this.props.onShow && this.props.onShow(this.props.notifications)
     };
     
     render() {
@@ -34,7 +36,7 @@ export class NotificationCard extends React.PureComponent<INotification> {
         ) : notifications[0].title;
         
         return <div className={className}>
-            <div className={styles.cardHeader}>
+            <div className={styles.cardHeader} onClick={this.showHandler}>
                 {isGroup ? <div className={styles.notificationTxIconSmall}>
                         <TxIcon txType={'notification'}/>
                     </div> :

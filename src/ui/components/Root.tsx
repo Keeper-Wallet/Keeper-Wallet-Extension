@@ -68,17 +68,17 @@ class RootComponent extends React.Component {
         if (nextProps.loading) {
             return { tab: PAGES.INTRO };
         }
-    
+        
         /**
          * Select lang page
          */
             // // select langs at first
-        // if (!nextProps.ui.selectedLangs) {
-        //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
-        // }
+            // if (!nextProps.ui.selectedLangs) {
+            //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
+            // }
         
         let tab = nextProps.tab;
-    
+        
         /**
          * Intro page on load
          */
@@ -94,13 +94,13 @@ class RootComponent extends React.Component {
         if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT && accounts.length) {
             if (activeMessage) {
                 tab = PAGES.MESSAGES;
+            } else if (activeNotification) {
+                tab = PAGES.NOTIFICATIONS;
             } else if (messages.length + notifications.length > 1) {
                 tab = PAGES.MESSAGES_LIST;
-            } else if (activeNotification) {
-                tab = PAGES.NOTIFICATIONS
             }
         }
-    
+        
         /**
          * Start page on locked keeper
          */
