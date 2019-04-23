@@ -44,6 +44,9 @@ export const DEFAULT_CONFIG = {
         message_expiration_ms: 30 * 60 * 1000,
         update_messages_ms: 30 * 1000,
         max_messages: 100,
+        notification_title_max: 20,
+        notification_interval_min: 30 * 1000,
+        notification_message_max: 250,
     },
     PACK_CONFIG: {
         max: 5,

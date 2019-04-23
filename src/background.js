@@ -234,7 +234,7 @@ class BackgroundService extends EventEmitter {
         this.notificationsController = new NotificationsController({
             initState: initState.NotificationsController,
             getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
-            canShowNotification: (origin) => this.permissionsController.canUseNotification(origin),
+            canShowNotification: (...args) => this.permissionsController.canUseNotification(...args),
             setNotificationPermissions: (origin, canUse, time) => this.permissionsController.setNotificationPermissions(origin, canUse, time),
         });
 

@@ -30,6 +30,39 @@ export class NotificationsController extends EventEmitter {
     }
 
     /**
+     *
+     * @param data
+     * @param {string} data.message
+     * @param {string} data.title
+     * @param {string} data.origin
+     * @param {string} data.type
+     * @param {string} data.timestamp
+     * @param {string} data.address
+     * @param {string} data.status
+     */
+    validateNotification(data) {
+
+        const config = this.getMessagesConfig();
+        const { notification_title_max, notification_message_max, notification_interval_min } = config;
+
+        if (!data || !data.origin || !data.title) {
+            throw ERRORS.NOTIFICATION_DATA_ERROR();
+        }
+
+        const { title, message } = data;
+
+        if (title && title.length > notification_title_max) {
+            throw ERRORS.NOTIFICATION_DATA_ERROR(`title has not more ${notification_title_max} characters`);
+        }
+
+        if (message && message.length > notification_message_max) {
+            throw ERRORS.NOTIFICATION_DATA_ERROR(`message has not more ${notification_message_max} characters`);
+        }
+
+        this.canShowNotification(data.origin, notification_interval_min);
+    }
+
+    /**
      * @title New notification
      * @param data
      * @param {string} data.message
@@ -44,11 +77,7 @@ export class NotificationsController extends EventEmitter {
     newNotification(data) {
         log.debug(`New notification ${data.type}: ${JSON.stringify(data)}`);
 
-        if (!data || !data.origin || !data.title) {
-            throw ERRORS.NOTIFICATION_DATA_ERROR();
-        }
-
-        this.canShowNotification(data.origin);
+        this.validateNotification(data);
 
         const notification = this._generateMessage(data);
 

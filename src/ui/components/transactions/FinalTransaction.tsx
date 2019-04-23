@@ -37,14 +37,14 @@ export class FinalTransaction extends React.PureComponent {
             .map(item => item.id)
             .filter(id => id !== message.id)
             .length);
-
+        const msgCount = newMessages + notifications.length;
         const isSend = message.broadcast;
         const isApprove = !!transactionStatus.approveOk;
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
         const isShowNext = newMessages > 0;
-        const isShowList = newMessages + notifications.length > 1;
-        const isShowClose = newMessages + notifications.length === 0;
+        const isShowList = msgCount > 1;
+        const isShowClose = !msgCount;
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;

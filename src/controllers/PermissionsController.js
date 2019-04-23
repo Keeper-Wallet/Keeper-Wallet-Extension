@@ -91,7 +91,7 @@ export class PermissionsController {
         const { origins, ...other } = this.store.getState();
         const { whitelist, blacklist } = other;
 
-        if ( whitelist.includes(origin) || blacklist.includes(origin) ) {
+        if (whitelist.includes(origin) || blacklist.includes(origin)) {
             return null;
         }
 
@@ -165,8 +165,7 @@ export class PermissionsController {
         return ['1001', '1002', '1003'].includes(String(tx.type).trim());
     }
 
-    canUseNotification(origin) {
-
+    canUseNotification(origin, time_interval) {
         const useApi = this.getPermission(origin, PERMISSIONS.APPROVED);
 
         const permission = this.getPermission(origin, PERMISSIONS.USE_NOTIFICATION);
@@ -176,7 +175,7 @@ export class PermissionsController {
         }
 
         const delta = Date.now() - permission.time;
-        const minInterval = 1000 * 30;
+        const minInterval = time_interval;
         const waitTime = minInterval - delta;
 
         if (waitTime > 0) {
