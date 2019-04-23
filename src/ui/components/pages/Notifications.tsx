@@ -94,7 +94,7 @@ class NotificationsComponent extends React.Component {
                 <div className={`${styles.notificationButtons} buttons-wrapper`}>
                     {
                         this.state.showToList &&
-                        <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
+                        <Button onClick={this.toListHandler}>
                             <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
                         </Button>
                     }
