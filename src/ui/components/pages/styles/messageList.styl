@@ -6,18 +6,17 @@
   height: 100%;
   background: $basic50;
 
-  &WithHeader
-    background: yellow;
-
   &Inner
     background: slategray;
-    height: calc(100% - 32px);
+    height: calc(100% - 48px);
+
+    .messageListScrollBox
+      max-height: 436px;
 
   .walletWrapper
-    padding: 14px;
+    padding: 14px 14px 0;
     position: absolute;
-    bottom: 2px;
-    margin: 0;
+    bottom: 0;
     width: 100%;
 
   .notificationButtons
@@ -28,14 +27,11 @@
     padding: 8px 14px 10px;
     width: 100%;
 
-  .&WithHeader
-    padding-top: 48px;
-    background: pink;
-
   &ScrollBox
     @extends .txScrollBox
-    max-height: 436px;
+    max-height: 494px;
     padding: 24px 14px;
+    background: green;
 
   .cardContent
     margin: 0;
