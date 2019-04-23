@@ -93,7 +93,7 @@ class NotificationsComponent extends React.Component {
                         
                         <div className="margin-main-big-top">
                             {
-                                this.state.hasMessages &&
+                                this.state.showToList &&
                                 <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
                                     <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
                                 </Button>
@@ -136,11 +136,13 @@ class NotificationsComponent extends React.Component {
         const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
         const hasMessages = messages.length > 0;
         const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
+        const showToList = hasMessages || hasNotifications && notifications.length > 2;
         
         return {
             canShowNotify,
             messages,
             activeNotification,
+            showToList,
             origin,
             hasMessages,
             hasNotifications,
