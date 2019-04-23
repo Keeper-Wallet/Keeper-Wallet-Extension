@@ -12,6 +12,7 @@ import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 import { TransactionWallet } from '../wallets';
 import * as styles from './styles/messageList.styl';
+import { Intro } from './Intro';
 
 const NotificationItem = ({ notification }) => (
     <div className={`margin-main-big`}>
@@ -41,14 +42,14 @@ class NotificationsComponent extends React.Component {
     readonly props;
     
     closeHandler = (e) => {
-        this._deleteMessages();
-        this.props.setActiveNotification(null);
+        this._deleteMessages(null);
         this.props.closeNotificationWindow();
     };
     
     toListHandler = () => {
-        this._deleteMessages();
-        this.props.setTab(PAGES.MESSAGES_LIST);
+        this._deleteMessages(null).then(
+            () => this.props.setTab(PAGES.MESSAGES_LIST)
+        );
     };
     
     toggleCanShowHandler = (e) => {
@@ -58,8 +59,7 @@ class NotificationsComponent extends React.Component {
     
     nextHandler = (e) => {
         const nextNotification = this.state.notifications.filter(([item]) => item.origin !== this.state.origin)[0];
-        this._deleteMessages();
-        this.props.setActiveNotification(nextNotification || null);
+        this._deleteMessages(nextNotification || null);
     };
     
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
@@ -69,7 +69,13 @@ class NotificationsComponent extends React.Component {
     }
     
     render() {
-        const { activeNotification } = this.state;
+        const { activeNotification, showToList, hasNotifications, showClose, loading } = this.state;
+        
+        if (loading) {
+            return <Intro/>;
+        }
+        
+        
         return (
             <div className={`${styles.messageList} ${styles.messageListInner}`}>
                 
@@ -93,21 +99,21 @@ class NotificationsComponent extends React.Component {
                 
                 <div className={`${styles.notificationButtons} buttons-wrapper`}>
                     {
-                        this.state.showToList &&
+                        showToList &&
                         <Button type={BUTTON_TYPE.INTERFACE} onClick={this.toListHandler}>
                             <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
                         </Button>
                     }
                     
                     {
-                        this.state.hasNotifications &&
+                        hasNotifications &&
                         <Button type={BUTTON_TYPE.GENERAL} onClick={this.nextHandler}>
                             <Trans i18nKey='notifications.nextBtn'>Next</Trans>
                         </Button>
                     }
                     
                     {
-                        this.state.showClose &&
+                        showClose &&
                         <Button onClick={this.closeHandler}>
                             <Trans i18nKey='notifications.closeBtn'>Close</Trans>
                         </Button>
@@ -124,12 +130,20 @@ class NotificationsComponent extends React.Component {
         );
     }
     
-    _deleteMessages() {
-        return this.props.deleteNotifications(this.state.activeNotification.map(({ id }) => id));
+    _deleteMessages(nexActive) {
+        return this.props.deleteNotifications({
+            ids: this.state.activeNotification.map(({ id }) => id),
+            next: nexActive
+        });
     }
     
     static getDerivedStateFromProps(props, state) {
         const { origins, activeNotification, messages, notifications } = props;
+        if (!activeNotification && notifications.length) {
+            props.setTab(PAGES.MESSAGES_LIST);
+            return { loading: true };
+        }
+        
         const origin = activeNotification[0].origin;
         const perms = origins[origin];
         const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
@@ -147,11 +161,12 @@ class NotificationsComponent extends React.Component {
             hasNotifications,
             notifications,
             showClose: !hasNotifications,
+            loading: false,
         };
     }
 }
 
-const mapStateToProps = function(store) {
+const mapStateToProps = function (store) {
     return {
         selectedAccount: store.selectedAccount,
         activeNotification: store.activeNotification,
