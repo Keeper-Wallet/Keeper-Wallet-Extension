@@ -55,7 +55,6 @@ async function setupBackgroundService() {
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
         global.background = backgroundService;
-        global.libs = libs;
     }
 
     // setup state persistence

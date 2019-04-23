@@ -176,7 +176,7 @@ export class PermissionsController {
         }
 
         const delta = Date.now() - permission.time;
-        const minInterval = 30 * 1000;
+        const minInterval = 1000 * 30;
         const waitTime = minInterval - delta;
 
         if (waitTime > 0) {

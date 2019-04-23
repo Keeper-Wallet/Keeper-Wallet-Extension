@@ -3,21 +3,19 @@
 
 .messageList
   height: 100%;
+  background: $basic50;
+  padding: 0 14px 0;
 
   &ScrollBox
     @extends .txScrollBox
-    max-height: 495px;
-    height: 495px;
-    background: $basic50;
+    max-height: 510px;
+    height: 510px;
     padding-top: 24px;
-    padding-bottom: 24px;
+    padding-bottom: 64px;
+    margin: 0 -14px 0;
 
   .cardContent
     margin: 0;
-
-  .txWallet
-    margin: 0;
-    width: 100%;
 
   &Header
     height: 48px;
@@ -27,24 +25,31 @@
     text-align: center;
     position: relative;
     border-bottom: 1px solid $basic100;
+    background: $white;
 
-    //.arrowBackIcon
-    //  width: 24px;
-    //  height: 24px;
-    //  position: absolute;
-    //  top: 13px;
-    //  cursor: pointer;
-    //  border-radius: 4px;
-    //  left: 8px;
-    //  background: url(../../../assets/img/back-18-black.svg) center no-repeat;
-    //  &:hover
-    //    background-color: $basic100;
+  &Title
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-weight: 400;
 
-   &Title
-     display: flex;
-     justify-content: center;
-     width: 100%;
-     font-weight: 400;
+  .txWallet
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+
+  .btnDivider
+    min-width: 14px;
+
+  &Content
+    padding: 0 14px;
+    background: $basic50;
+    height: 100%;
+    overflow: auto;
+    max-height: calc(100% - 104px);
+    padding-bottom: 24px;
 
   &Counter
     background: $submit400;
@@ -58,9 +63,48 @@
     display: block;
     border-radius: 10px;
 
+  .walletWrapper
+    padding: 14px;
+
   .cardItem
-    margin-bottom: 8px;
+    margin-top: 8px;
     cursor: pointer;
 
     & > div:not(:first-child)
       display: none;
+
+  .clearAllBtn
+    color: $basic500;
+    oadding: 4px 6px;
+    background: $basic100;
+    border-radius: 4px;
+
+   //notifications
+
+  .allowNotification
+    margin: 0 10px;
+
+  .timestamp
+    margin: 14px 0 0;
+    padding: 10px 0;
+    border-bottom: 1px dashed $basic200;
+
+  .messageItemInner
+    background: $white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 #9ba6b266;
+    padding: 10px;
+    flex-wrap: wrap;
+
+    .messageText
+      display: block;
+      word-break: break-word;
+
+  .messageIcon
+    background: url(../../../assets/img/t-message-48.svg) center no-repeat;
+    width: 48px;
+    height: 48px;
+    margin-right: 8px;
+
+  .messageTitle
+    flex-grow: 1;
