@@ -92,10 +92,12 @@ class RootComponent extends React.Component {
         const { messages, notifications, activeMessage, activeNotification, accounts } = nextProps;
         
         if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT && accounts.length) {
-            if (activeMessage) {
+            if (activeMessage && !activeNotification) {
                 tab = PAGES.MESSAGES;
-            } else if (activeNotification) {
+            } else if (activeNotification && !activeMessage) {
                 tab = PAGES.NOTIFICATIONS;
+            } else if (activeMessage && activeNotification) {
+                tab = PAGES.MESSAGES;
             } else if (messages.length + notifications.length > 1) {
                 tab = PAGES.MESSAGES_LIST;
             }
