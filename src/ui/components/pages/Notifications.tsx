@@ -147,7 +147,7 @@ class NotificationsComponent extends React.Component {
             hasMessages,
             hasNotifications,
             notifications,
-            showClose: !hasNotifications && !hasMessages
+            showClose: !hasNotifications,
         };
     }
 }
