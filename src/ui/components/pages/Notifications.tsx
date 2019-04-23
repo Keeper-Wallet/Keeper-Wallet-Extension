@@ -2,17 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Input, DateFormat, Button, BUTTON_TYPE } from 'ui/components/ui';
 import { translate, Trans } from 'react-i18next';
-import { setActiveNotification } from 'ui/actions';
 import {
-    updateActiveMessage,
-    getAsset,
-    approve,
-    reject,
-    clearMessagesStatus,
-    clearMessages,
     closeNotificationWindow,
-    setShowNotification,
-    setAutoOrigin,
+    setActiveNotification,
+    setShowedNotification,
     deleteNotifications,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -49,6 +42,7 @@ class NotificationsComponent extends React.Component {
     
     closeHandler = (e) => {
         this._deleteMessages();
+        this.props.setActiveNotification(null);
         this.props.closeNotificationWindow();
     };
     
@@ -120,13 +114,12 @@ class NotificationsComponent extends React.Component {
                             }
                         </div>
                     </div>
-    
+                    
                     <TransactionWallet onSelect={this.selectAccountHandler} account={this.props.selectedAccount}
                                        hideButton={false}/>
-                    
+                
                 </div>
-                
-                
+            
             
             </div>
         );
@@ -157,7 +150,7 @@ class NotificationsComponent extends React.Component {
     }
 }
 
-const mapStateToProps = function(store) {
+const mapStateToProps = function (store) {
     return {
         selectedAccount: store.selectedAccount,
         activeNotification: store.activeNotification,
@@ -169,8 +162,8 @@ const mapStateToProps = function(store) {
 
 const actions = {
     closeNotificationWindow,
-    setShowNotification,
     setActiveNotification,
+    setShowedNotification,
     deleteNotifications,
 };
 
