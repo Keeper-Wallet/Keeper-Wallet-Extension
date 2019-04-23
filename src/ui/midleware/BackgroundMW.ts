@@ -11,6 +11,7 @@ import {
     pairingLoading,
     pairingSetData, updateActiveMessage,
     updateIdle,
+    setActiveNotification,
 } from '../actions';
 import { PAGES } from '../pageConfig';
 import { store } from '../store';
@@ -46,7 +47,9 @@ export const deleteNotifications = store => next => action => {
         return next(action);
     }
     
-    background.deleteNotifications(action.payload);
+    return background.deleteNotifications(action.payload.ids).then(
+        () => store.dispatch(setActiveNotification(action.payload.next))
+    );
 };
 
 export const setNotificationPerms = store => next => action => {

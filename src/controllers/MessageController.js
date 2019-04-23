@@ -292,7 +292,7 @@ export class MessageController extends EventEmitter {
                 } else if (field.hasOwnProperty('coins') && field.hasOwnProperty('assetId')) {
                     const asset = await this.assetInfo(data[key].assetId);
                     data[key] = Money.fromCoins(field.coins, asset)
-                } else if (field.hasOwnProperty('amount') && field.hasOwnProperty('assetId')) {
+                } else if (field.hasOwnProperty('amount') && field.hasOwnProperty('assetId') && Object.keys(field).length === 2) {
                     const asset = await this.assetInfo(data[key].assetId);
                     data[key] = Money.fromCoins(field.amount, asset);
                 } else {
