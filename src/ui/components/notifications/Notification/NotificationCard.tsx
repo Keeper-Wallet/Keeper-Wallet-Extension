@@ -1,10 +1,10 @@
 import * as styles from './index.styl';
 import * as React from 'react'
-import * as cn from 'classnames';
 import { translate, Trans } from 'react-i18next';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TxIcon } from '../../transactions/TransactionIcon';
 import { Button, BUTTON_TYPE } from '../../ui/buttons';
+import * as cn from 'classnames';
 
 @translate(I18N_NAME_SPACE)
 export class NotificationCard extends React.PureComponent<INotification> {
@@ -35,17 +35,19 @@ export class NotificationCard extends React.PureComponent<INotification> {
             </span>
         ) : notifications[0].title;
         
-        return <div className={className}>
-            <div className={styles.cardHeader} onClick={this.showHandler}>
-                {isGroup ? <div className={styles.notificationTxIconSmall}>
-                        <TxIcon txType={'notification'}/>
-                    </div> :
+        return <div className={cn(className, { [styles.messagesGroup]: isGroup })}>
+            
+            <div className={styles.groupBottom}/>
+            
+            <div className={styles.groupEffect}>
+                <div className={styles.cardHeader} onClick={this.showHandler}>
+                    
                     <div className={styles.messageTransactionIcon}></div>
-                }
-                <div className="grow">
-                    <div className="basic500 body3 margin-min">{notifications[0].origin}</div>
-                    <h2 className="headline">{title}</h2>
-                </div>
+                    
+                    <div className="grow">
+                        <div className={`${styles.notififactionEllipsis} basic500 body3 margin-min`}>{notifications[0].origin}</div>
+                        <h2 className={`${styles.notififactionEllipsis} headline`}>{title}</h2>
+                    </div>
                     {
                         collapsed &&
                         <div>
@@ -55,8 +57,11 @@ export class NotificationCard extends React.PureComponent<INotification> {
                             ></Button>
                         </div>
                     }
+                </div>
             </div>
         </div>
+        
+        
     }
 }
 

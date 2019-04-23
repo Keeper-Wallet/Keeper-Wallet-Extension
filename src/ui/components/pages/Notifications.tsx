@@ -104,6 +104,11 @@ class NotificationsComponent extends React.Component {
                             <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
                         </Button>
                     }
+                        
+                        {
+                            hasNotifications && showToList &&
+                            <div className={styles.buttonsSeparator}/>
+                        }
                     
                     {
                         hasNotifications &&
@@ -111,6 +116,11 @@ class NotificationsComponent extends React.Component {
                             <Trans i18nKey='notifications.nextBtn'>Next</Trans>
                         </Button>
                     }
+    
+                        {
+                            (showClose && (hasNotifications || showToList)) &&
+                            <div className={styles.buttonsSeparator}/>
+                        }
                     
                     {
                         showClose &&

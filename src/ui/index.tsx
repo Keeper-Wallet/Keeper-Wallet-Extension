@@ -23,7 +23,6 @@ export async function initApp(background: any) {
     document.addEventListener('focus', () => backgroundService.updateIdle());
 }
 
-
 ReactDOM.render(
     <Provider store={store}>
         <div className='app'>

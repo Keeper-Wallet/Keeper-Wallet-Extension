@@ -70,10 +70,12 @@ class MessageListComponent extends React.Component {
         }
         
         const { messages, notifications, assets } = this.props;
+        const hasNotifications = notifications.length > 0;
+        const hasMessages = messages.length > 0;
         
         return (
             <div className={`${styles.messageList}`}>
-    
+                
                 <div className={styles.messageListHeader}>
                     <div className={styles.messageListTitle}>
                         <span className={styles.messageListCounter}>{messages.length + notifications.length}</span>
@@ -85,32 +87,40 @@ class MessageListComponent extends React.Component {
                 
                 <div className={styles.messageListScrollBox}>
                     {
-                        hasNewMessages &&
-                        <div className="flex margin-1">
-                            <div className="basic500">
-                                <Trans i18nKey='messageList.messages'>Messages</Trans>
+                        hasNotifications &&
+                        <React.Fragment>
+                            <div className="flex basic500">
+                                <div>
+                                    <Trans i18nKey='messageList.messages'>Messages</Trans>
+                                </div>
+                                <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.deleteAll}
+                                        className={`${styles.clearAllBtn} body3 basic500`}>
+                                    <Trans i18nKey='messageList.clearAllMessages'>Clear all</Trans>
+                                </Button>
                             </div>
-                            <Button type={BUTTON_TYPE.TRANSPARENT} onClick={this.deleteAll}
-                                    className={`${styles.clearAllBtn} body3 basic500`}>
-                                <Trans i18nKey='messageList.clearAllMessages'>Clear all</Trans>
-                            </Button>
-                        </div>
+                            
+                            <div className="basic-500 margin-main-big">
+                                <Notifications notifications={notifications}
+                                               onShow={this.selectNotificationHandler}
+                                               onDelete={this.deleteNotifications}/>
+                            </div>
+                        </React.Fragment>
                     }
-        
-                    <div className="basic-500">
-                        <Notifications notifications={notifications}
-                                       onShow={this.selectNotificationHandler}
-                                       onDelete={this.deleteNotifications}/>
-                    </div>
-        
-                    <div className="basic500 margin-main-big-top">
-                        <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
-                    </div>
-        
-                    <div className={'basic-500'}>
-                        <Messages messages={messages} assets={assets} onSelect={this.selectHandler}
-                                  onReject={this.props.reject}/>
-                    </div>
+                    
+                    
+                    {
+                        hasMessages &&
+                        <React.Fragment>
+                            <div className="basic500">
+                                <Trans i18nKey='messageList.pendingConfirm'>Pending confirmation</Trans>
+                            </div>
+                            
+                            <div className={'basic-500 margin1'}>
+                                <Messages messages={messages} assets={assets} onSelect={this.selectHandler}
+                                          onReject={this.props.reject}/>
+                            </div>
+                        </React.Fragment>
+                    }
                 </div>
                 
                 <div className={styles.walletWrapper}>
@@ -118,8 +128,6 @@ class MessageListComponent extends React.Component {
                                        account={this.props.selectedAccount}
                                        hideButton={true}/>
                 </div>
-            
-            
             </div>
         );
     }
@@ -164,12 +172,6 @@ const mapStateToProps = function(store) {
         assets: store.assets,
         messages: store.messages,
         notifications: store.notifications,
-        hasNewMessages: store.messages.length > 0,
-    };
-};
-
-const hasNewMessages = function(store) {
-    return {
         hasNewMessages: store.messages.length > 0,
     };
 };
