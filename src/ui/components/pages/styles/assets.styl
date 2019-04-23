@@ -82,7 +82,7 @@
 .notifier
   width: 48px;
   height: 48px;
-  box-shadow: 0 4px 6px 0 #9ba6b266;
+  box-shadow: 0 4px 6px 0 $basic500-opacity40;
   background: $white;
   position: absolute;
   bottom: 38px;
@@ -179,3 +179,43 @@
   100%
     opacity: 0;
     transform: translate(0, 151%);
+
+.buttonRequest
+  min-width: 146px;
+  height: 56px;
+  display: flex;
+  flex-direction column;
+  justify-content: center;
+  padding-left 56px
+  box-shadow: $shadowBasic500-opacity40;
+  border-radius: 4px;
+  margin-right: 14px
+  background: url(../../../assets/img/userimg-requestwaves-28.svg) 14px center no-repeat $white;
+  cursor: pointer;
+
+  .sum
+    margin-top 2px
+
+  &Active
+    min-width: 146px;
+    height: 56px;
+    display: flex;
+    flex-direction column;
+    justify-content: center;
+    padding-left 42px
+    border-radius: 4px;
+    margin-right: 14px
+    border 1px solid $basic100
+    background: url(../../../assets/img/check-14-success-400.svg) 14px center no-repeat $white;
+
+.contactRequest
+  flex-direction column
+  padding 5px 0
+
+  .email
+    margin-top 5px
+    display block
+    text-decoration underline
+
+.faucetWrapper
+  display: flex

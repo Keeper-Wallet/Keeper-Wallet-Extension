@@ -84,6 +84,33 @@ class AssetsComponent extends React.Component {
                                 transitionLeave={true}>
                 <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
             </CSSTransitionGroup>
+
+            <div className={`faucet margin-main-big-top`}>
+                <div className={`basic500 body3 margin-main`}>
+                    <Trans i18nKey='assets.faucet'>Faucet</Trans>
+                </div>
+
+                <div className={styles.faucetWrapper}>
+                    <div className={`${styles.buttonRequest} black`}>
+                        <div className={`tag1`}>
+                            <Trans i18nKey='assets.request'>Request</Trans>
+                        </div>
+                        <div className={`${styles.sum} body1 font600`}>
+                            <Trans i18nKey='assets.10waves'>10 WAVES</Trans>
+                        </div>
+                    </div>
+                    <div className={styles.contactRequest}>
+                        <div className={`tag1 basic500`}>
+                            <Trans i18nKey='assets.problems'>If you experience any problems with the faucet, please contact</Trans>
+                        </div>
+                        <a className={`${styles.email} tag1 black`}>
+                            <Trans i18nKey='assets.email'>support@wavesplatform.com</Trans>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div>
                     {wallets.length ? <div className={`${styles.otherWalletsTitle} basic500 body3`}>
