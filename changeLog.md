@@ -1,6 +1,11 @@
 ## Waves Keeper
 
 
+#### version 1.1.4
++ Idle configurable
++ Some ui fixes
++ Tokenomika auto orders
+
 #### version 1.1.3
 + Fix bug with attachments from waves lib
 
