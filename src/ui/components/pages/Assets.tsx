@@ -86,7 +86,6 @@ class AssetsComponent extends React.Component {
             </CSSTransitionGroup>
             <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                 <div>
-
                     {wallets.length ? <div className={`${styles.otherWalletsTitle} basic500 body3`}>
                         <Trans i18nKey='assets.inStorage'>Other accounts</Trans>
                     </div> : null}
@@ -101,6 +100,7 @@ class AssetsComponent extends React.Component {
                         </CSSTransitionGroup>
                     </div>
                 </div>
+
                 <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
                      onClick={this.addWalletHandler}>
                     <Trans i18nKey='assets.addAccount'>Add an account</Trans>
@@ -126,6 +126,10 @@ class AssetsComponent extends React.Component {
                     <div><Trans i18nKey="assets.deleteAccount">Delete account</Trans></div>
                 </div>
             </Modal>
+            
+            {/*<div className={styles.notifier}>*/}
+                {/*<i className={styles.counter}>5</i>*/}
+            {/*</div>*/}
             
         </div>
     }

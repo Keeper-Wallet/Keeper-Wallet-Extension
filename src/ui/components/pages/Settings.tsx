@@ -21,6 +21,7 @@ class SettingsComponent extends React.Component {
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
     deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
     pairingHandler = () => this.props.setTab(PAGES.PAIRING);
+    settingsGeneral = () => this.props.setTab(PAGES.GENERAL_SETTINGS);
     toggleAutoLockHandler = () => {
         this.props.setUiState({ autoClickProtection: !this.props.autoClickProtection });
     };
@@ -31,13 +32,13 @@ class SettingsComponent extends React.Component {
             <div className={`${styles.title1} title1`}>
                 <Trans i18nKey='settings.settings'>Settings</Trans>
             </div>
-
+    
             <div className={`${styles.settingsMenuItem} ${styles.network}`}>
                 <Button type='transparent'
                         className={styles.settingsBtn}
-                        onClick={this.networkHandler}>
+                        onClick={this.settingsGeneral}>
                     <div className='body1 left'>
-                        <Trans i18nKey='settings.network'>Network</Trans>
+                        <Trans i18nKey='settings.settingsGeneral'>General</Trans>
                     </div>
                 </Button>
             </div>
@@ -51,6 +52,17 @@ class SettingsComponent extends React.Component {
                     </div>
                 </Button>
             </div>
+            
+            <div className={`${styles.settingsMenuItem} ${styles.network}`}>
+                <Button type='transparent'
+                        className={styles.settingsBtn}
+                        onClick={this.networkHandler}>
+                    <div className='body1 left'>
+                        <Trans i18nKey='settings.network'>Network</Trans>
+                    </div>
+                </Button>
+            </div>
+            
             
             {/*<div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
                 <Button type='transparent'
@@ -70,7 +82,7 @@ class SettingsComponent extends React.Component {
                         <Trans i18nKey='settings.langs'>Change language</Trans>
                     </div>
                 </Button>
-            </div>*/}
+            </div>
 
             <div className={`${styles.settingsMenuItem} ${styles.password}`}>
                 <Button type='transparent'
@@ -80,7 +92,7 @@ class SettingsComponent extends React.Component {
                         <Trans i18nKey='settings.password'>Change password</Trans>
                     </div>
                 </Button>
-            </div>
+            </div>*/}
 
             <div className={`${styles.clickProtection} tag1` }>
                 <PowerButton onClick={this.toggleAutoLockHandler} enabled={this.props.autoClickProtection}/>

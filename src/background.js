@@ -24,6 +24,7 @@ import {
     TxInfoController,
     ExternalDeviceController,
     RemoteConfigController,
+    IdleController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import {setupDnode} from './lib/dnode-util';
@@ -31,9 +32,7 @@ import {WindowManager} from './lib/WindowManger'
 import { getAdapterByType } from '@waves/signature-adapter'
 import { WAVESKEEPER_DEBUG } from  './constants';
 
-const IDLE_INTERVAL = 60;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
-
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 setupBackgroundService().catch(e => log.error(e));
@@ -110,25 +109,8 @@ async function setupBackgroundService() {
         }
     });
 
-    // Idle management
-    extension.idle.setDetectionInterval(IDLE_INTERVAL);
 
-    if (!isEdge) {
-        extension.idle.onStateChanged.addListener(state => {
-            if (['active', 'idle'].indexOf(state) > -1) {
-                backgroundService.walletController.lock();
-            }
-        });
-    } else {
-        setInterval(() => {
-            extension.idle.queryState(IDLE_INTERVAL, (state) => {
-                if (["idle", "locked"].indexOf(state) > -1) {
-                    backgroundService.walletController.lock();
-                }
-            })
-        }, 10000)
-    }
-
+    backgroundService.idleController = new IdleController({ backgroundService });
 
     // Connection handlers
     function connectRemote(remotePort) {
@@ -275,7 +257,14 @@ class BackgroundService extends EventEmitter {
         return {
             // state
             getState: async () => this.getState(),
-
+            updateIdle: async () => this.idleController.update(),
+            setIdleOptions: async ({ type }) => {
+                const config = this.remoteConfigController.getIdleConfig();
+                if (!(Object.keys(config)).includes(type)) {
+                    throw ERRORS.UNKNOWN_IDLE();
+                }
+                this.idleController.setOptions({ type, interval: config[type] });
+            },
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (address, network) => this.preferencesController.selectAccount(address, network),

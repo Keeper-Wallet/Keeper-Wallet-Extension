@@ -10,8 +10,10 @@ import {
     notificationChangeName,
     pairingLoading,
     pairingSetData, updateActiveMessage,
+    updateIdle,
 } from '../actions';
 import { PAGES } from '../pageConfig';
+import { store } from '../store';
 
 export const pairingData = store => next => action => {
     if (action.type !== ACTION.PAIRING.GET_SEED) {
@@ -36,6 +38,15 @@ export const changeLang = store => next => action => {
         background.setCurrentLocale(action.payload);
     }
     return next(action);
+};
+
+export const setIdle = store => next => action => {
+    
+    if (action.type !== ACTION.REMOTE_CONFIG.SET_IDLE) {
+        return next(action);
+    }
+    
+    background.setIdleOptions({ type: action.payload });
 };
 
 export const updateLang = store => next => action => {

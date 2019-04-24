@@ -17,6 +17,10 @@ export async function initApp(background: any) {
     backgroundService.on(updateState);
     backgroundService.getNetworks();
     backgroundService.getState();
+    document.addEventListener('mousemove', () => backgroundService.updateIdle());
+    document.addEventListener('keyup', () => backgroundService.updateIdle());
+    document.addEventListener('mousedown', () => backgroundService.updateIdle());
+    document.addEventListener('focus', () => backgroundService.updateIdle());
 }
 
 

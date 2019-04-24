@@ -5,8 +5,11 @@ class Background {
     background: any;
     initPromise: Promise<void>;
     onUpdateCb: Array<(state) => void> = [];
+    updatedByUser = false;
     _defer;
     _assetsStore;
+    _lastUpdateIdle = 0;
+    _tmr;
     
     constructor() {
         this._assetsStore = {};
@@ -34,6 +37,16 @@ class Background {
         background.on('update', this._onUpdate.bind(this));
         this.background = background;
         this._defer.resolve();
+    }
+    
+    async updateIdle() {
+        this.updatedByUser = true;
+        this._updateIdle();
+    }
+    
+    async setIdleOptions(options: { type: string }) {
+        await this.initPromise;
+        return this.background.setIdleOptions(options);
     }
     
     async allowOrigin(origin: string) {
@@ -203,6 +216,21 @@ class Background {
         return this.background.getUserList(type, from, to);
     }
 
+    async _updateIdle() {
+        const now = Date.now();
+        clearTimeout(this._tmr);
+        this._tmr = setTimeout(() => this._updateIdle(), 4000);
+        
+        if (!this.updatedByUser || now - this._lastUpdateIdle < 4000) {
+            return  null;
+        }
+        
+        this.updatedByUser = false;
+        this._lastUpdateIdle = now;
+        await this.initPromise;
+        return  this.background.updateIdle();
+    }
+    
     _onUpdate(state: IState) {
         for (const cb of this.onUpdateCb) {
             cb(state);

@@ -34,6 +34,7 @@ export class RemoteConfigController {
                 network_config: DEFAULT_CONFIG.NETWORK_CONFIG,
                 messages_config: DEFAULT_CONFIG.MESSAGES_CONFIG,
                 pack_config: DEFAULT_CONFIG.PACK_CONFIG,
+                idle: DEFAULT_CONFIG.IDLE,
             },
             status: STATUS.PENDING,
         };
@@ -48,6 +49,15 @@ export class RemoteConfigController {
             return extendValues(DEFAULT_CONFIG.PACK_CONFIG, pack_config);
         } catch (e) {
             return DEFAULT_CONFIG.PACK_CONFIG;
+        }
+    }
+
+    getIdleConfig() {
+        try {
+            const { idle } = this.store.getState().config;
+            return extendValues(DEFAULT_CONFIG.IDLE, idle);
+        } catch (e) {
+            return DEFAULT_CONFIG.IDLE;
         }
     }
 
@@ -126,6 +136,7 @@ export class RemoteConfigController {
                 networks = DEFAULT_CONFIG.NETWORKS,
                 network_config = DEFAULT_CONFIG.NETWORK_CONFIG,
                 messages_config = DEFAULT_CONFIG.MESSAGES_CONFIG,
+                idle = DEFAULT_CONFIG.IDLE,
                 pack_config = DEFAULT_CONFIG.PACK_CONFIG,
             } = await this.fetchConfig();
 
@@ -133,6 +144,7 @@ export class RemoteConfigController {
                 blacklist,
                 whitelist,
                 config: {
+                    idle,
                     networks,
                     network_config,
                     messages_config,

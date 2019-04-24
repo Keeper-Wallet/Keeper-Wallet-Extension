@@ -1,8 +1,8 @@
 import ObservableStore from 'obs-store';
 import *  as SG from '@waves/signature-generator'
-import {encrypt, decrypt} from '../lib/encryprtor';
-import {Seed} from '@waves/signature-generator'
-import {Wallet} from "../lib/wallet";
+import { encrypt, decrypt } from '../lib/encryprtor';
+import { Seed } from '@waves/signature-generator'
+import { Wallet } from "../lib/wallet";
 
 export class WalletController {
     constructor(options = {}) {
@@ -11,7 +11,7 @@ export class WalletController {
         };
         const initState = Object.assign({}, defaults, options.initState);
         this.store = new ObservableStore(initState);
-        this.store.updateState({locked: true});
+        this.store.updateState({ locked: true });
         this.password = null;
         this.wallets = [];
         this.getNetwork = options.getNetwork;
@@ -66,14 +66,16 @@ export class WalletController {
     lock() {
         this.password = null;
         this.wallets = [];
-        this.store.updateState({locked: true})
+        if (!this.store.getState().locked) {
+            this.store.updateState({ locked: true });
+        }
     }
 
     unlock(password) {
         this._restoreWallets(password);
         this.password = password;
         this._migrateWalletsNetwork();
-        this.store.updateState({locked: false})
+        this.store.updateState({ locked: false })
     }
 
     initVault(password) {
@@ -83,13 +85,13 @@ export class WalletController {
         this.password = password;
         this.wallets = [];
         this._saveWallets();
-        this.store.updateState({locked: false, initialized: true})
+        this.store.updateState({ locked: false, initialized: true })
     }
 
     deleteVault() {
         this.password = null;
         this.wallets = [];
-        this.store.updateState({locked: true, initialized: false, vault: undefined});
+        this.store.updateState({ locked: true, initialized: false, vault: undefined });
     }
 
     newPassword(oldPassword, newPassword) {
@@ -225,7 +227,7 @@ export class WalletController {
     async auth(address, authData, network) {
         const wallet = this._findWallet(address, network);
         const signature = await wallet.signRequest(authData);
-        const {publicKey} = wallet.getAccount();
+        const { publicKey } = wallet.getAccount();
         const { host, name, prefix, version } = authData.data;
         return {
             host,
@@ -240,14 +242,14 @@ export class WalletController {
 
     // Private
     _checkForDuplicate(address, network) {
-        if (this.getWalletsByNetwork(network).find(account => account.address === address )) {
+        if (this.getWalletsByNetwork(network).find(account => account.address === address)) {
             throw new Error(`Account with address ${address} already exists`)
         }
     }
 
     _saveWallets() {
         const walletsData = this.wallets.map(wallet => wallet.serialize());
-        this.store.updateState({vault: encrypt(walletsData, this.password)})
+        this.store.updateState({ vault: encrypt(walletsData, this.password) })
     }
 
     _restoreWallets(password) {

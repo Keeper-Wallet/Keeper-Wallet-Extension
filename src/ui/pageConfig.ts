@@ -26,6 +26,7 @@ import {
     PairingAccountQr,
     PermissionsSettings,
     MessageList,
+    SettingsGeneral,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -55,6 +56,7 @@ export const PAGES = {
     QR_CODE_SELECTED: 'qr_code_selected_account',
     INTRO: 'intro',
     NETWORK_SETTINGS: 'networks_select',
+    GENERAL_SETTINGS: 'general_settings',
     LANGS_SETTINGS: 'langs_settings',
     LANGS_SETTINGS_INTRO: 'langs_settings_intro',
     CHANGE_PASSWORD: 'change_password_settings',
@@ -280,7 +282,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-            deleteAccount: true,
+            deleteAccount: false,
         }
     },
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {
@@ -326,6 +328,17 @@ export const PAGES_CONF = {
             hasSettings: false,
             back: null,
         }
+    },
+    [PAGES.GENERAL_SETTINGS]: {
+        component: SettingsGeneral,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        },
     },
     [PAGES.NETWORK_SETTINGS]: {
         component: NetworksSettings,

@@ -93,7 +93,7 @@ const List = ({ list, onSelect, isShow }) => {
     </div>
 };
 
-type TText = string|Trans;
+type TText = string|React.ReactNode;
 
 type TSelectItem<T> = {
     id: string|number;

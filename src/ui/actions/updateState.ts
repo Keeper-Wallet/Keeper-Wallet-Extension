@@ -18,6 +18,8 @@ export function updateState(state) {
         customCodes = {},
         customMatchers = {},
         origins = {},
+        config = {},
+        idleOptions = {},
     } = state;
     const currentState = store.getState();
 
@@ -28,6 +30,20 @@ export function updateState(state) {
         });
     }
 
+    if (!equals(currentState.config, config)) {
+        actions.push({
+            type: ACTION.REMOTE_CONFIG.SET_CONFIG,
+            payload: config,
+        });
+    }
+    
+    if (!equals(currentState.idleOptions, idleOptions)) {
+        actions.push({
+            type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
+            payload: idleOptions,
+        });
+    }
+    
     if (!equals(currentState.customNodes, customNodes)) {
         actions.push({
             type: ACTION.UPDATE_NODES,

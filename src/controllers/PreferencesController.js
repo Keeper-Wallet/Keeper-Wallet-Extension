@@ -2,12 +2,13 @@ import ObservableStore from 'obs-store';
 import log from 'loglevel'
 import EventEmitter from 'events';
 
-export class PreferencesController extends EventEmitter{
+export class PreferencesController extends EventEmitter {
     constructor(options = {}) {
         super();
 
         const defaults = {
             currentLocale: options.initLangCode || 'en',
+            idleOptions: { type: 'idle', interval: 0 },
             accounts: [],
             currentNetworkAccounts: [],
             selectedAccount: undefined,
@@ -20,24 +21,18 @@ export class PreferencesController extends EventEmitter{
     }
 
     setCurrentLocale(key) {
-        this.store.updateState({currentLocale: key});
+        this.store.updateState({ currentLocale: key });
     }
 
-    // addAccount(account) {
-    //     const accounts = this.store.getState().accounts;
-    //     if (!this._getAccountByAddress(account.address)) {
-    //         accounts.push(Object.assign({name: `Account ${accounts.length + 1}`}, account));
-    //         this.store.updateState({accounts})
-    //     } else {
-    //         log.log(`Account with address key ${account.address} already exists`)
-    //     }
-    // }
+    setIdleOptions(options) {
+        this.store.updateState({ idleOptions: options });
+    }
 
     syncAccounts(fromKeyrings) {
         const oldAccounts = this.store.getState().accounts;
         const accounts = fromKeyrings.map((account, i) => {
             return Object.assign(
-                {name: `Account ${i + 1}`},
+                { name: `Account ${i + 1}` },
                 account,
                 oldAccounts.find(oldAcc => oldAcc.address === account.address && oldAcc.network === account.network),
             )
@@ -47,8 +42,8 @@ export class PreferencesController extends EventEmitter{
         this.syncCurrentNetworkAccounts();
     }
 
-    syncCurrentNetworkAccounts(){
-        const network =this.getNetwork();
+    syncCurrentNetworkAccounts() {
+        const network = this.getNetwork();
         const accounts = this.store.getState().accounts;
         const currentNetworkAccounts = accounts.filter(account => account.network === network);
         this.store.updateState({ currentNetworkAccounts });
@@ -57,8 +52,8 @@ export class PreferencesController extends EventEmitter{
         let selectedAccount = this.store.getState().selectedAccount;
         if (!selectedAccount ||
             !currentNetworkAccounts.find(account => account.address === selectedAccount.address &&
-            account.network === selectedAccount.network
-        )){
+                account.network === selectedAccount.network
+            )) {
             const addressToSelect = currentNetworkAccounts.length > 0 ? currentNetworkAccounts[0].address : undefined;
             this.selectAccount(addressToSelect, network)
         }
@@ -67,11 +62,11 @@ export class PreferencesController extends EventEmitter{
     addLabel(address, label, network) {
         const accounts = this.store.getState().accounts;
         const index = accounts.findIndex(current => current.address === address && current.network === network);
-        if (index === -1){
+        if (index === -1) {
             throw new Error(`Account with address "${address}" in ${network} not found`)
         }
         accounts[index].name = label;
-        this.store.updateState({accounts})
+        this.store.updateState({ accounts })
     }
 
     selectAccount(address, network) {
