@@ -171,14 +171,9 @@
     margin-bottom: 14px;
     max-width: 100%;
 
-.txBigIcon
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 4px auto;
-
 .txFinal
   margin: 0 auto;
-  padding: 60px 0 0;
+  padding: 10px 0 0;
   background: $basic50;
   height: calc(100% - 48px);
   position: relative;
@@ -195,11 +190,13 @@
     min-height: 291px;
     padding-bottom: 14px;
 
+  .finalTxTitle
+    padding-left 26px
+
   .finalTxPlate
     overflow: auto;
     max-height: 240px;
-    margin: 0 -10px;
-    background: $errorBg;
+    background: $basic100;
     word-break: break-all;
 
   .txFooter
@@ -312,3 +309,7 @@
   padding-right 24px;
   flex-grow: 1;
   flex-shrink: 999;
+
+.txError
+  margin-left: -10px;
+  margin-right: -10px;
