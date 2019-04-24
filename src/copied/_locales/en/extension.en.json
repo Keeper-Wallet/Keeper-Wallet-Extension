@@ -58,9 +58,9 @@
         "create": "Save",
         "done": "Password changed",
         "equalPassword": "Old password is equal new",
-        "errorShortNew": "Name is required",
+        "errorShortNew": "Password is too short",
         "errorShortOld": "Password can't be so short",
-        "errorWrongConfirm": "New passwords not match",
+        "errorWrongConfirm": "New passwords does not match",
         "errorWrongOld": "Wrong password",
         "newPassword": "New password",
         "oldPassword": "Old password"
@@ -157,10 +157,10 @@
         "confirmPassword": "Confirm password",
         "create": "Continue",
         "createPassword": "Create a password",
-        "notMatch": "Password no match",
+        "notMatch": "Passwords does not match",
         "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Waves Keeper. Waves does not store your passwords.",
         "protect": "Protect Your Account",
-        "smallPass": "Password is small"
+        "smallPass": "Password is too short"
     },
     "newAccountName": {
         "accountName": "Account name",
@@ -243,7 +243,7 @@
         "time_20m": "20 min",
         "time_40m": "40 min",
         "time_5m": "5 min",
-        "time_idle": "Browser session end",
+        "time_idle": "Browser timeout",
         "toolitpContent": "Protect yourself from Clicker Trojans threats"
     },
     "showScriptComponent": {
@@ -363,7 +363,7 @@
         "originWarning": "wants to access your Waves Address",
         "packTransactionFee": "Fee",
         "packTransactionGroup": "Group",
-        "packTransactions": "transactions",
+        "packTransactions": "Transactions",
         "packTransactionsFees": "Fees",
         "payment": "Payment",
         "permission": {

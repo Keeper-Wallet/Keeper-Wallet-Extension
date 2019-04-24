@@ -1,12 +1,20 @@
 @import '../../../styles/colors.styl';
 
 .content
-  padding: 24px 14px 0;
+  padding: 24px;
   height: 100%;
+  max-height: calc(100% - 48px);
   width: 100%;
-  display: inline-block;
+  display: block;
   margin: auto;
+  overflow: auto;
   background-color: $basic50;
+
+.wallerShowQrTooltip
+  right: 0;
+  white-space: nowrap;
+  top: -38px;
+
 
 .accountName
   height: 20px;
@@ -44,6 +52,17 @@
   font-weight: 500;
   margin-top: 5px;
 
+.reservedBalance
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $basic100;
+  border-radius: 4px;
+  width: 100%;
+  height: 30px;
+  padding: 0 14px;
+
 .avatar
   margin: 0 14px 0 0;
   cursor: default;
@@ -62,20 +81,61 @@
     flex-basis: 100%;
 
 .buttonsWrapper
-  border-bottom: 1px dashed $basic200;
+  display: flex;
+  border-bottom: 1px solid $basic200;
   justify-content: flex-start;
   align-items: flex-start;
   padding-bottom: 24px;
 
+.walletBtnSeparator
+  flex-grow: 1;
+
+.activeAccount,
+.inActiveAccount
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  cursor: default;
+  right: 0;
+  top: 15px;
+  border-radius: 2px;
+  box-shadow: 0 none;
+
 .activeAccount
-  background: url(../../../assets/img/activeasset-18-submit-400.svg) 14px center no-repeat;
+  background: url(../../../assets/img/activeasset-18-submit-400.svg) center no-repeat;
   cursor: default;
 
 .inActiveAccount
-  background: url(../../../assets/img/activeasset-18-basic-500.svg) 14px center no-repeat;
+  border: 1px dashed $basic200;
+  background: url(../../../assets/img/activeasset-18-basic-500.svg) center no-repeat;
 
-.showQrIcon
-  background: url(../../../assets/img/qr-14-basic-500.svg) 14px center no-repeat;
+  &:hover
+    cursor: pointer;
+    border: 1px solid $basic200;
+    background-color: $basic100;
+
+.accountInfoFooter
+  font-size: 11px;
+  padding: 24px 0 0;
+  border-top: 1px solid $accent50;
+  text-align: center;
+
+  .deleteButton
+    display: inline-block;
+    margin: 0 auto;
+    cursor: pointer;
+
+    &:hover
+      .deleteIcon
+        background-color: $basic100;
+
+  .deleteIcon
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    display: block;
+    margin-bottom: 6px;
+    border-radius: 2px;
 
 .lockIcon
   width: 48px;
@@ -100,4 +160,4 @@
 .ellipsis div
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: 280px;
+  max-width: 260px;
