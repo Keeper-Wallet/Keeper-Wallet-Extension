@@ -68,7 +68,6 @@ export class FinalTransaction extends React.PureComponent {
                     
                     <div className={styles.finalTxContent}>
                         <div className="margin-main-top margin-main-big">
-                            
                             {isApprove || isReject ?
                                 <div className="center">
                                     <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
@@ -94,7 +93,7 @@ export class FinalTransaction extends React.PureComponent {
                         <div className={styles.txFinalButtonWrapper}>
 
                             {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
-                                <Trans i18nKey='sign.pendingList'>Pending list</Trans>
+                                <Trans i18nKey='messageList.notifications'>Notifications</Trans>
                             </Button> : null}
     
                             {isShowList && isShowClose ? <div className={styles.buttonMargin}></div> : null}
