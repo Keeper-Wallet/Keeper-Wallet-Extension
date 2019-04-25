@@ -8,7 +8,7 @@ import oauth from './OriginAuth';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 const Error = ({ approveError }) => {
-    return <div className={`plate ${styles.finalTxPlate}`}>
+    return <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
         <div className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}>
             <Trans i18nKey='sign.someError'>Something went wrong</Trans>
         </div>
@@ -50,6 +50,10 @@ export class FinalTransaction extends React.PureComponent {
         const Card = config.card;
         const network = selectedAccount && selectedAccount.networkCode;
         const txLink = `https://${network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
+        const className = cn(styles.txBigIcon, 'margin-main', {
+            'tx-reject-icon': isReject,
+            'tx-approve-icon': isApprove
+        });
 
         if (config.type === oauth.type && !isShowClose) {
             const method = isShowList ? 'onList' : 'onNext';
@@ -59,16 +63,23 @@ export class FinalTransaction extends React.PureComponent {
 
         return <div className={styles.txFinal}>
 
+            <div className={className}></div>
                 <div className={styles.txFinalContentWrapper}>
+                    
                     <div className={styles.finalTxContent}>
-                        <div className={`${styles.txError} margin-main-top margin-main-big`}>
+                        <div className="margin-main-top margin-main-big">
+                            
                             {isApprove || isReject ?
-                                <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
-                                                message={message} assets={assets}/> : null}
+                                <div className="center">
+                                    <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
+                                                    message={message} assets={assets}/>
+                                </div> : null}
                             {isError ?
-                                <div className="headline2"><Error approveError={transactionStatus.approveError}/></div> : null}
+                                <div className="headline2">
+                                    <Error approveError={transactionStatus.approveError}/>
+                                </div> : null}
                         </div>
-
+                        
                         <Card message={message} assets={assets} collapsed={false}/>
 
                         {isSend && isApprove ?
@@ -85,7 +96,8 @@ export class FinalTransaction extends React.PureComponent {
                             {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
                                 <Trans i18nKey='sign.pendingList'>Pending list</Trans>
                             </Button> : null}
-
+    
+                            {isShowList && isShowClose ? <div className={styles.buttonMargin}></div> : null}
                             {isShowNext && isShowList ? <div className={styles.buttonMargin}></div> : null}
 
                             {isShowNext ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
@@ -96,7 +108,6 @@ export class FinalTransaction extends React.PureComponent {
                                 {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
                                 {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
                             </Button> : null}
-
                         </div>
 
                         {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :

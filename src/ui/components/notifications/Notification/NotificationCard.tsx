@@ -60,8 +60,6 @@ export class NotificationCard extends React.PureComponent<INotification> {
                 </div>
             </div>
         </div>
-        
-        
     }
 }
 

@@ -40,7 +40,6 @@
 .txBalanceWrapper
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
 
   .txRow
     width: 100%;
@@ -176,18 +175,24 @@
     margin-bottom: 14px;
     max-width: 100%;
 
+.txBigIcon
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 4px auto;
+
 .txFinal
   margin: 0 auto;
-  padding: 10px 0 0;
+  padding: 60px 0 0;
   background: $basic50;
   height: calc(100% - 48px);
   position: relative;
   overflow: auto;
 
   &FooterWrapper {
-    position: sticky;
+    position: absolute;
     z-index: 1000;
     bottom: 0;
+    width: 100%;
   }
 
   .finalTxContent
@@ -203,6 +208,9 @@
     max-height: 240px;
     background: $basic100;
     word-break: break-all;
+
+    &Error
+      margin-top: -130px;
 
   .txFooter
     position: sticky;
@@ -220,7 +228,7 @@
       margin: 0;
 
     .buttonMargin
-      min-width: 12px;
+      min-width: 14px;
 
   .finalTxWallet
     margin: 0;
@@ -311,10 +319,6 @@
   padding-right 14px;
   flex-grow: 1;
   flex-shrink: 999;
-
-.txError
-  margin-left: -10px;
-  margin-right: -10px;
 
 .messageTransactionIcon
   background: url(../../../assets/img/t-message-48.svg) center no-repeat;

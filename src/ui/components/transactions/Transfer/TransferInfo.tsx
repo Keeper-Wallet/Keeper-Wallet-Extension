@@ -34,7 +34,7 @@ export class TransferInfo extends React.PureComponent<ITransferInfo> {
                 <div className={styles.txValue}>{amount.asset.id}</div>
             </div>
             
-            { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+            { tx.attachment && tx.attachment.length ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.attachment'>Attachment</Trans>
                 </div>
