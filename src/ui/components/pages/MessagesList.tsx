@@ -107,7 +107,6 @@ class MessageListComponent extends React.Component {
                         </React.Fragment>
                     }
                     
-                    
                     {
                         hasMessages &&
                         <React.Fragment>
