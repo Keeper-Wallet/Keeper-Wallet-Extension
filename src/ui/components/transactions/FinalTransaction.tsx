@@ -19,7 +19,7 @@ const Error = ({ approveError }) => {
 @translate(I18N_NAME_SPACE)
 export class FinalTransaction extends React.PureComponent {
     readonly props: any;
-
+    
     render() {
         const {
             transactionStatus,
@@ -32,7 +32,7 @@ export class FinalTransaction extends React.PureComponent {
             onList,
             assets,
         } = this.props;
-
+        
         const newMessages = (messages
             .map(item => item.id)
             .filter(id => id !== message.id)
@@ -43,8 +43,8 @@ export class FinalTransaction extends React.PureComponent {
         const isReject = !!transactionStatus.rejectOk;
         const isError = !!transactionStatus.approveError;
         const isShowNext = newMessages > 0;
-        const isShowList = msgCount > 1;
-        const isShowClose = !isShowNext;
+        const isShowList = msgCount > 1 || notifications.length;
+        const isShowClose = !isShowNext && !isShowList;
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;
@@ -54,66 +54,70 @@ export class FinalTransaction extends React.PureComponent {
             'tx-reject-icon': isReject,
             'tx-approve-icon': isApprove
         });
-
+        
         if (config.type === oauth.type && !isShowClose) {
             const method = isShowList ? 'onList' : 'onNext';
             this.props[method]();
             return null;
         }
-
+        
         return <div className={styles.txFinal}>
-
+            
             <div className={className}></div>
-                <div className={styles.txFinalContentWrapper}>
-                    
-                    <div className={styles.finalTxContent}>
-                        <div className="margin-main-top margin-main-big">
-                            {isApprove || isReject ?
-                                <div className="center">
-                                    <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
-                                                    message={message} assets={assets}/>
-                                </div> : null}
-                            {isError ?
-                                <div className="headline2">
-                                    <Error approveError={transactionStatus.approveError}/>
-                                </div> : null}
-                        </div>
+            <div className={styles.txFinalContentWrapper}>
+                
+                <div className={styles.finalTxContent}>
+                    <div className="margin-main-top margin-main-big">
                         
-                        <Card message={message} assets={assets} collapsed={false}/>
-
-                        {isSend && isApprove ?
-                            <div className="center margin-main-big-top">
-                                <a className="link black" href={txLink} target="_blank">
-                                    <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
-                                </a>
+                        {isApprove || isReject ?
+                            <div className="center">
+                                <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
+                                                message={message} assets={assets}/>
+                            </div> : null}
+                        {isError ?
+                            <div className="headline2">
+                                <Error approveError={transactionStatus.approveError}/>
                             </div> : null}
                     </div>
-
-                    <div className={styles.txFinalFooterWrapper}>
-                        <div className={styles.txFinalButtonWrapper}>
-
-                            {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
-                                <Trans i18nKey='messageList.notifications'>Notifications</Trans>
-                            </Button> : null}
-    
-                            {isShowList && isShowClose ? <div className={styles.buttonMargin}></div> : null}
-                            {isShowNext && isShowList ? <div className={styles.buttonMargin}></div> : null}
-
-                            {isShowNext ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
-                                <Trans i18nKey='sign.nextTransaction'>Next transaction</Trans>
-                            </Button> : null}
-
-                            {isShowClose ? <Button onClick={onClose} className={styles.closeBtn}>
-                                {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
-                                {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
-                            </Button> : null}
-                        </div>
-
-                        {isSend && isApprove ? <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/> :
-                            <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount} hideButton={true}/>}
-                    </div>
-
+                    
+                    <Card message={message} assets={assets} collapsed={false}/>
+                    
+                    {isSend && isApprove ?
+                        <div className="center margin-main-big-top">
+                            <a className="link black" href={txLink} target="_blank">
+                                <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
+                            </a>
+                        </div> : null}
                 </div>
-            </div>;
+                
+                <div className={styles.txFinalFooterWrapper}>
+                    <div className={styles.txFinalButtonWrapper}>
+                        
+                        {isShowList ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
+                            <Trans i18nKey='sign.pendingList'>Pending list</Trans>
+                        </Button> : null}
+                        
+                        {isShowList && isShowClose || isShowNext && isShowList ?
+                            <div className={styles.buttonMargin}></div> : null}
+                        
+                        {isShowNext ? <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
+                            <Trans i18nKey='sign.nextTransaction'>Next transaction</Trans>
+                        </Button> : null}
+                        
+                        {isShowClose ? <Button onClick={onClose} className={styles.closeBtn}>
+                            {isError ? <Trans i18nKey='sign.understand'>I understand</Trans> : null}
+                            {isReject || isApprove ? <Trans i18nKey='sign.ok'>Close</Trans> : null}
+                        </Button> : null}
+                    </div>
+                    
+                    {isSend && isApprove ?
+                        <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount}
+                                           hideButton={true}/> :
+                        <TransactionWallet className={styles.finalTxWallet} account={this.props.selectedAccount}
+                                           hideButton={true}/>}
+                </div>
+            
+            </div>
+        </div>;
     }
 }

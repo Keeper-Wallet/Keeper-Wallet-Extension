@@ -15,7 +15,6 @@ export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 export const selectedAccount = createSimpleReducer({}, ACTION.UPDATE_SELECTED_ACCOUNT);
 export const networks = createSimpleReducer([], ACTION.UPDATE_NETWORKS);
 export const currentNetwork = createSimpleReducer('', ACTION.UPDATE_CURRENT_NETWORK);
-export const activeMessage = createSimpleReducer(null, ACTION.UPDATE_ACTIVE_MESSAGE);
 export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);

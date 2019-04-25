@@ -1,6 +1,6 @@
 import {
     ACTION,
-    updateActiveMessage,
+    setActiveMessage,
     approvePending,
     rejectOk,
     approveOk,
@@ -10,25 +10,20 @@ import { MSG_STATUSES } from '../../constants'
 import background from '../services/Background';
 
 export const updateActiveMessageReducer = store => next => action => {
-    const { activeMessage, messages } = store.getState();
+    const { activePopup, messages } = store.getState();
+    const activeMessage = activePopup && activePopup.msg;
     
     if (action.type === ACTION.UPDATE_MESSAGES) {
         const { unapprovedMessages, messages } = action.payload;
         
-        if (!activeMessage && unapprovedMessages.length === 1) {
-            store.dispatch(updateActiveMessage(unapprovedMessages[0]));
-            return next(action);
-        }
-        
         if (!activeMessage && unapprovedMessages.length) {
             return next(action);
         }
-        
+
         const activeMessageUpdated = messages.find(({ id }) => id === activeMessage.id);
         
         if (activeMessageUpdated) {
             const { status } = activeMessageUpdated;
-            store.dispatch(updateActiveMessage(activeMessageUpdated));
 
             switch (status) {
                 case MSG_STATUSES.REJECTED:
@@ -52,7 +47,7 @@ export const updateActiveMessageReducer = store => next => action => {
     
     if (action.type === ACTION.APPROVE_REJECT_CLEAR) {
         const message = messages.find(({ id }) => id !== activeMessage.id);
-        store.dispatch(updateActiveMessage(action.payload ? null : message));
+        store.dispatch(setActiveMessage(action.payload ? null : message));
     }
     
     return next(action);

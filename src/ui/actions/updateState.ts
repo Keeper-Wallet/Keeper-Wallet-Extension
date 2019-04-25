@@ -31,13 +31,6 @@ export function updateState(state) {
         });
     }
     
-    if (!equals(currentState.notifications, myNotifications)) {
-        actions.push({
-            type: ACTION.NOTIFICATIONS.SET,
-            payload: myNotifications,
-        });
-    }
-    
     if (!equals(currentState.config, config)) {
         actions.push({
             type: ACTION.REMOTE_CONFIG.SET_CONFIG,
@@ -110,11 +103,32 @@ export function updateState(state) {
     }
     
     const unapprovedMessages = messages.filter(isMyMessages);
+    const toUpdateActiveNotify = { allMessages: messages, messages: currentState.messages, notifications: currentState.notifications };
     
     if (!equals(unapprovedMessages, currentState.messages)) {
         actions.push({
             type: ACTION.UPDATE_MESSAGES,
             payload: { unapprovedMessages, messages },
+        });
+    
+        toUpdateActiveNotify.messages = unapprovedMessages;
+    }
+    
+    
+    if (!equals(currentState.notifications, myNotifications)) {
+        actions.push({
+            type: ACTION.NOTIFICATIONS.SET,
+            payload: myNotifications,
+        });
+    
+        toUpdateActiveNotify.notifications = myNotifications;
+    }
+    
+    
+    if (toUpdateActiveNotify.messages !== currentState.messages || toUpdateActiveNotify.notifications !== currentState.notifications) {
+        actions.push({
+            type: ACTION.MESSAGES.SET_ACTIVE_AUTO,
+            payload: toUpdateActiveNotify,
         });
     }
     
