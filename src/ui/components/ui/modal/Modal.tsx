@@ -31,9 +31,9 @@ const ModalWrapper = (props) => {
     const hasAnimation = !!props.animation;
 
     return <CSSTransitionGroup transitionName={props.animation || 'default_modal'}
-                               transitionEnterTimeout={500}
+                               transitionEnterTimeout={400}
                                transitionEnter={hasAnimation}
-                               transitionLeaveTimeout={500}
+                               transitionLeaveTimeout={400}
                                transitionLeave={hasAnimation}>
         {Item}
     </CSSTransitionGroup>
