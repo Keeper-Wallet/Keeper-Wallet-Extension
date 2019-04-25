@@ -50,11 +50,6 @@ export class FinalTransaction extends React.PureComponent {
         const Card = config.card;
         const network = selectedAccount && selectedAccount.networkCode;
         const txLink = `https://${network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
-        const className = cn(styles.txBigIcon, 'margin-main', {
-            'tx-reject-icon': isReject,
-            'tx-approve-icon': isApprove,
-            'tx-error-icon': isError
-        });
 
         if (config.type === oauth.type && !isShowClose) {
             const method = isShowList ? 'onList' : 'onNext';
@@ -64,10 +59,9 @@ export class FinalTransaction extends React.PureComponent {
 
         return <div className={styles.txFinal}>
 
-            <div className={className}></div>
                 <div className={styles.txFinalContentWrapper}>
                     <div className={styles.finalTxContent}>
-                        <div className="margin-main-top margin-main-big">
+                        <div className={`${styles.txError} margin-main-top margin-main-big`}>
                             {isApprove || isReject ?
                                 <FinalComponent isApprove={isApprove} isReject={isReject} isSend={message.broadcast}
                                                 message={message} assets={assets}/> : null}

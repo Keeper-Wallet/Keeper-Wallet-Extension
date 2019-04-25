@@ -1,8 +1,10 @@
 ## Waves Keeper
 
 
-#### version 1.1.4
+#### version 1.1.5
 + Add notifications
+
+#### version 1.1.4
 + Idle configurable
 + Some ui fixes
 + Tokenomika auto orders
