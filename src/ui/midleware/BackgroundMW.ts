@@ -5,11 +5,12 @@ import { i18n } from '../i18n';
 import {
     setTab,
     updateAsset,
+    updateActiveState,
     notificationDelete,
     notificationSelect,
     notificationChangeName,
     pairingLoading,
-    pairingSetData, updateActiveMessage,
+    pairingSetData,
     updateIdle,
     setActiveNotification,
 } from '../actions';
@@ -50,7 +51,6 @@ export const deleteNotifications = store => next => action => {
     return background.deleteNotifications(action.payload.ids).then(
         () => {
             store.dispatch(setActiveNotification(action.payload.next));
-            store.dispatch(updateActiveMessage(null));
         }
     );
 };
@@ -125,12 +125,7 @@ export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
         background.deleteVault().then(
             () => {
-                store.dispatch(updateActiveMessage(null));
-                // store.dispatch(notificationDelete(true));
-                // setTimeout(() => {
-                //     store.dispatch(notificationDelete(false));
-                //
-                // }, 1000);
+                store.dispatch(updateActiveState(null));
                 store.dispatch(setTab(PAGES.ROOT));
             }
         );

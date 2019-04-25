@@ -1,7 +1,17 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow, setAutoOrigin, setShowNotification } from '../../actions';
+import {
+    setActiveMessage,
+    getAsset,
+    approve,
+    reject,
+    clearMessagesStatus,
+    clearMessages,
+    closeNotificationWindow,
+    setAutoOrigin,
+    setShowNotification
+} from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
@@ -224,7 +234,7 @@ const mapStateToProps = function (store) {
         transactionStatus: store.localState.transactionStatus,
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
-        activeMessage: store.activeMessage,
+        activeMessage: store.activePopup && store.activePopup.msg,
         assets: store.assets,
         messages: store.messages,
         notifications: store.notifications,
@@ -235,7 +245,7 @@ const actions = {
     setShowNotification,
     closeNotificationWindow,
     clearMessagesStatus,
-    updateActiveMessage,
+    setActiveMessage,
     setAutoOrigin,
     clearMessages,
     getAsset,

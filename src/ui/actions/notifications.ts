@@ -14,21 +14,6 @@ export function deleteNotifications(ids: [string]) {
     };
 }
 
-export function setShowedNotification(id) {
-    return {
-        type: ACTION.NOTIFICATIONS.SET_SHOWED,
-        payload: id,
-    };
-}
-
-
-export function setActiveNotification(id) {
-    return {
-        type: ACTION.NOTIFICATIONS.SET_ACTIVE,
-        payload: id,
-    };
-}
-
 export function setShowNotification(options) {
     return {
         type: ACTION.NOTIFICATIONS.SET_PERMS,
@@ -36,3 +21,23 @@ export function setShowNotification(options) {
     }
 }
 
+export function setActiveNotification(notify: Array<any> | null) {
+    return {
+        type: ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION,
+        payload: notify,
+    };
+}
+
+export function setActiveMessage(msg: any | null) {
+    return {
+        type: ACTION.MESSAGES.SET_ACTIVE_MESSAGE,
+        payload: msg,
+    };
+}
+
+export function updateActiveState(state) {
+    return {
+        type: ACTION.MESSAGES.UPDATE_ACTIVE,
+        payload: null,
+    };
+}

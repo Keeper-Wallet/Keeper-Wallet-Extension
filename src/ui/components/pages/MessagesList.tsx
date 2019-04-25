@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import {
-    updateActiveMessage,
+    setActiveMessage,
     getAsset, approve, reject,
     clearMessages, deleteNotifications,
     setActiveNotification,
@@ -50,8 +50,8 @@ class MessageListComponent extends React.Component {
     readonly state = { loading: true };
     readonly props;
     
-    readonly selectHandler = (message) => {
-        this.props.updateActiveMessage(message);
+    readonly selectMessageHandler = (message) => {
+        this.props.setActiveMessage(message);
     };
     
     readonly deleteNotifications = (ids) => {
@@ -116,7 +116,7 @@ class MessageListComponent extends React.Component {
                             </div>
                             
                             <div className={'basic-500 margin1'}>
-                                <Messages messages={messages} assets={assets} onSelect={this.selectHandler}
+                                <Messages messages={messages} assets={assets} onSelect={this.selectMessageHandler}
                                           onReject={this.props.reject}/>
                             </div>
                         </React.Fragment>
@@ -178,7 +178,7 @@ const mapStateToProps = function(store) {
 
 const actions = {
     setActiveNotification,
-    updateActiveMessage,
+    setActiveMessage,
     deleteNotifications,
     clearMessages,
     getAsset,

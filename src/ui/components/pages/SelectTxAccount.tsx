@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import {connect} from 'react-redux';
-import { clearMessagesStatus, clearMessages, updateActiveMessage, reject } from '../../actions';
+import { clearMessagesStatus, clearMessages, updateActiveState, reject } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -19,7 +19,7 @@ class SelectTxAccountComponent extends React.PureComponent {
         this.props.messages.forEach(({ id }) => this.props.reject(id));
         this.props.clearMessages();
         this.props.clearMessagesStatus();
-        this.props.updateActiveMessage();
+        this.props.updateActiveState(null);
         this.setState({ loading: true });
     };
     
@@ -67,13 +67,13 @@ const mapStateToProps = (state) => {
         selectAccount: state.selectedAccount,
         messages: state.messages,
         notifications: state.notifications,
-        activeMessage: state.activeMessage,
-        activeNotification: state.activeNotification,
+        activeMessage: state.activePopup.msg,
+        activeNotification: state.activePopup.notify,
     };
 };
 
 const actions = {
-    updateActiveMessage,
+    updateActiveState,
     clearMessagesStatus,
     clearMessages,
     reject

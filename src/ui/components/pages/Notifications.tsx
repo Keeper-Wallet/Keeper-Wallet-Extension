@@ -5,7 +5,6 @@ import { translate, Trans } from 'react-i18next';
 import {
     closeNotificationWindow,
     setActiveNotification,
-    setShowedNotification,
     deleteNotifications,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -179,7 +178,7 @@ class NotificationsComponent extends React.Component {
 const mapStateToProps = function (store) {
     return {
         selectedAccount: store.selectedAccount,
-        activeNotification: store.activeNotification,
+        activeNotification: store.activePopup && store.activePopup.notify,
         origins: store.origins,
         messages: store.messages,
         notifications: store.notifications,
@@ -189,7 +188,6 @@ const mapStateToProps = function (store) {
 const actions = {
     closeNotificationWindow,
     setActiveNotification,
-    setShowedNotification,
     deleteNotifications,
 };
 
