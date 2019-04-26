@@ -18,7 +18,9 @@ export class MessageController extends EventEmitter {
         const defaults = {
             messages: []
         };
-        this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
+
+        this.messages = Object.assign({}, defaults, options.initState);
+        this.store = new ObservableStore(this.messages);
 
         // Signing methods from WalletController
         this.signTx = options.signTx;
@@ -44,7 +46,7 @@ export class MessageController extends EventEmitter {
         this.canAutoApprove = options.canAutoApprove;
 
         this.rejectAllByTime();
-        this._updateBage(this.store.getState().messages);
+        this._updateBadge();
     }
 
 
@@ -181,12 +183,12 @@ export class MessageController extends EventEmitter {
 
 
     updateBadge() {
-        this._updateBage(this.store.getState().messages);
+        this._updateBadge(this.store.getState().messages);
     }
 
     rejectByOrigin(byOrigin) {
-        const {messages} = this.store.getState();
-        messages.forEach(({id, origin}) => {
+        const { messages } = this.store.getState();
+        messages.forEach(({ id, origin }) => {
             if (byOrigin === origin) {
                 this.reject(id);
             }
@@ -197,7 +199,7 @@ export class MessageController extends EventEmitter {
         const { message_expiration_ms } = this.getMessagesConfig();
         const time = Date.now();
         const { messages } = this.store.getState();
-        messages.forEach(({id, timestamp, status}) => {
+        messages.forEach(({ id, timestamp, status }) => {
             if ((time - timestamp) > message_expiration_ms && status === MSG_STATUSES.UNAPPROVED) {
                 this.reject(id);
             }
@@ -218,6 +220,10 @@ export class MessageController extends EventEmitter {
         } else {
             this._updateStore([]);
         }
+    }
+
+    getUnapproved() {
+        return this.messages.messages.filter(({ status }) => status === MSG_STATUSES.UNAPPROVED);
     }
 
     _updateMessagesByTimeout() {
@@ -241,7 +247,7 @@ export class MessageController extends EventEmitter {
     }
 
     _deleteMessage(id) {
-        const {messages} = this.store.getState();
+        const { messages } = this.store.getState();
         const index = messages.findIndex(message => message.id === id);
         if (index > -1) {
             messages.splice(index, 1);
@@ -250,14 +256,13 @@ export class MessageController extends EventEmitter {
     }
 
     _updateStore(messages) {
-        this.store.updateState({messages});
-        this._updateBage(messages);
+        this.messages = { ...this.store.getState(), messages };
+        this.store.updateState(this.messages);
+        this._updateBadge();
     }
 
-    _updateBage(messages) {
-        const unapproved = messages.filter(({status}) => status === MSG_STATUSES.UNAPPROVED).length;
-        const text = unapproved ? unapproved.toString() : '';
-        this.emit('Update badge', text)
+    _updateBadge() {
+        this.emit('Update badge')
     }
 
     async _transformData(data) {
@@ -268,7 +273,7 @@ export class MessageController extends EventEmitter {
         if (Array.isArray(data)) {
             data = [...data];
         } else {
-            data = {...data};
+            data = { ...data };
         }
 
         for (const key in data) {
@@ -309,7 +314,7 @@ export class MessageController extends EventEmitter {
             case 'order':
             case 'cancelOrder':
             case 'transaction':
-                message.data.data = await this._transformData({...message.data.data});
+                message.data.data = await this._transformData({ ...message.data.data });
                 return message;
             case 'transactionPackage':
                 message.data = await Promise.all(message.data.map(async data => await this._transformData(data)));
@@ -343,10 +348,10 @@ export class MessageController extends EventEmitter {
                 signedData = await this.signBytes(message.account.address, message.data, message.account.network);
                 break;
             case 'pairing':
-                signedData = {...signedData, approved: 'OK'};
+                signedData = { ...signedData, approved: 'OK' };
                 break;
             case 'authOrigin':
-                signedData = {...signedData, approved: 'OK'};
+                signedData = { ...signedData, approved: 'OK' };
                 this.setPermission(message.origin, PERMISSIONS.APPROVED);
                 break;
             default:
@@ -395,11 +400,11 @@ export class MessageController extends EventEmitter {
      * @returns {Promise<string>}
      */
     async _getMessageDataHash(data, account) {
-        let signableData = await this._transformData({...data.data});
+        let signableData = await this._transformData({ ...data.data });
         const Adapter = getAdapterByType('seed');
-        Adapter.initOptions({networkCode: networkByteFromAddress(account.address).charCodeAt(0)});
+        Adapter.initOptions({ networkCode: networkByteFromAddress(account.address).charCodeAt(0) });
         const adapter = new Adapter('validation seed');
-        const signable = adapter.makeSignable({...data, data: signableData});
+        const signable = adapter.makeSignable({ ...data, data: signableData });
         return await signable.getId();
     }
 
@@ -420,7 +425,7 @@ export class MessageController extends EventEmitter {
     }
 
     async _validateAndTransform(message) {
-        let result = {...message};
+        let result = { ...message };
 
         if (message.data && message.data.successPath) {
             result.successPath = message.data.successPath
@@ -467,7 +472,7 @@ export class MessageController extends EventEmitter {
 
                 result.data = message.data.map(txParams => {
                     const data = this._prepareTx(txParams.data, message.account);
-                    return {...txParams, data}
+                    return { ...txParams, data }
                 });
                 const validationPromises = result.data.map(data => this._getMessageDataHash(data, message.account));
                 result.messageHash = await Promise.all(validationPromises);
@@ -497,7 +502,7 @@ export class MessageController extends EventEmitter {
                     timestamp: Date.now(),
                     senderPublicKey: message.account.publicKey
                 };
-                result.data.data = {...requestDefaults, ...result.data.data};
+                result.data.data = { ...requestDefaults, ...result.data.data };
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'bytes':
@@ -520,7 +525,7 @@ export class MessageController extends EventEmitter {
             senderPublicKey: account.publicKey,
             chainId: networkByteFromAddress(account.address).charCodeAt(0)
         };
-        return {...txDefaults, ...txParams}
+        return { ...txDefaults, ...txParams }
     }
 
     async _prepareOrder(orderParams, account) {
@@ -531,7 +536,7 @@ export class MessageController extends EventEmitter {
             matcherPublicKey: await this.getMatcherPublicKey()
 
         };
-        return {...orderDefaults, ...orderParams}
+        return { ...orderDefaults, ...orderParams }
     }
 }
 

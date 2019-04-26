@@ -960,6 +960,7 @@ Example:
    }).catch((error) => {
         console.error("Что-то пошло не так", error);
    });
+   
 ```
 
 In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU` 
