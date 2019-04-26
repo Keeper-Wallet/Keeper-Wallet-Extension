@@ -43,7 +43,6 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
     });
 };
 
-
 @translate(I18N_NAME_SPACE)
 class MessageListComponent extends React.Component {
     
