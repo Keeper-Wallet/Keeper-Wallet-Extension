@@ -88,12 +88,21 @@ async function setupBackgroundService() {
         extension.runtime.onConnectExternal.addListener(connectExternal)
     }
 
-    // update badge
-    backgroundService.messageController.on('Update badge', text => {
+    const updateBadge = () => {
+        const state = backgroundService.store.getFlatState();
+        const { selectedAccount } = state;
+        const messages = backgroundService.messageController.getUnapproved();
+        const notifications = backgroundService.notificationsController.getGroupNotificationsByAccount(selectedAccount);
+        const msg = notifications.length + messages.length;
+        const text = msg ? String(msg) : '';
         extension.browserAction.setBadgeText({ text });
         extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
-    });
-    backgroundService.messageController.updateBadge();
+    };
+
+    // update badge
+    backgroundService.messageController.on('Update badge', updateBadge);
+    backgroundService.notificationsController.on('Update badge', updateBadge);
+    updateBadge();
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
         extension.tabs.create({ url });

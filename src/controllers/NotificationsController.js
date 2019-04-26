@@ -21,7 +21,9 @@ export class NotificationsController extends EventEmitter {
         const defaults = {
             notifications: []
         };
-        this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
+        const storeData = Object.assign({}, defaults, options.initState);
+        this.notifications = storeData;
+        this.store = new ObservableStore(storeData);
         this.getMessagesConfig = options.getMessagesConfig;
         this.canShowNotification = options.canShowNotification;
         this.setNotificationPermissions = options.setNotificationPermissions;
@@ -108,7 +110,7 @@ export class NotificationsController extends EventEmitter {
         if (!account || !account.address) {
             return [];
         }
-        return this.store.getState().notifications.filter(notification => notification.address === account.address);
+        return this.notifications.notifications.filter(notification => notification.address === account.address);
     }
 
     /**
@@ -223,7 +225,10 @@ export class NotificationsController extends EventEmitter {
      * @private
      */
     _updateStore(notifications) {
-        this.store.updateState({ notifications });
+        const data = { ...this.store.getState(), notifications };
+        this.store.updateState(data);
+        this.notifications = data;
+        this.emit('Update badge');
     }
 
     /**
