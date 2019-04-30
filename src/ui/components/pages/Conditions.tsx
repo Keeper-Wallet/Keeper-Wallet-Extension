@@ -47,10 +47,9 @@ class ConditionsComponent extends React.Component {
                 </h3>
 
                 <ConditionsAndTerms/>
-                
             </div>
 
-            <Button className="centered"
+            <Button className={`centered ${styles.acceptTermsBtn}`}
                     onClick={this.onClick.bind(this)}
                     type={BUTTON_TYPE.GENERAL}
                     disabled={this.state.confirmDisabled}>
