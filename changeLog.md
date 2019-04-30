@@ -3,6 +3,7 @@
 
 #### version 1.1.5
 + Add notifications
++ Fix publicState events
 
 #### version 1.1.4
 + Idle configurable

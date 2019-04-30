@@ -12,6 +12,7 @@ import { createStreamSink } from './lib/createStreamSink';
 import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import { ComposableObservableStore } from './lib/ComposableObservableStore';
+import { equals } from 'ramda';
 import LocalStore from './lib/local-store';
 import {
     PreferencesController,
@@ -552,7 +553,7 @@ class BackgroundService extends EventEmitter {
             const updateHandler = function (state) {
                 const updatedPublicState = self._publicState(state, origin);
                 // If public state changed call remote with new public state
-                if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
+                if (!equals(updatedPublicState, publicState)) {
                     publicState = updatedPublicState;
                     sendUpdate(publicState)
                 }
