@@ -46,7 +46,7 @@ export class Package extends SignClass {
                 <div className="margin-main margin-main-top headline3 basic500">
                     {title ? title : <Trans i18nKey='transactions.confirmationRequest'>Confirmation request</Trans>}
                 </div>
-                <div className={`${styles.packageTxShadow} margin-main`}>
+                <div className={`margin-main`}>
                     <PackageCard {...this.props}/>
                 </div>
 

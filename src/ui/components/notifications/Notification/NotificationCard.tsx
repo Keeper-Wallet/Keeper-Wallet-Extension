@@ -35,15 +35,11 @@ export class NotificationCard extends React.PureComponent<INotification> {
             </span>
         ) : notifications[0].title;
         
-        return <div className={cn(className, { [styles.messagesGroup]: isGroup })}>
-            
+        return <div className={cn(className, { [styles.groupTx]: isGroup })}>
             <div className={styles.groupBottom}/>
-            
             <div className={styles.groupEffect}>
                 <div className={styles.cardHeader} onClick={this.showHandler}>
-                    
                     <div className={styles.messageTransactionIcon}></div>
-                    
                     <div className="grow">
                         <div className={`${styles.notififactionEllipsis} basic500 body3 margin-min`}>{notifications[0].origin}</div>
                         <h2 className={`${styles.notififactionEllipsis} headline`}>{title}</h2>
@@ -53,8 +49,7 @@ export class NotificationCard extends React.PureComponent<INotification> {
                         <div>
                             <Button type={BUTTON_TYPE.TRANSPARENT}
                                     onClick={this.deleteHandler}
-                                    className={styles.cardClose}
-                            ></Button>
+                                    className={styles.cardClose}/>
                         </div>
                     }
                 </div>

@@ -20,7 +20,7 @@ export class PackageFinal extends React.PureComponent {
         }
         
         if (isReject) {
-            return <div className="margin-main-large headline2 center">
+            return <div className="margin-main headline2 center">
                 <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }
