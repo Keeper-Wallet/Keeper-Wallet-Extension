@@ -48,7 +48,7 @@ export const deleteNotifications = store => next => action => {
         return next(action);
     }
     
-    return background.deleteNotifications(action.payload.ids).then(
+    return background.deleteNotifications(action.payload).then(
         () => {
             store.dispatch(setActiveNotification(action.payload.next));
         }

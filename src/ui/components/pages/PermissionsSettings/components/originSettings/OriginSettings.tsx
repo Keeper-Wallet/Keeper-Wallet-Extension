@@ -202,8 +202,10 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         const { interval = null, totalAmount } = OriginSettingsComponent._getAutoSign(props.autoSign);
         const selected = CONFIG.list.find(({ value }) => value === interval).id;
         const notifications = props.permissions.find((item: TNotification) => item && item.type === 'useNotifications') as TNotification;
+        const inWhiteList = (props.origins[props.originName] || []).includes('whiteList');
         let canShowNotifications = state.canShowNotifications;
-        if(canShowNotifications === null && !!notifications) {
+        const canUseNotify = notifications && notifications.canUse || !notifications && inWhiteList;
+        if(canShowNotifications === null && canUseNotify) {
             canShowNotifications = true;
         }
         return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };
@@ -215,6 +217,7 @@ export const OriginSettings = OriginSettingsComponent;
 
 
 interface IProps extends React.ComponentProps<'div'> {
+    origins: any;
     autoSign: TAutoAuth;
     permissions: Array<TPermission>;
     originName: string;
@@ -237,6 +240,7 @@ type TAutoAuth = {
 type TNotification = {
     type: 'useNotifications',
     time: number,
+    canUse: boolean,
 }
 
 interface IState {

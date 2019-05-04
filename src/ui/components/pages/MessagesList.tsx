@@ -58,7 +58,10 @@ class MessageListComponent extends React.Component {
     };
     
     readonly deleteAll = () => {
-        this.props.deleteNotifications(this.props.notifications.map(({ id }) => id));
+        const ids = this.props.notifications.reduce((acc, item) => {
+            return [...acc, ...item.map(({ id }) => id)];
+        }, []);
+        this.props.deleteNotifications(ids);
     };
     
     readonly selectNotificationHandler = (notification) => this.props.setActiveNotification(notification);

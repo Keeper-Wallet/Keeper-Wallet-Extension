@@ -168,7 +168,7 @@ export class PermissionsController {
         const hasPermission = !!permission;
         const allowByPermission = hasPermission && permission.canUse || (!hasPermission && isInWhiteList);
 
-        if (useApi || !allowByPermission) {
+        if (!useApi || !allowByPermission) {
             throw ERRORS.API_DENIED();
         }
 
