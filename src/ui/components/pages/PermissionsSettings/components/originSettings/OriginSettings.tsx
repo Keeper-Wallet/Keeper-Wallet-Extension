@@ -204,7 +204,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         const notifications = props.permissions.find((item: TNotification) => item && item.type === 'useNotifications') as TNotification;
         const inWhiteList = (props.origins[props.originName] || []).includes('whiteList');
         let canShowNotifications = state.canShowNotifications;
-        const canUseNotify = notifications && notifications.canUse || !notifications && inWhiteList;
+        const canUse = notifications && notifications.canUse;
+        const canUseNotify = canUse || canUse == null && inWhiteList;
         if(canShowNotifications === null && canUseNotify) {
             canShowNotifications = true;
         }

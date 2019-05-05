@@ -165,14 +165,14 @@ export class PermissionsController {
         const { whitelist = [] } = this.store.getState();
         const isInWhiteList = whitelist.includes(origin);
         const permission = this.getPermission(origin, PERMISSIONS.USE_NOTIFICATION);
-        const hasPermission = !!permission;
+        const hasPermission = !!permission && permission.canUse != null;
         const allowByPermission = hasPermission && permission.canUse || (!hasPermission && isInWhiteList);
 
         if (!useApi || !allowByPermission) {
             throw ERRORS.API_DENIED();
         }
-
-        const delta = Date.now() - permission.time;
+        const time = permission && permission.time || 0;
+        const delta = Date.now() - time;
         const minInterval = time_interval;
         const waitTime = minInterval - delta;
 
