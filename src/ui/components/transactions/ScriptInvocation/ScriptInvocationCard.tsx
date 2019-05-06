@@ -50,7 +50,7 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
                 <ShowScript className={styles.dataScript}
                             isData={true}
                             noKey={true}
-                            data={tx.call.args || []}
+                            data={tx.call && tx.call.args || []}
                             optional={true}
                             showNotify={true}
                             hideScript={this.props.collapsed}/>
