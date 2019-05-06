@@ -447,7 +447,6 @@ class BackgroundService extends EventEmitter {
 
                 return result;
             } catch (e) {
-                debugger;
                 throw e;
             }
         };

@@ -30,12 +30,12 @@ function getLocales(locales = [], path = './') {
     return new Promise(resolve => {
 
         function onError(error) {
-            console.error('Download lokalise error', error);
+            console.error('\n\x1b[31mDownload lokalise error', error, '\n');
             resolve();
         }
 
         function onDone() {
-            console.log('Download lokalise done...');
+            console.log('\n\x1b[92mDownload lokalise done...', '\n');
             resolve();
         }
 
