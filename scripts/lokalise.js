@@ -1,13 +1,19 @@
 const request = require('request');
-const config = require('../config.json');
+const config = require('../init_config.json');
 const https = require('https');
 const fs = require('fs');
 const unZipper = require('unzipper');
+let private_config;
 
+try {
+    private_config = require('../config.json');
+} catch (e) {
+    private_config = {};
+}
 
 const options = { method: 'POST',
     url: 'https://api.lokalise.co/api2/projects/371458875c7d357054bbd8.44472567/files/download',
-    headers: { 'x-api-token': config.lokaliseApiKey, 'content-type': 'application/json' },
+    headers: { 'x-api-token': private_config.lokaliseApiKey, 'content-type': 'application/json' },
     body: { format: 'json', original_filenames: true },
     json: true,
 };
