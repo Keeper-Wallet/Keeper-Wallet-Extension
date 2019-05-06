@@ -5,7 +5,7 @@ module.exports = (compiler) => {
     const outputPath = compiler.options.output.path;
     const rootPath = path.resolve(outputPath, '../');
     rimraf(rootPath);
-    console.log('Dist is clear...');
+    console.log('\x1b[32mDist is clear...\n');
 };
 
 function rimraf(dir_path) {

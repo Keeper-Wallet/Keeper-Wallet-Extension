@@ -7,7 +7,7 @@ module.exports = () => {
     const isValidCurrentVersion = isValidVersion(currentVersion);
 
     if (!newVersion && isValidCurrentVersion) {
-        console.log('\x1b[34mCurrent version: \x1b[4m\x1b[33m%s\x1b[0m', currentVersion);
+        console.log('\x1b[92mCurrent version: \x1b[4m\x1b[33m%s\x1b[0m', currentVersion);
         return currentVersion;
     }
 
