@@ -2,7 +2,7 @@ const conf = require('./scripts/webpack.config');
 const prodConf = require('./scripts/webpack.prod.config');
 const defConf = require('./scripts/webpack.dev.config');
 const getVersion = require('./scripts/getVersion');
-const buildConfig = require('./config.json');
+const buildConfig = require('./init_config.json');
 
 const config = { ...buildConfig };
 

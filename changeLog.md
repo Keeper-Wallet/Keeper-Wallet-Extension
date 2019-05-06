@@ -4,6 +4,7 @@
 #### version 1.1.5
 + Add notifications
 + Fix publicState events
++ Fix build with out api key
 
 #### version 1.1.4
 + Idle configurable
