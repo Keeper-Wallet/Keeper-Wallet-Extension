@@ -47,6 +47,20 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         canShowNotifications: null,
     };
     
+    onClose = () => {
+        this.setState({
+            interval: null,
+            totalAmount: null,
+            selected: null,
+            canSave: false,
+            edited: false,
+            notifications: null,
+            canShowNotifications: null,
+        });
+        
+        this.props.onClose();
+    };
+    
     canUseNotificationsHandler = (e) => {
         this.setState({ canShowNotifications: e.target.checked });
         this.calculateCanSave(this.state.interval, this.state.totalAmount, e.target.checked);
@@ -206,9 +220,15 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         let canShowNotifications = state.canShowNotifications;
         const canUse = notifications && notifications.canUse;
         const canUseNotify = canUse || canUse == null && inWhiteList;
+        
         if(canShowNotifications === null && canUseNotify) {
             canShowNotifications = true;
         }
+        
+        if (props.originName == null) {
+            canShowNotifications = null;
+        }
+        
         return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };
     }
 }
