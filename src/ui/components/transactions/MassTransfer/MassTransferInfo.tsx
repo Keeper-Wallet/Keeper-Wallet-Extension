@@ -83,7 +83,7 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.attachment'>Attachment</Trans>
                 </div>
-                <Attachment className={`${styles.txValue} plate fullwidth`} attachment={bytesToSafeString(tx.attachment)}/>
+                <Attachment className="plate fullwidth" attachment={bytesToSafeString(tx.attachment)}/>
             </div> : null }
     
             <div className={styles.txRow}>
