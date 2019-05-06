@@ -125,12 +125,7 @@ export class PermissionsController {
     }
 
     setNotificationPermissions(origin, canUse, time = 0) {
-        if (!canUse) {
-            this.deletePermission(origin, PERMISSIONS.USE_NOTIFICATION);
-            return null;
-        }
-
-        this.updatePermission(origin, { type: PERMISSIONS.USE_NOTIFICATION, time });
+        this.updatePermission(origin, { type: PERMISSIONS.USE_NOTIFICATION, time, canUse });
     }
 
     setAutoApprove(origin, { interval, totalAmount }) {
@@ -167,14 +162,17 @@ export class PermissionsController {
 
     canUseNotification(origin, time_interval) {
         const useApi = this.getPermission(origin, PERMISSIONS.APPROVED);
-
+        const { whitelist = [] } = this.store.getState();
+        const isInWhiteList = whitelist.includes(origin);
         const permission = this.getPermission(origin, PERMISSIONS.USE_NOTIFICATION);
+        const hasPermission = !!permission && permission.canUse != null;
+        const allowByPermission = hasPermission && permission.canUse || (!hasPermission && isInWhiteList);
 
-        if (!useApi || !permission) {
+        if (!useApi || !allowByPermission) {
             throw ERRORS.API_DENIED();
         }
-
-        const delta = Date.now() - permission.time;
+        const time = permission && permission.time || 0;
+        const delta = Date.now() - time;
         const minInterval = time_interval;
         const waitTime = minInterval - delta;
 

@@ -59,6 +59,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
         const className = cn(styles.content);
         
         const {
+            origins,
             pending,
             allowed,
             disallowed,
@@ -86,6 +87,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
                 <div className={styles.cover}>
                     <OriginSettings originName={this.state.origin}
                                     permissions={this.state.permissions}
+                                    origins={origins}
                                     autoSign={this.state.autoSign}
                                     onSave={this.saveSettingsHandler}
                                     onChangePerms={this.onChangeOriginSettings}

@@ -48,9 +48,12 @@ export const deleteNotifications = store => next => action => {
         return next(action);
     }
     
-    return background.deleteNotifications(action.payload.ids).then(
+    const ids = action.payload.length ? action.payload : action.payload.ids;
+    const nextNotify = action.payload.length ? null : action.payload.next;
+    
+    return background.deleteNotifications(ids).then(
         () => {
-            store.dispatch(setActiveNotification(action.payload.next));
+            store.dispatch(setActiveNotification(nextNotify));
         }
     );
 };

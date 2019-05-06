@@ -6,6 +6,7 @@ import {
     closeNotificationWindow,
     setActiveNotification,
     deleteNotifications,
+    setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -155,7 +156,10 @@ class NotificationsComponent extends React.Component {
         
         const origin = activeNotification[0].origin;
         const perms = origins[origin];
-        const canShowNotify = !!perms.find((item) => item && item.type === 'useNotifications');
+        const useNotifications = perms.find((item) => item && item.type === 'useNotifications');
+        const inWhiteList = (origins[origin] || []).includes('whiteList');
+        const useNotify = useNotifications && useNotifications.canUse;
+        const canShowNotify = useNotify || (useNotify == null && inWhiteList);
         const hasMessages = messages.length > 0;
         const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
         const showToList = hasMessages || hasNotifications && notifications.length > 2;
@@ -188,6 +192,7 @@ const mapStateToProps = function (store) {
 const actions = {
     closeNotificationWindow,
     setActiveNotification,
+    setShowNotification,
     deleteNotifications,
 };
 

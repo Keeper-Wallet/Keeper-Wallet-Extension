@@ -361,11 +361,7 @@ class BackgroundService extends EventEmitter {
                 this.permissionsController.setAutoApprove(origin, params);
             },
             setNotificationPermissions: async ({ origin, canUse }) => {
-                if (canUse) {
-                    this.permissionsController.setNotificationPermissions(origin, true, 0);
-                } else {
-                    this.permissionsController.deletePermission(origin, PERMISSIONS.USE_NOTIFICATION);
-                }
+                this.permissionsController.setNotificationPermissions(origin, canUse, 0);
             }
         }
     }
