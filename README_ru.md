@@ -145,7 +145,7 @@
 
 `notification` может принимать на вход следующие данные
 + `title` - строка до 20 символов
-+ `message` - строка не более 250 символов
++ `message` - строка не более 250 символов (не обязательное)
 
 Возвращает Promise
 
@@ -158,7 +158,7 @@
 ```
 
 ОШИБКИ
-+ ``{message: "Incorrect notification data", data: "title has not more 20 characters", code: "19"}`` - Длинный заголовок
++ ``{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}`` - Длинный заголовок
 + ``{message: "Incorrect notification data", data: null, code: "19"}`` - Ошибки в данных нотификации
 + ``{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}`` - Запрещено посылать сообщеня чаще 1 раза в 30 сек  
 + ``{message: "Api rejected by user", code: 12}``сайт не является доверенным или запрещено посылать сообщения

@@ -143,8 +143,8 @@ Send message to keeper.
 Ypu can send message only 1 time in 30 sec for trusted sites with send permission.
 
 `notification` facilitates input of the following data
-+ `title` - string (20 chars max)
-+ `message` - string (250 chars max)
++ `title` - string (20 chars max) (required field)
++ `message` - string (250 chars max) (optional field)
 
 return Promise
 
@@ -157,7 +157,7 @@ Example:
 ```
 
 Possible errors
-+ ``{message: "Incorrect notification data", data: "title has not more 20 characters", code: "19"}`` - Incorrect notification title
++ ``{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}`` - Incorrect notification title
 + ``{message: "Incorrect notification data", data: null, code: "19"}`` - Incorrect notification data
 + ``{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}`` - try send later, you can send 1 message in 30 sec
 + ``{message: "Api rejected by user", code: 12}`` the user denied the request or the website is not trusted.
