@@ -1,7 +1,17 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
 import {translate, Trans} from 'react-i18next';
-import { updateActiveMessage, getAsset, approve, reject, clearMessagesStatus, clearMessages, closeNotificationWindow, setAutoOrigin } from '../../actions';
+import {
+    setActiveMessage,
+    getAsset,
+    approve,
+    reject,
+    clearMessagesStatus,
+    clearMessages,
+    closeNotificationWindow,
+    setAutoOrigin,
+    setShowNotification
+} from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Intro } from './Intro';
@@ -45,6 +55,7 @@ class MessagesComponent extends React.Component {
                                      message={this.props.activeMessage}
                                      assets={this.props.assets}
                                      messages={this.props.messages}
+                                     notifications={this.props.notifications}
                                      transactionStatus={this.state.transactionStatus}
                                      config={this.state.config}
                                      onClose={this.closeHandler}
@@ -80,7 +91,15 @@ class MessagesComponent extends React.Component {
         }
         
         if (params) {
-            this.props.setAutoOrigin(params);
+            const { notifyPermissions, approvePermissions } = params;
+            
+            if (approvePermissions) {
+                this.props.setAutoOrigin(approvePermissions);
+            }
+            
+            if (notifyPermissions) {
+                this.props.setShowNotification(notifyPermissions);
+            }
         }
         
         this.hasApproved = true;
@@ -108,7 +127,7 @@ class MessagesComponent extends React.Component {
     
     static getDerivedStateFromProps(props, state) {
 
-        const { balance: sourceBalance, selectedAccount, assets, activeMessage, messages } = props;
+        const { balance: sourceBalance, selectedAccount, assets, activeMessage, messages, notifications } = props;
         let loading = true;
     
         if (!assets || !assets['WAVES']) {
@@ -125,7 +144,7 @@ class MessagesComponent extends React.Component {
         if (isExistMsg) {
             const balance = Money.fromTokens(sourceBalance || 0, assetInstance);
             loading = false;
-            return { ...state, balance, selectedAccount, assets, transactionStatus, loading, messages};
+            return { balance, selectedAccount, assets, transactionStatus, loading, messages, notifications };
         }
         
         const sourceSignData = activeMessage.data || {};
@@ -149,6 +168,7 @@ class MessagesComponent extends React.Component {
             balance,
             assets,
             messages,
+            notifications,
             loading,
         };
     }
@@ -214,16 +234,18 @@ const mapStateToProps = function (store) {
         transactionStatus: store.localState.transactionStatus,
         balance: store.balances[store.selectedAccount.address],
         selectedAccount: store.selectedAccount,
-        activeMessage: store.activeMessage,
+        activeMessage: store.activePopup && store.activePopup.msg,
         assets: store.assets,
         messages: store.messages,
+        notifications: store.notifications,
     };
 };
 
 const actions = {
+    setShowNotification,
     closeNotificationWindow,
     clearMessagesStatus,
-    updateActiveMessage,
+    setActiveMessage,
     setAutoOrigin,
     clearMessages,
     getAsset,

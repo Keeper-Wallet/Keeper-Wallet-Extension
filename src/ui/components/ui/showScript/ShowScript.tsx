@@ -78,7 +78,7 @@ export class ShowScript extends React.PureComponent {
     componentDidMount() {
         const { script, optional, hideScript, data } = this.props;
         
-        if (hideScript || optional && !(script || data && data.length)) {
+        if (!this.scriptEl || hideScript || optional && !(script || data && data.length)) {
             return null;
         }
     
@@ -102,38 +102,43 @@ export class ShowScript extends React.PureComponent {
         
         const toCopy = !isData ? script : JSON.stringify(data || [], null, 4);
         
-        return <div className={`plate plate-with-controls break-all ${showAllClass}`}>
+        return <div>
             {
-                !isData && <ContentScript getScriptRef={this.getScriptRef} script={script}/>
-            }
-            {
-                isData && !noKey && <Data data={data} getScriptRef={this.getScriptRef}/>
-            }
-            {
-                isData && noKey && <DataNoKey data={data} getScriptRef={this.getScriptRef}/>
-            }
-            <div className="buttons-wrapper">
-                { hasScript ? <Copy text={toCopy} onCopy={this.onCopy}>
-                    <Button>
-                        <Trans i18nKey='showScriptComponent.copyCode'>Copy code</Trans>
-                    </Button>
-                </Copy> : null }
-                { this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>
+                hasScript &&
+                <div className={`plate plate-with-controls break-all ${showAllClass}`}>
                     {
-                        !this.state.showAllScript ?
-                            <Trans i18nKey='showScriptComponent.showAll'>Show all</Trans>:
-                            <Trans i18nKey='showScriptComponent.hide'>Hide</Trans>
+                        !isData && <ContentScript getScriptRef={this.getScriptRef} script={script}/>
                     }
-                </Button>: null }
-            </div>
+                    {
+                        isData && !noKey && <Data data={data} getScriptRef={this.getScriptRef}/>
+                    }
+                    {
+                        isData && noKey && <DataNoKey data={data} getScriptRef={this.getScriptRef}/>
+                    }
+                    <div className="buttons-wrapper">
+                        { hasScript ? <Copy text={toCopy} onCopy={this.onCopy}>
+                            <Button>
+                                <Trans i18nKey='showScriptComponent.copyCode'>Copy code</Trans>
+                            </Button>
+                        </Copy> : null }
+                        { this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>
+                            {
+                                !this.state.showAllScript ?
+                                    <Trans i18nKey='showScriptComponent.showAll'>Show all</Trans>:
+                                    <Trans i18nKey='showScriptComponent.hide'>Hide</Trans>
+                            }
+                        </Button>: null }
+                    </div>
     
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
-                   showModal={this.state.showCopied}
-                   showChildrenOnly={true}>
-                <div className='modal notification'>
-                    <Trans i18nKey='showScriptComponent.copied'>Copied!</Trans>
+                    <Modal animation={Modal.ANIMATION.FLASH_SCALE}
+                           showModal={this.state.showCopied}
+                           showChildrenOnly={true}>
+                        <div className='modal notification'>
+                            <Trans i18nKey='showScriptComponent.copied'>Copied!</Trans>
+                        </div>
+                    </Modal>
                 </div>
-            </Modal>
+            }
         </div>
     }
     

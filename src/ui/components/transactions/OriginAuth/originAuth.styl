@@ -1,9 +1,6 @@
 @import '../../../styles/colors.styl';
 @import '../../pages/styles/transactions.styl';
 
-.collapsedContent
-  height: 264px;
-
 .collapsedTitle
   display: inline-block;
   height: 40px;
@@ -25,13 +22,13 @@
 .collapsed
   margin-top: 24px;
   background-color: $white;
-  width: calc(100% + 24px);
+  width: 100%;
   border-radius: 4px;
   border: solid 1px $basic100;
+  margin-left: 0;
 
 .originAuthTransactionCard
   @extends .transaction-card
-  margin-bottom: 24px;
 
   .cardHeader,
   .cardContent

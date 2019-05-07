@@ -2,10 +2,13 @@ import ObservableStore from 'obs-store';
 import { BigNumber } from "@waves/data-entities/dist/libs/bignumber";
 import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
+import { ERRORS } from '../lib/KeeperError';
+
 
 export const PERMISSIONS = {
     ALL: 'all',
     USE_API: 'useApi',
+    USE_NOTIFICATION: 'useNotifications',
     REJECTED: 'rejected',
     APPROVED: 'approved',
     AUTO_SIGN: 'allowAutoSign',
@@ -88,7 +91,7 @@ export class PermissionsController {
         const { origins, ...other } = this.store.getState();
         const { whitelist, blacklist } = other;
 
-        if ( whitelist.includes(origin) || blacklist.includes(origin) ) {
+        if (whitelist.includes(origin) || blacklist.includes(origin)) {
             return null;
         }
 
@@ -121,6 +124,10 @@ export class PermissionsController {
         this.setPermissions(origin, permissions);
     }
 
+    setNotificationPermissions(origin, canUse, time = 0) {
+        this.updatePermission(origin, { type: PERMISSIONS.USE_NOTIFICATION, time, canUse });
+    }
+
     setAutoApprove(origin, { interval, totalAmount }) {
         if (!interval || !totalAmount) {
             this.deletePermission(origin, PERMISSIONS.AUTO_SIGN);
@@ -151,6 +158,29 @@ export class PermissionsController {
         }
 
         return ['1001', '1002', '1003'].includes(String(tx.type).trim());
+    }
+
+    canUseNotification(origin, time_interval) {
+        const useApi = this.getPermission(origin, PERMISSIONS.APPROVED);
+        const { whitelist = [] } = this.store.getState();
+        const isInWhiteList = whitelist.includes(origin);
+        const permission = this.getPermission(origin, PERMISSIONS.USE_NOTIFICATION);
+        const hasPermission = !!permission && permission.canUse != null;
+        const allowByPermission = hasPermission && permission.canUse || (!hasPermission && isInWhiteList);
+
+        if (!useApi || !allowByPermission) {
+            throw ERRORS.API_DENIED();
+        }
+        const time = permission && permission.time || 0;
+        const delta = Date.now() - time;
+        const minInterval = time_interval;
+        const waitTime = minInterval - delta;
+
+        if (waitTime > 0) {
+            throw ERRORS.NOTIFICATION_ERROR({ msg: `Min notification interval ${minInterval / 1000}s. Wait ${waitTime / 1000}s.` })
+        }
+
+        return true;
     }
 
     canApprove(origin, tx) {

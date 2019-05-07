@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.3
+# Waves Keeper v1.1.5
 en | [ru](https://github.com/wavesplatform/waveskeeper/blob/master/README_ru.md)
 
 Waves Keeper is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
@@ -23,6 +23,7 @@ On browser pages that operate under the http/https (not worked local pages with 
 *   `signTransaction`
 *   `signRequest`
 *   `signTransactionPackage`
+*   `notification`
 *   `on`
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
@@ -136,6 +137,31 @@ Possible errors
 *   `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
 *   `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts 
 *   `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper 
+
+### notification
+Send message to keeper.
+Ypu can send message only 1 time in 30 sec for trusted sites with send permission.
+
+`notification` facilitates input of the following data
++ `title` - string (20 chars max) (required field)
++ `message` - string (250 chars max) (optional field)
+
+return Promise
+
+Example:
+```
+       WavesKeeper.notification({
+            title: 'Hello!',
+            message: 'Congratulation!!!'
+       });
+```
+
+Possible errors
++ ``{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}`` - Incorrect notification title
++ ``{message: "Incorrect notification data", data: null, code: "19"}`` - Incorrect notification data
++ ``{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}`` - try send later, you can send 1 message in 30 sec
++ ``{message: "Api rejected by user", code: 12}`` the user denied the request or the website is not trusted.
+
 
 **on**
 
@@ -259,7 +285,7 @@ ERRORS
 
 *   `{message: "Invalid data", data: "[{"field":"data","type":"string","message":"field is required"}]", code: 9}` – signature data contain errors
 *   `{message: "User denied message", code: 10}` – the user denied the request
-*   `{message: "Api rejected by user", code: 12} - the website is not trusted`
+*   `{message: "Api rejected by user", code: 12}` - the website is not trusted
 
 **signTransaction**
 
@@ -934,6 +960,7 @@ Example:
    }).catch((error) => {
         console.error("Что-то пошло не так", error);
    });
+   
 ```
 
 In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU` 

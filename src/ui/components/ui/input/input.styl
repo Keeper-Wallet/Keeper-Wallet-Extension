@@ -13,6 +13,7 @@ textarea
   padding: 0 14px;
   font-size: 14px;
   transition: .3s;
+  outline: 0 none;
 
   &:hover
     border: 1px solid $basic500;
@@ -59,3 +60,32 @@ textarea
 
   &.password-input
     padding-left: 42px;
+
+input[type="checkbox"]
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  margin-right: 14px;
+  padding: 0;
+  background: url(../../../assets/img/check-12-basic-200.svg) center no-repeat;
+  border: 1px solid $basic100;
+
+  &:focus
+    border: 1px solid $basic100;
+
+  &:checked
+    background: url(../../../assets/img/check-12-white.svg) center no-repeat $submit400;
+    border: 1px solid $submit400;
+
+  &:hover
+    cursor: pointer;
+    border: 1px solid $submit400;
+
+  & + label
+    flex-grow: 1;
+    cursor: pointer;

@@ -11,3 +11,4 @@ export * from './menu';
 export * from './messages';
 export * from './pairing';
 export * from './permissions';
+export * from './notifications';

@@ -54,7 +54,9 @@ export class List extends React.PureComponent<IProps> {
                 <Trans i18nKey='permissionsSettings.rejectedOrigin'>Rejected</Trans>
             }
             {
-                hasAuto ? <Trans i18nKey='permissionsSettings.automaticOrigin'> + Automatic signing</Trans> : null
+                hasAuto ? <span>
+                        <Trans i18nKey='permissionsSettings.automaticOrigin'>+ Automatic signing</Trans>
+                    </span> : null
             }
         </React.Fragment>;
     }

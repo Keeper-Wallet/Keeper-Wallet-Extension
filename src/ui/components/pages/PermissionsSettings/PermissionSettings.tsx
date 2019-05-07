@@ -2,7 +2,7 @@ import * as styles from './permissionsSettings.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { allowOrigin, deleteOrigin, disableOrigin, setAutoOrigin } from 'ui/actions';
+import { allowOrigin, deleteOrigin, disableOrigin, setAutoOrigin, setShowNotification } from 'ui/actions';
 import cn from 'classnames';
 import { I18N_NAME_SPACE } from 'ui/appConfig';
 import { Loader, Modal } from 'ui/components/ui';
@@ -39,8 +39,9 @@ class PermissionsSettingsComponent extends React.PureComponent {
         this.setState({ autoSign });
     };
     
-    saveSettingsHandler = (params, origin) => {
+    saveSettingsHandler = (params, origin, canShowNotifications) => {
         this.props.setAutoOrigin({ origin, params });
+        this.props.setShowNotification({ origin, canUse: canShowNotifications });
         this.closeSettingsHandler();
     };
     
@@ -58,6 +59,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
         const className = cn(styles.content);
         
         const {
+            origins,
             pending,
             allowed,
             disallowed,
@@ -85,6 +87,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
                 <div className={styles.cover}>
                     <OriginSettings originName={this.state.origin}
                                     permissions={this.state.permissions}
+                                    origins={origins}
                                     autoSign={this.state.autoSign}
                                     onSave={this.saveSettingsHandler}
                                     onChangePerms={this.onChangeOriginSettings}
@@ -118,6 +121,7 @@ const actions = {
     deleteOrigin,
     disableOrigin,
     setAutoOrigin,
+    setShowNotification,
 };
 
 export const PermissionsSettings = connect(mapStateToProps, actions)(PermissionsSettingsComponent);

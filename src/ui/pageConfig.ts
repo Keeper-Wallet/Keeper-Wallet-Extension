@@ -27,6 +27,7 @@ import {
     PermissionsSettings,
     MessageList,
     SettingsGeneral,
+    Notifications,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
@@ -63,6 +64,7 @@ export const PAGES = {
     DELETE_ACCOUNT: 'delete_account',
     PAIRING: 'pairing',
     PERMISSIONS: 'origin_permisiions',
+    NOTIFICATIONS: 'notifications',
     MESSAGES: 'messages',
     MESSAGES_LIST: 'messages_list',
     FORGOT: 'forgot_password',
@@ -420,6 +422,17 @@ export const PAGES_CONF = {
             hasSettings: false,
             back: false,
         }
+    },
+    [PAGES.NOTIFICATIONS]: {
+        component: Notifications,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: false,
+        },
     },
     [PAGES.MESSAGES]: {
         component: Messages,

@@ -5,7 +5,7 @@ import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat, Button, BUTTON_TYPE, Attachment } from '../../ui';
 import { getFee, getAmount, getTransferAmount } from './parseTx';
 import { getMoney } from '../../../utils/converters';
-import { bytesToSafeString } from '../../../utils/waves';
+import { readAttachment } from '../../../utils/waves';
 
 const MIN_COUNT = 0;
 
@@ -79,11 +79,11 @@ export class MassTransferInfo extends React.PureComponent<ITransferInfo> {
                 <div className={styles.txValue}>{amount.asset.id}</div>
             </div>
     
-            { tx.attachment ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+            { tx.attachment && tx.attachment.length ? <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.attachment'>Attachment</Trans>
                 </div>
-                <Attachment className={`${styles.txValue} plate fullwidth`} attachment={bytesToSafeString(tx.attachment)}/>
+                <Attachment className="plate fullwidth" attachment={readAttachment(tx.attachment)}/>
             </div> : null }
     
             <div className={styles.txRow}>

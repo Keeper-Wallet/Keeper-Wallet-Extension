@@ -21,7 +21,8 @@ export class Input extends React.Component {
         let { className, error, multiLine, ...props } = this.props;
         className = cn(
             styles.input, className, {
-                [styles.error]: error
+                [styles.error]: error,
+                [styles.checkbox]: props.type === 'checkbox',
             }
         );
         return multiLine ?

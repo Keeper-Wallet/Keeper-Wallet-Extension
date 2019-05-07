@@ -68,17 +68,17 @@ class RootComponent extends React.Component {
         if (nextProps.loading) {
             return { tab: PAGES.INTRO };
         }
-    
+        
         /**
          * Select lang page
          */
             // // select langs at first
-        // if (!nextProps.ui.selectedLangs) {
-        //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
-        // }
+            // if (!nextProps.ui.selectedLangs) {
+            //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
+            // }
         
         let tab = nextProps.tab;
-    
+        
         /**
          * Intro page on load
          */
@@ -89,16 +89,18 @@ class RootComponent extends React.Component {
         /**
          * Has notify - show confirm page
          */
-        const { messages, activeMessage, accounts } = nextProps;
+        const { messages, notifications, activePopup, accounts } = nextProps;
         
         if (!nextProps.locked && tab !== PAGES.CHANGE_TX_ACCOUNT && accounts.length) {
-            if (activeMessage) {
+            if (activePopup && activePopup.msg) {
                 tab = PAGES.MESSAGES;
-            } else if (messages.length) {
+            } else if (activePopup && activePopup.notify) {
+                tab = PAGES.NOTIFICATIONS;
+            } else if (messages.length + notifications.length) {
                 tab = PAGES.MESSAGES_LIST;
             }
         }
-    
+        
         /**
          * Start page on locked keeper
          */
@@ -153,7 +155,8 @@ const mapStateToProps = function (store: any) {
         backTabs: store.backTabs,
         ui: store.uiState,
         messages: store.messages,
-        activeMessage: store.activeMessage,
+        notifications: store.notifications,
+        activePopup: store.activePopup,
     };
 };
 
@@ -178,7 +181,8 @@ interface IProps {
     tab: string;
     backTabs: Array<string>;
     messages: Array<any>;
-    activeMessage: any;
+    notifications: Array<any>;
+    activePopup: { msg: any | null, notify: Array<any> | null } | null;
     loading: boolean;
     ui: any;
 }

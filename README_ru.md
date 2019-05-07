@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.3        
+# Waves Keeper v1.1.5        
 [en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
@@ -21,6 +21,7 @@
 - `signTransaction`
 - `signRequest`
 - `signTransactionPackage`
+- `notification`
 - `on`
 
 > Все методы кроме `on` работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
@@ -139,6 +140,28 @@
 ```
 Если сайт не является доверенным, то события приходить не будут.
 
+### notification
+Метод для отправки пользователю сообщения от сайта. Разрешено посылать сообщение только разрешенным сайтам не чаще 1 раза за 30сек.
+
+`notification` может принимать на вход следующие данные
++ `title` - строка до 20 символов
++ `message` - строка не более 250 символов (не обязательное)
+
+Возвращает Promise
+
+Пример:
+```
+       WavesKeeper.notification({
+            title: 'Hello!',
+            message: 'Congratulation!!!'
+       });
+```
+
+ОШИБКИ
++ ``{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}`` - Длинный заголовок
++ ``{message: "Incorrect notification data", data: null, code: "19"}`` - Ошибки в данных нотификации
++ ``{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}`` - Запрещено посылать сообщеня чаще 1 раза в 30 сек  
++ ``{message: "Api rejected by user", code: 12}``сайт не является доверенным или запрещено посылать сообщения
 
 ### auth
 Метод для получения подписи авторизационных данных при подтверждении пользователя Waves.

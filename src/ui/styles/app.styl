@@ -260,6 +260,11 @@ $layout-44 = 44px;
   text-overflow: ellipsis;
 
 // blocks
+:global checkbox-row
+  display: flex;
+  align-items: center;
+  label
+    flex-grow: 1;
 
 :global .plate
   background: $basic50;
@@ -286,7 +291,8 @@ $layout-44 = 44px;
       width: 100%;
       display: flex;
       justify-content: flex-end;
-      margin-top: 14px;
+      min-height: 27px;
+      margin-bottom: -13px;
 
       button
         padding: 0;
@@ -306,7 +312,8 @@ $layout-44 = 44px;
             content: '';
             position: absolute;
             height: 14px;
-            top: 0;
+            top: 50%;
+            transform: translateY(-50%);
             background $basic500;
             display: block;
             right: -15px;
@@ -337,6 +344,9 @@ $layout-44 = 44px;
 
   & > div:last-child
     flex-grow: 1;
+
+:global .grow
+  flex-grow: 1;
 
 // modals, errors, notifications
 

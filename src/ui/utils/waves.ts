@@ -149,4 +149,16 @@ export const bytesToSafeString = ifElse(
         identity,
         bytesToString
     )
-)
+);
+
+export const readAttachment = data => {
+    if (!data) {
+        return '';
+    }
+    
+    if (typeof data === 'string') {
+        return data;
+    }
+    
+    return bytesToSafeString(data);
+};

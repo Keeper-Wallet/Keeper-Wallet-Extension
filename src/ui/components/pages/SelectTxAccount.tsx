@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui/buttons';
 import {connect} from 'react-redux';
-import { clearMessagesStatus, clearMessages, updateActiveMessage, reject } from '../../actions';
+import { clearMessagesStatus, clearMessages, deleteNotifications, updateActiveState, reject, closeNotificationWindow } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -15,12 +15,21 @@ class SelectTxAccountComponent extends React.PureComponent {
     readonly state = { loading: false };
     readonly props;
     
+    deleteNotifications = () => {
+        const ids = this.props.notifications.reduce((acc, item) => {
+            return [...acc, ...item.map(({ id }) => id)];
+        }, []);
+        this.props.deleteNotifications(ids);
+    };
+    
     onClick = () => {
         this.props.messages.forEach(({ id }) => this.props.reject(id));
         this.props.clearMessages();
         this.props.clearMessagesStatus();
-        this.props.updateActiveMessage();
+        this.deleteNotifications();
+        this.props.updateActiveState(null);
         this.setState({ loading: true });
+        this.props.closeNotificationWindow();
     };
     
     render() {
@@ -51,9 +60,9 @@ class SelectTxAccountComponent extends React.PureComponent {
     }
     
     static getDerivedStateFromProps(props, state) {
-        const { activeMessage, messages } = props;
+        const { activeMessage, messages, activeNotification, notifications } = props;
         
-        if (!activeMessage && messages.length === 0) {
+        if (!activeMessage && messages.length === 0 && !activeNotification && notifications.length === 0) {
             props.setTab(PAGES.ASSETS);
             return { loading: false };
         }
@@ -66,12 +75,16 @@ const mapStateToProps = (state) => {
     return {
         selectAccount: state.selectedAccount,
         messages: state.messages,
-        activeMessage: state.activeMessage,
+        notifications: state.notifications,
+        activeMessage: state.activePopup && state.activePopup.msg,
+        activeNotification: state.activePopup && state.activePopup.notify,
     };
 };
 
 const actions = {
-    updateActiveMessage,
+    closeNotificationWindow,
+    updateActiveState,
+    deleteNotifications,
     clearMessagesStatus,
     clearMessages,
     reject

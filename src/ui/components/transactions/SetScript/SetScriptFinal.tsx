@@ -12,7 +12,7 @@ export class SetScriptFinal extends React.PureComponent {
         
         if (isApprove) {
             return <div>
-                <div className="headline2">
+                <div className="headline2 center">
                     {isSend ? <Trans i18nKey='sign.transactionSend'>Your transaction is confirmed!</Trans> : null}
                     {!isSend ? <Trans i18nKey='sign.transactionConfirmed'>Your transaction has been signed!</Trans>: null}
                 </div>
@@ -20,7 +20,7 @@ export class SetScriptFinal extends React.PureComponent {
         }
         
         if (isReject) {
-            return <div className="headline2">
+            return <div className="headline2 center">
                 <Trans i18nKey='sign.transactionFiled'>Your transaction is rejected!</Trans>
             </div>
         }

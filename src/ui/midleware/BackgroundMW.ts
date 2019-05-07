@@ -5,12 +5,14 @@ import { i18n } from '../i18n';
 import {
     setTab,
     updateAsset,
+    updateActiveState,
     notificationDelete,
     notificationSelect,
     notificationChangeName,
     pairingLoading,
-    pairingSetData, updateActiveMessage,
+    pairingSetData,
     updateIdle,
+    setActiveNotification,
 } from '../actions';
 import { PAGES } from '../pageConfig';
 import { store } from '../store';
@@ -38,6 +40,30 @@ export const changeLang = store => next => action => {
         background.setCurrentLocale(action.payload);
     }
     return next(action);
+};
+
+
+export const deleteNotifications = store => next => action => {
+    if (action.type !== ACTION.NOTIFICATIONS.DELETE) {
+        return next(action);
+    }
+    
+    const ids = action.payload.length ? action.payload : action.payload.ids;
+    const nextNotify = action.payload.length ? null : action.payload.next;
+    
+    return background.deleteNotifications(ids).then(
+        () => {
+            store.dispatch(setActiveNotification(nextNotify));
+        }
+    );
+};
+
+export const setNotificationPerms = store => next => action => {
+    if (action.type !== ACTION.NOTIFICATIONS.SET_PERMS) {
+        return next(action);
+    }
+    
+    background.setNotificationPermissions(action.payload);
 };
 
 export const setIdle = store => next => action => {
@@ -102,12 +128,7 @@ export const deleteAccountMw = store => next => action => {
     if (action.type === ACTION.DELETE_ACCOUNT) {
         background.deleteVault().then(
             () => {
-                store.dispatch(updateActiveMessage(null));
-                // store.dispatch(notificationDelete(true));
-                // setTimeout(() => {
-                //     store.dispatch(notificationDelete(false));
-                //
-                // }, 1000);
+                store.dispatch(updateActiveState(null));
                 store.dispatch(setTab(PAGES.ROOT));
             }
         );

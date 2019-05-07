@@ -53,39 +53,43 @@ export class PackageCard extends React.PureComponent<IData> {
             },
         );
         
-        return <div className={`${myClassName} ${styles.packageTransactionCard}`}>
-
-            <div className={styles.cardHeader}>
-                <div className={styles.dataTxIcon}>
-                    <TxIcon txType={messageType}/>
-                </div>
-
-                <div>
-                    <div className="basic500 body3 margin-min">
-                        {title && collapsed ? title : <Trans i18nKey='transactions.packTransactionGroup'>Group</Trans>}
+        return <div className={`${myClassName} ${styles.packageTransactionCard} ${styles.groupTx}`}>
+            
+            <div className={styles.groupBottom}></div>
+            <div className={styles.groupEffect}>
+                
+                <div className={styles.cardHeader}>
+                    <div className={styles.dataTxIcon}>
+                        <TxIcon txType={messageType}/>
                     </div>
-                    <h1 className="headline1 margin-main">
-                        {tx.length} <Trans i18nKey='transactions.packTransactions'>transactions</Trans>
-                    </h1>
-
-                    <div className={styles.amounts}>
-                        <Amounts amounts={amounts}/>
+    
+                    <div>
+                        <div className="basic500 body3 margin-min">
+                            {title && collapsed ? title : <Trans i18nKey='transactions.packTransactionGroup'>Group</Trans>}
+                        </div>
+                        <h1 className="headline1 margin-main">
+                            {tx.length} <Trans i18nKey='transactions.packTransactions'>transactions</Trans>
+                        </h1>
+    
+                        <div className={styles.amounts}>
+                            <Amounts amounts={amounts}/>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div className={styles.origin}>
-                <div className="basic500 body3 margin-min margin-main-top">
-                    <Trans i18nKey='transactions.packTransactionsFees'>Fees</Trans>
+    
+                <div className={styles.origin}>
+                    <div className="basic500 body3 margin-min margin-main-top">
+                        <Trans i18nKey='transactions.packTransactionsFees'>Fees</Trans>
+                    </div>
+                    <div className="margin-min">
+                        <Fees fees={fees}/>
+                    </div>
                 </div>
-                <div className="margin-min">
-                    <Fees fees={fees}/>
-                </div>
-            </div>
-
-            <div className={styles.cardContent}>
-                <div className={`${styles.origin} margin-main-top`}>
-                    <OriginWarning message={message}/>
+    
+                <div className={styles.cardContent}>
+                    <div className={`${styles.origin} margin-main-top`}>
+                        <OriginWarning message={message}/>
+                    </div>
                 </div>
             </div>
         </div>

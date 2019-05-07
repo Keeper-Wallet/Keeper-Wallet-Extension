@@ -1,6 +1,14 @@
 ## Waves Keeper
 
 
+#### version 1.1.5
++ Add notifications
++ Update development invocation script
++ Fix publicState events
++ Fix build with no lokalize api key
++ Some UI fixes
++ Messages refactoring
+
 #### version 1.1.4
 + Idle configurable
 + Some ui fixes

@@ -19,7 +19,6 @@ export function Button({ className, type, withIcon, children, ...props }: IProps
         className,
         styles.button,
         {
-            [styles.custom]: type === BUTTON_TYPE.CUSTOM,
             [styles.submit]: type === BUTTON_TYPE.SUBMIT,
             [styles.submitTiny]: type === BUTTON_TYPE.SUBMIT_TINY,
             [styles.submit]: type === BUTTON_TYPE.GENERAL,
@@ -27,6 +26,7 @@ export function Button({ className, type, withIcon, children, ...props }: IProps
             [styles.icon]: withIcon,
             [styles.warning]: type === BUTTON_TYPE.WARNING,
             [styles.interface]: type === BUTTON_TYPE.INTERFACE,
+            [styles.custom]: type === BUTTON_TYPE.CUSTOM,
             [styles.default]: !type
         }
     );

@@ -6,15 +6,18 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
-import {ERRORS} from './lib/KeeperError';
-import {createStreamSink} from './lib/createStreamSink';
-import {getFirstLangCode} from './lib/get-first-lang-code';
+import { ERRORS } from './lib/KeeperError';
+import { MSG_STATUSES } from './constants';
+import { createStreamSink } from './lib/createStreamSink';
+import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
-import {ComposableObservableStore} from './lib/ComposableObservableStore';
+import { ComposableObservableStore } from './lib/ComposableObservableStore';
+import { equals } from 'ramda';
 import LocalStore from './lib/local-store';
 import {
     PreferencesController,
     WalletController,
+    NotificationsController,
     NetworkController,
     MessageController,
     BalanceController,
@@ -27,10 +30,10 @@ import {
     IdleController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
-import {setupDnode} from './lib/dnode-util';
-import {WindowManager} from './lib/WindowManger'
-import { getAdapterByType } from '@waves/signature-adapter'
-import { WAVESKEEPER_DEBUG } from  './constants';
+import { setupDnode } from './lib/dnode-util';
+import { WindowManager } from './lib/WindowManger';
+import { getAdapterByType } from '@waves/signature-adapter';
+import { WAVESKEEPER_DEBUG } from './constants';
 
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -52,7 +55,7 @@ async function setupBackgroundService() {
 
     // global access to service on debug
     if (WAVESKEEPER_DEBUG) {
-        global.background = backgroundService
+        global.background = backgroundService;
     }
 
     // setup state persistence
@@ -86,15 +89,24 @@ async function setupBackgroundService() {
         extension.runtime.onConnectExternal.addListener(connectExternal)
     }
 
+    const updateBadge = () => {
+        const state = backgroundService.store.getFlatState();
+        const { selectedAccount } = state;
+        const messages = backgroundService.messageController.getUnapproved();
+        const notifications = backgroundService.notificationsController.getGroupNotificationsByAccount(selectedAccount);
+        const msg = notifications.length + messages.length;
+        const text = msg ? String(msg) : '';
+        extension.browserAction.setBadgeText({ text });
+        extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
+    };
+
     // update badge
-    backgroundService.messageController.on('Update badge', text => {
-        extension.browserAction.setBadgeText({text});
-        extension.browserAction.setBadgeBackgroundColor({color: '#768FFF'});
-    });
-    backgroundService.messageController.updateBadge();
+    backgroundService.messageController.on('Update badge', updateBadge);
+    backgroundService.notificationsController.on('Update badge', updateBadge);
+    updateBadge();
     // open new tab
     backgroundService.messageController.on('Open new tab', url => {
-        extension.tabs.create({url});
+        extension.tabs.create({ url });
     });
 
     // Notification window management
@@ -167,7 +179,7 @@ class BackgroundService extends EventEmitter {
         this.networkController.store.subscribe(() => this.preferencesController.syncCurrentNetworkAccounts());
 
         // Ui State. Provides storage for ui application
-        this.uiStateController = new UiStateController({initState: initState.UiStateController});
+        this.uiStateController = new UiStateController({ initState: initState.UiStateController });
 
         // Wallet. Wallet creation, app locking, signing method
         this.walletController = new WalletController({
@@ -228,6 +240,14 @@ class BackgroundService extends EventEmitter {
             canAutoApprove: (origin, tx) => this.permissionsController.canApprove(origin, tx),
         });
 
+        // Notifications
+        this.notificationsController = new NotificationsController({
+            initState: initState.NotificationsController,
+            getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
+            canShowNotification: (...args) => this.permissionsController.canUseNotification(...args),
+            setNotificationPermissions: (origin, canUse, time) => this.permissionsController.setNotificationPermissions(origin, canUse, time),
+        });
+
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
@@ -240,6 +260,7 @@ class BackgroundService extends EventEmitter {
             UiStateController: this.uiStateController.store,
             AssetInfoController: this.assetInfoController.store,
             RemoteConfigController: this.remoteConfigController.store,
+            NotificationsController: this.notificationsController.store,
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update
@@ -249,7 +270,10 @@ class BackgroundService extends EventEmitter {
 
 
     getState() {
-        return this.store.getFlatState()
+        const state = this.store.getFlatState();
+        const { selectedAccount } = state;
+        const myNotifications = this.notificationsController.getGroupNotificationsByAccount(selectedAccount);
+        return { ...state, myNotifications };
     }
 
     getApi() {
@@ -265,6 +289,7 @@ class BackgroundService extends EventEmitter {
                 }
                 this.idleController.setOptions({ type, interval: config[type] });
             },
+
             // preferences
             setCurrentLocale: async (key) => this.preferencesController.setCurrentLocale(key),
             selectAccount: async (address, network) => this.preferencesController.selectAccount(address, network),
@@ -291,6 +316,10 @@ class BackgroundService extends EventEmitter {
             clearMessages: async () => this.messageController.clearMessages(),
             approve: async (messageId, address) => await this.messageController.approve(messageId, address),
             reject: async (messageId) => this.messageController.reject(messageId),
+
+            // notifications
+            setReadNotification: async (id) => this.notificationsController.setMessageStatus(id, MSG_STATUSES.SHOWED_NOTIFICATION),
+            deleteNotifications: async (ids) => this.notificationsController.deleteNotifications(ids),
 
             // network
             setNetwork: async (network) => this.networkController.setNetwork(network),
@@ -330,6 +359,9 @@ class BackgroundService extends EventEmitter {
             // extended permission autoSign
             setAutoSign: async ({ origin, params }) => {
                 this.permissionsController.setAutoApprove(origin, params);
+            },
+            setNotificationPermissions: async ({ origin, canUse }) => {
+                this.permissionsController.setNotificationPermissions(origin, canUse, 0);
             }
         }
     }
@@ -395,6 +427,30 @@ class BackgroundService extends EventEmitter {
             return await this.messageController.getMessageResult(messageId)
         };
 
+        const newNotification = (data) => {
+            const { selectedAccount } = this.getState();
+            const myData = { ...data };
+            try {
+                const result = this.notificationsController.newNotification({
+                    address: selectedAccount.address,
+                    message: myData.message,
+                    origin: origin,
+                    status: MSG_STATUSES.NEW_NOTIFICATION,
+                    timestamp: Date.now(),
+                    title: myData.title,
+                    type: 'simple'
+                }).id;
+
+                if (result) {
+                    this.emit('Show notification');
+                }
+
+                return result;
+            } catch (e) {
+                throw e;
+            }
+        };
+
         const api = {
             signOrder: async (data, from) => {
                 return await newMessage(data, 'order', from, false)
@@ -423,8 +479,19 @@ class BackgroundService extends EventEmitter {
             signRequest: async (data, from) => {
                 return await newMessage(data, 'request', from, false)
             },
-            //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
+            notification: async (data) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
 
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                await this.validatePermission(origin);
+
+                return await newNotification(data);
+            },
+            //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
 
         };
@@ -481,14 +548,14 @@ class BackgroundService extends EventEmitter {
             const updateHandler = function (state) {
                 const updatedPublicState = self._publicState(state, origin);
                 // If public state changed call remote with new public state
-                if (updatedPublicState.locked !== publicState.locked || updatedPublicState.account !== publicState.account) {
+                if (!equals(updatedPublicState, publicState)) {
                     publicState = updatedPublicState;
                     sendUpdate(publicState)
                 }
             };
 
 
-                this.on('update', updateHandler);
+            this.on('update', updateHandler);
 
             dnode.on('end', () => {
                 this.removeListener('update', updateHandler);
@@ -502,7 +569,7 @@ class BackgroundService extends EventEmitter {
     }
 
     _privateSendUpdate() {
-        this.emit('update', this.getState())
+        this.emit('update', this.getState());
     }
 
     _getCurrentNtwork(account) {

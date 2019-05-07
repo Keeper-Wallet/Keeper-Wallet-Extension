@@ -10,3 +10,4 @@ export { ExternalDeviceController } from './ExternalDeviceController';
 export { PermissionsController, PERMISSIONS } from './PermissionsController';
 export { RemoteConfigController } from './RemoteConfigController';
 export { IdleController } from './IdleController';
+export { NotificationsController } from './NotificationsController';
