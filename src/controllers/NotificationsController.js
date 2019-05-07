@@ -47,18 +47,22 @@ export class NotificationsController extends EventEmitter {
         const config = this.getMessagesConfig();
         const { notification_title_max, notification_message_max, notification_interval_min } = config;
 
-        if (!data || !data.origin || !data.title) {
+        if (!data || !data.origin) {
             throw ERRORS.NOTIFICATION_DATA_ERROR();
         }
 
         const { title, message } = data;
 
+        if (!title) {
+            throw ERRORS.NOTIFICATION_DATA_ERROR(`title is required`);
+        }
+
         if (title && title.length > notification_title_max) {
-            throw ERRORS.NOTIFICATION_DATA_ERROR(`title has not more ${notification_title_max} characters`);
+            throw ERRORS.NOTIFICATION_DATA_ERROR(`title has more than ${notification_title_max} characters`);
         }
 
         if (message && message.length > notification_message_max) {
-            throw ERRORS.NOTIFICATION_DATA_ERROR(`message has not more ${notification_message_max} characters`);
+            throw ERRORS.NOTIFICATION_DATA_ERROR(`message has more than ${notification_message_max} characters`);
         }
 
         this.canShowNotification(data.origin, notification_interval_min);

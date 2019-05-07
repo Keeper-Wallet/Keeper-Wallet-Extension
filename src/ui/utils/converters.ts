@@ -6,7 +6,9 @@ export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
 
         if ('tokens' in amount) {
             amountResult = amountResult.cloneWithTokens(amount.tokens || 0);
-        } else if ('coins' in amount) {
+        }
+        
+        if ('coins' in amount) {
             amountResult = amountResult.plus(amountResult.cloneWithCoins(amount.coins || 0));
         }
         
