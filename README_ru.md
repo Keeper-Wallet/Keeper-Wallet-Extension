@@ -200,7 +200,7 @@
 `auth` может принимать на вход следующие данные
 
 + `name` - название сервиса (не обязательное поле)
-+ `data` - строка с любыми данными (обязательное поле)
++ `data` - строка с любыми строковыми данными (обязательное поле)
 + `referrer` - полный url до сайта для редиректа (не обязательное поле)
 + `icon` - путь до лого, относительно `referrer` или origin сайта (не обязательное поле)
 + `successPath` - относительный путь до апи аунтификации сайта (не обязательное поле)
@@ -384,7 +384,7 @@
 ## [Транзакции](https://docs.wavesplatform.com/en/development-and-api/client-libraries/waves-transactions.html)
 У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты), 
 любая прошедшая транзакция меняет эти данные.  
-В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html). 
+В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/waves-api-and-sdk/waves-node-rest-api.html). 
   
 `signTransaction`, `signAndPublishTransaction` принимают транзакцию в следующем виде 
 ```
@@ -425,7 +425,7 @@ MoneyLike может иметь вид:
 + `precision`  [0 - 8]  number - точность,
 + `reissuable` true|false - возможно перевыпускать,
 + `fee` MoneyLike -комиссия 
-+ `*script` string - [скрипт для ассета](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
++ `*script` string - [smart asset](https://docs.wavesplatform.com/en/smart-contracts/smart-assets.html)
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 

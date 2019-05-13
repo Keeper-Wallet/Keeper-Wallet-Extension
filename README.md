@@ -233,7 +233,7 @@ or
 
 
 *   `name` – name of the service (optional field)
-*   `data` – a line with any data (required field)
+*   `data` – a string line with any data (required field)
 *   `referrer` – a websites' full URL for redirect (optional field)
 *   `icon` – path to the logo relative to the `referrer `or origin of the website (optional field)
 *   `successPath` – relative path to the website's Auth API (optional field)
@@ -439,7 +439,7 @@ ERRORS Same as in "`signTransaction`"
 **[Transactions](https://docs.wavesplatform.com/en/development-and-api/client-libraries/waves-transactions.html)**
 
 Every user of Waves' network has a state (balances, assets, data, scripts), and every past transactions changes these data. \
-In Waves Keeper API it is different from [NODE REST API](https://docs.wavesplatform.com/en/development-and-api/waves-node-rest-api.html).
+In Waves Keeper API it is different from [NODE REST API](https://docs.wavesplatform.com/en/waves-api-and-sdk/waves-node-rest-api.html).
 
 `signTransaction`, `signAndPublishTransaction` accept transactions as follows
 
@@ -488,7 +488,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 *   `precision` [0 - 8] number - precision,
 *   `reissuable` true|false – reissuble,
 *   `fee` MoneyLike -fee
-*   `*script` string – [asset script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+*   `*script` string – [smart asset](https://docs.wavesplatform.com/en/smart-contracts/smart-assets.html)
 *   `*senderPublicKey` string – sender's public key in base58
 *   `*timestamp` number/string – time in ms
 

@@ -55,9 +55,9 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
         return <div>
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
-                    <Trans i18nKey='transactions.scriptAddress'>Script address</Trans>
+                    <Trans i18nKey='transactions.dApp'>dApp</Trans>
                 </div>
-                <div className={styles.txValue}>{tx.dappAddress}</div>
+                <div className={styles.txValue}>{tx.dApp}</div>
             </div>
             {   tx.payment && tx.payment.length &&
                 <div className={styles.txRow}>
