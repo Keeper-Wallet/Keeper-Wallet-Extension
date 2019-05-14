@@ -572,7 +572,7 @@ class BackgroundService extends EventEmitter {
         this.emit('update', this.getState());
     }
 
-    _getCurrentNtwork(account) {
+    _getCurrentNetwork(account) {
         const networks = {
             code: this.networkController.getNetworkCode(),
             server: this.networkController.getNode(),
@@ -587,7 +587,7 @@ class BackgroundService extends EventEmitter {
         let messages = [];
         const canIUse = this.permissionsController.hasPermission(originReq, PERMISSIONS.APPROVED);
 
-        if (!state.locked && state.selectedAccount && canIUse) {
+        if (state.selectedAccount && canIUse) {
 
             const address = state.selectedAccount.address;
 
@@ -605,7 +605,7 @@ class BackgroundService extends EventEmitter {
             initialized: state.initialized,
             locked: state.locked,
             account,
-            network: this._getCurrentNtwork(state.selectedAccount),
+            network: this._getCurrentNetwork(state.selectedAccount),
             messages,
             txVersion: adapter.getSignVersions(),
         }
