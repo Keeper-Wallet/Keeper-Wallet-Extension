@@ -4,6 +4,7 @@ import { I18N_NAME_SPACE } from 'ui/appConfig';
 import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Input, Button, BUTTON_TYPE, Select } from 'ui/components/ui';
+import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
 
 const CONFIG = {
     list: [
@@ -73,7 +74,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     };
     
     calculateCanSave(newInterval, newTotalAmount, newCanShowNotifications): void {
-        const sign = OriginSettingsComponent._getAutoSign(this.props.autoSign);
+        const sign = OriginSettingsComponent._getAutoSign(this.props.originalAutoSign);
         let canSave = false;
         
         newTotalAmount = newInterval ? newTotalAmount : '';
@@ -105,7 +106,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     
     saveHandler = () => {
         const { interval, totalAmount, canShowNotifications } = this.state;
-        const data = { interval: Number(interval) || null, totalAmount: Number(totalAmount) * (10 ** 8) || null };
+        const res = (new BigNumber(totalAmount)).times(10 ** 8);
+        const data = { interval: Number(interval) || null, totalAmount: res.isNaN() ? null : res.toFixed(0) };
         this.props.onSave(data, this.props.originName, canShowNotifications);
     };
     
@@ -240,6 +242,7 @@ export const OriginSettings = OriginSettingsComponent;
 interface IProps extends React.ComponentProps<'div'> {
     origins: any;
     autoSign: TAutoAuth;
+    originalAutoSign: TAutoAuth;
     permissions: Array<TPermission>;
     originName: string;
     onSave?: (params: Partial<TAutoAuth>, origin: string, canShowNotifications: boolean) => void;
@@ -252,7 +255,7 @@ type TPermission = string | TAutoAuth | TNotification;
 
 type TAutoAuth = {
     type: 'allowAutoSign';
-    totalAmount: number;
+    totalAmount: string;
     interval: number;
     approved?: Array<any>;
 };
@@ -266,7 +269,7 @@ type TNotification = {
 
 interface IState {
     interval: number | null;
-    totalAmount: number | null;
+    totalAmount: string | null;
     canSave: boolean;
     edited: boolean;
     selected: string;

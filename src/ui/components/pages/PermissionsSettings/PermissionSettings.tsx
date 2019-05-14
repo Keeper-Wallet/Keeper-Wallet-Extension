@@ -7,12 +7,13 @@ import cn from 'classnames';
 import { I18N_NAME_SPACE } from 'ui/appConfig';
 import { Loader, Modal } from 'ui/components/ui';
 import { Tabs, List, OriginSettings } from './components';
+import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
 
 
 @translate(I18N_NAME_SPACE)
 class PermissionsSettingsComponent extends React.PureComponent {
     
-    readonly state = { originsList: 'customList', origin: null, permissions: [], autoSign: null };
+    readonly state = { originsList: 'customList', origin: null, permissions: [], autoSign: null, originalAutoSign: null };
     readonly props;
     
     deleteHandler = (origin) => {
@@ -23,8 +24,8 @@ class PermissionsSettingsComponent extends React.PureComponent {
     showSettingsHandler = (origin: string) => {
         const [_, permissions] = Object.entries(this.props.origins).find(([name]) => name === origin);
         const autoSign = (permissions as [] || []).find(({ type }) => type === 'allowAutoSign') || Object.create(null);
-        autoSign.totalAmount = autoSign.totalAmount / 10 ** 8 || 0;
-        this.setState({ origin, autoSign ,permissions });
+        autoSign.totalAmount = (new BigNumber(autoSign.totalAmount)).div(10 ** 8).toFormat();
+        this.setState({ origin, autoSign ,permissions, originalAutoSign: autoSign });
     };
     
     toggleApproveHandler = (origin: string, enable: boolean) => {
@@ -89,6 +90,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
                                     permissions={this.state.permissions}
                                     origins={origins}
                                     autoSign={this.state.autoSign}
+                                    originalAutoSign={this.state.originalAutoSign}
                                     onSave={this.saveSettingsHandler}
                                     onChangePerms={this.onChangeOriginSettings}
                                     onClose={this.closeSettingsHandler}
