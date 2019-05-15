@@ -126,6 +126,42 @@
 + `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов  
 + `{ message: "User denied message" }` -  пользователь запретил сайту работать с кипером  
 
+**encryptMessage**
+
+Вы можете зашифровать текст для конкретного пользователя сети Waves, зная его публичный ключ.
+
+Пример:
+```
+       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
+       .then((encryptedMessage) => {
+            console.log(encryptedMessage);
+       });
+```
+
+Возможные ошибки
+*   `{ message: "Init Waves Keeper and add account" }` – кипер не проинициализирован
+*   `{ message: "App is locked" }` – кипер заблокирован
++ `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов  
++ `{ message: "User denied message" }` - пользователь запретил сайту работать с кипером  
+
+**decryptMessage**
+Вы можете расшифровать сообщение, зашифрованное для вас пользователем сети Waves, зная сообщение и публичный ключ отправителя.
+
+Example:
+```
+       WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
+       .then((message) => {
+            console.log(message);
+       });
+```
+
+Возможные ошибки
+*   `{ message: "Init Waves Keeper and add account" }` – кипер не проинициализирован
+*   `{ message: "App is locked" }` – кипер заблокирован
++ `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов  
++ `{ message: "User denied message" }` - пользователь запретил сайту работать с кипером  
+
+
 ### on
 Позволяет подписаться на события из Waves Keeper.  
 
