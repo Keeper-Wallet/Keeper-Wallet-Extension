@@ -24,7 +24,8 @@ class PermissionsSettingsComponent extends React.PureComponent {
     showSettingsHandler = (origin: string) => {
         const [_, permissions] = Object.entries(this.props.origins).find(([name]) => name === origin);
         const autoSign = (permissions as [] || []).find(({ type }) => type === 'allowAutoSign') || Object.create(null);
-        autoSign.totalAmount = (new BigNumber(autoSign.totalAmount)).div(10 ** 8).toFormat();
+        const amount = (new BigNumber(autoSign.totalAmount)).div(10 ** 8);
+        autoSign.totalAmount = amount.isNaN() ? 0 : amount.toFormat();
         this.setState({ origin, autoSign ,permissions, originalAutoSign: autoSign });
     };
     

@@ -138,7 +138,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         
         const { originName } = this.props;
         const className = cn(styles.settings, styles.inModal, this.props.className);
-        const value = (this.state.interval ? this.state.totalAmount : '') || '';
+        const totalAmount = this.state.totalAmount || '';
+        const value = (this.state.interval ? totalAmount : '') || '';
         
         return (
             <div className={className}>
