@@ -493,20 +493,44 @@ class BackgroundService extends EventEmitter {
             },
             //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
+            publicState: async () => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
 
-        };
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
 
-        api.publicState = async () => {
-            const state = this.getState();
-            const { selectedAccount, initialized } = state;
+                await this.validatePermission(origin);
 
-            if (!selectedAccount) {
-                throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                return this._publicState(this.getState(), origin);
+            },
+
+            encryptMessage: async (message, publicKey) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                await this.validatePermission(origin);
+
+                return this.walletController.encryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey);
+            },
+
+            decryptMessage: async (message, publicKey) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                await this.validatePermission(origin);
+
+                return this.walletController.decryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey);
             }
-
-            await this.validatePermission(origin);
-
-            return this._publicState(this.getState(), origin);
         };
 
         return api;

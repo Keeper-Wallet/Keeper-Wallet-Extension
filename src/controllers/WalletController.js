@@ -240,6 +240,16 @@ export class WalletController {
         }
     }
 
+    async encryptMessage(address,network, message, publicKey) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.encryptMessage(message, publicKey);
+    }
+
+    async decryptMessage(address,network, message, publicKey) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.decryptMessage(message, publicKey);
+    }
+
     // Private
     _checkForDuplicate(address, network) {
         if (this.getWalletsByNetwork(network).find(account => account.address === address)) {
