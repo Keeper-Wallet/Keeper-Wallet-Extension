@@ -169,9 +169,11 @@ Possible errors
 You can encrypt string messages to account in Waves network.
 You need have recipient publicKey.  
 
+WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`, `*password length number optional argument*`)
+
 Example:
 ```
-       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
+       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((encryptedMessage) => {
             console.log(encryptedMessage);
        });
@@ -186,9 +188,12 @@ Possible errors
 You can decrypt string messages from account in Waves network to you.
 You need have sender publicKey and encrypted message.  
 
+WavesKeeper.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+
+
 Example:
 ```
-       WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
+       WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((message) => {
             console.log(message);
        });

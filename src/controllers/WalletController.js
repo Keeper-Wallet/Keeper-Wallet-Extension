@@ -240,14 +240,14 @@ export class WalletController {
         }
     }
 
-    async encryptMessage(address,network, message, publicKey) {
+    async encryptMessage(address,network, message, publicKey, prefix, pLength) {
         const wallet = this._findWallet(address, network);
-        return await wallet.encryptMessage(message, publicKey);
+        return await wallet.encryptMessage(message, publicKey, prefix, pLength);
     }
 
-    async decryptMessage(address,network, message, publicKey) {
+    async decryptMessage(address,network, message, publicKey, prefix) {
         const wallet = this._findWallet(address, network);
-        return await wallet.decryptMessage(message, publicKey);
+        return await wallet.decryptMessage(message, publicKey, prefix);
     }
 
     // Private

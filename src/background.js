@@ -506,7 +506,7 @@ class BackgroundService extends EventEmitter {
                 return this._publicState(this.getState(), origin);
             },
 
-            encryptMessage: async (message, publicKey) => {
+            encryptMessage: async (message, publicKey, prefix, pLen) => {
                 const state = this.getState();
                 const { selectedAccount, initialized } = state;
 
@@ -514,12 +514,27 @@ class BackgroundService extends EventEmitter {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
                 }
 
+                if (!prefix || typeof prefix !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('prefix is invalid');
+                }
+
+                if (!message || typeof message !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('message is invalid');
+                }
+
+                if (!publicKey || typeof publicKey !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+                }
+                if (pLen && typeof pLen !== 'number') {
+                    throw ERRORS.INVALID_FORMAT('password length is invalid');
+                }
+
                 await this.validatePermission(origin);
 
-                return this.walletController.encryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey);
+                return this.walletController.encryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey, prefix, pLen);
             },
 
-            decryptMessage: async (message, publicKey) => {
+            decryptMessage: async (message, publicKey, prefix) => {
                 const state = this.getState();
                 const { selectedAccount, initialized } = state;
 
@@ -527,9 +542,22 @@ class BackgroundService extends EventEmitter {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
                 }
 
+                if (!prefix || typeof prefix !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('prefix is invalid');
+                }
+
+                if (!message || typeof message !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('message is invalid');
+                }
+
+
+                if (!publicKey || typeof publicKey !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+                }
+
                 await this.validatePermission(origin);
 
-                return this.walletController.decryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey);
+                return this.walletController.decryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey, prefix);
             }
         };
 

@@ -130,9 +130,11 @@
 
 Вы можете зашифровать текст для конкретного пользователя сети Waves, зная его публичный ключ.
 
+WavesKeeper.encryptMessage(`текст для шифрования`, `публичный ключ в кодировке base58`, `префикс строкой уникальный для каждого приложения`, `длина пароля шифрования (опционально)`)
+
 Пример:
 ```
-       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
+       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'для меня')
        .then((encryptedMessage) => {
             console.log(encryptedMessage);
        });
@@ -146,6 +148,9 @@
 
 **decryptMessage**
 Вы можете расшифровать сообщение, зашифрованное для вас пользователем сети Waves, зная сообщение и публичный ключ отправителя.
+
+WavesKeeper.decryptMessage(`зашифрованный текст`, `публичный ключ в кодировке base58`, `префикс строкой уникальный для каждого приложения`)
+
 
 Example:
 ```
