@@ -169,7 +169,7 @@ Possible errors
 You can encrypt string messages to account in Waves network.
 You need have recipient publicKey.  
 
-WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`, `*password length number optional argument*`)
+WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
 
 Example:
 ```

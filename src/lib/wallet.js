@@ -1,5 +1,5 @@
 import {getAdapterByType} from '@waves/signature-adapter'
-import { encryptMessage, decryptMessage, getSharedKey, base58encode, stringToUint8Array, blake2b, libs } from '@waves/waves-crypto';
+import { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } from '@waves/waves-crypto';
 import {BigNumber} from '@waves/data-entities';
 import create from 'parse-json-bignumber';
 const {stringify, parse} = create({BigNumber});
@@ -59,22 +59,22 @@ export class Wallet {
         return this.user.seed
     }
 
-    async encryptMessage(message, publicKey, prefix = '', passwordLength) {
-        passwordLength = passwordLength ? passwordLength : Math.round(Math.random() * 128 + 128);
-        passwordLength = passwordLength < 50 ? 128 : passwordLength;
+    async encryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.base58.encode(
-            blake2b(stringToUint8Array(`${prefix}_${base58encode(getSharedKey(privateKey, publicKey))}`))
-        );
-        return encryptMessage(sharedKey, message, passwordLength);
+        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        return encryptMessage(sharedKey, message, prefix || undefined);
     }
 
-    async decryptMessage(message, publicKey, prefix = '') {
+    async decryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.base58.encode(
-            blake2b(stringToUint8Array(`${prefix}_${base58encode(getSharedKey(privateKey, publicKey))}`))
-        );
-        return decryptMessage(sharedKey, message);
+        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        return decryptMessage(sharedKey, message, prefix || undefined);
+    }
+
+    async getKEK(publicKey, prefix) {
+        const privateKey = await this._adapter.getPrivateKey();
+        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        return getKEK(sharedKey, prefix || undefined);
     }
 
     async signTx(tx){
