@@ -535,10 +535,6 @@ class BackgroundService extends EventEmitter {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
                 }
 
-                if (!prefix || typeof prefix !== 'string') {
-                    throw ERRORS.INVALID_FORMAT('prefix is invalid');
-                }
-
                 if (!message || typeof message !== 'string') {
                     throw ERRORS.INVALID_FORMAT('message is invalid');
                 }
@@ -558,10 +554,6 @@ class BackgroundService extends EventEmitter {
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
-                }
-
-                if (!prefix || typeof prefix !== 'string') {
-                    throw ERRORS.INVALID_FORMAT('prefix is invalid');
                 }
 
                 if (!message || typeof message !== 'string') {
