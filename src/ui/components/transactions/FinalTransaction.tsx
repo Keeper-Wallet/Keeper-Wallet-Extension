@@ -91,9 +91,9 @@ export class FinalTransaction extends React.PureComponent {
                         </div>
                     }
                     {
-                        !isNotOrder && <div className="center margin-main-big-top">
-                            <div className="black">
-                                order Id
+                        !isNotOrder && <div className={`${styles.txRow} margin-main-top`}>
+                            <div className="basic500 tx-title tag1">
+                                <Trans i18nKey='transactions.orderId'>Order ID</Trans>
                             </div>
                             <div className="black">
                                 {message.messageHash}
