@@ -240,6 +240,21 @@ export class WalletController {
         }
     }
 
+    async getKEK(address, network, pk, prefix) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.getKEK(publicKey, prefix);
+    }
+
+    async encryptMessage(address,network, message, publicKey, prefix) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.encryptMessage(message, publicKey, prefix);
+    }
+
+    async decryptMessage(address,network, message, publicKey, prefix) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.decryptMessage(message, publicKey, prefix);
+    }
+
     // Private
     _checkForDuplicate(address, network) {
         if (this.getWalletsByNetwork(network).find(account => account.address === address)) {

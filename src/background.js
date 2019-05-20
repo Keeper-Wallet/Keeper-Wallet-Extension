@@ -493,20 +493,82 @@ class BackgroundService extends EventEmitter {
             },
             //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
+            publicState: async () => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
 
-        };
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
 
-        api.publicState = async () => {
-            const state = this.getState();
-            const { selectedAccount, initialized } = state;
+                await this.validatePermission(origin);
 
-            if (!selectedAccount) {
-                throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                return this._publicState(this.getState(), origin);
+            },
+
+            getKEK: async (publicKey, prefix) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                if (!prefix || typeof prefix !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('prefix is invalid');
+                }
+
+                if (!publicKey || typeof publicKey !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+                }
+
+                await this.validatePermission(origin);
+
+                return this.walletController.getKEK(selectedAccount.address, selectedAccount.network, publicKey, prefix);
+            },
+
+            encryptMessage: async (message, publicKey, prefix) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                if (!message || typeof message !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('message is invalid');
+                }
+
+                if (!publicKey || typeof publicKey !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+                }
+
+                await this.validatePermission(origin);
+
+                return this.walletController.encryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey, prefix);
+            },
+
+            decryptMessage: async (message, publicKey, prefix) => {
+                const state = this.getState();
+                const { selectedAccount, initialized } = state;
+
+                if (!selectedAccount) {
+                    throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
+                }
+
+                if (!message || typeof message !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('message is invalid');
+                }
+
+
+                if (!publicKey || typeof publicKey !== 'string') {
+                    throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+                }
+
+                await this.validatePermission(origin);
+
+                return this.walletController.decryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey, prefix);
             }
-
-            await this.validatePermission(origin);
-
-            return this._publicState(this.getState(), origin);
         };
 
         return api;
@@ -572,7 +634,7 @@ class BackgroundService extends EventEmitter {
         this.emit('update', this.getState());
     }
 
-    _getCurrentNtwork(account) {
+    _getCurrentNetwork(account) {
         const networks = {
             code: this.networkController.getNetworkCode(),
             server: this.networkController.getNode(),
@@ -587,7 +649,7 @@ class BackgroundService extends EventEmitter {
         let messages = [];
         const canIUse = this.permissionsController.hasPermission(originReq, PERMISSIONS.APPROVED);
 
-        if (!state.locked && state.selectedAccount && canIUse) {
+        if (state.selectedAccount && canIUse) {
 
             const address = state.selectedAccount.address;
 
@@ -605,7 +667,7 @@ class BackgroundService extends EventEmitter {
             initialized: state.initialized,
             locked: state.locked,
             account,
-            network: this._getCurrentNtwork(state.selectedAccount),
+            network: this._getCurrentNetwork(state.selectedAccount),
             messages,
             txVersion: adapter.getSignVersions(),
         }

@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.5
+# Waves Keeper v1.1.6
 en | [ru](https://github.com/wavesplatform/waveskeeper/blob/master/README_ru.md)
 
 Waves Keeper is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
@@ -24,6 +24,8 @@ On browser pages that operate under the http/https (not worked local pages with 
 *   `signRequest`
 *   `signTransactionPackage`
 *   `notification`
+*   `encryptMessage`
+*   `decryptMessage`
 *   `on`
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
@@ -161,6 +163,46 @@ Possible errors
 + ``{message: "Incorrect notification data", data: null, code: "19"}`` - Incorrect notification data
 + ``{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}`` - try send later, you can send 1 message in 30 sec
 + ``{message: "Api rejected by user", code: 12}`` the user denied the request or the website is not trusted.
+
+**encryptMessage**
+
+You can encrypt string messages to account in Waves network.
+You need have recipient publicKey.  
+
+WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+
+Example:
+```
+       WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
+       .then((encryptedMessage) => {
+            console.log(encryptedMessage);
+       });
+```
+Possible errors
+*   `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
+*   `{ message: "App is locked" }` – Waves Keeper is locked
+*   `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts 
+*   `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper 
+
+**decryptMessage**
+You can decrypt string messages from account in Waves network to you.
+You need have sender publicKey and encrypted message.  
+
+WavesKeeper.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+
+
+Example:
+```
+       WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
+       .then((message) => {
+            console.log(message);
+       });
+```
+Possible errors
+*   `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
+*   `{ message: "App is locked" }` – Waves Keeper is locked
+*   `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts 
+*   `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper 
 
 
 **on**

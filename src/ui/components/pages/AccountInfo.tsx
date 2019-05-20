@@ -85,6 +85,7 @@ class AccountInfoComponent extends React.Component {
                     {
                         walletLink &&
                         <a href={walletLink} target="_blank"
+                           rel="noopener noreferrer"
                            className="button walletIconBlack button-wallet">
                             <Trans i18nKey='ui.wallet'>Wallet</Trans></a>
                     }
@@ -92,6 +93,7 @@ class AccountInfoComponent extends React.Component {
                     {
                         activeAddressLink &&
                         <a href={activeAddressLink} target="_blank"
+                           rel="noopener noreferrer"
                            className="transactionsIconBlack button button-wallet">
                             <Trans i18nKey='ui.transactions'>Transactions</Trans></a>
                     }
