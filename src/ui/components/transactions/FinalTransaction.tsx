@@ -6,6 +6,7 @@ import cn from 'classnames';
 import { TransactionWallet } from '../wallets';
 import oauth from './OriginAuth';
 import { I18N_NAME_SPACE } from '../../appConfig';
+import { isMe as isOrder } from './CreateOrder/parseTx';
 
 const Error = ({ approveError }) => {
     return <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
@@ -54,6 +55,7 @@ export class FinalTransaction extends React.PureComponent {
             'tx-reject-icon': isReject,
             'tx-approve-icon': isApprove
         });
+        const isNotOrder = !isOrder(message.data, message.type);
         
         if(config.type === oauth.type && !isShowClose) {
             const method = isShowList ? 'onList' : 'onNext';
@@ -81,12 +83,23 @@ export class FinalTransaction extends React.PureComponent {
                     
                     <Card message={message} assets={assets} collapsed={false}/>
                     
-                    {isSend && isApprove ?
-                        <div className="center margin-main-big-top">
-                            <a className="link black" href={txLink} target="_blank">
+                    {
+                        isSend && isApprove && isNotOrder && <div className="center margin-main-big-top">
+                            <a rel="noopener noreferrer" className="link black" href={txLink} target="_blank">
                                 <Trans i18nKey='sign.viewTransaction'>View Transaction</Trans>
                             </a>
-                        </div> : null}
+                        </div>
+                    }
+                    {
+                        !isNotOrder && <div className="center margin-main-big-top">
+                            <div className="black">
+                                order Id
+                            </div>
+                            <div className="black">
+                                {message.messageHash}
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
             
