@@ -51,7 +51,7 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
         const tx = { type: data.type, ...data.data };
         const fee = getMoney(getFee(tx), assets);
         const amount = getMoney(getAmount(tx), assets);
-
+        const hasPayment = !!(tx.payment && tx.payment.length);
         return <div>
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
@@ -59,7 +59,7 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
                 </div>
                 <div className={styles.txValue}>{tx.dApp}</div>
             </div>
-            {   tx.payment && tx.payment.length &&
+            {  hasPayment &&
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey='transactions.payment'>Payment</Trans>
