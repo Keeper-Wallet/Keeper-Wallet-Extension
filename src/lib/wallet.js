@@ -77,6 +77,7 @@ export class Wallet {
     }
 
     async getKEK(publicKey, prefix) {
+        prefix = (prefix || '') + 'waves';
         const privateKey = await this._adapter.getPrivateKey();
         const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
         return getKEK(sharedKey, prefix || undefined);
