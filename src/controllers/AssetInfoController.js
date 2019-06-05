@@ -34,6 +34,10 @@ export class AssetInfoController {
         this.store = new ObservableStore(Object.assign({}, defaults, options.initState));
     }
 
+    getWavesAsset() {
+        return WAVES;
+    }
+
     async assetInfo(assetId) {
         const { assets } = this.store.getState();
         if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES') return WAVES;
@@ -42,7 +46,7 @@ export class AssetInfoController {
         const API_BASE = this.getNode();
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
-        if (!assets[network][assetId]) {
+        if (!assets[network][assetId] || assets[network][assetId].scripted == null) {
             let resp = await fetch(url);
             switch (resp.status) {
                 case 200:
@@ -58,6 +62,7 @@ export class AssetInfoController {
                         height: assetInfo.issueHeight,
                         timestamp: (new Date(parseInt(assetInfo.issueTimestamp))).toJSON(),
                         sender: assetInfo.issuer,
+                        scripted: assetInfo.scripted,
                         reissuable: assetInfo.reissuable,
                         displayName: assetInfo.ticker || assetInfo.name
                     };

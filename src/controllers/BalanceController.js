@@ -1,5 +1,5 @@
 import ObservableStore from 'obs-store';
-import { BigNumber } from "@waves/data-entities";
+import { BigNumber } from "@waves/bignumber";
 
 export class BalanceController {
 
@@ -48,7 +48,7 @@ export class BalanceController {
                     const wavesBalances = await this.getByUrl(`addresses/balance/details/${address}`);
                     const available = new BigNumber(wavesBalances.available);
                     const regular = new BigNumber(wavesBalances.regular);
-                    const leasedOut = regular.minus(available);
+                    const leasedOut = regular.sub(available);
                     return { available: available.toString(), leasedOut: leasedOut.toString(), address, network: currentNetwork };
                 } catch (e) {
                     return null;

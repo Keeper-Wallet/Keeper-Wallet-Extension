@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ASSETS_NAMES } from '../../../appConfig';
-import { Money, BigNumber } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 import * as styles from './balance.styl';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';

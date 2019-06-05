@@ -1,8 +1,9 @@
 import { getAdapterByType } from '@waves/signature-adapter'
-import { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } from '@waves/waves-crypto';
-import { BigNumber } from '@waves/data-entities';
+import { libs as transactionsLibs } from '@waves/waves-transactions';
+import { BigNumber } from '@waves/bignumber';
 import create from 'parse-json-bignumber';
 
+const { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } = transactionsLibs;
 const { stringify, parse } = create({ BigNumber });
 
 export class Wallet {

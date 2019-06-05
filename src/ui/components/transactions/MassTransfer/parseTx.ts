@@ -1,5 +1,5 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { BigNumber } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 
 export const messageType = 'mass_transfer';
 export const txType = 'transaction';
@@ -36,13 +36,13 @@ export function getAmount(tx) {
     
     (tx.transfers || []).forEach(({ amount }) => {
         if (amount && amount.tokens) {
-            tokens = tokens.plus(amount.tokens);
+            tokens = tokens.add(amount.tokens);
         } else if (amount && amount.coins) {
-            coins = coins.plus(amount.coins);
+            coins = coins.add(amount.coins);
         } else {
             const parse = new BigNumber(amount);
             if (!parse.isNaN()) {
-                coins = coins.plus(parse);
+                coins = coins.add(parse);
             }
         }
     });

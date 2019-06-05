@@ -1,5 +1,11 @@
 ## Waves Keeper
 
+#### version 1.1.7
++ add auto calculate fee
++ Fix auth api
++ orders UI
++ update major libs versions
+
 #### version 1.1.6
 + Add encrypt and decrypt API by DH
 + Fix some UI problems

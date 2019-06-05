@@ -1,5 +1,5 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { BigNumber } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 
 export const messageType = 'script_invocation';
 export const txType = 'transaction';
@@ -42,15 +42,15 @@ export function getAmount(tx) {
     
     (tx.payment || []).forEach((item) => {
         if (item && item.tokens) {
-            tokens = tokens.plus(item.tokens);
+            tokens = tokens.add(item.tokens);
         } else if (item && item.coins) {
-            coins = coins.plus(item.coins);
+            coins = coins.add(item.coins);
         } else if (item && item.amount) {
-            coins = coins.plus(item.amount);
+            coins = coins.add(item.amount);
         } else {
             const parse = new BigNumber(item);
             if (!parse.isNaN()) {
-                coins = coins.plus(parse);
+                coins = coins.add(parse);
             }
         }
     });

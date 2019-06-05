@@ -1,4 +1,4 @@
-import { BigNumber } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 import { getMoney } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
 
@@ -39,8 +39,8 @@ export function getFees(tx, assets) {
         const { tx, config } = getTransactionData(item);
         const fee = config.getFee(tx);
         const accFee = acc[fee.assetId] || { coins: 0, tokens: 0, assetId: fee.assetId };
-        accFee.coins = new BigNumber(accFee.coins).plus(fee.coins || 0);
-        accFee.tokens = new BigNumber(accFee.tokens).plus(fee.tokens || 0);
+        accFee.coins = new BigNumber(accFee.coins).add(fee.coins || 0);
+        accFee.tokens = new BigNumber(accFee.tokens).add(fee.tokens || 0);
         acc[fee.assetId] = accFee;
         return acc;
     }, Object.create(null));

@@ -4,10 +4,12 @@ import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events'
 import { getAdapterByType } from "@waves/signature-adapter";
-import { BigNumber, Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 import { networkByteFromAddress } from "../lib/cryptoUtil";
 import { ERRORS } from '../lib/KeeperError';
 import { PERMISSIONS } from './PermissionsController';
+import { calculateFeeFabric } from "./CalculateFeeController";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -29,21 +31,23 @@ export class MessageController extends EventEmitter {
         this.signBytes = options.signBytes;
 
         // Broadcast and getMatcherPublicKey method from NetworkController
-        this.broadcast = options.broadcast;
+        this.broadcast = messages => options.networkController.broadcast(messages);
         this.getMatcherPublicKey = options.getMatcherPublicKey;
 
         this.getMessagesConfig = options.getMessagesConfig;
         this.getPackConfig = options.getPackConfig;
 
         // Get assetInfo method from AssetInfoController
-        this.assetInfo = options.assetInfo;
-
+        this.assetInfo = id => options.assetInfoController.assetInfo(id);
+        this.assetInfoController = options.assetInfoController;
         //tx by txId
         this.txInfo = options.txInfo;
 
         // permissions
         this.setPermission = options.setPermission;
         this.canAutoApprove = options.canAutoApprove;
+
+        this.getFee = calculateFeeFabric(options.assetInfoController, options.networkController);
 
         this.rejectAllByTime();
         this._updateBadge();
@@ -282,7 +286,7 @@ export class MessageController extends EventEmitter {
             }
 
             // Validate fields containing assetId
-            if (['assetId', 'amountAsset', 'priceAsset', 'feeAssetId'].includes(key)) {
+            if (['assetId', 'amountAsset', 'priceAsset', 'feeAssetId', 'matcherFeeAssetId'].includes(key)) {
                 await this.assetInfo(data[key]);
             }
 
@@ -403,8 +407,8 @@ export class MessageController extends EventEmitter {
     async _getMessageDataHash(data, account) {
         let signableData = await this._transformData({ ...data.data });
         const Adapter = getAdapterByType('seed');
-        Adapter.initOptions({ networkCode: networkByteFromAddress(account.address).charCodeAt(0) });
-        const adapter = new Adapter('validation seed');
+        const adapter = new Adapter('validation seed', networkByteFromAddress(account.address).charCodeAt(0));
+
         const signable = adapter.makeSignable({ ...data, data: signableData });
         return await signable.getId();
     }
@@ -431,6 +435,8 @@ export class MessageController extends EventEmitter {
         if (message.data && message.data.successPath) {
             result.successPath = message.data.successPath
         }
+
+        const hasFee = message.data.data && (message.data.data.fee || message.data.data.matcherFee);
 
         switch (message.type) {
             case 'auth':
@@ -477,11 +483,23 @@ export class MessageController extends EventEmitter {
                     const data = this._prepareTx(txParams.data, message.account);
                     return { ...txParams, data }
                 });
-                const validationPromises = result.data.map(data => this._getMessageDataHash(data, message.account));
-                result.messageHash = await Promise.all(validationPromises);
+
+                const dataPromises = message.data.map(async txParams => {
+                    const data = this._prepareTx(txParams.data, message.account);
+                    let readyData = { ...txParams, data };
+                    const feeData = !hasFee ? await this._getFee(message, readyData) : {};
+                    readyData = { ...readyData, ...feeData };
+                    readyData.id = await this._getMessageDataHash(data, message.account);
+                    return readyData;
+                });
+                result.data = await  Promise.all(dataPromises);
+                result.messageHash = result.data.map(item => item.id);
                 break;
             case 'order':
                 result.data.data = await this._prepareOrder(result.data.data, message.account);
+                const matcherFeeData = !hasFee ? await this._getFee(message, result.data) : {};
+                result.data.data = { ...result.data.data, ...matcherFeeData };
+                result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 break;
             case 'transaction':
@@ -490,6 +508,8 @@ export class MessageController extends EventEmitter {
                 }
 
                 result.data.data = this._prepareTx(result.data.data, message.account);
+                const feeData = !hasFee ? await this._getFee(message, result.data) : {};
+                result.data.data = { ...result.data.data, ...feeData };
                 result.messageHash = await this._getMessageDataHash(result.data, message.account);
                 switch (result.data.type) {
                     case 9:
@@ -522,11 +542,26 @@ export class MessageController extends EventEmitter {
         return result
     }
 
+    async _getFee(message, signData) {
+        let signableData = await this._transformData({ ...signData });
+        const Adapter = getAdapterByType('seed');
+        const adapter = new Adapter('validation seed', networkByteFromAddress(message.account.address).charCodeAt(0));
+        const fee = { coins: await this.getFee(adapter, signableData), assetId: 'WAVES' };
+        return {
+            fee,
+            matcherFee: fee,
+        }
+    }
+
     _prepareTx(txParams, account) {
+        const defaultFee = Money.fromCoins(0, new Asset(this.assetInfoController.getWavesAsset()));
+
         const txDefaults = {
             timestamp: Date.now(),
             senderPublicKey: account.publicKey,
-            chainId: networkByteFromAddress(account.address).charCodeAt(0)
+            chainId: networkByteFromAddress(account.address).charCodeAt(0),
+            fee: defaultFee,
+            matcherFee: defaultFee,
         };
         return { ...txDefaults, ...txParams }
     }

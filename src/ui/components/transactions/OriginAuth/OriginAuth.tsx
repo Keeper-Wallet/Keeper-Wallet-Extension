@@ -10,7 +10,7 @@ import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent } from 'ui/components
 import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
 import { state } from '../../../reducers/updateState';
-import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
+import { BigNumber } from '@waves/bignumber';
 
 @translate(I18N_NAME_SPACE)
 class OriginAuthComponent extends SignClass {
@@ -26,7 +26,7 @@ class OriginAuthComponent extends SignClass {
         </span>;
     
         const { interval, type, totalAmount, showNotify } = this.state;
-        const bnAmount = (new BigNumber(totalAmount)).times(10 ** 8);
+        const bnAmount = (new BigNumber(totalAmount)).mul(10 ** 8);
         const amount = bnAmount.isNaN() ? null : bnAmount.toFixed(8);
         const approvePermissions = !this.state.interval || !amount ? null : {
             origin: message.origin,

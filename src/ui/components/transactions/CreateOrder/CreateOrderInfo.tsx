@@ -31,11 +31,7 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
     
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
-                    {
-                        !isSell ?
-                            <Trans i18nKey='transactions.orderSell'>Sell</Trans> :
-                            <Trans i18nKey='transactions.orderBuy'>Buy</Trans>
-                    }
+                    <Trans i18nKey='transactions.orderSell'>Sell</Trans> :
                 </div>
                 <div className={styles.txValue}>
                     <Balance isShortFormat={true} balance={iGet} showAsset={true}/>

@@ -1,5 +1,5 @@
 import ObservableStore from 'obs-store';
-import { BigNumber } from "@waves/data-entities/dist/libs/bignumber";
+import { BigNumber } from '@waves/bignumber';
 import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/KeeperError';
@@ -205,9 +205,9 @@ export class PermissionsController {
         const currentTime = Date.now();
         approved = approved.filter(({ time }) => currentTime - time < interval);
         const total = new BigNumber(totalAmount);
-        const amount = approved.reduce((acc, { amount }) => acc.plus(new BigNumber(amount)), new BigNumber(0));
+        const amount = approved.reduce((acc, { amount }) => acc.add(new BigNumber(amount)), new BigNumber(0));
 
-        if (amount.plus(txAmount).gt(total)) {
+        if (amount.add(txAmount).gt(total)) {
             return false;
         }
 
@@ -290,7 +290,7 @@ const getTxAmount = (tx) => {
     }
 
     if (result.fee.assetId === result.amount.assetId && result.fee.assetId === 'WAVES') {
-        return result.fee.amount.plus(result.amount.amount);
+        return result.fee.amount.add(result.amount.amount);
     }
 
     return null;
@@ -324,7 +324,7 @@ const getTxMassReceiveAmount = (tx) => {
 
     amount.assetId = tx.data.assetId || tx.data.totalAmount.assetId;
     amount.amount = tx.data.transfers.reduce((acc, transfer) => {
-        return acc.plus(moneyLikeToBigNumber(transfer.amount, 8));
+        return acc.add(moneyLikeToBigNumber(transfer.amount, 8));
     }, new BigNumber(0));
 
     return { amount, fee };
@@ -364,8 +364,8 @@ const getPackAmount = (txs) => {
 
         amount.assetId = result.amount.assetId;
         fee.assetId = result.fee.assetId;
-        amount.amount = amount.amount.plus(result.amount.amount);
-        fee.amount = fee.amount.plus(result.fee.amount);
+        amount.amount = amount.amount.add(result.amount.amount);
+        fee.amount = fee.amount.add(result.fee.amount);
         result = null;
     }
 
