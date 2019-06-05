@@ -49,7 +49,13 @@ async function setupInpageApi() {
 
 }
 
-function setupClickInterceptor(inpageApi){
+function setupClickInterceptor(inpageApi) {
+    const excludeSites = ['client.wavesplatform.com', 'dex.wavesplatform.com'];
+
+    if (excludeSites.includes(location.host)) {
+        return false;
+    }
+
     document.addEventListener("click", (e)=> {
         const paymentApiResult = checkForPaymentApiLink(e);
         try {
