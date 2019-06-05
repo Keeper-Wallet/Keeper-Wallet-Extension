@@ -7,10 +7,12 @@ import background from '../../services/Background';
 import { getAsset, selectAccount } from '../../actions';
 import { Money, Asset } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
-import { Seed } from '@waves/signature-generator';
+import { seedUtils } from '@waves/waves-transactions';
 import { I18N_NAME_SPACE } from '../../appConfig';
 import { BUTTON_TYPE } from '../ui/buttons';
 import { getExplorerUrls } from 'ui/utils/waves';
+
+const { Seed } = seedUtils;
 
 @translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
@@ -266,7 +268,9 @@ class AccountInfoComponent extends React.Component {
     private onGetAccount(field, cb) {
         return (data) => {
             this.setState({ showPassword: false, passwordError: false });
-            const seed = new Seed(data);
+            const networkCode = this.props.customCodes[this.props.currentNetwork] ||
+                this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
+            const seed = new Seed(data, networkCode);
             const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
             cb(info[field]);
         };
@@ -312,6 +316,9 @@ const mapStateToProps = function (store: any) {
         assets: store.assets,
         notifications: store.localState.notifications,
         network: store.currentNetwork,
+        customCodes: store.customCodes,
+        networks: store.networks,
+        currentNetwork: store.currentNetwork,
     };
 };
 

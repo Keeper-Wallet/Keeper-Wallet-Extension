@@ -414,6 +414,13 @@ class BackgroundService extends EventEmitter {
 
     getInpageApi(origin) {
         const newMessage = async (data, type, from, broadcast, title = '') => {
+
+            if (data.type === 1000) {
+                type = 'auth';
+                data = data.data;
+                data.isRequest = true;
+            }
+
             const { selectedAccount } = this.getState();
 
             await this.validatePermission(origin);

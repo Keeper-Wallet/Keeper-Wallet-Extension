@@ -340,6 +340,7 @@ export class MessageController extends EventEmitter {
                 break;
             case 'auth':
                 signedData = await this.auth(message.account.address, message.data, message.account.network);
+                signedData = message.data.isRequest ? signedData.signature : signedData;
                 break;
             case 'request':
                 signedData = await this.signRequest(message.account.address, message.data, message.account.network);
@@ -440,13 +441,15 @@ export class MessageController extends EventEmitter {
                 } catch (e) {
                     result.successPath = null;
                 }
+
                 result.data = {
                     type: 1000,
                     referrer: message.data.referrer,
+                    isRequest: message.data.isRequest,
                     data: {
                         data: message.data.data,
                         prefix: 'WavesWalletAuthentication',
-                        host: (new URL('https://' + message.origin)).host,
+                        host: message.data.host || (new URL('https://' + message.origin)).host,
                         name: message.data.name,
                         icon: message.data.icon
                     }

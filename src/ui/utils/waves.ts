@@ -1,12 +1,10 @@
 import { SeedAdapter, TSignData } from '@waves/signature-adapter';
-import * as SG from '@waves/signature-generator';
-import { utils, libs } from '@waves/signature-generator';
+import { seedUtils, libs } from '@waves/waves-transactions';
 
 import { pipe, identity, isNil, ifElse, concat } from 'ramda';
 
 export function networkByteFromAddress(address: string): string {
-    const rawNetworkByte = SG.libs.base58.decode(address)[1];
-    return String.fromCharCode(rawNetworkByte);
+    return String.fromCharCode(libs.crypto.base58decode(address)[1]);
 }
 
 export function getExplorerUrls(network: string, address: string) {
@@ -31,22 +29,17 @@ export function getExplorerUrls(network: string, address: string) {
 }
 
 export function addressFromPublicKey(pk: string, byte: string): string {
-    const publicKeyBytes = SG.libs.base58.decode(pk);
-    const prefix = Uint8Array.from([SG.ADDRESS_VERSION, byte.charCodeAt(0)]);
-    const publicKeyHashPart = Uint8Array.from(hashChain(publicKeyBytes).slice(0, 20));
-    const rawAddress = SG.utils.concatUint8Arrays(prefix, publicKeyHashPart);
-    const addressHash = Uint8Array.from(hashChain(rawAddress).slice(0, 4));
-    return SG.libs.base58.encode(SG.utils.concatUint8Arrays(rawAddress, addressHash));
+    return new seedUtils.Seed(pk, byte).address
 }
 
 export function encrypt(object, password: string): string {
     const jsonObj = JSON.stringify(object);
-    return utils.crypto.encryptSeed(jsonObj, password)
+    return seedUtils.encryptSeed(jsonObj, password)
 }
 
 export function decrypt<T>(encryptedText: string, password: string): T | never {
     try {
-        const decryptedJson = utils.crypto.decryptSeed(encryptedText, password);
+        const decryptedJson = seedUtils.decryptSeed(encryptedText, password);
         return JSON.parse(decryptedJson)
     } catch (e) {
         throw new Error('Invalid password')
@@ -55,7 +48,7 @@ export function decrypt<T>(encryptedText: string, password: string): T | never {
 
 export function getInitedAdapter(user, seed = 'validation seed'): SeedAdapter {
     SeedAdapter.initOptions({networkCode: user.networkCode.charCodeAt(0)});
-    return new SeedAdapter('validation seed');
+    return new SeedAdapter('validation seed', user.networkCode);
 }
 
 export async function getTxId(adapter: SeedAdapter, tx: TSignData): Promise<string> {
@@ -82,7 +75,7 @@ export async function getNetworkByte(url: string): Promise<string> {
 export async function getMatcherPublicKey(url: string): Promise<string> {
     const response = await getUrl(url, '/matcher');
     const pk = await response.json();
-    const publicKeyBytes = SG.libs.base58.decode(pk);
+    const publicKeyBytes = libs.crypto.base58decode(pk);
     if (publicKeyBytes.length === 32) {
         return pk;
     }
@@ -91,11 +84,11 @@ export async function getMatcherPublicKey(url: string): Promise<string> {
 }
 
 function blake2b(input): Uint8Array {
-    return SG.libs.blake2b.blake2b(input, null, 32);
+    return libs.crypto.blake2b(input);
 }
 
 function keccak(input): Uint8Array {
-    return SG.libs.keccak256.array(input);
+    return libs.crypto.keccak(input);
 }
 
 function hashChain(input): Uint8Array {
@@ -130,9 +123,37 @@ export const validateNode = async (url: string, networkCode: string) => {
     return code;
 };
 
+export const byteArrayToString = function (bytes: Uint8Array): string {
+    const extraByteMap = [1, 1, 1, 1, 2, 2, 3, 0];
+    const count = bytes.length;
+    let str = '';
+    
+    for (let index = 0; index < count;) {
+        let ch = bytes[index++];
+        if (ch & 0x80) {
+            let extra = extraByteMap[(ch >> 3) & 0x07];
+            if (!(ch & 0x40) || !extra || ((index + extra) > count))
+                return null;
+            
+            ch = ch & (0x3F >> extra);
+            for (; extra > 0; extra -= 1) {
+                const chx = bytes[index++];
+                if ((chx & 0xC0) != 0x80)
+                    return null;
+                
+                ch = (ch << 6) | (chx & 0x3F);
+            }
+        }
+        
+        str += String.fromCharCode(ch);
+    }
+    
+    return str;
+};
 
-const bytesToBase58 = libs.base58.encode;
-const bytesToString = libs.converters.byteArrayToString;
+
+const bytesToBase58 = libs.crypto.base58encode;
+const bytesToString = byteArrayToString;
 
 export const bytesToSafeString = ifElse(
     pipe(
