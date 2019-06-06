@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.6
+# Waves Keeper v1.1.7
 en | [ru](https://github.com/wavesplatform/waveskeeper/blob/master/README_ru.md)
 
 Waves Keeper is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
@@ -529,7 +529,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 *   `quantity` [0 - (JLM)] number/string - quantity,
 *   `precision` [0 - 8] number - precision,
 *   `reissuable` true|false – reissuble,
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*script` string – [smart asset](https://docs.wavesplatform.com/en/smart-contracts/smart-assets.html)
 *   `*senderPublicKey` string – sender's public key in base58
 *   `*timestamp` number/string – time in ms
@@ -568,7 +568,7 @@ In case of a success, we are issuing a new asset in the quantity of 1,000,000, a
 *   `amount` MoneyLike - amount,
 *   `recipient` string – recipient's address or alias
 *   `attachment`[,140 bytes] string or byte Array – additional info in text
-*   `fee` MoneyLike - fee
+*   `*fee` MoneyLike - fee
 *   `*senderPublicKey` string – sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -598,7 +598,7 @@ Example:
 *   `assetId` string - "asset ID",
 *   `quantity` [0 - (JLM)] number/string/MoneyLike - quantity,
 *   `reissuable` false – deny reissue
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string – sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -633,7 +633,7 @@ In case of a success, we are re-issuing a new asset in the quantity of 1,000,000
 
 *   `assetId` string – asset ID,
 *   `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -667,7 +667,7 @@ In case of a success, 1,000 coins `are burned`.
 
 *   `recipient` string – recipient's address or alias,
 *   `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -700,7 +700,7 @@ In case of a success, 0.00001000 WAVES is leased.
 
 
 *   `leaseId` string – leasing transaction ID,
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -732,7 +732,7 @@ In case of a success, the leasing transaction is cancelled.
 
 
 *   `alias`[4, 30] string - alias
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -765,8 +765,8 @@ In case of a success, an alias (another name) is created.
 
 *   `totalAmount` moneyLike – total to be sent // instead of calculating the amount you may insert { assetId: "ID of the asset to be sent", coins: 0},
 *   `transfers`  a mass of objects
-    *   { `recipient`: string - address/alias, amount: number/string/moneyLike }
-*   `fee` MoneyLike -fee
+       { `recipient`: string - address/alias, amount: number/string/moneyLike }
+*   `*fee` MoneyLike -fee
 *   `attachment` [,140 bytes в base58] string – additional info
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
@@ -806,7 +806,7 @@ In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
     *   `type` "binary"/string/"integer"/"boolean" - type,
     *   `key` string – field name
     *   `value` /string/string/number/boolean depends on the type
-*   `fee` MoneyLike - fee
+*   `*fee` MoneyLike - fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -843,7 +843,7 @@ In case of a success, new data will be stored in the state.
 
 
 *   `script` string - [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-*   `fee` MoneyLike -fee
+*   `*fee` MoneyLike -fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -900,7 +900,7 @@ In case of a success, a new script will be added to the account, allowing any tr
 
 
 *   `minSponsoredAssetFee` MoneyLike – fee price in the asset.
-*   `fee` MoneyLike - fee
+*   `*fee` MoneyLike - fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -936,7 +936,7 @@ In case of a success, a transfer fee can be paid in the asset.
 
 *   `assetId` string – asset ID
 *   `script` string – [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-*   `fee` MoneyLike – fee
+*   `*fee` MoneyLike – fee
 *   `*senderPublicKey` string - sender's public key in base58
 *   `*timestamp` number/string – time in ms
 
@@ -968,12 +968,12 @@ In case of a success, the asset's script will be reset.
 
 ### [Тип 16 SCRIPT INVOCATION - call account script function *(testnet only)]()  
 + `dappAddress` string – address script account
-+ `fee` MoneyLike – fee 
 + `call` object –
     + `function` string function name
     + `args` array
         +   `type` "binary"/string/"integer"/"boolean" - type, 
         +   `value` /string/string/number/boolean - value for type 
++ `*fee` MoneyLike – fee 
 + `*payment` array MoneyLike (at now can use only 1 payment)
 + `*senderPublicKey` string - public key in base58
 + `*timestamp` number/string - number/string – time in ms

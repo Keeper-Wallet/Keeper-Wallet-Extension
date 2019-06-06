@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.6       
+# Waves Keeper v1.1.7       
 [en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
@@ -311,7 +311,7 @@ Example:
     });
 ```
 >  
-> Апи возвращает строки, а не объект, так как в javascript при работе с 8 байтными целыми происходит потеря точности.
+> Апи возвращает строки, а не объект, так как в javascript при работе с 8 байтными целыми (long) происходит потеря точности.
 > 
 > Описание поддерживаемых типов транзакций вы найдете ниже
 
@@ -465,7 +465,7 @@ MoneyLike может иметь вид:
 + `quantity` [0 - (JLM)]  number/string - количество,
 + `precision`  [0 - 8]  number - точность,
 + `reissuable` true|false - возможно перевыпускать,
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*script` string - [smart asset](https://docs.wavesplatform.com/en/smart-contracts/smart-assets.html)
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
@@ -503,7 +503,7 @@ MoneyLike может иметь вид:
 + `amount` MoneyLike - количество,
 + `recipient` string - адрес получателя или алиас
 + `attachment`[,140 bytes] string или Byte Array- доп информация
-+ `fee` MoneyLike - комиссия 
++ `*fee` MoneyLike - комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -531,7 +531,7 @@ MoneyLike может иметь вид:
 + `assetId` string - "Id ассета",
 + `quantity` [0 - (JLM)]  number/string/MoneyLike - количество,
 + `reissuable` false - запретить перевыпускать
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -565,7 +565,7 @@ MoneyLike может иметь вид:
 
 + `assetId` string - Id ассета,
 + `amount` [0 - (JLM)]  number/string/MoneyLike - количество,
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -597,7 +597,7 @@ MoneyLike может иметь вид:
 
 + `recipient` string - адрес получателя или алиас,
 + `amount` [0 - (JLM)]  number/string/MoneyLike - количество,
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -626,7 +626,7 @@ MoneyLike может иметь вид:
 ### [Тип 9 LEASE CANCEL - отмена лизинга](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-92869b0109414c29eb600dfc6caf4520)  
 
 + `leaseId` string - id транзакции лизинга,
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -654,7 +654,7 @@ MoneyLike может иметь вид:
 ### [Тип 10 CREATE ALIAS - создание алиаса для адреса](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-e4657fe644ac2cf0d4e382fe676f0477)  
 
 + `alias`[4, 30] string - имя
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -683,8 +683,8 @@ MoneyLike может иметь вид:
 + `totalAmount` moneyLike - итого отошлется // можно не считать сумму и вставить { assetId: "id отправляемого ассета", coins: 0}, 
 + `transfers` массив объектов
     + { `recipient`: string - адрес/алиас, amount: number/string/moneyLike }
-+ `fee` MoneyLike -комиссия 
 + `attachment` [,140 bytes в base58] string - доп информация
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -718,7 +718,7 @@ MoneyLike может иметь вид:
     +   `type` "binary"/string/"integer"/"boolean" - тип, 
     +   `key` string - название поля 
     +   `value` /string/string/number/boolean зависит от типа 
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -750,7 +750,7 @@ MoneyLike может иметь вид:
 
 ### [Тип 13 SET SCRIPT - скриптовать акаунт](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-11573fe1c896857a6d3fcfcf6cf6571d)  
 + `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -802,7 +802,7 @@ MoneyLike может иметь вид:
 ### [Тип 14 Sponsored Fee Transaction - Спонсорство](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-730bd9c8fe7e7628ba840d36df3c726e)  
 
 + `minSponsoredAssetFee` MoneyLike - цена комиссии в ассете.
-+ `fee` MoneyLike - комиссия 
++ `*fee` MoneyLike - комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -834,7 +834,7 @@ MoneyLike может иметь вид:
 ### [Тип 15 SET ASSET SCRIPT - скрипт на ассет](https://docs.wavesplatform.com/en/technical-details/data-structures.html#section-9459bb3757b06f2d75f1a07f24f873ce)  
 + `assetId` string - id ассета
 + `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
-+ `fee` MoneyLike -комиссия 
++ `*fee` MoneyLike -комиссия 
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
 
@@ -865,12 +865,12 @@ MoneyLike может иметь вид:
 
 ### [Тип 16 SCRIPT INVOCATION - выполнение функций скрипта *(только testnet)]()  
 + `dappAddress` string адрес контракта
-+ `fee` MoneyLike комиссия 
 + `call` объект слкдующей структуры
     + `function` string название функции
     + `args` массив аргументов вида
         +   `type` "binary"/string/"integer"/"boolean" - тип, 
         +   `value` /string/string/number/boolean зависит от типа 
++ `*fee` MoneyLike комиссия 
 + `*payment` массив MoneyLike (пока поддерживается 1 платеж)
 + `*senderPublicKey` string - публичный ключ отправителя в base58
 + `*timestamp` number/string - время в мс
@@ -922,9 +922,9 @@ MoneyLike может иметь вид:
 + `amount` MoneyLike - количество
 + `price`  MoneyLike - цена
 + `orderType` 'sell'/'buy' - тип ордера
-+ `matcherFee` MoneyLike - комиссия (мин 0.003 Waves),
 + `matcherPublicKey` string публичный ключ exchange сервиса
 + `expiration` string/number - время жизни ордера
++ `*matcherFee` MoneyLike - комиссия (мин 0.003 Waves),
 + `*timestamp` string/number щее время- теку
 + `*senderPublicKey` string публичный ключ в base58
 
