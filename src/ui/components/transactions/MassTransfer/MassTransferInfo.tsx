@@ -19,7 +19,7 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
             return <div key={recipient} className={styles.txRow}>
                 <div className="body3 tx-title-black">{recipient}</div>
                 <div className='body3 submit400'>
-                    <Balance isShortFormat={true} balance={money}/>
+                    <Balance isShortFormat={true} balance={money} showAsset={true}/>
                 </div>
             </div>;
         }
