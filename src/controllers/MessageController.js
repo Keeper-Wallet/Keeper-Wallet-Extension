@@ -432,7 +432,7 @@ export class MessageController extends EventEmitter {
         const signable = adapter.makeSignable({ ...data, data: signableData });
 
         const id = await signable.getId();
-        const bytes = await signable.getBytes();
+        const bytes = Array.from(await signable.getBytes());
 
         return { id, bytes };
     }
@@ -504,24 +504,23 @@ export class MessageController extends EventEmitter {
                     throw new Error(`Tx type can be ${allow_tx.join(', ')}`);
                 }
 
-                result.data = message.data.map(txParams => {
-                    const data = this._prepareTx(txParams.data, message.account);
-                    return { ...txParams, data }
-                });
+                const ids = [];
+                const bytes = [];
 
                 const dataPromises = message.data.map(async txParams => {
                     const data = this._prepareTx(txParams.data, message.account);
                     let readyData = { ...txParams, data };
-                    const feeData = !hasFee ? await this._getFee(message, readyData) : {};
-                    readyData = { ...readyData, ...feeData };
-                    messageMeta = await this._getMessageDataHash(result.data, message.account);
+                    const feeData = !data.fee ? await this._getFee(message, readyData) : {};
+                    readyData = { ...readyData, data: { ...data, ...feeData } };
+                    messageMeta = await this._getMessageDataHash( readyData, message.account);
+                    ids.push(messageMeta.id);
+                    bytes.push(messageMeta.bytes);
                     readyData.id = messageMeta.id;
-                    readyData.bytes = Array.from(messageMeta.bytes);
                     return readyData;
                 });
                 result.data = await Promise.all(dataPromises);
-                result.messageHash = result.data.map(item => item.id);
-                result.bytes = result.data.map(item => Array.from(item.bytes));
+                result.messageHash = ids;
+                result.bytes = bytes;
                 break;
             case 'order':
                 result.data.data = await this._prepareOrder(result.data.data, message.account);
