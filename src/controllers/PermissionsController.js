@@ -379,7 +379,7 @@ const moneyLikeToBigNumber = (moneyLike, precession) => {
     }
 
     const { coins = 0, tokens = 0 } = moneyLike;
-    const tokensAmount = new BigNumber(tokens).multipliedBy(10 ** precession);
+    const tokensAmount = new BigNumber(tokens).mul(10 ** precession);
     const coinsAmount = new BigNumber(coins);
 
     if (!coinsAmount.isNaN() && coinsAmount.gt(0)) {

@@ -50,7 +50,7 @@ export const DEFAULT_CONFIG = {
     },
     PACK_CONFIG: {
         max: 5,
-        allow_tx: [3, 4, 5, 6, 7, 10, 11, 12],
+        allow_tx: [3, 4, 5, 6, 7, 10, 11, 12, 16],
     },
     IDLE: {
         'idle': 0,
