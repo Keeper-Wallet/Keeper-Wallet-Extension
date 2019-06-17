@@ -237,7 +237,7 @@ export class WalletController {
         }
     }
 
-    async getKEK(address, network, pk, prefix) {
+    async getKEK(address, network, publicKey, prefix) {
         const wallet = this._findWallet(address, network);
         return await wallet.getKEK(publicKey, prefix);
     }
