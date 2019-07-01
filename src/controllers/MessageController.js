@@ -139,7 +139,7 @@ export class MessageController extends EventEmitter {
             case MSG_STATUSES.REJECTED:
                 return Promise.reject(ERRORS.USER_DENIED());
             case MSG_STATUSES.FAILED:
-                return Promise.reject(ERRORS.FILED_MSG(message.err.message));
+                return Promise.reject(ERRORS.FAILED_MSG(message.err.message));
             default:
                 return new Promise((resolve, reject) => {
                     this.once(`${id}:finished`, finishedMessage => {
@@ -150,7 +150,7 @@ export class MessageController extends EventEmitter {
                             case MSG_STATUSES.REJECTED:
                                 return reject(ERRORS.USER_DENIED());
                             case MSG_STATUSES.FAILED:
-                                return reject(ERRORS.FILED_MSG(finishedMessage.err.message));
+                                return reject(ERRORS.FAILED_MSG(finishedMessage.err.message));
                             default:
                                 return reject(ERRORS.UNKNOWN());
                         }

@@ -5,7 +5,8 @@
 + Fix auth api
 + orders UI
 + update major libs versions with keeper refactor (updated crypto protocol)
-+ replace signature-generator by waves-transactions
++ fix auto payment
++ add script invocation in package
 
 #### version 1.1.6
 + Add encrypt and decrypt API by DH
