@@ -90,6 +90,7 @@
     "ncp": "^2.0.0",
     "react-css-modules": "^4.7.6",
     "remote-webpack-plugin": "^1.0.2",
+    "request": "^2.88.0",
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.22.1",
     "stylus": "^0.54.5",
@@ -100,7 +101,6 @@
     "url-loader": "^1.1.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "web-ext": "^3.0.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-livereload-plugin": "^2.1.1"
