@@ -26,6 +26,9 @@
 
 > Все методы кроме `on` работают асинхронно и возвращают [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
+В вашем коде вы можете использовать [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
+
+
 При загрузке страницы в объекте WavesKeeper нет методов апи до окончания инициализации плагина. 
 Для облегчения работы с WavesKeeper при инициализации в window.WavesKeeper есть initialPromise
 который отрабатывает в момент окончания инициализации.
@@ -864,7 +867,7 @@ MoneyLike может иметь вид:
 
 
 ### [Тип 16 SCRIPT INVOCATION - выполнение функций скрипта *(только testnet)]()  
-+ `dappAddress` string адрес контракта
++ `dApp` string адрес контракта
 + `call` объект слкдующей структуры
     + `function` string название функции
     + `args` массив аргументов вида
@@ -884,7 +887,7 @@ MoneyLike может иметь вид:
                  "tokens": "0.05",
                  "assetId": "WAVES"
              },
-             dappAddress: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
+             dApp: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
              call: {
              		function: 'tellme',
              		args: [

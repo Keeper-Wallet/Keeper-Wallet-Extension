@@ -30,6 +30,7 @@ On browser pages that operate under the http/https (not worked local pages with 
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
+In code you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
 
 On initialize window.WavesKeeper has not api methods. 
 You can use WavesKeeper.initialPromise for waiting end initializing api.
@@ -967,7 +968,7 @@ In case of a success, the asset's script will be reset.
 
 
 ### [Тип 16 SCRIPT INVOCATION - call account script function *(testnet only)]()  
-+ `dappAddress` string – address script account
++ `dApp` string – address script account
 + `call` object –
     + `function` string function name
     + `args` array
@@ -987,7 +988,7 @@ Example:
                  "tokens": "0.05",
                  "assetId": "WAVES"
              },
-             dappAddress: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
+             dApp: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
              call: {
              		function: 'tellme',
              		args: [
