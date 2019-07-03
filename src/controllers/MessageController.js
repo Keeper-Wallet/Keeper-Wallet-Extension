@@ -306,7 +306,7 @@ export class MessageController extends EventEmitter {
             }
 
             // Validate fields containing assetId
-            if (['assetId', 'amountAsset', 'priceAsset', 'feeAssetId', 'matcherFeeAssetId'].includes(key)) {
+            if (['assetId', 'amountAsset', 'amountAssetId', 'priceAsset', 'priceAssetId', 'feeAssetId', 'matcherFeeAssetId'].includes(key)) {
                 await this.assetInfo(data[key]);
             }
 

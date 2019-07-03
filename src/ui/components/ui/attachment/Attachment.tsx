@@ -3,14 +3,14 @@ import { libs } from '@waves/waves-transactions';
 import * as cn from 'classnames';
 import * as styles from './attachment.styl';
 
-const { base58encode } = libs.crypto;
+const { base58Encode } = libs.crypto;
 
 export const Attachment: React.FunctionComponent<IAttachment> = ({ attachment, className }) => {
     const myClassName = cn(styles.attachment, className);
     let text = '';
     
     if (typeof attachment !== 'string') {
-        const bs58text = base58encode(new Uint8Array(Object.values(attachment)));
+        const bs58text = base58Encode(new Uint8Array(Object.values(attachment)));
         text = `base58:${bs58text}`;
     } else {
         text = attachment;

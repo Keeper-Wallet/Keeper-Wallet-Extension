@@ -14,14 +14,14 @@ function hashChain(input) {
 }
 
 export function publicKeyHashFromAddress(address) {
-    const rawPKHash = libs.crypto.base58decode(address).slice(2, 22);
-    return libs.crypto.base58encode(rawPKHash)
+    const rawPKHash = libs.crypto.base58Decode(address).slice(2, 22);
+    return libs.crypto.base58Encode(rawPKHash)
 }
 
 export function publicKeyHashFromPK(pk) {
-    const decodedPK = libs.crypto.base58decode(pk);
+    const decodedPK = libs.crypto.base58Decode(pk);
     const rawPKHash = hashChain(decodedPK).slice(0, 20);
-    return libs.crypto.base58encode(rawPKHash)
+    return libs.crypto.base58Encode(rawPKHash)
 }
 
 export function addressFromPublicKey(pk, network) {
@@ -29,6 +29,6 @@ export function addressFromPublicKey(pk, network) {
 }
 
 export function networkByteFromAddress(address) {
-    const rawNetworkByte = libs.crypto.base58decode(address).slice(1, 2);
+    const rawNetworkByte = libs.crypto.base58Decode(address).slice(1, 2);
     return String.fromCharCode(rawNetworkByte)
 }

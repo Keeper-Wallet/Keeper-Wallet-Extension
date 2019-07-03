@@ -4,7 +4,7 @@ import { seedUtils, libs } from '@waves/waves-transactions';
 import { pipe, identity, isNil, ifElse, concat } from 'ramda';
 
 export function networkByteFromAddress(address: string): string {
-    return String.fromCharCode(libs.crypto.base58decode(address)[1]);
+    return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
 }
 
 export function getExplorerUrls(network: string, address: string) {
@@ -75,7 +75,7 @@ export async function getNetworkByte(url: string): Promise<string> {
 export async function getMatcherPublicKey(url: string): Promise<string> {
     const response = await getUrl(url, '/matcher');
     const pk = await response.json();
-    const publicKeyBytes = libs.crypto.base58decode(pk);
+    const publicKeyBytes = libs.crypto.base58Decode(pk);
     if (publicKeyBytes.length === 32) {
         return pk;
     }
@@ -152,7 +152,7 @@ export const byteArrayToString = function (bytes: Uint8Array): string {
 };
 
 
-const bytesToBase58 = libs.crypto.base58encode;
+const bytesToBase58 = libs.crypto.base58Encode;
 const bytesToString = byteArrayToString;
 
 export const bytesToSafeString = ifElse(
