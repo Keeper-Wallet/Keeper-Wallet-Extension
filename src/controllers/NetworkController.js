@@ -118,12 +118,12 @@ export class NetworkController {
                 url = new URL('matcher/orderbook', API_BASE).toString();
                 break;
             case 'cancelOrder':
-                const { amountId, priceId } = message;
+                const { amountAsset, priceAsset } = message;
                 API_BASE = this.getMather();
                 if (!API_BASE) {
                     throw new Error('Matcher not set. Cannot send order')
                 }
-                url = new URL(`matcher/orderbook/${amountId}/${priceId}/cancel`, API_BASE).toString();
+                url = new URL(`matcher/orderbook/${amountAsset}/${priceAsset}/cancel`, API_BASE).toString();
                 break;
             default:
                 throw new Error(`Unknown message type: ${type}`)

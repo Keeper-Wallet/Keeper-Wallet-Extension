@@ -1021,12 +1021,15 @@ MoneyLike может иметь вид:
 
 ### signAndPublishCancelOrder
 Метод Waves Keeper для отмены ордера на матчер, работает идентично `signCancelOrder`, 
-но еще пытается отослать данные на матчер  
+но еще пытается отослать данные на матчер, для которого необходимо передать еще 2 поля `priceAsset` и `amountAsset` из ордера.
+  
 
 Пример:
 ```
     WavesKeeper.signAndPublishCancelOrder({
         type: 1003,
+        priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+        amountAsset: 'WAVES',
         data: {
         	id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'	
         }

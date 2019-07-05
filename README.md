@@ -1140,7 +1140,8 @@ ERRORS:
 
 **signAndPublishCancelOrder**
 
-Waves Keeper's method for cancelling an order to the matcher. It works identically to `signCancelOrder`, but also tries to send data to the matcher.
+Waves Keeper's method for cancelling an order to the matcher. It works identically to `signCancelOrder`, 
+but also tries to send data to the matcher. For api need know also 2 field `priceAsset` and `amountAsset` from order. 
 
 Example:
 
@@ -1148,6 +1149,8 @@ Example:
 ```
     WavesKeeper.signAndPublishCancelOrder({
         type: 1003,
+        priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+        amountAsset: 'WAVES',
         data: {
             id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'
         }

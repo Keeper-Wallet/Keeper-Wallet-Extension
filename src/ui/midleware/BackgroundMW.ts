@@ -181,6 +181,9 @@ export const getAsset = store => next => action => {
         background.assetInfo(action.payload).then(
             (data) => {
                 store.dispatch(updateAsset({[action.payload]: data}))
+            },
+            () => {
+                store.dispatch(updateAsset({[action.payload]: {}}))
             }
         );
         return null;
