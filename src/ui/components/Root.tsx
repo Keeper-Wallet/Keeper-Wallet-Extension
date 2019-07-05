@@ -15,7 +15,6 @@ const USER_START_PAGE = PAGES.LOGIN;
 class RootComponent extends React.Component {
     
     props: IProps;
-    element: HTMLElement;
     state = { tab: null, loading: true };
     
     constructor(props: IProps) {
@@ -23,12 +22,7 @@ class RootComponent extends React.Component {
         setTimeout(() => props.setLoading(false), 200);
     }
     
-    getRef = (element) => {
-        this.element = element;
-    };
-    
     render() {
-        const hasScroll = this.element && this.element.scrollHeight !== this.element.offsetHeight;
         const tab = this.state.tab || PAGES.INTRO;
         const pageConf = PAGES_CONF[tab];
         const Component = pageConf.component;
@@ -57,16 +51,12 @@ class RootComponent extends React.Component {
         const onDelete = () => {
             setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
         };
-    
-        const className = hasScroll ? 'scroll' : 'noScroll';
         
-        const pageProps = { ...pageConf.props, setTab, onBack, className };
+        const pageProps = { ...pageConf.props, setTab, onBack };
         
         return <div className="height">
             <Menu {...menuProps} setTab={setTab} onBack={onBack} onDelete={onDelete}/>
-            <div ref={this.getRef}>
-                <Component {...pageProps} key={tab}/>
-            </div>
+            <Component {...pageProps} key={tab}/>
             <Bottom {...pageConf.bottom}/>
         </div>;
     }
