@@ -303,7 +303,7 @@
         "transactionConfirmSponsor": "You have approved a Set Sponsorship transaction",
         "transactionConfirmTransfer": "You have approved a Send transaction for",
         "transactionFiled": "Your transaction is rejected!",
-        "transactionSend": "Your have sent",
+        "transactionSend": "You have sent",
         "transactionSendAlias": "An alias has been created.",
         "transactionSendCreateOrder": "You have approved a Create Order transaction",
         "transactionSendMassTransfer": "You have sent",

@@ -1,12 +1,14 @@
 ## Waves Keeper
 
 #### version 1.1.7
-+ add auto calculate fee
++ Add auto calculate fee
 + Fix auth api
-+ orders UI
-+ update major libs versions with keeper refactor (updated crypto protocol)
-+ fix auto payment
-+ add script invocation in package
++ Orders UI
++ Update major libs versions with keeper refactor (updated crypto protocol)
++ Order v3 support
++ Fix auto payment
++ Add script invocation in package
++ Fix some texts
 
 #### version 1.1.6
 + Add encrypt and decrypt API by DH
