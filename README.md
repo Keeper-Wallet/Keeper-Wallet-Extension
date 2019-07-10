@@ -1032,6 +1032,7 @@ Waves Keeper's method for signing an order to the matcher. As input, it accepts 
 
 
 
+*   `*version` 1,2,3
 *   `amount` MoneyLike - amount
 *   `price` MoneyLike - price
 *   `orderType` 'sell'/'buy' – order type

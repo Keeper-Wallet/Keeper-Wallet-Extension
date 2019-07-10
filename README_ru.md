@@ -922,6 +922,7 @@ MoneyLike может иметь вид:
     }
 ```
 
+* `*version` 1,2,3
 + `amount` MoneyLike - количество
 + `price`  MoneyLike - цена
 + `orderType` 'sell'/'buy' - тип ордера
