@@ -600,11 +600,14 @@ export class MessageController extends EventEmitter {
     }
 
     async _prepareOrder(orderParams, account) {
+        const defaultFee = Money.fromCoins(0, new Asset(this.assetInfoController.getWavesAsset()));
+
         const orderDefaults = {
             timestamp: Date.now(),
             senderPublicKey: account.publicKey,
             chainId: networkByteFromAddress(account.address).charCodeAt(0),
-            matcherPublicKey: await this.getMatcherPublicKey()
+            matcherPublicKey: await this.getMatcherPublicKey(),
+            matcherFee: defaultFee,
 
         };
         return { ...orderDefaults, ...orderParams }

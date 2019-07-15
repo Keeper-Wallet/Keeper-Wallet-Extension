@@ -32,8 +32,9 @@ const promiseCache = (delta, defaultValue) => cb => {
 
 const isAccountHasExtraFee = async (address, node) => {
     try {
-        const response = await fetch(`${node}/addresses/scriptInfo/${address}`);
-        return response.extraFee;
+        const response = await fetch(new URL(`/addresses/scriptInfo/${address}`, node).toString());
+        const result = await response.json();
+        return result.extraFee;
     } catch (e) {
         return 0;
     }
@@ -66,7 +67,7 @@ export const calculateFeeFabric = (assetInfoController, networkController) => as
         const minOrderFee = new BigNumber(300000);
         const matcherAddress = libs.crypto.address({ public: signData.data.matcherPublicKey }, adapter.getNetworkByte());
         const extraFee = await isAccountHasExtraFee(matcherAddress, node);
-        return signable.getOrderFee(feeConfig, minOrderFee, extraFee, assetIds);
+        return signable.getOrderFee(feeConfig, minOrderFee, extraFee, smartAssets);
     }
 
     const extraFee = await isAccountHasExtraFee(address, node);
