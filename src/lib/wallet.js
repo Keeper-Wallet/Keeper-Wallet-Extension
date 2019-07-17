@@ -63,13 +63,13 @@ export class Wallet {
 
     async encryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const shKey = base58Encode(sharedKey(privateKey, publicKey, prefix));
+        const shKey = sharedKey(privateKey, publicKey, prefix);
         return base58Encode(messageEncrypt(shKey, message, prefix || undefined));
     }
 
     async decryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const shKey = base58Encode(sharedKey(privateKey, publicKey, prefix));
+        const shKey = sharedKey(privateKey, publicKey, prefix);
         try {
             return messageDecrypt(shKey, message, prefix || undefined);
         } catch (e) {
