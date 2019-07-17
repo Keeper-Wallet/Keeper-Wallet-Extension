@@ -1,8 +1,9 @@
 import { getAdapterByType } from '@waves/signature-adapter'
-import { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } from '@waves/waves-crypto';
-import { BigNumber } from '@waves/data-entities';
+import { libs as transactionsLibs } from '@waves/waves-transactions';
+import { BigNumber } from '@waves/bignumber';
 import create from 'parse-json-bignumber';
 
+const { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } = transactionsLibs;
 const { stringify, parse } = create({ BigNumber });
 
 export class Wallet {
@@ -62,13 +63,13 @@ export class Wallet {
 
     async encryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
         return encryptMessage(sharedKey, message, prefix || undefined);
     }
 
     async decryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
         try {
             return decryptMessage(sharedKey, message, prefix || undefined);
         } catch (e) {
@@ -79,7 +80,7 @@ export class Wallet {
     async getKEK(publicKey, prefix) {
         prefix = (prefix || '') + 'waves';
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.base58.encode(getSharedKey(privateKey, publicKey));
+        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
         return getKEK(sharedKey, prefix || undefined);
     }
 

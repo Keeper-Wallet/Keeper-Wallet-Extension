@@ -50,7 +50,7 @@ export const DEFAULT_CONFIG = {
     },
     PACK_CONFIG: {
         max: 5,
-        allow_tx: [3, 4, 5, 6, 7, 10, 11, 12],
+        allow_tx: [3, 4, 5, 6, 7, 10, 11, 12, 16],
     },
     IDLE: {
         'idle': 0,
@@ -61,3 +61,43 @@ export const DEFAULT_CONFIG = {
         '1h': 60 * 60 * 1000,
     },
 };
+
+export const DEFAULT_FEE_CONFIG_URL = 'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/fee.json';
+
+export const DEFAULT_FEE_CONFIG = {
+    "smart_asset_extra_fee": 400000,
+    "smart_account_extra_fee": 400000,
+    "calculate_fee_rules": {
+        "default": {
+            "add_smart_asset_fee": true,
+            "add_smart_account_fee": true,
+            "min_price_step": 100000,
+            "fee": 100000
+        },
+        "3": {
+            "fee": 100000000
+        },
+        "5": {
+            "fee": 100000000
+        },
+        "7": {
+            "add_smart_account_fee": false,
+            "fee": 300000
+        },
+        "11": {
+            "price_per_transfer": 50000
+        },
+        "12": {
+            "price_per_kb": 100000
+        },
+        "13": {
+            "fee": 1000000
+        },
+        "14": {
+            "fee": 100000000
+        },
+        "15": {
+            "fee": 100000000
+        }
+    }
+}

@@ -1,4 +1,5 @@
-import { BigNumber, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 
 export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
     if (amount) {
@@ -9,7 +10,7 @@ export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
         }
         
         if ('coins' in amount) {
-            amountResult = amountResult.plus(amountResult.cloneWithCoins(amount.coins || 0));
+            amountResult = amountResult.add(amountResult.cloneWithCoins(amount.coins || 0));
         }
         
         return amountResult;

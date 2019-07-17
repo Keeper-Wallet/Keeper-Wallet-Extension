@@ -21,7 +21,7 @@ const ERRORS_DATA = {
     12: { msg: 'Api rejected by user', name: 'API_DENIED' },
     13: { msg: 'Init Waves Keeper and add account', name: 'INIT_KEEPER' },
     14: { msg: 'Add Waves Keeper account', name: 'EMPTY_KEEPER' },
-    15: { msg: 'Filed request', name: 'FILED_MSG' },
+    15: { msg: 'Filed request', name: 'FAILED_MSG' },
     16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
     17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
     18: { msg: 'Can\'t sent notification', name: 'NOTIFICATION_ERROR' },
@@ -50,7 +50,7 @@ class KeeperError extends Error {
  *    "INIT_KEEPER": (function(*=): KeeperError)
  *    "EMPTY_KEEPER": (function(*=): KeeperError)
  *    "UNKNOWN_IDLE": (function(*=): KeeperError)
- *    "FILED_MSG": (function(*=): KeeperError)
+ *    "FAILED_MSG": (function(*=): KeeperError)
  *    "UNKNOWN_TX": (function(*=): KeeperError)
  *    "NOTIFICATION_ERROR": (function(*=): KeeperError)
  *    "NOTIFICATION_DATA_ERROR": (function(*=): KeeperError)

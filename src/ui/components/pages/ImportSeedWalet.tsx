@@ -2,13 +2,15 @@ import * as styles from './styles/importSeed.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
-import { Seed, config } from '@waves/signature-generator';
+import { seedUtils } from '@waves/waves-transactions';
 import { newAccountSelect, clearSeedErrors } from '../../actions';
 import { Button } from '../ui/buttons';
 import { Input } from '../ui/input';
 import { Error } from '../ui/error';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
+
+const { Seed } = seedUtils;
 
 @translate(I18N_NAME_SPACE)
 class ImportSeedComponent extends React.Component {
@@ -26,13 +28,10 @@ class ImportSeedComponent extends React.Component {
         const value = isNew ? '' : this.props.account && this.props.account.phrase;
         const networkCode = this.props.customCodes[this.props.currentNetwork] ||
             this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
-        
-        config.set({ networkByte: networkCode.charCodeAt(0) });
-        
         let seed = { address: '', phrase: '' };
         
         if (value.length >= 24) {
-            seed = new Seed(value.trim());
+            seed = new Seed(value.trim(), networkCode);
         }
         
         const error = this._validate({ phrase: value, address: seed.address }, true);
@@ -112,12 +111,10 @@ class ImportSeedComponent extends React.Component {
         const phrase = e.target.value || '';
         const networkCode = this.props.customCodes[this.props.currentNetwork] ||
             this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
-        
-        config.set({ networkByte: networkCode.charCodeAt(0) });
         let seed = { address: '', phrase: '' };
         
         if (phrase.length >= 24) {
-            seed = new Seed(phrase.trim());
+            seed = new Seed(phrase.trim(), networkCode);
         }
         
         this.setState({ value: phrase });

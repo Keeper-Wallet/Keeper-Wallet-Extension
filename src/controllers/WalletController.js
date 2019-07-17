@@ -1,8 +1,9 @@
 import ObservableStore from 'obs-store';
-import *  as SG from '@waves/signature-generator'
+import { seedUtils, libs } from '@waves/waves-transactions';
 import { encrypt, decrypt } from '../lib/encryprtor';
-import { Seed } from '@waves/signature-generator'
 import { Wallet } from "../lib/wallet";
+
+const { Seed } = seedUtils;
 
 export class WalletController {
     constructor(options = {}) {
@@ -26,9 +27,7 @@ export class WalletController {
         switch (options.type) {
             case 'seed':
                 const networkCode = this.getNetworkCode(options.network);
-                const networkByte = networkCode.charCodeAt(0);
-                SG.config.set({ networkByte });
-                const seed = new SG.Seed(options.seed);
+                const seed = new Seed(options.seed, networkCode);
                 user = {
                     seed: seed.phrase,
                     publicKey: seed.keyPair.publicKey,
@@ -133,17 +132,15 @@ export class WalletController {
     encryptedSeed(address, network) {
         const wallet = this._findWallet(address, network);
         const seed = wallet.getSecret();
-        return SG.Seed.encryptSeedPhrase(seed, this.password)
+        return Seed.encryptSeedPhrase(seed, this.password)
     }
 
     updateNetworkCode(network, code) {
         code = code || this.getNetworkCode(network);
-        const networkByte = code.charCodeAt(0);
-        SG.config.set({ networkByte });
         const wallets = this.getWalletsByNetwork(network);
         wallets.forEach(wallet => {
             if (wallet.user.networkCode !== code) {
-                const seed = new SG.Seed(wallet.user.seed);
+                const seed = Seed(wallet.user.seed, code);
                 wallet.user.network = network;
                 wallet.user.networkCode = code;
                 wallet.user.address = seed.address;
@@ -240,7 +237,7 @@ export class WalletController {
         }
     }
 
-    async getKEK(address, network, pk, prefix) {
+    async getKEK(address, network, publicKey, prefix) {
         const wallet = this._findWallet(address, network);
         return await wallet.getKEK(publicKey, prefix);
     }

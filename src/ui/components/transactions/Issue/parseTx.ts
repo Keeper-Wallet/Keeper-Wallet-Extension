@@ -20,7 +20,10 @@ export function getFee(tx) {
 }
 
 export function getAmount(tx = null) {
-    return new Money(tx.quantity, new Asset(tx));
+    return new Money(tx.quantity, new Asset({
+        ...tx,
+        precision: Number(tx.precision) || 0,
+    }));
 }
 
 export function getAmountSign() {

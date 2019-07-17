@@ -1,5 +1,4 @@
 import { ACTION } from '../actions/constants';
-import { config } from '@waves/signature-generator';
 import background from '../services/Background';
 import { i18n } from '../i18n';
 import {
@@ -182,6 +181,9 @@ export const getAsset = store => next => action => {
         background.assetInfo(action.payload).then(
             (data) => {
                 store.dispatch(updateAsset({[action.payload]: data}))
+            },
+            () => {
+                store.dispatch(updateAsset({[action.payload]: {}}))
             }
         );
         return null;
@@ -235,30 +237,6 @@ export const setCustomMatcher = store => next => action => {
     }
     
     return next(action);
-};
-
-export const updateNetworkCode = store => next => action => {
-    if (action.type === ACTION.UPDATE_CURRENT_NETWORK || action.type === ACTION.UPDATE_NETWORKS) {
-        const { payload, type } = action;
-        let { networks, currentNetwork } = store.getState();
-
-        if (type === ACTION.UPDATE_CURRENT_NETWORK) {
-            currentNetwork = payload;
-        }
-
-        if (type === ACTION.UPDATE_NETWORKS) {
-            networks = payload;
-        }
-        
-        if (currentNetwork && networks && networks.length) {
-            const netCode = networks.filter(({ name }) => name === currentNetwork)[0] || networks[0];
-            if (netCode) {
-                config.set({networkByte: netCode.code.charCodeAt(0)});
-            }
-        }
-    }
-
-    next(action);
 };
 
 export const lock = store => next => action => {

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { newAccountSelect } from '../../actions';
 import { AvatarList } from '../ui/avatar';
-import { Seed } from '@waves/signature-generator';
+import { seedUtils } from '@waves/waves-transactions';
 import { Button } from '../ui/buttons';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
@@ -19,8 +19,10 @@ class NewWalletComponent extends React.Component {
 
     constructor({ isGenerateNew, ...props }) {
         super(props);
+        const networkCode = this.props.customCodes[this.props.currentNetwork] ||
+            this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
         if (isGenerateNew) {
-            NewWalletComponent.list = NewWalletComponent.getNewWallets();
+            NewWalletComponent.list = NewWalletComponent.getNewWallets(networkCode);
         }
 
         const list  = NewWalletComponent.list;
@@ -36,11 +38,13 @@ class NewWalletComponent extends React.Component {
         this.state = { list };
     }
 
-    static getNewWallets() {
+    static getNewWallets(networkCode) {
         const list = [];
         for (let i = 0; i < 5; i++) {
-            const seedData = Seed.create();
-            list.push({ seed: seedData.phrase, address: seedData.address, type: 'seed' });
+            const seedData = seedUtils.Seed.create();
+            const seed = seedData.phrase;
+            const address = new seedUtils.Seed(seed, networkCode).address;
+            list.push({ seed, address, type: 'seed' });
         }
         return list ;
     }
@@ -94,7 +98,10 @@ const actions = {
 const mapStateToProps = function(store: any) {
     return {
         account: store.localState.newAccount,
-        notSaveAccount: store.uiState.account
+        notSaveAccount: store.uiState.account,
+        customCodes: store.customCodes,
+        networks: store.networks,
+        currentNetwork: store.currentNetwork,
     };
 };
 

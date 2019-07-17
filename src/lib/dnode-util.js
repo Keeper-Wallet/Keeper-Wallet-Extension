@@ -30,7 +30,7 @@ export function setupDnode(connectionStream, api, name) {
 export function transformMethods(transformation, obj, target = {}) {
     Object.keys(obj).forEach(key => {
         if (typeof obj[key] === 'object') {
-            target[key] = {}
+            target[key] = {};
             transformMethods(transformation, obj[key], target[key])
         } else if (typeof obj[key] === 'function') {
             target[key] = transformation(obj[key], obj)

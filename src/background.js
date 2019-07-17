@@ -230,9 +230,9 @@ class BackgroundService extends EventEmitter {
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),
             signBytes: this.walletController.signBytes.bind(this.walletController),
-            broadcast: this.networkController.broadcast.bind(this.networkController),
+            networkController: this.networkController,
             getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(this.networkController),
-            assetInfo: this.assetInfoController.assetInfo.bind(this.assetInfoController),
+            assetInfoController: this.assetInfoController,
             txInfo: this.txinfoController.txInfo.bind(this.txinfoController),
             setPermission: this.permissionsController.setPermission.bind(this.permissionsController),
             getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
@@ -394,7 +394,16 @@ class BackgroundService extends EventEmitter {
             }
 
             if (!messageId) {
-                const result = await this.messageController.newMessage({ origin }, 'authOrigin', origin, selectedAccount, false);
+                const messageData = {
+                    origin,
+                    title: null,
+                    options: {},
+                    broadcast: false,
+                    data: { origin },
+                    type: 'authOrigin',
+                    account: selectedAccount,
+                };
+                const result = await this.messageController.newMessage(messageData);
                 messageId = result.id;
                 this.permissionsController.setMessageIdAccess(origin, messageId);
             }
@@ -413,12 +422,34 @@ class BackgroundService extends EventEmitter {
     }
 
     getInpageApi(origin) {
-        const newMessage = async (data, type, from, broadcast, title = '') => {
+        const newMessage = async (data, type, options, broadcast, title = '') => {
+
+            if (data.type === 1000) {
+                type = 'auth';
+                data = data.data;
+                data.isRequest = true;
+            }
+
             const { selectedAccount } = this.getState();
 
             await this.validatePermission(origin);
 
-            const { id: messageId, showNotification } = await this.messageController.newMessage(data, type, origin, selectedAccount, broadcast, title);
+            const messageData = {
+                data,
+                type,
+                title,
+                origin,
+                options,
+                broadcast,
+                account: selectedAccount,
+            };
+
+            const { noSign, showNotification, ...result } = await this.messageController.newMessage(messageData);
+            const { id: messageId } = result;
+
+            if (noSign) {
+                return result;
+            }
 
             if (showNotification) {
                 this.emit('Show notification');
@@ -452,32 +483,32 @@ class BackgroundService extends EventEmitter {
         };
 
         const api = {
-            signOrder: async (data, from) => {
-                return await newMessage(data, 'order', from, false)
+            signOrder: async (data, options) => {
+                return await newMessage(data, 'order', options, false)
             },
-            signAndPublishOrder: async (data, from) => {
-                return await newMessage(data, 'order', from, true)
+            signAndPublishOrder: async (data, options) => {
+                return await newMessage(data, 'order', options, true)
             },
-            signCancelOrder: async (data, from) => {
-                return await newMessage(data, 'cancelOrder', from, false)
+            signCancelOrder: async (data, options) => {
+                return await newMessage(data, 'cancelOrder', options, false)
             },
-            signAndPublishCancelOrder: async (data, from) => {
-                return await newMessage(data, 'cancelOrder', from, true)
+            signAndPublishCancelOrder: async (data, options) => {
+                return await newMessage(data, 'cancelOrder', options, true)
             },
-            signTransaction: async (data, from) => {
-                return await newMessage(data, 'transaction', from, false)
+            signTransaction: async (data, options) => {
+                return await newMessage(data, 'transaction', options, false)
             },
-            signTransactionPackage: async (data, title, from) => {
-                return await newMessage(data, 'transactionPackage', from, false, title)
+            signTransactionPackage: async (data, title, options) => {
+                return await newMessage(data, 'transactionPackage', options, false, title)
             },
-            signAndPublishTransaction: async (data, from) => {
-                return await newMessage(data, 'transaction', from, true)
+            signAndPublishTransaction: async (data, options) => {
+                return await newMessage(data, 'transaction', options, true)
             },
-            auth: async (data, from) => {
-                return await newMessage(data, 'auth', from, false)
+            auth: async (data, options) => {
+                return await newMessage(data, 'auth', options, false)
             },
-            signRequest: async (data, from) => {
-                return await newMessage(data, 'request', from, false)
+            signRequest: async (data, options) => {
+                return await newMessage(data, 'request', options, false)
             },
             notification: async (data) => {
                 const state = this.getState();

@@ -4,7 +4,7 @@ import { I18N_NAME_SPACE } from 'ui/appConfig';
 import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Input, Button, BUTTON_TYPE, Select } from 'ui/components/ui';
-import { BigNumber } from '@waves/data-entities/dist/libs/bignumber';
+import { BigNumber } from '@waves/bignumber';
 
 const CONFIG = {
     list: [
@@ -106,7 +106,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     
     saveHandler = () => {
         const { interval, totalAmount, canShowNotifications } = this.state;
-        const res = (new BigNumber(totalAmount)).times(10 ** 8);
+        const res = (new BigNumber(totalAmount)).mul(10 ** 8);
         const data = { interval: Number(interval) || null, totalAmount: res.isNaN() ? null : res.toFixed(0) };
         this.props.onSave(data, this.props.originName, canShowNotifications);
     };
