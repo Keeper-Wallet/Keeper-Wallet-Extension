@@ -32,9 +32,11 @@ import {
 import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
+import '@waves/waves-transactions';
 import { getAdapterByType } from '@waves/signature-adapter';
 import { WAVESKEEPER_DEBUG } from './constants';
 
+const version = extension.runtime.getManifest().version;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
@@ -695,6 +697,7 @@ class BackgroundService extends EventEmitter {
         }
 
         return {
+            version,
             initialized: state.initialized,
             locked: state.locked,
             account,
