@@ -510,7 +510,7 @@ export class MessageController extends EventEmitter {
                 const dataPromises = message.data.map(async txParams => {
                     const data = this._prepareTx(txParams.data, message.account);
                     let readyData = { ...txParams, data };
-                    const feeData = !data.fee || data.fee.getCoins().lte(0) ? await this._getFee(message, readyData) : {};
+                    const feeData = !data.fee || !data.fee.getCoins() || data.fee.getCoins().lte(0) ? await this._getFee(message, readyData) : {};
                     readyData = { ...readyData, data: { ...data, ...feeData } };
                     messageMeta = await this._getMessageDataHash( readyData, message.account);
                     ids.push(messageMeta.id);
