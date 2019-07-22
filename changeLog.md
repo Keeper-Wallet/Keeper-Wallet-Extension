@@ -1,9 +1,6 @@
 ## Waves Keeper
 
 
-#### version 1.1.9
-+ Fix package calculate fee
-
 #### version 1.1.8
 + Add auto calculate fee
 + Fix auth api
