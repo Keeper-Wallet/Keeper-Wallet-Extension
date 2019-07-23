@@ -508,9 +508,10 @@ export class MessageController extends EventEmitter {
                 const bytes = [];
 
                 const dataPromises = message.data.map(async txParams => {
+                    const hasFee = !!txParams.data.fee;
                     const data = this._prepareTx(txParams.data, message.account);
                     let readyData = { ...txParams, data };
-                    const feeData = !data.fee || data.fee.getCoins().lte(0) ? await this._getFee(message, readyData) : {};
+                    const feeData = !hasFee ? await this._getFee(message, readyData) : {};
                     readyData = { ...readyData, data: { ...data, ...feeData } };
                     messageMeta = await this._getMessageDataHash( readyData, message.account);
                     ids.push(messageMeta.id);
@@ -579,7 +580,7 @@ export class MessageController extends EventEmitter {
         let signableData = await this._transformData({ ...signData });
         const Adapter = getAdapterByType('seed');
         const adapter = new Adapter('validation seed', networkByteFromAddress(message.account.address).charCodeAt(0));
-        const fee = { coins: await this.getFee(adapter, signableData), assetId: 'WAVES' };
+        const fee = { coins: (await this.getFee(adapter, signableData)).toString(), assetId: 'WAVES' };
         return {
             fee,
             matcherFee: fee,
@@ -587,7 +588,7 @@ export class MessageController extends EventEmitter {
     }
 
     _prepareTx(txParams, account) {
-        const defaultFee = Money.fromCoins(0, new Asset(this.assetInfoController.getWavesAsset()));
+        const defaultFee = Money.fromCoins(0, new Asset(this.assetInfoController.getWavesAsset())).toJSON();
 
         const txDefaults = {
             timestamp: Date.now(),

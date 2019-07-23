@@ -3,7 +3,7 @@ import { libs as transactionsLibs } from '@waves/waves-transactions';
 import { BigNumber } from '@waves/bignumber';
 import create from 'parse-json-bignumber';
 
-const { encryptMessage, decryptMessage, getSharedKey, getKEK, libs } = transactionsLibs;
+const { messageEncrypt, messageDecrypt, sharedKey, base58Encode } = transactionsLibs.crypto;
 const { stringify, parse } = create({ BigNumber });
 
 export class Wallet {
@@ -63,15 +63,15 @@ export class Wallet {
 
     async encryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
-        return encryptMessage(sharedKey, message, prefix || undefined);
+        const shKey = sharedKey(privateKey, publicKey, prefix);
+        return base58Encode(messageEncrypt(shKey, message, prefix || undefined));
     }
 
     async decryptMessage(message, publicKey, prefix = 'waveskeeper') {
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
+        const shKey = sharedKey(privateKey, publicKey, prefix);
         try {
-            return decryptMessage(sharedKey, message, prefix || undefined);
+            return messageDecrypt(shKey, message, prefix || undefined);
         } catch (e) {
             throw new Error('message is invalid');
         }
@@ -80,8 +80,7 @@ export class Wallet {
     async getKEK(publicKey, prefix) {
         prefix = (prefix || '') + 'waves';
         const privateKey = await this._adapter.getPrivateKey();
-        const sharedKey = libs.crypto.base58Encode(getSharedKey(privateKey, publicKey));
-        return getKEK(sharedKey, prefix || undefined);
+        return base58Encode(sharedKey(privateKey, publicKey, prefix));
     }
 
     async signTx(tx) {
