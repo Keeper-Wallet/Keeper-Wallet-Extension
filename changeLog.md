@@ -1,6 +1,9 @@
 ## Waves Keeper
 
 
+#### version 1.1.9
++ Update fixed libs
+
 #### version 1.1.8
 + Add auto calculate fee
 + Fix auth api

@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.8       
+# Waves Keeper v1.1.9      
 [en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 
 Приложение для хранения данных пользователя  
