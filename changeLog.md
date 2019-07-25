@@ -2,6 +2,7 @@
 
 
 #### version 1.1.9
++ WavesKeeper proxy
 + Update fixed libs
 
 #### version 1.1.8
