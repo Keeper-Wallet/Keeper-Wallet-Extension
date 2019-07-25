@@ -5,7 +5,7 @@ import EventEmitter from 'events';
 
 const createDeffer = () => {
     const def = {};
-    def.propmise = new Promise((res, rej) => {
+    def.promise = new Promise((res, rej) => {
         def.resolve = res;
         def.reject = rej;
     });
@@ -19,16 +19,12 @@ async function setupInpageApi() {
     let cbs = {};
     let args = {};
     const wavesAppDef = createDeffer();
-    const wavesApp = {
-        initialPromise: wavesAppDef.propmise
+    const wavesApp = {};
+    let wavesApi = {
+        initialPromise: wavesAppDef.promise
     };
-    let wavesApi = {};
     const proxyApi = {
         get(target, prop) {
-            if (prop === 'initialPromise') {
-                return wavesAppDef.propmise;
-            }
-
             if (wavesApi[prop]) {
                 return wavesApi[prop];
             }
@@ -38,7 +34,7 @@ async function setupInpageApi() {
                     const def = createDeffer();
                     args[prop] = args[prop] || [];
                     args[prop].push({ args, def });
-                    return def.propmise;
+                    return def.promise;
                 };
             }
 
@@ -46,17 +42,18 @@ async function setupInpageApi() {
                 cbs[prop] = function (...args) {
                     args[prop] = args[prop] || [];
                     args[prop].push({ args });
-                }
+                };
             }
 
             return cbs[prop];
         },
 
         set(target, prop) {
-            if (wavesApi[prop]) {
-                target[prop] = wavesApi[prop];
-                return true;
-            }
+            throw new Error('Not permitted');
+        },
+
+        has() {
+            return true;
         }
     };
 
@@ -97,11 +94,10 @@ async function setupInpageApi() {
 
     args = [];
     cbs = {};
-
+    Object.assign(wavesApi, inpageApi);
+    wavesAppDef.resolve(wavesApi);
+    global.WavesKeeper = global.Waves = wavesApi;
     setupClickInterceptor(inpageApi);
-    wavesApi = inpageApi;
-    Object.assign(wavesApp, inpageApi);
-    wavesAppDef.resolve(wavesApp);
 }
 
 function setupClickInterceptor(inpageApi) {
