@@ -55,7 +55,7 @@ If a website is trusted, Waves Keeper public data are returned.
 Example:
 
 
-```
+```js
     WavesKeeper.publicState()
         .then(state => {
             console.log(state); //displaying the result in the console
@@ -72,7 +72,7 @@ Example:
 or
 
 
-```
+```js
     const getPublicState = async () => {
         try {
             const state = await WavesKeeper.publicState();
@@ -92,7 +92,7 @@ or
 REPLY
 
 
-```
+```js
 {
     "initialized": true,
     "locked": true,
@@ -152,7 +152,7 @@ Ypu can send message only 1 time in 30 sec for trusted sites with send permissio
 return Promise
 
 Example:
-```
+```js
        WavesKeeper.notification({
             title: 'Hello!',
             message: 'Congratulation!!!'
@@ -173,7 +173,7 @@ You need have recipient publicKey.
 WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
 
 Example:
-```
+```js
        WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((encryptedMessage) => {
             console.log(encryptedMessage);
@@ -193,7 +193,7 @@ WavesKeeper.decryptMessage(`*string to decrypt*`, `*public key in base58 string*
 
 
 Example:
-```
+```js
        WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((message) => {
             console.log(message);
@@ -219,7 +219,7 @@ Supports events:
 Example:
 
 
-```
+```js
    WavesKeeper.on("update", state => {
         //state object as from WavesKeeper.publicState
    });
@@ -235,7 +235,7 @@ This is a method for obtaining a signature of authorization data while verifying
 Example:
 
 
-```
+```js
     const authData = { data: "Auth on my site" };
     WavesKeeper.auth(authData)
         .then(auth => {
@@ -253,7 +253,7 @@ Example:
 or
 
 
-```
+```js
     const getAuthData = async authData => {
         try {
             const state = await WavesKeeper.auth(authData);
@@ -284,7 +284,7 @@ or
 Example
 
 
-```
+```js
     const authData = { 
         data: "Generated string from server",
         name: "My test App",
@@ -337,7 +337,7 @@ A method for signing transactions in Waves' network.
 Example:
 
 
-```
+```js
     const txData = {
         type: 4,
         data: {
@@ -383,7 +383,7 @@ This is similar to "`signTransaction"`, but it also broadcasts a transaction to 
 Example:
 
 
-```
+```js
    const txData = {
            type: 4,
            data: {
@@ -432,7 +432,7 @@ A package transaction signature. Sometimes several transactions need to be simul
 Example:
 
 
-```
+```js
     const name = "For Test";
     const tx = [{
         type: 4,
@@ -487,7 +487,7 @@ In Waves Keeper API it is different from [NODE REST API](https://docs.wavesplatf
 `signTransaction`, `signAndPublishTransaction` accept transactions as follows
 
 
-```
+```js
 {
     type: number //transaction type,
     data: {
@@ -538,7 +538,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 3,
         data: {
@@ -576,7 +576,7 @@ In case of a success, we are issuing a new asset in the quantity of 1,000,000, a
 Example:
 
 
-```
+```js
     WavesKeeper.signAndPublishTransaction({
         type: 4,
         data: {
@@ -606,7 +606,7 @@ Example:
 Example:
 
 
-```
+```js
       WavesKeeper.signAndPublishTransaction({
            type: 5,
            data: {
@@ -641,7 +641,7 @@ In case of a success, we are re-issuing a new asset in the quantity of 1,000,000
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 6,
         data: {
@@ -675,7 +675,7 @@ In case of a success, 1,000 coins `are burned`.
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 8,
         data: {
@@ -708,7 +708,7 @@ In case of a success, 0.00001000 WAVES is leased.
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 9,
         data: {
@@ -740,7 +740,7 @@ In case of a success, the leasing transaction is cancelled.
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 10,
         data: {
@@ -775,7 +775,7 @@ In case of a success, an alias (another name) is created.
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 11,
         data: {
@@ -814,7 +814,7 @@ In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
 Field:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 12,
         data: {
@@ -853,7 +853,7 @@ For cancelling a script the field `script `has to be "". [Script development on 
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -876,7 +876,7 @@ In case of a success, the script will be removed from the account.
 Example 2:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -908,7 +908,7 @@ In case of a success, a new script will be added to the account, allowing any tr
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 14,
         data: {
@@ -946,7 +946,7 @@ It's now impossible to cancel a script, you can only add a new script. [Script 
 Example:
 
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 15,
         data: {
@@ -980,7 +980,7 @@ In case of a success, the asset's script will be reset.
 + `*timestamp` number/string - number/string – time in ms
 
 Example:
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 16,
         data: {
@@ -1020,7 +1020,7 @@ In case of a success, invoke script function `tellme` in testnet account `3N27HU
 Waves Keeper's method for signing an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
 
-```
+```js
     {
         type: 1002,
         data: {
@@ -1045,7 +1045,7 @@ Waves Keeper's method for signing an order to the matcher. As input, it accepts 
 Example:
 
 
-```
+```js
    WavesKeeper.signOrder({
         type: 1002,
         data: {
@@ -1101,7 +1101,7 @@ ERRORS:
 Waves Keeper's method for signing cancellation of an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
 
-```
+```js
     {
         type: 1003,
         data: {
@@ -1119,7 +1119,7 @@ Waves Keeper's method for signing cancellation of an order to the matcher. As in
 Example:
 
 
-```
+```js
     WavesKeeper.signCancelOrder({
         type: 1003,
         data: {
@@ -1147,7 +1147,7 @@ but also tries to send data to the matcher. For api need know also 2 field `pric
 Example:
 
 
-```
+```js
     WavesKeeper.signAndPublishCancelOrder({
         type: 1003,
         priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
@@ -1177,7 +1177,7 @@ ERRORS:
 Waves Keeper's method for signing typified data, for signing requests on various services. As input, it accepts an object similar to a transaction like this:
 
 
-```
+```js
     {
         type: number,
         data: {
@@ -1199,7 +1199,7 @@ Currently, the method supports the following types:
 Example:
 
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1001,
         data: {
@@ -1228,7 +1228,7 @@ ERRORS:
 Request:
 
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1004,
         data: {
