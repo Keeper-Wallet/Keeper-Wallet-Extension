@@ -2,7 +2,7 @@ module.exports = (conf) => {
     return {
         ...conf,
         mode: 'development',
-        devtool: 'source-map',
+        devtool: 'inline-source-map',
         module: {
             ...conf.module,
             rules: [
