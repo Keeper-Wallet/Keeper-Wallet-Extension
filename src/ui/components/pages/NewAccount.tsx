@@ -57,10 +57,6 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
         this.props.setTab('conditions');
     }
 
-    componentDidMount() {
-        //this.inputEl.focus();
-    }
-
     render() {
         return <div className={styles.account}>
             <form className={styles.content} onSubmit={this.onSubmit}>
@@ -148,11 +144,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
 
     _onChangeInputs(firstValue, secondValue) {
         this.setState({ firstValue, secondValue });
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
-
-        if (!buttonDisabled) {
-            this._checkValues(firstValue, secondValue);
-        }
+        this._checkValues(firstValue, secondValue);
     }
 
     _checkValues(firstValue, secondValue) {
@@ -160,14 +152,16 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = termsAccepted ?
-            NewAccountComponent._isDisabledButton({ firstValue, secondValue }) :
-            true;
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue }, termsAccepted);
 
         this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
 
-    static _isDisabledButton({ firstValue, secondValue }) {
+    static _isDisabledButton({ firstValue, secondValue }, termsAccepted: boolean) {
+        if (!termsAccepted) {
+            return true;
+        }
+
         if (!firstValue || !secondValue) {
             return true;
         }
