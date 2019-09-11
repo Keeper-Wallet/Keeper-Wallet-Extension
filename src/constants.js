@@ -25,7 +25,7 @@ export const DEFAULT_CONFIG = {
     CONFIG: {
         update_ms: 30000,
     },
-    NETWORKS: [ 'mainnet', 'testnet', 'custom' ],
+    NETWORKS: [ 'mainnet', 'testnet', 'stagenet', 'custom' ],
     NETWORK_CONFIG: {
         testnet: {
             code: 'T', server: 'https://pool.testnet.wavesnodes.com/',
@@ -34,6 +34,10 @@ export const DEFAULT_CONFIG = {
         mainnet: {
             code: 'W', server: 'https://nodes.wavesplatform.com/',
             matcher: 'https://matcher.wavesplatform.com/',
+        },
+        stagenet: {
+            code: 'S', server: ' https://nodes-stagenet.wavesnodes.com/',
+            matcher: 'https://matcher-stagenet.wavesplatform.com/',
         },
         custom: {
             code: '', server: '',
