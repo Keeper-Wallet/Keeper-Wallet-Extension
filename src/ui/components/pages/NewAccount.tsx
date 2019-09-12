@@ -1,6 +1,6 @@
 import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
-import { createNew } from '../../actions';
+import { createNew, setTab } from '../../actions';
 import * as React from 'react'
 import { Input, Button, Error } from '../ui';
 import { translate, Trans } from 'react-i18next';
@@ -14,9 +14,13 @@ const mapStateToProps = function (store: any) {
     };
 };
 
+interface INewAccountComponentProps {
+    createNew(pass: string): void;
+    setTab(tab: string): void;
+}
+
 @translate(I18N_NAME_SPACE)
-class NewAccountComponent extends React.PureComponent {
-    
+class NewAccountComponent extends React.PureComponent<INewAccountComponentProps> {
     inputEl: Input;
     state = {
         firstValue: '',
@@ -25,16 +29,21 @@ class NewAccountComponent extends React.PureComponent {
         secondError: null,
         buttonDisabled: true,
         passwordError: false,
+        termsAccepted: true,
     };
-    props: {
-        createNew: (pass: string) => void;
-    };
-    
+
     getRef = input => this.inputEl = input;
     onFirstBlur = () => this._onFirstBlur();
     onSecondBlur = () => this._onSecondBlur();
     onChangeFist = e => this._onChangeInputs(e.target.value, this.state.secondValue);
     onChangeSecond = e => this._onChangeInputs(this.state.firstValue, e.target.value);
+
+    handleTermsAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        this.setState({ termsAccepted: e.currentTarget.checked }, () => {
+            this._onChangeInputs(this.state.firstValue, this.state.secondValue);
+        });
+    }
+
     onSubmit = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -42,11 +51,12 @@ class NewAccountComponent extends React.PureComponent {
             this.props.createNew(this.state.firstValue);
         }
     };
-    
-    componentDidMount() {
-        //this.inputEl.focus();
+
+    openTermsAndConditions = (e: React.MouseEvent): void => {
+        e.preventDefault();
+        this.props.setTab('conditions');
     }
-    
+
     render() {
         return <div className={styles.account}>
             <form className={styles.content} onSubmit={this.onSubmit}>
@@ -59,36 +69,55 @@ class NewAccountComponent extends React.PureComponent {
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.createPassword'>Create a password</Trans>
                         </div>
-                        <Input id='first'
-                               className='margin1'
-                               type="password"
-                               ref={this.getRef}
-                               onBlur={this.onFirstBlur}
-                               onChange={this.onChangeFist}
-                               error={!!this.state.firstError}
-                               autoFocus={true}
-                               autoComplete="off"/>
-                        
+                        <Input
+                            id='first'
+                            className='margin1'
+                            type="password"
+                            ref={this.getRef}
+                            onBlur={this.onFirstBlur}
+                            onChange={this.onChangeFist}
+                            error={!!this.state.firstError}
+                            autoFocus={true}
+                            autoComplete="off"
+                        />
+
                         <Error show={this.state.firstError}>
                             <Trans i18nKey='newAccount.smallPass'>Password is small</Trans>
                         </Error>
-                    
+
                     </div>
                     <div className='margin1 relative'>
                         <div className={`basic500 tag1 left input-title`}>
                             <Trans i18nKey='newAccount.confirmPassword'>Confirm password</Trans>
                         </div>
-                        <Input id='second'
-                               className='margin1'
-                               type="password"
-                               onBlur={this.onSecondBlur}
-                               onChange={this.onChangeSecond}
-                               error={!!this.state.secondError}
-                               autoComplete="off"/>
+                        <Input
+                            id='second'
+                            className='margin1'
+                            type="password"
+                            onBlur={this.onSecondBlur}
+                            onChange={this.onChangeSecond}
+                            error={!!this.state.secondError}
+                            autoComplete="off"
+                        />
                         <Error show={this.state.secondError}>
                             <Trans i18nKey='newAccount.notMatch'>Passwords no match</Trans>
                         </Error>
                     </div>
+                </div>
+                <div className="flex margin-main margin-main-top">
+                    <Input
+                        id="termsAccepted"
+                        type="checkbox"
+                        checked={this.state.termsAccepted}
+                        onChange={this.handleTermsAcceptedChange}
+                    />
+                    <label htmlFor="termsAccepted">
+                        <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
+                        {' '}
+                        <a href="" onClick={this.openTermsAndConditions}>
+                            <Trans i18nkey='newAccount.termsAndConditions'>Terms and Conditions</Trans>
+                        </a>
+                    </label>
                 </div>
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='newAccount.create'>Continue</Trans>
@@ -104,64 +133,66 @@ class NewAccountComponent extends React.PureComponent {
             </form>
         </div>
     }
-    
+
     _onFirstBlur() {
         this._checkValues(this.state.firstValue, this.state.secondValue);
     }
-    
+
     _onSecondBlur() {
         this._checkValues(this.state.firstValue, this.state.secondValue);
     }
-    
-    
+
     _onChangeInputs(firstValue, secondValue) {
         this.setState({ firstValue, secondValue });
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
-        if (!buttonDisabled) {
-            this._checkValues(firstValue, secondValue);
-        }
+        this._checkValues(firstValue, secondValue);
     }
-    
+
     _checkValues(firstValue, secondValue) {
+        const { termsAccepted } = this.state;
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue });
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue }, termsAccepted);
+
         this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
-    
-    static _isDisabledButton({ firstValue, secondValue }) {
+
+    static _isDisabledButton({ firstValue, secondValue }, termsAccepted: boolean) {
+        if (!termsAccepted) {
+            return true;
+        }
+
         if (!firstValue || !secondValue) {
             return true;
         }
-        
+
         const isFirstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const isSecondError = NewAccountComponent._validateSecond(firstValue, secondValue);
-        
+
         return isFirstError || isSecondError;
     }
-    
+
     static _validateFirst(firstValue, secondValue) {
         if (!firstValue) {
             return null;
         }
-        
+
         if (firstValue.length < MIN_LENGTH) {
             return { error: 'isSmall' };
         }
     }
-    
+
     static _validateSecond(firstValue, secondValue) {
         if (!secondValue || !firstValue) {
             return null;
         }
-        
+
         if (firstValue === secondValue) {
             return null;
         }
-        
+
         return { error: 'noMatch' }
     }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew })(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, { createNew, setTab })(NewAccountComponent);
