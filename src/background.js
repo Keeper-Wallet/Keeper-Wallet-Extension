@@ -539,6 +539,14 @@ class BackgroundService extends EventEmitter {
                 return this._publicState(this.getState(), origin);
             },
 
+            resourceIsApproved: async () => {
+                return this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+            },
+
+            resourceIsBlocked: async () => {
+                return this.permissionsController.hasPermission(origin, PERMISSIONS.REJECTED);
+            },
+
             getKEK: async (publicKey, prefix) => {
                 const state = this.getState();
                 const { selectedAccount, initialized } = state;
