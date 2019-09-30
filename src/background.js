@@ -28,6 +28,7 @@ import {
     ExternalDeviceController,
     RemoteConfigController,
     IdleController,
+    StatisticsController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
@@ -250,9 +251,16 @@ class BackgroundService extends EventEmitter {
             setNotificationPermissions: (origin, canUse, time) => this.permissionsController.setNotificationPermissions(origin, canUse, time),
         });
 
+        //Statistics
+        this.statisticsController = new StatisticsController(
+            initState.StatisticsController, {
+                network: this.networkController
+            }
+        );
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
+            StatisticsController: this.statisticsController.store,
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
             NetworkController: this.networkController.store,
@@ -301,11 +309,19 @@ class BackgroundService extends EventEmitter {
             setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
-            addWallet: async (account) => this.walletController.addWallet(account),
+            addWallet: async (account) => {
+                const data = await this.walletController.addWallet(account);
+                this.statisticsController.addEvent('addWallet');
+                return data;
+            },
             removeWallet: async (address, network) => this.walletController.removeWallet(address, network),
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
-            initVault: async (password) => this.walletController.initVault(password),
+            initVault: async (password) => {
+                const result = await this.walletController.initVault(password);
+                this.statisticsController.addEvent('initVault');
+                return result;
+            },
             deleteVault: async () => {
                 await this.messageController.clearMessages();
                 await this.walletController.deleteVault();
@@ -316,7 +332,21 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            approve: async (messageId, address) => await this.messageController.approve(messageId, address),
+            approve: async (messageId, address) => {
+                const approveData = await this.messageController.approve(messageId, address);
+                const message = this.messageController.getMessageById(messageId);
+                try {
+                    const isDApp = message.data.type === 16;
+                    this.statisticsController.addEvent('approve', {
+                        type: message.data.type,
+                        msgType: message.type,
+                        dApp: isDApp ? message.data.data.dApp : undefined,
+                    });
+                } catch (e) {
+
+                }
+                return  approveData;
+            },
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // notifications
@@ -345,12 +375,14 @@ class BackgroundService extends EventEmitter {
 
             // origin settings
             allowOrigin: async (origin) => {
+                this.statisticsController.addEvent('allowOrigin', { origin });
                 this.messageController.rejectByOrigin(origin);
                 this.permissionsController.deletePermission(origin, PERMISSIONS.REJECTED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
             },
 
             disableOrigin: async (origin) => {
+                this.statisticsController.addEvent('disableOrigin', { origin });
                 this.permissionsController.deletePermission(origin, PERMISSIONS.APPROVED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
             },
