@@ -150,7 +150,11 @@ class AssetsComponent extends React.Component {
         }).filter(Boolean);
         delete hash[activeAddress];
         this._sorted = [...this._sorted, ...Object.values(hash).filter(Boolean)];
-        
+        this._sorted.sort((acc, acc2) => {
+            const lastLogin1 = acc.lastLogin || 0;
+            const lastLogin2 = acc2.lastlogin || 0;
+            return lastLogin2 - lastLogin1;
+        });
         if (this._currentActive === activeAddress) {
             return this._sorted;
         }

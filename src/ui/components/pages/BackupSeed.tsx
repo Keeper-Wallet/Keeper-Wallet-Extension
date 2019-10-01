@@ -1,9 +1,9 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react'
 import { connect } from 'react-redux';
-import { setUiStateAndSetTab, newAccountSelect, setUiState } from '../../actions';
+import { setUiStateAndSetTab, newAccountSelect, setUiState, user } from '../../actions';
 import { translate, Trans } from 'react-i18next';
-import { Copy, Button, Modal } from '../ui';
+import { Copy, Button, Modal, Input } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -37,6 +37,18 @@ class BackUpSeedComponent extends React.Component {
                 {this.props.account.seed}
             </div>
 
+            <div className="flex margin-main margin-main-top">
+                <Input
+                    id="wantSkipConfirm"
+                    type="checkbox"
+                    checked={this.state.skipBackup}
+                    onChange={() => this.setState({ skipBackup: !this.state.skipBackup })}
+                />
+                <label htmlFor="wantSkipConfirm">
+                    <Trans i18nKey='backupSeed.wantSkipBackup'>I want to skip confirmation</Trans>
+                </label>
+            </div>
+            
             <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
                 <Trans i18nKey='backupSeed.confirmBackupInfo'>
                     You will confirm this phrase on the next screen
@@ -72,6 +84,14 @@ class BackUpSeedComponent extends React.Component {
     }
 
     _onClick() {
+        if (this.state.skipBackup) {
+            this.props.setUiState({
+                account: null
+            });
+            this.props.addUser(this.props.account);
+            return null;
+        }
+        
         this.props.setTab(PAGES.CONFIRM_BACKUP);
     }
 
@@ -92,6 +112,7 @@ const mapStateToProps = function (store: any) {
 const actions = {
     setUiState,
     setUiStateAndSetTab,
+    addUser: user,
     newAccountSelect
 };
 

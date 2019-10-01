@@ -1,40 +1,37 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react'
-import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
-import {newAccountName, user, setUiState} from '../../actions';
-import {Input, Button, Error} from '../ui';
+import { connect } from 'react-redux';
+import { translate, Trans } from 'react-i18next';
+import { newAccountName, user, setUiState } from '../../actions';
+import { Input, Button, Error } from '../ui';
 import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
 class NewWalletNameComponent extends React.Component {
-
+    
     inputEl: Input;
     readonly props;
     readonly state = {} as any;
-
+    
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
     onSubmit = (e) => this._onSubmit(e);
     onBlur = () => this._onBlur();
     getRef = input => this.inputEl = input;
-
+    
     constructor(params) {
         super(params);
         this.props.setUiState({
             account: null
         });
     }
-
+    
     render() {
-        
-        const accountResult = this.props.addNewAccount;
-        
         return <div className={styles.content}>
             <h2 className={`title1 margin1`}>
                 <Trans i18nKey='newAccountName.accountName'>Account name</Trans>
             </h2>
-
+            
             <form onSubmit={this.onSubmit}>
                 <div className={`margin1`}>
                     <Input ref={this.getRef}
@@ -47,35 +44,47 @@ class NewWalletNameComponent extends React.Component {
                            onBlur={this.onBlur}/>
                     <Error show={this.state.error} errors={this.state.errors}/>
                 </div>
-
+                
                 <div className={`basic500 tag1 margin2`}>
                     <Trans i18nKey="newAccountName.nameInfo">
                         The account name will be known only to you
                     </Trans>
                 </div>
-
-                <Button type='submit' disabled={this.state.errors.length}>
-                    <Trans i18nKey="newAccountName.continue">Continue</Trans>
-                </Button>
+                
+                <div className={styles.buttons}>
+                    <Button type='submit' onClick={this._onSave} disabled={this.state.errors.length}>
+                        <Trans i18nKey="newAccountName.continue">Continue</Trans>
+                    </Button>
+                    {   this.props.account.hasBackup ? null :
+                        <Button type='submit' disabled={this.state.errors.length}>
+                            <Trans i18nKey="newAccountName.continueBackup">Create backup</Trans>
+                        </Button>
+                    }
+                </div>
             </form>
-
+        
         </div>
     }
-
+    
     componentDidMount() {
         //this.inputEl.focus();
     }
-
+    
     _onChange(e) {
         const newName = e.target.value;
         this.props.newAccountName(newName);
     }
-
+    
     _onBlur() {
         const errors = NewWalletNameComponent.validateName(this.props.account.name, this.props.accounts);
-        this.setState({error: errors.length , errors});
+        this.setState({ error: errors.length, errors });
     }
-
+    
+    _onSave = (e) => {
+        e.preventDefault();
+        this.props.addUser(this.props.account);
+    };
+    
     _onSubmit(e) {
         e.preventDefault();
         
@@ -83,7 +92,7 @@ class NewWalletNameComponent extends React.Component {
             this.props.addUser(this.props.account);
             return null;
         }
-
+        
         this.props.setTab(this.props.next);
     }
     
@@ -122,6 +131,7 @@ const mapStateToProps = function (store: any) {
         account: store.localState.newAccount,
         accountSave: store.localState.addNewAccount,
         accounts: store.accounts,
+        addUser: user,
     };
 };
 

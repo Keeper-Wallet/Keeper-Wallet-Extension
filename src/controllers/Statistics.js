@@ -11,6 +11,7 @@ export class StatisticsController {
         const userId = store.userId || StatisticsController.createUserId();
         this.store = new ObservableStore({ userId });
         this.version = extension.runtime.getManifest().version;
+        this.id = extension.runtime.id;
         this.addEvent('runKeeper');
     }
 
@@ -20,7 +21,8 @@ export class StatisticsController {
         event_properties = {
             ...event_properties,
             network: this.controllers.network.store.getState().currentNetwork,
-            app_version: this.version
+            app_version: this.version,
+            extensionId: this.id,
         };
 
         if (!WAVESKEEPER_DEBUG) {
