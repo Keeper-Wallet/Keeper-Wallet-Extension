@@ -335,16 +335,7 @@ class BackgroundService extends EventEmitter {
             approve: async (messageId, address) => {
                 const approveData = await this.messageController.approve(messageId, address);
                 const message = this.messageController.getMessageById(messageId);
-                try {
-                    const isDApp = message.data.type === 16;
-                    this.statisticsController.addEvent('approve', {
-                        type: message.data.type,
-                        msgType: message.type,
-                        dApp: isDApp ? message.data.data.dApp : undefined,
-                    });
-                } catch (e) {
-
-                }
+                this.statisticsController.transaction(message);
                 return  approveData;
             },
             reject: async (messageId) => this.messageController.reject(messageId),
