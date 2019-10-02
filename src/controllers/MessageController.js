@@ -10,6 +10,7 @@ import { networkByteFromAddress } from "../lib/cryptoUtil";
 import { ERRORS } from '../lib/KeeperError';
 import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from "./CalculateFeeController";
+import { waves } from "./wavesTransactionsController";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -26,6 +27,7 @@ export class MessageController extends EventEmitter {
 
         // Signing methods from WalletController
         this.signTx = options.signTx;
+        this.signWaves = options.signWaves;
         this.auth = options.auth;
         this.signRequest = options.signRequest;
         this.signBytes = options.signBytes;
@@ -108,12 +110,10 @@ export class MessageController extends EventEmitter {
         this._updateStore(messages);
 
         let showNotification = true;
-
         if (this.canAutoApprove(message.origin, message.data)) {
             showNotification = false;
             this.approve(message.id);
         }
-
         return { id: message.id, showNotification };
     }
 
@@ -369,6 +369,9 @@ export class MessageController extends EventEmitter {
             case 'request':
                 signedData = await this.signRequest(message.account.address, message.data, message.account.network);
                 break;
+            case 'customData':
+                signedData = await this.signWaves('signCustomData', message.data, message.account.address, message.account.network);
+                break;
             case 'bytes':
                 signedData = await this.signBytes(message.account.address, message.data, message.account.network);
                 break;
@@ -425,6 +428,11 @@ export class MessageController extends EventEmitter {
      * @returns {Promise<{ id, bytes }>}
      */
     async _getMessageDataHash(data, account) {
+
+        if (data && data.type === 'customData') {
+            return waves.parseCustomData(data);
+        }
+
         let signableData = await this._transformData({ ...data.data });
         const Adapter = getAdapterByType('seed');
         const adapter = new Adapter('validation seed', networkByteFromAddress(account.address).charCodeAt(0));
@@ -564,6 +572,11 @@ export class MessageController extends EventEmitter {
                 break;
             case 'bytes':
             case 'authOrigin':
+                break;
+            case 'customData':
+                result.data.publicKey = message.data.publicKey = message.data.publicKey || message.account.publicKey;
+                messageMeta = await this._getMessageDataHash(result, message.account);
+                result.messageHash = messageMeta.id;
                 break;
             case 'pairing':
                 if (!(typeof message.data.address === 'string' && typeof message.data.encryptedSeed === 'string'))

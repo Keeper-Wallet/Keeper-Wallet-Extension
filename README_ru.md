@@ -22,6 +22,8 @@
 - `signOrder`,
 - `signTransaction`
 - `signRequest`
+- `signCustomData`
+- `verifyCustomData`
 - `signTransactionPackage`
 - `notification`
 - `on`
@@ -35,7 +37,7 @@
 который отрабатывает в момент окончания инициализации.
 Пример:
 
-```
+```js
     WavesKeeper.initialPromise
         .then((keeperApi) => {
             /*...инициализация работы приложения с WavesKeeper*/
@@ -61,7 +63,7 @@
 
 Пример:
 
-```
+```js
     WavesKeeper.publicState()
         .then(state => {
             console.log(state); //вывод в консоль результата
@@ -75,7 +77,7 @@
 
 или
 
-```
+```js
     const getPublicState = async () => {
         try {
             const state = await WavesKeeper.publicState();
@@ -144,7 +146,7 @@ WavesKeeper.encryptMessage(`текст для шифрования`, `публи
 
 Пример:
 
-```
+```js
        WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'для меня')
        .then((encryptedMessage) => {
             console.log(encryptedMessage);
@@ -166,7 +168,7 @@ WavesKeeper.decryptMessage(`зашифрованный текст`, `публи�
 
 Example:
 
-```
+```js
        WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
        .then((message) => {
             console.log(message);
@@ -233,7 +235,7 @@ Example:
 
 Пример:
 
-```
+```js
     const authData = { data: "Auth on my site" };
     WavesKeeper.auth(authData)
         .then(auth => {
@@ -248,7 +250,7 @@ Example:
 
 или
 
-```
+```js
     const getAuthData = async authData => {
         try {
             const state = await WavesKeeper.auth(authData);
@@ -274,7 +276,7 @@ Example:
 
 Например
 
-```
+```js
     const authData = {
         data: "Generated string from server",
         name: "My test App",
@@ -318,7 +320,7 @@ Example:
 
 Пример:
 
-```
+```js
     const txData = {
         type: 4,
         data: {
@@ -361,7 +363,7 @@ Example:
 
 Пример:
 
-```
+```js
    const txData = {
            type: 4,
            data: {
@@ -408,7 +410,7 @@ Example:
 
 Пример:
 
-```
+```js
     const name = "For Test";
     const tx = [{
         type: 4,
@@ -505,7 +507,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 3,
         data: {
@@ -540,7 +542,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
     WavesKeeper.signAndPublishTransaction({
         type: 4,
         data: {
@@ -567,7 +569,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
       WavesKeeper.signAndPublishTransaction({
            type: 5,
            data: {
@@ -599,7 +601,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 6,
         data: {
@@ -629,7 +631,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 8,
         data: {
@@ -658,7 +660,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 9,
         data: {
@@ -686,7 +688,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 10,
         data: {
@@ -717,7 +719,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 11,
         data: {
@@ -752,7 +754,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 12,
         data: {
@@ -788,7 +790,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -809,7 +811,7 @@ MoneyLike может иметь вид:
 
 Пример2:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -838,7 +840,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 14,
         data: {
@@ -873,7 +875,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 15,
         data: {
@@ -908,7 +910,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 16,
         data: {
@@ -966,7 +968,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
    WavesKeeper.signOrder({
         type: 1002,
         data: {
@@ -1034,7 +1036,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
     WavesKeeper.signCancelOrder({
         type: 1003,
         data: {
@@ -1059,7 +1061,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
     WavesKeeper.signAndPublishCancelOrder({
         type: 1003,
         priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
@@ -1105,7 +1107,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1001,
         data: {
@@ -1129,7 +1131,7 @@ MoneyLike может иметь вид:
 
 Пример:
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1004,
         data: {
@@ -1146,3 +1148,93 @@ MoneyLike может иметь вид:
 - `{ message: "User denied message", code: 10 }` - пользователь отклонил запрос
 - `{ message: "Api rejected by user", code: 12 }` - cайт является не доверенным
 - `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
+
+
+### signCustomData
+
+Метод Waves Keeper для подписи данных, для подтверждения их на разных сервисах
+Принимает на вход объект:
+
+#### version 1
+
+- `version` 1
+- `binary` string 'base64:....'
+
+Пример:
+
+```js
+    WavesKeeper.signRequest({
+         version: 1,
+         binary: 'base64:AADDEE=='
+    });
+```
+
+ОТВЕТ:
+```
+   {
+        version: 1,
+        binary: 'base64:AADDEE==',
+        signature: '...',
+        publicKey: '...'
+   }
+```
+ОШИБКИ:
+
+- `{ message: "User denied message", code: 10 }` - пользователь отклонил запрос
+- `{ message: "Api rejected by user", code: 12 }` - cайт является не доверенным
+- `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
+
+
+#### version 2
+
+- `version` 2
+- `data` массив объектов
+  - `type` "binary"/string/"integer"/"boolean" - тип,
+  - `key` string - название поля
+  - `value` /string/string/number/boolean зависит от типа
+
+
+Пример:
+
+```js
+    WavesKeeper.signRequest({
+         version: 2,
+         data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+    });
+```
+
+ОТВЕТ:
+
+```
+   {
+        version: 2,
+        data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+        signature: '...',
+        publicKey: '...'
+   }
+```      
+
+ОШИБКИ:
+
+- `{ message: "User denied message", code: 10 }` - пользователь отклонил запрос
+- `{ message: "Api rejected by user", code: 12 }` - cайт является не доверенным
+- `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
+
+### verifyCustomData
+Валидация подписи данных типа:
+```
+       {
+           version: 1,
+           binary: 'base64:AADDEE==',
+           signature: '...',
+           publicKey: '...'
+       }
+       /// или
+       {
+            version: 2,
+            data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+            signature: '...',
+            publicKey: '...'
+       }
+```
+

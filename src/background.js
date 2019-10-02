@@ -36,6 +36,8 @@ import { WindowManager } from './lib/WindowManger';
 import '@waves/waves-transactions';
 import { getAdapterByType } from '@waves/signature-adapter';
 import { WAVESKEEPER_DEBUG } from './constants';
+import { verifyCustomData } from "@waves/waves-transactions";
+import { waves } from "./controllers/wavesTransactionsController";
 
 const version = extension.runtime.getManifest().version;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
@@ -230,6 +232,7 @@ class BackgroundService extends EventEmitter {
         this.messageController = new MessageController({
             initState: initState.MessageController,
             signTx: this.walletController.signTx.bind(this.walletController),
+            signWaves: this.walletController.signWaves.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),
             signBytes: this.walletController.signBytes.bind(this.walletController),
@@ -468,7 +471,6 @@ class BackgroundService extends EventEmitter {
                 broadcast,
                 account: selectedAccount,
             };
-
             const { noSign, showNotification, ...result } = await this.messageController.newMessage(messageData);
             const { id: messageId } = result;
 
@@ -508,6 +510,7 @@ class BackgroundService extends EventEmitter {
         };
 
         const api = {
+
             signOrder: async (data, options) => {
                 return await newMessage(data, 'order', options, false)
             },
@@ -534,6 +537,12 @@ class BackgroundService extends EventEmitter {
             },
             signRequest: async (data, options) => {
                 return await newMessage(data, 'request', options, false)
+            },
+            signCustomData: async (data, options) => {
+                return await newMessage(data, 'customData', options, false)
+            },
+            verifyCustomData: async (data) => {
+                return waves.verifyCustomData(data);
             },
             notification: async (data) => {
                 const state = this.getState();

@@ -1,0 +1,25 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.dataTransactionCard
+  @extends .transaction-card
+
+.dataCard_collapsed
+  .origin
+    display: none;
+
+.dataTxIcon
+  @extends .txIcon
+
+.dataTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.cardContent
+  padding-left: 0;
+
+.origin
+  padding-left: 58px;
+
+.dataScript pre
+  white-space: pre;

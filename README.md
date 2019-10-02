@@ -22,6 +22,8 @@ On browser pages that operate under the http/https (not worked local pages with 
 - `signTransaction`
 - `signRequest`
 - `signTransactionPackage`
+- `signCustomData`
+- `verifyCustomData`
 - `notification`
 - `encryptMessage`
 - `decryptMessage`
@@ -1125,3 +1127,105 @@ ERRORS:
 - `{ message: "User denied message", code: 10 }` – the user rejected the request
 - `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
 - `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+
+### signCustomData
+
+Method Waves Keeper for sign custom data for different services, it accepts an object:
+
+#### version 1
+
+- `version` 1
+- `binary` string 'base64:....'
+
+Example:
+
+```js
+    WavesKeeper.signRequest({
+         version: 1,
+         binary: 'base64:AADDEE=='
+    });
+```
+
+REPLY:
+```
+   {
+        version: 1,
+        binary: 'base64:AADDEE==',
+        signature: '...',
+        publicKey: '...'
+   }
+```
+ERRORS:
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+
+#### version 2
+
+- `version` 2
+- `data` Array of
+  - `type` "binary"/string/"integer"/"boolean" - field type,
+  - `key` string - field name
+  - `value` /string/string/number/boolean
+
+
+Example:
+
+```js
+    WavesKeeper.signRequest({
+         version: 2,
+         data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+    });
+```
+
+REPLY:
+
+```
+   {
+        version: 2,
+        data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+        signature: '...',
+        publicKey: '...'
+   }
+```      
+
+ERRORS:
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+### verifyCustomData
+Validate custom data:
+```js
+       v1 = {
+           version: 1,
+           binary: 'base64:AADDEE==',
+           signature: '...',
+           publicKey: '...'
+       }
+       /// или
+       v2 = {
+            version: 2,
+            data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+            signature: '...',
+            publicKey: '...'
+       }
+```
+Example:
+```js
+    Waves.verifyCustomData({
+        "version" : 1,
+        "binary" : "base64:AADDEE==",
+        "publicKey" : "3BvAsKuGZe2LbSwKr9SA7eSXcNDKnRqN1j2K2bZaTn5X",
+        "signature": "2bLJYR68pwWrUUoatGbySz2vfY76VtzR8TScg1tt5f9DVDsFDCdecWrUiR4x6gFBnwF4Y51uszpouAwtSrg7EcGg"
+    }).then(result => { console.log(result) });
+```
+
+REPLY: true/false in 
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted

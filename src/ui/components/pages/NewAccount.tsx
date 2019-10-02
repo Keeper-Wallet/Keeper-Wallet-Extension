@@ -29,7 +29,8 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
         secondError: null,
         buttonDisabled: true,
         passwordError: false,
-        termsAccepted: true,
+        termsAccepted: false,
+        conditionsAccepted: false,
     };
 
     getRef = input => this.inputEl = input;
@@ -42,7 +43,13 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
         this.setState({ termsAccepted: e.currentTarget.checked }, () => {
             this._onChangeInputs(this.state.firstValue, this.state.secondValue);
         });
-    }
+    };
+    
+    handleonditionsAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        this.setState({ conditionsAccepted: e.currentTarget.checked }, () => {
+            this._onChangeInputs(this.state.firstValue, this.state.secondValue);
+        });
+    };
 
     onSubmit = (e) => {
         e.preventDefault();
@@ -119,6 +126,22 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                         </a>
                     </label>
                 </div>
+                <div className="flex margin-main margin-main-top">
+                    <Input
+                        id="conditionsAccepted"
+                        type="checkbox"
+                        checked={this.state.conditionsAccepted}
+                        onChange={this.handleonditionsAcceptedChange}
+                    />
+                    <label htmlFor="conditionsAccepted">
+                        <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
+                        {' '}
+                        <a href="" onClick={this.openTermsAndConditions}>
+                            <Trans i18nkey='newAccount.termsAndConditions'>Terms and Conditions</Trans>
+                        </a>
+                    </label>
+                </div>
+                
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='newAccount.create'>Continue</Trans>
                 </Button>
@@ -148,17 +171,17 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     }
 
     _checkValues(firstValue, secondValue) {
-        const { termsAccepted } = this.state;
+        const { termsAccepted, conditionsAccepted } = this.state;
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue }, termsAccepted);
+        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue }, termsAccepted, conditionsAccepted);
 
         this.setState({ passwordError, firstError, secondError, buttonDisabled });
     }
 
-    static _isDisabledButton({ firstValue, secondValue }, termsAccepted: boolean) {
-        if (!termsAccepted) {
+    static _isDisabledButton({ firstValue, secondValue }, termsAccepted: boolean, conditionsAccepted: boolean) {
+        if (!termsAccepted || !conditionsAccepted) {
             return true;
         }
 

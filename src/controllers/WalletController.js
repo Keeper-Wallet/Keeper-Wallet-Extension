@@ -193,6 +193,11 @@ export class WalletController {
         return await wallet.signTx(tx);
     }
 
+    async signWaves(type, data, address, network) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.signWaves(type, data);
+    }
+
     /**
      * Signs transaction
      * @param {string} address - wallet address

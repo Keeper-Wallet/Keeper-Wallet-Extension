@@ -1,5 +1,6 @@
 import { getAdapterByType } from '@waves/signature-adapter'
 import { libs as transactionsLibs } from '@waves/waves-transactions';
+import { waves } from '../controllers/wavesTransactionsController';
 import { BigNumber } from '@waves/bignumber';
 import create from 'parse-json-bignumber';
 
@@ -39,6 +40,7 @@ export class Wallet {
         if (this.user.type === 'seed') {
             params = this.user.seed;
         }
+
         return new Adapter(params)
     }
 
@@ -81,6 +83,10 @@ export class Wallet {
         prefix = (prefix || '') + 'waves';
         const privateKey = await this._adapter.getPrivateKey();
         return base58Encode(sharedKey(privateKey, publicKey, prefix));
+    }
+
+    async signWaves(type, data) {
+        return waves[type](data, this.user);
     }
 
     async signTx(tx) {
