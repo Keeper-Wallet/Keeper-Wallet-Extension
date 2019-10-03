@@ -137,7 +137,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                         <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
                         {' '}
                         <a href="" onClick={this.openTermsAndConditions}>
-                            <Trans i18nkey='newAccount.termsAndConditions'>Terms and Conditions</Trans>
+                            <Trans i18nkey='newAccount.privacyPolicy'>Privacy Policy</Trans>
                         </a>
                     </label>
                 </div>
