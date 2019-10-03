@@ -1141,7 +1141,7 @@ Method Waves Keeper for sign custom data for different services, it accepts an o
 Example:
 
 ```js
-    WavesKeeper.signRequest({
+    WavesKeeper.signCustomData({
          version: 1,
          binary: 'base64:AADDEE=='
     });
@@ -1175,7 +1175,7 @@ ERRORS:
 Example:
 
 ```js
-    WavesKeeper.signRequest({
+    WavesKeeper.signCustomData({
          version: 2,
          data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
     });
@@ -1200,15 +1200,15 @@ ERRORS:
 
 ### verifyCustomData
 Validate custom data:
-```js
-       v1 = {
+```
+       {
            version: 1,
            binary: 'base64:AADDEE==',
            signature: '...',
            publicKey: '...'
        }
-       /// или
-       v2 = {
+       или
+       {
             version: 2,
             data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
             signature: '...',

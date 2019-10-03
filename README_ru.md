@@ -1163,7 +1163,7 @@ MoneyLike может иметь вид:
 Пример:
 
 ```js
-    WavesKeeper.signRequest({
+    WavesKeeper.signCustomData({
          version: 1,
          binary: 'base64:AADDEE=='
     });
@@ -1197,7 +1197,7 @@ MoneyLike может иметь вид:
 Пример:
 
 ```js
-    WavesKeeper.signRequest({
+    WavesKeeper.signCustomData({
          version: 2,
          data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
     });
@@ -1238,3 +1238,12 @@ MoneyLike может иметь вид:
        }
 ```
 
+Пример:
+```js
+    WavesKeeper.verifyCustomData({
+         version: 2,
+         data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
+         signature: 'wrong signature',
+         publicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy'
+    }).then((result) => { console.log(result) } ); //true/false
+```
