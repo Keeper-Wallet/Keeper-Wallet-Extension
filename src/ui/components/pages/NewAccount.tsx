@@ -121,7 +121,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                     <label htmlFor="termsAccepted">
                         <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
                         {' '}
-                        <a href="" onClick={this.openTermsAndConditions}>
+                        <a href="https://waves.exchange/files/Terms_and_conditions.pdf" target='_blank'  rel="noopener noreferrer">
                             <Trans i18nkey='newAccount.termsAndConditions'>Terms and Conditions</Trans>
                         </a>
                     </label>
@@ -136,7 +136,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                     <label htmlFor="conditionsAccepted">
                         <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
                         {' '}
-                        <a href="" onClick={this.openTermsAndConditions}>
+                        <a href="https://waves.exchange/files/Privacy_Policy.pdf" target='_blank' rel="noopener noreferrer">
                             <Trans i18nkey='newAccount.privacyPolicy'>Privacy Policy</Trans>
                         </a>
                     </label>
