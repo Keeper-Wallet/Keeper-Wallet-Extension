@@ -1,5 +1,13 @@
 ## Waves Keeper
 
+#### version 1.1.10
++ Added methods to sign and verify custom data
++ Added Stagenet in network selector
++ simplified the creation of the new accounts
++ accounts are now sorted in the list by last activity
++ added Privacy Policy confirmation on the registration screen
++ fixed bug of empty InvokeScript function error
++ fixed network byte loss , while switching between different custom networks
 
 #### version 1.1.9
 + WavesKeeper proxy
