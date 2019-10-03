@@ -1140,7 +1140,7 @@ Method Waves Keeper for sign custom data for different services, it accepts an o
 - `version` 1
 - `binary` string 'base64:....'
 
-Note: This method adds the `[255, 255, 255, 1]` prefix to the signed bytes. This was done to make it impossible to sign transaction data in this method, which can lead to unauthenticated transactions and phishing. [For the details check a sign method in waves-transaction library.](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L60)
+Note: This method adds the `[255, 255, 255, 1]` prefix to the signed bytes. This was done to make it impossible to sign transaction data in this method, which can lead to unauthenticated transactions and phishing. [For the details check serializeCustomData method in waves-transaction library.](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L60)
 
 Example:
 
