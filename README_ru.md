@@ -25,6 +25,8 @@
 - `signCustomData`
 - `verifyCustomData`
 - `signTransactionPackage`
+- `resourceIsApproved`
+- `resourceIsBlocked`
 - `notification`
 - `on`
 
