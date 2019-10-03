@@ -27,6 +27,8 @@ On browser pages that operate under the http/https (not worked local pages with 
 - `notification`
 - `encryptMessage`
 - `decryptMessage`
+- `resourceIsApproved`
+- `resourceIsBlocked`
 - `on`
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
@@ -1217,7 +1219,7 @@ Validate custom data:
 ```
 Example:
 ```js
-    Waves.verifyCustomData({
+    WavesKeeper.verifyCustomData({
         "version" : 1,
         "binary" : "base64:AADDEE==",
         "publicKey" : "3BvAsKuGZe2LbSwKr9SA7eSXcNDKnRqN1j2K2bZaTn5X",
@@ -1225,7 +1227,31 @@ Example:
     }).then(result => { console.log(result) });
 ```
 
-REPLY: true/false in 
+REPLY: true/false
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request
 - `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+
+
+### resourceIsApproved
+Check allow API status for your origin
+
+Example:
+
+```js
+    WavesKeeper.resourceIsApproved().then(result => { console.log(result) });
+```     
+
+REPLY: true/false
+ 
+
+### resourceIsBlocked
+Check block API status for your origin
+
+Example:
+
+```js
+    WavesKeeper.resourceIsBlocked().then(result => { console.log(result) });
+```     
+
+REPLY: true/false

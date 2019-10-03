@@ -1247,3 +1247,26 @@ MoneyLike может иметь вид:
          publicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy'
     }).then((result) => { console.log(result) } ); //true/false
 ```
+
+### resourceIsApproved
+Проверка разрешения использования API кипера
+
+Пример:
+
+```js
+    WavesKeeper.resourceIsApproved().then(result => { console.log(result) });
+```     
+
+Ответ: true/false
+ 
+
+### resourceIsBlocked
+Проверка запрета на использование API кипера
+
+Пример:
+
+```js
+    WavesKeeper.resourceIsBlocked().then(result => { console.log(result) });
+```     
+
+Ответ: true/false
