@@ -132,7 +132,7 @@ function checkForPaymentApiLink(e) {
 
         const url = new URL(href);
 
-        if (url.host !== 'client.wavesplatform.com') {
+        if (!['client.wavesplatform.com', 'dex.wavesplatform.com'].find(item => url.host === item)) {
             return false;
         }
 

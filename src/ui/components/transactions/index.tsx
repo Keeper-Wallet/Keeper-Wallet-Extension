@@ -19,6 +19,7 @@ import assetScript from './AssetScript';
 import scriptInvocation from './ScriptInvocation';
 import packageTx from './Package';
 import unknown from './Unknown';
+import customData from './CustomData';
 
 const MESSAGES = [
     auth,
@@ -41,6 +42,7 @@ const MESSAGES = [
     assetScript,
     scriptInvocation,
     packageTx,
+    customData,
 ];
 
 export { FinalTransaction } from './FinalTransaction';

@@ -22,6 +22,8 @@ On browser pages that operate under the http/https (not worked local pages with 
 - `signTransaction`
 - `signRequest`
 - `signTransactionPackage`
+- `signCustomData`
+- `verifyCustomData`
 - `notification`
 - `encryptMessage`
 - `decryptMessage`
@@ -54,7 +56,8 @@ If a website is trusted, Waves Keeper public data are returned.
 
 Example:
 
-```
+
+```js
     WavesKeeper.publicState()
         .then(state => {
             console.log(state); //displaying the result in the console
@@ -69,7 +72,7 @@ Example:
 
 or
 
-```
+```js
     const getPublicState = async () => {
         try {
             const state = await WavesKeeper.publicState();
@@ -87,7 +90,8 @@ or
 
 REPLY
 
-```
+
+```js
 {
     "initialized": true,
     "locked": true,
@@ -145,7 +149,7 @@ return Promise
 
 Example:
 
-```
+```js
        WavesKeeper.notification({
             title: 'Hello!',
             message: 'Congratulation!!!'
@@ -168,7 +172,7 @@ WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*
 
 Example:
 
-```
+```js
        WavesKeeper.encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((encryptedMessage) => {
             console.log(encryptedMessage);
@@ -190,7 +194,7 @@ WavesKeeper.decryptMessage(`*string to decrypt*`, `*public key in base58 string*
 
 Example:
 
-```
+```js
        WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'my app')
        .then((message) => {
             console.log(message);
@@ -214,7 +218,7 @@ Supports events:
 
 Example:
 
-```
+```js   
    WavesKeeper.on("update", state => {
         //state object as from WavesKeeper.publicState
    });
@@ -228,7 +232,7 @@ This is a method for obtaining a signature of authorization data while verifying
 
 Example:
 
-```
+```js
     const authData = { data: "Auth on my site" };
     WavesKeeper.auth(authData)
         .then(auth => {
@@ -244,7 +248,7 @@ Example:
 
 or
 
-```
+```js
     const getAuthData = async authData => {
         try {
             const state = await WavesKeeper.auth(authData);
@@ -271,8 +275,8 @@ or
 
 Example
 
-```
-    const authData = {
+```js
+    const authData = { 
         data: "Generated string from server",
         name: "My test App",
         icon: "/img/icons/waves_logo.svg",
@@ -318,7 +322,7 @@ A method for signing transactions in Waves' network.
 
 Example:
 
-```
+```js
     const txData = {
         type: 4,
         data: {
@@ -360,7 +364,7 @@ This is similar to "`signTransaction"`, but it also broadcasts a transaction to 
 
 Example:
 
-```
+```js
    const txData = {
            type: 4,
            data: {
@@ -403,7 +407,7 @@ A package transaction signature. Sometimes several transactions need to be simul
 
 Example:
 
-```
+```js
     const name = "For Test";
     const tx = [{
         type: 4,
@@ -454,7 +458,7 @@ In Waves Keeper API it is different from [NODE REST API](https://docs.wavesplatf
 
 `signTransaction`, `signAndPublishTransaction` accept transactions as follows
 
-```
+```js
 {
     type: number //transaction type,
     data: {
@@ -496,7 +500,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 3,
         data: {
@@ -530,7 +534,7 @@ In case of a success, we are issuing a new asset in the quantity of 1,000,000, a
 
 Example:
 
-```
+```js
     WavesKeeper.signAndPublishTransaction({
         type: 4,
         data: {
@@ -556,7 +560,7 @@ Example:
 
 Example:
 
-```
+```js
       WavesKeeper.signAndPublishTransaction({
            type: 5,
            data: {
@@ -587,7 +591,7 @@ In case of a success, we are re-issuing a new asset in the quantity of 1,000,000
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 6,
         data: {
@@ -617,7 +621,7 @@ In case of a success, 1,000 coins `are burned`.
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 8,
         data: {
@@ -646,7 +650,7 @@ In case of a success, 0.00001000 WAVES is leased.
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 9,
         data: {
@@ -674,7 +678,7 @@ In case of a success, the leasing transaction is cancelled.
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 10,
         data: {
@@ -705,7 +709,7 @@ In case of a success, an alias (another name) is created.
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 11,
         data: {
@@ -740,7 +744,7 @@ In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
 
 Field:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 12,
         data: {
@@ -775,7 +779,7 @@ For cancelling a script the field `script`has to be "". [Script development on R
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -796,7 +800,7 @@ In case of a success, the script will be removed from the account.
 
 Example 2:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 13,
         data: {
@@ -824,7 +828,7 @@ In case of a success, a new script will be added to the account, allowing any tr
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 14,
         data: {
@@ -858,7 +862,7 @@ It's now impossible to cancel a script, you can only add a new script. [Script 
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 15,
         data: {
@@ -893,7 +897,7 @@ In case of a success, the asset's script will be reset.
 
 Example:
 
-```
+```js
    WavesKeeper.signAndPublishTransaction({
         type: 16,
         data: {
@@ -929,7 +933,7 @@ In case of a success, invoke script function `tellme` in testnet account `3N27HU
 
 Waves Keeper's method for signing an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
-```
+```js
     {
         type: 1002,
         data: {
@@ -951,7 +955,7 @@ Waves Keeper's method for signing an order to the matcher. As input, it accepts 
 
 Example:
 
-```
+```js
    WavesKeeper.signOrder({
         type: 1002,
         data: {
@@ -1001,7 +1005,7 @@ ERRORS:
 
 Waves Keeper's method for signing cancellation of an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
-```
+```js
     {
         type: 1003,
         data: {
@@ -1016,7 +1020,7 @@ Waves Keeper's method for signing cancellation of an order to the matcher. As in
 
 Example:
 
-```
+```js
     WavesKeeper.signCancelOrder({
         type: 1003,
         data: {
@@ -1040,7 +1044,7 @@ but also tries to send data to the matcher. For api need know also 2 field `pric
 
 Example:
 
-```
+```js
     WavesKeeper.signAndPublishCancelOrder({
         type: 1003,
         priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
@@ -1066,7 +1070,7 @@ ERRORS:
 
 Waves Keeper's method for signing typified data, for signing requests on various services. As input, it accepts an object similar to a transaction like this:
 
-```
+```js
     {
         type: number,
         data: {
@@ -1084,7 +1088,7 @@ Currently, the method supports the following types:
 
 Example:
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1001,
         data: {
@@ -1107,7 +1111,7 @@ ERRORS:
 
 Request:
 
-```
+```js
     WavesKeeper.signRequest({
         type: 1004,
         data: {
@@ -1123,3 +1127,105 @@ ERRORS:
 - `{ message: "User denied message", code: 10 }` – the user rejected the request
 - `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
 - `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+
+### signCustomData
+
+Method Waves Keeper for sign custom data for different services, it accepts an object:
+
+#### version 1
+
+- `version` 1
+- `binary` string 'base64:....'
+
+Example:
+
+```js
+    WavesKeeper.signCustomData({
+         version: 1,
+         binary: 'base64:AADDEE=='
+    });
+```
+
+REPLY:
+```
+   {
+        version: 1,
+        binary: 'base64:AADDEE==',
+        signature: '...',
+        publicKey: '...'
+   }
+```
+ERRORS:
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+
+#### version 2
+
+- `version` 2
+- `data` Array of
+  - `type` "binary"/string/"integer"/"boolean" - field type,
+  - `key` string - field name
+  - `value` /string/string/number/boolean
+
+
+Example:
+
+```js
+    WavesKeeper.signCustomData({
+         version: 2,
+         data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+    });
+```
+
+REPLY:
+
+```
+   {
+        version: 2,
+        data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+        signature: '...',
+        publicKey: '...'
+   }
+```      
+
+ERRORS:
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+
+### verifyCustomData
+Validate custom data:
+```
+       {
+           version: 1,
+           binary: 'base64:AADDEE==',
+           signature: '...',
+           publicKey: '...'
+       }
+       или
+       {
+            version: 2,
+            data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+            signature: '...',
+            publicKey: '...'
+       }
+```
+Example:
+```js
+    Waves.verifyCustomData({
+        "version" : 1,
+        "binary" : "base64:AADDEE==",
+        "publicKey" : "3BvAsKuGZe2LbSwKr9SA7eSXcNDKnRqN1j2K2bZaTn5X",
+        "signature": "2bLJYR68pwWrUUoatGbySz2vfY76VtzR8TScg1tt5f9DVDsFDCdecWrUiR4x6gFBnwF4Y51uszpouAwtSrg7EcGg"
+    }).then(result => { console.log(result) });
+```
+
+REPLY: true/false in 
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request
+- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted

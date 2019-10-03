@@ -140,7 +140,7 @@ export class WalletController {
         const wallets = this.getWalletsByNetwork(network);
         wallets.forEach(wallet => {
             if (wallet.user.networkCode !== code) {
-                const seed = Seed(wallet.user.seed, code);
+                const seed = new Seed(wallet.user.seed, code);
                 wallet.user.network = network;
                 wallet.user.networkCode = code;
                 wallet.user.address = seed.address;
@@ -191,6 +191,11 @@ export class WalletController {
     async signTx(address, tx, network) {
         const wallet = this._findWallet(address, network);
         return await wallet.signTx(tx);
+    }
+
+    async signWaves(type, data, address, network) {
+        const wallet = this._findWallet(address, network);
+        return await wallet.signWaves(type, data);
     }
 
     /**

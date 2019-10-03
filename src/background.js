@@ -28,6 +28,7 @@ import {
     ExternalDeviceController,
     RemoteConfigController,
     IdleController,
+    StatisticsController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
@@ -35,6 +36,8 @@ import { WindowManager } from './lib/WindowManger';
 import '@waves/waves-transactions';
 import { getAdapterByType } from '@waves/signature-adapter';
 import { WAVESKEEPER_DEBUG } from './constants';
+import { verifyCustomData } from "@waves/waves-transactions";
+import { waves } from "./controllers/wavesTransactionsController";
 
 const version = extension.runtime.getManifest().version;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
@@ -229,6 +232,7 @@ class BackgroundService extends EventEmitter {
         this.messageController = new MessageController({
             initState: initState.MessageController,
             signTx: this.walletController.signTx.bind(this.walletController),
+            signWaves: this.walletController.signWaves.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),
             signBytes: this.walletController.signBytes.bind(this.walletController),
@@ -250,9 +254,16 @@ class BackgroundService extends EventEmitter {
             setNotificationPermissions: (origin, canUse, time) => this.permissionsController.setNotificationPermissions(origin, canUse, time),
         });
 
+        //Statistics
+        this.statisticsController = new StatisticsController(
+            initState.StatisticsController, {
+                network: this.networkController
+            }
+        );
 
         // Single state composed from states of all controllers
         this.store.updateStructure({
+            StatisticsController: this.statisticsController.store,
             PreferencesController: this.preferencesController.store,
             WalletController: this.walletController.store,
             NetworkController: this.networkController.store,
@@ -301,11 +312,19 @@ class BackgroundService extends EventEmitter {
             setUiState: async (state) => this.uiStateController.setUiState(state),
 
             // wallets
-            addWallet: async (account) => this.walletController.addWallet(account),
+            addWallet: async (account) => {
+                const data = await this.walletController.addWallet(account);
+                this.statisticsController.addEvent('addWallet');
+                return data;
+            },
             removeWallet: async (address, network) => this.walletController.removeWallet(address, network),
             lock: async () => this.walletController.lock(),
             unlock: async (password) => this.walletController.unlock(password),
-            initVault: async (password) => this.walletController.initVault(password),
+            initVault: async (password) => {
+                const result = await this.walletController.initVault(password);
+                this.statisticsController.addEvent('initVault');
+                return result;
+            },
             deleteVault: async () => {
                 await this.messageController.clearMessages();
                 await this.walletController.deleteVault();
@@ -316,7 +335,12 @@ class BackgroundService extends EventEmitter {
 
             // messages
             clearMessages: async () => this.messageController.clearMessages(),
-            approve: async (messageId, address) => await this.messageController.approve(messageId, address),
+            approve: async (messageId, address) => {
+                const approveData = await this.messageController.approve(messageId, address);
+                const message = this.messageController.getMessageById(messageId);
+                this.statisticsController.transaction(message);
+                return  approveData;
+            },
             reject: async (messageId) => this.messageController.reject(messageId),
 
             // notifications
@@ -345,12 +369,14 @@ class BackgroundService extends EventEmitter {
 
             // origin settings
             allowOrigin: async (origin) => {
+                this.statisticsController.addEvent('allowOrigin', { origin });
                 this.messageController.rejectByOrigin(origin);
                 this.permissionsController.deletePermission(origin, PERMISSIONS.REJECTED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
             },
 
             disableOrigin: async (origin) => {
+                this.statisticsController.addEvent('disableOrigin', { origin });
                 this.permissionsController.deletePermission(origin, PERMISSIONS.APPROVED);
                 this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
             },
@@ -445,7 +471,6 @@ class BackgroundService extends EventEmitter {
                 broadcast,
                 account: selectedAccount,
             };
-
             const { noSign, showNotification, ...result } = await this.messageController.newMessage(messageData);
             const { id: messageId } = result;
 
@@ -485,6 +510,7 @@ class BackgroundService extends EventEmitter {
         };
 
         const api = {
+
             signOrder: async (data, options) => {
                 return await newMessage(data, 'order', options, false)
             },
@@ -512,6 +538,12 @@ class BackgroundService extends EventEmitter {
             signRequest: async (data, options) => {
                 return await newMessage(data, 'request', options, false)
             },
+            signCustomData: async (data, options) => {
+                return await newMessage(data, 'customData', options, false)
+            },
+            verifyCustomData: async (data) => {
+                return waves.verifyCustomData(data);
+            },
             notification: async (data) => {
                 const state = this.getState();
                 const { selectedAccount, initialized } = state;
@@ -537,6 +569,14 @@ class BackgroundService extends EventEmitter {
                 await this.validatePermission(origin);
 
                 return this._publicState(this.getState(), origin);
+            },
+
+            resourceIsApproved: async () => {
+                return this.permissionsController.hasPermission(origin, PERMISSIONS.APPROVED);
+            },
+
+            resourceIsBlocked: async () => {
+                return this.permissionsController.hasPermission(origin, PERMISSIONS.REJECTED);
             },
 
             getKEK: async (publicKey, prefix) => {
