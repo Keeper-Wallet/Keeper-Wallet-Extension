@@ -1140,6 +1140,9 @@ Method Waves Keeper for sign custom data for different services, it accepts an o
 - `version` 1
 - `binary` string 'base64:....'
 
+Bytes to sign: [255, 255, 255, 1, ...(from decode base64)]
+[waves-transaction library](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts)
+
 Example:
 
 ```js
@@ -1173,6 +1176,8 @@ ERRORS:
   - `key` string - field name
   - `value` /string/string/number/boolean
 
+Bytes to sign: [255, 255, 255, 2, ...(from data Array to bin)]
+[waves-transaction library](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts)
 
 Example:
 
