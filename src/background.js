@@ -29,6 +29,7 @@ import {
     RemoteConfigController,
     IdleController,
     StatisticsController,
+    TrashController,
 } from './controllers';
 import { PERMISSIONS } from './controllers/PermissionsController';
 import { setupDnode } from './lib/dnode-util';
@@ -155,6 +156,10 @@ class BackgroundService extends EventEmitter {
         const initState = options.initState || {};
         this.store = new ComposableObservableStore(initState);
 
+        this.trash = new TrashController({
+            initState: initState.TrashController,
+        });
+
         // Controllers
         this.remoteConfigController = new RemoteConfigController({
             initState: initState.RemoteConfigController,
@@ -192,6 +197,7 @@ class BackgroundService extends EventEmitter {
             getNetwork: this.networkController.getNetwork.bind(this.networkController),
             getNetworkCode: this.networkController.getNetworkCode.bind(this.networkController),
             getNetworks: this.networkController.getNetworks.bind(this.networkController),
+            trash: this.trash,
         });
 
 
@@ -274,6 +280,7 @@ class BackgroundService extends EventEmitter {
             AssetInfoController: this.assetInfoController.store,
             RemoteConfigController: this.remoteConfigController.store,
             NotificationsController: this.notificationsController.store,
+            TrashController: this.trash.store,
         });
 
         // Call send update, which is bound to ui EventEmitter, on every store update

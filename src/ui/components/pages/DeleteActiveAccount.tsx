@@ -8,8 +8,13 @@ import { I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
 class DeleteActiveAccountComponent extends React.Component {
+    
+    state = { disable: false };
     props;
-    onClickHandler = () => this.props.deleteActiveAccount(null);
+    onClickHandler = () => {
+        this.props.deleteActiveAccount(null);
+        this.setState({ disable: false });
+    };
 
     render() {
         return <div className={styles.content}>
@@ -22,7 +27,7 @@ class DeleteActiveAccountComponent extends React.Component {
                 </Trans>
             </div>
             <div>
-                <Button onClick={this.onClickHandler} type='warning'>
+                <Button onClick={this.onClickHandler} type='warning' disabled={this.state.disable}>
                     <Trans i18nKey='deleteAccount.delete'>Delete account</Trans>
                 </Button>
             </div>

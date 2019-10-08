@@ -11,7 +11,7 @@ class NewWalletNameComponent extends React.Component {
     
     inputEl: Input;
     readonly props;
-    readonly state = {} as any;
+    readonly state = { disabled: false, errors: [] } as any;
     
     passwordError: boolean;
     onChange = (e) => this._onChange(e);
@@ -52,7 +52,9 @@ class NewWalletNameComponent extends React.Component {
                 </div>
                 
                 <div className={styles.buttons}>
-                    <Button type='submit' onClick={this._onSave} disabled={this.state.errors.length}>
+                    <Button type='submit'
+                            onClick={this._onSave}
+                            disabled={this.state.errors.length || this.state.disabled}>
                         <Trans i18nKey="newAccountName.continue">Continue</Trans>
                     </Button>
                     {   this.props.account.hasBackup ? null :
@@ -83,6 +85,7 @@ class NewWalletNameComponent extends React.Component {
     _onSave = (e) => {
         e.preventDefault();
         this.props.addUser(this.props.account);
+        this.setState({ disabled: true });
     };
     
     _onSubmit(e) {

@@ -55,7 +55,7 @@ class BackUpSeedComponent extends React.Component {
                 </Trans>
             </div>
 
-            <Button className="submit margin-main-big" type='submit' onClick={this.onClick}>
+            <Button className="submit margin-main-big" type='submit' onClick={this.onClick} disabled={this.state.disabled}>
                 <Trans i18nKey='backupSeed.continue'>Continue</Trans>
             </Button>
 
@@ -89,6 +89,7 @@ class BackUpSeedComponent extends React.Component {
                 account: null
             });
             this.props.addUser(this.props.account);
+            this.setState({ disabled: true });
             return null;
         }
         

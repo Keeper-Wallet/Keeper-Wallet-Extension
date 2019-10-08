@@ -18,6 +18,7 @@ export class WalletController {
         this.getNetwork = options.getNetwork;
         this.getNetworks = options.getNetworks;
         this.getNetworkCode = options.getNetworkCode;
+        this.trashControl = options.trash;
     }
 
     // Public
@@ -53,8 +54,10 @@ export class WalletController {
     removeWallet(address, network) {
         if (this.store.getState().locked) throw new Error('App is locked');
         const wallet = this.getWalletsByNetwork(network).find(wallet => wallet.getAccount().address === address);
-        const index = this.wallets.indexOf(wallet);
-        this.wallets.splice(index, 1);
+        this._walletToTrash(wallet);
+        this.wallets = this.wallets.filter((w) => {
+            return w !== wallet;
+        });
         this._saveWallets();
     }
 
@@ -81,6 +84,7 @@ export class WalletController {
         if (!password || typeof password !== 'string') {
             throw new Error('Password is needed to init vault')
         }
+        (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
         this.password = password;
         this.wallets = [];
         this._saveWallets();
@@ -88,6 +92,7 @@ export class WalletController {
     }
 
     deleteVault() {
+        (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
         this.password = null;
         this.wallets = [];
         this.store.updateState({ locked: true, initialized: false, vault: undefined });
@@ -154,6 +159,15 @@ export class WalletController {
 
     getWalletsByNetwork(network) {
         return this.wallets.filter(wallet => wallet.isMyNetwork(network));
+    }
+
+
+    _walletToTrash(wallet) {
+        const walletsData = wallet && wallet.serialize && wallet.serialize();
+        if (walletsData) {
+            const saveData = { walletsData: this.password ? encrypt(walletsData, this.password) : walletsData, address: wallet.address };
+            this.trashControl.addData(saveData);
+        }
     }
 
     _migrateWalletsNetwork() {
