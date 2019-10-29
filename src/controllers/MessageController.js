@@ -366,6 +366,9 @@ export class MessageController extends EventEmitter {
                 signedData = await this.auth(message.account.address, message.data, message.account.network);
                 signedData = message.data.isRequest ? signedData.signature : signedData;
                 break;
+            case 'wavesAuth':
+                signedData = await this.signWaves('signWavesAuth', message.data, message.account.address, message.account.network);
+                break;
             case 'request':
                 signedData = await this.signRequest(message.account.address, message.data, message.account.network);
                 break;
@@ -429,6 +432,10 @@ export class MessageController extends EventEmitter {
      */
     async _getMessageDataHash(data, account) {
 
+        if (data && data.type === 'wavesAuth') {
+            return  waves.parseWavesAuth(data);
+        }
+
         if (data && data.type === 'customData') {
             return waves.parseCustomData(data);
         }
@@ -469,6 +476,12 @@ export class MessageController extends EventEmitter {
         const hasFee = message.data.data && (message.data.data.fee || message.data.data.matcherFee);
 
         switch (message.type) {
+            case 'wavesAuth':
+                result.data = message.data;
+                result.data.publicKey = message.data.publicKey = message.data.publicKey || message.account.publicKey;
+                messageMeta = await this._getMessageDataHash(message, message.account);
+                result.messageHash = messageMeta.id;
+                break;
             case 'auth':
                 try {
                     result.successPath = result.successPath ?

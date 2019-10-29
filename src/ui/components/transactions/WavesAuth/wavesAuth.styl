@@ -1,0 +1,47 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.wavesAuthTransactionCard
+  @extends .transaction-card
+
+  .cardHeader,
+  .cardContent
+    flex-direction: column;
+    margin: 0;
+
+  .cardContent
+    padding-left: 0;
+    margin-bottom: 4px;
+    text-align: center;
+
+  .smallCardContent
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+
+.wavesAuthCard_collapsed
+  .origin
+    display: none;
+
+.wavesAuthTxIconSmall
+  @extends .txIcon
+
+.wavesAuthTxIcon
+  @extends .txIconBig
+
+.wavesAuthTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.wavesAuthOriginDescription
+  @extends .originDescription
+  color: $black;
+  font-size: 12px;
+
+.wavesAuthOriginAddress
+  @extends .originAddress
+  padding-top:7px;
+  margin-bottom: 4px;
+  color: $black;
+  font-size: 14px;

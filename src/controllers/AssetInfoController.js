@@ -21,6 +21,9 @@ export class AssetInfoController {
                 mainnet: {
                     WAVES
                 },
+                stagenet: {
+                    WAVES
+                },
                 testnet: {
                     WAVES
                 },
@@ -46,7 +49,7 @@ export class AssetInfoController {
         const API_BASE = this.getNode();
         const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
-        if (!assets[network][assetId] || assets[network][assetId].scripted == null) {
+        if (!assets[network] || !assets[network][assetId] || assets[network][assetId].scripted == null) {
             let resp = await fetch(url);
             switch (resp.status) {
                 case 200:
@@ -66,6 +69,7 @@ export class AssetInfoController {
                         reissuable: assetInfo.reissuable,
                         displayName: assetInfo.ticker || assetInfo.name
                     };
+                    assets[network] = assets[network] || {};
                     assets[network][assetId] = mapped;
                     this.store.updateState({assets});
                     break;

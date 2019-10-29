@@ -542,6 +542,11 @@ class BackgroundService extends EventEmitter {
             auth: async (data, options) => {
                 return await newMessage(data, 'auth', options, false)
             },
+            wavesAuth: async (data, options) => {
+                const publicKey = data && data.publicKey;
+                const timestamp = data && data.timestamp || Date.now();
+                return await newMessage({ publicKey, timestamp }, 'wavesAuth', options, false)
+            },
             signRequest: async (data, options) => {
                 return await newMessage(data, 'request', options, false)
             },
