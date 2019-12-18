@@ -1,5 +1,8 @@
 ## Waves Keeper
 
+#### version 1.1.1w
++ Fix links to waves.exchange
+
 #### version 1.1.11
 + Fix debounce on delete account btn
 + Add backup accounts store
