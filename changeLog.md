@@ -1,5 +1,9 @@
 ## Waves Keeper
 
+#### version 1.1.11
++ Fix debounce on delete account btn
++ Add backup accounts store
+
 #### version 1.1.10
 + Added methods to sign and verify custom data
 + Added Stagenet in network selector

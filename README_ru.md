@@ -1,4 +1,4 @@
-# Waves Keeper v1.1.10
+# Waves Keeper v1.1.12
 
 [en](https://github.com/wavesplatform/waveskeeper/blob/master/README.md) | ru
 

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './fromDate.styl';
 
 const AddZero = ({ value=0 }) => {
     const res = +value < 10 ? `0${value}` : `${value}`;
@@ -19,7 +20,6 @@ const Day = ({ value }) => {
     const day = new Date(value).getDate();
     return <AddZero value={day}/>;
 };
-
 
 const Hours = ({ value }) => {
     const hours = new Date(value).getHours();
@@ -60,8 +60,8 @@ const DateFromFormat = ({ value, format }) => {
     }</span>
 };
 
-export const DateFormat = ({ value, format='DD-MM-YYYY hh:mm' }) => {
-    return <div>
-        <DateFromFormat value={value} format={format}/>
+export const DateFormat = ({ value, format='DD-MM-YYYY hh:mm', showRaw = false, className = '' }) => {
+    return <div className={className}>
+        <DateFromFormat value={value} format={format}/> { showRaw ? <span className={styles.timestamp}>{value}</span> : undefined }
     </div>
 };

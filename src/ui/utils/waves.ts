@@ -16,13 +16,20 @@ export function getExplorerUrls(network: string, address: string) {
     
     switch (network) {
         case 'mainnet':
-            result.walletLink = 'https://client.wavesplatform.com/import/waveskeeper';
+            result.walletLink = 'https://waves.exchange/import/waveskeeper';
             result.activeAddressLink = `https://wavesexplorer.com/address/${address}`;
             break;
         case 'testnet':
             result.walletLink = 'https://testnet.wavesplatform.com/import/waveskeeper';
             result.activeAddressLink = `https://wavesexplorer.com/testnet/address/${address}`;
             break;
+        case 'stagenet':
+            result.walletLink = 'https://stagenet.wavesplatform.com/import/waveskeeper';
+            result.activeAddressLink = `https://wavesexplorer.com/stagenet/address/${address}`;
+            break;
+        default:
+            result.walletLink = 'https://waves.exchange/import/waveskeeper';
+            result.activeAddressLink = `https://wavesexplorer.com/address/${address}`;
     }
     
     return result;

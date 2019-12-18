@@ -27,21 +27,25 @@ export const DEFAULT_CONFIG = {
     },
     NETWORKS: [ 'mainnet', 'testnet', 'stagenet', 'custom' ],
     NETWORK_CONFIG: {
-        testnet: {
-            code: 'T', server: 'https://pool.testnet.wavesnodes.com/',
-            matcher: 'https://matcher.testnet.wavesnodes.com/',
+        "testnet": {
+            "code": "T",
+            "server": "https://pool.testnet.wavesnodes.com/",
+            "matcher": "https://matcher.testnet.wavesnodes.com/"
         },
-        mainnet: {
-            code: 'W', server: 'https://nodes.wavesplatform.com/',
-            matcher: 'https://matcher.wavesplatform.com/',
+        "mainnet": {
+            "code": "W",
+            "server": "https://nodes.wavesplatform.com/",
+            "matcher": "https://matcher.waves.exchange/"
         },
-        stagenet: {
-            code: 'S', server: ' https://nodes-stagenet.wavesnodes.com/',
-            matcher: 'https://matcher-stagenet.wavesplatform.com/',
+        "stagenet": {
+            "code": "S",
+            "server": " https://nodes-stagenet.wavesnodes.com/",
+            "matcher": "https://matcher-stagenet.wavesplatform.com/"
         },
-        custom: {
-            code: '', server: '',
-            matcher: '',
+        "custom": {
+            "code": "",
+            "server": "",
+            "matcher": ""
         }
     },
     MESSAGES_CONFIG: {
@@ -104,4 +108,4 @@ export const DEFAULT_FEE_CONFIG = {
             "fee": 100000000
         }
     }
-}
+};

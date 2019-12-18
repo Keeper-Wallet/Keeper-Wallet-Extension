@@ -101,7 +101,7 @@ async function setupInpageApi() {
 }
 
 function setupClickInterceptor(inpageApi) {
-    const excludeSites = ['client.wavesplatform.com', 'dex.wavesplatform.com'];
+    const excludeSites = ['waves.exchange'];
 
     if (excludeSites.includes(location.host)) {
         return false;
@@ -132,7 +132,7 @@ function checkForPaymentApiLink(e) {
 
         const url = new URL(href);
 
-        if (!['client.wavesplatform.com', 'dex.wavesplatform.com'].find(item => url.host === item)) {
+        if (!['client.wavesplatform.com', 'dex.wavesplatform.com', 'waves.exchange'].find(item => url.host === item)) {
             return false;
         }
 

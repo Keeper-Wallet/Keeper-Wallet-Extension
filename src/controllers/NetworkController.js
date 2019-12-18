@@ -9,17 +9,20 @@ export class NetworkController {
             currentNetwork: WAVESKEEPER_DEBUG ? 'testnet' : 'mainnet',
             customNodes: {
                 mainnet: null,
+                stagenet: null,
                 testnet: null,
                 custom: null,
             },
             customMatchers: {
                 mainnet: null,
                 testnet: null,
+                stagenet: null,
                 custom: null,
             },
             customCodes: {
                 mainnet: null,
                 testnet: null,
+                stagenet: null,
                 custom: null,
             }
         };

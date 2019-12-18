@@ -12,7 +12,7 @@ const SHUFFLE_COUNT = 500;
 class ConfirmBackupComponent extends React.Component {
 
     props;
-    state = {seed: null, list: [], selectedList: [], wrongSeed: false, complete: false};
+    state = {seed: null, list: [], selectedList: [], wrongSeed: false, complete: false, disabled: false};
     onSelect = (list) => this._onSelect(list);
     onUnSelect = (list) => this._onUnSelect(list);
     onClear = () => this._onClear();
@@ -49,6 +49,7 @@ class ConfirmBackupComponent extends React.Component {
                    list={list} selected={true} onSelect={this.onSelect}/>
             {showButton ?
                 <Button type='submit'
+                        disabled={this.state.disabled}
                         className={styles.confirm}
                         onClick={this.onSubmit}>
                     <Trans i18nKey='confirmBackup.confirm'>Confirm</Trans>
@@ -71,6 +72,7 @@ class ConfirmBackupComponent extends React.Component {
             account: null
         });
         this.props.addUser(this.props.account);
+        this.setState({ disabled: true });
     }
 
     private _onSelect({text, id}) {
