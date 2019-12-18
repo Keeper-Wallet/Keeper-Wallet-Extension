@@ -1,6 +1,6 @@
 ## Waves Keeper
 
-#### version 1.1.1w
+#### version 1.1.1
 + Fix links to waves.exchange
 
 #### version 1.1.11
