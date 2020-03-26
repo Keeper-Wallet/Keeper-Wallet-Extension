@@ -8,7 +8,7 @@ describe('BalanceController', () => {
         getAccounts: () => [
             {address: '3N3Cn2pYtqzj7N9pviSesNe8KG9Cmb718Y1'},
             {address: '3MpkdJR4Kf2wS9XGeqANK15tN9YQZib4LaQ'}],
-        getNode: () => 'https://testnodes.wavesnodes.com'
+        getNode: () => 'https://nodes-testnet.wavesnodes.com'
     });
     clearInterval(controller.poller);
 
