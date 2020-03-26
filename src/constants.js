@@ -29,8 +29,8 @@ export const DEFAULT_CONFIG = {
     NETWORK_CONFIG: {
         "testnet": {
             "code": "T",
-            "server": "https://pool.testnet.wavesnodes.com/",
-            "matcher": "https://matcher.testnet.wavesnodes.com/"
+            "server": "https://nodes-testnet.wavesnodes.com/",
+            "matcher": "https://matcher-testnet.wavesnodes.com/"
         },
         "mainnet": {
             "code": "W",
