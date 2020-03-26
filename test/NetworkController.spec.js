@@ -20,10 +20,10 @@ describe('NetworkController', () => {
     });
 
     it('Should set custom nodes', () => {
-        controller.setCustomNode('https://testnet1.wavesnodes.com/')
-        controller.setCustomNode('https://testnet1.wavesnodes.com/', 'testnet')
-        expect(controller.getCustomNodes().testnet).to.eql('https://testnet1.wavesnodes.com/')
-        expect(controller.getCustomNodes().mainnet).to.eql('https://testnet1.wavesnodes.com/')
+        controller.setCustomNode('https://nodes-stagenet.wavesnodes.com/')
+        controller.setCustomNode('https://nodes-stagenet.wavesnodes.com/', 'stagenet')
+        expect(controller.getCustomNodes().stagenet).to.eql('https://nodes-stagenet.wavesnodes.com/')
+        expect(controller.getCustomNodes().mainnet).to.eql('https://nodes-stagenet.wavesnodes.com/')
     });
 
     it('Should broadcast messages with transactions', async () => {
@@ -43,7 +43,7 @@ describe('NetworkController', () => {
     it('Should broadcast messages with transactions to custom nodes', () => {
         const message = {type:'transaction', data: {}}
         const resp =  controller.broadcast(message)
-        controller.setCustomNode('https://testnet1.wavesnodes.com/')
+        controller.setCustomNode('https://nodes-stagenet.wavesnodes.com/')
         return resp.should.eventually.be.rejectedWith('failed to parse json message')
     });
 });
