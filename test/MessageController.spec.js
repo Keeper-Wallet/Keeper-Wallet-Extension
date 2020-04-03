@@ -60,7 +60,7 @@ describe("MessageController", () => {
         }
     };
 
-    const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://testnodes.wavesnodes.com'})
+    const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://nodes-testnet.wavesnodes.com'})
 
     beforeEach(() => {
         controller = new MessageController({signTx: async() => 'placeholder', broadcast: async () => 'broadcast placeholder', assetInfo: (id)=>assetInfoController.assetInfo(id)});
