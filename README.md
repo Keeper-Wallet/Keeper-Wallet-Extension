@@ -230,7 +230,7 @@ If a website is not trusted, events won't show.
 
 **auth**
 
-This is a method for obtaining a signature of authorization data while verifying Waves' user. It works the same way as [Waves Auth API](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
+This is a method for obtaining a signature of authorization data while verifying Waves' user. It works the same way as [Waves Auth API](https://docs.wavesprotocol.org/en/development-and-api/client-api/auth-api.html).
 
 Example:
 
@@ -282,7 +282,7 @@ Example
         data: "Generated string from server",
         name: "My test App",
         icon: "/img/icons/waves_logo.svg",
-        referrer: "https://client.wavesplatform.com/",
+        referrer: "https://waves.exchange/",
         successPath: "login"
     };
 
@@ -310,7 +310,7 @@ If the verification is successful, Waves Keeper will return in the promise an ob
 - `signature` - signature
 - `version` – API version
 
-[How to verify a signature](https://docs.wavesplatform.com/en/waves-api-and-sdk/client-api/auth-api.html#how-to-check-signature-validity)?
+[How to verify a signature](https://docs.wavesprotocol.org/en/waves-api-and-sdk/client-api/auth-api.html#how-to-check-signature-validity)?
 
 ERRORS
 
@@ -453,10 +453,10 @@ A unit of two lines – transactions that are signed and ready to be broadcasted
 
 ERRORS Same as in "`signTransaction`"
 
-**[Transactions](https://docs.wavesplatform.com/en/waves-api-and-sdk/client-libraries/waves-transactions.html)**
+**[Transactions](https://docs.wavesprotocol.org/en/waves-api-and-sdk/client-libraries/waves-transactions.html)**
 
 Every user of Waves' network has a state (balances, assets, data, scripts), and every past transactions changes these data. \
-In Waves Keeper API it is different from [NODE REST API](https://docs.wavesplatform.com/en/waves-api-and-sdk/waves-node-rest-api.html).
+In Waves Keeper API it is different from [NODE REST API](https://docs.wavesprotocol.org/en/waves-api-and-sdk/waves-node-rest-api.html).
 
 `signTransaction`, `signAndPublishTransaction` accept transactions as follows
 
@@ -488,7 +488,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 
 ---
 
-**[Type 3 ISSUE – token issue](https://docs.wavesplatform.com/en/blockchain/transaction-type/issue-transaction.html)**
+**[Type 3 ISSUE – token issue](https://docs.wavesprotocol.org/en/blockchain/transaction-type/issue-transaction.html)**
 
 - `name` [4, 16] string – token name,
 - `description` [0, 1000] string – token description,
@@ -496,7 +496,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 - `precision` [0 - 8] number - precision,
 - `reissuable` true|false – reissuble,
 - `*fee` MoneyLike -fee
-- `*script` string – [smart asset](https://docs.wavesplatform.com/en/smart-contracts/smart-assets.html)
+- `*script` string – [smart asset](https://docs.wavesprotocol.org/en/smart-contracts/smart-assets.html)
 - `*senderPublicKey` string – sender's public key in base58
 - `*timestamp` number/string – time in ms
 
@@ -525,7 +525,7 @@ Example:
 
 In case of a success, we are issuing a new asset in the quantity of 1,000,000, and your balance will show 10,000.00 Best Token
 
-**[Тype 4 TRANSFER – asset transfer](https://docs.wavesplatform.com/en/blockchain/transaction-type/transfer-transaction.html)**
+**[Тype 4 TRANSFER – asset transfer](https://docs.wavesprotocol.org/en/blockchain/transaction-type/transfer-transaction.html)**
 
 - `amount` MoneyLike - amount,
 - `recipient` string – recipient's address or alias
@@ -551,7 +551,7 @@ Example:
     });
 ```
 
-**[Тype 5 REISSUE – token reissue](https://docs.wavesplatform.com/en/blockchain/transaction-type/reissue-transaction.html)**
+**[Тype 5 REISSUE – token reissue](https://docs.wavesprotocol.org/en/blockchain/transaction-type/reissue-transaction.html)**
 
 - `assetId` string - "asset ID",
 - `quantity` [0 - (JLM)] number/string/MoneyLike - quantity,
@@ -583,7 +583,7 @@ Example:
 
 In case of a success, we are re-issuing a new asset in the quantity of 1,000,000, and your balance will show 10,000.00 Best Token
 
-**[Тype 6 BURN – burning tokens](https://docs.wavesplatform.com/en/blockchain/transaction-type/burn-transaction.html)**
+**[Тype 6 BURN – burning tokens](https://docs.wavesprotocol.org/en/blockchain/transaction-type/burn-transaction.html)**
 
 - `assetId` string – asset ID,
 - `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
@@ -613,7 +613,7 @@ Example:
 
 In case of a success, 1,000 coins `are burned`.
 
-**[Тype 8 LEASE - Leasing](https://docs.wavesplatform.com/en/blockchain/transaction-type/lease-transaction.html)**
+**[Тype 8 LEASE - Leasing](https://docs.wavesprotocol.org/en/blockchain/transaction-type/lease-transaction.html)**
 
 - `recipient` string – recipient's address or alias,
 - `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
@@ -643,7 +643,7 @@ Example:
 
 In case of a success, 0.00001000 WAVES is leased.
 
-**[Тype 9 LEASE CANCEL – cancel leasing](https://docs.wavesplatform.com/en/blockchain/transaction-type/lease-cancel-transaction.html)**
+**[Тype 9 LEASE CANCEL – cancel leasing](https://docs.wavesprotocol.org/en/blockchain/transaction-type/lease-cancel-transaction.html)**
 
 - `leaseId` string – leasing transaction ID,
 - `*fee` MoneyLike -fee
@@ -671,7 +671,7 @@ Example:
 
 In case of a success, the leasing transaction is cancelled.
 
-**[Тype 10 CREATE ALIAS – creating an alias for an address](https://docs.wavesplatform.com/en/blockchain/transaction-type/create-alias-transaction.html)**
+**[Тype 10 CREATE ALIAS – creating an alias for an address](https://docs.wavesprotocol.org/en/blockchain/transaction-type/create-alias-transaction.html)**
 
 - `alias`[4, 30] string - alias
 - `*fee` MoneyLike -fee
@@ -699,7 +699,7 @@ Example:
 
 In case of a success, an alias (another name) is created.
 
-**[Тype 11 MASS TRANSFER - a mass transfer of an asset](https://docs.wavesplatform.com/en/blockchain/transaction-type/mass-transfer-transaction.html)**
+**[Тype 11 MASS TRANSFER - a mass transfer of an asset](https://docs.wavesprotocol.org/en/blockchain/transaction-type/mass-transfer-transaction.html)**
 
 - `totalAmount` moneyLike – total to be sent // instead of calculating the amount you may insert { assetId: "ID of the asset to be sent", coins: 0},
 - `transfers`  a mass of objects
@@ -734,7 +734,7 @@ Example:
 
 In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
 
-**[Тype 12 DATA TRANSACTION - saving data](https://docs.wavesplatform.com/en/blockchain/transaction-type/data-transaction.html)**
+**[Тype 12 DATA TRANSACTION - saving data](https://docs.wavesprotocol.org/en/blockchain/transaction-type/data-transaction.html)**
 
 - `data`  mass of objects
   - `type` "binary"/string/"integer"/"boolean" - type,
@@ -770,9 +770,9 @@ Field:
 
 In case of a success, new data will be stored in the state.
 
-**[Тype 13 SET SCRIPT – scrypting an account](https://docs.wavesplatform.com/en/blockchain/transaction-type/set-script-transaction.html)**
+**[Тype 13 SET SCRIPT – scrypting an account](https://docs.wavesprotocol.org/en/blockchain/transaction-type/set-script-transaction.html)**
 
-- `script` string - [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+- `script` string - [script](https://docs.wavesprotocol.org/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 - `*fee` MoneyLike -fee
 - `*senderPublicKey` string - sender's public key in base58
 - `*timestamp` number/string – time in ms
@@ -821,7 +821,7 @@ Example 2:
 
 In case of a success, a new script will be added to the account, allowing any transactions without a signature (be careful!).
 
-**[Тype 14 Sponsored Fee Transaction - Sponsorship](https://docs.wavesplatform.com/en/blockchain/transaction-type/fee-sponsoring-transaction.html)**
+**[Тype 14 Sponsored Fee Transaction - Sponsorship](https://docs.wavesprotocol.org/en/blockchain/transaction-type/fee-sponsoring-transaction.html)**
 
 - `minSponsoredAssetFee` MoneyLike – fee price in the asset.
 - `*fee` MoneyLike - fee
@@ -852,10 +852,10 @@ Example:
 
 In case of a success, a transfer fee can be paid in the asset.
 
-**[Тype 15 SET ASSET SCRIPT – setting a script to an asset](https://docs.wavesplatform.com/en/blockchain/transaction-type/set-asset-script-transaction.html)**
+**[Тype 15 SET ASSET SCRIPT – setting a script to an asset](https://docs.wavesprotocol.org/en/blockchain/transaction-type/set-asset-script-transaction.html)**
 
 - `assetId` string – asset ID
-- `script` string – [script](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+- `script` string – [script](https://docs.wavesprotocol.org/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 - `*fee` MoneyLike – fee
 - `*senderPublicKey` string - sender's public key in base58
 - `*timestamp` number/string – time in ms
@@ -884,7 +884,7 @@ Example:
 
 In case of a success, the asset's script will be reset.
 
-**[Тип 16 SCRIPT INVOCATION - call account script function](https://docs.wavesplatform.com/en/blockchain/transaction-type/invoke-script-transaction.html)**
+**[Тип 16 SCRIPT INVOCATION - call account script function](https://docs.wavesprotocol.org/en/blockchain/transaction-type/invoke-script-transaction.html)**
 
 - `dApp` string – address script account
 - `call` object –
@@ -927,7 +927,7 @@ Example:
 
 In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU`
 
-**[Calculating transaction fees](https://docs.wavesplatform.com/blockchain/transaction/transaction-fee.html)**
+**[Calculating transaction fees](https://docs.wavesprotocol.org/blockchain/transaction/transaction-fee.html)**
 
 ---
 

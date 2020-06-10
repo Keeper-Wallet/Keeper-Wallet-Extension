@@ -4,7 +4,7 @@
 
 Приложение для хранения данных пользователя
 и проведения транзакций в блокчейн сети Waves.
-[Информация о сети Waves](https://docs.wavesplatform.com/en/)
+[Информация о сети Waves](https://docs.wavesprotocol.org/en/)
 
 ## Waves Keeper API
 
@@ -233,7 +233,7 @@ Example:
 ### auth
 
 Метод для получения подписи авторизационных данных при подтверждении пользователя Waves.
-Работает аналогично [протоколу авторизации waves](https://docs.wavesplatform.com/en/development-and-api/client-api/auth-api.html).
+Работает аналогично [протоколу авторизации waves](https://docs.wavesprotocol.org/en/development-and-api/client-api/auth-api.html).
 
 Пример:
 
@@ -283,7 +283,7 @@ Example:
         data: "Generated string from server",
         name: "My test App",
         icon: "/img/icons/waves_logo.svg",
-        referrer: "https://client.wavesplatform.com/",
+        referrer: "https://waves.exchange/",
         successPath: "login"
     };
 
@@ -308,7 +308,7 @@ Example:
 - `signature` - подпись
 - `version` - версия апи
 
-[Как проверить подпись](https://docs.wavesplatform.com/en/waves-api-and-sdk/client-api/auth-api.html#how-to-check-signature-validity)?
+[Как проверить подпись](https://docs.wavesprotocol.org/en/waves-api-and-sdk/client-api/auth-api.html#how-to-check-signature-validity)?
 
 ОШИБКИ
 
@@ -456,11 +456,11 @@ Example:
 ОШИБКИ
 Аналогично `signTransaction`.
 
-## [Транзакции](https://docs.wavesplatform.com/en/waves-api-and-sdk/client-libraries/waves-transactions.html)
+## [Транзакции](https://docs.wavesprotocol.org/en/waves-api-and-sdk/client-libraries/waves-transactions.html)
 
 У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты),
 любая прошедшая транзакция меняет эти данные.
-В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesplatform.com/en/waves-api-and-sdk/waves-node-rest-api.html).
+В wavesKeeper API - отличается от [NODE REST API](https://docs.wavesprotocol.org/en/waves-api-and-sdk/waves-node-rest-api.html).
 
 `signTransaction`, `signAndPublishTransaction` принимают транзакцию в следующем виде
 
@@ -495,7 +495,7 @@ MoneyLike может иметь вид:
 
 ---
 
-### [Тип 3 ISSUE - выпуск токена](https://docs.wavesplatform.com/en/blockchain/transaction-type/issue-transaction.html)
+### [Тип 3 ISSUE - выпуск токена](https://docs.wavesprotocol.org/en/blockchain/transaction-type/issue-transaction.html)
 
 - `name` [4, 16] string - Название токена,
 - `description` [0, 1000] string - Описание токена,
@@ -503,7 +503,7 @@ MoneyLike может иметь вид:
 - `precision` [0 - 8] number - точность,
 - `reissuable` true|false - возможно перевыпускать,
 - `*fee` MoneyLike -комиссия
-- `*script` string - [smart asset](https://docs.wavesplatform.com/ru/smart-contracts/smart-assets.html)
+- `*script` string - [smart asset](https:/docs.wavesprotocol.org/ru/smart-contracts/smart-assets.html)
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
 
@@ -533,7 +533,7 @@ MoneyLike может иметь вид:
 В случае успеха мы выпускаем новыйй ассет в количестве 1000000 шт.
 которые будут на вашем балансе 10000.00 Best Token
 
-### [Тип 4 TRANSFER - передача ассетов](https://docs.wavesplatform.com/ru/blockchain/transaction-type/transfer-transaction.html)
+### [Тип 4 TRANSFER - передача ассетов](https:/docs.wavesprotocol.org/ru/blockchain/transaction-type/transfer-transaction.html)
 
 - `amount` MoneyLike - количество,
 - `recipient` string - адрес получателя или алиас
@@ -560,7 +560,7 @@ MoneyLike может иметь вид:
 
 ```
 
-### [Тип 5 REISSUE - довыпуск токенов](https://docs.wavesplatform.com/ru/blockchain/transaction-type/reissue-transaction.html)
+### [Тип 5 REISSUE - довыпуск токенов](https:/docs.wavesprotocol.org/ru/blockchain/transaction-type/reissue-transaction.html)
 
 - `assetId` string - "Id ассета",
 - `quantity` [0 - (JLM)] number/string/MoneyLike - количество,
@@ -593,7 +593,7 @@ MoneyLike может иметь вид:
 В случае успеха мы довыпускаем новыйй ассет в количестве 1000000 `coins`.
 которые будут на вашем балансе 10000.00 Best Token
 
-### [Тип 6 BURN - сжигание токена](https://docs.wavesplatform.com/ru/blockchain/transaction-type/burn-transaction.html)
+### [Тип 6 BURN - сжигание токена](https:/docs.wavesprotocol.org/ru/blockchain/transaction-type/burn-transaction.html)
 
 - `assetId` string - Id ассета,
 - `amount` [0 - (JLM)] number/string/MoneyLike - количество,
@@ -623,7 +623,7 @@ MoneyLike может иметь вид:
 
 В случае успеха сжигается 1000 `coins`.
 
-### [Тип 8 LEASE - Передача в лизинг](https://docs.wavesplatform.com/en/blockchain/transaction-type/lease-transaction.html)
+### [Тип 8 LEASE - Передача в лизинг](https://docs.wavesprotocol.org/en/blockchain/transaction-type/lease-transaction.html)
 
 - `recipient` string - адрес получателя или алиас,
 - `amount` [0 - (JLM)] number/string/MoneyLike - количество,
@@ -653,7 +653,7 @@ MoneyLike может иметь вид:
 
 В случае успеха передается в лизинг 0.00001000 Waves.
 
-### [Тип 9 LEASE CANCEL - отмена лизинга](https://docs.wavesplatform.com/en/blockchain/transaction-type/lease-cancel-transaction.html)
+### [Тип 9 LEASE CANCEL - отмена лизинга](https://docs.wavesprotocol.org/en/blockchain/transaction-type/lease-cancel-transaction.html)
 
 - `leaseId` string - id транзакции лизинга,
 - `*fee` MoneyLike -комиссия
@@ -681,7 +681,7 @@ MoneyLike может иметь вид:
 
 В случае успеха отменяется лизинг.
 
-### [Тип 10 CREATE ALIAS - создание алиаса для адреса](https://docs.wavesplatform.com/en/blockchain/transaction-type/create-alias-transaction.html)
+### [Тип 10 CREATE ALIAS - создание алиаса для адреса](https://docs.wavesprotocol.org/en/blockchain/transaction-type/create-alias-transaction.html)
 
 - `alias`[4, 30] string - имя
 - `*fee` MoneyLike -комиссия
@@ -709,7 +709,7 @@ MoneyLike может иметь вид:
 
 В случае успеха для адреса создается алиас (дополнительное имя).
 
-### [Тип 11 MASS TRANSFER - массовая рассылка ассета](https://docs.wavesplatform.com/en/blockchain/transaction-type/mass-transfer-transaction.html)
+### [Тип 11 MASS TRANSFER - массовая рассылка ассета](https://docs.wavesprotocol.org/en/blockchain/transaction-type/mass-transfer-transaction.html)
 
 - `totalAmount` moneyLike - итого отошлется // можно не считать сумму и вставить { assetId: "id отправляемого ассета", coins: 0},
 - `transfers` массив объектов
@@ -744,7 +744,7 @@ MoneyLike может иметь вид:
 
 В случае успеха на адреса alias1, alias2 прийдет по 0.002 Waves.
 
-### [Тип 12 DATA TRANSACTION - сохранение данных](https://docs.wavesplatform.com/en/blockchain/transaction-type/data-transaction.html)
+### [Тип 12 DATA TRANSACTION - сохранение данных](https://docs.wavesprotocol.org/en/blockchain/transaction-type/data-transaction.html)
 
 - `data` массив объектов
   - `type` "binary"/string/"integer"/"boolean" - тип,
@@ -780,9 +780,9 @@ MoneyLike может иметь вид:
 
 В случае успеха в стейте будут хранится новые данные.
 
-### [Тип 13 SET SCRIPT - скриптовать акаунт](https://docs.wavesplatform.com/en/blockchain/transaction-type/set-script-transaction.html)
+### [Тип 13 SET SCRIPT - скриптовать акаунт](https://docs.wavesprotocol.org/en/blockchain/transaction-type/set-script-transaction.html)
 
-- `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+- `script` string - [скрипт](https://docs.wavesprotocol.org/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 - `*fee` MoneyLike -комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
@@ -833,7 +833,7 @@ MoneyLike может иметь вид:
 В случае успеха на аккаунте будет новый скрипт
 разрешающий на аккаунте любые транзакции без подписи (будте осторожны!).
 
-### [Тип 14 Sponsored Fee Transaction - Спонсорство](https://docs.wavesplatform.com/en/blockchain/transaction-type/fee-sponsoring-transaction.html)
+### [Тип 14 Sponsored Fee Transaction - Спонсорство](https://docs.wavesprotocol.org/en/blockchain/transaction-type/fee-sponsoring-transaction.html)
 
 - `minSponsoredAssetFee` MoneyLike - цена комиссии в ассете.
 - `*fee` MoneyLike - комиссия
@@ -864,10 +864,10 @@ MoneyLike может иметь вид:
 
 В случае успеха, в ассете можно платить комиссию за трансфер
 
-### [Тип 15 SET ASSET SCRIPT - скрипт на ассет](https://docs.wavesplatform.com/en/blockchain/transaction-type/set-asset-script-transaction.html)
+### [Тип 15 SET ASSET SCRIPT - скрипт на ассет](https://docs.wavesprotocol.org/en/blockchain/transaction-type/set-asset-script-transaction.html)
 
 - `assetId` string - id ассета
-- `script` string - [скрипт](https://docs.wavesplatform.com/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
+- `script` string - [скрипт](https://docs.wavesprotocol.org/en/technical-details/waves-contracts-language-description/creating-and-deploying-a-script-manually.html#section-5e6520b97a7ead921d7fb6bce7292ce0)
 - `*fee` MoneyLike -комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
@@ -897,7 +897,7 @@ MoneyLike может иметь вид:
 
 В случае успеха на ассете будет переписан скрипт
 
-### [Тип 16 SCRIPT INVOCATION - выполнение функций скрипта](https://docs.wavesplatform.com/ru/blockchain/transaction-type/invoke-script-transaction.html)
+### [Тип 16 SCRIPT INVOCATION - выполнение функций скрипта](https:/docs.wavesprotocol.org/ru/blockchain/transaction-type/invoke-script-transaction.html)
 
 - `dApp` string адрес контракта
 - `call` объект слкдующей структуры
@@ -939,7 +939,7 @@ MoneyLike может иметь вид:
 
 В случае успеха будет запущен скрипт
 
-### [Как расчитать комиссию](https://docs.wavesplatform.com/ru/blockchain/transaction/transaction-fee.html)
+### [Как расчитать комиссию](https:/docs.wavesprotocol.org/ru/blockchain/transaction/transaction-fee.html)
 
 ---
 

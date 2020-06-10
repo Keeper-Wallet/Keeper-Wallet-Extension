@@ -30,7 +30,7 @@ export const DEFAULT_CONFIG = {
         "testnet": {
             "code": "T",
             "server": "https://nodes-testnet.wavesnodes.com/",
-            "matcher": "https://matcher-testnet.wavesnodes.com/"
+            "matcher": "https://matcher-testnet.waves.exchange/"
         },
         "mainnet": {
             "code": "W",
@@ -39,8 +39,8 @@ export const DEFAULT_CONFIG = {
         },
         "stagenet": {
             "code": "S",
-            "server": " https://nodes-stagenet.wavesnodes.com/",
-            "matcher": "https://matcher-stagenet.wavesplatform.com/"
+            "server": "https://nodes-stagenet.wavesnodes.com/",
+            "matcher": ""
         },
         "custom": {
             "code": "",
