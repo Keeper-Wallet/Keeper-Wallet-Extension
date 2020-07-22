@@ -467,6 +467,7 @@ export class MessageController extends EventEmitter {
     }
 
     async _validateAndTransform(message) {
+        console.log('message', message)
         let result = { ...message };
         let messageMeta;
         if (message.data && message.data.successPath) {
