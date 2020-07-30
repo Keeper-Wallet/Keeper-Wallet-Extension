@@ -71,10 +71,7 @@ export class MessageController extends EventEmitter {
         let message;
         try {
             message = await this._generateMessage(messageData);
-
-            console.log('newMessage', message)
         } catch (e) {
-            console.log('newMessage error', e)
             throw ERRORS.REQUEST_ERROR(e.message);
         }
 
@@ -450,22 +447,14 @@ export class MessageController extends EventEmitter {
 
         const signable = adapter.makeSignable({ ...data, data: signableData });
 
-        debugger
-
         const id = await signable.getId();
 
-        debugger
-
         const bytes = Array.from(await signable.getBytes());
-
-        debugger
 
         return { id, bytes };
     }
 
     async _generateMessage(messageData) {
-        console.log('_generateMessage', messageData)
-
         const { options } = messageData;
 
         const message = {
@@ -479,8 +468,6 @@ export class MessageController extends EventEmitter {
     }
 
     async _validateAndTransform(message) {
-        console.log('message', message)
-        console.log('_validateAndTransform', message)
         let result = { ...message };
         let messageMeta;
         if (message.data && message.data.successPath) {
@@ -568,24 +555,15 @@ export class MessageController extends EventEmitter {
                 break;
             case 'transaction':
                 if (!result.data.type || result.data.type >= 1000) {
-                    console.log('RESULT', result)
                     throw ERRORS.REQUEST_ERROR(result.data);
                 }
 
-                debugger
-
                 result.data.data = this._prepareTx(result.data.data, message.account);
-                debugger
                 const feeData = !hasFee ? await this._getFee(message, result.data) : {};
-                debugger
                 result.data.data = { ...result.data.data, ...feeData };
-                debugger
                 messageMeta = await this._getMessageDataHash(result.data, message.account);
-                debugger
                 result.messageHash = messageMeta.id;
-                debugger
                 result.bytes = Array.from(messageMeta.bytes);
-                debugger
 
                 switch (result.data.type) {
                     case 9:
