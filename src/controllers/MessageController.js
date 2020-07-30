@@ -444,6 +444,7 @@ export class MessageController extends EventEmitter {
         }
 
         let signableData = await this._transformData({ ...data.data });
+        
         const Adapter = getAdapterByType('seed');
         const adapter = new Adapter('validation seed', networkByteFromAddress(account.address).charCodeAt(0));
 
