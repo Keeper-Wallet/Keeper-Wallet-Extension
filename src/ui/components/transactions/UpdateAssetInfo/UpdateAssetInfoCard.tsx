@@ -32,15 +32,8 @@ export class UpdateAssetInfoCard extends React.PureComponent<IUpdateAssetInfo> {
                 </div>
                 <div>
                     <div className="basic500 body3 margin-min">
-                        <Trans i18nKey='transactions.tokenGeneration'>Token Generation</Trans>
+                        <Trans i18nKey='transactions.updateAssetInfo'>Update Asset Info</Trans>
                     </div>
-                    <h1 className="headline1">
-                        {/*<Balance split={true}*/}
-                        {/*         showAsset={true}*/}
-                        {/*         balance={amount}*/}
-                        {/*         className={styles.txBalanceWrapper} */}
-                        {/*/>*/}
-                    </h1>
                 </div>
             </div>
 

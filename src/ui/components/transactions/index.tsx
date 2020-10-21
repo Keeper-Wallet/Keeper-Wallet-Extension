@@ -20,6 +20,7 @@ import scriptInvocation from './ScriptInvocation';
 import packageTx from './Package';
 import unknown from './Unknown';
 import customData from './CustomData';
+import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 
 const MESSAGES = [
@@ -44,6 +45,7 @@ const MESSAGES = [
     scriptInvocation,
     packageTx,
     customData,
+    updateAssetInfo,
     wavesAuth
 ];
 
