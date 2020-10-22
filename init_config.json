@@ -2,6 +2,5 @@
   "DIST": "dist",
   "LANGS": ["en"],
   "PAGE_TITLE": "Waves Keeper",
-  "PLATFORMS": ["chrome"]
+  "PLATFORMS": ["chrome", "firefox", "opera", "edge"]
 }
-  

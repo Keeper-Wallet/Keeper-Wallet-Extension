@@ -43,6 +43,9 @@ const WKTConverterV1 = {
         15: {
             1: emptyTxConverter,
         },
+        17: {
+            1: emptyTxConverter,
+        }
     },
 };
 

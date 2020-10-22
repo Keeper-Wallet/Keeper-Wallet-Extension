@@ -9,7 +9,7 @@ const config = { ...buildConfig };
 const DIST = config.DIST || 'dist';
 const LANGS = config.LANGS || ['en'];
 const PAGE_TITLE = config.PAGE_TITLE || 'Waves Keeper';
-const PLATFORMS = config.PLATFORMS || ['chrome'];
+const PLATFORMS = config.PLATFORMS || ['chrome', 'firefox', 'opera', 'edge'];
 
 module.exports = () => {
     const version = getVersion();
