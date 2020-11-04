@@ -30,6 +30,7 @@ export namespace WavesKeeper {
         export const setScript: TTransaction;
         export const setAssetScript: TTransaction;
         export const package: (props: Array<TTx>) => Promise<TId>;
+        export const updateAssetInfo: TTransaction;
     }
     
     export namespace matcher {

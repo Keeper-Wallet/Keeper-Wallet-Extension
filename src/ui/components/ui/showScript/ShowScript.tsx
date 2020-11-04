@@ -1,60 +1,68 @@
 import * as styles from './script.styl';
 import * as React from 'react';
-import { translate, Trans } from 'react-i18next';
-import { I18N_NAME_SPACE } from '../../../appConfig';
+import {translate, Trans} from 'react-i18next';
+import {I18N_NAME_SPACE} from '../../../appConfig';
 import cn from 'classnames';
-import { Copy } from '../copy';
-import { Button } from '../buttons';
-import { Modal } from '..';
+import {Copy} from '../copy';
+import {Button} from '../buttons';
+import {Modal} from '..';
 
-const ContentScript = ({ script, getScriptRef }) =>
-    
+const ContentScript = ({script, getScriptRef}) =>
+
     <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>{script}</pre>;
-    
-const Data = ({ data, getScriptRef }) => {
+
+const Data = ({data, getScriptRef}) => {
     return (
         <div className={styles.dataContainer} ref={getScriptRef}>
-            <table  className={cn(styles.data, styles.dataTable)}>
+            <table className={cn(styles.data, styles.dataTable)}>
                 <thead>
-                    <tr className={cn('basic500', styles.headRow)}>
-                        <td className={styles.dataItemData}>Key</td>
-                        <td className={styles.dataItemData}>Type</td>
-                        <td className={styles.dataItemData}>Value</td>
-                    </tr>
+                <tr className={cn('basic500', styles.headRow)}>
+                    <td className={styles.dataItemData}>Key</td>
+                    <td className={styles.dataItemData}>Type</td>
+                    <td className={styles.dataItemData}>Value</td>
+                </tr>
                 </thead>
                 {
-                    (data || []).map((item, index) => (
-                        <tbody key={index} >
-                            <tr className={cn(styles.dataRow)}>
-                                <td title={item.key} className={styles.dataItemData}>{item.key}</td>
-                                <td title={item.type} className={styles.dataItemData}>{item.type}</td>
-                                <td title={String(item.value)} className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</td>
-                            </tr>
-                        </tbody>
-                    ))
+                    (data || []).map((item, index) => {
+                        const itemType = Array.isArray(item.type) ? 'list' : item.type
+                        const itemValue = Array.isArray(item.value) ? item.value : JSON.stringify(item.value)
+                        return (<tbody key={index}>
+                        <tr className={cn(styles.dataRow)}>
+                            <td title={item.key} className={styles.dataItemData}>{item.key}</td>
+                            <td title={item.type}
+                                className={styles.dataItemData}>{itemType}
+                            </td>
+                            <td title={String(item.value)}
+                                className={styles.dataItemDataLast}>
+                                {itemValue}
+                            </td>
+                        </tr>
+                        </tbody>)
+                    })
                 }
             </table>
         </div>
     );
 };
 
-const DataNoKey = ({ data, getScriptRef }) => {
+const DataNoKey = ({data, getScriptRef}) => {
     return (
         <div className={styles.dataContainer} ref={getScriptRef}>
             <table className={cn(styles.data, styles.dataTable)}>
                 <thead>
-                    <tr className={cn('basic500', styles.headRow)}>
-                        <td className={styles.dataItemData}>Type</td>
-                        <td className={styles.dataItemDataLast}>Value</td>
-                    </tr>
+                <tr className={cn('basic500', styles.headRow)}>
+                    <td className={styles.dataItemData}>Type</td>
+                    <td className={styles.dataItemDataLast}>Value</td>
+                </tr>
                 </thead>
                 {
                     (data || []).map((item, index) => (
-                        <tbody key={index} >
-                            <tr className={cn(styles.dataRow)}>
-                                <td className={styles.dataItemData}>{item.type}</td>
-                                <td title={String(item.value)} className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</td>
-                            </tr>
+                        <tbody key={index}>
+                        <tr className={cn(styles.dataRow)}>
+                            <td className={styles.dataItemData}>{item.type}</td>
+                            <td title={String(item.value)}
+                                className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</td>
+                        </tr>
                         </tbody>
                     ))
                 }
@@ -65,43 +73,43 @@ const DataNoKey = ({ data, getScriptRef }) => {
 
 @translate(I18N_NAME_SPACE)
 export class ShowScript extends React.PureComponent {
-    
+
     readonly props: { noKey?: boolean, data?: Array<any>, isData?: boolean, script?: string, optional?: boolean, showNotify?: boolean, className?: string, hideScript?: boolean };
-    readonly state = { showAllScript: false, showCopied: false, showResizeBtn: false };
+    readonly state = {showAllScript: false, showCopied: false, showResizeBtn: false};
     protected scriptEl: HTMLDivElement;
     protected _t;
-    
-    toggleShowScript = () => this.setState({ showAllScript: !this.state.showAllScript });
+
+    toggleShowScript = () => this.setState({showAllScript: !this.state.showAllScript});
     onCopy = () => this._onCopy();
     getScriptRef = (ref) => this.scriptEl = ref;
-    
+
     componentDidMount() {
-        const { script, optional, hideScript, data } = this.props;
-        
+        const {script, optional, hideScript, data} = this.props;
+
         if (!this.scriptEl || hideScript || optional && !(script || data && data.length)) {
             return null;
         }
-    
+
         const scrollHeight = this.scriptEl.scrollHeight;
         const height = this.scriptEl.offsetHeight;
         const showResizeBtn = scrollHeight > height;
-        this.setState({ showResizeBtn });
+        this.setState({showResizeBtn});
     }
-    
+
     render() {
-        const { script, optional, data, isData, noKey } = this.props;
+        const {script, optional, data, isData, noKey} = this.props;
         const showAllClass = cn(this.props.className, {
-                [styles.showAllScript]: this.state.showAllScript
-            });
-        
+            [styles.showAllScript]: this.state.showAllScript
+        });
+
         const hasScript = script || data && data.length;
-        
+
         if (optional && !hasScript) {
             return null;
         }
-        
+
         const toCopy = !isData ? script : JSON.stringify(data || [], null, 4);
-        
+
         return <div>
             {
                 hasScript &&
@@ -116,20 +124,20 @@ export class ShowScript extends React.PureComponent {
                         isData && noKey && <DataNoKey data={data} getScriptRef={this.getScriptRef}/>
                     }
                     <div className="buttons-wrapper">
-                        { hasScript ? <Copy text={toCopy} onCopy={this.onCopy}>
+                        {hasScript ? <Copy text={toCopy} onCopy={this.onCopy}>
                             <Button>
                                 <Trans i18nKey='showScriptComponent.copyCode'>Copy code</Trans>
                             </Button>
-                        </Copy> : null }
-                        { this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>
+                        </Copy> : null}
+                        {this.state.showResizeBtn ? <Button onClick={this.toggleShowScript}>
                             {
                                 !this.state.showAllScript ?
-                                    <Trans i18nKey='showScriptComponent.showAll'>Show all</Trans>:
+                                    <Trans i18nKey='showScriptComponent.showAll'>Show all</Trans> :
                                     <Trans i18nKey='showScriptComponent.hide'>Hide</Trans>
                             }
-                        </Button>: null }
+                        </Button> : null}
                     </div>
-    
+
                     <Modal animation={Modal.ANIMATION.FLASH_SCALE}
                            showModal={this.state.showCopied}
                            showChildrenOnly={true}>
@@ -141,15 +149,15 @@ export class ShowScript extends React.PureComponent {
             }
         </div>
     }
-    
+
     protected _onCopy() {
-        
+
         if (!this.props.showNotify) {
             return null;
         }
-        
-        this.setState({ showCopied: true });
+
+        this.setState({showCopied: true});
         clearTimeout(this._t);
-        this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
+        this._t = setTimeout(() => this.setState({showCopied: false}), 1000);
     }
 }

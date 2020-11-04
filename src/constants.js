@@ -106,6 +106,9 @@ export const DEFAULT_FEE_CONFIG = {
         },
         "15": {
             "fee": 100000000
+        },
+        "17": {
+            "fee": 1000000
         }
     }
 };

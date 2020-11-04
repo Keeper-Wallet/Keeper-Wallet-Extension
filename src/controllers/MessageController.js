@@ -53,6 +53,7 @@ export class MessageController extends EventEmitter {
 
         this.rejectAllByTime();
         this._updateBadge();
+        new Error('_prepareTx')
     }
 
 
@@ -69,11 +70,11 @@ export class MessageController extends EventEmitter {
         log.debug(`New message ${messageData.type}: ${JSON.stringify(messageData.data)}`);
 
         let message;
-        try {
+        // try {
             message = await this._generateMessage(messageData);
-        } catch (e) {
-            throw ERRORS.REQUEST_ERROR(e.message);
-        }
+        // } catch (e) {
+        //     throw ERRORS.REQUEST_ERROR(e.message);
+        // }
 
 
         let messages = this.store.getState().messages;
@@ -441,11 +442,12 @@ export class MessageController extends EventEmitter {
         }
 
         let signableData = await this._transformData({ ...data.data });
-        
+        // throw new Error(signableData)
         const Adapter = getAdapterByType('seed');
         const adapter = new Adapter('validation seed', networkByteFromAddress(account.address).charCodeAt(0));
 
         const signable = adapter.makeSignable({ ...data, data: signableData });
+        throw ERRORS.REQUEST_ERROR(signable)
 
         const id = await signable.getId();
 
@@ -555,7 +557,7 @@ export class MessageController extends EventEmitter {
                 break;
             case 'transaction':
                 if (!result.data.type || result.data.type >= 1000) {
-                    throw ERRORS.REQUEST_ERROR(result.data);
+                    // throw ERRORS.REQUEST_ERROR(result.data);
                 }
 
                 result.data.data = this._prepareTx(result.data.data, message.account);
