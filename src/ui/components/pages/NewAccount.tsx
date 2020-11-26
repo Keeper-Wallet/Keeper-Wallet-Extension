@@ -1,10 +1,10 @@
 import * as styles from './styles/newaccount.styl';
-import { connect } from 'react-redux';
-import { createNew, setTab } from '../../actions';
+import {connect} from 'react-redux';
+import {createNew, setTab} from '../../actions';
 import * as React from 'react'
-import { Input, Button, Error } from '../ui';
-import { translate, Trans } from 'react-i18next';
-import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
+import {Input, Button, Error} from '../ui';
+import {translate, Trans} from 'react-i18next';
+import {CONFIG, I18N_NAME_SPACE} from '../../appConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
@@ -16,6 +16,7 @@ const mapStateToProps = function (store: any) {
 
 interface INewAccountComponentProps {
     createNew(pass: string): void;
+
     setTab(tab: string): void;
 }
 
@@ -40,13 +41,13 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     onChangeSecond = e => this._onChangeInputs(this.state.firstValue, e.target.value);
 
     handleTermsAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState({ termsAccepted: e.currentTarget.checked }, () => {
+        this.setState({termsAccepted: e.currentTarget.checked}, () => {
             this._onChangeInputs(this.state.firstValue, this.state.secondValue);
         });
     };
-    
+
     handleonditionsAcceptedChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState({ conditionsAccepted: e.currentTarget.checked }, () => {
+        this.setState({conditionsAccepted: e.currentTarget.checked}, () => {
             this._onChangeInputs(this.state.firstValue, this.state.secondValue);
         });
     };
@@ -121,7 +122,8 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                     <label htmlFor="termsAccepted">
                         <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
                         {' '}
-                        <a href="https://waves.tech/Terms_of_Use_Keeper.pdf" target='_blank'  rel="noopener noreferrer">
+                        <a href="https://s3.eu-central-1.amazonaws.com/waves.tech/TERMS_OF_USE_Keeper_fin_DL_Tech_695afeecb3.pdf"
+                           target='_blank' rel="noopener noreferrer">
                             <Trans i18nkey='newAccount.termsAndConditions'>Terms and Conditions</Trans>
                         </a>
                     </label>
@@ -136,12 +138,14 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                     <label htmlFor="conditionsAccepted">
                         <Trans i18nkey='newAccount.acceptTerms'>I have read and agree with the</Trans>
                         {' '}
-                        <a href="https://waves.exchange/files/Privacy_Policy.pdf" target='_blank' rel="noopener noreferrer">
+                        <a href="https://s3.eu-central-1.amazonaws.com/waves.tech/Privacy_Policy_Waves_Keeper_fin_DL_Tech_9ce50e1fe0.pdf"
+                           target='_blank'
+                           rel="noopener noreferrer">
                             <Trans i18nkey='newAccount.privacyPolicy'>Privacy Policy</Trans>
                         </a>
                     </label>
                 </div>
-                
+
                 <Button type='submit' disabled={this.state.buttonDisabled}>
                     <Trans i18nKey='newAccount.create'>Continue</Trans>
                 </Button>
@@ -166,21 +170,24 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     }
 
     _onChangeInputs(firstValue, secondValue) {
-        this.setState({ firstValue, secondValue });
+        this.setState({firstValue, secondValue});
         this._checkValues(firstValue, secondValue);
     }
 
     _checkValues(firstValue, secondValue) {
-        const { termsAccepted, conditionsAccepted } = this.state;
+        const {termsAccepted, conditionsAccepted} = this.state;
         const firstError = NewAccountComponent._validateFirst(firstValue, secondValue);
         const secondError = NewAccountComponent._validateSecond(firstValue, secondValue);
         const passwordError = !!(firstError || secondError);
-        const buttonDisabled = NewAccountComponent._isDisabledButton({ firstValue, secondValue }, termsAccepted, conditionsAccepted);
+        const buttonDisabled = NewAccountComponent._isDisabledButton({
+            firstValue,
+            secondValue
+        }, termsAccepted, conditionsAccepted);
 
-        this.setState({ passwordError, firstError, secondError, buttonDisabled });
+        this.setState({passwordError, firstError, secondError, buttonDisabled});
     }
 
-    static _isDisabledButton({ firstValue, secondValue }, termsAccepted: boolean, conditionsAccepted: boolean) {
+    static _isDisabledButton({firstValue, secondValue}, termsAccepted: boolean, conditionsAccepted: boolean) {
         if (!termsAccepted || !conditionsAccepted) {
             return true;
         }
@@ -201,7 +208,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
         }
 
         if (firstValue.length < MIN_LENGTH) {
-            return { error: 'isSmall' };
+            return {error: 'isSmall'};
         }
     }
 
@@ -214,8 +221,8 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             return null;
         }
 
-        return { error: 'noMatch' }
+        return {error: 'noMatch'}
     }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew, setTab })(NewAccountComponent);
+export const NewAccount = connect(mapStateToProps, {createNew, setTab})(NewAccountComponent);

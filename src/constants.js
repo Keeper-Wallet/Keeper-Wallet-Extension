@@ -34,7 +34,7 @@ export const DEFAULT_CONFIG = {
         },
         "mainnet": {
             "code": "W",
-            "server": "https://nodes.wavesplatform.com/",
+            "server": "https://nodes.wavesnodes.com/",
             "matcher": "https://matcher.waves.exchange/"
         },
         "stagenet": {

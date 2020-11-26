@@ -28,8 +28,10 @@ export class Info extends React.Component {
                     <li className={styles.telegram}><a rel="noopener noreferrer" target="_blank" href="https://t.me/wavesnews"></a></li>
                     <li className={styles.discord}><a rel="noopener noreferrer" target="_blank" href="https://discordapp.com/invite/cnFmDyA"></a></li>
                     <li className={styles.twitter}><a rel="noopener noreferrer" target="_blank" href="https://twitter.com/wavesprotocol"></a></li>
-                    {/* <li className={styles.facebook}><a rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/wavesplatform"></a></li> */}
                     <li className={styles.reddit}><a rel="noopener noreferrer" target="_blank" href="https://www.reddit.com/r/Wavesplatform"></a></li>
+                    <li className={styles.medium}><a rel="noopener noreferrer" target="_blank" href="https://medium.com/wavesprotocol"></a></li>
+                    <li className={styles.youtube}><a rel="noopener noreferrer" target="_blank" href="https://www.youtube.com/channel/UCYDQN4Fo4rGnOZ22L5plNIw/featured"></a></li>
+                    <li className={styles.vk}><a rel="noopener noreferrer" target="_blank" href="https://vk.com/wavesprotocol"></a></li>
                 </ul>
             </div>
 
