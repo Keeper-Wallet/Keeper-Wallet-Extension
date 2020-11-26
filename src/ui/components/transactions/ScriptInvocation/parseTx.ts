@@ -1,5 +1,5 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
-import { BigNumber } from '@waves/bignumber';
+import {SIGN_TYPE} from '@waves/signature-adapter';
+import {BigNumber} from '@waves/bignumber';
 
 export const messageType = 'script_invocation';
 export const txType = 'transaction';
@@ -36,11 +36,12 @@ export function getFee(tx) {
     return typeof tx.fee === 'object' ? tx.fee : { coins: tx.fee, assetId: 'WAVES' };
 }
 
-export function getAmount(tx) {
-    let tokens = new BigNumber(0);
-    let coins = new BigNumber(0);
-    
+export function getAmounts(tx) {
+    const amounts = [];
+
     (tx.payment || []).forEach((item) => {
+        let tokens = new BigNumber(0);
+        let coins = new BigNumber(0);
         if (item && item.tokens) {
             tokens = tokens.add(item.tokens);
         } else if (item && item.coins) {
@@ -53,11 +54,12 @@ export function getAmount(tx) {
                 coins = coins.add(parse);
             }
         }
+        const assetId = item.assetId || 'WAVES';
+
+        amounts.push({coins, tokens, assetId});
     });
-    
-    const assetId = ((tx.payment || [])[0] || {}).assetId || 'WAVES';
-    
-    return { coins, tokens, assetId };
+
+    return amounts;
 }
 
 export function getAmountSign() {

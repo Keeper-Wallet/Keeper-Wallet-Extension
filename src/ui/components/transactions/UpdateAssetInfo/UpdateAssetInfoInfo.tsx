@@ -17,38 +17,36 @@ export class UpdateAssetInfoInfo extends React.PureComponent<ITransferInfo> {
         
         const fee = getMoney(getFee(tx), assets);
         return <div>
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.assetId'>AssetID</Trans>
+                </div>
+                <div className={styles.txValue}>{
+                    tx.assetId
+                }</div>
+            </div>
+
+            <div className={styles.txRow}>
+                <div className="tx-title tag1 basic500">
+                    <Trans i18nKey='transactions.name'>Name</Trans>
+                </div>
+                <div className={styles.txValue}>{tx.name}</div>
+            </div>
+
             { tx.description ? <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.description'>Description</Trans>
                 </div>
                 <div className={styles.txValue}>{tx.description}</div>
             </div> : null }
-    
-            <div className={styles.txRow}>
-                <div className="tx-title tag1 basic500">
-                    <Trans i18nKey='transactions.decimalPoints'>Decimal points</Trans>
-                </div>
-                <div className={styles.txValue}>{tx.precision}</div>
-            </div>
-    
-            <div className={styles.txRow}>
-                <div className="tx-title tag1 basic500">
-                    <Trans i18nKey='transactions.issureType'>Type</Trans>
-                </div>
-                <div className={styles.txValue}>{
-                    tx.reissuable ?
-                        <Trans i18nKey='transactions.reissuable'>Reissuable</Trans>:
-                        <Trans i18nKey='transactions.noReissuable'>Not reissuable</Trans>
-                }</div>
-            </div>
-            
+
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.txid'>TXID</Trans>
                 </div>
                 <div className={styles.txValue}>{messageHash}</div>
             </div>
-        
+
             <div className={styles.txRow}>
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.fee'>Fee</Trans>

@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
-import { Balance } from '../../ui';
-import { I18N_NAME_SPACE } from '../../../appConfig';
+import {Trans, translate} from 'react-i18next';
+import {I18N_NAME_SPACE} from '../../../appConfig';
 
 
 @translate(I18N_NAME_SPACE)
