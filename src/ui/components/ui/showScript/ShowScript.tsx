@@ -34,7 +34,7 @@ const Data = ({data, getScriptRef}) => {
                             </td>
                             <td title={String(item.value)}
                                 className={styles.dataItemDataLast}>
-                                {itemValue}
+                                {!!itemValue ? itemValue : 'Key Deletion'}
                             </td>
                         </tr>
                         </tbody>)
