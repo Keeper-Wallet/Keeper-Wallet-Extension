@@ -24,20 +24,16 @@ const Data = ({data, getScriptRef}) => {
                 </thead>
                 {
                     (data || []).map((item, index) => {
-                        const itemType = Array.isArray(item.type) ? 'list' : item.type
-                        const itemValue = Array.isArray(item.value) ? item.value : JSON.stringify(item.value)
-                        return (<tbody key={index}>
+                        return <tbody key={index}>
                         <tr className={cn(styles.dataRow)}>
                             <td title={item.key} className={styles.dataItemData}>{item.key}</td>
-                            <td title={item.type}
-                                className={styles.dataItemData}>{itemType}
-                            </td>
+                            <td title={item.type} className={styles.dataItemData}>{item.type}</td>
                             <td title={String(item.value)}
                                 className={styles.dataItemDataLast}>
-                                {!!itemValue ? itemValue : 'Key Deletion'}
+                                {!!item.value ? item.value : 'Key Deletion'}
                             </td>
                         </tr>
-                        </tbody>)
+                        </tbody>
                     })
                 }
             </table>
@@ -56,15 +52,27 @@ const DataNoKey = ({data, getScriptRef}) => {
                 </tr>
                 </thead>
                 {
-                    (data || []).map((item, index) => (
-                        <tbody key={index}>
+                    (data || []).map((item, index) => {
+                        const itemValue = Array.isArray(item.value) ? item.value : JSON.stringify(item.value);
+                        const length = Array.isArray(itemValue) ? itemValue.length : 0;
+                        return <tbody key={index}>
                         <tr className={cn(styles.dataRow)}>
                             <td className={styles.dataItemData}>{item.type}</td>
-                            <td title={String(item.value)}
-                                className={styles.dataItemDataLast}>{JSON.stringify(item.value)}</td>
+                            {!!length
+                                ? <td title={String(itemValue)}
+                                      className={styles.dataItemDataLast}>
+                                    [{itemValue.map((item, index) => index === length - 1
+                                    ? <>{JSON.stringify(item)}]<br/></>
+                                    : <>{JSON.stringify(item)},<br/></>)}
+                                </td>
+                                : <td title={String(itemValue)}
+                                      className={styles.dataItemDataLast}>
+                                    {JSON.stringify(itemValue)}
+                                </td>}
+                            {console.log(itemValue)}
                         </tr>
                         </tbody>
-                    ))
+                    })
                 }
             </table>
         </div>
