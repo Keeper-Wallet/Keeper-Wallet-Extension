@@ -28,7 +28,7 @@ export class IssueInfo extends React.PureComponent<ITransferInfo> {
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.decimalPoints'>Decimal points</Trans>
                 </div>
-                <div className={styles.txValue}>{tx.precision}</div>
+                <div className={styles.txValue}>{tx.decimals}</div>
             </div>
     
             <div className={styles.txRow}>
