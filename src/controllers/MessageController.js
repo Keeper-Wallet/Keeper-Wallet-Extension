@@ -565,7 +565,6 @@ export class MessageController extends EventEmitter {
                 result.bytes = Array.from(messageMeta.bytes);
                 break;
             case 'transaction':
-                console.log('_validateAndTransform', `type: transaction`)
                 if (!result.data.type || result.data.type >= 1000) {
                     throw ERRORS.REQUEST_ERROR(result.data);
                 }
