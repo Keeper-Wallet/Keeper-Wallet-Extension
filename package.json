@@ -27,7 +27,7 @@
     "@types/react-redux": "^6.0.6",
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
-    "@waves/signature-adapter": "6.0.7",
+    "@waves/signature-adapter": "6.2.0",
     "@waves/ts-types": "^0.3.3",
     "@waves/waves-transactions": "4.1.6",
     "base64-js": "^1.3.0",
