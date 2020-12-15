@@ -11,6 +11,7 @@ import {ERRORS} from '../lib/KeeperError';
 import {PERMISSIONS} from './PermissionsController';
 import {calculateFeeFabric} from "./CalculateFeeController";
 import {waves} from "./wavesTransactionsController";
+import {protoBytesToOrder} from "@waves/waves-transactions/dist/proto-serialize";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -72,7 +73,6 @@ export class MessageController extends EventEmitter {
         try {
             message = await this._generateMessage(messageData);
         } catch (e) {
-            console.log('messageData', messageData)
             throw ERRORS.REQUEST_ERROR(messageData);
         }
 
@@ -292,7 +292,6 @@ export class MessageController extends EventEmitter {
     }
 
     async _transformData(data) {
-        console.log('_transformData', data)
         if (!data || typeof data !== 'object' || data instanceof BigNumber || data instanceof Money) {
             return data;
         }
@@ -443,25 +442,16 @@ export class MessageController extends EventEmitter {
             return waves.parseCustomData(data);
         }
         let signableData = await this._transformData({...data.data});
-        console.log('signableData', signableData)
 
         const Adapter = getAdapterByType('seed');
-        console.log('Adapter', Adapter)
 
         const adapter = new Adapter('validation seed', networkByteFromAddress(account.address).charCodeAt(0));
-        console.log('adapter', adapter)
 
-        console.log('makeSignable', {...data, data: signableData})
         const signable = adapter.makeSignable({...data, data: signableData});
-        console.log('signable', signable)
 
-        console.log('signable.getId()', signable.getId)
         const id = await signable.getId();
-        console.log('id', id)
 
         const bytes = Array.from(await signable.getBytes());
-        console.log('bytes', bytes)
-
         return {id, bytes};
     }
 
@@ -573,7 +563,6 @@ export class MessageController extends EventEmitter {
                 const feeData = !hasFee ? await this._getFee(message, result.data) : {};
                 result.data.data = {...result.data.data, ...feeData};
                 messageMeta = await this._getMessageDataHash(result.data, message.account);
-                console.log('messageMeta', messageMeta)
                 result.messageHash = messageMeta.id;
                 result.bytes = Array.from(messageMeta.bytes);
 
@@ -627,7 +616,6 @@ export class MessageController extends EventEmitter {
     }
 
     _prepareTx(txParams, account) {
-        console.log('_prepareTx', txParams, account)
         const defaultFee = Money.fromCoins(0, new Asset(this.assetInfoController.getWavesAsset())).toJSON();
 
         const txDefaults = {
