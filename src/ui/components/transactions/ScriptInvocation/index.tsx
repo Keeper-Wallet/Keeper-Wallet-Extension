@@ -1,7 +1,7 @@
-import { ScriptInvocation } from './ScriptInvocation';
-import { ScriptInvocationCard } from './ScriptInvocationCard';
-import { ScriptInvocationFinal } from './ScriptInvocationFinal';
-import { ScriptInvocationInfo } from './ScriptInvocationInfo';
+import {ScriptInvocation} from './ScriptInvocation';
+import {ScriptInvocationCard} from './ScriptInvocationCard';
+import {ScriptInvocationFinal} from './ScriptInvocationFinal';
+import {ScriptInvocationInfo} from './ScriptInvocationInfo';
 import * as utils from './parseTx';
 
 const scriptInvocation = {

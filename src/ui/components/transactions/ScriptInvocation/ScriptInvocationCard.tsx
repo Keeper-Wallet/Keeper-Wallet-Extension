@@ -1,13 +1,12 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
-import { I18N_NAME_SPACE } from '../../../appConfig';
+import {Trans, translate} from 'react-i18next';
+import {TxIcon} from '../TransactionIcon';
+import {I18N_NAME_SPACE} from '../../../appConfig';
 import * as cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
-import { Balance, ShowScript } from '../../ui';
-import { getMoney } from '../../../utils/converters';
-import { getAmount, messageType } from './parseTx';
+import {OriginWarning} from '../OriginWarning';
+import {ShowScript} from '../../ui';
+import {messageType} from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {

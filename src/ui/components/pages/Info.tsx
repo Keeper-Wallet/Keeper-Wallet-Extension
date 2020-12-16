@@ -17,23 +17,25 @@ export class Info extends React.Component {
                 </Trans>
             </div>
 
-            <a rel="noopener noreferrer" className="link black" target='_blank' href='https://forum.wavesplatform.com'>forum.wavesplatform.com</a>
+            <a rel="noopener noreferrer" className="link black" target='_blank' href='https://forum.waves.tech'>forum.waves.tech</a>
 
             <div className={`${styles.social} margin-main`}>
                 <div className="margin-main basic500">
                     <Trans i18nKey='info.joinUs'>Join the Waves Community</Trans>
                 </div>
                 <ul>
-                    <li className={styles.github}><a rel="noopener noreferrer" target="_blank" href="https://github.com/wavesplatform/"></a></li>
-                    <li className={styles.telegram}><a rel="noopener noreferrer" target="_blank" href="https://telegram.me/wavesnews"></a></li>
-                    <li className={styles.discord}><a rel="noopener noreferrer" target="_blank" href="https://discord.gg/cnFmDyA"></a></li>
-                    <li className={styles.twitter}><a rel="noopener noreferrer" target="_blank" href="https://twitter.com/wavesplatform"></a></li>
-                    <li className={styles.facebook}><a rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/wavesplatform"></a></li>
-                    <li className={styles.reddit}><a rel="noopener noreferrer" target="_blank" href="https://reddit.com/r/Wavesplatform/"></a></li>
+                    <li className={styles.github}><a rel="noopener noreferrer" target="_blank" href="https://github.com/wavesplatform"></a></li>
+                    <li className={styles.telegram}><a rel="noopener noreferrer" target="_blank" href="https://t.me/wavesnews"></a></li>
+                    <li className={styles.discord}><a rel="noopener noreferrer" target="_blank" href="https://discordapp.com/invite/cnFmDyA"></a></li>
+                    <li className={styles.twitter}><a rel="noopener noreferrer" target="_blank" href="https://twitter.com/wavesprotocol"></a></li>
+                    <li className={styles.reddit}><a rel="noopener noreferrer" target="_blank" href="https://www.reddit.com/r/Wavesplatform"></a></li>
+                    <li className={styles.medium}><a rel="noopener noreferrer" target="_blank" href="https://medium.com/wavesprotocol"></a></li>
+                    <li className={styles.youtube}><a rel="noopener noreferrer" target="_blank" href="https://www.youtube.com/channel/UCYDQN4Fo4rGnOZ22L5plNIw/featured"></a></li>
+                    <li className={styles.vk}><a rel="noopener noreferrer" target="_blank" href="https://vk.com/wavesprotocol"></a></li>
                 </ul>
             </div>
 
-            <div className="basic500">&copy; Waves Platform</div>
+            <div className="basic500">&copy; Waves</div>
 
         </div>;
     }

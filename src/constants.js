@@ -30,17 +30,17 @@ export const DEFAULT_CONFIG = {
         "testnet": {
             "code": "T",
             "server": "https://nodes-testnet.wavesnodes.com/",
-            "matcher": "https://matcher-testnet.wavesnodes.com/"
+            "matcher": "https://matcher-testnet.waves.exchange/"
         },
         "mainnet": {
             "code": "W",
-            "server": "https://nodes.wavesplatform.com/",
+            "server": "https://nodes.wavesnodes.com/",
             "matcher": "https://matcher.waves.exchange/"
         },
         "stagenet": {
             "code": "S",
-            "server": " https://nodes-stagenet.wavesnodes.com/",
-            "matcher": "https://matcher-stagenet.wavesplatform.com/"
+            "server": "https://nodes-stagenet.wavesnodes.com/",
+            "matcher": ""
         },
         "custom": {
             "code": "",
@@ -106,6 +106,12 @@ export const DEFAULT_FEE_CONFIG = {
         },
         "15": {
             "fee": 100000000
+        },
+        "16": {
+            "fee": 500000
+        },
+        "17": {
+            "fee": 100000
         }
     }
 };
