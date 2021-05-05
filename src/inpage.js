@@ -126,6 +126,10 @@ function checkForPaymentApiLink(e) {
     const check = (node) => {
         const href = node.href;
 
+        if(node.tagName.toLowerCase() !== 'a') {
+            return false
+        }
+
         if (!node.href) {
             return false;
         }
