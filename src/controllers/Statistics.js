@@ -2,6 +2,7 @@ import ObservableStore from "obs-store";
 import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config';
 import extension from 'extensionizer';
+import { detect } from "../lib/detectBrowser";
 
 
 export class StatisticsController {
@@ -15,6 +16,7 @@ export class StatisticsController {
         this.store = new ObservableStore({ userId });
         this.version = extension.runtime.getManifest().version;
         this.id = extension.runtime.id;
+        this.browser = detect()
         this.addEvent('runKeeper');
     }
 
@@ -30,13 +32,16 @@ export class StatisticsController {
         event_properties = {
             ...event_properties,
             network: this.controllers.network.store.getState().currentNetwork,
-            app_version: this.version,
             extensionId: this.id,
         };
 
         this.events.push({
             user_id: userId,
             device_id: 'waves_keeper',
+            app_version: this.version,
+            platform: this.browser.os,
+            os_name: this.browser.name,
+            os_version: this.browser.version,
             time: Date.now(),
             event_properties,
             event_type,
