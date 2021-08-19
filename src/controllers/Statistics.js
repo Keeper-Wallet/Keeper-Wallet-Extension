@@ -42,6 +42,7 @@ export class StatisticsController {
             platform: this.browser.os,
             os_name: this.browser.name,
             os_version: this.browser.version,
+            language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
             time: Date.now(),
             event_properties,
             event_type,
@@ -85,6 +86,7 @@ export class StatisticsController {
                 this.addEvent('approve', {
                     type: message.data.type,
                     msgType: message.type,
+                    origin: message.origin,
                     dApp: isDApp ? message.data.data.dApp : undefined,
                 });
             }
