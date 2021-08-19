@@ -3,7 +3,6 @@ import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config';
 import extension from 'extensionizer';
 
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 
 export class StatisticsController {
 
@@ -34,10 +33,6 @@ export class StatisticsController {
             app_version: this.version,
             extensionId: this.id,
         };
-
-        if (!WAVESKEEPER_DEBUG) {
-            return null;
-        }
 
         this.events.push({
             user_id: userId,
