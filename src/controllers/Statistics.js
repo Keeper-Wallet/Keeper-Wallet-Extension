@@ -43,6 +43,7 @@ export class StatisticsController {
             os_name: this.browser.name,
             os_version: this.browser.version,
             language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
+            ip: '$remote',
             time: Date.now(),
             event_properties,
             event_type,
