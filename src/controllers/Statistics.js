@@ -96,4 +96,18 @@ export class StatisticsController {
         }
 
     }
+    /**
+     * Popup show event. Send no more once per hour.
+     */
+    showPopup() {
+        const timeDelta = 1000 * 60 * 60  // 1 event per hour
+        const state = this.store.getState()
+        const dateNow = new Date();
+        const dateLastOpened = !!state.lastOpened ? new Date(state.lastOpened) : dateNow - timeDelta;
+
+        if ((dateNow - dateLastOpened) >= timeDelta) {
+            this.store.updateState({lastOpened: dateNow});
+            this.addEvent('openKeeper');
+        }
+    }
 }
