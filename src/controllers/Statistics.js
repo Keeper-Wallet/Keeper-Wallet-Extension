@@ -105,6 +105,10 @@ export class StatisticsController {
         const dateNow = new Date();
         const dateLastOpened = !!state.lastOpened ? new Date(state.lastOpened) : dateNow - timeDelta;
 
+        if (!state.lastOpened) {
+            this.addEvent('installKeeper');
+        }
+
         if ((dateNow - dateLastOpened) >= timeDelta) {
             this.store.updateState({lastOpened: dateNow});
             this.addEvent('openKeeper');
