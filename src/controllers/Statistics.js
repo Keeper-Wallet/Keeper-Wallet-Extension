@@ -27,12 +27,11 @@ export class StatisticsController {
 
     addEvent(event_type, event_properties = {}) {
         const userId = this.store.getState().userId;
-
-        event_properties = {
-            ...event_properties,
+        const user_properties = {
+            environment: WAVESKEEPER_ENV,
             network: this.controllers.network.store.getState().currentNetwork,
             extensionId: this.id,
-        };
+        }
 
         this.events.push({
             user_id: userId,
@@ -44,7 +43,7 @@ export class StatisticsController {
             language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
             ip: '$remote',
             time: Date.now(),
-            env: WAVESKEEPER_ENV,
+            user_properties,
             event_properties,
             event_type,
         });
