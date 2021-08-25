@@ -3,7 +3,7 @@ import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config';
 import extension from 'extensionizer';
 import { detect } from "../lib/detectBrowser";
-
+import { WAVESKEEPER_ENV } from "../constants"
 
 export class StatisticsController {
 
@@ -45,6 +45,7 @@ export class StatisticsController {
             language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
             ip: '$remote',
             time: Date.now(),
+            env: WAVESKEEPER_ENV,
             event_properties,
             event_type,
         });
