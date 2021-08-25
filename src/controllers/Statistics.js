@@ -17,7 +17,6 @@ export class StatisticsController {
         this.version = extension.runtime.getManifest().version;
         this.id = extension.runtime.id;
         this.browser = detect()
-        this.addEvent('runKeeper');
     }
 
     static createUserId() {
