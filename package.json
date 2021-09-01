@@ -106,7 +106,8 @@
     "webpack-cli": "^3.3.9",
     "webpack-livereload-plugin": "^2.1.1"
   },
+  "engineStrict": true,
   "engines": {
-    "node": ">=8.0.0"
+    "node": "^10.24.1"
   }
 }
