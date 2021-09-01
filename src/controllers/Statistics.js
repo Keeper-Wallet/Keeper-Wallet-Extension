@@ -28,6 +28,9 @@ export class StatisticsController {
     addEvent(event_type, event_properties = {}) {
         const userId = this.store.getState().userId;
         const user_properties = {
+            browser_name: this.browser.name,
+            browser_version: this.browser.version,
+            browser_version_major: this.browser.version && this.browser.version.split(".")[0],
             environment: WAVESKEEPER_ENV,
             network: this.controllers.network.store.getState().currentNetwork,
             extensionId: this.id,
@@ -38,8 +41,6 @@ export class StatisticsController {
             device_id: 'waves_keeper',
             app_version: this.version,
             platform: this.browser.os,
-            os_name: this.browser.name,
-            os_version: this.browser.version,
             language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
             ip: '$remote',
             time: Date.now(),
