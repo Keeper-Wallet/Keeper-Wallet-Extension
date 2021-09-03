@@ -1,6 +1,6 @@
 {
   "name": "waveskeeper",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -106,7 +106,8 @@
     "webpack-cli": "^3.3.9",
     "webpack-livereload-plugin": "^2.1.1"
   },
+  "engineStrict": true,
   "engines": {
-    "node": ">=8.0.0"
+    "node": "^10.24.1"
   }
 }

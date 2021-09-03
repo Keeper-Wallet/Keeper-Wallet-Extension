@@ -2,8 +2,8 @@ import ObservableStore from "obs-store";
 import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config';
 import extension from 'extensionizer';
-
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
+import { detect } from "../lib/detectBrowser";
+import { WAVESKEEPER_ENV } from "../constants"
 
 export class StatisticsController {
 
@@ -16,7 +16,7 @@ export class StatisticsController {
         this.store = new ObservableStore({ userId });
         this.version = extension.runtime.getManifest().version;
         this.id = extension.runtime.id;
-        this.addEvent('runKeeper');
+        this.browser = detect()
     }
 
     static createUserId() {
@@ -27,22 +27,24 @@ export class StatisticsController {
 
     addEvent(event_type, event_properties = {}) {
         const userId = this.store.getState().userId;
-
-        event_properties = {
-            ...event_properties,
+        const user_properties = {
+            browser_name: this.browser.name,
+            browser_version: this.browser.version,
+            browser_version_major: this.browser.version && this.browser.version.split(".")[0],
+            environment: WAVESKEEPER_ENV,
             network: this.controllers.network.store.getState().currentNetwork,
-            app_version: this.version,
             extensionId: this.id,
-        };
-
-        if (!WAVESKEEPER_DEBUG) {
-            return null;
         }
 
         this.events.push({
             user_id: userId,
             device_id: 'waves_keeper',
+            app_version: this.version,
+            platform: this.browser.os,
+            language: (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage,
+            ip: '$remote',
             time: Date.now(),
+            user_properties,
             event_properties,
             event_type,
         });
@@ -85,6 +87,7 @@ export class StatisticsController {
                 this.addEvent('approve', {
                     type: message.data.type,
                     msgType: message.type,
+                    origin: message.origin,
                     dApp: isDApp ? message.data.data.dApp : undefined,
                 });
             }
@@ -92,5 +95,23 @@ export class StatisticsController {
 
         }
 
+    }
+    /**
+     * Popup show event. Send no more once per hour.
+     */
+    showPopup() {
+        const timeDelta = 1000 * 60 * 60  // 1 event per hour
+        const state = this.store.getState()
+        const dateNow = new Date();
+        const dateLastOpened = !!state.lastOpened ? new Date(state.lastOpened) : dateNow - timeDelta;
+
+        if (!state.lastOpened) {
+            this.addEvent('installKeeper');
+        }
+
+        if ((dateNow - dateLastOpened) >= timeDelta) {
+            this.store.updateState({lastOpened: dateNow});
+            this.addEvent('openKeeper');
+        }
     }
 }

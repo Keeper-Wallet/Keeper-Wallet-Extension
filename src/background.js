@@ -676,6 +676,8 @@ class BackgroundService extends EventEmitter {
                 this.removeListener('update', sendUpdate);
                 this.removeListener('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
             });
+
+            this.statisticsController.showPopup();
         };
 
         dnode.on('remote', remoteHandler);
