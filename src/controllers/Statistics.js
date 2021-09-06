@@ -27,12 +27,16 @@ export class StatisticsController {
 
     addEvent(event_type, event_properties = {}) {
         const userId = this.store.getState().userId;
+        const network = this.controllers.network.getNetwork();
+        const networkCode = this.controllers.network.getNetworkCode(network);
+
         const user_properties = {
             browser_name: this.browser.name,
             browser_version: this.browser.version,
             browser_version_major: this.browser.version && this.browser.version.split(".")[0],
             environment: WAVESKEEPER_ENV,
-            network: this.controllers.network.store.getState().currentNetwork,
+            network: network,
+            chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
             extensionId: this.id,
         }
 
