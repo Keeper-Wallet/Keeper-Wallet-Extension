@@ -399,13 +399,18 @@ ERRORS
 
 A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. Only certain types of transactions are permitted:
 
-- `3 – token issue`
-- `4 – token transfer`
-- `5 – token re-issue`
-- `6 – token burning`
-- `10 – creating an alias for an address in Waves' network`
+- `3 – issues a token`
+- `4 – transfer a token`
+- `5 – reissues a token`
+- `6 – burns a token`
+- `8 – leases WAVES`
+- `9 – cancels the leasing`
+- `10 – creating an alias for an address in Waves network`
 - `11 – mass transfer`
-- `12 - DataTransaction`
+- `12 - adds, modifies and deletes data entries in the sender's account data storage`
+- `13 - assigns the dApp script or account script to the sender's account`
+- `14 - configures sponsorship`
+- `15 - modifies the asset script`
 
 Example:
 
