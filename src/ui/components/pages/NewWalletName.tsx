@@ -52,12 +52,13 @@ class NewWalletNameComponent extends React.Component {
                 </div>
                 
                 <div className={styles.buttons}>
-                    <Button type='submit'
-                            onClick={this._onSave}
-                            disabled={this.state.errors.length || this.state.disabled}>
-                        <Trans i18nKey="newAccountName.continue">Continue</Trans>
-                    </Button>
-                    {   this.props.account.hasBackup ? null :
+                    {
+                        this.props.account.hasBackup ?
+                        <Button type='submit'
+                                onClick={this._onSave}
+                                disabled={this.state.errors.length || this.state.disabled}>
+                            <Trans i18nKey="newAccountName.continue">Continue</Trans>
+                        </Button> :
                         <Button type='submit' disabled={this.state.errors.length}>
                             <Trans i18nKey="newAccountName.continueBackup">Create backup</Trans>
                         </Button>
@@ -95,7 +96,7 @@ class NewWalletNameComponent extends React.Component {
             this.props.addUser(this.props.account);
             return null;
         }
-        
+
         this.props.setTab(this.props.next);
     }
     
