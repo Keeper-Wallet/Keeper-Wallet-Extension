@@ -3,7 +3,7 @@ import { translate, Trans } from 'react-i18next';
 import * as styles from './index.styl';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat } from '../../ui';
-import { getFee, getAssetsId, getAmount } from './parseTx';
+import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
 
@@ -28,7 +28,7 @@ export class IssueInfo extends React.PureComponent<ITransferInfo> {
                 <div className="tx-title tag1 basic500">
                     <Trans i18nKey='transactions.decimalPoints'>Decimal points</Trans>
                 </div>
-                <div className={styles.txValue}>{tx.decimals}</div>
+                <div className={styles.txValue}>{tx.precision || tx.decimals}</div>
             </div>
     
             <div className={styles.txRow}>
