@@ -22,7 +22,7 @@ export function getFee(tx) {
 export function getAmount(tx = null) {
     return new Money(tx.quantity, new Asset({
         ...tx,
-        precision: Number(tx.decimals) || 0,
+        precision: Number(tx.precision || tx.decimals) || 0,
     }));
 }
 
