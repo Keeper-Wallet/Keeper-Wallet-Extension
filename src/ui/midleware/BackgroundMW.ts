@@ -1,4 +1,4 @@
-import { ACTION } from '../actions/constants';
+import { ACTION } from '../actions';
 import background from '../services/Background';
 import { i18n } from '../i18n';
 import {
@@ -12,6 +12,7 @@ import {
     pairingSetData,
     updateIdle,
     setActiveNotification,
+    setUiState,
 } from '../actions';
 import { PAGES } from '../pageConfig';
 import { store } from '../store';
@@ -129,6 +130,9 @@ export const deleteAccountMw = store => next => action => {
             () => {
                 store.dispatch(updateActiveState(null));
                 store.dispatch(setTab(PAGES.ROOT));
+                store.dispatch(setUiState({
+                    account: null
+                }));
             }
         );
         return null;
