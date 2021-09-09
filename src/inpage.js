@@ -130,27 +130,32 @@ function checkForPaymentApiLink(e) {
             return false;
         }
 
-        const url = new URL(href);
+        try {
+            const url = new URL(href);
 
-        if (!['client.wavesplatform.com', 'dex.wavesplatform.com', 'waves.exchange'].find(item => url.host === item)) {
+            if (!['client.wavesplatform.com', 'dex.wavesplatform.com', 'waves.exchange'].find(item => url.host === item)) {
+                return false;
+            }
+
+            if (!url.hash.indexOf('#gateway/auth')) {
+                return {
+                    type: 'auth',
+                    hash: url.hash
+                }
+            }
+
+            if (!url.hash.indexOf('#send/') && url.hash.includes('strict=true')) {
+                return {
+                    type: 'send',
+                    hash: url.hash
+                }
+            }
+
+            return false
+        }
+        catch (err) {
             return false;
         }
-
-        if (!url.hash.indexOf('#gateway/auth')) {
-            return {
-                type: 'auth',
-                hash: url.hash
-            }
-        }
-
-        if (!url.hash.indexOf('#send/') && url.hash.includes('strict=true')) {
-            return {
-                type: 'send',
-                hash: url.hash
-            }
-        }
-
-        return false
     };
 
     while (node) {
