@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: "[BUG]"
 labels: bug
-assignees: jahsus-waves
+assignees: msmolyakov
 
 ---
 
@@ -23,10 +23,11 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. Debian/Ubuntu/iOS]
- - Browser/JVM [e.g. chrome, safari]
- - Version [e.g. 22]
+**Environment**
+Please complete the following information.
+- Version of ProviderKeeper: [e.g. "1.0.0"]
+- OS: [e.g. "Windows 10 / macOS Big Sur / Ubuntu Bionic Beaver / iOS 15"]
+- Browser version: [e.g. "Google Chrome Version 93.0.4577.63 (Official Build) (x86_64)"]
 
 **Additional context**
 Add any other context about the problem here.
