@@ -1,5 +1,11 @@
+@import '../../../styles/colors.styl';
+
 .splitButton
-  display: flex;
+  position: relative;
+  margin-bottom: 14px;
+
+  button
+    margin-bottom: 0 !important;
 
 .dropdownButton
   &::after
@@ -13,4 +19,25 @@
     border-left: .3em solid transparent
 
 .arrowButton
+  position: relative;
   width: 40px;
+
+.list
+  position: absolute;
+  width: 100%;
+  margin-top: 2px;
+  box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
+  background: $white;
+  border-radius: 4px;
+  z-index: 50;
+
+.listItem
+  height: 40px;
+  cursor: pointer;
+  line-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+  text-align: left;
+
+  &:hover
+    background: $basic50;
