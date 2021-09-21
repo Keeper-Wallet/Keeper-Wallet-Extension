@@ -427,7 +427,7 @@ export class MessageController extends EventEmitter {
     /**
      * Calculates hash of message data. It is TX id for transactions. Also used for auth and requests. Throws if data is invalid
      * @param {object} data - data field from message
-     * @param {object} account - waveskeeper account
+     * @param {object} account - Waves Keeper account
      * @returns {Promise<{ id, bytes }>}
      */
     async _getMessageDataHash(data, account) {

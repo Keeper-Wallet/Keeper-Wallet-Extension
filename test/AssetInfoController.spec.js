@@ -6,7 +6,7 @@ describe('AssetInfoController', () => {
 
     const controller = new AssetInfoController({
         getNetwork: () => 'mainnet',
-        getNode: () => 'https://nodes.wavesplatform.com'
+        getNode: () => 'https://nodes.wavesnodes.com'
     });
 
     it('Should Get waves asset info', async () => {
