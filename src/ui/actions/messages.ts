@@ -14,3 +14,8 @@ export const reject = messageId => ({
     type: ACTION.REJECT,
     payload: messageId
 });
+
+export const rejectForever = messageId => ({
+    type: ACTION.REJECT_FOREVER,
+    payload: {messageId, forever: true}
+})

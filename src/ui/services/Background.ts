@@ -166,9 +166,9 @@ class Background {
         return this.background.approve(messageId, address, network);
     }
 
-    async reject(messageId): Promise<void> {
+    async reject(messageId, forever = false): Promise<void> {
         await this.initPromise;
-        return this.background.reject(messageId);
+        return this.background.reject(messageId, forever);
     }
 
     async setNetwork(network): Promise<void> {
