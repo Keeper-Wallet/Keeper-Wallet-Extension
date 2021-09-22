@@ -6,39 +6,37 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
-import { ERRORS } from './lib/KeeperError';
-import { MSG_STATUSES } from './constants';
-import { createStreamSink } from './lib/createStreamSink';
-import { getFirstLangCode } from './lib/get-first-lang-code';
+import {ERRORS} from './lib/KeeperError';
+import {MSG_STATUSES, WAVESKEEPER_DEBUG} from './constants';
+import {createStreamSink} from './lib/createStreamSink';
+import {getFirstLangCode} from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
-import { ComposableObservableStore } from './lib/ComposableObservableStore';
-import { equals } from 'ramda';
+import {ComposableObservableStore} from './lib/ComposableObservableStore';
+import {equals} from 'ramda';
 import LocalStore from './lib/local-store';
 import {
-    PreferencesController,
-    WalletController,
-    NotificationsController,
-    NetworkController,
-    MessageController,
-    BalanceController,
-    PermissionsController,
-    UiStateController,
     AssetInfoController,
-    TxInfoController,
+    BalanceController,
     ExternalDeviceController,
-    RemoteConfigController,
     IdleController,
+    MessageController,
+    NetworkController,
+    NotificationsController,
+    PERMISSIONS,
+    PermissionsController,
+    PreferencesController,
+    RemoteConfigController,
     StatisticsController,
     TrashController,
+    TxInfoController,
+    UiStateController,
+    WalletController,
 } from './controllers';
-import { PERMISSIONS } from './controllers/PermissionsController';
-import { setupDnode } from './lib/dnode-util';
-import { WindowManager } from './lib/WindowManger';
+import {setupDnode} from './lib/dnode-util';
+import {WindowManager} from './lib/WindowManger';
 import '@waves/waves-transactions';
-import { getAdapterByType } from '@waves/signature-adapter';
-import { WAVESKEEPER_DEBUG } from './constants';
-import { verifyCustomData } from "@waves/waves-transactions";
-import { waves } from "./controllers/wavesTransactionsController";
+import {getAdapterByType} from '@waves/signature-adapter';
+import {waves} from "./controllers/wavesTransactionsController";
 
 const version = extension.runtime.getManifest().version;
 const isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
@@ -348,7 +346,7 @@ class BackgroundService extends EventEmitter {
                 this.statisticsController.transaction(message);
                 return  approveData;
             },
-            reject: async (messageId) => this.messageController.reject(messageId),
+            reject: async (messageId, forever) => this.messageController.reject(messageId, forever),
 
             // notifications
             setReadNotification: async (id) => this.notificationsController.setMessageStatus(id, MSG_STATUSES.SHOWED_NOTIFICATION),
@@ -450,7 +448,14 @@ class BackgroundService extends EventEmitter {
                     this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
                 })
                 .catch((e) => {
-                    this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
+                    switch(e.data){}
+                    if(e.data === MSG_STATUSES.REJECTED){
+                        // user rejected single permission request
+                        this.permissionsController.setMessageIdAccess(origin, null);
+                    } else if (e.data === MSG_STATUSES.REJECTED_FOREVER) {
+                        // blocked origin
+                        this.messageController.setPermission(origin, PERMISSIONS.REJECTED);
+                    }
                     return Promise.reject(e);
                 });
         }
@@ -516,7 +521,7 @@ class BackgroundService extends EventEmitter {
             }
         };
 
-        const api = {
+        return {  // api
 
             signOrder: async (data, options) => {
                 return await newMessage(data, 'order', options, false)
@@ -545,7 +550,7 @@ class BackgroundService extends EventEmitter {
             wavesAuth: async (data, options) => {
                 const publicKey = data && data.publicKey;
                 const timestamp = data && data.timestamp || Date.now();
-                return await newMessage({ publicKey, timestamp }, 'wavesAuth', options, false)
+                return await newMessage({publicKey, timestamp}, 'wavesAuth', options, false)
             },
             signRequest: async (data, options) => {
                 return await newMessage(data, 'request', options, false)
@@ -558,7 +563,7 @@ class BackgroundService extends EventEmitter {
             },
             notification: async (data) => {
                 const state = this.getState();
-                const { selectedAccount, initialized } = state;
+                const {selectedAccount, initialized} = state;
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -572,7 +577,7 @@ class BackgroundService extends EventEmitter {
 
             publicState: async () => {
                 const state = this.getState();
-                const { selectedAccount, initialized } = state;
+                const {selectedAccount, initialized} = state;
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -593,7 +598,7 @@ class BackgroundService extends EventEmitter {
 
             getKEK: async (publicKey, prefix) => {
                 const state = this.getState();
-                const { selectedAccount, initialized } = state;
+                const {selectedAccount, initialized} = state;
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -614,7 +619,7 @@ class BackgroundService extends EventEmitter {
 
             encryptMessage: async (message, publicKey, prefix) => {
                 const state = this.getState();
-                const { selectedAccount, initialized } = state;
+                const {selectedAccount, initialized} = state;
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -635,7 +640,7 @@ class BackgroundService extends EventEmitter {
 
             decryptMessage: async (message, publicKey, prefix) => {
                 const state = this.getState();
-                const { selectedAccount, initialized } = state;
+                const {selectedAccount, initialized} = state;
 
                 if (!selectedAccount) {
                     throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -655,8 +660,6 @@ class BackgroundService extends EventEmitter {
                 return this.walletController.decryptMessage(selectedAccount.address, selectedAccount.network, message, publicKey, prefix);
             }
         };
-
-        return api;
     }
 
     setupUiConnection(connectionStream) {
