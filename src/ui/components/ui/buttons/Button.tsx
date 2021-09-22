@@ -9,6 +9,7 @@ export const BUTTON_TYPE = {
     TRANSPARENT: 'transparent',
     ICON: 'icon',
     WARNING: 'warning',
+    DANGER: 'danger',
     INTERFACE: 'interface',
     CUSTOM: 'custom'
 };
@@ -25,6 +26,7 @@ export function Button({ className, type, withIcon, children, ...props }: IProps
             [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
             [styles.icon]: withIcon,
             [styles.warning]: type === BUTTON_TYPE.WARNING,
+            [styles.danger]: type === BUTTON_TYPE.DANGER,
             [styles.interface]: type === BUTTON_TYPE.INTERFACE,
             [styles.custom]: type === BUTTON_TYPE.CUSTOM,
             [styles.default]: !type

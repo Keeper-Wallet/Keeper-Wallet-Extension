@@ -3,13 +3,10 @@ import cn from 'classnames';
 import * as styles from './splitButton.styl';
 import { Button } from "./Button";
 
-export class SplitButton extends React.PureComponent<IProps, IState> {
+export class DropdownButton extends React.PureComponent<IProps, IState> {
     private element: HTMLDivElement;
 
     getRef = (element) => this.element = element;
-
-    selectHandler = (item: TDropdownItem) => {
-    };
 
     clickHandler = () => {
         const showList = this.state.showList;
@@ -58,48 +55,34 @@ export class SplitButton extends React.PureComponent<IProps, IState> {
     }
 
     render(): React.ReactNode {
+        const [defaultItem, ...otherItems] = this.props.children;
+
         return (
             <div className={cn(styles.splitButton, this.props.className, 'buttons-group')} ref={this.getRef}>
                 <div className={'relative flex'}>
-                    <Button type={this.props.type}>
-                        {this.props.children}
-                    </Button>
+                    {defaultItem}
 
                     <div className={cn(styles.arrowButton)}>
-                        <Button type={this.props.type} onClick={this.clickHandler}
+                        <Button type={defaultItem.props.type} onClick={this.clickHandler}
                                 className={cn(styles.dropdownButton)}/>
                     </div>
                 </div>
 
-                <List isShow={this.state.showList} list={this.props.dropdownList} onClickItem={this.selectHandler} />
+                {this.state.showList ?
+                    <div className={styles.list}>
+                        {otherItems.map(item => (
+                            <div className={styles.listItem}>
+                                {item}
+                            </div>
+                        ))}
+                    </div>: null}
             </div>
         )
     }
 }
 
-const List = ({ list, onClickItem, isShow }) => {
-    return !isShow ? null : <div className={styles.list}>
-        {
-            list.map(item => (
-                <div key={item.id} className={styles.listItem} onClick={(e) => onClickItem(item)}>{item.text}</div>
-            ))
-        }
-    </div>
-};
-
-type TText = string|React.ReactNode;
-
-type TDropdownItem = {
-    id: string|number;
-    text: TText;
-};
-
 interface IProps extends React.ComponentProps<'div'> {
-    type: string;
-    dropdownList: Array<TDropdownItem>;
     children?: any
-    onClickBtn?: () => void;
-    onClickDropdownItem?: (id: string|number) => void;
 }
 
 interface IState {

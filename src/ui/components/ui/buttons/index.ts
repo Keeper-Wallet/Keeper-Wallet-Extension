@@ -1,4 +1,4 @@
 export * from './Button';
 export * from './ApproveBtn';
 export * from './PowerButton';
-export * from './SplitButton';
+export * from './DropdownButton';
