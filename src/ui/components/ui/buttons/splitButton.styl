@@ -10,7 +10,8 @@
 .dropdownButton
   &::after
     display: inline-block
-    margin-left: .255em
+    margin-left: .128em
+    margin-right: .128em
     vertical-align: .255em
     content: ''
     border-top: .3em solid
@@ -21,6 +22,10 @@
 .arrowButton
   position: relative;
   width: 40px;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-left-color: $white
+
 
 .list
   position: absolute;
@@ -35,7 +40,7 @@
   height: 40px;
   cursor: pointer;
   line-height: 40px;
-  padding: 0 14px;
+  margin-top: 2px;
   font-size: 14px;
   text-align: left;
 
