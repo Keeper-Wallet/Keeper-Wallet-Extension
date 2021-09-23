@@ -1112,30 +1112,6 @@ ERRORS:
 - `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
 - `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
 
-**1004 – signing data for a request to Coinomat**
-
-- `timestamp` number/string
-
-Request:
-
-```js
-    WavesKeeper.signRequest({
-        type: 1004,
-        data: {
-            timestamp: 234234242423423
-        }
-    });
-```
-
-REPLY: a line with a signature in base58.
-
-ERRORS:
-
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
-
-
 ### signCustomData
 
 Method Waves Keeper for sign custom data for different services, it accepts an object:
