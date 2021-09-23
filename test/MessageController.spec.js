@@ -1,4 +1,4 @@
-import chai, {expect, assert} from 'chai';
+import chai, {expect} from 'chai';
 import chaiAsPromised from 'chai-as-promised'
 import {MessageController, AssetInfoController} from "../src/controllers";
 
@@ -53,13 +53,6 @@ describe("MessageController", () => {
         }
     };
 
-    const coinomatRequest = {
-        type: 1004,
-        data: {
-            timestamp: Date.now()
-        }
-    };
-
     const assetInfoController = new AssetInfoController({getNetwork:()=>'testnet', getNode:()=>'https://nodes-testnet.wavesnodes.com'})
 
     beforeEach(() => {
@@ -72,7 +65,6 @@ describe("MessageController", () => {
         await controller.newMessage(txPackage, 'transactionPackage', origin, account);
         await controller.newMessage(auth, 'auth', origin, account);
         await controller.newMessage(matcherRequest, 'request', origin, account);
-        await controller.newMessage(coinomatRequest, 'request', origin, account);
         const state = controller.store.getState();
         expect(state.messages.length).to.eql(5);
         expect(state.messages[0].id).to.be.a('string');

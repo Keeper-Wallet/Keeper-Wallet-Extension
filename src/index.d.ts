@@ -41,6 +41,5 @@ export namespace WavesKeeper {
     
     export namespace custom {
         export function sign( rx: TSD ): Promise<TId>;
-        export function coinomatConfirm(TCD): Promise<TId>;
     }
 }

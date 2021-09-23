@@ -1133,32 +1133,6 @@ WavesKeeper.signRequest({
 - `{ message: "Api rejected by user", code: 12 }` - сайт не является доверенным
 - `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
 
-##### 1004 - подпись данных для запроса к Coinomat
-
-- `timestamp` number/string
-
-Пример:
-
-```js
-WavesKeeper.signRequest({
-    type: 1004,
-    data: {
-        timestamp: 234234242423423
-    }
-});
-```
-
-ОТВЕТ:
-
-Строка с подписью в base58.
-
-ОШИБКИ:
-
-- `{ message: "User denied message", code: 10 }` - пользователь отклонил запрос
-- `{ message: "Api rejected by user", code: 12 }` - сайт не является доверенным
-- `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
-
-
 #### signCustomData
 
 Метод Waves Keeper для подписи данных, для подтверждения их на разных сервисах.
