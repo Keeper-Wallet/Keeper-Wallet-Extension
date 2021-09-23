@@ -1,6 +1,6 @@
 import * as React from "react";
 import cn from 'classnames';
-import * as styles from './splitButton.styl';
+import * as styles from './dropdownButton.styl';
 import { Button } from "./Button";
 
 export class DropdownButton extends React.PureComponent<IProps, IState> {
