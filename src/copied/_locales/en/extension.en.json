@@ -262,6 +262,7 @@
         "authOriginOk": "Allow requests",
         "authOriginReject": "Blocked requests",
         "authRejected": "Request has not been signed.",
+        "blacklist": "Add to blacklist",
         "changeAccount": "Do you want to change your account?",
         "changeAccountInfo": "If you change account, we will cancel the current transaction. After selecting a new active account, repeat the operation.",
         "confirmButton": "Approve",

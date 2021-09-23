@@ -1,0 +1,47 @@
+@import '../../../styles/colors.styl';
+
+.splitButton
+  position: relative;
+  margin-bottom: 14px;
+
+  button
+    margin-bottom: 0 !important;
+
+.dropdownButton
+  &::after
+    display: inline-block
+    margin-left: .128em
+    margin-right: .128em
+    vertical-align: .255em
+    content: ''
+    border-top: .3em solid
+    border-right: .3em solid transparent
+    border-bottom: 0
+    border-left: .3em solid transparent
+
+.arrowButton
+  position: relative;
+  width: 40px;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: $white
+
+
+.list
+  position: absolute;
+  width: 100%;
+  margin-top: 1px;
+  box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
+  background: $white;
+  border-radius: 4px;
+  z-index: 50;
+
+.listItem
+  height: 40px;
+  cursor: pointer;
+  line-height: 40px;
+  font-size: 14px;
+  text-align: left;
+
+  &:hover
+    background: $basic50;

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
+import {translate} from 'react-i18next';
 import {
     setActiveMessage,
     getAsset,
     approve,
     reject,
+    rejectForever,
     clearMessagesStatus,
     clearMessages,
     closeNotificationWindow,
@@ -26,6 +27,7 @@ class MessagesComponent extends React.Component {
     hasApproved: boolean;
     
     rejectHandler = (e) => this.reject(e);
+    rejectForeverHandler = (e) => this.rejectForever(e);
     approveHandler = (e, params) => this.approve(e, params);
     closeHandler = (e) => {
         this.updateActiveMessages(e);
@@ -78,6 +80,7 @@ class MessagesComponent extends React.Component {
                           onNext={this.nextHandler}
                           onList={this.toListHandler}
                           reject={this.rejectHandler}
+                          rejectForever={this.rejectForeverHandler}
                           approve={this.approveHandler}
                           selectAccount={this.selectAccountHandler}>
         </Component>;
@@ -111,6 +114,11 @@ class MessagesComponent extends React.Component {
             e.preventDefault();
         }
         this.props.reject(this.state.activeMessage.id);
+    }
+
+    rejectForever(e = null) {
+        if (e) e.preventDefault();
+        this.props.rejectForever(this.state.activeMessage.id)
     }
     
     updateActiveMessages( e, isNext = false) {
@@ -251,6 +259,7 @@ const actions = {
     getAsset,
     approve,
     reject,
+    rejectForever
 };
 
 export const Messages = connect(mapStateToProps, actions)(MessagesComponent);

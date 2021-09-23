@@ -11,7 +11,6 @@ import {ERRORS} from '../lib/KeeperError';
 import {PERMISSIONS} from './PermissionsController';
 import {calculateFeeFabric} from "./CalculateFeeController";
 import {waves} from "./wavesTransactionsController";
-import {protoBytesToOrder} from "@waves/waves-transactions/dist/proto-serialize";
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -59,11 +58,7 @@ export class MessageController extends EventEmitter {
 
     /**
      * Generates message with metadata. Add tx to pipeline
-     * @param {object} data - message data
-     * @param {string} origin - Domain, which has sent this data
-     * @param {string} type - type of message(transaction, request, auth, bytes)
-     * @param {object | undefined} account - Account, that should approve message. Can be undefined
-     * @param {boolean} broadcast - Should this message be sent(node, matcher, somewhere else)
+     * @param {object} messageData - message data
      * @returns {Promise<Object>} id - message id
      */
     async newMessage(messageData) {
@@ -139,7 +134,8 @@ export class MessageController extends EventEmitter {
             case MSG_STATUSES.PUBLISHED:
                 return Promise.resolve(message.result);
             case MSG_STATUSES.REJECTED:
-                return Promise.reject(ERRORS.USER_DENIED());
+            case MSG_STATUSES.REJECTED_FOREVER:
+                return Promise.reject(ERRORS.USER_DENIED(message.status));
             case MSG_STATUSES.FAILED:
                 return Promise.reject(ERRORS.FAILED_MSG(message.err.message));
             default:
@@ -150,7 +146,8 @@ export class MessageController extends EventEmitter {
                             case MSG_STATUSES.PUBLISHED:
                                 return resolve(finishedMessage.result);
                             case MSG_STATUSES.REJECTED:
-                                return reject(ERRORS.USER_DENIED());
+                            case MSG_STATUSES.REJECTED_FOREVER:
+                                return reject(ERRORS.USER_DENIED(message.status));
                             case MSG_STATUSES.FAILED:
                                 return reject(ERRORS.FAILED_MSG(finishedMessage.err.message));
                             default:
@@ -199,10 +196,11 @@ export class MessageController extends EventEmitter {
     /**
      * Rejects message
      * @param {string} id - message id
+     * @param {boolean} forever - reject forever flag
      */
-    reject(id) {
+    reject(id, forever) {
         const message = this._getMessageById(id);
-        message.status = 'rejected';
+        message.status = !forever ? MSG_STATUSES.REJECTED : MSG_STATUSES.REJECTED_FOREVER;
         this._updateMessage(message);
         this.emit(`${message.id}:finished`, message);
     }
@@ -429,7 +427,7 @@ export class MessageController extends EventEmitter {
     /**
      * Calculates hash of message data. It is TX id for transactions. Also used for auth and requests. Throws if data is invalid
      * @param {object} data - data field from message
-     * @param {object} account - waveskeeper account
+     * @param {object} account - Waves Keeper account
      * @returns {Promise<{ id, bytes }>}
      */
     async _getMessageDataHash(data, account) {

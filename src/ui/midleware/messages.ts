@@ -27,6 +27,7 @@ export const updateActiveMessageReducer = store => next => action => {
 
             switch (status) {
                 case MSG_STATUSES.REJECTED:
+                case MSG_STATUSES.REJECTED_FOREVER:
                     store.dispatch(rejectOk(activeMessageUpdated.id));
                     store.dispatch(approvePending(false));
                     break;
@@ -77,7 +78,17 @@ export const reject = store => next => action => {
     if (action.type !== ACTION.REJECT) {
         return next(action);
     }
-    
+
     background.reject(action.payload);
     store.dispatch(approvePending(true));
 };
+
+export const rejectForever = store => next => action => {
+    if (action.type != ACTION.REJECT_FOREVER) {
+        return next(action)
+    }
+    const {messageId, forever} = action.payload;
+
+    background.reject(messageId, forever)
+    store.dispatch(approvePending(true));
+}

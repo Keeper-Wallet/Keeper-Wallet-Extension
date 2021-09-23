@@ -11,6 +11,7 @@ export const MSG_STATUSES = {
     PUBLISHED: 'published',
     FAILED: 'failed',
     REJECTED: 'rejected',
+    REJECTED_FOREVER: 'rejected_forever',
     SHOWED_NOTIFICATION: 'showed_notify',
     NEW_NOTIFICATION: 'new_notify',
 };

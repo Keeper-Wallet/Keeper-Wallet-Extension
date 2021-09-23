@@ -6,10 +6,9 @@ import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
-import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent } from 'ui/components/ui';
+import {ApproveBtn, Button, BUTTON_TYPE, CollapsedContent, DropdownButton} from 'ui/components/ui';
 import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
-import { state } from '../../../reducers/updateState';
 import { BigNumber } from '@waves/bignumber';
 
 @translate(I18N_NAME_SPACE)
@@ -59,9 +58,14 @@ class OriginAuthComponent extends SignClass {
             </div>
             
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-                <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey='sign.reject'>Reject</Trans>
-                </Button>
+                <DropdownButton>
+                    <Button key={'reject'} onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
+                        <Trans i18nKey='sign.reject'>Reject</Trans>
+                    </Button>
+                    <Button key={'rejectForever'} onClick={this.props.rejectForever} type={BUTTON_TYPE.DANGER} className={'custom'}>
+                        <Trans i18nKey='sign.blacklist'>Add to blacklist</Trans>
+                    </Button>
+                </DropdownButton>
                 <ApproveBtn onClick={(e) => this.props.approve(e, params)} type={BUTTON_TYPE.SUBMIT}>
                     <Trans i18nKey='sign.auth'>Auth</Trans>
                 </ApproveBtn>
