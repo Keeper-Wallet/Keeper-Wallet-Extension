@@ -8,7 +8,6 @@ import cancelLease from './CancelLease';
 import createOrder from './CreateOrder';
 import cancelOrder from './CancelOrder';
 import matcher from './MatcherOrders';
-import coinomatConfirm from './CoinomatConfirm';
 import massTransfer from './MassTransfer';
 import issue from './Issue';
 import reissue from './Reissue';
@@ -34,7 +33,6 @@ const MESSAGES = [
     createOrder,
     cancelOrder,
     matcher,
-    coinomatConfirm,
     massTransfer,
     issue,
     reissue,
