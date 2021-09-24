@@ -2,6 +2,7 @@ import './styles/app.styl';
 import './styles/icons.styl';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import './i18n';
 import { LANGS } from './i18n';
 import { store } from './store';
 import { updateState } from './actions/updateState';
@@ -25,8 +26,9 @@ export async function initApp(background: any) {
 
 ReactDOM.render(
     <Provider store={store}>
-        <div className='app'>
-            <Root/>
+        <div className="app">
+            <Root />
         </div>
     </Provider>,
-    document.getElementById('app-content'));
+    document.getElementById('app-content')
+);

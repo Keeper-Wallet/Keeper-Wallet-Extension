@@ -40,8 +40,8 @@
     "dnode": "^1.2.2",
     "events": "^3.0.0",
     "extensionizer": "^1.0.1",
-    "i18next": "^11.6.0",
-    "i18next-locize-backend": "^1.6.0",
+    "i18next": "^20",
+    "i18next-locize-backend": "^1",
     "identity-img": "^1.0.0",
     "loglevel": "^1.6.1",
     "obj-multiplex": "^1.0.0",
@@ -56,7 +56,7 @@
     "react-addons-css-transition-group": "^15.6.2",
     "react-addons-transition-group": "^15.6.2",
     "react-dom": "^16.4.2",
-    "react-i18next": "^7.10.1",
+    "react-i18next": "^11",
     "react-redux": "^5.0.7",
     "readable-stream": "^2.3.6",
     "redux": "^4.0.0",
@@ -109,5 +109,8 @@
   "engineStrict": true,
   "engines": {
     "node": "^10.24.1"
+  },
+  "browser": {
+    "fs": false
   }
 }

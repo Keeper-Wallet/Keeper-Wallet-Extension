@@ -1,37 +1,65 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {WalletItem, ActiveWallet} from '../wallets';
-import {translate, Trans} from 'react-i18next';
-import {
-    getBalances,
-    getAsset,
-    selectAccount,
-    setActiveAccount,
-} from '../../actions';
-import {PAGES} from '../../pageConfig';
+import { connect } from 'react-redux';
+import { ActiveWallet, WalletItem } from '../wallets';
+import { Trans } from 'react-i18next';
+import { getAsset, getBalances, selectAccount, setActiveAccount } from '../../actions';
+import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
 import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import cn from 'classnames';
 import { Intro } from './Intro';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class AssetsComponent extends React.Component {
     props;
     state = {} as any;
     _currentActive;
     _sorted;
     _t;
+
+    static getDerivedStateFromProps(props, state) {
+        const asset = props.assets['WAVES'];
+
+        if (!props.activeAccount) {
+            return { loading: true };
+        }
+
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balances: {}, lease: {}, loading: false };
+        }
+
+        const assetInstance = new Asset(asset);
+        const balancesMoney = {};
+        const leaseMoney = {};
+
+        Object.entries<{ available: string; leasedOut: string }>(props.balances).forEach(([key, balance]) => {
+            if (!balance) {
+                return null;
+            }
+
+            balancesMoney[key] = new Money(balance.available, assetInstance);
+            leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+        });
+
+        const { deleted: deletedNotify } = props.notifications;
+        return { balances: balancesMoney, lease: leaseMoney, loading: false, deletedNotify };
+    }
+
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
-    onSelectHandler = account => this.showInfo(account);
-    onSetActiveHandler = account => this.setActive(account);
+
+    onSelectHandler = (account) => this.showInfo(account);
+
+    onSetActiveHandler = (account) => this.setActive(account);
+
     copyActiveHandler = () => this.onCopyModal();
+
     scrollHandler = (e) => {
         const value = e.target.scrollTop;
         this.setState({ topScrollMain: value > 90 });
     };
+
     showQrHandler = (event) => {
         event.stopPropagation();
         event.preventDefault();
@@ -39,12 +67,11 @@ class AssetsComponent extends React.Component {
     };
 
     render() {
-
         if (this.state.loading) {
-            return <Intro/>;
+            return <Intro />;
         }
 
-        const {address: activeAddress} = this.props.activeAccount;
+        const { address: activeAddress } = this.props.activeAccount;
 
         const activeProps = {
             account: this.props.activeAccount,
@@ -54,10 +81,9 @@ class AssetsComponent extends React.Component {
             onShowQr: this.showQrHandler,
             active: true,
         };
-        
-        const wallets = this.getFilteredAndSortedAccounts(activeAddress)
-            .map((account) => (
-                account ?
+
+        const wallets = this.getFilteredAndSortedAccounts(activeAddress).map((account) =>
+            account ? (
                 <WalletItem
                     account={account}
                     active={false}
@@ -65,73 +91,94 @@ class AssetsComponent extends React.Component {
                     leaseBalance={this.state.lease[account.address]}
                     key={`${account.address}_${account.name}_${account.type}`}
                     onSelect={this.onSelectHandler}
-                    onActive={this.onSetActiveHandler}/> : null)
-            );
+                    onActive={this.onSetActiveHandler}
+                />
+            ) : null
+        );
 
         const scrollClassName = cn('scroll-container', {
-            'lock-scroll': this.state.topScrollMain
+            'lock-scroll': this.state.topScrollMain,
         });
 
-        return <div className={styles.assets}>
-            <div className={styles.activeAccountTitle}>
-                <Trans i18nKey='assets.activeAccount'>Active account</Trans>
-            </div>
-            <CSSTransitionGroup className={styles.activeAnimationSpan}
-                                transitionName="animate_active_wallet"
+        return (
+            <div className={styles.assets}>
+                <div className={styles.activeAccountTitle}>
+                    <Trans i18nKey="assets.activeAccount">Active account</Trans>
+                </div>
+                <CSSTransitionGroup
+                    className={styles.activeAnimationSpan}
+                    transitionName="animate_active_wallet"
+                    transitionEnterTimeout={600}
+                    transitionEnter={true}
+                    transitionLeaveTimeout={600}
+                    transitionLeave={true}
+                >
+                    <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress} />
+                </CSSTransitionGroup>
+                <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
+                    <div>
+                        {wallets.length ? (
+                            <div className={`${styles.otherWalletsTitle} basic500 body3`}>
+                                <Trans i18nKey="assets.inStorage">Other accounts</Trans>
+                            </div>
+                        ) : null}
+
+                        <div className={styles.walletListWrapper}>
+                            <CSSTransitionGroup
+                                transitionName="animate_wallets"
                                 transitionEnterTimeout={600}
                                 transitionEnter={true}
                                 transitionLeaveTimeout={600}
-                                transitionLeave={true}>
-                <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress}/>
-            </CSSTransitionGroup>
-            <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
-                <div>
-                    {wallets.length ? <div className={`${styles.otherWalletsTitle} basic500 body3`}>
-                        <Trans i18nKey='assets.inStorage'>Other accounts</Trans>
-                    </div> : null}
-                    
-                    <div className={styles.walletListWrapper}>
-                        <CSSTransitionGroup transitionName="animate_wallets"
-                                            transitionEnterTimeout={600}
-                                            transitionEnter={true}
-                                            transitionLeaveTimeout={600}
-                                            transitionLeave={true}>
-                            {wallets}
-                        </CSSTransitionGroup>
+                                transitionLeave={true}
+                            >
+                                {wallets}
+                            </CSSTransitionGroup>
+                        </div>
+                    </div>
+
+                    <div
+                        className={`body1 basic500 border-dashed ${styles.addAccount}`}
+                        onClick={this.addWalletHandler}
+                    >
+                        <Trans i18nKey="assets.addAccount">Add an account</Trans>
                     </div>
                 </div>
 
-                <div className={`body1 basic500 border-dashed ${styles.addAccount}`}
-                     onClick={this.addWalletHandler}>
-                    <Trans i18nKey='assets.addAccount'>Add an account</Trans>
-                </div>
-            </div>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy} showChildrenOnly={true}>
+                    <div className="modal notification">
+                        <Trans i18nKey="assets.copied">Copied!</Trans>
+                    </div>
+                </Modal>
 
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE}
-                   showModal={this.state.showCopy}
-                   showChildrenOnly={true}>
-                <div className="modal notification">
-                    <Trans i18nKey="assets.copied">Copied!</Trans>
-                </div>
-            </Modal>
+                <Modal
+                    animation={Modal.ANIMATION.FLASH_SCALE}
+                    showModal={this.state.showActivated}
+                    showChildrenOnly={true}
+                >
+                    <div className="modal notification active-asset" key={this.state.name}>
+                        <div>
+                            <Trans i18nKey="assets.setActive">Active account changed</Trans>
+                        </div>
+                    </div>
+                </Modal>
 
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showActivated} showChildrenOnly={true}>
-                <div className="modal notification active-asset" key={this.state.name}>
-                    <div><Trans i18nKey="assets.setActive">Active account changed</Trans></div>
-                </div>
-            </Modal>
-    
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.deletedNotify} showChildrenOnly={true}>
-                <div className="modal notification active-asset" key='deleted'>
-                    <div><Trans i18nKey="assets.deleteAccount">Delete account</Trans></div>
-                </div>
-            </Modal>
-            
-            {/*<div className={styles.notifier}>*/}
+                <Modal
+                    animation={Modal.ANIMATION.FLASH_SCALE}
+                    showModal={this.state.deletedNotify}
+                    showChildrenOnly={true}
+                >
+                    <div className="modal notification active-asset" key="deleted">
+                        <div>
+                            <Trans i18nKey="assets.deleteAccount">Delete account</Trans>
+                        </div>
+                    </div>
+                </Modal>
+
+                {/*<div className={styles.notifier}>*/}
                 {/*<i className={styles.counter}>5</i>*/}
-            {/*</div>*/}
-            
-        </div>
+                {/*</div>*/}
+            </div>
+        );
     }
 
     getFilteredAndSortedAccounts(activeAddress) {
@@ -140,14 +187,16 @@ class AssetsComponent extends React.Component {
         }
         this._sorted = this._sorted || [];
         const hash = {};
-        this.props.accounts.forEach(account => hash[account.address] = account);
-        
-        this._sorted = this._sorted.map(account => {
-            const { address } = account || { address: null };
-            const data = hash[address];
-            delete hash[address];
-            return data;
-        }).filter(Boolean);
+        this.props.accounts.forEach((account) => (hash[account.address] = account));
+
+        this._sorted = this._sorted
+            .map((account) => {
+                const { address } = account || { address: null };
+                const data = hash[address];
+                delete hash[address];
+                return data;
+            })
+            .filter(Boolean);
         delete hash[activeAddress];
         this._sorted = [...this._sorted, ...Object.values(hash).filter(Boolean)];
         this._sorted.sort((acc, acc2) => {
@@ -158,19 +207,19 @@ class AssetsComponent extends React.Component {
         if (this._currentActive === activeAddress) {
             return this._sorted;
         }
-    
+
         if (!this._currentActive) {
             this._currentActive = activeAddress;
             return this._sorted;
         }
-    
-        const last = this.props.accounts.find(account => account.address === this._currentActive);
-        this._sorted = this._sorted.filter(account => account.address !== activeAddress);
+
+        const last = this.props.accounts.find((account) => account.address === this._currentActive);
+        this._sorted = this._sorted.filter((account) => account.address !== activeAddress);
         this._sorted.unshift(last);
         this._currentActive = activeAddress;
         return this._sorted;
     }
-    
+
     setActive(account) {
         this.props.selectAccount(account);
         this.setState({ showActivated: true, name: account.name });
@@ -188,46 +237,16 @@ class AssetsComponent extends React.Component {
         const showCopy = false;
         setTimeout(() => this.setState({ showSelected, showActivated, showCopy }), 1000);
     }
-    
+
     onCopyModal() {
         this.setState({ showCopy: true });
         this.closeModals();
-    }
-    
-    static getDerivedStateFromProps(props, state) {
-        const asset = props.assets['WAVES'];
-
-        if (!props.activeAccount) {
-            return { loading: true };
-        }
-
-        if (!asset) {
-            props.getAsset('WAVES');
-            return { balances: {}, lease: {}, loading: false };
-        }
-        
-        const assetInstance = new Asset(asset);
-        const balancesMoney = {};
-        const leaseMoney = {};
-        
-        Object.entries<{ available: string, leasedOut: string }>(props.balances)
-            .forEach(([key, balance]) =>  {
-                if (!balance) {
-                    return null;
-                }
-            
-                balancesMoney[key] = new Money(balance.available, assetInstance);
-                leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
-            });
-
-        const { deleted: deletedNotify } = props.notifications;
-        return { balances: balancesMoney, lease: leaseMoney, loading: false, deletedNotify };
     }
 }
 
 const mapStateToProps = function (store: any) {
     const activeAccount = store.selectedAccount.address;
-    const selected =  store.localState.assets.account ?  store.localState.assets.account.address : activeAccount;
+    const selected = store.localState.assets.account ? store.localState.assets.account.address : activeAccount;
 
     return {
         selectedAccount: store.accounts.find(({ address }) => address === selected),
@@ -235,7 +254,7 @@ const mapStateToProps = function (store: any) {
         accounts: store.accounts,
         balances: store.balances,
         assets: store.assets,
-        notifications: store.localState.notifications
+        notifications: store.localState.notifications,
     };
 };
 
