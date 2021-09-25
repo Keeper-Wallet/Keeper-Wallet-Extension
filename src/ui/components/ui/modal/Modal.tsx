@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as styles from './modal.styl';
 import cn from 'classnames';
-import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { CSSTransition } from 'react-transition-group';
 
 const ModalWrapper = (props) => {
     let Item;
     if (props.showChildrenOnly) {
-        Item = props.showModal ? props.children : null;
+        Item = props.showModal ? props.children : <div> </div>;
     } else {
         const className = cn(styles.modal, 'modal', styles.animated, {
             [styles.hidden]: !props.showModal,
@@ -25,18 +25,15 @@ const ModalWrapper = (props) => {
         );
     }
 
-    const hasAnimation = !!props.animation;
-
     return (
-        <CSSTransitionGroup
-            transitionName={props.animation || 'default_modal'}
-            transitionEnterTimeout={400}
-            transitionEnter={hasAnimation}
-            transitionLeaveTimeout={400}
-            transitionLeave={hasAnimation}
+        <CSSTransition
+            classNames={props.animation || 'default_modal'}
+            timeout={{ enter: 400, exit: 400 }}
+            enter={!!props.animation}
+            exit={!!props.animation}
         >
             {Item}
-        </CSSTransitionGroup>
+        </CSSTransition>
     );
 };
 

@@ -7,7 +7,7 @@ import { getAsset, getBalances, selectAccount, setActiveAccount } from '../../ac
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
-import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { CSSTransition } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
 
@@ -105,16 +105,15 @@ class AssetsComponent extends React.Component {
                 <div className={styles.activeAccountTitle}>
                     <Trans i18nKey="assets.activeAccount">Active account</Trans>
                 </div>
-                <CSSTransitionGroup
+                <CSSTransition
                     className={styles.activeAnimationSpan}
-                    transitionName="animate_active_wallet"
-                    transitionEnterTimeout={600}
-                    transitionEnter={true}
-                    transitionLeaveTimeout={600}
-                    transitionLeave={true}
+                    classNames="animate_active_wallet"
+                    timeout={600}
+                    enter={true}
+                    exit={true}
                 >
                     <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress} />
-                </CSSTransitionGroup>
+                </CSSTransition>
                 <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                     <div>
                         {wallets.length ? (
@@ -124,15 +123,9 @@ class AssetsComponent extends React.Component {
                         ) : null}
 
                         <div className={styles.walletListWrapper}>
-                            <CSSTransitionGroup
-                                transitionName="animate_wallets"
-                                transitionEnterTimeout={600}
-                                transitionEnter={true}
-                                transitionLeaveTimeout={600}
-                                transitionLeave={true}
-                            >
-                                {wallets}
-                            </CSSTransitionGroup>
+                            <CSSTransition classNames="animate_wallets" timeout={200} enter={true} exit={true}>
+                                <>{wallets}</>
+                            </CSSTransition>
                         </div>
                     </div>
 
@@ -144,7 +137,7 @@ class AssetsComponent extends React.Component {
                     </div>
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy} showChildrenOnly={true}>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy}>
                     <div className="modal notification">
                         <Trans i18nKey="assets.copied">Copied!</Trans>
                     </div>

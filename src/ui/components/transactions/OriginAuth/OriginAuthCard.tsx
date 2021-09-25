@@ -1,6 +1,6 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import { messageType } from './parseTx';

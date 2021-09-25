@@ -2,7 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../../ui';
-import * as cn from 'classnames';
+import cn from 'classnames';
 
 export class NotificationCard extends React.PureComponent<INotification> {
     deleteHandler = (event) => {

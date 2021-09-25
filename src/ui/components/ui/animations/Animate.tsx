@@ -1,7 +1,6 @@
 import './styles/animations.styl';
 import * as React from 'react';
-import * as CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-import cn from 'classnames';
+import { CSSTransition } from 'react-transition-group';
 
 export const ANIMATIONS = {
     SLIDE_LEFT: 'slid-left',
@@ -13,14 +12,17 @@ export const ANIMATIONS = {
 };
 
 export const Animation = (props) => {
-    const { animation = null , children = null, className = '', time = 600 } = props;
+    const { animation = null, children = null, className = '', time = 600 } = props;
 
-    return <CSSTransitionGroup className={className}
-                               transitionName={animation}
-                               transitionEnterTimeout={time}
-                               transitionEnter={!!animation}
-                               transitionLeaveTimeout={time}
-                               transitionLeave={!!animation}>
-        {children}
-    </CSSTransitionGroup>;
+    return (
+        <CSSTransition
+            className={className}
+            classNames={animation}
+            timeout={time}
+            enter={!!animation}
+            exit={!!animation}
+        >
+            {children}
+        </CSSTransition>
+    );
 };

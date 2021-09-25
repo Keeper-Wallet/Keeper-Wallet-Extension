@@ -1,6 +1,6 @@
 import * as styles from './auth.styl';
 import * as React from 'react';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { Trans } from 'react-i18next';
 
 const Icon = (props) => (

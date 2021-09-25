@@ -2,7 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { Asset } from '../../ui';
 import { getMoney } from '../../../utils/converters';
