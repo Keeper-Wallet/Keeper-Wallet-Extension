@@ -168,7 +168,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                     onSelect={this.selectHandler}
                 />
 
-                <Modal showModal={showSettings} animation={Modal.ANIMATION.FLASH_SCALE}>
+                <Modal showModal={showSettings} animation={Modal.ANIMATION.FLASH}>
                     <NetworkSettings
                         node={net && net.server}
                         name={(net && net.name) || lastNet}

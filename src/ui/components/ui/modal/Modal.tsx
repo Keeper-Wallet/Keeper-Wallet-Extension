@@ -5,7 +5,13 @@ import { CSSTransition } from 'react-transition-group';
 
 const ModalWrapper = (props) => {
     return (
-        <CSSTransition in={props.showModal} classNames={props.animation || 'default_modal'} timeout={400} unmountOnExit>
+        <CSSTransition
+            in={props.showModal}
+            classNames={props.animation || 'default_modal'}
+            timeout={400}
+            unmountOnExit
+            onExited={props.onExited}
+        >
             {props.showChildrenOnly ? (
                 <div className="modal">
                     {props.showClose && (
@@ -60,6 +66,7 @@ export class Modal extends React.PureComponent {
         return ReactDOM.createPortal(
             <ModalWrapper
                 onClose={this.closeHandler.bind(this)}
+                onExited={this.props.onExited}
                 animation={this.props.animation}
                 showClose={this.props.showClose}
                 showModal={this.props.showModal}
@@ -107,4 +114,5 @@ interface IProps {
     children?: any;
     onClose?: () => void;
     animation?: string;
+    onExited?: () => void;
 }

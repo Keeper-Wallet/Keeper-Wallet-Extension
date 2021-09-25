@@ -10,6 +10,7 @@ import { BigNumber } from '@waves/bignumber';
 
 class PermissionsSettingsComponent extends React.PureComponent {
     readonly state = {
+        showSettings: false,
         originsList: 'customList',
         origin: null,
         permissions: [],
@@ -29,7 +30,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
             ((permissions as any) || []).find(({ type }) => type === 'allowAutoSign') || Object.create(null);
         const amount = new BigNumber(autoSign.totalAmount).div(10 ** 8);
         autoSign.totalAmount = amount.isNaN() ? 0 : amount.toFormat();
-        this.setState({ origin, autoSign, permissions, originalAutoSign: autoSign });
+        this.setState({ origin, autoSign, permissions, originalAutoSign: autoSign, showSettings: true });
     };
 
     toggleApproveHandler = (origin: string, enable: boolean) => {
@@ -51,6 +52,10 @@ class PermissionsSettingsComponent extends React.PureComponent {
     };
 
     closeSettingsHandler = () => {
+        this.setState({ showSettings: false });
+    };
+
+    resetSettingsHandler = () => {
         this.setState({ origin: null, permissions: [] });
     };
 
@@ -88,7 +93,12 @@ class PermissionsSettingsComponent extends React.PureComponent {
                     toggleApprove={this.toggleApproveHandler}
                 />
 
-                <Modal showModal={this.state.origin}>
+                <Modal
+                    showModal={this.state.showSettings}
+                    animation={Modal.ANIMATION.FLASH}
+                    showChildrenOnly={true}
+                    onExited={this.resetSettingsHandler}
+                >
                     <div className={styles.cover}>
                         <OriginSettings
                             originName={this.state.origin}
