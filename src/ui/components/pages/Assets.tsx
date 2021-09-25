@@ -1,13 +1,13 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ActiveWallet, WalletItem } from '../wallets';
+import { WalletItem, ActiveWallet } from '../wallets';
 import { Trans } from 'react-i18next';
-import { getAsset, getBalances, selectAccount, setActiveAccount } from '../../actions';
+import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { CSSTransition, SwitchTransition, TransitionGroup } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
 
@@ -17,49 +17,14 @@ class AssetsComponent extends React.Component {
     _currentActive;
     _sorted;
     _t;
-
-    static getDerivedStateFromProps(props, state) {
-        const asset = props.assets['WAVES'];
-
-        if (!props.activeAccount) {
-            return { loading: true };
-        }
-
-        if (!asset) {
-            props.getAsset('WAVES');
-            return { balances: {}, lease: {}, loading: false };
-        }
-
-        const assetInstance = new Asset(asset);
-        const balancesMoney = {};
-        const leaseMoney = {};
-
-        Object.entries<{ available: string; leasedOut: string }>(props.balances).forEach(([key, balance]) => {
-            if (!balance) {
-                return null;
-            }
-
-            balancesMoney[key] = new Money(balance.available, assetInstance);
-            leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
-        });
-
-        const { deleted: deletedNotify } = props.notifications;
-        return { balances: balancesMoney, lease: leaseMoney, loading: false, deletedNotify };
-    }
-
     addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
-
     onSelectHandler = (account) => this.showInfo(account);
-
     onSetActiveHandler = (account) => this.setActive(account);
-
     copyActiveHandler = () => this.onCopyModal();
-
     scrollHandler = (e) => {
         const value = e.target.scrollTop;
         this.setState({ topScrollMain: value > 90 });
     };
-
     showQrHandler = (event) => {
         event.stopPropagation();
         event.preventDefault();
@@ -84,15 +49,21 @@ class AssetsComponent extends React.Component {
 
         const wallets = this.getFilteredAndSortedAccounts(activeAddress).map((account) =>
             account ? (
-                <WalletItem
-                    account={account}
-                    active={false}
-                    balance={this.state.balances[account.address]}
-                    leaseBalance={this.state.lease[account.address]}
+                <CSSTransition
                     key={`${account.address}_${account.name}_${account.type}`}
-                    onSelect={this.onSelectHandler}
-                    onActive={this.onSetActiveHandler}
-                />
+                    classNames="animate_wallets"
+                    timeout={600}
+                >
+                    <WalletItem
+                        account={account}
+                        active={false}
+                        balance={this.state.balances[account.address]}
+                        leaseBalance={this.state.lease[account.address]}
+                        key={`${account.address}_${account.name}_${account.type}`}
+                        onSelect={this.onSelectHandler}
+                        onActive={this.onSetActiveHandler}
+                    />
+                </CSSTransition>
             ) : null
         );
 
@@ -105,9 +76,11 @@ class AssetsComponent extends React.Component {
                 <div className={styles.activeAccountTitle}>
                     <Trans i18nKey="assets.activeAccount">Active account</Trans>
                 </div>
-                <CSSTransition className={styles.activeAnimationSpan} classNames="animate_active_wallet" timeout={600}>
-                    <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress} />
-                </CSSTransition>
+                <TransitionGroup className={styles.activeAnimationSpan}>
+                    <CSSTransition key={activeAddress} classNames="animate_active_wallet" timeout={600}>
+                        <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress} />
+                    </CSSTransition>
+                </TransitionGroup>
                 <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
                     <div>
                         {wallets.length ? (
@@ -117,13 +90,7 @@ class AssetsComponent extends React.Component {
                         ) : null}
 
                         <div className={styles.walletListWrapper}>
-                            <TransitionGroup>
-                                {wallets.map((item) => (
-                                    <CSSTransition classNames="animate_wallets" timeout={200}>
-                                        {item}
-                                    </CSSTransition>
-                                ))}
-                            </TransitionGroup>
+                            <TransitionGroup>{wallets}</TransitionGroup>
                         </div>
                     </div>
 
@@ -135,7 +102,7 @@ class AssetsComponent extends React.Component {
                     </div>
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy}>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy} showChildrenOnly={true}>
                     <div className="modal notification">
                         <Trans i18nKey="assets.copied">Copied!</Trans>
                     </div>
@@ -232,6 +199,35 @@ class AssetsComponent extends React.Component {
     onCopyModal() {
         this.setState({ showCopy: true });
         this.closeModals();
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        const asset = props.assets['WAVES'];
+
+        if (!props.activeAccount) {
+            return { loading: true };
+        }
+
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balances: {}, lease: {}, loading: false };
+        }
+
+        const assetInstance = new Asset(asset);
+        const balancesMoney = {};
+        const leaseMoney = {};
+
+        Object.entries<{ available: string; leasedOut: string }>(props.balances).forEach(([key, balance]) => {
+            if (!balance) {
+                return null;
+            }
+
+            balancesMoney[key] = new Money(balance.available, assetInstance);
+            leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+        });
+
+        const { deleted: deletedNotify } = props.notifications;
+        return { balances: balancesMoney, lease: leaseMoney, loading: false, deletedNotify };
     }
 }
 
