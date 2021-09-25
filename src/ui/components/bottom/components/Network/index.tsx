@@ -45,7 +45,7 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
 };
 
 class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
-    state = { showNetworks: false, net: null, showEdit: false, networkHash: null, showSettings: false };
+    state = { showNetworks: false, net: null, showEdit: false, networkHash: null, showSettings: false, lastNet: null };
 
     static getDerivedStateFromProps(props: INetworkProps, state: IState): IState {
         const networkHash = props.networks.reduce((acc, network) => {
@@ -140,7 +140,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
             [styles.disabledNet]: this.props.noChangeNetwork,
         });
 
-        const { networkHash, showSettings, net: selectedNet, showNetworks, showEdit } = this.state;
+        const { networkHash, showSettings, net: selectedNet, showNetworks, showEdit, lastNet } = this.state;
         const currentNetwork = this.props.currentNetwork || 'mainnet';
         const net = selectedNet ? networkHash[selectedNet.name] : null;
 
@@ -171,10 +171,10 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                 <Modal showModal={showSettings} animation={Modal.ANIMATION.FLASH_SCALE}>
                     <NetworkSettings
                         node={net && net.server}
-                        name={net && net.name}
+                        name={(net && net.name) || lastNet}
                         matcher={net && net.matcher}
                         networkCode={net && net.code}
-                        onClose={() => this.setState({ net: null, showSettings: false })}
+                        onClose={() => this.setState({ net: null, lastNet: net.name, showSettings: false })}
                         onSave={this.saveSettingsHandler}
                     />
                 </Modal>
@@ -228,4 +228,5 @@ interface IState {
     showNetworks?: boolean;
     showEdit?: boolean;
     showSettings?: boolean;
+    lastNet?: string;
 }

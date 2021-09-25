@@ -1,38 +1,23 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as styles from './modal.styl';
-import cn from 'classnames';
 import { CSSTransition } from 'react-transition-group';
 
 const ModalWrapper = (props) => {
-    let Item;
-    if (props.showChildrenOnly) {
-        Item = props.showModal ? props.children : <div> </div>;
-    } else {
-        const className = cn(styles.modal, 'modal', styles.animated, {
-            [styles.hidden]: !props.showModal,
-        });
-
-        Item = (
-            <div className={className}>
-                {props.showClose ? (
-                    <div className={styles.close} onClick={props.onClose}>
-                        X
-                    </div>
-                ) : null}
-                <div className="modal-content">{props.children}</div>
-            </div>
-        );
-    }
-
     return (
-        <CSSTransition
-            classNames={props.animation || 'default_modal'}
-            timeout={{ enter: 400, exit: 400 }}
-            enter={!!props.animation}
-            exit={!!props.animation}
-        >
-            {Item}
+        <CSSTransition in={props.showModal} classNames={props.animation || 'default_modal'} timeout={400} unmountOnExit>
+            {props.showChildrenOnly ? (
+                <div className="modal">
+                    {props.showClose && (
+                        <div className={styles.close} onClick={props.onClose}>
+                            X
+                        </div>
+                    )}
+                    <div className="modal-content">{props.children}</div>
+                </div>
+            ) : (
+                props.children ?? <div> </div>
+            )}
         </CSSTransition>
     );
 };

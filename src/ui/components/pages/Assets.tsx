@@ -7,7 +7,7 @@ import { getAsset, getBalances, selectAccount, setActiveAccount } from '../../ac
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
 
@@ -105,13 +105,7 @@ class AssetsComponent extends React.Component {
                 <div className={styles.activeAccountTitle}>
                     <Trans i18nKey="assets.activeAccount">Active account</Trans>
                 </div>
-                <CSSTransition
-                    className={styles.activeAnimationSpan}
-                    classNames="animate_active_wallet"
-                    timeout={600}
-                    enter={true}
-                    exit={true}
-                >
+                <CSSTransition className={styles.activeAnimationSpan} classNames="animate_active_wallet" timeout={600}>
                     <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} key={activeAddress} />
                 </CSSTransition>
                 <div className={`${scrollClassName} wallets-list`} onScroll={this.scrollHandler}>
@@ -123,9 +117,13 @@ class AssetsComponent extends React.Component {
                         ) : null}
 
                         <div className={styles.walletListWrapper}>
-                            <CSSTransition classNames="animate_wallets" timeout={200} enter={true} exit={true}>
-                                <>{wallets}</>
-                            </CSSTransition>
+                            <TransitionGroup>
+                                {wallets.map((item) => (
+                                    <CSSTransition classNames="animate_wallets" timeout={200}>
+                                        {item}
+                                    </CSSTransition>
+                                ))}
+                            </TransitionGroup>
                         </div>
                     </div>
 

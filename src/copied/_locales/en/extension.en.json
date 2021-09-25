@@ -41,7 +41,8 @@
     "network": {
       "edit": "Edit"
     },
-    "testnet": "Testnet"
+    "testnet": "Testnet",
+    "stagenet": "Stagenet"
   },
   "changeName": {
     "currentName": "Current account name",
