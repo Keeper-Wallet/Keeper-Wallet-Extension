@@ -140,7 +140,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
             [styles.disabledNet]: this.props.noChangeNetwork,
         });
 
-        const { networkHash, showSettings, net: selectedNet, showNetworks, showEdit, lastNet } = this.state;
+        const { networkHash, showSettings, net: selectedNet, showNetworks, showEdit } = this.state;
         const currentNetwork = this.props.currentNetwork || 'mainnet';
         const net = selectedNet ? networkHash[selectedNet.name] : null;
 
@@ -168,13 +168,17 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                     onSelect={this.selectHandler}
                 />
 
-                <Modal showModal={showSettings} animation={Modal.ANIMATION.FLASH}>
+                <Modal
+                    showModal={showSettings}
+                    animation={Modal.ANIMATION.FLASH}
+                    onExited={() => this.setState({ net: null })}
+                >
                     <NetworkSettings
                         node={net && net.server}
-                        name={(net && net.name) || lastNet}
+                        name={net && net.name}
                         matcher={net && net.matcher}
                         networkCode={net && net.code}
-                        onClose={() => this.setState({ net: null, lastNet: net.name, showSettings: false })}
+                        onClose={() => this.setState({ showSettings: false })}
                         onSave={this.saveSettingsHandler}
                     />
                 </Modal>
