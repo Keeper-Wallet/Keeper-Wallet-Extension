@@ -19,7 +19,7 @@ export class CopyText extends React.PureComponent {
 
     render() {
         const iconClass = cn(styles.firstIcon, {
-            'password-icon': this.props.type === 'key'
+            'password-icon': this.props.type === 'key',
         });
 
         const copyIcon = cn(styles.lastIcon, 'copy-icon');
@@ -27,15 +27,17 @@ export class CopyText extends React.PureComponent {
         const toggleHandler = this.props.toggleText ? this.showTextHandler : null;
         const showText = this.props.toggleText ? this.state.showText : this.props.showText;
 
-        return <div onClick={toggleHandler}>
-           <div>
-               {this.props.type ? <div className={iconClass}></div> : null}
-               <div className={styles.copyTextOverflow}>{showText ? this.props.text : DEFAULT_HIDDEN_CONTENT}</div>
-               {this.props.showCopy ? <div className={copyIcon} onClick={this.onCopyHandler}/> : null}
-               {this.props.showConfirmed ? <div>Confirm</div> : null}
-               {this.props.showNotAccess ? <div>N/A</div> : null}
-           </div>
-        </div>;
+        return (
+            <div onClick={toggleHandler}>
+                <div>
+                    {this.props.type ? <i className={iconClass}> </i> : null}
+                    <div className={styles.copyTextOverflow}>{showText ? this.props.text : DEFAULT_HIDDEN_CONTENT}</div>
+                    {this.props.showCopy ? <div className={copyIcon} onClick={this.onCopyHandler} /> : null}
+                    {this.props.showConfirmed ? <div>Confirm</div> : null}
+                    {this.props.showNotAccess ? <div>N/A</div> : null}
+                </div>
+            </div>
+        );
     }
 
     private _copyText(event) {
@@ -45,12 +47,12 @@ export class CopyText extends React.PureComponent {
         }
 
         if (this.props.getText) {
-            this.props.getText(text => this.copy(text));
+            this.props.getText((text) => this.copy(text));
             return null;
         }
 
         const text = this.props.text;
-        this.copy(text)
+        this.copy(text);
     }
 
     private copy(text) {
