@@ -27,10 +27,10 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
         const { name } = this.state;
 
         return (
-            <div className={styles.networkSettings}>
-                <div className={styles.contentBox}>
+            <div className="modal cover">
+                <div className="modal-form">
                     <div>
-                        <i className="networkIconActive"></i>
+                        <i className="networkIconActive"> </i>
                         <h2 className="headline2 margin-main-big">
                             <span className="capitalize">
                                 <Trans i18nKey={key(name)}>{name}</Trans>

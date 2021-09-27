@@ -170,62 +170,72 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         });
 
         const { originName } = this.props;
-        const className = cn(styles.settings, styles.inModal, this.props.className);
         const totalAmount = this.state.totalAmount || '';
         const value = (this.state.interval ? totalAmount : '') || '';
 
         return (
-            <div className={className}>
-                <h2 className={cn(styles.title)}>
-                    <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
-                </h2>
+            <div className="modal cover">
+                <div className="modal-form">
+                    <h2 className={cn(styles.title)}>
+                        <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
+                    </h2>
 
-                <div className={styles.description}>
-                    <Trans i18nKey="permissionSettings.modal.description">
-                        This allows {{ originName }} to automatically sign transactions on your behalf.
-                    </Trans>
-                </div>
-
-                <Select
-                    className={cn(styles.selectTime)}
-                    selectList={timeList}
-                    selected={this.state.selected}
-                    description={<Trans i18nKey="permissionSettings.modal.time">Resolution time</Trans>}
-                    onSelectItem={this.selectTimeHandler}
-                />
-
-                <div className={cn(styles.amount)}>
-                    <div className="left input-title basic500 tag1">
-                        <Trans i18nKey="permissionSettings.modal.amount">Spending limit</Trans>
+                    <div className={styles.description}>
+                        <Trans i18nKey="permissionSettings.modal.description">
+                            This allows {{ originName }} to automatically sign transactions on your behalf.
+                        </Trans>
                     </div>
-                    <Input
-                        disabled={!this.state.interval}
-                        onChange={this.amountHandler}
-                        className={styles.amountInput}
-                        value={value}
-                        placeholder={0}
+
+                    <Select
+                        className={cn(styles.selectTime)}
+                        selectList={timeList}
+                        selected={this.state.selected}
+                        description={<Trans i18nKey="permissionSettings.modal.time">Resolution time</Trans>}
+                        onSelectItem={this.selectTimeHandler}
                     />
-                    <div className={styles.waves}>Waves</div>
-                </div>
 
-                <div className="flex margin-main-big margin-main-big-top">
-                    <Input
-                        id="checkbox_noshow"
-                        type={'checkbox'}
-                        checked={this.state.canShowNotifications}
-                        onChange={this.canUseNotificationsHandler}
-                    />
-                    <label htmlFor="checkbox_noshow">
-                        <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
-                    </label>
-                </div>
+                    <div className={cn(styles.amount)}>
+                        <div className="left input-title basic500 tag1">
+                            <Trans i18nKey="permissionSettings.modal.amount">Spending limit</Trans>
+                        </div>
+                        <Input
+                            disabled={!this.state.interval}
+                            onChange={this.amountHandler}
+                            className={styles.amountInput}
+                            value={value}
+                            placeholder={0}
+                        />
+                        <div className={styles.waves}>Waves</div>
+                    </div>
 
-                {!inWhiteList ? (
-                    <div className="buttons-wrapper">
-                        <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
-                            <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
-                        </Button>
+                    <div className="flex margin-main-big margin-main-big-top">
+                        <Input
+                            id="checkbox_noshow"
+                            type={'checkbox'}
+                            checked={this.state.canShowNotifications}
+                            onChange={this.canUseNotificationsHandler}
+                        />
+                        <label htmlFor="checkbox_noshow">
+                            <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
+                        </label>
+                    </div>
 
+                    {!inWhiteList ? (
+                        <div className="buttons-wrapper">
+                            <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
+                                <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
+                            </Button>
+
+                            <Button
+                                className={styles.test}
+                                type={BUTTON_TYPE.GENERAL}
+                                disabled={!this.state.canSave}
+                                onClick={this.saveHandler}
+                            >
+                                <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+                            </Button>
+                        </div>
+                    ) : (
                         <Button
                             className={styles.test}
                             type={BUTTON_TYPE.GENERAL}
@@ -234,21 +244,12 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         >
                             <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
                         </Button>
-                    </div>
-                ) : (
-                    <Button
-                        className={styles.test}
-                        type={BUTTON_TYPE.GENERAL}
-                        disabled={!this.state.canSave}
-                        onClick={this.saveHandler}
-                    >
-                        <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
-                    </Button>
-                )}
+                    )}
 
-                <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
-                    <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
-                </Button>
+                    <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
+                        <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
+                    </Button>
+                </div>
             </div>
         );
     }

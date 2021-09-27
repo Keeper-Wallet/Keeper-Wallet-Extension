@@ -34,8 +34,8 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
 
                 return (
                     <div onClick={onSelectNet} className={className} key={currentNetwork}>
-                        <i className={`networkIcon ${styles.networkIcon}`}></i>
-                        <i className={`networkIconActive ${styles.networkIconActive}`}></i>
+                        <i className={`networkIcon ${styles.networkIcon}`}> </i>
+                        <i className={`networkIconActive ${styles.networkIconActive}`}> </i>
                         <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                     </div>
                 );
@@ -45,7 +45,7 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
 };
 
 class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
-    state = { showNetworks: false, net: null, showEdit: false, networkHash: null, showSettings: false, lastNet: null };
+    state = { showNetworks: false, net: null, showEdit: false, networkHash: null, showSettings: false };
 
     static getDerivedStateFromProps(props: INetworkProps, state: IState): IState {
         const networkHash = props.networks.reduce((acc, network) => {
@@ -118,6 +118,14 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
         }
     };
 
+    resetSettingsHandler = () => {
+        this.setState({ net: null });
+    };
+
+    closeSettingsHandler = () => {
+        this.setState({ showSettings: false });
+    };
+
     clickOutHandler = () => {
         this.setState({ showNetworks: false, net: null });
         this.removeClickOutHandler();
@@ -128,11 +136,11 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     }
 
     removeClickOutHandler() {
-        document.removeEventListener('click', this.clickOutHandler);
+        document.removeEventListener('click', this.clickOutHandler, { capture: true });
     }
 
     addClickOutHandler() {
-        document.addEventListener('click', this.clickOutHandler);
+        document.addEventListener('click', this.clickOutHandler, { capture: true });
     }
 
     render(): React.ReactNode {
@@ -151,7 +159,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                     onClick={this.selectFromNetworksHandler}
                     key={currentNetwork}
                 >
-                    <i className={`networkIcon ${styles.networkIcon}`}></i>
+                    <i className={`networkIcon ${styles.networkIcon}`}> </i>
                     <span className={styles.networkBottom}>
                         <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
                     </span>
@@ -168,17 +176,13 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                     onSelect={this.selectHandler}
                 />
 
-                <Modal
-                    showModal={showSettings}
-                    animation={Modal.ANIMATION.FLASH}
-                    onExited={() => this.setState({ net: null })}
-                >
+                <Modal showModal={showSettings} animation={Modal.ANIMATION.FLASH} onExited={this.resetSettingsHandler}>
                     <NetworkSettings
                         node={net && net.server}
                         name={net && net.name}
                         matcher={net && net.matcher}
                         networkCode={net && net.code}
-                        onClose={() => this.setState({ showSettings: false })}
+                        onClose={this.closeSettingsHandler}
                         onSave={this.saveSettingsHandler}
                     />
                 </Modal>
@@ -232,5 +236,4 @@ interface IState {
     showNetworks?: boolean;
     showEdit?: boolean;
     showSettings?: boolean;
-    lastNet?: string;
 }

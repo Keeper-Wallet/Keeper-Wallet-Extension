@@ -7,7 +7,7 @@ import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../ac
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
-import { CSSTransition, SwitchTransition, TransitionGroup } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
 
@@ -102,17 +102,13 @@ class AssetsComponent extends React.Component {
                     </div>
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy} showChildrenOnly={true}>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopy}>
                     <div className="modal notification">
                         <Trans i18nKey="assets.copied">Copied!</Trans>
                     </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showActivated}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showActivated}>
                     <div className="modal notification active-asset" key={this.state.name}>
                         <div>
                             <Trans i18nKey="assets.setActive">Active account changed</Trans>
@@ -120,21 +116,13 @@ class AssetsComponent extends React.Component {
                     </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.deletedNotify}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.deletedNotify}>
                     <div className="modal notification active-asset" key="deleted">
                         <div>
                             <Trans i18nKey="assets.deleteAccount">Delete account</Trans>
                         </div>
                     </div>
                 </Modal>
-
-                {/*<div className={styles.notifier}>*/}
-                {/*<i className={styles.counter}>5</i>*/}
-                {/*</div>*/}
             </div>
         );
     }

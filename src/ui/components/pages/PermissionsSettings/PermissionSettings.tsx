@@ -96,29 +96,22 @@ class PermissionsSettingsComponent extends React.PureComponent {
                 <Modal
                     showModal={this.state.showSettings}
                     animation={Modal.ANIMATION.FLASH}
-                    showChildrenOnly={true}
                     onExited={this.resetSettingsHandler}
                 >
-                    <div className={styles.cover}>
-                        <OriginSettings
-                            originName={this.state.origin}
-                            permissions={this.state.permissions}
-                            origins={origins}
-                            autoSign={this.state.autoSign}
-                            originalAutoSign={this.state.originalAutoSign}
-                            onSave={this.saveSettingsHandler}
-                            onChangePerms={this.onChangeOriginSettings}
-                            onClose={this.closeSettingsHandler}
-                            onDelete={this.deleteHandler}
-                        />
-                    </div>
+                    <OriginSettings
+                        originName={this.state.origin}
+                        permissions={this.state.permissions}
+                        origins={origins}
+                        autoSign={this.state.autoSign}
+                        originalAutoSign={this.state.originalAutoSign}
+                        onSave={this.saveSettingsHandler}
+                        onChangePerms={this.onChangeOriginSettings}
+                        onClose={this.closeSettingsHandler}
+                        onDelete={this.deleteHandler}
+                    />
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={allowed || disallowed || deleted}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={allowed || disallowed || deleted}>
                     <div className="modal notification">
                         {allowed ? <Trans i18nKey="permissionsSettings.notify.allowed">Allowed!</Trans> : null}
                         {disallowed ? <Trans i18nKey="permissionsSettings.notify.disallowed">Disallowed!</Trans> : null}

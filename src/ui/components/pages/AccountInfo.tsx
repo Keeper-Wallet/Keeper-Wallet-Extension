@@ -100,7 +100,7 @@ class AccountInfoComponent extends React.Component {
                                     onClick={this.editNameHandler}
                                 >
                                     <span className={`basic500 body1`}>{name}</span>
-                                    <i className={styles.editIcon}></i>
+                                    <i className={styles.editIcon}> </i>
                                 </Button>
                             </div>
                             <div className={`headline1 marginTop1 ${styles.balance}`}>
@@ -208,57 +208,51 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword} showChildrenOnly={true}>
-                    <form className={`modal ${styles.enterPasswordModal}`} onClick={this.confirmPassword}>
-                        <i className={`lock-icon ${styles.lockIcon}`} />
+                <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword}>
+                    <div className="modal cover">
+                        <form className="modal-form" onClick={this.confirmPassword}>
+                            <i className={`lock-icon ${styles.lockIcon}`} />
 
-                        <div className="margin1 relative">
-                            <div className="basic500 tag1 input-title">
-                                <Trans i18nKey="accountInfo.password">Password</Trans>
-                            </div>
-                            <Input
-                                ref={this.getInputPassRef}
-                                type="password"
-                                error={this.state.passwordError}
-                                className="margin1"
-                                onChange={this.inputPassword}
-                            />
-
-                            <Error show={this.state.passwordError}>
-                                <div className="error">
-                                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                            <div className="margin1 relative">
+                                <div className="basic500 tag1 input-title">
+                                    <Trans i18nKey="accountInfo.password">Password</Trans>
                                 </div>
-                            </Error>
-                        </div>
+                                <Input
+                                    ref={this.getInputPassRef}
+                                    type="password"
+                                    error={this.state.passwordError}
+                                    className="margin1"
+                                    onChange={this.inputPassword}
+                                />
 
-                        <Button
-                            disabled={this.state.passwordError || !this.state.password}
-                            className="margin-main-big"
-                            type="submit"
-                        >
-                            <Trans i18nKey="accountInfo.enter">Enter</Trans>
-                        </Button>
-                        <Button onClick={this.rejectPassword}>
-                            <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
-                        </Button>
-                    </form>
+                                <Error show={this.state.passwordError}>
+                                    <div className="error">
+                                        <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                                    </div>
+                                </Error>
+                            </div>
+
+                            <Button
+                                disabled={this.state.passwordError || !this.state.password}
+                                className="margin-main-big"
+                                type="submit"
+                            >
+                                <Trans i18nKey="accountInfo.enter">Enter</Trans>
+                            </Button>
+                            <Button onClick={this.rejectPassword}>
+                                <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
+                            </Button>
+                        </form>
+                    </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showCopied}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
                     <div className="modal notification">
                         <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                     </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.changeNameNotify}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.changeNameNotify}>
                     <div className="modal notification active-asset" key="change_name">
                         <div>
                             <Trans i18nKey="assets.changeName">Account name changed</Trans>

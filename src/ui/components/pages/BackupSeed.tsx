@@ -28,7 +28,7 @@ class BackUpSeedComponent extends React.Component {
                         </Trans>
                     </div>
                     <Copy onCopy={this.copyHandler} text={this.props.account.seed}>
-                        <div className={`copy-icon ${styles.copyIcon}`}></div>
+                        <i className={`copy-icon ${styles.copyIcon}`}> </i>
                     </Copy>
                 </div>
 
@@ -53,11 +53,7 @@ class BackUpSeedComponent extends React.Component {
                     <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
                 </Button>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showCopied}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
                     <div className="modal notification">
                         <Trans i18nKey="backupSeed.copied">Copied!</Trans>
                     </div>

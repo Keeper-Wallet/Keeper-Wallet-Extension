@@ -121,11 +121,7 @@ class ChangePasswordComponent extends React.PureComponent {
                         <Trans i18nKey="changePassword.create">Save</Trans>
                     </Button>
                 </form>
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showChanged}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showChanged}>
                     <div className="modal notification">
                         <Trans i18nKey="changePassword.done">Password changed</Trans>
                     </div>

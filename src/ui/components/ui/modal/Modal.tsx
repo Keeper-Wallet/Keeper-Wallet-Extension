@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import * as styles from './modal.styl';
 import { CSSTransition } from 'react-transition-group';
 
-const ModalWrapper = (props) => {
+const ModalWrapper = (props: IProps) => {
     return (
         <CSSTransition
             in={props.showModal}
@@ -12,18 +12,7 @@ const ModalWrapper = (props) => {
             unmountOnExit
             onExited={props.onExited}
         >
-            {props.showChildrenOnly ? (
-                <div className="modal">
-                    {props.showClose && (
-                        <div className={styles.close} onClick={props.onClose}>
-                            X
-                        </div>
-                    )}
-                    <div className="modal-content">{props.children}</div>
-                </div>
-            ) : (
-                props.children ?? <div> </div>
-            )}
+            {props.children ?? <div> </div>}
         </CSSTransition>
     );
 };
@@ -44,75 +33,32 @@ export class Modal extends React.PureComponent {
         Modal.modalRoot = Modal.modalRoot || document.getElementById('app-modal');
     }
 
-    onclickOut = (event) => this._onClickOut(event);
-
-    closeHandler() {
-        if (this.props.onClose) {
-            this.props.onClose();
-        }
-    }
-
     componentDidMount() {
         Modal.modalRoot.appendChild(this.el);
-        this._addClickOut();
     }
 
     componentWillUnmount() {
         Modal.modalRoot.removeChild(this.el);
-        document.removeEventListener('click', this.onclickOut);
     }
 
     render() {
         return ReactDOM.createPortal(
             <ModalWrapper
-                onClose={this.closeHandler.bind(this)}
                 onExited={this.props.onExited}
                 animation={this.props.animation}
-                showClose={this.props.showClose}
                 showModal={this.props.showModal}
-                showChildrenOnly={this.props.showChildrenOnly}
             >
                 {this.props.children}
             </ModalWrapper>,
             this.el
         );
     }
-
-    private _addClickOut() {
-        if (this.props.noClickOut) {
-            return null;
-        }
-
-        document.addEventListener('click', this.onclickOut);
-    }
-
-    private _onClickOut(event) {
-        if (!this.props.showModal) {
-            return null;
-        }
-
-        let node = event.target;
-
-        while (node) {
-            if (node === this.el) {
-                return null;
-            }
-
-            node = node.parentElement;
-        }
-        event.stopPropagation();
-        event.preventDefault();
-        this.closeHandler();
-    }
 }
 
 interface IProps {
     showModal?: boolean;
-    showClose?: boolean;
-    showChildrenOnly?: boolean;
-    noClickOut?: boolean;
     children?: any;
-    onClose?: () => void;
     animation?: string;
+    onClose?: () => void;
     onExited?: () => void;
 }

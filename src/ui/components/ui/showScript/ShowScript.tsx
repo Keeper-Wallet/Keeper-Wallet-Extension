@@ -82,7 +82,6 @@ const DataNoKey = ({ data, getScriptRef }) => {
                                         {JSON.stringify(itemValue)}
                                     </td>
                                 )}
-                                {console.log(itemValue)}
                             </tr>
                         </tbody>
                     );
@@ -164,11 +163,7 @@ export class ShowScript extends React.PureComponent {
                             ) : null}
                         </div>
 
-                        <Modal
-                            animation={Modal.ANIMATION.FLASH_SCALE}
-                            showModal={this.state.showCopied}
-                            showChildrenOnly={true}
-                        >
+                        <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
                             <div className="modal notification">
                                 <Trans i18nKey="showScriptComponent.copied">Copied!</Trans>
                             </div>

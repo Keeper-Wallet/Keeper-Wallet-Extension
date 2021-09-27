@@ -117,7 +117,7 @@ class NetworksSettingsComponent extends React.PureComponent {
                 <div className="margin-main-big relative">
                     <label className="input-title basic500 tag1" htmlFor="node_address">
                         <Copy text={this.state.node} onCopy={this.copyHandler}>
-                            <div className={`copy-icon ${styles.copyIcon}`}></div>
+                            <i className={`copy-icon ${styles.copyIcon}`}> </i>
                         </Copy>
                         <Trans i18nKey="networksSettings.node">Node address</Trans>
                     </label>
@@ -135,7 +135,7 @@ class NetworksSettingsComponent extends React.PureComponent {
                 <div className="margin-main-big relative">
                     <label className="input-title basic500 tag1" htmlFor="matcher_address">
                         <Copy text={this.state.matcher} onCopy={this.copyHandler}>
-                            <div className={`copy-icon ${styles.copyIcon}`}></div>
+                            <i className={`copy-icon ${styles.copyIcon}`}> </i>
                         </Copy>
                         <Trans i18nKey="networksSettings.matcher">Matcher address</Trans>
                     </label>
@@ -172,27 +172,19 @@ class NetworksSettingsComponent extends React.PureComponent {
                     ) : null}
                 </div>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showCopied}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.copied">Copied!</Trans>
                     </div>
                 </Modal>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSaved} showChildrenOnly={true}>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSaved}>
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.savedModal">Saved!</Trans>
                     </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showSetDefault}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSetDefault}>
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.setDefaultModal">Save default!</Trans>
                     </div>
