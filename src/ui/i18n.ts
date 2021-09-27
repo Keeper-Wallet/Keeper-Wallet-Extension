@@ -1,6 +1,6 @@
 import i18next, { i18n as i18nInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-locize-backend';
+import Backend from 'i18next-http-backend';
 import { I18N_NAME_SPACE, WAVESKEEPER_DEBUG } from './appConfig';
 
 const createI18n = (): i18nInstance => {
@@ -13,7 +13,7 @@ const createI18n = (): i18nInstance => {
         ns: [I18N_NAME_SPACE],
         defaultNS: I18N_NAME_SPACE,
         backend: {
-            loadPath: './_locales/{{lng}}/{{ns}}.{{lng}}.json',
+            loadPath: '/_locales/{{lng}}/{{ns}}.{{lng}}.json',
         },
         react: {
             wait: true,
