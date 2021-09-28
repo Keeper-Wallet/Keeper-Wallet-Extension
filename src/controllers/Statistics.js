@@ -1,22 +1,21 @@
-import ObservableStore from "obs-store";
+import ObservableStore from 'obs-store';
 import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config';
 import extension from 'extensionizer';
-import { detect } from "../lib/detectBrowser";
-import { WAVESKEEPER_ENV } from "../constants"
+import { detect } from '../lib/detectBrowser';
+import { WAVESKEEPER_ENV } from '../constants';
 
 export class StatisticsController {
-
     events = [];
     sended = Promise.resolve();
 
     constructor(store = {}, controllers) {
         this.controllers = controllers;
         const userId = store.userId || StatisticsController.createUserId();
-        this.store = new ObservableStore({ userId });
+        this.store = new ObservableStore({ ...store, userId });
         this.version = extension.runtime.getManifest().version;
         this.id = extension.runtime.id;
-        this.browser = detect()
+        this.browser = detect();
     }
 
     static createUserId() {
@@ -33,12 +32,12 @@ export class StatisticsController {
         const user_properties = {
             browser_name: this.browser.name,
             browser_version: this.browser.version,
-            browser_version_major: this.browser.version && this.browser.version.split(".")[0],
+            browser_version_major: this.browser.version && this.browser.version.split('.')[0],
             environment: WAVESKEEPER_ENV,
             network: network,
             chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
             extensionId: this.id,
-        }
+        };
 
         this.events.push({
             user_id: userId,
@@ -58,7 +57,8 @@ export class StatisticsController {
     sendEvents() {
         this.sended = this.sended
             .then(() => new Promise((resolve) => setTimeout(resolve, 1000)))
-            .then(() => {
+            .then(
+                () => {
                     if (this.events.length === 0) {
                         return null;
                     }
@@ -70,20 +70,22 @@ export class StatisticsController {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': '*/*',
+                            Accept: '*/*',
                         },
                         body: JSON.stringify({
                             api_key: statisticsApiKey,
                             events: events,
                         }),
                     });
-                }, () => {});
+                },
+                () => {}
+            );
     }
 
     transaction(message) {
         try {
             if (message.type === 'transactionPackage') {
-                (message.data || []).forEach(data => {
+                (message.data || []).forEach((data) => {
                     this.transaction({ ...message, type: 'transaction', data });
                 });
             } else {
@@ -95,17 +97,14 @@ export class StatisticsController {
                     dApp: isDApp ? message.data.data.dApp : undefined,
                 });
             }
-        } catch (e) {
-
-        }
-
+        } catch (e) {}
     }
     /**
      * Popup show event. Send no more once per hour.
      */
     showPopup() {
-        const timeDelta = 1000 * 60 * 60  // 1 event per hour
-        const state = this.store.getState()
+        const timeDelta = 1000 * 60 * 60; // 1 event per hour
+        const state = this.store.getState();
         const dateNow = new Date();
         const dateLastOpened = !!state.lastOpened ? new Date(state.lastOpened) : dateNow - timeDelta;
 
@@ -113,8 +112,8 @@ export class StatisticsController {
             this.addEvent('installKeeper');
         }
 
-        if ((dateNow - dateLastOpened) >= timeDelta) {
-            this.store.updateState({lastOpened: dateNow});
+        if (dateNow - dateLastOpened >= timeDelta) {
+            this.store.updateState({ lastOpened: dateNow.valueOf() });
             this.addEvent('openKeeper');
         }
     }
