@@ -1,6 +1,4 @@
-
 class Background {
-
     static instance: Background;
     background: any;
     initPromise: Promise<void>;
@@ -10,7 +8,7 @@ class Background {
     _assetsStore;
     _lastUpdateIdle = 0;
     _tmr;
-    
+
     constructor() {
         this._assetsStore = {};
         this._defer = {};
@@ -22,7 +20,7 @@ class Background {
     }
 
     on(cb: (state) => void) {
-        if(this.onUpdateCb.indexOf(cb) > -1) {
+        if (this.onUpdateCb.indexOf(cb) > -1) {
             return null;
         }
 
@@ -38,43 +36,42 @@ class Background {
         this.background = background;
         this._defer.resolve();
     }
-    
+
     async updateIdle() {
         this.updatedByUser = true;
         this._updateIdle();
     }
-    
+
     async setIdleOptions(options: { type: string }) {
         await this.initPromise;
         return this.background.setIdleOptions(options);
     }
-    
+
     async allowOrigin(origin: string) {
         await this.initPromise;
         return this.background.allowOrigin(origin);
     }
-    
+
     async disableOrigin(origin: string) {
         await this.initPromise;
         return this.background.disableOrigin(origin);
     }
-    
+
     async deleteOrigin(origin: string) {
         await this.initPromise;
         return this.background.deleteOrigin(origin);
     }
-    
-    async setAutoSign(origin: string, options: { interval: number, totalAmount: number}) {
+
+    async setAutoSign(origin: string, options: { interval: number; totalAmount: number }) {
         await this.initPromise;
         return this.background.setAutoSign(origin, options);
     }
-    
-    async setNotificationPermissions(options: { origin: string, canUse: boolean }) {
+
+    async setNotificationPermissions(options: { origin: string; canUse: boolean }) {
         await this.initPromise;
         return this.background.setNotificationPermissions(options);
     }
-    
-    
+
     async getState() {
         await this.initPromise;
         const data = await this.background.getState();
@@ -107,20 +104,20 @@ class Background {
         if (address) {
             return this.background.removeWallet(address, network);
         }
-    
+
         return this.deleteVault();
     }
-    
+
     async deleteVault() {
         await this.initPromise;
         return this.background.deleteVault();
     }
-    
+
     async closeNotificationWindow(): Promise<void> {
         await this.initPromise;
         return this.background.closeNotificationWindow();
     }
-    
+
     async lock(): Promise<void> {
         await this.initPromise;
         return this.background.lock();
@@ -140,7 +137,7 @@ class Background {
         await this.initPromise;
         return this.background.exportAccount(address, password, network);
     }
-    
+
     async exportSeed(address, network): Promise<void> {
         await this.initPromise;
         return this.background.encryptedSeed(address, network);
@@ -159,6 +156,11 @@ class Background {
     async clearMessages(): Promise<void> {
         await this.initPromise;
         return this.background.clearMessages();
+    }
+
+    async deleteMessage(id): Promise<void> {
+        await this.initPromise;
+        return this.background.deleteMessage(id);
     }
 
     async approve(messageId, address, network): Promise<any> {
@@ -187,12 +189,12 @@ class Background {
         await this.initPromise;
         return this.background.setCustomNode(url, network);
     }
-    
+
     async setCustomCode(code, network): Promise<void> {
         await this.initPromise;
         return this.background.setCustomCode(code, network);
     }
-    
+
     async setCustomMatcher(url, network): Promise<void> {
         await this.initPromise;
         return this.background.setCustomMatcher(url, network);
@@ -200,14 +202,14 @@ class Background {
 
     async assetInfo(assetId: string): Promise<any> {
         assetId = assetId || 'WAVES';
-        
+
         if (this._assetsStore[assetId]) {
             return await this._assetsStore[assetId];
         }
-        
+
         await this.initPromise;
         this._assetsStore[assetId] = this.background.assetInfo(assetId);
-        
+
         try {
             return await this._assetsStore[assetId];
         } catch (e) {
@@ -220,7 +222,7 @@ class Background {
         await this.initPromise;
         return this.background.deleteNotifications(ids);
     }
-    
+
     async getUserList(type: string, from: number, to: number): Promise<any> {
         await this.initPromise;
         return this.background.getUserList(type, from, to);
@@ -230,17 +232,17 @@ class Background {
         const now = Date.now();
         clearTimeout(this._tmr);
         this._tmr = setTimeout(() => this._updateIdle(), 4000);
-        
+
         if (!this.updatedByUser || now - this._lastUpdateIdle < 4000) {
-            return  null;
+            return null;
         }
-        
+
         this.updatedByUser = false;
         this._lastUpdateIdle = now;
         await this.initPromise;
-        return  this.background.updateIdle();
+        return this.background.updateIdle();
     }
-    
+
     _onUpdate(state: IState) {
         for (const cb of this.onUpdateCb) {
             cb(state);
@@ -259,7 +261,7 @@ export interface IState {
     messages?: Array<any>;
     balances?: any;
     uiState?: IUiState;
-    networks?: Array<{ name; code; }>;
+    networks?: Array<{ name; code }>;
 }
 
 export interface IUiState {
