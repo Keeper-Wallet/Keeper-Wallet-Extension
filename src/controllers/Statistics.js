@@ -8,6 +8,7 @@ import { WAVESKEEPER_ENV } from '../constants';
 export class StatisticsController {
     events = [];
     sended = Promise.resolve();
+    _idle = 0;
 
     constructor(store = {}, controllers) {
         this.controllers = controllers;
@@ -16,6 +17,8 @@ export class StatisticsController {
         this.version = extension.runtime.getManifest().version;
         this.id = extension.runtime.id;
         this.browser = detect();
+        this.sendInstallEvent();
+        this.sendIdleEvent();
     }
 
     static createUserId() {
@@ -82,11 +85,34 @@ export class StatisticsController {
             );
     }
 
-    transaction(message) {
+    /**
+     Sends `eventType` at most once per `ms`.
+     The last sent timestamp is stored in `store[storeKey].
+
+     @param {string} eventType
+     @param {number} [ms] in ms, by default is 1 hour
+     @param {string} [storeKey] by default is `last{EventType}`
+     **/
+    addEventOnce(eventType, ms, storeKey) {
+        ms = ms || 60 * 60 * 1000; // default 1 event per hour
+        storeKey = storeKey || 'last' + eventType.charAt(0).toUpperCase() + eventType.slice(1);
+        const state = this.store.getState();
+        const dateNow = new Date();
+        const dateLast = !!state[storeKey] ? new Date(state[storeKey]) : dateNow - ms;
+
+        if (dateNow - dateLast >= ms) {
+            let partial = {};
+            partial[storeKey] = dateNow.valueOf();
+            this.addEvent(eventType);
+            this.store.updateState(partial);
+        }
+    }
+
+    sendTxEvent(message) {
         try {
             if (message.type === 'transactionPackage') {
                 (message.data || []).forEach((data) => {
-                    this.transaction({ ...message, type: 'transaction', data });
+                    this.sendTxEvent({ ...message, type: 'transaction', data });
                 });
             } else {
                 const isDApp = message.data.type === 16;
@@ -99,22 +125,22 @@ export class StatisticsController {
             }
         } catch (e) {}
     }
-    /**
-     * Popup show event. Send no more once per hour.
-     */
-    showPopup() {
-        const timeDelta = 1000 * 60 * 60; // 1 event per hour
-        const state = this.store.getState();
-        const dateNow = new Date();
-        const dateLastOpened = !!state.lastOpened ? new Date(state.lastOpened) : dateNow - timeDelta;
 
-        if (!state.lastOpened) {
+    sendInstallEvent() {
+        if (!this.store.getState().lastInstallKeeper) {
             this.addEvent('installKeeper');
+            this.store.updateState({ lastInstallKeeper: new Date().valueOf() });
         }
+    }
 
-        if (dateNow - dateLastOpened >= timeDelta) {
-            this.store.updateState({ lastOpened: dateNow.valueOf() });
-            this.addEvent('openKeeper');
-        }
+    sendIdleEvent() {
+        // sends `idleKeeper` event once per hour until browser is running
+        clearTimeout(this._idle);
+        this.addEventOnce('idleKeeper');
+        this._idle = setTimeout(() => this.sendIdleEvent(), 60 * 1000);
+    }
+
+    sendOpenEvent() {
+        this.addEventOnce('openKeeper');
     }
 }

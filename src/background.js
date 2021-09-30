@@ -338,7 +338,7 @@ class BackgroundService extends EventEmitter {
             approve: async (messageId, address) => {
                 const approveData = await this.messageController.approve(messageId, address);
                 const message = this.messageController.getMessageById(messageId);
-                this.statisticsController.transaction(message);
+                this.statisticsController.sendTxEvent(message);
                 return approveData;
             },
             reject: async (messageId, forever) => {
@@ -694,7 +694,7 @@ class BackgroundService extends EventEmitter {
                 this.removeListener('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
             });
 
-            this.statisticsController.showPopup();
+            this.statisticsController.sendOpenEvent();
         };
 
         dnode.on('remote', remoteHandler);
