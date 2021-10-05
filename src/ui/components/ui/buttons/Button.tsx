@@ -11,39 +11,32 @@ export const BUTTON_TYPE = {
     WARNING: 'warning',
     DANGER: 'danger',
     INTERFACE: 'interface',
-    CUSTOM: 'custom'
+    CUSTOM: 'custom',
 };
 
-export function Button({ className, type, withIcon, children, ...props }: IProps ) {
-
-    const btnClassName = cn(
-        className,
-        styles.button,
-        {
-            [styles.submit]: type === BUTTON_TYPE.SUBMIT,
-            [styles.submitTiny]: type === BUTTON_TYPE.SUBMIT_TINY,
-            [styles.submit]: type === BUTTON_TYPE.GENERAL,
-            [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
-            [styles.icon]: withIcon,
-            [styles.warning]: type === BUTTON_TYPE.WARNING,
-            [styles.danger]: type === BUTTON_TYPE.DANGER,
-            [styles.interface]: type === BUTTON_TYPE.INTERFACE,
-            [styles.custom]: type === BUTTON_TYPE.CUSTOM,
-            [styles.default]: !type
-        }
-    );
+export function Button({ id, className, type, withIcon, children, ...props }: IProps) {
+    const btnClassName = cn(className, styles.button, {
+        [styles.submit]: type === BUTTON_TYPE.SUBMIT,
+        [styles.submitTiny]: type === BUTTON_TYPE.SUBMIT_TINY,
+        [styles.submit]: type === BUTTON_TYPE.GENERAL,
+        [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
+        [styles.icon]: withIcon,
+        [styles.warning]: type === BUTTON_TYPE.WARNING,
+        [styles.danger]: type === BUTTON_TYPE.DANGER,
+        [styles.interface]: type === BUTTON_TYPE.INTERFACE,
+        [styles.custom]: type === BUTTON_TYPE.CUSTOM,
+        [styles.default]: !type,
+    });
 
     return (
-        <button
-            type={type}
-            className={btnClassName}
-            {...props}>
+        <button id={id} type={type} className={btnClassName} {...props}>
             {children}
         </button>
     );
 }
 
 interface IProps {
+    id?: any;
     children?: any;
     className?: string;
     onClick?: any;
