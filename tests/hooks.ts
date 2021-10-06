@@ -9,14 +9,18 @@ export const mochaHooks = () => {
     };
 
     return {
-        beforeAll(done) {
+        async beforeAll() {
+            this.timeout(60 * 1000);
+            this.wait = 10 * 1000;
             this.extension = extension;
             this.driver = new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(new chrome.Options().addArguments(`--load-extension=${extension.path}`))
                 .build() as WebDriver;
             this.wait = 10 * 1000;
-            done();
+            // FIXME wait until extension ready, some kind of glitch
+            await this.driver.get('chrome://new-tab-page');
+            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
         },
         afterAll(done) {
             this.driver.quit();

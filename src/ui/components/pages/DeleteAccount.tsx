@@ -1,8 +1,8 @@
 import * as styles from './styles/deleteAccount.styl';
-import * as React from 'react'
-import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
-import {Button} from '../ui/buttons';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { translate, Trans } from 'react-i18next';
+import { Button } from '../ui';
 import { deleteAccount } from '../../actions';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -16,26 +16,34 @@ class DeleteAccountComponent extends React.Component {
     };
 
     render() {
-        return <div className={styles.content}>
-            <h2 className="title1 margin2">
-                <Trans i18nKey='deleteUser.attention'>Attention!</Trans>
-            </h2>
-            <div className="margin4 body1">
-                <Trans i18nKey='deleteUser.warn'>
-                    Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEEDs.
-                </Trans>
+        return (
+            <div className={styles.content}>
+                <h2 className="title1 margin2">
+                    <Trans i18nKey="deleteUser.attention">Attention!</Trans>
+                </h2>
+                <div className="margin4 body1">
+                    <Trans i18nKey="deleteUser.warn">
+                        Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have
+                        backed up your SEEDs.
+                    </Trans>
+                </div>
+                <div>
+                    <Button
+                        id="deleteAccount"
+                        onClick={this.onClickHandler}
+                        type="warning"
+                        disabled={this.state.disable}
+                    >
+                        <Trans i18nKey="deleteUser.delete">Delete account</Trans>
+                    </Button>
+                </div>
             </div>
-            <div>
-                <Button onClick={this.onClickHandler} type='warning' disabled={this.state.disable}>
-                    <Trans i18nKey='deleteUser.delete'>Delete account</Trans>
-                </Button>
-            </div>
-        </div>
+        );
     }
 }
 
 const actions = {
-    deleteAccount
+    deleteAccount,
 };
 
 const mapStateToProps = function () {

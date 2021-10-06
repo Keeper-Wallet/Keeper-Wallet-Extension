@@ -1,11 +1,11 @@
 import * as styles from './styles/newwallet.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { translate, Trans } from 'react-i18next';
 import { newAccountSelect } from '../../actions';
-import { AvatarList } from '../ui/avatar';
+import { AvatarList } from '../ui';
 import { seedUtils } from '@waves/waves-transactions';
-import { Button } from '../ui/buttons';
+import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
@@ -19,19 +19,21 @@ class NewWalletComponent extends React.Component {
 
     constructor({ isGenerateNew, ...props }) {
         super(props);
-        const networkCode = this.props.customCodes[this.props.currentNetwork] ||
-            this.props.networks.find(({ name }) => this.props.currentNetwork === name).code || '';
+        const networkCode =
+            this.props.customCodes[this.props.currentNetwork] ||
+            this.props.networks.find(({ name }) => this.props.currentNetwork === name).code ||
+            '';
         if (isGenerateNew) {
             NewWalletComponent.list = NewWalletComponent.getNewWallets(networkCode);
         }
 
-        const list  = NewWalletComponent.list;
+        const list = NewWalletComponent.list;
 
         if (props.notSaveAccount) {
             this._onSelect(props.notSaveAccount);
             this.props.setTab(PAGES.SAVE_BACKUP);
         } else {
-            const selected = list.find(item => props.account && item.address === props.account.address) || list[0];
+            const selected = list.find((item) => props.account && item.address === props.account.address) || list[0];
             this._onSelect(selected);
         }
 
@@ -46,38 +48,49 @@ class NewWalletComponent extends React.Component {
             const address = new seedUtils.Seed(seed, networkCode).address;
             list.push({ seed, address, type: 'seed' });
         }
-        return list ;
+        return list;
     }
 
-    render () {
-        return <div className={styles.content}>
-            <div>
-                <h2 className={`title1 margin3 left`}>
-                    <Trans i18nKey='newWallet.createNew'>Create New Account</Trans>
-                </h2>
+    render() {
+        return (
+            <div className={styles.content}>
+                <div>
+                    <h2 className={`title1 margin3 left`}>
+                        <Trans i18nKey="newWallet.createNew">Create New Account</Trans>
+                    </h2>
+                </div>
+
+                <div className={`margin3`}>
+                    <div className={`body3`}>
+                        <Trans i18nKey="newWallet.select">Choose your address avatar</Trans>
+                    </div>
+                    <div className={`tag1 basic500`}>
+                        <Trans i18nKey="newWallet.selectInfo">This avatar is unique. You cannot change it later.</Trans>
+                    </div>
+                </div>
+
+                <div className={`margin4 avatar-list`}>
+                    <AvatarList
+                        size={38}
+                        items={this.state.list}
+                        selected={this.props.account}
+                        onSelect={this.onSelect}
+                    />
+                </div>
+
+                <div className={`tag1 basic500 input-title`}>
+                    <Trans i18nKey="newWallet.address">Account address</Trans>
+                </div>
+
+                <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>
+
+                <form onSubmit={this.onSubmit}>
+                    <Button type="submit" id="continue">
+                        <Trans i18nKey="newWallet.continue">Continue</Trans>
+                    </Button>
+                </form>
             </div>
-
-            <div className={`margin3`}>
-                <div className={`body3`}><Trans i18nKey='newWallet.select'>Choose your address avatar</Trans></div>
-                <div className={`tag1 basic500`}><Trans i18nKey='newWallet.selectInfo'>This avatar is unique. You cannot change it later.</Trans></div>
-            </div>
-
-            <div className={`margin4 avatar-list`}>
-                <AvatarList size={38} items={this.state.list} selected={this.props.account} onSelect={this.onSelect}/>
-            </div>
-
-            <div className={`tag1 basic500 input-title`}>
-                <Trans i18nKey='newWallet.address'>Account address</Trans>
-            </div>
-
-            <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>
-
-            <form onSubmit={this.onSubmit}>
-                <Button type="submit">
-                    <Trans i18nKey="newWallet.continue">Continue</Trans>
-                </Button>
-            </form>
-        </div>
+        );
     }
 
     _onSelect(account) {
@@ -92,10 +105,10 @@ class NewWalletComponent extends React.Component {
 }
 
 const actions = {
-    newAccountSelect
+    newAccountSelect,
 };
 
-const mapStateToProps = function(store: any) {
+const mapStateToProps = function (store: any) {
     return {
         account: store.localState.newAccount,
         notSaveAccount: store.uiState.account,
