@@ -1,8 +1,9 @@
-import { until, By, WebElement, Key } from 'selenium-webdriver';
+import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
+import { clear } from './utils';
 
 describe('Password management', () => {
-    const password = { short: 'short', default: 'strongpassword', new: 'verystrongpassword' };
+    const PASSWORD = { SHORT: 'short', DEFAULT: 'strongpassword', NEW: 'verystrongpassword' };
 
     describe('Create password', function () {
         this.timeout(60 * 1000);
@@ -29,34 +30,48 @@ describe('Password management', () => {
             );
         });
 
+        after(async function () {
+            // reset Waves Keeper vault
+            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+            await this.driver
+                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
+                .click();
+
+            await this.driver
+                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")), this.wait)
+                .click();
+
+            await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
+        });
+
         beforeEach(async function () {
             await firstPasswordInput.clear();
             await secondPasswordInput.clear();
         });
 
         it('Minimum password length 8 characters', async function () {
-            await firstPasswordInput.sendKeys(password.short);
+            await firstPasswordInput.sendKeys(PASSWORD.SHORT);
             expect(await firstPasswordErrorDiv.getText()).matches(/password is too short/i);
         });
 
         it('Passwords in both fields must mismatch', async function () {
             // check password mismatches
-            await firstPasswordInput.sendKeys(password.default);
-            await secondPasswordInput.sendKeys(password.short);
+            await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await secondPasswordInput.sendKeys(PASSWORD.SHORT);
             expect(await secondPasswordErrorDiv.getText()).matches(/passwords does not match/i);
         });
 
         it('Passwords in both fields must match', async function () {
-            await firstPasswordInput.sendKeys(password.default);
-            await secondPasswordInput.sendKeys(password.default);
+            await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await secondPasswordInput.sendKeys(PASSWORD.DEFAULT);
             expect(await secondPasswordErrorDiv.getText()).to.be.empty;
         });
 
         it('The ability to paste the password from the clipboard');
 
         it('Successful password creation', async function () {
-            await firstPasswordInput.sendKeys(password.default);
-            await secondPasswordInput.sendKeys(password.default);
+            await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await secondPasswordInput.sendKeys(PASSWORD.DEFAULT);
             await this.driver.findElement(By.css('.app input#termsAccepted[type=checkbox]')).click();
             await this.driver.findElement(By.css('.app input#conditionsAccepted[type=checkbox]')).click();
             await this.driver
@@ -78,10 +93,6 @@ describe('Password management', () => {
         this.timeout(60 * 1000);
 
         let oldPasswordInput: WebElement, newFirstPasswordInput: WebElement, newSecondPasswordInput: WebElement;
-        const clear = async (input: WebElement) => {
-            // fixes some issues with form input.clear()
-            await input.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), Key.BACK_SPACE);
-        };
 
         before(async function () {
             await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
@@ -102,7 +113,7 @@ describe('Password management', () => {
         });
 
         it('Minimum password length 8 characters', async function () {
-            await oldPasswordInput.sendKeys(password.short);
+            await oldPasswordInput.sendKeys(PASSWORD.SHORT);
             await oldPasswordInput.sendKeys('\t');
             expect(
                 await this.driver
@@ -113,7 +124,7 @@ describe('Password management', () => {
             ).matches(/Password can't be so short/i);
             await clear(oldPasswordInput);
 
-            await newFirstPasswordInput.sendKeys(password.short);
+            await newFirstPasswordInput.sendKeys(PASSWORD.SHORT);
             await newFirstPasswordInput.sendKeys('\t');
             expect(
                 await this.driver
@@ -129,8 +140,8 @@ describe('Password management', () => {
 
         it('Passwords in both fields must match', async function () {
             // check password mismatches
-            await newFirstPasswordInput.sendKeys(password.default);
-            await newSecondPasswordInput.sendKeys(password.short);
+            await newFirstPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await newSecondPasswordInput.sendKeys(PASSWORD.SHORT);
             await newFirstPasswordInput.sendKeys('\t');
 
             const errDiv = this.driver.findElement(
@@ -139,14 +150,14 @@ describe('Password management', () => {
             expect(await errDiv.getText()).matches(/New passwords does not match/i);
             await clear(newSecondPasswordInput);
 
-            await newSecondPasswordInput.sendKeys(password.default);
+            await newSecondPasswordInput.sendKeys(PASSWORD.DEFAULT);
             await newFirstPasswordInput.sendKeys('\t');
             expect(await errDiv.getText()).to.be.empty;
         });
 
         it('New password cannot match old', async function () {
-            await oldPasswordInput.sendKeys(password.default);
-            await newFirstPasswordInput.sendKeys(password.default);
+            await oldPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await newFirstPasswordInput.sendKeys(PASSWORD.DEFAULT);
             await newFirstPasswordInput.sendKeys('\t');
 
             const errDiv = this.driver.findElement(
@@ -155,15 +166,15 @@ describe('Password management', () => {
             expect(await errDiv.getText()).matches(/Old password is equal new/i);
             await clear(newFirstPasswordInput);
 
-            await newFirstPasswordInput.sendKeys(password.new);
+            await newFirstPasswordInput.sendKeys(PASSWORD.NEW);
             await newFirstPasswordInput.sendKeys('\t');
             expect(await errDiv.getText()).to.be.empty;
         });
 
         it('Successful password changed', async function () {
-            await oldPasswordInput.sendKeys(password.default);
-            await newFirstPasswordInput.sendKeys(password.new);
-            await newSecondPasswordInput.sendKeys(password.new);
+            await oldPasswordInput.sendKeys(PASSWORD.DEFAULT);
+            await newFirstPasswordInput.sendKeys(PASSWORD.NEW);
+            await newSecondPasswordInput.sendKeys(PASSWORD.NEW);
 
             await this.driver
                 .wait(until.elementIsEnabled(this.driver.findElement(By.css('.app button[type=submit]'))), this.wait)
@@ -206,7 +217,7 @@ describe('Password management', () => {
 
         it('Incorrect password login', async function () {
             loginInput = this.driver.findElement(By.css('input[type=password]'));
-            await loginInput.sendKeys(password.default);
+            await loginInput.sendKeys(PASSWORD.DEFAULT);
             await loginButton.click();
             expect(
                 await this.driver
@@ -219,7 +230,7 @@ describe('Password management', () => {
         });
 
         it('Correct password login', async function () {
-            await loginInput.sendKeys(password.new);
+            await loginInput.sendKeys(PASSWORD.NEW);
             await loginButton.click();
             // check we are at create new account page
             await this.driver.wait(
@@ -231,7 +242,6 @@ describe('Password management', () => {
             );
         });
 
-        // in this case, the Waves Keeper extension is complitly reset, so there is no need to reset `afterAll` tests
         it('Password reset', async function () {
             await performLogout.call(this);
             await loginForm.findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]")).click();

@@ -1,14 +1,13 @@
 import * as styles from './styles/deleteAccount.styl';
-import * as React from 'react'
-import {connect} from 'react-redux';
-import {translate, Trans} from 'react-i18next';
-import {Button} from '../ui/buttons';
-import {deleteActiveAccount} from '../../actions';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { Trans, translate } from 'react-i18next';
+import { Button } from '../ui';
+import { deleteActiveAccount } from '../../actions';
 import { I18N_NAME_SPACE } from '../../appConfig';
 
 @translate(I18N_NAME_SPACE)
 class DeleteActiveAccountComponent extends React.Component {
-    
     state = { disable: false };
     props;
     onClickHandler = () => {
@@ -17,26 +16,31 @@ class DeleteActiveAccountComponent extends React.Component {
     };
 
     render() {
-        return <div className={styles.content}>
-            <h2 className="title1 margin2">
-                <Trans i18nKey='deleteAccount.attention'>Attention!</Trans>
-            </h2>
-            <div className="margin4 body1">
-                <Trans i18nKey='deleteAccount.warn'>
-                    Deleting an account will lead to its irretrievable loss!
-                </Trans>
+        return (
+            <div className={styles.content}>
+                <h2 className="title1 margin2">
+                    <Trans i18nKey="deleteAccount.attention">Attention!</Trans>
+                </h2>
+                <div className="margin4 body1">
+                    <Trans i18nKey="deleteAccount.warn">Deleting an account will lead to its irretrievable loss!</Trans>
+                </div>
+                <div>
+                    <Button
+                        id="deleteAccount"
+                        onClick={this.onClickHandler}
+                        type="warning"
+                        disabled={this.state.disable}
+                    >
+                        <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
+                    </Button>
+                </div>
             </div>
-            <div>
-                <Button onClick={this.onClickHandler} type='warning' disabled={this.state.disable}>
-                    <Trans i18nKey='deleteAccount.delete'>Delete account</Trans>
-                </Button>
-            </div>
-        </div>
+        );
     }
 }
 
 const actions = {
-    deleteActiveAccount
+    deleteActiveAccount,
 };
 
 const mapStateToProps = function () {

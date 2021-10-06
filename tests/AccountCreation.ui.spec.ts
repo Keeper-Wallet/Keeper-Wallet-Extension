@@ -1,5 +1,6 @@
 import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
+import { clear } from './utils';
 
 describe('Account management', function () {
     this.timeout(60 * 1000);
@@ -41,7 +42,40 @@ describe('Account management', function () {
 
     describe('Create account', function () {
         const ACCOUNTS = { FIRST: 'first', SECOND: 'second', ANY: 'account123!@#_аккаунт' };
-        const PILL_ANIMATION_DELAY = 300;
+        const PILL_ANIMATION_DELAY = 200;
+
+        after(async function () {
+            // delete all created accounts
+            while (true) {
+                let form: WebElement = await this.driver.wait(
+                    until.elementLocated(
+                        By.xpath("//div[(contains(@class, '-assets-assets') or contains(@class, '-import-import'))]")
+                    ),
+                    this.wait
+                );
+                let activeWalletEl: WebElement[] = await form.findElements(
+                    By.xpath(
+                        "//div[contains(@class, '-wallet-activeWallet')]" +
+                            "//div[contains(@class, '-wallet-accountName')]"
+                    )
+                );
+
+                if (!activeWalletEl.length) {
+                    break;
+                }
+
+                await activeWalletEl[0].click();
+
+                await this.driver
+                    .wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-accountInfo-deleteButton')]")),
+                        this.wait
+                    )
+                    .click();
+
+                await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
+            }
+        });
 
         it('Creating the first account via the "Create a new account" button', async function () {
             await this.driver.findElement(By.css('button#createNewAccount')).click();
@@ -98,10 +132,10 @@ describe('Account management', function () {
             ).to.be.equals(ACCOUNTS.FIRST);
         });
 
-        describe('Creating an additional account via the "Add account" button', () => {
-            describe('When you already have 1 account', () => {
-                describe('Create new account page', () => {
-                    it('Each time you open the "Create new account" screen, new addresses are generated', async function () {
+        describe('Creating an additional account via the "Add account" button', function () {
+            describe('When you already have 1 account', function () {
+                describe('Create new account page', function () {
+                    before(async function () {
                         await this.driver
                             .wait(
                                 until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")),
@@ -112,7 +146,9 @@ describe('Account management', function () {
                         await this.driver
                             .wait(until.elementLocated(By.css('button#createNewAccount')), this.wait)
                             .click();
+                    });
 
+                    it('Each time you open the "Create new account" screen, new addresses are generated', async function () {
                         const prevAddress = await this.driver
                             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-newwallet-greyLine')]")))
                             .getText();
@@ -150,21 +186,27 @@ describe('Account management', function () {
                     });
                 });
 
-                describe('Account name page', () => {
-                    let accountNameInput, createBackupBtn;
-                    it('Account cannot be given a name that is already in use', async function () {
+                describe('Account name page', function () {
+                    let accountNameInput: WebElement, createBackupBtn: WebElement;
+                    before(function () {
                         accountNameInput = this.driver.wait(
                             until.elementLocated(By.css('input#newAccountName')),
                             this.wait
                         );
-                        await accountNameInput.sendKeys(ACCOUNTS.FIRST);
                         createBackupBtn = this.driver.findElement(By.css('button#createBackup'));
+                    });
+
+                    beforeEach(async function () {
+                        await clear(accountNameInput);
+                    });
+
+                    it('Account cannot be given a name that is already in use', async function () {
+                        await accountNameInput.sendKeys(ACCOUNTS.FIRST);
                         expect(await createBackupBtn.isEnabled()).to.be.false;
                     });
 
                     it('Ability to paste account name from clipboard');
                     it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
-                        await accountNameInput.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), Key.BACK_SPACE);
                         await accountNameInput.sendKeys(ACCOUNTS.ANY);
                         expect(await createBackupBtn.isEnabled()).to.be.true;
                         await createBackupBtn.click();
@@ -172,7 +214,7 @@ describe('Account management', function () {
                 });
 
                 let rightSeed: string;
-                describe('Save backup phrase page', () => {
+                describe('Save backup phrase page', function () {
                     it('After the Keeper is closed, the same screen opens', async function () {
                         rightSeed = await this.driver
                             .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
@@ -189,7 +231,7 @@ describe('Account management', function () {
                     it('Ability to copy backup phrase to clipboard');
                 });
 
-                describe('Confirm backup page', () => {
+                describe('Confirm backup page', function () {
                     let clearButton: WebElement, wrongSeed: string[];
                     it('Filling in a seed in the wrong word order', async function () {
                         // there is no Confirm button. An error message and a "Clear" button are displayed
@@ -289,7 +331,8 @@ describe('Account management', function () {
                             )
                         ).to.be.empty;
                     });
-                    it('Additional account successufuly created while filling in the phrase in the correct order', async function () {
+
+                    it('Additional account successfully created while filling in the phrase in the correct order', async function () {
                         const writePills: WebElement = this.driver.wait(
                             until.elementLocated(By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")),
                             this.wait
@@ -330,78 +373,212 @@ describe('Account management', function () {
                 });
             });
 
-            // it('When you already have 1 account', async function () {
-            //     await this.driver
-            //         .wait(until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")), this.wait)
-            //         .click();
-            //
-            //     // create new account page
-            //     await this.driver.wait(
-            //         until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")),
-            //         this.wait
-            //     );
-            //
-            //     await createAccount.call(this, accounts.second);
-            //
-            //     // await this.driver.sleep(3000);
-            //     expect(
-            //         await this.driver
-            //             .wait(
-            //                 until.elementIsVisible(
-            //                     this.driver.wait(
-            //                         until.elementLocated(
-            //                             By.xpath(
-            //                                 "//div[contains(@class, '-assets-assets')]" +
-            //                                     "//div[contains(@class, 'wallets-list')]" +
-            //                                     "//div[contains(@class, '-wallet-accountName')]"
-            //                             )
-            //                         ),
-            //                         this.wait
-            //                     )
-            //                 ),
-            //                 this.wait
-            //             )
-            //             .getText()
-            //     ).to.be.equals(accounts.second);
-            // });
             it('When you already have 2 accounts');
+
             it('When you already have 10 accounts');
         });
-
-        // it('Account cannot be given a name that is already in use');
-        // it('Ability to paste account name from clipboard');
-        // it('In the account name, you can enter numbers, special characters and symbols from any layout');
-        // it('Each time you open the "Create new account" screen, new addresses are generated');
-        // it('You can select an account from the list of 5 generated (click on each account)');
-        // it('Ability to copy backup phrase to clipboard');
-        // it('Backup phrase cannot be selected with cursor');
-        // it('After the Keeper is closed, the same screen with the same phrase opens on the phrase backup screen');
-
-        // describe('Backup check', () => {
-        //     it(
-        //         'When filling in a seed in the wrong word order - there is no Confirm button. An error message and a "Clear" button are displayed'
-        //     );
-        //     it('The "Clear" button resets a partially filled phrase');
-        //     it('The "Clear" button resets a completely filled phrase');
-        //     it('The word can be reset by clicking (any, not only the last)');
-        //     it('When filling in the correct order, the "Confirm" button appears');
-        //     it('Clicking on "Confirm" opens the main screen. Account added to the end of the list');
-        // });
     });
 
-    describe('Import account', () => {
-        it('Importing the first account from the "Create new account" screen (when no accounts have been added yet)');
-        describe('Importing an additional account via the "Add account" button', () => {
-            it('When you already have 1 account');
+    describe('Import account', function () {
+        const ACCOUNTS = {
+            FIRST: { SEED: 'this is first account seed', NAME: 'first' },
+            MORE_25_CHARS: { SEED: 'there is more than 25 characters', NAME: 'more than 25 characters' },
+            LESS_25_CHARS: { SEED: 'too short seed', NAME: 'short' },
+        };
+
+        it('Importing the first account via the "Import account" button', async function () {
+            await this.driver
+                .wait(until.elementLocated(By.xpath("//div[contains(@class,'-import-importChooser')]")), this.wait)
+                .click();
+
+            await this.driver
+                .wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")),
+                    this.wait
+                )
+                .sendKeys(ACCOUNTS.FIRST.SEED);
+            await this.driver
+                .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#importAccount'))), this.wait)
+                .click();
+
+            await this.driver
+                .wait(until.elementLocated(By.css('input#newAccountName')), this.wait)
+                .sendKeys(ACCOUNTS.FIRST.NAME);
+            await this.driver
+                .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#continue'))), this.wait)
+                .click();
+
+            expect(
+                await this.driver
+                    .wait(
+                        until.elementIsVisible(
+                            this.driver.wait(
+                                until.elementLocated(
+                                    By.xpath(
+                                        "//div[contains(@class, '-assets-assets')]" +
+                                            "//div[contains(@class, '-wallet-activeWallet')]" +
+                                            "//div[contains(@class, '-wallet-accountName')]"
+                                    )
+                                ),
+                                this.wait
+                            )
+                        ),
+                        this.wait
+                    )
+                    .getText()
+            ).to.be.equals(ACCOUNTS.FIRST.NAME);
+        });
+
+        describe('Importing an additional account via the "Add account" button', function () {
+            describe('When you already have 1 account', function () {
+                before(async function () {
+                    await this.driver
+                        .wait(
+                            until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")),
+                            this.wait
+                        )
+                        .click();
+
+                    await this.driver
+                        .wait(
+                            until.elementLocated(By.xpath("//div[contains(@class,'-import-importChooser')]")),
+                            this.wait
+                        )
+                        .click();
+                });
+                describe('Welcome back page', function () {
+                    let seedTextarea: WebElement, importAccountBtn: WebElement, currentAddressDiv: WebElement;
+
+                    before(function () {
+                        seedTextarea = this.driver.wait(
+                            until.elementLocated(By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")),
+                            this.wait
+                        );
+                        importAccountBtn = this.driver.findElement(By.css('button#importAccount'));
+                        currentAddressDiv = this.driver.findElement(
+                            By.xpath("//div[contains(@class, '-importSeed-greyLine')]")
+                        );
+                    });
+
+                    beforeEach(async function () {
+                        await clear(seedTextarea);
+                    });
+
+                    it("Can't import seed with length less than 25 characters", async function () {
+                        await seedTextarea.sendKeys(ACCOUNTS.LESS_25_CHARS.SEED);
+                        await seedTextarea.sendKeys('\t'); // fire blur event
+                        expect(await importAccountBtn.isEnabled()).to.be.false;
+                    });
+
+                    it("Can't import seed for an already added account", async function () {
+                        await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
+                        await seedTextarea.sendKeys('\t');
+                        expect(
+                            await this.driver.wait(
+                                until.elementLocated(
+                                    By.xpath(
+                                        "//div[contains(@class, '-importSeed-content')]//textarea" +
+                                            "//following-sibling::div[contains(@class, '-error-error')]"
+                                    )
+                                ),
+                                this.wait
+                            )
+                        ).to.be.not.empty;
+                    });
+
+                    it('Any change in the seed changes the address', async function () {
+                        let lastAddress: string = null,
+                            currentAddress: string;
+                        // input seed
+                        await seedTextarea.sendKeys(ACCOUNTS.MORE_25_CHARS.SEED);
+                        currentAddress = await currentAddressDiv.getText();
+                        expect(currentAddress).to.be.not.equal(lastAddress);
+                        lastAddress = currentAddress;
+                        // insert char
+                        await seedTextarea.sendKeys('W');
+                        currentAddress = await currentAddressDiv.getText();
+                        expect(currentAddress).to.be.not.equal(lastAddress);
+                        lastAddress = currentAddress;
+                        // delete inserted char
+                        await seedTextarea.sendKeys(Key.BACK_SPACE);
+                        expect(await currentAddressDiv.getText()).to.be.not.equal(lastAddress);
+                    });
+
+                    it('You can paste a seed from the clipboard');
+
+                    it('Correct seed entered', async function () {
+                        await seedTextarea.sendKeys(ACCOUNTS.MORE_25_CHARS.SEED);
+                        expect(await importAccountBtn.isEnabled()).to.be.true;
+                        await importAccountBtn.click();
+                    });
+                });
+
+                describe('Account name page', function () {
+                    let accountNameInput: WebElement, continueBtn: WebElement;
+
+                    before(function () {
+                        accountNameInput = this.driver.wait(
+                            until.elementLocated(By.css('input#newAccountName')),
+                            this.wait
+                        );
+                        continueBtn = this.driver.findElement(By.css('button#continue'));
+                    });
+
+                    beforeEach(async function () {
+                        await clear(accountNameInput);
+                    });
+
+                    it('The account cannot be given a name already in use', async function () {
+                        await accountNameInput.sendKeys(ACCOUNTS.FIRST.NAME);
+                        await accountNameInput.sendKeys('\t');
+                        expect(
+                            await this.driver
+                                .wait(
+                                    until.elementLocated(
+                                        By.xpath(
+                                            "//input[@id='newAccountName']" +
+                                                "//following-sibling::div[contains(@class, '-error-error')]"
+                                        )
+                                    ),
+                                    this.wait
+                                )
+                                .getText()
+                        ).matches(/Name already exist/i);
+                        expect(await continueBtn.isEnabled()).to.be.false;
+                    });
+
+                    it('Additional account successfully imported while entered correct account name', async function () {
+                        await accountNameInput.sendKeys(ACCOUNTS.MORE_25_CHARS.NAME);
+                        await accountNameInput.sendKeys('\t');
+                        expect(await continueBtn.isEnabled()).to.be.true;
+                        await continueBtn.click();
+
+                        expect(
+                            await this.driver
+                                .wait(
+                                    until.elementIsVisible(
+                                        this.driver.wait(
+                                            until.elementLocated(
+                                                By.xpath(
+                                                    "//div[contains(@class, '-assets-assets')]" +
+                                                        "//div[contains(@class, 'wallets-list')]" +
+                                                        "//div[contains(@class, '-wallet-accountName')]"
+                                                )
+                                            ),
+                                            this.wait
+                                        )
+                                    ),
+                                    this.wait
+                                )
+                                .getText()
+                        ).to.be.equals(ACCOUNTS.MORE_25_CHARS.NAME);
+                    });
+                });
+            });
+
             it('When you already have 2 accounts');
+
             it('When you already have 10 accounts');
         });
-        it('Minimum seed length - 25 characters');
-        it('Any change in the seed (input / deletion / insertion of characters) changes the address');
-        it('You can paste a seed from the clipboard');
-        it('The account cannot be given a name already in use');
-        it("Can't import seed for an already added account");
-        it('The "Import account" button appears only with a valid entered seed');
-        it('Clicking "Import account" opens the main screen. Account added to the end of the list');
     });
 });
