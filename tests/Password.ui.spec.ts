@@ -1,9 +1,14 @@
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
+import { resetWavesKeeperVault } from './utils/actions';
 
 describe('Password management', () => {
     const PASSWORD = { SHORT: 'short', DEFAULT: 'strongpassword', NEW: 'verystrongpassword' };
+
+    after(async function () {
+        resetWavesKeeperVault.call(this);
+    });
 
     describe('Create password', function () {
         this.timeout(60 * 1000);
@@ -13,7 +18,7 @@ describe('Password management', () => {
             secondPasswordErrorDiv: WebElement;
 
         before(async function () {
-            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+            await this.driver.get(this.extensionUrl);
             // Get Started page
             await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
             // Protect Your Account page
@@ -28,20 +33,6 @@ describe('Password management', () => {
             secondPasswordErrorDiv = this.driver.findElement(
                 By.xpath("//input[@id='second']//following-sibling::div[contains(@class, '-error-error')]")
             );
-        });
-
-        after(async function () {
-            // reset Waves Keeper vault
-            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
-            await this.driver
-                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
-                .click();
-
-            await this.driver
-                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")), this.wait)
-                .click();
-
-            await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
         });
 
         beforeEach(async function () {
@@ -95,7 +86,7 @@ describe('Password management', () => {
         let oldPasswordInput: WebElement, newFirstPasswordInput: WebElement, newSecondPasswordInput: WebElement;
 
         before(async function () {
-            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+            await this.driver.get(this.extensionUrl);
             await this.driver
                 .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
                 .click();
@@ -206,7 +197,7 @@ describe('Password management', () => {
         }
 
         before(async function () {
-            await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+            await this.driver.get(this.extensionUrl);
         });
 
         it('Logout', async function () {
@@ -216,7 +207,7 @@ describe('Password management', () => {
         });
 
         it('Incorrect password login', async function () {
-            loginInput = this.driver.findElement(By.css('input[type=password]'));
+            loginInput = loginForm.findElement(By.css('input[type=password]'));
             await loginInput.sendKeys(PASSWORD.DEFAULT);
             await loginButton.click();
             expect(

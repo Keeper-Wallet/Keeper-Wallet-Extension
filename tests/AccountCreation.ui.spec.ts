@@ -1,6 +1,7 @@
 import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
+import { resetWavesKeeperVault } from './utils/actions';
 
 describe('Account management', function () {
     this.timeout(60 * 1000);
@@ -9,7 +10,7 @@ describe('Account management', function () {
         // init Waves Keeper vault before this tests
         const password = 'valid-password';
 
-        await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+        await this.driver.get(this.extensionUrl);
         // Get Started page
         await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
         // Protect Your Account page
@@ -27,17 +28,7 @@ describe('Account management', function () {
     });
 
     after(async function () {
-        // reset Waves Keeper vault
-        await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
-            .click();
-
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")), this.wait)
-            .click();
-
-        await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
+        resetWavesKeeperVault.call(this);
     });
 
     describe('Create account', function () {
@@ -220,7 +211,7 @@ describe('Account management', function () {
                             .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
                             .getText();
                         // reload page equals to close then open
-                        await this.driver.get(`chrome-extension://${this.extension.id}/popup.html`);
+                        await this.driver.get(this.extensionUrl);
                         expect(
                             await this.driver.wait(until.elementLocated(By.css('div.cant-select')), this.wait).getText()
                         ).to.be.equals(rightSeed);

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Input, DateFormat, Button, BUTTON_TYPE } from 'ui/components/ui';
-import { translate, Trans } from 'react-i18next';
+import { Button, BUTTON_TYPE, DateFormat, Input } from 'ui/components/ui';
+import { Trans, translate } from 'react-i18next';
 import {
     closeNotificationWindow,
-    setActiveNotification,
     deleteNotifications,
+    setActiveNotification,
     setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -18,7 +18,7 @@ const NotificationItem = ({ notification }) => (
     <div className={`margin-main-big`}>
         <div className={`${styles.messageItemInner} margin-2`}>
             <div className="flex">
-                <div className={styles.messageIcon}/>
+                <div className={styles.messageIcon} />
                 <div className={styles.messageTitle}>
                     <div className="basic500">{notification && notification.origin}</div>
                     <h2 className="">{notification && notification.title}</h2>
@@ -28,132 +28,119 @@ const NotificationItem = ({ notification }) => (
         </div>
         <div className={styles.timestamp}>
             <div className="basic500 margin-min">
-                <Trans i18nKey='notifications.time'>Time</Trans>
+                <Trans i18nKey="notifications.time">Time</Trans>
             </div>
-            <DateFormat value={notification.timestamp}/>
+            <DateFormat value={notification.timestamp} />
         </div>
     </div>
 );
 
 @translate(I18N_NAME_SPACE)
 class NotificationsComponent extends React.Component {
-    
     readonly state = {} as any;
     readonly props;
-    
-    closeHandler = (e) => {
+
+    closeHandler = () => {
         this._deleteMessages(null);
         this.props.closeNotificationWindow();
     };
-    
+
     toListHandler = () => {
-        this._deleteMessages(null).then(
-            () => this.props.setTab(PAGES.MESSAGES_LIST)
-        );
+        this._deleteMessages(null).then(() => this.props.setTab(PAGES.MESSAGES_LIST));
     };
-    
+
     toggleCanShowHandler = (e) => {
         const canUse = e.target.checked;
         this.props.setShowNotification({ origin: this.state.origin, canUse });
     };
-    
-    nextHandler = (e) => {
+
+    nextHandler = () => {
         const nextNotification = this.state.notifications.filter(([item]) => item.origin !== this.state.origin)[0];
         this._deleteMessages(nextNotification || null);
     };
-    
+
     selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
-    
+
     componentDidCatch(error, info) {
         this.toListHandler();
     }
-    
+
     render() {
         const { activeNotification, showToList, hasNotifications, showClose, loading } = this.state;
-        
+
         if (loading) {
-            return <Intro/>;
+            return <Intro />;
         }
-        
-        
+
         return (
             <div className={`${styles.messageList} ${styles.messageListInner}`}>
-                
                 <div className={styles.messageListScrollBox}>
-                    {
-                        activeNotification
-                            .map(notification => (
-                                    <NotificationItem notification={notification} key={notification.id}/>
-                                )
-                            )
-                    }
-                    
+                    {activeNotification.map((notification) => (
+                        <NotificationItem notification={notification} key={notification.id} />
+                    ))}
+
                     <div className={`margin-main-big margin-main-big-top flex ${styles.allowNotification}`}>
-                        <Input id='checkbox_noshow' type={'checkbox'} checked={this.state.canShowNotify}
-                               onChange={this.toggleCanShowHandler}/>
-                        <label htmlFor='checkbox_noshow'>
-                            <Trans i18nkey='notifications.allowSending'>Allow sending messages</Trans>
+                        <Input
+                            id="checkbox_noshow"
+                            type={'checkbox'}
+                            checked={this.state.canShowNotify}
+                            onChange={this.toggleCanShowHandler}
+                        />
+                        <label htmlFor="checkbox_noshow">
+                            <Trans i18nkey="notifications.allowSending">Allow sending messages</Trans>
                         </label>
                     </div>
                 </div>
-                
+
                 <div className={`${styles.notificationButtons} buttons-wrapper`}>
-                    {
-                        showToList &&
+                    {showToList && (
                         <Button onClick={this.toListHandler}>
-                            <Trans i18nKey='notifications.toListBtn'>Notifications</Trans>
+                            <Trans i18nKey="notifications.toListBtn">Notifications</Trans>
                         </Button>
-                    }
-                        
-                        {
-                            hasNotifications && showToList &&
-                            <div className={styles.buttonsSeparator}/>
-                        }
-                    
-                    {
-                        hasNotifications &&
+                    )}
+
+                    {hasNotifications && showToList && <div className={styles.buttonsSeparator} />}
+
+                    {hasNotifications && (
                         <Button type={BUTTON_TYPE.GENERAL} onClick={this.nextHandler}>
-                            <Trans i18nKey='notifications.nextBtn'>Next</Trans>
+                            <Trans i18nKey="notifications.nextBtn">Next</Trans>
                         </Button>
-                    }
-    
-                        {
-                            (showClose && (hasNotifications || showToList)) &&
-                            <div className={styles.buttonsSeparator}/>
-                        }
-                    
-                    {
-                        showClose &&
-                        <Button onClick={this.closeHandler}>
-                            <Trans i18nKey='notifications.closeBtn'>Close</Trans>
+                    )}
+
+                    {showClose && (hasNotifications || showToList) && <div className={styles.buttonsSeparator} />}
+
+                    {showClose && (
+                        <Button id="closeNotification" onClick={this.closeHandler}>
+                            <Trans i18nKey="notifications.closeBtn">Close</Trans>
                         </Button>
-                    }
+                    )}
                 </div>
-                
+
                 <div className={styles.walletWrapper}>
-                    <TransactionWallet onSelect={this.selectAccountHandler}
-                                       account={this.props.selectedAccount}
-                                       hideButton={false}/>
+                    <TransactionWallet
+                        onSelect={this.selectAccountHandler}
+                        account={this.props.selectedAccount}
+                        hideButton={false}
+                    />
                 </div>
-            
             </div>
         );
     }
-    
+
     _deleteMessages(nexActive) {
         return this.props.deleteNotifications({
             ids: this.state.activeNotification.map(({ id }) => id),
-            next: nexActive
+            next: nexActive,
         });
     }
-    
-    static getDerivedStateFromProps(props, state) {
+
+    static getDerivedStateFromProps(props) {
         const { origins, activeNotification, messages, notifications } = props;
         if (!activeNotification && notifications.length) {
             props.setTab(PAGES.MESSAGES_LIST);
             return { loading: true };
         }
-        
+
         const origin = activeNotification[0].origin;
         const perms = origins[origin];
         const useNotifications = perms.find((item) => item && item.type === 'useNotifications');
@@ -162,8 +149,8 @@ class NotificationsComponent extends React.Component {
         const canShowNotify = useNotify || (useNotify == null && inWhiteList);
         const hasMessages = messages.length > 0;
         const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
-        const showToList = hasMessages || hasNotifications && notifications.length > 2;
-        
+        const showToList = hasMessages || (hasNotifications && notifications.length > 2);
+
         return {
             canShowNotify,
             messages,
