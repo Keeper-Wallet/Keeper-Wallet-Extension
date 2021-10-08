@@ -1,14 +1,9 @@
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
-import { resetWavesKeeperVault } from './utils/actions';
 
 describe('Password management', () => {
     const PASSWORD = { SHORT: 'short', DEFAULT: 'strongpassword', NEW: 'verystrongpassword' };
-
-    after(async function () {
-        resetWavesKeeperVault.call(this);
-    });
 
     describe('Create password', function () {
         this.timeout(60 * 1000);

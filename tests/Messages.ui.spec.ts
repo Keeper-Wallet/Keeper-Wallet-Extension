@@ -1,6 +1,6 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
-import { resetWavesKeeperVault } from './utils/actions';
+import { App, CreateNewAccount, Settings } from './utils/actions';
 
 describe('Messages', function () {
     const PAGE_LOAD_DELAY = 500;
@@ -34,54 +34,13 @@ describe('Messages', function () {
     }
 
     before(async function () {
-        // init Waves Keeper vault before this tests
-        const PASSWORD = 'valid-password';
-        const ACCOUNT = { SEED: 'waves private node seed with waves tokens', NAME: 'rich' };
-
-        await this.driver.get(this.extensionUrl);
-        // Get Started page
-        await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
-        // Protect Your Account page
-        await this.driver
-            .wait(until.elementLocated(By.css('.app input#first[type=password]')), this.wait)
-            .sendKeys(PASSWORD);
-        await this.driver.findElement(By.css('.app input#second[type=password]')).sendKeys(PASSWORD);
-        await this.driver.findElement(By.css('.app input#termsAccepted[type=checkbox]')).click();
-        await this.driver.findElement(By.css('.app input#conditionsAccepted[type=checkbox]')).click();
-        await this.driver
-            .wait(until.elementIsEnabled(this.driver.findElement(By.css('.app button[type=submit]'))), this.wait)
-            .click();
-        // Import seed
-        await this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")), this.wait);
-        await this.driver.findElement(By.xpath("//div[contains(@class,'-import-importChooser')]")).click();
-
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")), this.wait)
-            .sendKeys(ACCOUNT.SEED);
-        await this.driver
-            .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#importAccount'))), this.wait)
-            .click();
-
-        await this.driver.wait(until.elementLocated(By.css('input#newAccountName')), this.wait).sendKeys(ACCOUNT.NAME);
-        await this.driver
-            .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#continue'))), this.wait)
-            .click();
-        // set maximum session timeout
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
-            .click();
-        await this.driver.wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait).click();
-
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-index-selectInput')]")), this.wait)
-            .click();
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-index-listItem')][last()]")), this.wait)
-            .click();
+        await App.initVault.call(this);
+        await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
+        await Settings.setMaxSessionTimeout.call(this);
     });
 
     after(async function () {
-        resetWavesKeeperVault.call(this);
+        await App.resetVault.call(this);
     });
 
     it('Allowed messages from all resources from WhiteList', async function () {

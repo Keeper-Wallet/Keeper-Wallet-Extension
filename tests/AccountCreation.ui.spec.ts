@@ -1,34 +1,17 @@
 import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
-import { resetWavesKeeperVault } from './utils/actions';
+import { App } from './utils/actions';
 
 describe('Account management', function () {
     this.timeout(60 * 1000);
 
     before(async function () {
-        // init Waves Keeper vault before this tests
-        const password = 'valid-password';
-
-        await this.driver.get(this.extensionUrl);
-        // Get Started page
-        await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
-        // Protect Your Account page
-        await this.driver
-            .wait(until.elementLocated(By.css('.app input#first[type=password]')), this.wait)
-            .sendKeys(password);
-        await this.driver.findElement(By.css('.app input#second[type=password]')).sendKeys(password);
-        await this.driver.findElement(By.css('.app input#termsAccepted[type=checkbox]')).click();
-        await this.driver.findElement(By.css('.app input#conditionsAccepted[type=checkbox]')).click();
-        await this.driver
-            .wait(until.elementIsEnabled(this.driver.findElement(By.css('.app button[type=submit]'))), this.wait)
-            .click();
-        // Create new account page
-        await this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")), this.wait);
+        await App.initVault.call(this);
     });
 
     after(async function () {
-        resetWavesKeeperVault.call(this);
+        await App.resetVault.call(this);
     });
 
     describe('Create account', function () {

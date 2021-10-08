@@ -37,6 +37,7 @@
     },
     "bottom": {
         "custom": "Custom",
+        "stagenet": "Stagenet",
         "mainnet": "Mainnet",
         "network": {
             "edit": "Edit"
