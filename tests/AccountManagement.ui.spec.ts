@@ -1,31 +1,95 @@
-describe('Управление аккаунтами', () => {
-    it('Смена активного аккаунта');
-    it('Обновление балансов аккаунта при импорте');
-    it('В балансе отражаются WAVES, переданные в лизинг');
-    it('Копирование адреса активного аккаунта на экране аккаунтов');
-    it('Открытие экрана с QR-кодом адреса по кнопке "Show QR"');
-    it('Проверить, что QR совпадает с отображаемым адресом');
-    it('Download QR code - скачивание файла с QR - "адрес.png"');
-    it('По клику на неактивный аккаунт — переход на экран свойств аккаунта');
-    it('По клику на активный аккаунт — переход на экран свойств аккаунта');
-    describe('Переименование аккаунта', () => {
-        it('нельзя задать уже использующееся имя');
+import { App, CreateNewAccount, DEFAULT_PASSWORD } from './utils/actions';
+import { By, until } from 'selenium-webdriver';
+
+describe('Account management', function () {
+    before(async function () {
+        await App.initVault.call(this, DEFAULT_PASSWORD);
+        await CreateNewAccount.importAccount('rich', 'waves private node seed with waves tokens');
+
+        await this.driver
+            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")), this.wait)
+            .click();
+        await CreateNewAccount.importAccount('poor', 'waves private node seed without waves tokens');
     });
-    it('Активный аккаунт отображается как Active');
-    it('Переход на экран QR-кода адреса');
-    it('Адрес отображается');
-    it('Копирование адреса по нажатию кнопки "Copy"');
-    it('Публичный ключ не отображается');
-    it('Копирование приватного ключа по нажатию кнопки "Copy" и вводу корректного пароля');
-    it('Backup phrase не отображается');
-    it('Копирование backup phrase по нажатию кнопки "Copy" и воду корректного пароля');
-    it('Нажатие Cancel не копирует Private Key / Backup phrase');
-    it('Удаление аккаунта с экрана свойств аккаунта');
-    it('Клик на стрелку "←" на экране подтверждения удаления аккаунта — не удаляется аккаунт');
-    describe('Открытие новой вкладки импорта кошелька по нажатию кнопки "Wallet"', () => {
-        it('на всех сетях (Mainnet, Testnet, Stagent, Custom)');
+
+    after(async function () {
+        await App.resetVault.call(this);
     });
-    describe('Открытие новой вкладки Explorer по нажатию кнопки "Transactions"', () => {
-        it('на всех сетях (Mainnet, Testnet, Stagent, Custom)');
+
+    describe('Accounts list', function () {
+        it('Change active account');
+        it('Updating account balances on import');
+        it('The balance reflects the leased WAVES');
+        it('Copying the address of the active account on the accounts screen');
+
+        describe('Show QR', function () {
+            it('Opening the screen with the QR code of the address by clicking the "Show QR" button');
+            it('Check that QR matches the displayed address');
+            it('Download QR code'); // file downloaded, filename equals "${address}.png"
+        });
+    });
+
+    const accountPropertiesShouldBeRight = () => {
+        it('Displayed right "Active"-status icon');
+        it('Go to the address QR code screen');
+
+        describe('Address', function () {
+            it('Is displayed');
+            it('Copying by clicking the "Copy" button');
+        });
+
+        describe('Public key', function () {
+            it('Is displayed');
+            it('Copying by clicking the "Copy" button');
+        });
+
+        describe('Private key', function () {
+            it('Is displayed');
+            describe('Copying by clicking the "Copy" button', function () {
+                it('Clicking "Cancel" does not copy');
+                it('Copying by clicking the "Copy" button and entering the correct password');
+            });
+        });
+
+        describe('Backup phrase', function () {
+            it('Is displayed');
+            describe('Copying by clicking the "Copy" button', function () {
+                it('Clicking "Cancel" does not copy');
+                it('Copying by clicking the "Copy" button and entering the correct password');
+            });
+        });
+
+        describe('Rename an account', () => {
+            it('A name that is already in use cannot be specified');
+            it('Unique name specified');
+        });
+
+        describe('Delete account', () => {
+            it('Click "Back" on the account deletion confirmation screen - the account is not deleted');
+            it('Click "Delete account" deletes the account');
+        });
+    };
+
+    describe('Active account', async function () {
+        it('By clicking on account - go to the account properties screen');
+        await accountPropertiesShouldBeRight.call(this);
+    });
+
+    describe('Inactive account', async function () {
+        it('By clicking on account - go to the account properties screen');
+        await accountPropertiesShouldBeRight.call(this);
+    });
+
+    describe('Opening a new Wallet tab by clicking the "Wallet" button', () => {
+        it('Mainnet');
+        it('Testnet');
+        it('Stagenet');
+        it('Custom');
+    });
+    describe('Opening a new Explorer tab by clicking the "Transactions" button', () => {
+        it('Mainnet');
+        it('Testnet');
+        it('Stagenet');
+        it('Custom');
     });
 });
