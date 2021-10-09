@@ -3,7 +3,6 @@ import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
 
-const ACCOUNT_SWITCH_ANIMATION_DELAY = 600;
 const NOTIFICATION_ANIMATION_DELAY = 600;
 const ACCOUNTS = {
     RICH: { NAME: 'rich', SEED: 'waves private node seed with waves tokens' },
@@ -79,7 +78,6 @@ describe('Account management', function () {
         describe('Show QR', function () {
             after(async function () {
                 await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-                await this.driver.sleep(ACCOUNT_SWITCH_ANIMATION_DELAY);
             });
 
             it('Opening the screen with the QR code of the address by clicking the "Show QR" button', async function () {
@@ -110,10 +108,66 @@ describe('Account management', function () {
         });
     });
 
-    function accountPropertiesShouldBeRight(isActive: boolean) {
-        after(async function () {
+    describe('Opening a new Wallet tab by clicking the "Wallet" button', function () {
+        it('Mainnet', async function () {
+            await this.driver.wait(
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                this.wait
+            );
+            const currentTab = await this.driver.getWindowHandle();
+            await this.driver.wait(until.elementLocated(By.css('a.walletIconBlack')), this.wait).click();
+            const tabs = await this.driver.getAllWindowHandles();
+            expect(tabs).length(2);
+            for (const tab of tabs) {
+                if (tab != currentTab) {
+                    await this.driver.switchTo().window(tab);
+                    await this.driver.close();
+                }
+            }
+            await this.driver.switchTo().window(currentTab);
+            // clicking by <a> element propagates click event to element, so we should go back after
             await this.driver.findElement(By.css('div.arrow-back-icon')).click();
         });
+
+        it('Testnet');
+
+        it('Stagenet');
+
+        it('Custom');
+    });
+
+    describe('Opening a new Explorer tab by clicking the "Transactions" button', function () {
+        it('Mainnet', async function () {
+            await this.driver.wait(
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                this.wait
+            );
+            const currentTab = await this.driver.getWindowHandle();
+            await this.driver.wait(until.elementLocated(By.css('a.transactionsIconBlack')), this.wait).click();
+            const tabs = await this.driver.getAllWindowHandles();
+            expect(tabs).length(2);
+            for (const tab of tabs) {
+                if (tab != currentTab) {
+                    await this.driver.switchTo().window(tab);
+                    await this.driver.close();
+                }
+            }
+            await this.driver.switchTo().window(currentTab);
+            // clicking by <a> element propagates click event to element, so we should go back after
+            await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+        });
+
+        it('Testnet');
+
+        it('Stagenet');
+
+        it('Custom');
+    });
+
+    function accountPropertiesShouldBeRight(isActive: boolean) {
+        // after(async function () {
+        //     await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+        // });
 
         it('Displayed right status icon', async function () {
             const activeStatusCls = isActive ? '-accountInfo-activeAccount' : '-accountInfo-inActiveAccount';
@@ -306,35 +360,40 @@ describe('Account management', function () {
         });
 
         describe('Delete account', function () {
-            it('Click "Back" on the account deletion confirmation screen - the account is not deleted');
-            it('Click "Delete account" deletes the account');
+            beforeEach(async function () {
+                await this.driver.wait(until.elementLocated(By.css('div.delete-icon')), this.wait).click();
+                await this.driver.wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-deleteAccount-content')]")),
+                    this.wait
+                );
+            });
+
+            it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async function () {
+                await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-accountInfo-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
+
+            it('Click "Delete account" deletes the account', async function () {
+                await this.driver.findElement(By.css('button#deleteAccount')).click();
+
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(
+                            By.xpath(
+                                "//div[(contains(@class, '-assets-assets') or contains(@class, '-import-import'))]"
+                            )
+                        ),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
         });
     }
-
-    describe('Active account', async function () {
-        it('By clicking on account - go to the account properties screen', async function () {
-            await this.driver
-                .wait(
-                    until.elementLocated(
-                        By.xpath(
-                            "//div[contains(@class, '-assets-assets')]" +
-                                "//div[contains(@class, '-wallet-activeWallet')]"
-                        )
-                    ),
-                    this.wait
-                )
-                .click();
-
-            expect(
-                await this.driver.wait(
-                    until.elementLocated(By.xpath("//div[contains(@class, '-accountInfo-content')]")),
-                    this.wait
-                )
-            ).not.to.be.throw;
-        });
-
-        accountPropertiesShouldBeRight.call(this, true);
-    });
 
     describe('Inactive account', async function () {
         it('By clicking on account - go to the account properties screen', async function () {
@@ -362,47 +421,28 @@ describe('Account management', function () {
         accountPropertiesShouldBeRight.call(this, false);
     });
 
-    describe('Opening a new Wallet tab by clicking the "Wallet" button', function () {
-        it('Mainnet', async function () {
-            const currentTab = await this.driver.getWindowHandle();
-            await this.driver.wait(until.elementLocated(By.css('a.transactionsIconBlack')), this.wait).click();
-            const tabs = await this.driver.getAllWindowHandles();
-            expect(tabs).length(2);
-            for (const tab of tabs) {
-                if (tab != currentTab) {
-                    await this.driver.switchTo().window(tab);
-                    await this.driver.close();
-                }
-            }
-            await this.driver.switchTo().window(currentTab);
+    describe('Active account', async function () {
+        it('By clicking on account - go to the account properties screen', async function () {
+            await this.driver
+                .wait(
+                    until.elementLocated(
+                        By.xpath(
+                            "//div[contains(@class, '-assets-assets')]" +
+                                "//div[contains(@class, '-wallet-activeWallet')]"
+                        )
+                    ),
+                    this.wait
+                )
+                .click();
+
+            expect(
+                await this.driver.wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-accountInfo-content')]")),
+                    this.wait
+                )
+            ).not.to.be.throw;
         });
 
-        it('Testnet');
-
-        it('Stagenet');
-
-        it('Custom');
-    });
-
-    describe('Opening a new Explorer tab by clicking the "Transactions" button', function () {
-        it('Mainnet', async function () {
-            const currentTab = await this.driver.getWindowHandle();
-            await this.driver.wait(until.elementLocated(By.css('a.walletIconBlack')), this.wait).click();
-            const tabs = await this.driver.getAllWindowHandles();
-            expect(tabs).length(2);
-            for (const tab of tabs) {
-                if (tab != currentTab) {
-                    await this.driver.switchTo().window(tab);
-                    await this.driver.close();
-                }
-            }
-            await this.driver.switchTo().window(currentTab);
-        });
-
-        it('Testnet');
-
-        it('Stagenet');
-
-        it('Custom');
+        accountPropertiesShouldBeRight.call(this, true);
     });
 });
