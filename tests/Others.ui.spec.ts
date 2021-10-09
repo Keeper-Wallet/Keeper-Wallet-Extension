@@ -1,10 +1,9 @@
-describe('Прочее', () => {
-    it('Подпись пачки из нескольких транзакций');
-    it('Запрос доступа');
-    it('Авторизация');
-    it('Подпись произвольных данных');
-    it('После signAndPublishTransaction() кнопка "View transaction" ведет на правильный Explorer');
-    it('Запросы на подпись удаляются из ожидающих через 30 минут');
-    it('Переключение аккаунта на экране подтверждения');
-    it('Отправить на подпись еще транзакции, когда открыты различные экраны.');
+describe('Others', function () {
+    it('After signAndPublishTransaction() "View transaction" button leads to the correct Explorer');
+
+    it('Signature requests are automatically removed from pending requests after 30 minutes');
+
+    it('Switch account on confirmation screen');
+
+    it('Send more transactions for signature when different screens are open');
 });

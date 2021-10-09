@@ -1,33 +1,59 @@
-describe('Настройки', () => {
-    describe('General', () => {
-        describe('Session Timeout', () => {
-            it('"Browser timeout" — Keeper разлогинивается по неактивности браузера');
-            it('5 min / 10 min / 1 hour — разлогинивается через указанное время');
+describe('Settings', function () {
+    describe('General', function () {
+        it('The current version of the extension is displayed');
+
+        describe('Session Timeout', function () {
+            // todo afterEach() login
+            it('Logout after "Browser timeout"');
+            it('Logout after 5 min / 10 min / 1 hour');
         });
 
-        it('Отображается текущая версия расширения');
-        it('Auto-click protection. Отображение tooltip подсказки');
-        it('Удаление всех аккаунтов (удаляет все добавленные аккаунты только для выбранной сети)');
-        it('Logout - выход из Keeper на экран ввода пароля');
+        describe('Auto-click protection', function () {
+            it('Can be enabled');
+            it('Can be disabled');
+            it('Display tooltip');
+        });
+
+        describe('Delete accounts', function () {
+            it('Account deletion warning displays');
+            it('Clicking "Back" button cancels the deletion');
+            it('Clicking "Delete account" removes all accounts from current network');
+        });
+
+        describe('Logout', function () {
+            // todo after() login
+            it('Exit to the login screen');
+        });
     });
 
-    describe('Network', () => {
-        it('отображается URL ноды');
-        it('можно скопировать');
-        it('можно изменить');
-        it('отображается URL матчера');
-        it('можно скопировать');
-        it('можно изменить');
-        it('Сброс до дефолтных настроек ноды и матчера');
+    describe('Network', function () {
+        describe('Node URL', function () {
+            it('Is shown');
+            it('Can be copied');
+            it('Can be changed');
+        });
+
+        describe('Matcher URL', function () {
+            it('Is shown');
+            it('Can be copied');
+            it('Can be changed');
+        });
+
+        describe('Set default', function () {
+            it('Resets Node and Matcher URLs');
+        });
     });
 
-    describe('Permissions control', () => {
-        describe('White list', () => {
-            it('добавлены сервисы биржи, swopfi, ducks, vires, waves-dapp и пр.');
-            it('Изменение автолимитов в настройках ресурса');
-            it('При установке автолимитов в списке у ресурса отображается: "Approved + automatic signing"');
-            it('Отключение автолимитов');
-            describe('Проверка транзакций с автолимитами', () => {
+    describe('Permissions control', function () {
+        describe('White list', function () {
+            it('Default whitelisted services appears');
+
+            describe('Changing autolimits in resource settings', function () {
+                it('Enabling'); // "Approved + automatic signing" shown in resource
+                it('Disabling');
+            });
+
+            describe('Verification of transactions with autolimits', function () {
                 it('Transfer');
                 it('MassTransfer');
                 it('Data');
@@ -35,18 +61,18 @@ describe('Настройки', () => {
             });
         });
 
-        describe('Custom list', () => {
-            it('Добавление стороннего ресурса в Custom list');
-            it('Запрет доступа стороннему ресурсу в Custom list');
-            it('Заблокировать сторонний ресурс после добавления');
-            it('Удаление стороннего ресурса');
-            it(
-                'Добавление автолимитов при добавлении (Spending limit доступен только если выбрано значение Resolution time)'
-            );
-            it('Изменение автолимитов в настройках ресурса');
-            it('При установке автолимитов в списке у ресурса отображается: "Approved + automatic signing"');
-            it('Отключение автолимитов');
-            describe('Проверка транзакций с автолимитами', () => {
+        describe('Custom list', function () {
+            it('Adding');
+            it('Blocking');
+            it('Removing');
+            it('Adding autolimits when adding to "Custom list"'); // "Spending limit" available only if "Resolution time" set
+
+            describe('Changing autolimits in resource settings', function () {
+                it('Enabling'); // "Approved + automatic signing" shown in resource
+                it('Disabling');
+            });
+
+            describe('Verification of transactions with autolimits', function () {
                 it('Transfer');
                 it('MassTransfer');
                 it('Data');

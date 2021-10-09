@@ -1,73 +1,139 @@
-describe('Signature', () => {
-    describe('Transactions', () => {
-        describe('Issue', () => {
-            it('is_valid');
-            it('копирование кода скрипта в буфер обмена');
-        });
-        describe('Transfer', () => {
-            it('is_valid');
-            it('адрес / алиас');
-            it('waves / asset / smart asset');
-            it('attachment (uint8array)');
-            it('переводы на Gateways');
+describe('Signature', function () {
+    function checkAnyTransaction() {
+        it('Is shown');
+
+        it('Rejected');
+
+        it('Approved');
+    }
+
+    describe('Permission request from origin', function () {
+        checkAnyTransaction.call(this);
+    });
+
+    describe('Authentication request from origin', function () {
+        checkAnyTransaction.call(this);
+    });
+
+    describe('Transactions', function () {
+        describe('Issue', function () {
+            checkAnyTransaction.call(this);
+
+            it('Copying script to the clipboard');
         });
 
-        describe('Reissue', () => {
-            it('is_valid');
-        });
-        describe('Burn', () => {
-            it('is_valid');
-        });
-        describe('Exchange', () => {
-            it('is_valid');
-        });
-        describe('Lease', () => {
-            it('is_valid');
-        });
-        describe('LeaseCancel', () => {
-            it('is_valid');
-        });
-        describe('Alias', () => {
-            it('is_valid');
-            it('4, 26 символов');
-        });
-        describe('MassTransfer', () => {
-            it('is_valid');
-        });
-        describe('Data', () => {
-            it('is_valid');
-        });
-        describe('SetScript', () => {
-            it('is_valid');
-            it('копирование кода скрипта в буфер обмена');
-            it('установка / отмена (null)');
+        describe('Transfer', function () {
+            checkAnyTransaction.call(this);
+
+            it('Address');
+
+            it('Alias');
+
+            it('Waves / asset / smart asset');
+
+            it('Attachment');
+
+            it('Transfers to Gateways');
         });
 
-        describe('SponsorFee', () => {
-            it('is_valid');
-            it('set/cancel');
-        });
-        describe('SetAssetScript', () => {
-            it('is_valid');
-            it('копирование кода скрипта в буфер обмена');
-        });
-        describe('InvokeScript', () => {
-            it('is_valid');
-            it('dApp: адрес / алиас');
-            it('имя функции максимальной длины');
-            it('default функция');
-            it('максимальное количество аргументов (22)');
-            it('все типы аргументов (примитивы и List union-ов)');
-            it('пейменты (без них и максимальное количество). Waves / asset / smart asset');
+        describe('Reissue', function () {
+            checkAnyTransaction.call(this);
         });
 
-        describe('UpdateAssetInfo', () => {
-            it('is_valid');
+        describe('Burn', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('Exchange', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('Lease', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('LeaseCancel', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('Alias', function () {
+            checkAnyTransaction.call(this);
+
+            it('Minimum alias length');
+
+            it('Maximum alias length');
+        });
+
+        describe('MassTransfer', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('Data', function () {
+            checkAnyTransaction.call(this);
+        });
+
+        describe('SetScript', function () {
+            checkAnyTransaction.call(this);
+
+            it('Copying script to the clipboard');
+
+            it('Set');
+
+            it('Cancel');
+        });
+
+        describe('SponsorFee', function () {
+            checkAnyTransaction.call(this);
+
+            it('Set');
+
+            it('Cancel');
+        });
+
+        describe('SetAssetScript', function () {
+            checkAnyTransaction.call(this);
+
+            it('Copying script to the clipboard');
+        });
+
+        describe('InvokeScript', function () {
+            checkAnyTransaction.call(this);
+
+            it('dApp: address / alias');
+
+            it('Function name at max length');
+
+            it('Default function call');
+
+            it('Maximum number of arguments');
+
+            it('Arguments of all types (primitives and List of unions)');
+
+            describe('Payment', function () {
+                it('Zero count');
+
+                it('Maximum count');
+
+                it('Waves / asset / smart asset');
+            });
+        });
+
+        describe('UpdateAssetInfo', function () {
+            checkAnyTransaction.call(this);
         });
     });
 
-    describe('Order', () => {
-        it('Создание ордера');
-        it('Отмена ордера');
+    describe('Order', function () {
+        it('Create');
+
+        it('Cancel');
+    });
+
+    describe('Multiple transactions package', function () {
+        checkAnyTransaction.call(this);
+    });
+
+    describe('Signature of message', function () {
+        checkAnyTransaction.call(this);
     });
 });
