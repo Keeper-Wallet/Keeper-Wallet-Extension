@@ -1,24 +1,14 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { App, CreateNewAccount, Settings } from './utils/actions';
+import { CUSTOMLIST, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
     const PAGE_LOAD_DELAY = 500;
     const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 100;
 
-    this.timeout(2 * 60 * PAGE_LOAD_DELAY);
+    this.timeout(2 * 60 * 1000);
 
-    const whitelist = [
-        'swop.fi',
-        'waves.exchange',
-        'testnet.waves.exchange',
-        'oracles.wavesexplorer.com',
-        'tokenrating.wavesexplorer.com',
-        'waves-dapp.com',
-        'waves-ide.com',
-        'wavesducks.com',
-        'vires.finance',
-    ];
     const sendMessage = () => {
         // @ts-ignore
         WavesKeeper.initialPromise.then((api) => {
@@ -44,7 +34,7 @@ describe('Messages', function () {
     });
 
     it('Allowed messages from all resources from WhiteList', async function () {
-        for (const origin of whitelist) {
+        for (const origin of WHITELIST) {
             await sendMessageFromOrigin.call(this, origin);
 
             await this.driver.get(this.extensionUrl);
@@ -62,7 +52,7 @@ describe('Messages', function () {
     });
 
     it('When a message is received from a new resource, permission is requested to access', async function () {
-        await sendMessageFromOrigin.call(this, 'waves.tech');
+        await sendMessageFromOrigin.call(this, CUSTOMLIST[0]);
 
         await this.driver.get(this.extensionUrl);
         // permission request is shown
@@ -97,7 +87,7 @@ describe('Messages', function () {
         await this.driver.findElement(By.css('button#closeNotification')).click();
     });
 
-    const lastOrigin = 'wavesassociation.org';
+    const lastOrigin = CUSTOMLIST[1];
     it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
         await sendMessageFromOrigin.call(this, lastOrigin);
 
@@ -161,9 +151,9 @@ describe('Messages', function () {
         /*
 
          */
-        await sendMessageFromOrigin.call(this, whitelist[0]);
+        await sendMessageFromOrigin.call(this, WHITELIST[0]);
         await this.driver.sleep(NOTIFICATION_REPEAT_DELAY);
-        await sendMessageFromOrigin.call(this, whitelist[0]);
+        await sendMessageFromOrigin.call(this, WHITELIST[0]);
 
         await this.driver.get(this.extensionUrl);
         expect(
@@ -175,7 +165,7 @@ describe('Messages', function () {
     });
 
     it('When receiving messages from several resources - messages are displayed in several blocks', async function () {
-        await sendMessageFromOrigin.call(this, whitelist[1]);
+        await sendMessageFromOrigin.call(this, WHITELIST[1]);
 
         await this.driver.get(this.extensionUrl);
         expect(
