@@ -1,17 +1,33 @@
 import { App, CreateNewAccount } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
-import { CUSTOMLIST, WHITELIST } from './utils/constants';
+import {
+    CUSTOMLIST,
+    DEFAULT_ANIMATION_DELAY,
+    DEFAULT_PAGE_LOAD_DELAY,
+    DEFAULT_PASSWORD,
+    WHITELIST,
+} from './utils/constants';
 
 const SPENDING_LIMIT = '1',
-    MODAL_FADE_ANIMATION_DELAY = 600,
-    PAGE_LOAD_DELAY = 500;
+    BROWSER_TIMEOUT_DELAY = 60 * 1000 + DEFAULT_ANIMATION_DELAY;
 
 describe('Settings', function () {
-    this.timeout(5 * 60 * 1000);
+    this.timeout(BROWSER_TIMEOUT_DELAY + 60 * 1000);
+
+    async function performLogin(password: string) {
+        const passwordEls = await this.driver.findElements(By.css('input#loginPassword'));
+
+        if (passwordEls.length) {
+            await passwordEls[0].sendKeys(password);
+            await this.driver
+                .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#loginEnter'))), this.wait)
+                .click();
+        }
+    }
 
     before(async function () {
-        await App.initVault.call(this);
+        await App.initVault.call(this, DEFAULT_PASSWORD);
         await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
 
         await this.driver
@@ -22,10 +38,6 @@ describe('Settings', function () {
             until.elementLocated(By.xpath("//div[contains(@class, '-settings-content')]")),
             this.wait
         );
-    });
-
-    after(async function () {
-        await App.resetVault.call(this);
     });
 
     describe('Network', function () {
@@ -141,7 +153,7 @@ describe('Settings', function () {
                         .wait(until.elementIsEnabled(spendingLimitInput), this.wait)
                         .sendKeys(SPENDING_LIMIT);
                     await this.driver.wait(until.elementIsEnabled(saveBtn), this.wait).click();
-                    await this.driver.sleep(MODAL_FADE_ANIMATION_DELAY);
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
                     await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
                     expect(
                         await this.driver
@@ -165,7 +177,7 @@ describe('Settings', function () {
                         .wait(until.elementLocated(By.xpath("//div[contains(@class, '-index-listItem')]")), this.wait)
                         .click();
                     await this.driver.wait(until.elementIsEnabled(saveBtn), this.wait).click();
-                    await this.driver.sleep(MODAL_FADE_ANIMATION_DELAY);
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
                     await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
                     expect(
                         await this.driver.findElements(
@@ -229,7 +241,7 @@ describe('Settings', function () {
                 };
 
                 await this.driver.get(`https://${origin}`);
-                await this.driver.sleep(PAGE_LOAD_DELAY);
+                await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
                 return await this.driver.executeScript(permissionRequest);
             }
 
@@ -293,7 +305,7 @@ describe('Settings', function () {
                         )
                         .click();
 
-                    await this.driver.sleep(MODAL_FADE_ANIMATION_DELAY);
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
                     this.driver
                         .findElement(
@@ -435,7 +447,7 @@ describe('Settings', function () {
                     );
                     await this.driver.wait(until.elementIsVisible(originSettingsModal), this.wait);
                     this.driver.findElement(By.css('button#delete')).click();
-                    await this.driver.sleep(MODAL_FADE_ANIMATION_DELAY);
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
                     await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
 
                     await publicStateFromOrigin.call(this, origin);
@@ -467,27 +479,141 @@ describe('Settings', function () {
             await this.driver.wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait).click();
         });
 
-        describe('Auto-click protection', function () {
-            it('Can be enabled');
-            it('Can be disabled');
-            it('Display tooltip');
-        });
-
-        describe('Logout', function () {
-            // todo after() login
-            it('Exit to the login screen');
+        after(async function () {
+            await this.driver.findElement(By.css('div.arrow-back-icon')).click();
         });
 
         describe('Session Timeout', function () {
-            // todo afterEach() login
-            it('Logout after "Browser timeout"');
+            afterEach(async function () {
+                await performLogin.call(this, DEFAULT_PASSWORD);
+
+                await this.driver.wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-settings-content')]")),
+                    this.wait
+                );
+            });
+
+            it('Logout after "Browser timeout"', async function () {
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-login-content')]")),
+                        BROWSER_TIMEOUT_DELAY
+                    )
+                ).not.to.be.throw;
+            });
+
             it('Logout after 5 min / 10 min / 1 hour');
+        });
+    });
+
+    describe('Root', function () {
+        describe('Auto-click protection', function () {
+            let clickProtectionDiv: WebElement,
+                toggleBtn: WebElement,
+                statusSpan: WebElement,
+                helpIcon: WebElement,
+                helpTooltip: WebElement;
+
+            before(async function () {
+                clickProtectionDiv = this.driver.wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-settings-clickProtection')]")),
+                    this.wait
+                );
+                toggleBtn = clickProtectionDiv.findElement(
+                    By.xpath("//button[contains(@class, '-powerBtn-powerBtn')]")
+                );
+                statusSpan = clickProtectionDiv.findElement(
+                    By.xpath("//div[contains(@class, '-settings-powerBtnState')]//div//span")
+                );
+                helpIcon = clickProtectionDiv.findElement(By.xpath("//i[contains(@class, '-settings-helpIcon')]"));
+                helpTooltip = clickProtectionDiv.findElement(By.xpath("//div[contains(@class, '-settings-tooltip')]"));
+            });
+
+            it('Can be enabled', async function () {
+                await toggleBtn.click();
+                await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+                expect(
+                    await clickProtectionDiv.findElements(
+                        By.xpath("//button[contains(@class, '-powerBtn-powerBtnOn')]")
+                    )
+                ).length(1);
+                expect(await statusSpan.getText()).matches(/enabled/i);
+            });
+
+            it('Can be disabled', async function () {
+                await toggleBtn.click();
+                await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+                expect(
+                    await clickProtectionDiv.findElements(
+                        By.xpath("//button[contains(@class, '-powerBtn-powerBtnOn')]")
+                    )
+                ).length(0);
+                expect(await statusSpan.getText()).matches(/disabled/i);
+            });
+
+            it('Display tooltip', async function () {
+                const actions = this.driver.actions({ async: true });
+                await actions.move({ origin: helpIcon }).perform();
+                expect(await helpTooltip.isDisplayed()).to.be.true;
+            });
+        });
+
+        describe('Logout', function () {
+            after(async function () {
+                await performLogin.call(this, DEFAULT_PASSWORD);
+
+                await this.driver
+                    .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
+                    .click();
+            });
+
+            it('Exit to the login screen', async function () {
+                await this.driver.findElement(By.xpath("//div[contains(@class, '-settings-logout')]")).click();
+
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-login-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
         });
 
         describe('Delete accounts', function () {
-            it('Account deletion warning displays');
-            it('Clicking "Back" button cancels the deletion');
-            it('Clicking "Delete account" removes all accounts from current network');
+            it('Account deletion warning displays', async function () {
+                await this.driver.findElement(By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")).click();
+
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-deleteAccount-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
+
+            it('Clicking "Back" button cancels the deletion', async function () {
+                await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-settings-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
+
+            it('Clicking "Delete account" removes all accounts from current network', async function () {
+                await this.driver.findElement(By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")).click();
+
+                await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
+
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-welcome-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+            });
         });
     });
 });

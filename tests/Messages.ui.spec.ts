@@ -1,10 +1,9 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { App, CreateNewAccount, Settings } from './utils/actions';
-import { CUSTOMLIST, WHITELIST } from './utils/constants';
+import { CUSTOMLIST, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
-    const PAGE_LOAD_DELAY = 500;
     const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 100;
 
     this.timeout(2 * 60 * 1000);
@@ -17,7 +16,7 @@ describe('Messages', function () {
     };
 
     async function sendMessageFromOrigin(origin: string, ms: number) {
-        ms = ms || PAGE_LOAD_DELAY;
+        ms = ms || DEFAULT_PAGE_LOAD_DELAY;
         await this.driver.get(`https://${origin}`);
         await this.driver.sleep(ms);
         await this.driver.executeScript(sendMessage);
@@ -178,7 +177,7 @@ describe('Messages', function () {
 
     it('The "Clear all" button closes all messages', async function () {
         await this.driver.findElement(By.css('button#clearAllMessages')).click();
-        await this.driver.sleep(PAGE_LOAD_DELAY);
+        await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
 
         expect(
             await this.driver.findElements(

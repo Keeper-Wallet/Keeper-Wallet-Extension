@@ -1,9 +1,9 @@
-import { App, CreateNewAccount, DEFAULT_PASSWORD } from './utils/actions';
+import { App, CreateNewAccount } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
+import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 
-const NOTIFICATION_ANIMATION_DELAY = 600;
 const ACCOUNTS = {
     RICH: { NAME: 'rich', SEED: 'waves private node seed with waves tokens' },
     POOR: { NAME: 'poor', SEED: 'waves private node seed without waves tokens' },
@@ -344,7 +344,7 @@ describe('Account management', function () {
                         .getText()
                 ).matches(/Account name changed/i);
 
-                await this.driver.sleep(NOTIFICATION_ANIMATION_DELAY);
+                await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
                 expect(
                     await this.driver
