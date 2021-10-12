@@ -1,14 +1,13 @@
-import { getAdapterByType } from '@waves/signature-adapter'
+import { getAdapterByType } from '@waves/signature-adapter';
 import { libs as transactionsLibs } from '@waves/waves-transactions';
 import { waves } from '../controllers/wavesTransactionsController';
 import { BigNumber } from '@waves/bignumber';
-import create from 'parse-json-bignumber';
+import create from '@waves/parse-json-bignumber';
 
 const { messageEncrypt, messageDecrypt, sharedKey, base58Encode } = transactionsLibs.crypto;
-const { stringify, parse } = create({ BigNumber });
+const { stringify } = create({ BigNumber });
 
 export class Wallet {
-
     /**
      * user
      * @type {
@@ -27,7 +26,7 @@ export class Wallet {
 
     constructor(user) {
         if (!user) throw new Error('user required');
-        this.user = user
+        this.user = user;
     }
 
     get _adapter() {
@@ -41,7 +40,7 @@ export class Wallet {
             params = this.user.seed;
         }
 
-        return new Adapter(params)
+        return new Adapter(params);
     }
 
     isMyNetwork(network) {
@@ -56,11 +55,11 @@ export class Wallet {
     }
 
     serialize() {
-        return this.user
+        return this.user;
     }
 
     getSecret() {
-        return this.user.seed
+        return this.user.seed;
     }
 
     async encryptMessage(message, publicKey, prefix = 'waveskeeper') {
@@ -95,11 +94,11 @@ export class Wallet {
     }
 
     async signBytes(bytes) {
-        return await this._adapter.signData(Uint8Array.from(bytes))
+        return await this._adapter.signData(Uint8Array.from(bytes));
     }
 
     async signRequest(request) {
         const signable = this._adapter.makeSignable(request);
-        return await signable.getSignature()
+        return await signable.getSignature();
     }
 }

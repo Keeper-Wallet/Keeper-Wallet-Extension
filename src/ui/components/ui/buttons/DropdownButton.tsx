@@ -1,12 +1,12 @@
-import * as React from "react";
+import * as React from 'react';
 import cn from 'classnames';
 import * as styles from './dropdownButton.styl';
-import { Button } from "./Button";
+import { Button } from './Button';
 
 export class DropdownButton extends React.PureComponent<IProps, IState> {
     private element: HTMLDivElement;
 
-    getRef = (element) => this.element = element;
+    getRef = (element) => (this.element = element);
 
     clickHandler = () => {
         const showList = this.state.showList;
@@ -39,11 +39,11 @@ export class DropdownButton extends React.PureComponent<IProps, IState> {
     }
 
     setClickOut = () => {
-        document.addEventListener('click', this.clickOutHandler);
+        document.addEventListener('click', this.clickOutHandler, { capture: true });
     };
 
     removeClickOut = () => {
-        document.removeEventListener('click', this.clickOutHandler);
+        document.removeEventListener('click', this.clickOutHandler, { capture: true });
     };
 
     constructor(props: IProps) {
@@ -63,26 +63,28 @@ export class DropdownButton extends React.PureComponent<IProps, IState> {
                     {defaultItem}
 
                     <div className={cn(styles.arrowButton)}>
-                        <Button type={defaultItem.props.type} onClick={this.clickHandler}
-                                className={cn(styles.dropdownButton)}/>
+                        <Button
+                            type={defaultItem.props.type}
+                            onClick={this.clickHandler}
+                            className={cn(styles.dropdownButton)}
+                        />
                     </div>
                 </div>
 
-                {this.state.showList ?
+                {this.state.showList ? (
                     <div className={styles.list}>
-                        {otherItems.map(item => (
-                            <div className={styles.listItem}>
-                                {item}
-                            </div>
+                        {otherItems.map((item) => (
+                            <div className={styles.listItem}>{item}</div>
                         ))}
-                    </div>: null}
+                    </div>
+                ) : null}
             </div>
-        )
+        );
     }
 }
 
 interface IProps extends React.ComponentProps<'div'> {
-    children?: any
+    children?: any;
 }
 
 interface IState {

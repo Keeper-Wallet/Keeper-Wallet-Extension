@@ -1,93 +1,65 @@
-import * as i18n from 'i18next';
-import { reactI18nextModule } from 'react-i18next';
-import { default as Locize } from 'i18next-locize-backend';
+import i18next, { i18n as i18nInstance } from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import Backend from 'i18next-http-backend';
 import { I18N_NAME_SPACE, WAVESKEEPER_DEBUG } from './appConfig';
 
+const createI18n = (): i18nInstance => {
+    const i18n = i18next.createInstance().use(initReactI18next);
 
-let backendPath = { loadPath: './_locales/{{lng}}/{{ns}}.{{lng}}.json' } as any;
-
-// if (WAVESKEEPER_DEBUG) {
-//     backendPath = {
-//         loadPath: 'https://locize.wvservices.com/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-//         //privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-//         //pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-//         //getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
-//         //addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-//         //updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-//     };
-// }
-
-i18n
-    .use(reactI18nextModule)
-    .use(Locize)
-    .init({
+    i18n.use(Backend).init({
+        debug: WAVESKEEPER_DEBUG,
+        lng: 'en',
         fallbackLng: 'en',
-        appendNamespaceToCIMode: true,
-        saveMissing: false,
         ns: [I18N_NAME_SPACE],
         defaultNS: I18N_NAME_SPACE,
-
-        debug: WAVESKEEPER_DEBUG,
-        keySeparator: '.', // we use content as keys
-        nsSeparator: '.', // we use content as keys
-
         backend: {
-            projectId: '',
-            apiKey: '',
-            referenceLng: 'en',
-            ...backendPath
+            loadPath: '/_locales/{{lng}}/{{ns}}.{{lng}}.json',
         },
-
-        interpolation: {
-            formatSeparator: ',',
-            format: function(value, format, lng) {
-                if (format === 'uppercase') return value.toUpperCase();
-                return value;
-            }
-        },
-
         react: {
-            wait: true//!WAVESKEEPER_DEBUG
-        }
+            wait: true,
+        },
     });
 
-const LANGS = [
+    return i18n;
+};
+
+export const LANGS = [
     {
         id: 'en',
-        name: 'English'
+        name: 'English',
     },
     {
         id: 'ru',
-        name: 'Русский'
+        name: 'Русский',
     },
     {
         id: 'ko',
-        name: '한국어'
+        name: '한국어',
     },
     {
         id: 'zh',
-        name: '中文(简体)'
+        name: '中文(简体)',
     },
     {
         id: 'tr',
-        name: 'Türkçe'
+        name: 'Türkçe',
     },
     {
         id: 'hi',
-        name: 'हिन्दी'
+        name: 'हिन्दी',
     },
     {
         id: 'es',
-        name: 'Español'
+        name: 'Español',
     },
     {
         id: 'pt',
-        name: 'Portugal'
+        name: 'Portugal',
     },
     {
         id: 'pl',
-        name: 'Polsk'
-    }
+        name: 'Polsk',
+    },
 ];
 
-export { i18n, LANGS };
+export const i18n = createI18n();

@@ -1,13 +1,11 @@
 import * as styles from './styles/backupSeed.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { connect } from 'react-redux';
-import { setUiStateAndSetTab, newAccountSelect, setUiState, user } from '../../actions';
-import { translate, Trans } from 'react-i18next';
-import { Copy, Button, Modal } from '../ui';
+import { newAccountSelect, setUiState, setUiStateAndSetTab, user } from '../../actions';
+import { Trans } from 'react-i18next';
+import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class BackUpSeedComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
@@ -17,46 +15,51 @@ class BackUpSeedComponent extends React.Component {
     cancelHandler = () => this._cancelHandler();
 
     render() {
-        return <div className={styles.content}>
-            <h2 className='title1 margin2'>
-                <Trans i18nKey='backupSeed.saveBackup'>Save backup phrase</Trans>
-            </h2>
+        return (
+            <div className={styles.content}>
+                <h2 className="title1 margin2">
+                    <Trans i18nKey="backupSeed.saveBackup">Save backup phrase</Trans>
+                </h2>
 
-            <div className='flex margin-main'>
-                <div className='basic500 tag1'>
-                    <Trans i18nKey='backupSeed.backupCarefully'>
-                        Please carefully write down these 15 words or copy them
+                <div className="flex margin-main">
+                    <div className="basic500 tag1">
+                        <Trans i18nKey="backupSeed.backupCarefully">
+                            Please carefully write down these 15 words or copy them
+                        </Trans>
+                    </div>
+                    <Copy onCopy={this.copyHandler} text={this.props.account.seed}>
+                        <i className={`copy-icon ${styles.copyIcon}`}> </i>
+                    </Copy>
+                </div>
+
+                <div className={`plate center body3 cant-select ${styles.plateMargin}`}>{this.props.account.seed}</div>
+
+                <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
+                    <Trans i18nKey="backupSeed.confirmBackupInfo">
+                        You will confirm this phrase on the next screen
                     </Trans>
                 </div>
-                <Copy onCopy={this.copyHandler} text={this.props.account.seed} >
-                    <div className={`copy-icon ${styles.copyIcon}`}></div>
-                </Copy>
+
+                <Button
+                    className="submit margin-main-big"
+                    type="submit"
+                    onClick={this.onClick}
+                    disabled={this.state.disabled}
+                >
+                    <Trans i18nKey="backupSeed.continue">Continue</Trans>
+                </Button>
+
+                <Button className="button default" onClick={this.cancelHandler}>
+                    <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
+                </Button>
+
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
+                    <div className="modal notification">
+                        <Trans i18nKey="backupSeed.copied">Copied!</Trans>
+                    </div>
+                </Modal>
             </div>
-
-            <div className={`plate center body3 cant-select ${styles.plateMargin}`}>
-                {this.props.account.seed}
-            </div>
-            
-            <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
-                <Trans i18nKey='backupSeed.confirmBackupInfo'>
-                    You will confirm this phrase on the next screen
-                </Trans>
-            </div>
-
-            <Button className="submit margin-main-big" type='submit' onClick={this.onClick} disabled={this.state.disabled}>
-                <Trans i18nKey='backupSeed.continue'>Continue</Trans>
-            </Button>
-
-            <Button className="button default" onClick={this.cancelHandler}>
-                <Trans i18nKey='backupSeed.cancel'>Cancel creation</Trans>
-            </Button>
-
-            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied} showChildrenOnly={true}>
-                <div className="modal notification">
-                    <Trans i18nKey="backupSeed.copied">Copied!</Trans>
-                </div>
-            </Modal>
-        </div>
+        );
     }
 
     componentDidMount() {
@@ -76,16 +79,19 @@ class BackUpSeedComponent extends React.Component {
     }
 
     _cancelHandler() {
-        this.props.setUiStateAndSetTab({
-            account: null,
-        }, PAGES.ROOT);
+        this.props.setUiStateAndSetTab(
+            {
+                account: null,
+            },
+            PAGES.ROOT
+        );
     }
 }
 
 const mapStateToProps = function (store: any) {
     return {
         account: store.localState.newAccount,
-        ui: store.uiState
+        ui: store.uiState,
     };
 };
 
@@ -93,7 +99,7 @@ const actions = {
     setUiState,
     setUiStateAndSetTab,
     addUser: user,
-    newAccountSelect
+    newAccountSelect,
 };
 
 export const BackUpSeed = connect(mapStateToProps, actions)(BackUpSeedComponent);
