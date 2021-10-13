@@ -11,6 +11,7 @@ describe('Network management', function () {
     });
 
     after(async function () {
+        await Network.switchTo.call(this, 'Mainnet');
         await App.resetVault.call(this);
     });
 

@@ -29,6 +29,7 @@ describe('Messages', function () {
     });
 
     after(async function () {
+        await Settings.clearCustomList.call(this);
         await App.resetVault.call(this);
     });
 

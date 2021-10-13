@@ -9,6 +9,10 @@ describe('Others', function () {
         await App.initVault.call(this);
     });
 
+    after(async function () {
+        await App.resetVault.call(this);
+    });
+
     it('The current version of the extension is displayed', async function () {
         const { version } = require('../package');
 

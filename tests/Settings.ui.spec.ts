@@ -1,4 +1,4 @@
-import { App, CreateNewAccount } from './utils/actions';
+import { App, CreateNewAccount, Network, Settings } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import {
@@ -29,7 +29,9 @@ describe('Settings', function () {
     before(async function () {
         await App.initVault.call(this, DEFAULT_PASSWORD);
         await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
+        await Settings.setMaxSessionTimeout.call(this);
 
+        await this.driver.get(this.extensionUrl);
         await this.driver
             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
             .click();
@@ -56,8 +58,8 @@ describe('Settings', function () {
             );
 
             nodeUrlInput = this.driver.wait(until.elementLocated(By.css('input#node_address')), this.wait);
-            matcherUrlInput = this.driver.findElement(By.css('input#matcher_address'));
-            setDefaultBtn = this.driver.findElement(By.css('button#setDefault'));
+            matcherUrlInput = this.driver.wait(until.elementLocated(By.css('input#matcher_address')), this.wait);
+            setDefaultBtn = this.driver.wait(until.elementLocated(By.css('button#setDefault')), this.wait);
 
             nodeUrl = await nodeUrlInput.getAttribute('value');
             matcherUrl = await matcherUrlInput.getAttribute('value');
@@ -84,7 +86,7 @@ describe('Settings', function () {
             });
             it('Can be changed', async function () {
                 await matcherUrlInput.clear();
-                expect(await matcherUrlInput.getAttribute('value')).not.to.be.equal(matcherUrlInput);
+                expect(await matcherUrlInput.getAttribute('value')).not.to.be.equal(matcherUrl);
             });
             it('Can be copied');
         });
@@ -244,6 +246,11 @@ describe('Settings', function () {
                 await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
                 return await this.driver.executeScript(permissionRequest);
             }
+
+            after(async function () {
+                await this.driver.get(this.extensionUrl);
+                await Settings.clearCustomList.call(this);
+            });
 
             describe('Adding', function () {
                 it('Origin added to custom list', async function () {
@@ -494,6 +501,9 @@ describe('Settings', function () {
             });
 
             it('Logout after "Browser timeout"', async function () {
+                await this.driver.get(this.extensionUrl);
+                await Settings.setMinSessionTimeout.call(this);
+
                 expect(
                     await this.driver.wait(
                         until.elementLocated(By.xpath("//div[contains(@class, '-login-content')]")),

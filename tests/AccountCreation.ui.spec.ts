@@ -1,13 +1,17 @@
 import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
-import { App } from './utils/actions';
+import { App, Settings } from './utils/actions';
 
 describe('Account management', function () {
     this.timeout(60 * 1000);
 
     before(async function () {
         await App.initVault.call(this);
+        await Settings.setMaxSessionTimeout.call(this);
+
+        await this.driver.get(this.extensionUrl);
+        await this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")), this.wait);
     });
 
     after(async function () {
