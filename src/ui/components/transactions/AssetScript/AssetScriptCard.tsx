@@ -1,14 +1,12 @@
 import * as styles from './assetScript.styl';
-import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import * as React from 'react'
+import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
-import { I18N_NAME_SPACE } from '../../../appConfig';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-@translate(I18N_NAME_SPACE)
 export class AssetScriptCard extends React.PureComponent<ISetScript> {
     render() {
         const className = cn(styles.assetScriptTransactionCard, this.props.className, {

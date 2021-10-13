@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Button, BUTTON_TYPE, DateFormat, Input } from 'ui/components/ui';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import {
     closeNotificationWindow,
     deleteNotifications,
@@ -9,7 +9,6 @@ import {
     setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { TransactionWallet } from '../wallets';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
@@ -35,10 +34,40 @@ const NotificationItem = ({ notification }) => (
     </div>
 );
 
-@translate(I18N_NAME_SPACE)
 class NotificationsComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
+
+    static getDerivedStateFromProps(props, state) {
+        const { origins, activeNotification, messages, notifications } = props;
+        if (!activeNotification && notifications.length) {
+            props.setTab(PAGES.MESSAGES_LIST);
+            return { loading: true };
+        }
+
+        const origin = activeNotification[0].origin;
+        const perms = origins[origin];
+        const useNotifications = perms.find((item) => item && item.type === 'useNotifications');
+        const inWhiteList = (origins[origin] || []).includes('whiteList');
+        const useNotify = useNotifications && useNotifications.canUse;
+        const canShowNotify = useNotify || (useNotify == null && inWhiteList);
+        const hasMessages = messages.length > 0;
+        const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
+        const showToList = hasMessages || (hasNotifications && notifications.length > 2);
+
+        return {
+            canShowNotify,
+            messages,
+            activeNotification,
+            showToList,
+            origin,
+            hasMessages,
+            hasNotifications,
+            notifications,
+            showClose: !hasNotifications,
+            loading: false,
+        };
+    }
 
     closeHandler = () => {
         this._deleteMessages(null);
@@ -85,9 +114,10 @@ class NotificationsComponent extends React.Component {
                             type={'checkbox'}
                             checked={this.state.canShowNotify}
                             onChange={this.toggleCanShowHandler}
+
                         />
                         <label htmlFor="checkbox_noshow">
-                            <Trans i18nkey="notifications.allowSending">Allow sending messages</Trans>
+                            <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
                         </label>
                     </div>
                 </div>
@@ -132,37 +162,6 @@ class NotificationsComponent extends React.Component {
             ids: this.state.activeNotification.map(({ id }) => id),
             next: nexActive,
         });
-    }
-
-    static getDerivedStateFromProps(props) {
-        const { origins, activeNotification, messages, notifications } = props;
-        if (!activeNotification && notifications.length) {
-            props.setTab(PAGES.MESSAGES_LIST);
-            return { loading: true };
-        }
-
-        const origin = activeNotification[0].origin;
-        const perms = origins[origin];
-        const useNotifications = perms.find((item) => item && item.type === 'useNotifications');
-        const inWhiteList = (origins[origin] || []).includes('whiteList');
-        const useNotify = useNotifications && useNotifications.canUse;
-        const canShowNotify = useNotify || (useNotify == null && inWhiteList);
-        const hasMessages = messages.length > 0;
-        const hasNotifications = notifications.filter(([item]) => item.origin !== origin).length > 0;
-        const showToList = hasMessages || (hasNotifications && notifications.length > 2);
-
-        return {
-            canShowNotify,
-            messages,
-            activeNotification,
-            showToList,
-            origin,
-            hasMessages,
-            hasNotifications,
-            notifications,
-            showClose: !hasNotifications,
-            loading: false,
-        };
     }
 }
 

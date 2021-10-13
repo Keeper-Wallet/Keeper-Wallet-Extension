@@ -1,11 +1,10 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
 import cn from 'classnames';
 import { TransactionWallet } from '../wallets';
 import oauth from './OriginAuth';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { isMe as isOrder } from './CreateOrder/parseTx';
 
 const Error = ({ approveError }) => {
@@ -19,7 +18,6 @@ const Error = ({ approveError }) => {
     );
 };
 
-@translate(I18N_NAME_SPACE)
 export class FinalTransaction extends React.PureComponent {
     readonly props: any;
 

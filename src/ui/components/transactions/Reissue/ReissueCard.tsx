@@ -1,15 +1,13 @@
 import * as styles from './reissue.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
-import { I18N_NAME_SPACE } from '../../../appConfig';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-@translate(I18N_NAME_SPACE)
 export class ReissueCard extends React.PureComponent<IIssue> {
     render() {
         const className = cn(styles.reissueTransactionCard, this.props.className, {

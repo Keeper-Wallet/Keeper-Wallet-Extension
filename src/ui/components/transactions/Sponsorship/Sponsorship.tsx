@@ -1,14 +1,12 @@
 import * as styles from './sponsorship.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
 import { SponsorshipCard } from './SponsorshipCard';
 import { SponsorshipInfo } from './SponsorshipInfo';
 import { TransactionBottom } from '../TransactionBottom';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 
-@translate(I18N_NAME_SPACE)
 export class Sponsorship extends SignClass {
     render() {
         const { message, assets } = this.props;

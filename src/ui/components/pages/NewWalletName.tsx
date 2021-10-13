@@ -1,22 +1,17 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
-import { newAccountName, user, setUiState } from '../../actions';
-import { Input, Button, Error } from '../ui';
-import { CONFIG, I18N_NAME_SPACE } from '../../appConfig';
+import { Trans } from 'react-i18next';
+import { newAccountName, setUiState, user } from '../../actions';
+import { Button, Error, Input } from '../ui';
+import { CONFIG } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class NewWalletNameComponent extends React.Component {
     inputEl: Input;
     readonly props;
     readonly state = { disabled: false, errors: [] } as any;
 
     passwordError: boolean;
-    onChange = (e) => this._onChange(e);
-    onSubmit = (e) => this._onSubmit(e);
-    onBlur = () => this._onBlur();
-    getRef = (input) => (this.inputEl = input);
 
     constructor(params) {
         super(params);
@@ -24,6 +19,45 @@ class NewWalletNameComponent extends React.Component {
             account: null,
         });
     }
+
+    static validateName(name: string, accounts) {
+        const errors = [];
+        const names = accounts.map(({ name }) => name);
+
+        if (name.length < CONFIG.NAME_MIN_LENGTH) {
+            errors.push({ code: 1, key: 'newAccountName.errorRequired', msg: 'Required name' });
+        }
+
+        if (names.includes(name)) {
+            errors.push({ code: 2, key: 'newAccountName.errorInUse', msg: 'Name already exist' });
+        }
+
+        return errors;
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        const { account, accounts, accountSave } = props;
+        const name = (account && account.name) || '';
+        const errors = NewWalletNameComponent.validateName(name, accounts);
+        let error = state.error;
+        if (accountSave && accountSave.error) {
+            errors.push({
+                code: 3,
+                key: 'newAccountName.errorSeedExist',
+                msg: 'Account already exist',
+            });
+            error = true;
+        }
+        return { ...state, errors, error };
+    }
+
+    onChange = (e) => this._onChange(e);
+
+    onSubmit = (e) => this._onSubmit(e);
+
+    onBlur = () => this._onBlur();
+
+    getRef = (input) => (this.inputEl = input);
 
     render() {
         return (
@@ -102,37 +136,6 @@ class NewWalletNameComponent extends React.Component {
         }
 
         this.props.setTab(this.props.next);
-    }
-
-    static validateName(name: string, accounts) {
-        const errors = [];
-        const names = accounts.map(({ name }) => name);
-
-        if (name.length < CONFIG.NAME_MIN_LENGTH) {
-            errors.push({ code: 1, key: 'newAccountName.errorRequired', msg: 'Required name' });
-        }
-
-        if (names.includes(name)) {
-            errors.push({ code: 2, key: 'newAccountName.errorInUse', msg: 'Name already exist' });
-        }
-
-        return errors;
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        const { account, accounts, accountSave } = props;
-        const name = (account && account.name) || '';
-        const errors = NewWalletNameComponent.validateName(name, accounts);
-        let error = state.error;
-        if (accountSave && accountSave.error) {
-            errors.push({
-                code: 3,
-                key: 'newAccountName.errorSeedExist',
-                msg: 'Account already exist',
-            });
-            error = true;
-        }
-        return { ...state, errors, error };
     }
 }
 

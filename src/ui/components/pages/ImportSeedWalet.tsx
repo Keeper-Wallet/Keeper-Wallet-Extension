@@ -1,28 +1,22 @@
 import * as styles from './styles/importSeed.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans, translate } from 'react-i18next';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
 import { clearSeedErrors, newAccountSelect } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
 const { Seed } = seedUtils;
 
-@translate(I18N_NAME_SPACE)
 class ImportSeedComponent extends React.Component {
     props;
     state;
     inputEl: Input;
-    getRef = (input) => (this.inputEl = input);
-    onSubmit = (e) => this._onSubmit(e);
-    onChange = (e) => this._changeHandler(e);
-    inputBlurHandler = () => this._showError(true);
-    inputFocusHandler = () => this._showError(false);
 
-    constructor({ isNew, ...props }) {
+    constructor(props) {
         super(props);
+        const { isNew } = props;
         const value = isNew ? '' : this.props.account && this.props.account.phrase;
         const networkCode =
             this.props.customCodes[this.props.currentNetwork] ||
@@ -38,23 +32,32 @@ class ImportSeedComponent extends React.Component {
         this.state = { value, error, showError: false, existError: false, showExistError: false };
     }
 
-    componentDidMount() {
-        //this.inputEl.focus();
-    }
+    getRef = (input) => (this.inputEl = input);
+
+    onSubmit = (e) => this._onSubmit(e);
+
+    onChange = (e) => this._changeHandler(e);
+
+    inputBlurHandler = () => this._showError(true);
+
+    inputFocusHandler = () => this._showError(false);
 
     render() {
         const address = !this.state.error ? this.props.account.address : '';
+        const { t } = this.props;
 
         return (
             <div className={styles.content}>
                 <div>
                     <h2 className={'title1 margin3 left'}>
+                        {/*{t('importSeed.importSeed')}*/}
                         <Trans i18nKey="importSeed.importSeed">Welcome Back</Trans>
                     </h2>
                 </div>
 
                 <form onSubmit={this.onSubmit}>
                     <div className={'tag1 basic500 input-title'}>
+                        {/*{t('importSeed.newSeed')}*/}
                         <Trans i18nKey="importSeed.newSeed">Wallet Seed</Trans>
                     </div>
 
@@ -68,23 +71,23 @@ class ImportSeedComponent extends React.Component {
                         multiLine={true}
                         value={this.state.value}
                         className="margin5"
-                        placeholder={this.props.t(
-                            'importSeed.inputSeed',
-                            'Your seed is the 15 words you saved when creating your account'
-                        )}
+                        placeholder={t('importSeed.inputSeed')}
                     />
 
                     <Error show={!!this.state.showExistError} className={styles.error}>
+                        {/*{t('importSeed.existError')}*/}
                         <Trans i18nKey="importSeed.existError">Account already exist</Trans>
                     </Error>
 
                     <div className={'tag1 basic500 input-title'}>
+                        {/*{t('importSeed.address')}*/}
                         <Trans i18nKey="importSeed.address">Account address</Trans>
                     </div>
 
                     <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
                     <Button id="importAccount" type="submit" disabled={this.state.error}>
+                        {/*{t('importSeed.importAccount')}*/}
                         <Trans i18nKey="importSeed.importAccount">Import Account</Trans>
                     </Button>
                 </form>
@@ -134,6 +137,16 @@ class ImportSeedComponent extends React.Component {
     }
 }
 
+interface IProps extends WithTranslation {
+    newAccountSelect?: any;
+    clearSeedErrprs?: any;
+    account?: any;
+    accounts?: any;
+    customCodes?: any;
+    networks?: any;
+    currentNetwork?: any;
+}
+
 const actions = {
     newAccountSelect,
     clearSeedErrors,
@@ -149,4 +162,4 @@ const mapStateToProps = function (store: any) {
     };
 };
 
-export const ImportSeed = connect(mapStateToProps, actions)(ImportSeedComponent);
+export const ImportSeed = connect(mapStateToProps, actions)(withTranslation()(ImportSeedComponent));

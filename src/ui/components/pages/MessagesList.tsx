@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import {
     approve,
     clearMessages,
@@ -13,7 +13,6 @@ import {
 import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { TransactionWallet } from '../wallets';
 import * as styles from './styles/messageList.styl';
 import { Button, BUTTON_TYPE } from '../ui';
@@ -61,10 +60,39 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
     });
 };
 
-@translate(I18N_NAME_SPACE)
 class MessageListComponent extends React.Component {
     readonly state = { loading: true };
     readonly props;
+
+    static getDerivedStateFromProps(props) {
+        const { messages, assets, notifications } = props;
+        const needAssets = MessageListComponent.getAssets(messages, assets);
+        needAssets.forEach((id) => props.getAsset(id));
+
+        if (needAssets.length > 0) {
+            return { loading: true };
+        }
+
+        return { messages, assets, notifications, loading: false };
+    }
+
+    static getAssets(messages = [], assetsHash) {
+        const assets = messages.reduce((acc, message) => {
+            const { data } = message;
+            const txData = data.data ? data.data : data;
+            const tx = txData;
+            const config = getConfigByTransaction(message);
+            const assetIds = config.getAssetsId(tx);
+            assetIds.forEach((item) => {
+                if (!assetsHash[item]) {
+                    acc[item] = null;
+                }
+            });
+            return acc;
+        }, Object.create(null));
+
+        return Object.keys(assets);
+    }
 
     readonly selectMessageHandler = (message) => {
         this.props.setActiveMessage(message);
@@ -157,35 +185,6 @@ class MessageListComponent extends React.Component {
                 </div>
             </div>
         );
-    }
-
-    static getDerivedStateFromProps(props) {
-        const { messages, assets, notifications } = props;
-        const needAssets = MessageListComponent.getAssets(messages, assets);
-        needAssets.forEach((id) => props.getAsset(id));
-
-        if (needAssets.length > 0) {
-            return { loading: true };
-        }
-
-        return { messages, assets, notifications, loading: false };
-    }
-
-    static getAssets(messages = [], assetsHash) {
-        const assets = messages.reduce((acc, message) => {
-            const { data } = message;
-            const tx = data.data ? data.data : data;
-            const config = getConfigByTransaction(message);
-            const assetIds = config.getAssetsId(tx);
-            assetIds.forEach((item) => {
-                if (!assetsHash[item]) {
-                    acc[item] = null;
-                }
-            });
-            return acc;
-        }, Object.create(null));
-
-        return Object.keys(assets);
     }
 }
 

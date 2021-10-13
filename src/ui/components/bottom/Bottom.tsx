@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import * as styles from './bottom.styl';
-import { translate } from 'react-i18next';
 import cn from 'classnames';
 import { loading, setNetwork } from '../../actions';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { Network } from './components';
 
-@translate(I18N_NAME_SPACE)
 class BottomComponent extends React.Component {
     props: IProps;
 

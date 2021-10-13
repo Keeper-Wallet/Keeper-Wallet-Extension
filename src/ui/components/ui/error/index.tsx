@@ -1,27 +1,38 @@
 import * as React from 'react';
 import * as styles from './error.styl';
 import cn from 'classnames';
-import {translate, Trans} from 'react-i18next';
-import { I18N_NAME_SPACE } from '../../../appConfig';
-
+import { Trans } from 'react-i18next';
 
 const Errors = ({ errors, show }) => {
-    
     if (!show || !errors || !errors.length) {
         return null;
     }
-    
+
     return errors.map(({ key, msg }) => {
         key = key.replace(/\s/g, '');
-        return <Trans i18nKey={key} key={key}>{msg}</Trans>
+        return (
+            <Trans i18nKey={key} key={key}>
+                {msg}
+            </Trans>
+        );
     });
 };
 
-@translate(I18N_NAME_SPACE)
 export class Error extends React.PureComponent {
-
     props: IProps;
     state = { showed: false };
+
+    static getDerivedStateFromProps(props, state) {
+        const { showed } = state;
+        const { show } = props;
+
+        if (!state || showed != show) {
+            return { ...state, showed: show };
+        }
+
+        return null;
+    }
+
     onClick = (e) => this._onClick(e);
 
     render() {
@@ -36,14 +47,14 @@ export class Error extends React.PureComponent {
         const errorProps = {
             onClick: this.onClick,
             className: cn(styles.error, className, {
-                [styles.modalError]: type && type === 'modal'
-            })
+                [styles.modalError]: type && type === 'modal',
+            }),
         };
-        
+
         return (
-            <div { ...errorProps }>
-                <Errors errors={errors} show={showed}/>
-                {showed ?  children: null}
+            <div {...errorProps}>
+                <Errors errors={errors} show={showed} />
+                {showed ? children : null}
             </div>
         );
     }
@@ -58,17 +69,6 @@ export class Error extends React.PureComponent {
             this.setState({ hidden: true });
         }
     }
-
-    static getDerivedStateFromProps(props, state) {
-        const { showed } = state;
-        const { show } = props;
-
-        if (!state || showed != show) {
-            return { ...state, showed: show };
-        }
-
-        return null;
-    }
 }
 
 interface IProps {
@@ -79,5 +79,5 @@ interface IProps {
     className?: string;
     hideByClick?: boolean;
     onClick?: (...args) => void;
-    errors?: Array<{ code: number, key: string, msg: string }>
+    errors?: Array<{ code: number; key: string; msg: string }>;
 }

@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './sponsorship.styl';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { Balance, DateFormat } from '../../ui';
 import { getAssetFee, getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-@translate(I18N_NAME_SPACE)
 export class SponsorshipInfo extends React.PureComponent<ITransferInfo> {
     render() {
         const { message, assets } = this.props;

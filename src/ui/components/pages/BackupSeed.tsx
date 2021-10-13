@@ -1,13 +1,11 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { setUiStateAndSetTab, newAccountSelect, setUiState, user } from '../../actions';
-import { translate, Trans } from 'react-i18next';
-import { Copy, Button, Modal } from '../ui';
+import { newAccountSelect, setUiState, setUiStateAndSetTab, user } from '../../actions';
+import { Trans } from 'react-i18next';
+import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class BackUpSeedComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
@@ -59,7 +57,7 @@ class BackUpSeedComponent extends React.Component {
                 <Modal
                     animation={Modal.ANIMATION.FLASH_SCALE}
                     showModal={this.state.showCopied}
-                    showChildrenOnly={true}
+
                 >
                     <div className="modal notification">
                         <Trans i18nKey="backupSeed.copied">Copied!</Trans>

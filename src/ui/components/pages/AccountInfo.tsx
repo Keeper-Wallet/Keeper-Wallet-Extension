@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, BUTTON_TYPE, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
@@ -8,31 +8,65 @@ import { getAsset, selectAccount } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { seedUtils } from '@waves/waves-transactions';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { getExplorerUrls } from 'ui/utils/waves';
 
 const { Seed } = seedUtils;
 
-@translate(I18N_NAME_SPACE)
 class AccountInfoComponent extends React.Component {
     readonly props;
     readonly state = {} as any;
     passInputEl: Input;
     copiedTimer;
     deffer;
+
+    static getDerivedStateFromProps(props, state) {
+        const { selectedAccount, assets, balances } = props;
+        const asset = assets['WAVES'];
+
+        if (!asset) {
+            props.getAsset('WAVES');
+            return { balance: null };
+        }
+        const assetInstance = new Asset(asset);
+        const balancesMoney = {};
+        const leaseMoney = {};
+
+        Object.entries<{ available: string; leasedOut: string }>(balances).forEach(([key, balance]) => {
+            if (!balance) {
+                return null;
+            }
+
+            balancesMoney[key] = new Money(balance.available, assetInstance);
+            leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+        });
+
+        const { changeName: changeNameNotify } = props.notifications;
+        const balance = balancesMoney[selectedAccount.address];
+        const leaseBalance = leaseMoney[selectedAccount.address];
+        return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
+    }
+
     getSeed = (cb) => this.getAccountInfo('seed', cb);
+
     getPrivate = (cb) => this.getAccountInfo('privateKey', cb);
 
     confirmPassword = (e) => {
         e.preventDefault();
         this.deffer.resolve(this.state.password);
     };
+
     rejectPassword = () => this.deffer.reject();
+
     inputPassword = (event) => this.setState({ password: event.target.value, passwordError: false });
+
     setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
+
     editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
+
     showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
+
     onCopyHandler = () => this.setCopiedModal();
+
     getInputPassRef = (el) => {
         this.passInputEl = el;
         if (el) {
@@ -174,58 +208,52 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword} showChildrenOnly={true}>
-                    <form className={`modal ${styles.enterPasswordModal}`} onClick={this.confirmPassword}>
-                        <i className={`lock-icon ${styles.lockIcon}`} />
+                <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword}>
+                    <div className="modal cover">
+                        <form className={`modal-form ${styles.enterPasswordModal}`} onClick={this.confirmPassword}>
+                            <i className={`lock-icon ${styles.lockIcon}`} />
 
-                        <div className="margin1 relative">
-                            <div className="basic500 tag1 input-title">
-                                <Trans i18nKey="accountInfo.password">Password</Trans>
-                            </div>
-                            <Input
-                                ref={this.getInputPassRef}
-                                type="password"
-                                error={this.state.passwordError}
-                                className="margin1"
-                                onChange={this.inputPassword}
-                            />
-
-                            <Error show={this.state.passwordError}>
-                                <div className="error">
-                                    <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                            <div className="margin1 relative">
+                                <div className="basic500 tag1 input-title">
+                                    <Trans i18nKey="accountInfo.password">Password</Trans>
                                 </div>
-                            </Error>
-                        </div>
+                                <Input
+                                    ref={this.getInputPassRef}
+                                    type="password"
+                                    error={this.state.passwordError}
+                                    className="margin1"
+                                    onChange={this.inputPassword}
+                                />
 
-                        <Button
-                            id="passwordEnter"
-                            disabled={this.state.passwordError || !this.state.password}
-                            className="margin-main-big"
-                            type="submit"
-                        >
-                            <Trans i18nKey="accountInfo.enter">Enter</Trans>
-                        </Button>
-                        <Button id="passwordCancel" onClick={this.rejectPassword}>
-                            <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
-                        </Button>
-                    </form>
+                                <Error show={this.state.passwordError}>
+                                    <div className="error">
+                                        <Trans i18nKey="accountInfo.passwordError">Incorrect password</Trans>
+                                    </div>
+                                </Error>
+                            </div>
+
+                            <Button
+                                id="passwordEnter"
+                                disabled={this.state.passwordError || !this.state.password}
+                                className="margin-main-big"
+                                type="submit"
+                            >
+                                <Trans i18nKey="accountInfo.enter">Enter</Trans>
+                            </Button>
+                            <Button id="passwordCancel" onClick={this.rejectPassword}>
+                                <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
+                            </Button>
+                        </form>
+                    </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.showCopied}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
                     <div className="modal notification">
                         <Trans i18nKey="accountInfo.copied">Copied!</Trans>
                     </div>
                 </Modal>
 
-                <Modal
-                    animation={Modal.ANIMATION.FLASH_SCALE}
-                    showModal={this.state.changeNameNotify}
-                    showChildrenOnly={true}
-                >
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.changeNameNotify}>
                     <div className="modal notification active-asset" key="change_name">
                         <div>
                             <Trans i18nKey="assets.changeName">Account name changed</Trans>
@@ -292,33 +320,6 @@ class AccountInfoComponent extends React.Component {
             const info = { address: seed.address, privateKey: seed.keyPair.privateKey, seed: seed.phrase };
             cb(info[field]);
         };
-    }
-
-    static getDerivedStateFromProps(props) {
-        const { selectedAccount, assets, balances } = props;
-        const asset = assets['WAVES'];
-
-        if (!asset) {
-            props.getAsset('WAVES');
-            return { balance: null };
-        }
-        const assetInstance = new Asset(asset);
-        const balancesMoney = {};
-        const leaseMoney = {};
-
-        Object.entries<{ available: string; leasedOut: string }>(balances).forEach(([key, balance]) => {
-            if (!balance) {
-                return null;
-            }
-
-            balancesMoney[key] = new Money(balance.available, assetInstance);
-            leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
-        });
-
-        const { changeName: changeNameNotify } = props.notifications;
-        const balance = balancesMoney[selectedAccount.address];
-        const leaseBalance = leaseMoney[selectedAccount.address];
-        return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
     }
 }
 

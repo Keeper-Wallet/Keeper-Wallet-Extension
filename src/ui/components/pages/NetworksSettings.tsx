@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { setCustomCode, setCustomMatcher, setCustomNode } from '../../actions';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
-import { I18N_NAME_SPACE } from '../../appConfig';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
-@translate(I18N_NAME_SPACE)
 class NetworksSettingsComponent extends React.PureComponent {
     readonly props;
     readonly state;
@@ -15,8 +13,46 @@ class NetworksSettingsComponent extends React.PureComponent {
     _tSave;
     _tSetDefault;
 
+    static getDerivedStateFromProps(props, state) {
+        state = { ...state };
+
+        const defaultServers = props.networks.find((item) => item.name === props.currentNetwork);
+
+        const defaultNode = defaultServers.server;
+        const currentNode = props.customNodes[props.currentNetwork];
+        const isDefault = state.node === defaultNode;
+        const isCurrent = currentNode && state.node === currentNode;
+        const hasChanges = state.node && ((isDefault && currentNode) || (!isCurrent && !isDefault));
+        const node = hasChanges || state.node != null ? state.node : currentNode || defaultNode;
+        const defaultMatcher = defaultServers.matcher;
+        const currentMatcher = props.customMatcher[props.currentNetwork];
+        const isDefaultMatcher = state.matcher === defaultMatcher;
+        const isCurrentMatcher = currentMatcher && state.matcher === currentMatcher;
+        const hasChangesMatcher =
+            state.matcher && ((isDefaultMatcher && currentMatcher) || (!isCurrentMatcher && !isDefaultMatcher));
+        const matcher = hasChangesMatcher || state.matcher != null ? state.matcher : currentMatcher || defaultMatcher;
+
+        return {
+            node,
+            defaultNode,
+            currentNode,
+            hasChanges,
+            isDefault,
+            isCurrent,
+            matcher,
+            defaultMatcher,
+            currentMatcher,
+            hasChangesMatcher,
+            isDefaultMatcher,
+            isCurrentMatcher,
+            showSetDefaultBtn: props.currentNetwork !== 'custom',
+        };
+    }
+
     onInputHandler = (event) => this.setState({ node: event.target.value, nodeError: false });
+
     onInputMatcherHandler = (event) => this.setState({ matcher: event.target.value, matcherError: false });
+
     onSaveNodeHandler = async () => {
         this.setState({ validateData: true });
         try {
@@ -28,6 +64,7 @@ class NetworksSettingsComponent extends React.PureComponent {
         } catch (e) {}
         this.setState({ validateData: false });
     };
+
     saveDefault = () => {
         this.setDefaultNode();
         this.setDefaultMatcher();
@@ -139,14 +176,14 @@ class NetworksSettingsComponent extends React.PureComponent {
                 <Modal
                     animation={Modal.ANIMATION.FLASH_SCALE}
                     showModal={this.state.showCopied}
-                    showChildrenOnly={true}
+
                 >
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.copied">Copied!</Trans>
                     </div>
                 </Modal>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSaved} showChildrenOnly={true}>
+                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSaved}>
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.savedModal">Saved!</Trans>
                     </div>
@@ -155,7 +192,7 @@ class NetworksSettingsComponent extends React.PureComponent {
                 <Modal
                     animation={Modal.ANIMATION.FLASH_SCALE}
                     showModal={this.state.showSetDefault}
-                    showChildrenOnly={true}
+
                 >
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.setDefaultModal">Save default!</Trans>
@@ -225,42 +262,6 @@ class NetworksSettingsComponent extends React.PureComponent {
         clearTimeout(this._tSetDefault);
         this.setState({ showSetDefault: true });
         this._tSetDefault = setTimeout(() => this.setState({ showSetDefault: false }), 1000);
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        state = { ...state };
-
-        const defaultServers = props.networks.find((item) => item.name === props.currentNetwork);
-
-        const defaultNode = defaultServers.server;
-        const currentNode = props.customNodes[props.currentNetwork];
-        const isDefault = state.node === defaultNode;
-        const isCurrent = currentNode && state.node === currentNode;
-        const hasChanges = state.node && ((isDefault && currentNode) || (!isCurrent && !isDefault));
-        const node = hasChanges || state.node != null ? state.node : currentNode || defaultNode;
-        const defaultMatcher = defaultServers.matcher;
-        const currentMatcher = props.customMatcher[props.currentNetwork];
-        const isDefaultMatcher = state.matcher === defaultMatcher;
-        const isCurrentMatcher = currentMatcher && state.matcher === currentMatcher;
-        const hasChangesMatcher =
-            state.matcher && ((isDefaultMatcher && currentMatcher) || (!isCurrentMatcher && !isDefaultMatcher));
-        const matcher = hasChangesMatcher || state.matcher != null ? state.matcher : currentMatcher || defaultMatcher;
-
-        return {
-            node,
-            defaultNode,
-            currentNode,
-            hasChanges,
-            isDefault,
-            isCurrent,
-            matcher,
-            defaultMatcher,
-            currentMatcher,
-            hasChangesMatcher,
-            isDefaultMatcher,
-            isCurrentMatcher,
-            showSetDefaultBtn: props.currentNetwork !== 'custom',
-        };
     }
 }
 

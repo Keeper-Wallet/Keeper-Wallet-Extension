@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
-import { I18N_NAME_SPACE } from 'ui/appConfig';
 import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Button, BUTTON_TYPE, Input, Select } from 'ui/components/ui';
@@ -35,7 +34,6 @@ const CONFIG = {
     ],
 };
 
-@translate(I18N_NAME_SPACE)
 class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     state = {
         interval: null,
@@ -46,6 +44,36 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         notifications: null,
         canShowNotifications: null,
     };
+
+    static _getAutoSign(autoSign: TAutoAuth): TAutoAuth {
+        if (!autoSign || typeof autoSign === 'string') {
+            return { type: 'allowAutoSign', totalAmount: null, interval: null };
+        }
+
+        return autoSign;
+    }
+
+    static getDerivedStateFromProps(props: IProps, state: IState): Partial<IState> {
+        const { interval = null, totalAmount } = OriginSettingsComponent._getAutoSign(props.autoSign);
+        const selected = CONFIG.list.find(({ value }) => value === interval).id;
+        const notifications = props.permissions.find(
+            (item: TNotification) => item && item.type === 'useNotifications'
+        ) as TNotification;
+        const inWhiteList = (props.origins[props.originName] || []).includes('whiteList');
+        let canShowNotifications = state.canShowNotifications;
+        const canUse = notifications && notifications.canUse;
+        const canUseNotify = canUse || (canUse == null && inWhiteList);
+
+        if (canShowNotifications === null && canUseNotify) {
+            canShowNotifications = true;
+        }
+
+        if (props.originName == null) {
+            canShowNotifications = null;
+        }
+
+        return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };
+    }
 
     onClose = () => {
         this.setState({
@@ -142,18 +170,18 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
         });
 
         const { originName } = this.props;
-        const className = cn(styles.settings, styles.inModal, this.props.className);
         const totalAmount = this.state.totalAmount || '';
         const value = (this.state.interval ? totalAmount : '') || '';
 
         return (
-            <div className={className}>
-                <h2 className={cn(styles.title)}>
+            <div className="modal cover">
+                <div className="modal-form">
+                    <h2 className={cn(styles.title)}>
                     <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
                 </h2>
 
                 <div className={styles.description}>
-                    <Trans i18nKey="permissionSettings.modal.description" originName={originName}>
+                        <Trans i18nKey="permissionSettings.modal.description">
                         This allows {{ originName }} to automatically sign transactions on your behalf.
                     </Trans>
                 </div>
@@ -169,7 +197,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                 <div className={cn(styles.amount)}>
                     <div className="left input-title basic500 tag1">
                         <Trans i18nKey="permissionSettings.modal.amount">Spending limit</Trans>
-                    </div>
+                        </div>
                     <Input
                         disabled={!this.state.interval}
                         onChange={this.amountHandler}
@@ -187,8 +215,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         checked={this.state.canShowNotifications}
                         onChange={this.canUseNotificationsHandler}
                     />
-                    <label htmlFor="checkbox_noshow">
-                        <Trans i18nkey="notifications.allowSending">Allow sending messages</Trans>
+                        <label htmlFor="checkbox_noshow">
+                            <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
                     </label>
                 </div>
 
@@ -205,10 +233,10 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                             disabled={!this.state.canSave}
                             onClick={this.saveHandler}
                         >
-                            <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
-                        </Button>
+                                <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+                            </Button>
                     </div>
-                ) : (
+                    ) : (
                     <Button
                         id="save"
                         className={styles.test}
@@ -216,7 +244,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         disabled={!this.state.canSave}
                         onClick={this.saveHandler}
                     >
-                        <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+                            <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
                     </Button>
                 )}
 
@@ -226,40 +254,11 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                     type={BUTTON_TYPE.TRANSPARENT}
                     onClick={this.props.onClose}
                 >
-                    <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
-                </Button>
+                        <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
+                    </Button>
+                </div>
             </div>
         );
-    }
-
-    static _getAutoSign(autoSign: TAutoAuth): TAutoAuth {
-        if (!autoSign || typeof autoSign === 'string') {
-            return { type: 'allowAutoSign', totalAmount: null, interval: null };
-        }
-
-        return autoSign;
-    }
-
-    static getDerivedStateFromProps(props: IProps, state: IState): Partial<IState> {
-        const { interval = null, totalAmount } = OriginSettingsComponent._getAutoSign(props.autoSign);
-        const selected = CONFIG.list.find(({ value }) => value === interval).id;
-        const notifications = props.permissions.find(
-            (item: TNotification) => item && item.type === 'useNotifications'
-        ) as TNotification;
-        const inWhiteList = (props.origins[props.originName] || []).includes('whiteList');
-        let canShowNotifications = state.canShowNotifications;
-        const canUse = notifications && notifications.canUse;
-        const canUseNotify = canUse || (canUse == null && inWhiteList);
-
-        if (canShowNotifications === null && canUseNotify) {
-            canShowNotifications = true;
-        }
-
-        if (props.originName == null) {
-            canShowNotifications = null;
-        }
-
-        return { ...state, interval, totalAmount: totalAmount, selected, notifications, canShowNotifications };
     }
 }
 

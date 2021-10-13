@@ -2,21 +2,33 @@ import * as React from 'react';
 import { Trans, translate } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
-import { I18N_NAME_SPACE } from 'ui/appConfig';
 import { Button, BUTTON_TYPE, Error, Input } from 'ui/components/ui';
 
 const key = (key) => `bottom.${key}`;
 
-@translate(I18N_NAME_SPACE)
 export class NetworkSettings extends React.PureComponent<INetworkSettings, IState> {
     state = {} as IState;
+
+    static getDerivedStateFromProps(props: INetworkSettings, state: IState): IState {
+        const { matcher, name, networkCode, node, onSave, onClose } = props;
+
+        return {
+            ...state,
+            name,
+            onSave,
+            onClose,
+            node: state.node == null ? node : state.node,
+            matcher: state.matcher == null ? matcher : state.matcher,
+            networkCode: state.networkCode == null ? networkCode : state.networkCode,
+        };
+    }
 
     render(): React.ReactNode {
         const { name } = this.state;
 
         return (
-            <div className={styles.networkSettings}>
-                <div className={styles.contentBox}>
+            <div className="modal cover">
+                <div className="modal-form">
                     <div>
                         <i className="networkIconActive"> </i>
                         <h2 className="headline2 margin-main-big">
@@ -140,20 +152,6 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
                 this.setState({ matcherError: true });
                 return Promise.reject();
             });
-    }
-
-    static getDerivedStateFromProps(props: INetworkSettings, state: IState): IState {
-        const { matcher, name, networkCode, node, onSave, onClose } = props;
-
-        return {
-            ...state,
-            name,
-            onSave,
-            onClose,
-            node: state.node == null ? node : state.node,
-            matcher: state.matcher == null ? matcher : state.matcher,
-            networkCode: state.networkCode == null ? networkCode : state.networkCode,
-        };
     }
 }
 

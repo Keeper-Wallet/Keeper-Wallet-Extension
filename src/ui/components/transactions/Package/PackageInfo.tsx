@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './package.styl';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { getTransactionData } from './parseTx';
 import { TxIcon } from '../TransactionIcon';
 
@@ -16,7 +15,6 @@ const MessageItem = ({ message, config, assets }) => {
     );
 };
 
-@translate(I18N_NAME_SPACE)
 export class PackageInfo extends React.PureComponent<IPackInfo> {
     readonly state = { isOpened: false };
 

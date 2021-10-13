@@ -5,10 +5,8 @@ import { SignClass } from '../SignClass';
 import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
 import { TransactionBottom } from '../TransactionBottom';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 
-@translate(I18N_NAME_SPACE)
 export class CustomData extends SignClass {
     render() {
         const { message, assets } = this.props;

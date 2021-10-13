@@ -1,14 +1,12 @@
 import * as styles from './auth.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 
-@translate(I18N_NAME_SPACE)
 export class Auth extends SignClass {
     render() {
         const { message, assets } = this.props;

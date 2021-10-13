@@ -1,20 +1,41 @@
 import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
-import { user, setUiState } from '../../actions';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import { setUiState, user } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
-@translate(I18N_NAME_SPACE)
 class ConfirmBackupComponent extends React.Component {
     props;
     state = { seed: null, list: [], selectedList: [], wrongSeed: false, complete: false, disabled: false };
+
+    static getDerivedStateFromProps(props, state) {
+        const { seed } = props.account;
+
+        if (seed == state.seed) {
+            return null;
+        }
+
+        const list = seed.split(' ').map((text, id) => ({ text, id, selected: true, hidden: false }));
+        let count = SHUFFLE_COUNT;
+
+        while (count--) {
+            const index = Math.floor(Math.random() * list.length);
+            const item = list.splice(index, 1)[0];
+            list.push(item);
+        }
+
+        return { ...state, list, seed };
+    }
+
     onSelect = (list) => this._onSelect(list);
+
     onUnSelect = (list) => this._onUnSelect(list);
+
     onClear = () => this._onClear();
+
     onSubmit = (e) => this._onSubmit(e);
 
     render() {
@@ -112,25 +133,6 @@ class ConfirmBackupComponent extends React.Component {
 
     private _onClear() {
         this._setSelected([]);
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        const { seed } = props.account;
-
-        if (seed == state.seed) {
-            return null;
-        }
-
-        const list = seed.split(' ').map((text, id) => ({ text, id, selected: true, hidden: false }));
-        let count = SHUFFLE_COUNT;
-
-        while (count--) {
-            const index = Math.floor(Math.random() * list.length);
-            const item = list.splice(index, 1)[0];
-            list.push(item);
-        }
-
-        return { ...state, list, seed };
     }
 }
 

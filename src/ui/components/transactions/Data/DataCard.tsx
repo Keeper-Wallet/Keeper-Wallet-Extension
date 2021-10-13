@@ -1,14 +1,12 @@
 import * as styles from './data.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
-import { I18N_NAME_SPACE } from '../../../appConfig';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-@translate(I18N_NAME_SPACE)
 export class DataCard extends React.PureComponent<IData> {
     render() {
         const className = cn(styles.dataTransactionCard, this.props.className, {

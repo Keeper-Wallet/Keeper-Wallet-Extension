@@ -1,21 +1,16 @@
 import * as styles from './styles/newwallet.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { newAccountSelect } from '../../actions';
-import { AvatarList } from '../ui';
+import { AvatarList, Button } from '../ui';
 import { seedUtils } from '@waves/waves-transactions';
-import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class NewWalletComponent extends React.Component {
     static list = [];
     props;
     state;
-    onSelect = (account) => this._onSelect(account);
-    onSubmit = (e) => this._onSubmit(e);
 
     constructor({ isGenerateNew, ...props }) {
         super(props);
@@ -50,6 +45,10 @@ class NewWalletComponent extends React.Component {
         }
         return list;
     }
+
+    onSelect = (account) => this._onSelect(account);
+
+    onSubmit = (e) => this._onSubmit(e);
 
     render() {
         return (

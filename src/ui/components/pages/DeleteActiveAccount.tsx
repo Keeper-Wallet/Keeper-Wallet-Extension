@@ -1,12 +1,10 @@
 import * as styles from './styles/deleteAccount.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans, translate } from 'react-i18next';
+import { Trans , translate } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class DeleteActiveAccountComponent extends React.Component {
     state = { disable: false };
     props;

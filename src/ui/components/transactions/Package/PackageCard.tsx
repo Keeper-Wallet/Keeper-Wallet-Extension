@@ -1,9 +1,8 @@
 import * as styles from './package.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
-import { I18N_NAME_SPACE } from '../../../appConfig';
-import * as cn from 'classnames';
+import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
 import { getAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';
@@ -40,7 +39,6 @@ const Amounts = ({ amounts }) => {
     );
 };
 
-@translate(I18N_NAME_SPACE)
 export class PackageCard extends React.PureComponent<IData> {
     render() {
         const { message, assets, collapsed, className } = this.props;

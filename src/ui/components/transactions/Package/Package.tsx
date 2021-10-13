@@ -1,14 +1,12 @@
 import * as styles from './package.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
 import { PackageCard } from './PackageCard';
 import { PackageInfo } from './PackageInfo';
 import { TransactionBottom } from '../TransactionBottom';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 
-@translate(I18N_NAME_SPACE)
 export class Package extends SignClass {
     readonly state = { needScroll: false };
     container: HTMLDivElement;

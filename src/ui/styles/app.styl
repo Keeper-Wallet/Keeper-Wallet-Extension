@@ -372,11 +372,15 @@ $layout-44 = 44px;
     position: absolute;
 
 :global #app-modal
-  position: relative;
+  position: absolute;
   width: 100%;
   display: block;
   top: 0;
   z-index: 1000;
+
+:global .cover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
 
 :global .modal
   position: fixed;
@@ -384,6 +388,20 @@ $layout-44 = 44px;
   height: 100%;
   top: 0;
   left: 0;
+
+:global .modal-form
+  display: block;
+  width: 280px;
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  background: $white;
+  height: auto;
+  padding: 24px;
+  z-index: 100;
+  box-shadow: 0 0 0 300px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
 
 :global .tooltip
   display: none;

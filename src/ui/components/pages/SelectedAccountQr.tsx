@@ -1,48 +1,50 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
-import { Avatar, QRCode, Button } from '../ui';
-import { I18N_NAME_SPACE } from '../../appConfig';
+import { Button, QRCode } from '../ui';
 
-@translate(I18N_NAME_SPACE)
 class QRCodeSelectedAccountComponent extends React.PureComponent {
-    
     readonly props;
     qrCode: QRCode;
-    getQrRef = (qr) => this.qrCode = qr;
+    getQrRef = (qr) => (this.qrCode = qr);
     downloadHandler = () => this._download();
-    
+
     render() {
         const address = this.props.selectedAccount.address;
         const name = this.props.selectedAccount.name;
         const isEdge = window.navigator && typeof window.navigator.msSaveOrOpenBlob === 'function';
-        return <div className={`center ${styles.content}`}>
-    
-            <div className="input-title fullwidth tag1">{name}</div>
-            <div className="tag1 basic500 margin-main">{address}</div>
-            
-            <QRCode ref={this.getQrRef}
+        return (
+            <div className={`center ${styles.content}`}>
+                <div className="input-title fullwidth tag1">{name}</div>
+                <div className="tag1 basic500 margin-main">{address}</div>
+
+                <QRCode
+                    ref={this.getQrRef}
                     width={200}
                     height={200}
                     scale={16}
                     quality={1}
                     margin={1}
-                    type='image/png'
-                    text={address} />
-            
-            {isEdge ? null : <Button type="submitTiny" className={`${styles.downloadQr}`} onClick={this.downloadHandler}>
+                    type="image/png"
+                    text={address}
+                />
+
+                {isEdge ? null : (
+                    <Button type="submitTiny" className={`${styles.downloadQr}`} onClick={this.downloadHandler}>
                         <div>
-                            <Trans i18nKey='qrCode.download'>Download QR code</Trans>
+                            <Trans i18nKey="qrCode.download">Download QR code</Trans>
                         </div>
-                    </Button>}
-        </div>;
+                    </Button>
+                )}
+            </div>
+        );
     }
-    
+
     _download() {
         const data = this.qrCode.getImg();
         const name = `${this.props.selectedAccount.address}.png`;
-        
+
         const link = document.createElement('a');
         link.setAttribute('href', data);
         link.setAttribute('download', name);

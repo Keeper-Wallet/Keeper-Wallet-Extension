@@ -1,14 +1,12 @@
 import * as styles from './styles/login.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class LoginComponent extends React.Component {
     inputEl: Input;
     state = {
@@ -18,9 +16,23 @@ class LoginComponent extends React.Component {
 
     readonly props;
 
+    static getDerivedStateFromProps(props, state) {
+        const { passwordError } = state;
+        const { error } = props;
+
+        if (!passwordError && !!error) {
+            return { ...state, passwordError: true };
+        }
+
+        return null;
+    }
+
     onChange = (e) => this._onChange(e);
+
     onSubmit = (e) => this._onSubmit(e);
+
     getRef = (input) => (this.inputEl = input);
+
     forgotHandler = () => this.props.setTab(PAGES.FORGOT);
 
     componentDidMount() {
@@ -72,17 +84,6 @@ class LoginComponent extends React.Component {
     _onSubmit(e) {
         e.preventDefault();
         this.props.login(this.state.password);
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        const { passwordError } = state;
-        const { error } = props;
-
-        if (!passwordError && !!error) {
-            return { ...state, passwordError: true };
-        }
-
-        return null;
     }
 }
 

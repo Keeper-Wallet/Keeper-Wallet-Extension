@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './customData.styl';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 export class CustomDataInfo extends React.PureComponent<IDataInfo> {
     render() {
         const { message } = this.props;

@@ -1,13 +1,11 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { translate, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE, Select } from '../ui';
-import { lock, setUiState, setIdle } from '../../actions';
+import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
-@translate(I18N_NAME_SPACE)
 class SettingsGeneralComponent extends React.Component {
     readonly props;
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);

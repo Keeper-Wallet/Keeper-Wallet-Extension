@@ -1,17 +1,15 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
 import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
-import { I18N_NAME_SPACE } from '../../../appConfig';
 import { TransactionWallet } from '../../wallets';
 import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent, DropdownButton } from 'ui/components/ui';
 import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
 import { BigNumber } from '@waves/bignumber';
 
-@translate(I18N_NAME_SPACE)
 class OriginAuthComponent extends SignClass {
     getRef = (el) => this.setState({ el });
 

@@ -1,17 +1,15 @@
 import * as styles from './styles/conditions.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { setTab } from '../../actions';
-import { translate, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { connect } from 'react-redux';
-import { Button, BUTTON_TYPE } from '../ui/buttons';
+import { Button, BUTTON_TYPE } from '../ui';
 import { ConditionsAndTerms } from '../conditions/Conditions';
-import { I18N_NAME_SPACE } from '../../appConfig';
 
 interface IConditionsComponentProps {
     setTab(tab: string): void;
 }
 
-@translate(I18N_NAME_SPACE)
 class ConditionsComponent extends React.Component<IConditionsComponentProps> {
     onClick(e: React.MouseEvent) {
         e.stopPropagation();
@@ -20,7 +18,7 @@ class ConditionsComponent extends React.Component<IConditionsComponentProps> {
         this.props.setTab('new');
     }
 
-    render () {
+    render() {
         return (
             <div className={`body1 height ${styles.contentWrapper}`}>
                 <div className={`${styles.conditionsContent} height`}>
@@ -36,7 +34,7 @@ class ConditionsComponent extends React.Component<IConditionsComponentProps> {
                     onClick={this.onClick.bind(this)}
                     type={BUTTON_TYPE.GENERAL}
                 >
-                    <Trans className="text" i18nKey='conditions.close'>Close</Trans>
+                    <Trans i18nKey="conditions.close">Close</Trans>
                 </Button>
             </div>
         );
