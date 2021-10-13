@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { clear } from './utils';
-import { App, CreateNewAccount } from './utils/actions';
+import { App, CreateNewAccount, Network } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 
 describe('Network management', function () {
@@ -15,25 +15,6 @@ describe('Network management', function () {
     });
 
     describe('Switching networks', function () {
-        async function switchNetworkTo(network: string) {
-            await this.driver
-                .wait(until.elementLocated(By.xpath("//i[contains(@class, '-network-networkIcon')]")), this.wait)
-                .click();
-
-            await this.driver.executeScript(
-                (el) => el.click(),
-                await this.driver.wait(
-                    until.elementLocated(
-                        By.xpath(
-                            `//div[contains(@class, '-network-chooseNetwork')][contains(text(), '${network}')]` +
-                                "//i[contains(@class, '-network-networkIcon')]"
-                        )
-                    ),
-                    this.wait
-                )
-            );
-        }
-
         async function expectNetworkChangedTo(network: string) {
             await this.driver.wait(
                 until.elementLocated(By.xpath("//div[contains(@class, '-intro-loader')]")),
@@ -61,7 +42,7 @@ describe('Network management', function () {
         }
 
         async function networkShouldBeChangedTo(network: string) {
-            await switchNetworkTo.call(this, network);
+            await Network.switchTo.call(this, network);
             await expectNetworkChangedTo.call(this, network);
         }
 
@@ -121,7 +102,7 @@ describe('Network management', function () {
             const customNetwork = 'Custom';
 
             it('Successfully switched', async function () {
-                await switchNetworkTo.call(this, customNetwork);
+                await Network.switchTo.call(this, customNetwork);
 
                 await this.driver
                     .wait(

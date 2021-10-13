@@ -76,3 +76,24 @@ export const Settings = {
             .click();
     },
 };
+
+export const Network = {
+    switchTo: async function (network: string) {
+        await this.driver
+            .wait(until.elementLocated(By.xpath("//i[contains(@class, '-network-networkIcon')]")), this.wait)
+            .click();
+
+        await this.driver.executeScript(
+            (el) => el.click(),
+            await this.driver.wait(
+                until.elementLocated(
+                    By.xpath(
+                        `//div[contains(@class, '-network-chooseNetwork')][contains(text(), '${network}')]` +
+                            "//i[contains(@class, '-network-networkIcon')]"
+                    )
+                ),
+                this.wait
+            )
+        );
+    },
+};

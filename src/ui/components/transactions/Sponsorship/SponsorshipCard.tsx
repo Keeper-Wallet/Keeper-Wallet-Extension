@@ -1,6 +1,6 @@
-import * as styles from './index.styl';
-import * as React from 'react'
-import { translate, Trans } from 'react-i18next';
+import * as styles from './sponsorship.styl';
+import * as React from 'react';
+import { Trans, translate } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import { I18N_NAME_SPACE } from '../../../appConfig';
 import * as cn from 'classnames';
@@ -11,16 +11,11 @@ import { getAssetFee, SPONSOR_MODE } from './parseTx';
 
 @translate(I18N_NAME_SPACE)
 export class SponsorshipCard extends React.PureComponent<IIssue> {
-    
     render() {
-        const className = cn(
-            styles.sponsorshipTransactionCard,
-            this.props.className,
-            {
-                [styles.sponsorshipCard_collapsed]: this.props.collapsed
-            },
-        );
-        
+        const className = cn(styles.sponsorshipTransactionCard, this.props.className, {
+            [styles.sponsorshipCard_collapsed]: this.props.collapsed,
+        });
+
         const { message, assets } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
@@ -31,31 +26,30 @@ export class SponsorshipCard extends React.PureComponent<IIssue> {
             title: isSetSponsored ? 'Set Sponsorship' : 'Disable Sponsorship',
             icon: isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable,
         };
-        
-        
-        return <div className={className}>
 
-            <div className={styles.cardHeader}>
-                <div className={styles.sponsorshipTxIcon}>
-                    <TxIcon txType={conf.icon}/>
-                </div>
-                <div>
-                    <div className="basic500 body3 margin-min">
-                        <Trans i18nKey={`transactions.${conf.key}`}>{conf.title}</Trans>
+        return (
+            <div className={className}>
+                <div className={styles.cardHeader}>
+                    <div className={styles.sponsorshipTxIcon}>
+                        <TxIcon txType={conf.icon} />
                     </div>
-                    <h1 className="headline1">
-                        <Asset assetId={assetFee.asset.id}/>
-                    </h1>
+                    <div>
+                        <div className="basic500 body3 margin-min">
+                            <Trans i18nKey={`transactions.${conf.key}`}>{conf.title}</Trans>
+                        </div>
+                        <h1 className="headline1">
+                            <Asset assetId={assetFee.asset.id} />
+                        </h1>
+                    </div>
+                </div>
+
+                <div className={styles.cardContent}>
+                    <div className={styles.origin}>
+                        <OriginWarning message={message} />
+                    </div>
                 </div>
             </div>
-
-            <div className={styles.cardContent}>
-                <div className={styles.origin}>
-                    <OriginWarning message={message}/>
-                </div>
-            </div>
-
-        </div>
+        );
     }
 }
 
