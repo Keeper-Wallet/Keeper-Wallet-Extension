@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { App, CreateNewAccount, Network, Settings } from './utils/actions';
-import { CUSTOMLIST, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
+import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 import { By, until, WebElement } from 'selenium-webdriver';
 import {
     ALIAS,
@@ -50,6 +50,7 @@ describe('Signature', function () {
                 until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))),
                 this.wait
             );
+            await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
             await this.driver.findElement(By.css('button#reject')).click();
             await this.driver.wait(
                 until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
@@ -63,6 +64,7 @@ describe('Signature', function () {
                 until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))),
                 this.wait
             );
+            await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
             await this.driver.findElement(By.css('button#reject')).click();
             const txFinalEl: WebElement = this.driver.wait(
                 until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),

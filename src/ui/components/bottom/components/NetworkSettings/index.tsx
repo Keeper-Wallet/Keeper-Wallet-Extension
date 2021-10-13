@@ -28,7 +28,7 @@ export class NetworkSettings extends React.PureComponent<INetworkSettings, IStat
 
         return (
             <div className="modal cover">
-                <div className="modal-form">
+                <div id="customNetwork" className="modal-form">
                     <div>
                         <i className="networkIconActive"> </i>
                         <h2 className="headline2 margin-main-big">

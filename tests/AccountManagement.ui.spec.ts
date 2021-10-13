@@ -241,14 +241,8 @@ describe('Account management', function () {
                 });
 
                 it('Clicking "Copy" displays the password entry form', async function () {
-                    expect(
-                        await this.driver.wait(
-                            until.elementLocated(
-                                By.xpath("//form[contains(@class, '-accountInfo-enterPasswordModal')]")
-                            ),
-                            this.wait
-                        )
-                    ).not.to.be.throw;
+                    expect(await this.driver.wait(until.elementLocated(By.css('form#enterPassword')), this.wait)).not.to
+                        .be.throw;
                     await this.driver.findElement(By.css('button#passwordCancel')).click();
                 });
 
@@ -281,14 +275,8 @@ describe('Account management', function () {
                 });
 
                 it('Clicking "Copy" displays the password entry form', async function () {
-                    expect(
-                        await this.driver.wait(
-                            until.elementLocated(
-                                By.xpath("//form[contains(@class, '-accountInfo-enterPasswordModal')]")
-                            ),
-                            this.wait
-                        )
-                    ).not.to.be.throw;
+                    expect(await this.driver.wait(until.elementLocated(By.css('form#enterPassword')), this.wait)).not.to
+                        .be.throw;
                     await this.driver.findElement(By.css('button#passwordCancel')).click();
                 });
 

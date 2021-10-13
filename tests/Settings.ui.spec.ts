@@ -111,10 +111,7 @@ describe('Settings', function () {
 
         const checkChangingAutoLimitsInResourceSettings = () => {
             describe('Changing auto-limits in resource settings', function () {
-                let originSettingsModal: WebElement,
-                    resolutionTimeSelect: WebElement,
-                    spendingLimitInput: WebElement,
-                    saveBtn: WebElement;
+                let resolutionTimeSelect: WebElement, spendingLimitInput: WebElement, saveBtn: WebElement;
 
                 beforeEach(async function () {
                     await this.driver
@@ -125,10 +122,12 @@ describe('Settings', function () {
                         )
                         .click();
 
-                    originSettingsModal = this.driver.findElement(
-                        By.xpath("//div[contains(@class, '-settings-settings')]")
+                    await this.driver.wait(
+                        until.elementIsVisible(
+                            this.driver.wait(until.elementLocated(By.css('div#originSettings')), this.wait)
+                        ),
+                        this.wait
                     );
-                    await this.driver.wait(until.elementIsVisible(originSettingsModal), this.wait);
 
                     resolutionTimeSelect = this.driver.findElement(
                         By.xpath(
@@ -156,7 +155,6 @@ describe('Settings', function () {
                         .sendKeys(SPENDING_LIMIT);
                     await this.driver.wait(until.elementIsEnabled(saveBtn), this.wait).click();
                     await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-                    await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
                     expect(
                         await this.driver
                             .wait(
@@ -180,7 +178,6 @@ describe('Settings', function () {
                         .click();
                     await this.driver.wait(until.elementIsEnabled(saveBtn), this.wait).click();
                     await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-                    await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
                     expect(
                         await this.driver.findElements(
                             By.xpath(
@@ -449,13 +446,14 @@ describe('Settings', function () {
                     const origin: string = await originEl.findElement(By.css('div')).getText();
                     await originEl.findElement(By.xpath("//button[contains(@class, '-list-settings')]")).click();
 
-                    const originSettingsModal = this.driver.findElement(
-                        By.xpath("//div[contains(@class, '-settings-settings')]")
+                    await this.driver.wait(
+                        until.elementIsVisible(
+                            this.driver.wait(until.elementLocated(By.css('div#originSettings')), this.wait)
+                        ),
+                        this.wait
                     );
-                    await this.driver.wait(until.elementIsVisible(originSettingsModal), this.wait);
                     this.driver.findElement(By.css('button#delete')).click();
                     await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-                    await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
 
                     await publicStateFromOrigin.call(this, origin);
 

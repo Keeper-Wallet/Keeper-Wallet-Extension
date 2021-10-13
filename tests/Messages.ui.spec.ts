@@ -1,7 +1,7 @@
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { App, CreateNewAccount, Settings } from './utils/actions';
-import { CUSTOMLIST, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
+import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
     const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 100;
@@ -30,6 +30,7 @@ describe('Messages', function () {
 
     after(async function () {
         await Settings.clearCustomList.call(this);
+        await this.driver.get(this.extensionUrl);
         await App.resetVault.call(this);
     });
 
@@ -127,14 +128,10 @@ describe('Messages', function () {
                 this.wait
             )
             .click();
-        await this.driver
-            .wait(until.elementIsVisible(this.driver.findElement(By.css('input#checkbox_noshow'))), this.wait)
-            .click();
+        await this.driver.wait(until.elementLocated(By.css('input#checkbox_noshow')), this.wait).click();
 
-        const saveButton = this.driver.findElement(By.css('button#save'));
-        await saveButton.click();
-
-        await this.driver.wait(until.elementIsNotVisible(saveButton), this.wait);
+        await this.driver.findElement(By.css('button#save')).click();
+        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
         await sendMessageFromOrigin.call(this, lastOrigin);
 

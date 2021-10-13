@@ -19,7 +19,7 @@ class AccountInfoComponent extends React.Component {
     copiedTimer;
     deffer;
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
         const { selectedAccount, assets, balances } = props;
         const asset = assets['WAVES'];
 
@@ -210,7 +210,7 @@ class AccountInfoComponent extends React.Component {
 
                 <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword}>
                     <div className="modal cover">
-                        <form className={`modal-form ${styles.enterPasswordModal}`} onClick={this.confirmPassword}>
+                        <form id="enterPassword" className="modal-form" onClick={this.confirmPassword}>
                             <i className={`lock-icon ${styles.lockIcon}`} />
 
                             <div className="margin1 relative">

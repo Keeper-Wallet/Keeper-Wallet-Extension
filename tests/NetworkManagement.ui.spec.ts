@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { clear } from './utils';
 import { App, CreateNewAccount, Network } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
+import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Network management', function () {
     this.timeout(60 * 1000);
@@ -99,7 +100,7 @@ describe('Network management', function () {
 
         describe('Custom', function () {
             const validNodeUrl = 'https://nodes.wavesplatform.com';
-            const invalidNodeUrl = validNodeUrl + '.invalid';
+            const invalidNodeUrl = 'https://nodes.invalid.com';
             const customNetwork = 'Custom';
 
             it('Successfully switched', async function () {
@@ -108,9 +109,7 @@ describe('Network management', function () {
                 await this.driver
                     .wait(
                         until.elementIsVisible(
-                            this.driver.findElement(
-                                By.xpath("//div[contains(@class, '-networkSettings-networkSettings')]")
-                            )
+                            this.driver.wait(until.elementLocated(By.css('div#customNetwork')), this.wait)
                         ),
                         this.wait
                     )
@@ -135,9 +134,7 @@ describe('Network management', function () {
 
                     await this.driver.wait(
                         until.elementIsVisible(
-                            this.driver.findElement(
-                                By.xpath("//div[contains(@class, '-networkSettings-networkSettings')]")
-                            )
+                            this.driver.wait(until.elementLocated(By.css('div#customNetwork')), this.wait)
                         ),
                         this.wait
                     );
@@ -164,15 +161,14 @@ describe('Network management', function () {
                 it('The address of non-existed node was entered', async function () {
                     await nodeAddressInput.sendKeys(invalidNodeUrl);
                     await saveAndApplyBtn.click();
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+
                     expect(
                         await this.driver
-                            .wait(
-                                until.elementLocated(
-                                    By.xpath(
-                                        "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
-                                    )
-                                ),
-                                this.wait
+                            .findElement(
+                                By.xpath(
+                                    "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
+                                )
                             )
                             .getText()
                     ).matches(/Incorrect node address/i);
@@ -181,6 +177,8 @@ describe('Network management', function () {
                 it('Matcher address is not required field', async function () {
                     await nodeAddressInput.sendKeys(validNodeUrl);
                     await saveAndApplyBtn.click();
+                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+
                     expect(
                         await this.driver.wait(
                             until.elementLocated(By.xpath("//div[contains(@class,'-network-editBtn')]"))

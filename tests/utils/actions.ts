@@ -101,9 +101,7 @@ export const Settings = {
     },
 
     permissionSettings: async function () {
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
-            .click();
+        await Settings.rootSettings.call(this);
         await this.driver.wait(until.elementLocated(By.css('button#settingsPermission')), this.wait).click();
     },
 
@@ -115,13 +113,10 @@ export const Settings = {
         )) {
             await originEl.findElement(By.xpath("//button[contains(@class, '-list-settings')]")).click();
 
-            const originSettingsModal = this.driver.findElement(
-                By.xpath("//div[contains(@class, '-settings-settings')]")
-            );
+            const originSettingsModal = this.driver.wait(until.elementLocated(By.css('div#originSettings')), this.wait);
             await this.driver.wait(until.elementIsVisible(originSettingsModal), this.wait);
             this.driver.findElement(By.css('button#delete')).click();
             await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-            await this.driver.wait(until.elementIsNotVisible(originSettingsModal), this.wait);
         }
     },
 };

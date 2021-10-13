@@ -175,7 +175,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
         return (
             <div className="modal cover">
-                <div className="modal-form">
+                <div id="originSettings" className="modal-form">
                     <h2 className={cn(styles.title)}>
                         <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
                     </h2>
