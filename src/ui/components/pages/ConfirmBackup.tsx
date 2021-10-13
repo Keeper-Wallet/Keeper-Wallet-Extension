@@ -50,7 +50,6 @@ class ConfirmBackupComponent extends React.Component {
                 </h2>
 
                 <Pills
-                    animated={true}
                     className={`${styles.readSeed} plate body3`}
                     list={selectedList}
                     selected={false}

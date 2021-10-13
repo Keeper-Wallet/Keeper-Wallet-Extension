@@ -15,7 +15,7 @@ export class Pills extends React.PureComponent {
             <div className={myClassName}>
                 <TransitionGroup>
                     {list.map((item) => (
-                        <CSSTransition classNames="animated" timeout={200}>
+                        <CSSTransition key={item.id} classNames="animated" timeout={200}>
                             <Pill
                                 onSelect={this.onSelect.bind(null, item)}
                                 text={item.text}

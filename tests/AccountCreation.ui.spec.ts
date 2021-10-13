@@ -210,17 +210,22 @@ describe('Account management', function () {
                 });
 
                 describe('Confirm backup page', function () {
-                    let clearButton: WebElement, wrongSeed: string[];
+                    let clearButton: WebElement;
                     it('Filling in a seed in the wrong word order', async function () {
                         // there is no Confirm button. An error message and a "Clear" button are displayed
-                        wrongSeed = rightSeed.split(' ').reverse();
+                        const wrongSeed = rightSeed.split(' ').reverse();
                         const seedPills: WebElement = await this.driver.wait(
                             until.elementLocated(By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")),
                             this.wait
                         );
                         for (const word of wrongSeed) {
                             await seedPills
-                                .findElement(By.xpath(`//div[contains(@class,'-pills-text')][text()='${word}']`))
+                                .findElement(
+                                    By.xpath(
+                                        "//div[not(contains(@class, '-pills-hidden'))]" +
+                                            `//div[contains(@class,'-pills-text')][text()='${word}']`
+                                    )
+                                )
                                 .click();
                             await this.driver.sleep(PILL_ANIMATION_DELAY);
                         }
@@ -241,11 +246,11 @@ describe('Account management', function () {
 
                     it('The "Clear" button resets a completely filled phrase', async function () {
                         await clearButton.click();
-                        expect(
-                            await this.driver
-                                .findElement(By.xpath("//div[contains(@class,'-error-error')]"))
-                                .isDisplayed()
-                        ).to.be.false;
+                        await this.driver.sleep(PILL_ANIMATION_DELAY);
+
+                        expect(await this.driver.findElements(By.xpath("//div[contains(@class,'-error-error')]"))).to.be
+                            .empty;
+
                         expect(
                             await this.driver.findElements(
                                 By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
@@ -263,14 +268,13 @@ describe('Account management', function () {
                             until.elementsLocated(
                                 By.xpath(
                                     "//div[contains(@class, '-confirmBackup-writeSeed')]" +
-                                        "//div[not(contains(@class, '-pills-hidden'))]" +
-                                        "/div[contains(@class,'-pills-text')]"
+                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
                                 )
                             ),
                             this.wait
                         );
-                        for (const pill of writePills) {
-                            await pill.click();
+                        for (const writePill of writePills) {
+                            await writePill.click();
                             await this.driver.sleep(PILL_ANIMATION_DELAY);
                         }
                         await this.driver.wait(
@@ -281,8 +285,7 @@ describe('Account management', function () {
                             await this.driver.findElements(
                                 By.xpath(
                                     "//div[contains(@class, '-confirmBackup-writeSeed')]" +
-                                        "//div[not(contains(@class, '-pills-hidden'))]" +
-                                        "/div[contains(@class,'-pills-text')]"
+                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
                                 )
                             )
                         ).to.be.empty;
@@ -290,12 +293,11 @@ describe('Account management', function () {
                         const readPills: WebElement[] = await this.driver.findElements(
                             By.xpath(
                                 "//div[contains(@class, '-confirmBackup-readSeed')]" +
-                                    "//div[not(contains(@class, '-pills-hidden'))]" +
-                                    "/div[contains(@class,'-pills-text')]"
+                                    "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
                             )
                         );
-                        for (const pill of readPills) {
-                            await pill.click();
+                        for (const readPill of readPills) {
+                            await readPill.click();
                             await this.driver.sleep(PILL_ANIMATION_DELAY);
                         }
 
@@ -303,8 +305,7 @@ describe('Account management', function () {
                             await this.driver.findElements(
                                 By.xpath(
                                     "//div[contains(@class, '-confirmBackup-readSeed')]" +
-                                        "//div[not(contains(@class, '-pills-hidden'))]" +
-                                        "/div[contains(@class,'-pills-text')]"
+                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
                                 )
                             )
                         ).to.be.empty;
