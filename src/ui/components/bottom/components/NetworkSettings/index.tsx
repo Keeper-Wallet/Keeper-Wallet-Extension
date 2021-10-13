@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { Button, BUTTON_TYPE, Error, Input } from 'ui/components/ui';

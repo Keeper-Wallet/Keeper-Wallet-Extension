@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import * as styles from './data.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';

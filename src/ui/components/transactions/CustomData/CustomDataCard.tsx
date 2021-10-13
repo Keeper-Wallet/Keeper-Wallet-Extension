@@ -1,6 +1,6 @@
 import * as styles from './customData.styl';
 import * as React from 'react';
-import { Trans, translate } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
 import { OriginWarning } from '../OriginWarning';
