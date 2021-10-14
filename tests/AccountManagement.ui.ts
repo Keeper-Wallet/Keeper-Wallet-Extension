@@ -2,7 +2,7 @@ import { App, CreateNewAccount } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
-import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
+import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD, DEFAULT_SWITCH_TABS_DELAY } from './utils/constants';
 
 const ACCOUNTS = {
     RICH: { NAME: 'rich', SEED: 'waves private node seed with waves tokens' },
@@ -116,15 +116,19 @@ describe('Account management', function () {
             );
             const currentTab = await this.driver.getWindowHandle();
             await this.driver.wait(until.elementLocated(By.css('a.walletIconBlack')), this.wait).click();
+
             const tabs = await this.driver.getAllWindowHandles();
             expect(tabs).length(2);
+
             for (const tab of tabs) {
-                if (tab != currentTab) {
+                if (tab !== currentTab) {
                     await this.driver.switchTo().window(tab);
                     await this.driver.close();
                 }
             }
             await this.driver.switchTo().window(currentTab);
+            await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
+
             // clicking by <a> element propagates click event to element, so we should go back after
             await this.driver.findElement(By.css('div.arrow-back-icon')).click();
         });
@@ -144,15 +148,19 @@ describe('Account management', function () {
             );
             const currentTab = await this.driver.getWindowHandle();
             await this.driver.wait(until.elementLocated(By.css('a.transactionsIconBlack')), this.wait).click();
+
             const tabs = await this.driver.getAllWindowHandles();
             expect(tabs).length(2);
+
             for (const tab of tabs) {
-                if (tab != currentTab) {
+                if (tab !== currentTab) {
                     await this.driver.switchTo().window(tab);
                     await this.driver.close();
                 }
             }
             await this.driver.switchTo().window(currentTab);
+            await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
+
             // clicking by <a> element propagates click event to element, so we should go back after
             await this.driver.findElement(By.css('div.arrow-back-icon')).click();
         });
@@ -165,10 +173,6 @@ describe('Account management', function () {
     });
 
     function accountPropertiesShouldBeRight(isActive: boolean) {
-        // after(async function () {
-        //     await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-        // });
-
         it('Displayed right status icon', async function () {
             const activeStatusCls = isActive ? '-accountInfo-activeAccount' : '-accountInfo-inActiveAccount';
 
@@ -349,7 +353,12 @@ describe('Account management', function () {
 
         describe('Delete account', function () {
             beforeEach(async function () {
-                await this.driver.wait(until.elementLocated(By.css('div.delete-icon')), this.wait).click();
+                await this.driver
+                    .wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-accountInfo-deleteButton')]")),
+                        this.wait
+                    )
+                    .click();
                 await this.driver.wait(
                     until.elementLocated(By.xpath("//div[contains(@class, '-deleteAccount-content')]")),
                     this.wait

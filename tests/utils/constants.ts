@@ -16,4 +16,6 @@ export const DEFAULT_PASSWORD = 'default-password';
 
 export const DEFAULT_ANIMATION_DELAY = 600;
 
-export const DEFAULT_PAGE_LOAD_DELAY = 500;
+export const DEFAULT_PAGE_LOAD_DELAY = 250;
+
+export const DEFAULT_SWITCH_TABS_DELAY = 250;

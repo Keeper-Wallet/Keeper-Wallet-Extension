@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { App, CreateNewAccount, Network, Settings } from './utils/actions';
-import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
+import { CUSTOMLIST, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 import { By, until, WebElement } from 'selenium-webdriver';
 import {
     ALIAS,
@@ -24,23 +24,24 @@ import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 describe('Signature', function () {
     this.timeout(5 * 60 * 1000);
 
+    let tabKeeper, tabOrigin;
+
     before(async function () {
         await App.initVault.call(this);
-
         await Network.switchTo.call(this, 'Testnet');
-        await this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class, '-intro-loader')]")), this.wait);
-        await this.driver.wait(
-            until.elementLocated(
-                By.xpath(
-                    "//div[contains(@class, '-network-network')]" + "//span[contains(@class, 'network-networkBottom')]"
-                )
-            ),
-            this.wait
-        );
-
         await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
-
         await Settings.setMaxSessionTimeout.call(this);
+
+        tabKeeper = await this.driver.getWindowHandle();
+        await this.driver.switchTo().newWindow('tab');
+        tabOrigin = await this.driver.getWindowHandle();
+    });
+
+    after(async function () {
+        await this.driver.switchTo().window(tabOrigin);
+        await this.driver.close();
+        await this.driver.switchTo().window(tabKeeper);
+        await App.resetVault.call(this);
     });
 
     function checkAnyTransaction(txFormLocator: By, wait?: number) {
@@ -50,10 +51,13 @@ describe('Signature', function () {
                 until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))),
                 this.wait
             );
-            await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
             await this.driver.findElement(By.css('button#reject')).click();
+            await this.driver
+                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")), this.wait)
+                .findElement(By.css('button#close'))
+                .click();
             await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
                 this.wait
             );
         });
@@ -64,13 +68,17 @@ describe('Signature', function () {
                 until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))),
                 this.wait
             );
-            await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
             await this.driver.findElement(By.css('button#reject')).click();
             const txFinalEl: WebElement = this.driver.wait(
                 until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-reject-icon'))).length(1);
+            await txFinalEl.findElement(By.css('button#close')).click();
+            await this.driver.wait(
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                this.wait
+            );
         });
 
         it('Approved', async function () {
@@ -83,28 +91,34 @@ describe('Signature', function () {
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-approve-icon'))).length(1);
+            await txFinalEl.findElement(By.css('button#close')).click();
+            await this.driver.wait(
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                this.wait
+            );
         });
     }
 
     describe('Permission request from origin', function () {
         let authFormLocator = By.xpath("//div[contains(@class, '-originAuth-transaction')]");
         const REJECT_FOREVER = 'Reject forever';
+        let lastOrigin;
 
-        async function performPermissionRequest(origin) {
-            await this.driver.get(`http://${origin}`);
-            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        beforeEach(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+
+            const origin = this.currentTest.title != REJECT_FOREVER ? CUSTOMLIST[0] : CUSTOMLIST[1];
+            if (origin !== lastOrigin) {
+                await this.driver.get(`http://${origin}`);
+            }
             await this.driver.executeScript(() => {
                 // @ts-ignore
                 WavesKeeper.initialPromise.then((api) => {
                     api.publicState();
                 });
             });
-        }
 
-        beforeEach(async function () {
-            const origin = this.currentTest.title != REJECT_FOREVER ? CUSTOMLIST[0] : CUSTOMLIST[1];
-            await performPermissionRequest.call(this, origin);
-            await this.driver.get(this.extensionUrl);
+            await this.driver.switchTo().window(tabKeeper);
         });
 
         checkAnyTransaction(authFormLocator);
@@ -120,20 +134,32 @@ describe('Signature', function () {
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-reject-icon'))).length(1);
+            await txFinalEl.findElement(By.css('button#close')).click();
+            await this.driver.wait(
+                until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                this.wait
+            );
         });
     });
 
     describe('Authentication request from origin', function () {
-        beforeEach(async function () {
-            await this.driver.get(`http://${WHITELIST[0]}`);
+        before(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+            await this.driver.get(`http://${WHITELIST[3]}`);
             await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        });
+
+        beforeEach(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+
             await this.driver.executeScript(() => {
                 // @ts-ignore
                 WavesKeeper.initialPromise.then((api) => {
                     api.auth({ data: 'generated auth data' });
                 });
             });
-            await this.driver.get(this.extensionUrl);
+
+            await this.driver.switchTo().window(tabKeeper);
         });
 
         checkAnyTransaction(By.xpath("//div[contains(@class, '-auth-transaction')]"));
@@ -141,20 +167,27 @@ describe('Signature', function () {
 
     describe('Transactions', function () {
         async function performSignTransaction(tx: any) {
-            await this.driver.get(`http://${WHITELIST[0]}`);
-            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+            await this.driver.switchTo().window(tabOrigin);
+
             await this.driver.executeScript((tx) => {
                 // @ts-ignore
                 WavesKeeper.initialPromise.then((api) => {
                     api.signTransaction(tx);
                 });
             }, tx);
+
+            await this.driver.switchTo().window(tabKeeper);
         }
+
+        before(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+            await this.driver.get(`http://${WHITELIST[3]}`);
+            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        });
 
         describe('Issue', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, ISSUE);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-issue-transaction')]"));
@@ -165,7 +198,6 @@ describe('Signature', function () {
         describe('Transfer', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, TRANSFER);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-transfer-transaction')]"));
@@ -180,7 +212,6 @@ describe('Signature', function () {
         describe('Reissue', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, REISSUE);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-reissue-transaction')]"));
@@ -189,7 +220,6 @@ describe('Signature', function () {
         describe('Burn', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, BURN);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-burn-transaction')]"));
@@ -202,7 +232,6 @@ describe('Signature', function () {
         describe('Lease', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, LEASE);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-lease-transaction')]"));
@@ -211,7 +240,6 @@ describe('Signature', function () {
         describe('Cancel lease', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, CANCEL_LEASE);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-cancelLease-transaction')]"));
@@ -220,7 +248,6 @@ describe('Signature', function () {
         describe('Alias', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, ALIAS);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-alias-transaction')]"));
@@ -232,7 +259,6 @@ describe('Signature', function () {
         describe('MassTransfer', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, MASS_TRANSFER);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-massTransfer-transaction')]"));
@@ -241,7 +267,6 @@ describe('Signature', function () {
         describe('Data', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, DATA);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-data-transaction')]"));
@@ -250,7 +275,6 @@ describe('Signature', function () {
         describe('SetScript', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, SET_SCRIPT);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-setScript-transaction')]"));
@@ -263,7 +287,6 @@ describe('Signature', function () {
         describe('Sponsorship', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, SPONSORSHIP);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-sponsorship-transaction')]"));
@@ -275,7 +298,6 @@ describe('Signature', function () {
         describe('SetAssetScript', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, SET_ASSET_SCRIPT);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-assetScript-transaction')]"));
@@ -286,7 +308,6 @@ describe('Signature', function () {
         describe('InvokeScript', function () {
             beforeEach(async function () {
                 await performSignTransaction.call(this, INVOKE_SCRIPT);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"));
@@ -324,15 +345,22 @@ describe('Signature', function () {
         };
 
         async function performSignOrder(script: (tx: any) => {}, tx: any) {
-            await this.driver.get(`http://${WHITELIST[0]}`);
-            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+            await this.driver.switchTo().window(tabOrigin);
+
             await this.driver.executeScript(script, tx);
+
+            await this.driver.switchTo().window(tabKeeper);
         }
+
+        before(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+            await this.driver.get(`http://${WHITELIST[3]}`);
+            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        });
 
         describe('Create', function () {
             beforeEach(async function () {
                 await performSignOrder.call(this, createOrder, CREATE_ORDER);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-createOrder-transaction')]"), 60 * 1000);
@@ -341,7 +369,6 @@ describe('Signature', function () {
         describe('Cancel', function () {
             beforeEach(async function () {
                 await performSignOrder.call(this, cancelOrder, CANCEL_ORDER);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-cancelOrder-transaction')]"));
@@ -350,10 +377,10 @@ describe('Signature', function () {
 
     describe('Multiple transactions package', function () {
         async function performSignTransactionPackage(tx: any[], name: string) {
-            await this.driver.get(`http://${WHITELIST[0]}`);
-            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+            await this.driver.switchTo().window(tabOrigin);
+
             await this.driver.executeScript(
-                (tx) => {
+                (tx, name) => {
                     // @ts-ignore
                     WavesKeeper.initialPromise.then((api) => {
                         api.signTransactionPackage(tx, name);
@@ -362,11 +389,18 @@ describe('Signature', function () {
                 tx,
                 name
             );
+
+            await this.driver.switchTo().window(tabKeeper);
         }
+
+        before(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+            await this.driver.get(`http://${WHITELIST[3]}`);
+            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        });
 
         beforeEach(async function () {
             await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
-            await this.driver.get(this.extensionUrl);
         });
 
         checkAnyTransaction(By.xpath("//div[contains(@class, '-package-transaction')]"));
@@ -374,20 +408,27 @@ describe('Signature', function () {
 
     describe('Custom data', function () {
         async function performSignCustomData(data: any) {
-            await this.driver.get(`http://${WHITELIST[0]}`);
-            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+            await this.driver.switchTo().window(tabOrigin);
+
             await this.driver.executeScript((data) => {
                 // @ts-ignore
                 WavesKeeper.initialPromise.then((api) => {
                     api.signCustomData(data);
                 });
             }, data);
+
+            await this.driver.switchTo().window(tabKeeper);
         }
+
+        before(async function () {
+            await this.driver.switchTo().window(tabOrigin);
+            await this.driver.get(`http://${WHITELIST[3]}`);
+            await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+        });
 
         describe('Version 1', function () {
             beforeEach(async function () {
                 await performSignCustomData.call(this, CUSTOM_DATA_V1);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-customData-transaction')]"));
@@ -396,7 +437,6 @@ describe('Signature', function () {
         describe('Version 2', function () {
             beforeEach(async function () {
                 await performSignCustomData.call(this, CUSTOM_DATA_V2);
-                await this.driver.get(this.extensionUrl);
             });
 
             checkAnyTransaction(By.xpath("//div[contains(@class, '-customData-transaction')]"));

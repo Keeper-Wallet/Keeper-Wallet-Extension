@@ -3,14 +3,14 @@ import { expect } from 'chai';
 import { clear } from './utils';
 import { App, Settings } from './utils/actions';
 
-describe('Account management', function () {
+describe('Account creation', function () {
     this.timeout(60 * 1000);
 
     before(async function () {
         await App.initVault.call(this);
         await Settings.setMaxSessionTimeout.call(this);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         await this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")), this.wait);
     });
 
@@ -198,7 +198,7 @@ describe('Account management', function () {
                             .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
                             .getText();
                         // reload page equals to close then open
-                        await this.driver.get(this.extensionUrl);
+                        await App.open.call(this);
                         expect(
                             await this.driver.wait(until.elementLocated(By.css('div.cant-select')), this.wait).getText()
                         ).to.be.equals(rightSeed);

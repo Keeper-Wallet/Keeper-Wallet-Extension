@@ -158,20 +158,24 @@ describe('Network management', function () {
                     await saveAndApplyBtn.click();
                     expect(await nodeAddressError.getText()).matches(/URL is required/i);
                 });
+
                 it('The address of non-existed node was entered', async function () {
                     await nodeAddressInput.sendKeys(invalidNodeUrl);
                     await saveAndApplyBtn.click();
-                    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
                     expect(
-                        await this.driver
-                            .findElement(
-                                By.xpath(
-                                    "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
-                                )
-                            )
-                            .getText()
-                    ).matches(/Incorrect node address/i);
+                        await this.driver.wait(
+                            until.elementTextMatches(
+                                this.driver.findElement(
+                                    By.xpath(
+                                        "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
+                                    )
+                                ),
+                                /Incorrect node address/i
+                            ),
+                            this.wait
+                        )
+                    ).not.to.be.throw;
                 });
 
                 it('Matcher address is not required field', async function () {

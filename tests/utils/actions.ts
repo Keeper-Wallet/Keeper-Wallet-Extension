@@ -8,7 +8,7 @@ import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './constants';
 
 export const App = {
     initVault: async function (password: string = DEFAULT_PASSWORD) {
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
 
         await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
 
@@ -26,7 +26,7 @@ export const App = {
     },
 
     resetVault: async function () {
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
 
         await this.driver
             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
@@ -37,6 +37,13 @@ export const App = {
             .click();
 
         await this.driver.wait(until.elementLocated(By.css('button#deleteAccount')), this.wait).click();
+    },
+    open: async function () {
+        await this.driver.get(this.extensionUrl);
+        await this.driver.wait(
+            until.elementIsVisible(this.driver.wait(until.elementLocated(By.css('.app')), this.wait)),
+            this.wait
+        );
     },
 };
 

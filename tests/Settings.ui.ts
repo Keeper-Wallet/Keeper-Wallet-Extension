@@ -31,7 +31,7 @@ describe('Settings', function () {
         await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
         await Settings.setMaxSessionTimeout.call(this);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         await this.driver
             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
             .click();
@@ -245,7 +245,7 @@ describe('Settings', function () {
             }
 
             after(async function () {
-                await this.driver.get(this.extensionUrl);
+                await App.open.call(this);
                 await Settings.clearCustomList.call(this);
             });
 
@@ -254,7 +254,7 @@ describe('Settings', function () {
                     const origin = CUSTOMLIST[0];
                     await publicStateFromOrigin.call(this, origin);
 
-                    await this.driver.get(this.extensionUrl);
+                    await App.open.call(this);
                     await this.driver.wait(
                         until.elementLocated(By.xpath("//div[contains(@class, '-originAuth-transaction')]")),
                         this.wait
@@ -296,7 +296,7 @@ describe('Settings', function () {
                     const origin = CUSTOMLIST[1];
                     await publicStateFromOrigin.call(this, origin);
 
-                    await this.driver.get(this.extensionUrl);
+                    await App.open.call(this);
                     await this.driver.wait(
                         until.elementLocated(By.xpath("//div[contains(@class, '-originAuth-transaction')]")),
                         this.wait
@@ -376,7 +376,7 @@ describe('Settings', function () {
 
             describe('Blocking', function () {
                 after(async function () {
-                    await this.driver.get(this.extensionUrl);
+                    await App.open.call(this);
 
                     await this.driver
                         .wait(
@@ -419,7 +419,7 @@ describe('Settings', function () {
 
             describe('Removing', function () {
                 after(async function () {
-                    await this.driver.get(this.extensionUrl);
+                    await App.open.call(this);
 
                     await this.driver
                         .wait(
@@ -457,7 +457,7 @@ describe('Settings', function () {
 
                     await publicStateFromOrigin.call(this, origin);
 
-                    await this.driver.get(this.extensionUrl);
+                    await App.open.call(this);
                     expect(
                         await this.driver.wait(
                             until.elementLocated(By.xpath("//div[contains(@class, '-originAuth-transaction')]")),
@@ -499,7 +499,7 @@ describe('Settings', function () {
             });
 
             it('Logout after "Browser timeout"', async function () {
-                await this.driver.get(this.extensionUrl);
+                await App.open.call(this);
                 await Settings.setMinSessionTimeout.call(this);
 
                 expect(

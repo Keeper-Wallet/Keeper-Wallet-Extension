@@ -1,6 +1,7 @@
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
+import { App } from './utils/actions';
 
 describe('Password management', () => {
     const PASSWORD = { SHORT: 'short', DEFAULT: 'strongpassword', NEW: 'verystrongpassword' };
@@ -13,7 +14,7 @@ describe('Password management', () => {
             secondPasswordErrorDiv: WebElement;
 
         before(async function () {
-            await this.driver.get(this.extensionUrl);
+            await App.open.call(this);
             // Get Started page
             await this.driver.wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait).click();
             // Protect Your Account page
@@ -81,7 +82,7 @@ describe('Password management', () => {
         let oldPasswordInput: WebElement, newFirstPasswordInput: WebElement, newSecondPasswordInput: WebElement;
 
         before(async function () {
-            await this.driver.get(this.extensionUrl);
+            await App.open.call(this);
             await this.driver
                 .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
                 .click();
@@ -192,7 +193,7 @@ describe('Password management', () => {
         }
 
         before(async function () {
-            await this.driver.get(this.extensionUrl);
+            await App.open.call(this);
         });
 
         it('Logout', async function () {

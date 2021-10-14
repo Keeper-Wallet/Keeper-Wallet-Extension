@@ -15,10 +15,9 @@ describe('Messages', function () {
         });
     };
 
-    async function sendMessageFromOrigin(origin: string, ms: number) {
-        ms = ms || DEFAULT_PAGE_LOAD_DELAY;
+    async function sendMessageFromOrigin(origin: string) {
         await this.driver.get(`https://${origin}`);
-        await this.driver.sleep(ms);
+        await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
         await this.driver.executeScript(sendMessage);
     }
 
@@ -30,7 +29,7 @@ describe('Messages', function () {
 
     after(async function () {
         await Settings.clearCustomList.call(this);
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         await App.resetVault.call(this);
     });
 
@@ -38,7 +37,7 @@ describe('Messages', function () {
         for (const origin of WHITELIST) {
             await sendMessageFromOrigin.call(this, origin);
 
-            await this.driver.get(this.extensionUrl);
+            await App.open.call(this);
             expect(
                 await this.driver
                     .wait(
@@ -55,7 +54,7 @@ describe('Messages', function () {
     it('When a message is received from a new resource, permission is requested to access', async function () {
         await sendMessageFromOrigin.call(this, CUSTOMLIST[0]);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         // permission request is shown
         expect(
             await this.driver.wait(
@@ -92,13 +91,15 @@ describe('Messages', function () {
     it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
         await sendMessageFromOrigin.call(this, lastOrigin);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         // permission request is shown
         await this.driver.wait(
             until.elementLocated(By.xpath("//div[contains(@class, '-originAuth-transaction')]")),
             this.wait
         );
-        await this.driver.findElement(By.css('button#approve')).click();
+        await this.driver
+            .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))), this.wait)
+            .click();
 
         expect(
             await this.driver.wait(
@@ -109,7 +110,7 @@ describe('Messages', function () {
     });
 
     it('When allowing access from settings - messages are displayed', async function () {
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
 
         await this.driver
             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-menu-settingsIcon')]")), this.wait)
@@ -135,7 +136,7 @@ describe('Messages', function () {
 
         await sendMessageFromOrigin.call(this, lastOrigin);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         expect(
             await this.driver
                 .wait(until.elementLocated(By.xpath("//div[contains(@class, '-messageList-messageList')]")), this.wait)
@@ -145,14 +146,11 @@ describe('Messages', function () {
     });
 
     it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
-        /*
-
-         */
-        await sendMessageFromOrigin.call(this, WHITELIST[0]);
+        await sendMessageFromOrigin.call(this, WHITELIST[3]);
         await this.driver.sleep(NOTIFICATION_REPEAT_DELAY);
-        await sendMessageFromOrigin.call(this, WHITELIST[0]);
+        await sendMessageFromOrigin.call(this, WHITELIST[3]);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         expect(
             await this.driver
                 .wait(until.elementLocated(By.xpath("//div[contains(@class, '-messageList-messageList')]")), this.wait)
@@ -162,9 +160,9 @@ describe('Messages', function () {
     });
 
     it('When receiving messages from several resources - messages are displayed in several blocks', async function () {
-        await sendMessageFromOrigin.call(this, WHITELIST[1]);
+        await sendMessageFromOrigin.call(this, WHITELIST[4]);
 
-        await this.driver.get(this.extensionUrl);
+        await App.open.call(this);
         expect(
             await this.driver
                 .wait(until.elementLocated(By.xpath("//div[contains(@class, '-messageList-messageList')]")), this.wait)
