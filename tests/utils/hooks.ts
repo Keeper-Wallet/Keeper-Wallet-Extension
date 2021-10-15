@@ -9,7 +9,7 @@ export const mochaHooks = () => {
 
     return {
         async beforeAll() {
-            this.timeout(5 * 60 * 1000);
+            this.timeout(15 * 60 * 1000);
             this.wait = 10 * 1000;
             this.selenium = await (await GenericContainer.fromDockerfile(path.resolve(__dirname, '..', '..')).build())
                 .withExposedPorts(4444)
