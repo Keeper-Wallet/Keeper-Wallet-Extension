@@ -7,6 +7,7 @@ COPY package-lock.json .
 RUN npm install
 
 COPY . .
+RUN echo '{}' > config.json
 
 RUN npm run dist
 

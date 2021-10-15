@@ -27,3 +27,6 @@ jobs:
 
       - name: Run tests
         run: npm run test
+
+      - name: Remove "dangling" Docker images
+        run: docker rmi $(docker images -f "dangling=true" -q --no-trunc)
