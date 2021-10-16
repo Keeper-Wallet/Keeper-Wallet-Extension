@@ -26,6 +26,7 @@ export class MessageController extends EventEmitter {
 
         // Signing methods from WalletController
         this.signTx = options.signTx;
+        this.jsonTx = options.jsonTx;
         this.signWaves = options.signWaves;
         this.auth = options.auth;
         this.signRequest = options.signRequest;
@@ -66,6 +67,7 @@ export class MessageController extends EventEmitter {
         try {
             message = await this._generateMessage(messageData);
         } catch (e) {
+            console.log(e);
             throw ERRORS.REQUEST_ERROR(messageData);
         }
 
@@ -587,11 +589,12 @@ export class MessageController extends EventEmitter {
                 result.messageHash = messageMeta.id;
                 result.bytes = Array.from(messageMeta.bytes);
 
-                switch (result.data.type) {
-                    case 9:
-                        result.lease = await this.txInfo(result.data.data.leaseId);
-                        break;
+                if (result.data.type === 9) {
+                    result.lease = await this.txInfo(result.data.data.leaseId);
                 }
+                // transaction json before signed
+                const filledMessage = await this._fillSignableData({ ...result });
+                result.json = await this.jsonTx(result.account.address, filledMessage.data, result.account.network);
                 break;
             case 'cancelOrder':
                 result.amountAsset = message.data.amountAsset;
