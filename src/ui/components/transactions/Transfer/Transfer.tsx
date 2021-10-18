@@ -1,34 +1,30 @@
 import * as styles from './transfer.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { TransferCard } from './TransferCard';
 import { TransferInfo } from './TransferInfo';
-import { TransactionBottom } from '../TransactionBottom';
-import { TransactionWallet } from '../../wallets';
+import { TransactionFooter } from '../TransactionFooter';
+import { TransactionHeader } from '../TransactionHeader';
+import { TransactionDetails } from '../TransactionDetails';
 
-export class Transfer extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export const Transfer = (props) => {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.transferTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.confirmationRequest">Confirmation request</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TransactionHeader {...props} />
 
-                    <div className="margin-main">
-                        <TransferCard {...this.props} />
-                    </div>
-
-                    <TransferInfo message={message} assets={assets} />
+            <div className={`${styles.transferTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <TransferCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <TransactionDetails>
+                    <TransferInfo message={message} assets={assets} />
+                </TransactionDetails>
             </div>
-        );
-    }
-}
+
+            <TransactionFooter {...props} />
+        </div>
+    );
+};

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FinalStatus } from '../FinalStatus';
+import { TransactionStatus } from '../TransactionStatus';
 
 export const WavesAuthFinal = (props) => {
     return (
-        <FinalStatus
+        <TransactionStatus
             {...props}
             messages={{
                 send: 'sign.wavesAuthConfirmed',

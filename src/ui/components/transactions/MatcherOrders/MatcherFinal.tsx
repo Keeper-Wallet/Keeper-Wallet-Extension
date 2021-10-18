@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FinalStatus } from '../FinalStatus';
+import { TransactionStatus } from '../TransactionStatus';
 
 export const MatcherFinal = (props) => {
     return (
-        <FinalStatus
+        <TransactionStatus
             {...props}
             messages={{ send: 'sign.matcherSend', approve: 'sign.matcherConfirmed', reject: 'sign.matcherRejected' }}
         />

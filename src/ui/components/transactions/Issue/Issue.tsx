@@ -1,34 +1,30 @@
 import * as styles from './index.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { IssueCard } from './IssueCard';
 import { IssueInfo } from './IssueInfo';
-import { TransactionBottom } from '../TransactionBottom';
-import { TransactionWallet } from '../../wallets';
+import { TransactionFooter } from '../TransactionFooter';
+import { TransactionHeader } from '../TransactionHeader';
+import { TransactionDetails } from '../TransactionDetails';
 
-export class Issue extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export const Issue = (props) => {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.issueTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.confirmationRequest">Confirmation request</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TransactionHeader {...props} />
 
-                    <div className="margin-main">
-                        <IssueCard {...this.props} />
-                    </div>
-
-                    <IssueInfo message={message} assets={assets} />
+            <div className={`${styles.issueTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <IssueCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <TransactionDetails>
+                    <IssueInfo message={message} assets={assets} />
+                </TransactionDetails>
             </div>
-        );
-    }
-}
+
+            <TransactionFooter {...props} />
+        </div>
+    );
+};

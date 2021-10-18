@@ -1,14 +1,15 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
-import { TransactionWallet } from '../../wallets';
 import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent, DropdownButton } from 'ui/components/ui';
 import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
 import { BigNumber } from '@waves/bignumber';
+import { TransactionHeader } from '../TransactionHeader';
+import { SignClass } from '../SignClass';
 
 class OriginAuthComponent extends SignClass {
     getRef = (el) => this.setState({ el });
@@ -36,11 +37,9 @@ class OriginAuthComponent extends SignClass {
 
         return (
             <div className={styles.transaction}>
-                <div className={`${styles.originAuthTxScrollBox} transactionContent`} ref={this.getRef}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.allowAccess">Allow access</Trans>
-                    </div>
+                <TransactionHeader {...this.props} />
 
+                <div className={`${styles.originAuthTxScrollBox} transactionContent`} ref={this.getRef}>
                     <div className="margin-main">
                         <OriginAuthCard {...this.props} />
                     </div>
@@ -75,8 +74,6 @@ class OriginAuthComponent extends SignClass {
                     <ApproveBtn onClick={(e) => this.props.approve(e, params)} type={BUTTON_TYPE.SUBMIT}>
                         <Trans i18nKey="sign.auth">Auth</Trans>
                     </ApproveBtn>
-
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
                 </div>
             </div>
         );

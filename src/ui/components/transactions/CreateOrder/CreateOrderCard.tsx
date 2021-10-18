@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Asset, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getAmountSign, getPrice, getPriceAmount, getPriceSign, messageType } from './parseTx';
@@ -21,8 +20,7 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
         const amount = getMoney(getAmount(tx), assets);
         const price = getMoney(getPrice(tx), assets);
 
-        let iGet;
-        let sign = '';
+        let iGet, sign;
 
         if (!isSell) {
             sign = `${getAmountSign(tx)} `;
@@ -61,11 +59,7 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }

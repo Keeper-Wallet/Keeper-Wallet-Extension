@@ -14,17 +14,6 @@ export class AssetScriptInfo extends React.PureComponent<ISetScriptInfo> {
         const fee = getMoney(getFee(tx), assets);
         return (
             <div>
-                <div className="font600 tag1 basic500 margin-min">
-                    <Trans i18nKey="transactions.assetScriptWarningHeader">
-                        Warning: actions can block transactions with your asset
-                    </Trans>
-                </div>
-                <div className="tag1 basic500 margin-main">
-                    <Trans i18nKey="transactions.assetScriptWarningDescription">
-                        We do not recommend you submit script transactions unless you are an experienced user.
-                    </Trans>
-                </div>
-
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey="transactions.txid">TXID</Trans>

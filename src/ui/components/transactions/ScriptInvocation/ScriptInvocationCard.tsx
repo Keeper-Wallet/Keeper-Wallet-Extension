@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { ShowScript } from '../../ui';
 import { messageType } from './parseTx';
 
@@ -50,10 +49,6 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
                         showNotify={true}
                         hideScript={this.props.collapsed}
                     />
-
-                    <div className={`${styles.origin}`}>
-                        <OriginWarning message={message} />
-                    </div>
                 </div>
             </div>
         );

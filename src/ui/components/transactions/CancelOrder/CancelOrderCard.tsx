@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 
 export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
@@ -11,8 +10,6 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
         const className = cn(styles.cancelOrderTransactionCard, this.props.className, {
             [styles.cancelOrderCard_collapsed]: this.props.collapsed,
         });
-
-        const { message } = this.props;
 
         return (
             <div className={className}>
@@ -30,11 +27,7 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }

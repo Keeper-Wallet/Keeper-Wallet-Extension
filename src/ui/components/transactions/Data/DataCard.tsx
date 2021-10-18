@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
@@ -41,10 +40,6 @@ export class DataCard extends React.PureComponent<IData> {
                         showNotify={true}
                         hideScript={this.props.collapsed}
                     />
-
-                    <div className={`${styles.origin} margin-main-top`}>
-                        <OriginWarning message={message} />
-                    </div>
                 </div>
             </div>
         );

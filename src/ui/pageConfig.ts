@@ -1,37 +1,36 @@
 import {
-    Welcome,
-    Login,
-    Intro,
-    Conditions,
-    NewAccount,
-    Import,
+    AccountInfo,
     Assets,
+    BackUpSeed,
+    ChangeAccountName,
+    ChangePassword,
+    Conditions,
+    ConfirmBackup,
+    DeleteAccount,
+    DeleteActiveAccount,
+    ForgotPassword,
+    Import,
+    Info,
+    Intro,
+    LangsSettings,
+    Login,
+    MessageList,
+    Messages,
+    NetworksSettings,
+    NewAccount,
     NewWallet,
     NewWalletName,
-    BackUpSeed,
-    ConfirmBackup,
-    Settings,
-    Info,
-    AccountInfo,
-    DeleteActiveAccount,
-    ChangeAccountName,
-    QRCodeSelectedAccount,
-    NetworksSettings,
-    LangsSettings,
-    ChangePassword,
-    DeleteAccount,
-    Messages,
-    ForgotPassword,
-    SelectTxAccount,
+    Notifications,
     PairingAccountQr,
     PermissionsSettings,
-    MessageList,
+    QRCodeSelectedAccount,
+    SelectTxAccount,
+    Settings,
     SettingsGeneral,
-    Notifications,
+    Welcome,
 } from './components/pages';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
-
 
 export const PAGES = {
     WELCOME: 'welcome',
@@ -82,7 +81,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: null,
-        }
+        },
     },
     [PAGES.CONDITIONS]: {
         component: Conditions,
@@ -93,7 +92,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: null,
-        }
+        },
     },
     [PAGES.LOGIN]: {
         component: Login,
@@ -104,7 +103,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: null,
-        }
+        },
     },
     [PAGES.NEW]: {
         component: NewAccount,
@@ -112,7 +111,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: null,
-        }
+        },
     },
     [PAGES.IMPORT]: {
         component: Import,
@@ -120,7 +119,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: true,
             back: null,
-        }
+        },
     },
     [PAGES.IMPORT_FROM_ASSETS]: {
         component: Import,
@@ -128,7 +127,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.NEW_ACCOUNT]: {
         component: NewWallet,
@@ -142,7 +141,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.NEW_ACCOUNT_BACK]: {
         component: NewWallet,
@@ -153,12 +152,12 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.ACCOUNT_NAME]: {
         component: NewWalletName,
         props: {
-            next: PAGES.SAVE_BACKUP
+            next: PAGES.SAVE_BACKUP,
         },
         bottom: {
             hide: true,
@@ -167,13 +166,13 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.NEW_ACCOUNT_BACK,
-        }
+        },
     },
     [PAGES.ACCOUNT_NAME_SEED]: {
         component: NewWalletName,
         props: {
             isCreate: true,
-            next: PAGES.SAVE_BACKUP
+            next: PAGES.SAVE_BACKUP,
         },
         bottom: {
             hide: true,
@@ -182,12 +181,11 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.IMPORT_SEED_BACK,
-        }
+        },
     },
     [PAGES.CHANGE_ACCOUNT_NAME]: {
         component: ChangeAccountName,
-        props: {
-        },
+        props: {},
         bottom: {
             hide: true,
         },
@@ -195,7 +193,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.SAVE_BACKUP]: {
         component: BackUpSeed,
@@ -206,7 +204,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.ACCOUNT_NAME,
-        }
+        },
     },
     [PAGES.CONFIRM_BACKUP]: {
         component: ConfirmBackup,
@@ -217,12 +215,12 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: PAGES.SAVE_BACKUP,
-        }
+        },
     },
     [PAGES.IMPORT_SEED]: {
         component: ImportSeed,
         props: {
-            isNew: true
+            isNew: true,
         },
         bottom: {
             hide: true,
@@ -231,7 +229,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.IMPORT_SEED_BACK]: {
         component: ImportSeed,
@@ -242,7 +240,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.ASSETS]: {
         component: Assets,
@@ -250,7 +248,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: true,
             back: null,
-        }
+        },
     },
     [PAGES.SETTINGS]: {
         component: Settings,
@@ -262,7 +260,7 @@ export const PAGES_CONF = {
             hasSettings: false,
             back: false,
             close: true,
-        }
+        },
     },
     [PAGES.INFO]: {
         component: Info,
@@ -273,7 +271,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.ACCOUNT_INFO]: {
         component: AccountInfo,
@@ -285,7 +283,7 @@ export const PAGES_CONF = {
             hasSettings: false,
             back: true,
             deleteAccount: false,
-        }
+        },
     },
     [PAGES.DELETE_ACTIVE_ACCOUNT]: {
         component: DeleteActiveAccount,
@@ -296,7 +294,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.PAIRING]: {
         component: PairingAccountQr,
@@ -307,7 +305,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.QR_CODE_SELECTED]: {
         component: QRCodeSelectedAccount,
@@ -318,7 +316,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.INTRO]: {
         component: Intro,
@@ -329,7 +327,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: null,
-        }
+        },
     },
     [PAGES.GENERAL_SETTINGS]: {
         component: SettingsGeneral,
@@ -351,7 +349,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.PERMISSIONS]: {
         component: PermissionsSettings,
@@ -362,7 +360,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.LANGS_SETTINGS]: {
         component: LangsSettings,
@@ -373,13 +371,13 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.LANGS_SETTINGS_INTRO]: {
         component: LangsSettings,
         props: {
             confirm: true,
-            hideTitle: true
+            hideTitle: true,
         },
         bottom: {
             hide: true,
@@ -388,7 +386,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: false,
-        }
+        },
     },
     [PAGES.CHANGE_PASSWORD]: {
         component: ChangePassword,
@@ -399,7 +397,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.DELETE_ACCOUNT]: {
         component: DeleteAccount,
@@ -410,7 +408,7 @@ export const PAGES_CONF = {
             hasLogo: true,
             hasSettings: false,
             back: true,
-        }
+        },
     },
     [PAGES.FORGOT]: {
         component: ForgotPassword,
@@ -421,7 +419,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: false,
-        }
+        },
     },
     [PAGES.NOTIFICATIONS]: {
         component: Notifications,
@@ -440,10 +438,10 @@ export const PAGES_CONF = {
             hide: true,
         },
         menu: {
-            hasLogo: true,
+            hasLogo: false,
             hasSettings: false,
             back: false,
-        }
+        },
     },
     [PAGES.MESSAGES_LIST]: {
         component: MessageList,
@@ -454,7 +452,7 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: false,
             back: false,
-        }
+        },
     },
     [PAGES.CHANGE_TX_ACCOUNT]: {
         component: SelectTxAccount,
@@ -465,6 +463,6 @@ export const PAGES_CONF = {
             hasLogo: false,
             hasSettings: true,
             back: false,
-        }
-    }
+        },
+    },
 };

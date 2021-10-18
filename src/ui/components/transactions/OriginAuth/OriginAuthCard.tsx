@@ -34,14 +34,7 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
                         </div>
                     )}
                 </div>
-                {collapsed ? null : (
-                    <div className={styles.cardContent}>
-                        <div className={styles.originAuthOriginAddress}>{origin}</div>
-                        <div className={styles.originAuthOriginDescription}>
-                            <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
-                        </div>
-                    </div>
-                )}
+                {collapsed ? null : <div className={styles.cardContent} />}
             </div>
         );
     }

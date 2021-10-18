@@ -1,34 +1,27 @@
 import * as styles from './matcher.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { MatcherCard } from './MatcherCard';
 import { MatcherInfo } from './MatcherInfo';
-import { TransactionWallet } from '../../wallets';
-import { TransactionBottom } from '../TransactionBottom';
+import { TransactionFooter } from '../TransactionFooter';
+import { TransactionHeader } from '../TransactionHeader';
 
-export class MatcherOrders extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export const MatcherOrders = (props) => {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.matcherTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.signMatcherRequest">Sign a request to the Matcher</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TransactionHeader {...props} />
 
-                    <div className="margin-main">
-                        <MatcherCard {...this.props} />
-                    </div>
-
-                    <MatcherInfo message={message} assets={assets} />
+            <div className={`${styles.matcherTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <MatcherCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <MatcherInfo message={message} assets={assets} />
             </div>
-        );
-    }
-}
+
+            <TransactionFooter {...props} />
+        </div>
+    );
+};

@@ -1,20 +1,31 @@
 import * as styles from './../pages/styles/transactions.styl';
 import * as React from 'react';
-import {Trans} from 'react-i18next';
+import cn from 'classnames';
+import { Trans } from 'react-i18next';
 
 export class OriginWarning extends React.PureComponent<{ message: any }> {
-    
     render(): React.ReactNode {
         const { message } = this.props;
+        const {
+            account: { network },
+        } = message;
+
+        const key = (key) => `bottom.${key}`;
+
         if (!message.origin) {
             return null;
         }
-        return <React.Fragment>
-            <div className={styles.originAddress}>{message.origin}</div>
-            <div className={styles.originDescription}>
-                <Trans i18nKey='transactions.originWarning'>wants to access your Waves Address</Trans>
-            </div>
-        </React.Fragment>
+
+        return (
+            <React.Fragment>
+                <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
+                <div className={cn(styles.originNetwork, 'flex')}>
+                    <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
+                    <span className={styles.networkBottom}>
+                        <Trans i18nKey={key(network)}>{network}</Trans>
+                    </span>
+                </div>
+            </React.Fragment>
+        );
     }
-    
 }

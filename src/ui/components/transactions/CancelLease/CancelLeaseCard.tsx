@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
@@ -19,7 +18,6 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
 
         const tx = { type: data.type, ...data.data };
         const amount = getMoney(getAmount(tx, message), assets);
-        const hasLease = !amount.getCoins().isNaN();
 
         return (
             <div className={className}>
@@ -42,11 +40,7 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }

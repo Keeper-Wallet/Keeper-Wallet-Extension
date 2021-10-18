@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 
 export class AliasCard extends React.PureComponent<IAlias> {
@@ -29,11 +28,7 @@ export class AliasCard extends React.PureComponent<IAlias> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }

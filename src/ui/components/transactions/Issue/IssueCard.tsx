@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance, ShowScript } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
@@ -47,10 +46,6 @@ export class IssueCard extends React.PureComponent<IIssue> {
                         optional={true}
                         hideScript={this.props.collapsed}
                     />
-
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
                 </div>
             </div>
         );

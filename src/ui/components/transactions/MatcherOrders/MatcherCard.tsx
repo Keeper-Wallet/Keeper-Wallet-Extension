@@ -8,8 +8,7 @@ import { messageType } from './parseTx';
 export class MatcherCard extends React.PureComponent<IMatcher> {
     render() {
         const { message, collapsed } = this.props;
-        const { data, origin } = message;
-        const tx = { type: data.type, ...data.data };
+        const { origin } = message;
         const className = cn(styles.matcherTransactionCard, this.props.className, {
             [styles.matcherCard_collapsed]: this.props.collapsed,
         });
@@ -39,14 +38,7 @@ export class MatcherCard extends React.PureComponent<IMatcher> {
                         </div>
                     )}
                 </div>
-                {collapsed ? null : (
-                    <div className={styles.cardContent}>
-                        <div className={styles.matcherOriginAddress}>{origin}</div>
-                        <div className={styles.matcherOriginDescription}>
-                            <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
-                        </div>
-                    </div>
-                )}
+                {collapsed ? null : <div className={styles.cardContent} />}
             </div>
         );
     }

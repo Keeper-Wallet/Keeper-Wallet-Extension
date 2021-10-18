@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { FinalStatus } from '../FinalStatus';
+import { TransactionStatus } from '../TransactionStatus';
 
 export const SetScriptFinal = (props) => {
-    return <FinalStatus {...props} />;
+    return <TransactionStatus {...props} />;
 };

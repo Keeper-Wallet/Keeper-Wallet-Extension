@@ -1,34 +1,27 @@
 import * as styles from './index.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
-import { TransactionBottom } from '../TransactionBottom';
-import { TransactionWallet } from '../../wallets';
+import { TransactionFooter } from '../TransactionFooter';
+import { TransactionHeader } from '../TransactionHeader';
 
-export class CustomData extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export const CustomData = (props) => {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.dataTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.confirmationRequest">Confirmation request</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TransactionHeader {...props} />
 
-                    <div className="margin-main">
-                        <CustomDataCard {...this.props} />
-                    </div>
-
-                    <CustomDataInfo message={message} assets={assets} />
+            <div className={`${styles.dataTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <CustomDataCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <CustomDataInfo message={message} assets={assets} />
             </div>
-        );
-    }
-}
+
+            <TransactionFooter {...props} />
+        </div>
+    );
+};

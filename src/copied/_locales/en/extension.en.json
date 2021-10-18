@@ -350,6 +350,7 @@
     "hide": "hide",
     "hideTransactions": "Hide transactions",
     "issureType": "Type",
+    "json": "JSON",
     "lease": "Start Lease",
     "leaseTx": "Leasing TX",
     "massTransfer": "Mass Send",

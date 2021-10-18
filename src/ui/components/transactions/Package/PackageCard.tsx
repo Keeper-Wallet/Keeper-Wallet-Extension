@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { getAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';
 
@@ -52,7 +51,7 @@ export class PackageCard extends React.PureComponent<IData> {
 
         return (
             <div className={`${myClassName} ${styles.packageTransactionCard} ${styles.groupTx}`}>
-                <div className={styles.groupBottom}></div>
+                <div className={styles.groupBottom}> </div>
                 <div className={styles.groupEffect}>
                     <div className={styles.cardHeader}>
                         <div className={styles.dataTxIcon}>
@@ -86,11 +85,7 @@ export class PackageCard extends React.PureComponent<IData> {
                         </div>
                     </div>
 
-                    <div className={styles.cardContent}>
-                        <div className={`${styles.origin} margin-main-top`}>
-                            <OriginWarning message={message} />
-                        </div>
-                    </div>
+                    <div className={styles.cardContent} />
                 </div>
             </div>
         );

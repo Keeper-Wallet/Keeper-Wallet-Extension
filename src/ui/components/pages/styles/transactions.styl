@@ -28,14 +28,17 @@
   color: $basic500;
 
 .originAddress
-  font-size: 11px;
+  font-size: 12px;
   display: block;
-  margin-top: 14px;
   word-break: break-all;
   text-decoration: none;
 
-.originDescription
-  font-size: 11px;
+.originNetwork
+  font-size: 12px;
+  text-transform: capitalize;
+
+.originNetworkIcon
+  margin-right: 8px;
 
 .txBalanceWrapper
   display: flex;
@@ -71,7 +74,7 @@
     border-top: 1px dashed $basic200;
 
   &Description
-    padding-bottom: 0px;
+    padding-bottom: 0;
 
   &Description + .txRow
     border-top: 0 none;
@@ -164,6 +167,10 @@
   span:first-child
     font-weight: 600;
 
+.txHeader
+  width: 100%;
+  padding: 0 14px;
+
 .txButtonsWrapper
   width: 100%;
   padding: 14px 14px 0 14px;
@@ -224,7 +231,7 @@
   margin: 0 auto;
   padding: 60px 0 0;
   background: $basic50;
-  height: 456px;
+  height: calc(100%-69px);
   position: relative;
   overflow: auto;
 
@@ -260,8 +267,9 @@
     background: $white;
     border-top: 1px solid $basic100;
     display: flex;
-    justify-content: space-between;
-    padding: 8px 14px 0;
+    text-align: center;
+    flex-wrap: wrap;
+    padding: 14px 14px 0 14px;
     width: 100%;
 
     button
