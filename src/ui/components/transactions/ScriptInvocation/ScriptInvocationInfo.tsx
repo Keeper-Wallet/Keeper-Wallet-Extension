@@ -1,44 +1,9 @@
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './scriptInvocation.styl';
-import { Balance, Button, BUTTON_TYPE, DateFormat } from '../../ui';
+import { Balance, DateFormat } from '../../ui';
 import { getAmounts, getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
-
-const MIN_COUNT = 0;
-
-const Transfers = ({ payment }) => {
-    return <div>Info</div>;
-};
-
-const ToggleList = ({ count, currentCount, onClick }) => {
-    const needShowBtn = count > MIN_COUNT;
-    const showAll = !currentCount || currentCount === MIN_COUNT;
-    const newCount = showAll ? count : MIN_COUNT;
-    const toggle = () => onClick(newCount);
-
-    if (!needShowBtn) {
-        return null;
-    }
-
-    return (
-        <div className={styles.toggleList}>
-            <Button onClick={toggle} type={BUTTON_TYPE.TRANSPARENT}>
-                {!showAll ? (
-                    <div className={styles.buttonTextCenter}>
-                        <Trans i18nKey="transactions.transfersClose">Hide</Trans>
-                        <i className={styles.arrowUp}></i>
-                    </div>
-                ) : (
-                    <div className={styles.buttonTextCenter}>
-                        <Trans i18nKey="transactions.transfersShowAll">Show All</Trans>
-                        <i className={styles.arrowDown}></i>
-                    </div>
-                )}
-            </Button>
-        </div>
-    );
-};
 
 export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
     readonly state = Object.create(null);
