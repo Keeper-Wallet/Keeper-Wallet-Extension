@@ -2,7 +2,7 @@ import { getAdapterByType } from '@waves/signature-adapter';
 import { libs as transactionsLibs } from '@waves/waves-transactions';
 import { waves } from '../controllers/wavesTransactionsController';
 import { BigNumber } from '@waves/bignumber';
-import create from '@waves/parse-json-bignumber';
+import create from 'parse-json-bignumber';
 
 const { messageEncrypt, messageDecrypt, sharedKey, base58Encode } = transactionsLibs.crypto;
 const { stringify } = create({ BigNumber });
