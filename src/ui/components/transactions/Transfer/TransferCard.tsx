@@ -3,9 +3,10 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
 import cn from 'classnames';
-import { Balance } from '../../ui';
+import { Attachment, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
+import { readAttachment } from '../../../utils/waves';
 
 export class TransferCard extends React.PureComponent<ITransfer> {
     render() {
@@ -26,7 +27,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.transfer">Send</Trans>
+                            <Trans i18nKey="transactions.transfer">Transfer</Trans>
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -40,7 +41,26 @@ export class TransferCard extends React.PureComponent<ITransfer> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent} />
+                <div className={styles.cardContent}>
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.recipient">Recipient</Trans>
+                        </div>
+                        <div className={styles.txValue}>{tx.recipient}</div>
+                    </div>
+
+                    {tx.attachment && tx.attachment.length ? (
+                        <div className={`${styles.txRow} ${styles.txRowDescription}`}>
+                            <div className="tx-title tag1 basic500">
+                                <Trans i18nKey="transactions.attachment">Attachment</Trans>
+                            </div>
+                            <Attachment
+                                className={`${styles.txValue} plate fullwidth`}
+                                attachment={readAttachment(tx.attachment)}
+                            />
+                        </div>
+                    ) : null}
+                </div>
             </div>
         );
     }
