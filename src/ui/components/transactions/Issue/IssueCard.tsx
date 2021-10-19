@@ -26,7 +26,17 @@ export class IssueCard extends React.PureComponent<IIssue> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.tokenGeneration">Token Generation</Trans>
+                            {!tx.reissuable && !tx.decimals && tx.quantity == 1 ? (
+                                !tx.script ? (
+                                    <Trans i18nKey="transactions.issueNFT" />
+                                ) : (
+                                    <Trans i18nKey="transactions.issueSmartNFT" />
+                                )
+                            ) : !tx.script ? (
+                                <Trans i18nKey="transactions.issueToken" />
+                            ) : (
+                                <Trans i18nKey="transactions.issueSmartToken" />
+                            )}
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -40,12 +50,41 @@ export class IssueCard extends React.PureComponent<IIssue> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <ShowScript
-                        script={tx.script}
-                        showNotify={true}
-                        optional={true}
-                        hideScript={this.props.collapsed}
-                    />
+                    {tx.description ? (
+                        <div className={styles.txRow}>
+                            <div className="tx-title tag1 basic500">
+                                <Trans i18nKey="transactions.description">Description</Trans>
+                            </div>
+                            <div className={styles.txValue}>{tx.description}</div>
+                        </div>
+                    ) : null}
+
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.issureType">Type</Trans>
+                        </div>
+                        <div className={styles.txValue}>
+                            {tx.reissuable ? (
+                                <Trans i18nKey="transactions.reissuable">Reissuable</Trans>
+                            ) : (
+                                <Trans i18nKey="transactions.noReissuable">Not reissuable</Trans>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.script">Script</Trans>
+                        </div>
+                        <div className={styles.txValue}>
+                            <ShowScript
+                                script={tx.script}
+                                showNotify={true}
+                                optional={true}
+                                hideScript={this.props.collapsed}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
