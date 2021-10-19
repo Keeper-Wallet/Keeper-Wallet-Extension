@@ -38,7 +38,7 @@ class NotificationsComponent extends React.Component {
     readonly state = {} as any;
     readonly props;
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
         const { origins, activeNotification, messages, notifications } = props;
         if (!activeNotification && notifications.length) {
             props.setTab(PAGES.MESSAGES_LIST);
@@ -69,7 +69,7 @@ class NotificationsComponent extends React.Component {
         };
     }
 
-    closeHandler = (e) => {
+    closeHandler = () => {
         this._deleteMessages(null);
         this.props.closeNotificationWindow();
     };
@@ -83,7 +83,7 @@ class NotificationsComponent extends React.Component {
         this.props.setShowNotification({ origin: this.state.origin, canUse });
     };
 
-    nextHandler = (e) => {
+    nextHandler = () => {
         const nextNotification = this.state.notifications.filter(([item]) => item.origin !== this.state.origin)[0];
         this._deleteMessages(nextNotification || null);
     };
@@ -103,6 +103,15 @@ class NotificationsComponent extends React.Component {
 
         return (
             <div className={`${styles.messageList} ${styles.messageListInner}`}>
+                <div className={styles.walletWrapper}>
+                    <TransactionWallet
+                        type={'clean'}
+                        onSelect={this.selectAccountHandler}
+                        account={this.props.selectedAccount}
+                        hideButton={false}
+                    />
+                </div>
+
                 <div className={styles.messageListScrollBox}>
                     {activeNotification.map((notification) => (
                         <NotificationItem notification={notification} key={notification.id} />
@@ -143,14 +152,6 @@ class NotificationsComponent extends React.Component {
                             <Trans i18nKey="notifications.closeBtn">Close</Trans>
                         </Button>
                     )}
-                </div>
-
-                <div className={styles.walletWrapper}>
-                    <TransactionWallet
-                        onSelect={this.selectAccountHandler}
-                        account={this.props.selectedAccount}
-                        hideButton={false}
-                    />
                 </div>
             </div>
         );

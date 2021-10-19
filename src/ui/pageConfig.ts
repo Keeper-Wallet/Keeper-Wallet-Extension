@@ -438,7 +438,7 @@ export const PAGES_CONF = {
             hide: true,
         },
         menu: {
-            hasLogo: false,
+            hasLogo: true,
             hasSettings: false,
             back: false,
         },

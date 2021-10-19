@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button, BUTTON_TYPE } from '../ui';
 import cn from 'classnames';
-import { TransactionWallet } from '../wallets';
 import oauth from './OriginAuth';
 import { isMe as isOrder } from './CreateOrder/parseTx';
+import { TransactionHeader } from './TransactionHeader';
 
 const Error = ({ approveError }) => {
     return (
@@ -61,10 +61,12 @@ export class FinalTransaction extends React.PureComponent {
         }
 
         return (
-            <div className={styles.txFinal}>
-                <div className={className}></div>
+            <div className={styles.transaction}>
+                <TransactionHeader {...this.props} hideButton={true} />
 
-                <div className={styles.txFinalContentWrapper}>
+                <div className={className}> </div>
+
+                <div className={styles.txScrollBox}>
                     <div className={styles.finalTxContent}>
                         <div className="margin-main-top margin-main-big">
                             {isApprove || isReject ? (
@@ -114,7 +116,7 @@ export class FinalTransaction extends React.PureComponent {
                         ) : null}
 
                         {(isShowList && isShowClose) || (isShowNext && isShowList) ? (
-                            <div className={styles.buttonMargin}></div>
+                            <div className={styles.buttonMargin}> </div>
                         ) : null}
 
                         {isShowNext ? (
@@ -130,20 +132,6 @@ export class FinalTransaction extends React.PureComponent {
                             </Button>
                         ) : null}
                     </div>
-
-                    {isSend && isApprove ? (
-                        <TransactionWallet
-                            className={styles.finalTxWallet}
-                            account={this.props.selectedAccount}
-                            hideButton={true}
-                        />
-                    ) : (
-                        <TransactionWallet
-                            className={styles.finalTxWallet}
-                            account={this.props.selectedAccount}
-                            hideButton={true}
-                        />
-                    )}
                 </div>
             </div>
         );

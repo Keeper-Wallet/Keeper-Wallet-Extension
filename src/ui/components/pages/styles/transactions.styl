@@ -24,8 +24,11 @@
   align-items: center;
 
 .cardContent
-  padding-left: 58px;
-  color: $basic500;
+  .txRow
+    padding-bottom: 0;
+
+    & + .txRow
+      border-top: none;
 
 .originAddress
   font-size: 12px;
@@ -43,6 +46,9 @@
 .txBalanceWrapper
   display: flex;
   flex-wrap: wrap;
+
+.txValue
+  width: 100%;
 
 .txRow
   width: 100%;
@@ -225,7 +231,7 @@
 .txBigIcon
   width: 80px;
   height: 80px;
-  margin: 0 auto 4px auto;
+  margin: 14px auto 0 auto;
 
 .txFinal
   margin: 0 auto;
