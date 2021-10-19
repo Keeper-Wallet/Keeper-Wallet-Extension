@@ -36,7 +36,7 @@ export const Menu = ({setTab, onBack, hasClose=false, hasBack=false, onDelete, .
     const navBack = () => onBack();
 
     return (
-        <div className={`${styles.menu}`}>
+        <div>
             <Logo {...props}/>
             <Settings leftClick={leftClick} rightClick={rightClick} {...props}/>
             <Back hasBack={hasBack} onClick={navBack}/>
