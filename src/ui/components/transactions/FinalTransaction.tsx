@@ -48,10 +48,6 @@ export class FinalTransaction extends React.PureComponent {
         const Card = config.card;
         const network = selectedAccount && selectedAccount.networkCode;
         const txLink = `https://${network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
-        const className = cn(styles.txBigIcon, 'margin-main', {
-            'tx-reject-icon': isReject,
-            'tx-approve-icon': isApprove,
-        });
         const isNotOrder = !isOrder(message.data, message.type);
 
         if (config.type === oauth.type && !isShowClose) {
@@ -60,78 +56,79 @@ export class FinalTransaction extends React.PureComponent {
             return null;
         }
 
+        const showExtraButton = (isShowList && isShowClose) || (isShowNext && isShowList);
+
         return (
             <div className={styles.transaction}>
                 <TransactionHeader {...this.props} hideButton={true} />
 
-                <div className={className}> </div>
+                <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
+                    {isReject || isApprove ? (
+                        <div
+                            className={cn(styles.txBigIcon, 'margin-main', {
+                                'tx-reject-icon': isReject,
+                                'tx-approve-icon': isApprove,
+                            })}
+                        />
+                    ) : null}
 
-                <div className={styles.txScrollBox}>
-                    <div className={styles.finalTxContent}>
-                        <div className="margin-main-top margin-main-big">
-                            {isApprove || isReject ? (
-                                <div className="center">
-                                    <FinalComponent
-                                        isApprove={isApprove}
-                                        isReject={isReject}
-                                        isSend={message.broadcast}
-                                        message={message}
-                                        assets={assets}
-                                    />
-                                </div>
-                            ) : null}
-                            {isError ? (
-                                <div className="headline2">
-                                    <Error approveError={transactionStatus.approveError} />
-                                </div>
-                            ) : null}
-                        </div>
-
-                        <Card message={message} assets={assets} collapsed={false} />
-
-                        {isSend && isApprove && isNotOrder && (
-                            <div className="center margin-main-big-top">
-                                <a rel="noopener noreferrer" className="link black" href={txLink} target="_blank">
-                                    <Trans i18nKey="sign.viewTransaction">View Transaction</Trans>
-                                </a>
+                    <div className="margin-main-top margin-main-big">
+                        {isApprove || isReject ? (
+                            <div className="center">
+                                <FinalComponent
+                                    isApprove={isApprove}
+                                    isReject={isReject}
+                                    isSend={message.broadcast}
+                                    message={message}
+                                    assets={assets}
+                                />
                             </div>
-                        )}
-                        {!isNotOrder && (
-                            <div className={`${styles.txRow} margin-main-top`}>
-                                <div className="basic500 tx-title tag1">
-                                    <Trans i18nKey="transactions.orderId">Order ID</Trans>
-                                </div>
-                                <div className="black">{message.messageHash}</div>
+                        ) : null}
+                        {isError ? (
+                            <div className="headline2">
+                                <Error approveError={transactionStatus.approveError} />
                             </div>
-                        )}
+                        ) : null}
                     </div>
+
+                    <Card message={message} assets={assets} collapsed={false} />
+
+                    {isSend && isApprove && isNotOrder && (
+                        <div className="center margin-main-big-top">
+                            <a rel="noopener noreferrer" className="link black" href={txLink} target="_blank">
+                                <Trans i18nKey="sign.viewTransaction">View Transaction</Trans>
+                            </a>
+                        </div>
+                    )}
+                    {!isNotOrder && (
+                        <div className={`${styles.txRow} margin-main-top`}>
+                            <div className="basic500 tx-title tag1">
+                                <Trans i18nKey="transactions.orderId">Order ID</Trans>
+                            </div>
+                            <div className="black">{message.messageHash}</div>
+                        </div>
+                    )}
                 </div>
 
-                <div className={styles.txFinalFooterWrapper}>
-                    <div className={styles.txFinalButtonWrapper}>
-                        {isShowList ? (
-                            <Button type={BUTTON_TYPE.SUBMIT} onClick={onList} className={styles.closeBtn}>
-                                <Trans i18nKey="sign.pendingList">Pending list</Trans>
-                            </Button>
-                        ) : null}
+                <div className={cn(styles.txButtonsWrapper, { ['buttons-wrapper']: showExtraButton })}>
+                    {isShowList ? (
+                        <Button onClick={onList}>
+                            <Trans i18nKey="sign.pendingList">Pending list</Trans>
+                        </Button>
+                    ) : null}
 
-                        {(isShowList && isShowClose) || (isShowNext && isShowList) ? (
-                            <div className={styles.buttonMargin}> </div>
-                        ) : null}
+                    {isShowNext ? (
+                        <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext}>
+                            <Trans i18nKey="sign.nextTransaction">Next transaction</Trans>
+                        </Button>
+                    ) : null}
 
-                        {isShowNext ? (
-                            <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext} className={styles.nextBtn}>
-                                <Trans i18nKey="sign.nextTransaction">Next transaction</Trans>
-                            </Button>
-                        ) : null}
-
-                        {isShowClose ? (
-                            <Button onClick={onClose} className={styles.closeBtn}>
-                                {isError ? <Trans i18nKey="sign.understand">I understand</Trans> : null}
-                                {isReject || isApprove ? <Trans i18nKey="sign.ok">Close</Trans> : null}
-                            </Button>
-                        ) : null}
-                    </div>
+                    {isShowClose ? (
+                        <Button onClick={onClose}>
+                            {isError ? <Trans i18nKey="sign.understand">I understand</Trans> : null}
+                            {isReject || isApprove ? <Trans i18nKey="sign.ok">Close</Trans> : null}
+                        </Button>
+                    ) : null}
                 </div>
             </div>
         );
