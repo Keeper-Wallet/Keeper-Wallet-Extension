@@ -1,57 +1,30 @@
 @import './../../../styles/colors.styl';
 
-.import
-  width: 100%;
-  position: relative;
-
-.topMargin
-  margin: 84px 0 40px 0;
-
-.label
-  margin-bottom: 7px;
-
-.content
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
-  display: inline-block;
-  height: 60%;
+.root
+  margin: 14px auto 0 ;
   width: 240px;
+
+.importIcon
+  display: block;
   margin: auto;
 
-  .importIcon
-    margin: -70px auto 0 auto;
-    width: 220px;
-    height: auto;
-    display: block;
-    min-height: 200px;
-    background-size: contain;
+.importButtons
+  margin-top: 40px;
 
-  .importChooser
+.importButtonsItem
+  padding: 14px 0;
+
+  &:first-child
+    padding-top: 0;
+
+  &:not(:last-child)
     border-bottom: 1px solid $accent50;
-    padding: 14px 0;
 
-    &:first-child
-      padding-top: 0;
-
-    &:last-child
-      border-bottom: 0 none;
-
-    button
-      display: flex;
-      align-items: flex-start;
-      flex-direction: column;
-      font-family: Roboto;
-      background: url(../../../assets/img/arrow-right-14-basic-200.svg) right center no-repeat;
-      padding: 0;
-      height: 42px;
-      width: 100%;
-
-      &:hover
-        background: url(../../../assets/img/arrow-right-14-basic-200.svg) right center no-repeat;
-
-      div
-        margin: 3px 0;
+  button
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    height: 42px;
+    background: url(../../../assets/img/arrow-right-14-basic-200.svg) right center no-repeat;
+    text-align: left;
