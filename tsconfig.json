@@ -8,8 +8,7 @@
     "jsx": "react",
     "lib": [
       "ES2017",
-      "DOM",
-      "node"
+      "DOM"
     ],
     "baseUrl": "./src",
     "paths": {
