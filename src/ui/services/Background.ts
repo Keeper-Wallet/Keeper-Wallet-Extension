@@ -133,7 +133,7 @@ class Background {
         return this.background.initVault(password);
     }
 
-    async exportAccount(address, password, network): Promise<void> {
+    async exportAccount(address, password, network): Promise<string> {
         await this.initPromise;
         return this.background.exportAccount(address, password, network);
     }

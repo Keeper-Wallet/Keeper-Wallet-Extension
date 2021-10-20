@@ -1,65 +1,65 @@
 import * as styles from './styles/import.styl';
+import { seedUtils } from '@waves/waves-transactions';
+import cn from 'classnames';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { Button } from '../ui';
+import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
 
-class ImportComponent extends React.PureComponent {
-    props: any;
-
-    render() {
-        return (
-            <div className={styles.import}>
-                <div className={styles.content}>
-                    <div className={styles.topMargin}>
-                        <i className={`import-icon ${styles.importIcon}`} />
-                        <form onSubmit={this.onClick.bind(this, 'new_account')}>
-                            <Button type="submit" id="createNewAccount">
-                                <Trans i18nKey="import.createNew">Create a new account</Trans>
-                            </Button>
-                        </form>
-                    </div>
-                    <div>
-                        <div className={`left border-bottom ${styles.importChooser}`}>
-                            <Button
-                                className="fullwidth"
-                                type="transparent"
-                                onClick={this.onClick.bind(this, 'import_seed')}
-                            >
-                                <div className="body1">
-                                    <Trans i18nKey="import.importAccount">Import Account</Trans>
-                                </div>
-                                <div className="body3 disabled500 font300">
-                                    <Trans i18nKey="import.viaSeed">Via SEED</Trans>
-                                </div>
-                            </Button>
-                        </div>
-                        {/*<div className={`left ${styles.importChooser}`}>*/}
-                        {/*<Button type='transparent' onClick={this.onClick.bind(this, 'import_device')}>*/}
-                        {/*<div className='body1'>*/}
-                        {/*<Trans i18nKey='import.useHardware'>Use secure hardware</Trans>*/}
-                        {/*</div>*/}
-                        {/*<div className='body3 disabled500 font300'>*/}
-                        {/*<Trans i18nKey='import.viaDevices'>Via Ledger</Trans>*/}
-                        {/*</div>*/}
-                        {/*</Button>*/}
-                        {/*</div>*/}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    onClick(tab, event) {
-        event.preventDefault();
-        this.props.setTab(tab);
-    }
+interface Props {
+    setTab: (newTab: string) => void;
 }
 
-const actions = {};
+export function Import({ setTab }: Props) {
+    return (
+        <div className={styles.root}>
+            <img className={styles.importIcon} src={wavesKeeperLock} alt="" width={220} height={200} />
 
-const mapStateToProps = function () {
-    return {};
-};
+            <Button
+                id="createNewAccount"
+                type="submit"
+                onClick={() => {
+                    setTab('new_account');
+                }}
+            >
+                <Trans i18nKey="import.createNew" />
+            </Button>
 
-export const Import = connect(mapStateToProps, actions)(ImportComponent);
+            <div className={cn('body1', 'disabled500', 'font300', styles.separator)}>
+                <Trans i18nKey="import.importVia">Or import via</Trans>
+            </div>
+
+            <div>
+                <div className={styles.importButtonsItem}>
+                    <Button
+                        className="fullwidth"
+                        data-testid="importSeed"
+                        type="transparent"
+                        onClick={() => {
+                            setTab('import_seed');
+                        }}
+                    >
+                        <div className="body1">
+                            <Trans i18nKey="import.viaSeed" />
+                        </div>
+                    </Button>
+                </div>
+
+                <div className={styles.importButtonsItem}>
+                    <Button
+                        className="fullwidth"
+                        data-testid="importKeystore"
+                        type="transparent"
+                        onClick={() => {
+                            setTab('import_keystore');
+                        }}
+                    >
+                        <div className="body1">
+                            <Trans i18nKey="import.viaKeystore" />
+                        </div>
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+}

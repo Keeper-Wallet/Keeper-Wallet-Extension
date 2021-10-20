@@ -29,6 +29,8 @@ import {
     SettingsGeneral,
     Welcome,
 } from './components/pages';
+import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
+import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -45,8 +47,10 @@ export const PAGES = {
     ACCOUNT_NAME_SEED: 'account_name_seed',
     SAVE_BACKUP: 'safe_backup',
     CONFIRM_BACKUP: 'confirm_backup',
+    IMPORT_KEYSTORE: 'import_keystore',
     IMPORT_SEED: 'import_seed',
     IMPORT_SEED_BACK: 'import_seed_back',
+    EXPORT_ACCOUNTS: 'export_accounts',
     ASSETS: 'assets',
     SETTINGS: 'settings',
     INFO: 'info',
@@ -217,6 +221,17 @@ export const PAGES_CONF = {
             back: PAGES.SAVE_BACKUP,
         },
     },
+    [PAGES.IMPORT_KEYSTORE]: {
+        component: ImportKeystore,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        },
+    },
     [PAGES.IMPORT_SEED]: {
         component: ImportSeed,
         props: {
@@ -241,6 +256,17 @@ export const PAGES_CONF = {
             hasSettings: false,
             back: true,
         },
+    },
+    [PAGES.EXPORT_ACCOUNTS]: {
+        component: ExportAccounts,
+        bottom: {
+            hide: true,
+        },
+        menu: {
+            hasLogo: true,
+            hasSettings: false,
+            back: true,
+        }
     },
     [PAGES.ASSETS]: {
         component: Assets,

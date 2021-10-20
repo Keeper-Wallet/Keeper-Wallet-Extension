@@ -13,6 +13,7 @@ class SettingsComponent extends React.Component {
         this.props.lock();
     };
     networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
+    exportHandler = () => this.props.setTab(PAGES.EXPORT_ACCOUNTS);
     langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
     permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
     passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
@@ -65,6 +66,20 @@ class SettingsComponent extends React.Component {
                     >
                         <div className="body1 left">
                             <Trans i18nKey="settings.network">Network</Trans>
+                        </div>
+                    </Button>
+                </div>
+
+                <div className={`${styles.settingsMenuItem} ${styles.export}`}>
+                    <Button
+                        data-testid="exportMenuItem"
+                        id="settingsExport"
+                        type="transparent"
+                        className={styles.settingsBtn}
+                        onClick={this.exportHandler}
+                    >
+                        <div className="body1 left">
+                            <Trans i18nKey="settings.export" />
                         </div>
                     </Button>
                 </div>

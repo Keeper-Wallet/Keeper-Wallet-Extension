@@ -1,0 +1,74 @@
+.root
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 0;
+  height: calc(100% - 48px);
+  overflow: hidden;
+
+.checkbox.checkbox // for increased specificity
+  margin-right: 0;
+
+.centered
+  margin-right: 60px;
+  margin-left: 60px;
+
+.accounts
+  flex: 1 1 0;
+  border-top: 1px solid #edf0f4;
+  background: #f8f9fb;
+  overflow: auto;
+
+.accountsGroup
+  position: relative;
+
+.accountsGroupHeader
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #edf0f4;
+  padding: 10px 74px;
+  background: #fff;
+
+.accountsGroupIcon
+  margin: 0 27px 0 13px;
+
+.accountsGroupLabel
+  margin-right: auto;
+  color: #9ba6b2;
+  font-size: 12px;
+  font-weight: 300;
+
+.accountList
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 60px;
+
+.accountListItem
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
+  background: #FFFFFF;
+
+.accountInfo
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+.accountInfoText
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+.accountName
+  font-size: 12px;
+  line-height: 14px;
+  word-break: break-word;
+
+.buttons
+  border-top: 1px solid #edf0f4;
+  padding: 20px 60px;
