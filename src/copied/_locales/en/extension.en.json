@@ -352,7 +352,7 @@
     "json": "JSON",
     "lease": "Lease",
     "leaseCancel": "Lease Cancel",
-    "massTransfer": "Mass Send",
+    "massTransfer": "Mass Transfer",
     "matcherTimeStamp": "Matcher Time Stamp",
     "nodeAddress": "Node address",
     "noReissuable": "Not reissuable",
