@@ -22,7 +22,7 @@ export class AliasCard extends React.PureComponent<IAlias> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.createAlias">Create Alias</Trans>
+                            <Trans i18nKey="transactions.createAlias" />
                         </div>
                         <h1 className="headline1">{tx.data.alias}</h1>
                     </div>
