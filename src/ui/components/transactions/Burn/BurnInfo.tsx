@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './burn.styl';
 import { Balance, DateFormat } from '../../ui';
-import { getAmount, getFee } from './parseTx';
+import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
 export class BurnInfo extends React.PureComponent<IBurnInfo> {
@@ -11,40 +11,9 @@ export class BurnInfo extends React.PureComponent<IBurnInfo> {
         const { messageHash, data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const fee = getMoney(getFee(tx), assets);
-        const amount = getMoney(getAmount(tx), assets);
-        const asset = assets[amount.asset.id];
 
         return (
             <div>
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.assetId">Asset ID</Trans>
-                    </div>
-                    <div className={styles.txValue}>{asset.id}</div>
-                </div>
-
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.issureType">Type</Trans>
-                    </div>
-                    <div className={styles.txValue}>
-                        {asset.reissuable ? (
-                            <Trans i18nKey="transactions.reissuable">Reissuable</Trans>
-                        ) : (
-                            <Trans i18nKey="transactions.noReissuable">Not reissuable</Trans>
-                        )}
-                    </div>
-                </div>
-
-                {asset.description ? (
-                    <div className={styles.txRow}>
-                        <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.description">Description</Trans>
-                        </div>
-                        <div className={styles.txValue}>{asset.description}</div>
-                    </div>
-                ) : null}
-
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
                         <Trans i18nKey="transactions.txid">TXID</Trans>
