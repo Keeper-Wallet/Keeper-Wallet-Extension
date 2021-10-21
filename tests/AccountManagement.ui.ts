@@ -278,12 +278,6 @@ describe('Account management', function () {
                         .click();
                 });
 
-                it('Clicking "Copy" displays the password entry form', async function () {
-                    expect(await this.driver.wait(until.elementLocated(By.css('form#enterPassword')), this.wait)).not.to
-                        .be.throw;
-                    await this.driver.findElement(By.css('button#passwordCancel')).click();
-                });
-
                 it('Clicking "Cancel" does not copy');
 
                 it('Clicking "Copy" and entering the correct password will copy it');
