@@ -23,10 +23,10 @@ export class DataCard extends React.PureComponent<IData> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.dataTransaction">Entry in blockchain</Trans>
+                            <Trans i18nKey="transactions.dataTransaction" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.dataTransactionName">Data Transaction</Trans>
+                            <Trans i18nKey="transactions.dataTransactionName" />
                         </h1>
                     </div>
                 </div>
