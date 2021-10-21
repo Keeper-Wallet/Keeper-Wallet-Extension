@@ -16,13 +16,6 @@ export class LeaseInfo extends React.PureComponent<ILeaseInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.nodeAddress">Node address</Trans>
-                    </div>
-                    <div className={styles.txValue}>{tx.recipient}</div>
-                </div>
-
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
                         <Trans i18nKey="transactions.txid">TXID</Trans>
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>

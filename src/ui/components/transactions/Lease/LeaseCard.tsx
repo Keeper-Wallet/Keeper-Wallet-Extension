@@ -26,7 +26,7 @@ export class LeaseCard extends React.PureComponent<ILease> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.lease">Start Lease</Trans>
+                            <Trans i18nKey="transactions.lease" />
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -39,7 +39,14 @@ export class LeaseCard extends React.PureComponent<ILease> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent} />
+                <div className={styles.cardContent}>
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.recipient" />
+                        </div>
+                        <div className={styles.txValue}>{tx.recipient}</div>
+                    </div>
+                </div>
             </div>
         );
     }
