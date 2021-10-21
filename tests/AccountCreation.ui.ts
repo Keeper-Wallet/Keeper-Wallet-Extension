@@ -165,13 +165,19 @@ describe('Account creation', function () {
                 });
 
                 describe('Account name page', function () {
-                    let accountNameInput: WebElement, createBackupBtn: WebElement;
+                    let accountNameInput: WebElement, createBackupBtn: WebElement, errorDiv: WebElement;
                     before(function () {
                         accountNameInput = this.driver.wait(
                             until.elementLocated(By.css('input#newAccountName')),
                             this.wait
                         );
                         createBackupBtn = this.driver.findElement(By.css('button#createBackup'));
+                        errorDiv = this.driver.findElement(
+                            By.xpath(
+                                "//input[@id='newAccountName']" +
+                                    "//following-sibling::div[contains(@class, '-error-error')]"
+                            )
+                        );
                     });
 
                     beforeEach(async function () {
@@ -180,12 +186,16 @@ describe('Account creation', function () {
 
                     it('Account cannot be given a name that is already in use', async function () {
                         await accountNameInput.sendKeys(ACCOUNTS.FIRST);
+                        await accountNameInput.sendKeys('\t');
+                        expect(await errorDiv.getText()).matches(/name already exist/i);
                         expect(await createBackupBtn.isEnabled()).to.be.false;
                     });
 
                     it('Ability to paste account name from clipboard');
                     it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
                         await accountNameInput.sendKeys(ACCOUNTS.ANY);
+                        await accountNameInput.sendKeys('\t');
+                        expect(await errorDiv.getText()).to.be.empty;
                         expect(await createBackupBtn.isEnabled()).to.be.true;
                         await createBackupBtn.click();
                     });
@@ -493,7 +503,7 @@ describe('Account creation', function () {
                 });
 
                 describe('Account name page', function () {
-                    let accountNameInput: WebElement, continueBtn: WebElement;
+                    let accountNameInput: WebElement, continueBtn: WebElement, errorDiv: WebElement;
 
                     before(function () {
                         accountNameInput = this.driver.wait(
@@ -501,6 +511,12 @@ describe('Account creation', function () {
                             this.wait
                         );
                         continueBtn = this.driver.findElement(By.css('button#continue'));
+                        errorDiv = this.driver.findElement(
+                            By.xpath(
+                                "//input[@id='newAccountName']" +
+                                    "//following-sibling::div[contains(@class, '-error-error')]"
+                            )
+                        );
                     });
 
                     beforeEach(async function () {
@@ -510,25 +526,14 @@ describe('Account creation', function () {
                     it('The account cannot be given a name already in use', async function () {
                         await accountNameInput.sendKeys(ACCOUNTS.FIRST.NAME);
                         await accountNameInput.sendKeys('\t');
-                        expect(
-                            await this.driver
-                                .wait(
-                                    until.elementLocated(
-                                        By.xpath(
-                                            "//input[@id='newAccountName']" +
-                                                "//following-sibling::div[contains(@class, '-error-error')]"
-                                        )
-                                    ),
-                                    this.wait
-                                )
-                                .getText()
-                        ).matches(/Name already exist/i);
+                        expect(await errorDiv.getText()).matches(/name already exist/i);
                         expect(await continueBtn.isEnabled()).to.be.false;
                     });
 
                     it('Additional account successfully imported while entered correct account name', async function () {
                         await accountNameInput.sendKeys(ACCOUNTS.MORE_25_CHARS.NAME);
                         await accountNameInput.sendKeys('\t');
+                        expect(errorDiv.getText()).to.be.empty;
                         expect(await continueBtn.isEnabled()).to.be.true;
                         await continueBtn.click();
 

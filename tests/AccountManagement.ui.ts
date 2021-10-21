@@ -324,6 +324,7 @@ describe('Account management', function () {
                 newAccountName = currentAccountName.slice(1);
                 await newAccountNameInput.sendKeys(newAccountName);
                 await newAccountNameInput.sendKeys('\t');
+                expect(await newAccountNameErr.getText()).to.be.empty;
                 expect(await saveBtn.isEnabled()).to.be.true;
             });
 
