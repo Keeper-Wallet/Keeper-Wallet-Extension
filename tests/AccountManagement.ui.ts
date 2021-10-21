@@ -276,6 +276,11 @@ describe('Account management', function () {
                             By.xpath("//div[@id='accountInfoBackupPhrase']//div[contains(@class, '-copy-lastIcon')]")
                         )
                         .click();
+                    await this.driver.wait(until.elementLocated(By.css('form#enterPassword')), this.wait);
+                });
+
+                after(async function () {
+                    await this.driver.findElement(By.css('button#passwordCancel')).click();
                 });
 
                 it('Clicking "Cancel" does not copy');
