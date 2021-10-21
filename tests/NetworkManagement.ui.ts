@@ -99,7 +99,7 @@ describe('Network management', function () {
         });
 
         describe('Custom', function () {
-            const validNodeUrl = 'https://nodes.wavesplatform.com';
+            const validNodeUrl = 'https://nodes.wavesnodes.com';
             const invalidNodeUrl = 'https://nodes.invalid.com';
             const customNetwork = 'Custom';
 
