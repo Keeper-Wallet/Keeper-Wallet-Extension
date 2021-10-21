@@ -41,6 +41,7 @@ class BackUpSeedComponent extends React.Component {
                 </div>
 
                 <Button
+                    id="continue"
                     className="submit margin-main-big"
                     type="submit"
                     onClick={this.onClick}
@@ -49,11 +50,15 @@ class BackUpSeedComponent extends React.Component {
                     <Trans i18nKey="backupSeed.continue">Continue</Trans>
                 </Button>
 
-                <Button className="button default" onClick={this.cancelHandler}>
+                <Button id="cancelCreation" className="button default" onClick={this.cancelHandler}>
                     <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
                 </Button>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
+                <Modal
+                    animation={Modal.ANIMATION.FLASH_SCALE}
+                    showModal={this.state.showCopied}
+
+                >
                     <div className="modal notification">
                         <Trans i18nKey="backupSeed.copied">Copied!</Trans>
                     </div>

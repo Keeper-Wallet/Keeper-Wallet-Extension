@@ -69,7 +69,7 @@ class NotificationsComponent extends React.Component {
         };
     }
 
-    closeHandler = (e) => {
+    closeHandler = () => {
         this._deleteMessages(null);
         this.props.closeNotificationWindow();
     };
@@ -83,7 +83,7 @@ class NotificationsComponent extends React.Component {
         this.props.setShowNotification({ origin: this.state.origin, canUse });
     };
 
-    nextHandler = (e) => {
+    nextHandler = () => {
         const nextNotification = this.state.notifications.filter(([item]) => item.origin !== this.state.origin)[0];
         this._deleteMessages(nextNotification || null);
     };
@@ -114,6 +114,7 @@ class NotificationsComponent extends React.Component {
                             type={'checkbox'}
                             checked={this.state.canShowNotify}
                             onChange={this.toggleCanShowHandler}
+
                         />
                         <label htmlFor="checkbox_noshow">
                             <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
@@ -139,7 +140,7 @@ class NotificationsComponent extends React.Component {
                     {showClose && (hasNotifications || showToList) && <div className={styles.buttonsSeparator} />}
 
                     {showClose && (
-                        <Button onClick={this.closeHandler}>
+                        <Button id="closeNotification" onClick={this.closeHandler}>
                             <Trans i18nKey="notifications.closeBtn">Close</Trans>
                         </Button>
                     )}

@@ -18,6 +18,7 @@ export class Tabs extends React.PureComponent<IProps, IState> {
                 {this.props.tabs.map(({ item, name }, i) => (
                     <div
                         key={i}
+                        id={`${name}Tab`}
                         onClick={this.selectHandler(name)}
                         className={cn(styles.tab, { [styles.selected]: selected === name })}
                     >

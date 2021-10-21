@@ -19,7 +19,7 @@ class BottomComponent extends React.Component {
             <div className={className}>
                 <Network noChangeNetwork={this.props.noChangeNetwork} />
 
-                <div className={'basic500'}>v {this.props.version}</div>
+                <div className="version basic500">v {this.props.version}</div>
             </div>
         );
     }

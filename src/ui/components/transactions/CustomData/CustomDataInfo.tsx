@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import * as styles from './index.styl';
+import * as styles from './customData.styl';
 
 export class CustomDataInfo extends React.PureComponent<IDataInfo> {
     render() {

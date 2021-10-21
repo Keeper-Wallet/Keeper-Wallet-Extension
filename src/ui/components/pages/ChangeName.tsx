@@ -29,7 +29,6 @@ class ChangeAccountNameComponent extends React.PureComponent {
     getRef = (input) => (this.inputEl = input);
 
     setNewNameHandler = (event) => this.setNewName(event);
-
     onSubmit = (event) => this.changeName(event);
 
     blurHandler = () => this.onBlur();
@@ -59,9 +58,11 @@ class ChangeAccountNameComponent extends React.PureComponent {
                     <Trans i18nKey="changeName.currentName">Current account name</Trans>
                 </div>
 
-                <div className="body1 font400 margin-main-big">{this.props.account.name}</div>
+                <div id="currentAccountName" className="body1 font400 margin-main-big">
+                    {this.props.account.name}
+                </div>
 
-                <div className="separator margin-main-big"></div>
+                <div className="separator margin-main-big"> </div>
                 <form onSubmit={this.onSubmit}>
                     <div className="tag1 basic500 input-title">
                         <Trans i18nKey="changeName.newName">New account name</Trans>
@@ -69,6 +70,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
 
                     <div className="margin-main-big relative">
                         <Input
+                            id="newAccountName"
                             ref={this.getRef}
                             onInput={this.setNewNameHandler}
                             onBlur={this.blurHandler}
@@ -80,7 +82,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
                         <Error show={this.state.error} errors={this.state.errors} />
                     </div>
 
-                    <Button type="submit" disabled={this.state.errors.length || !this.state.newName}>
+                    <Button id="save" type="submit" disabled={this.state.errors.length || !this.state.newName}>
                         <Trans i18nKey="changeName.save">Save</Trans>
                     </Button>
                 </form>
@@ -97,6 +99,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
         this.setState({ errors, error: errors.length ? errors : null });
     }
 }
+
 
 const mapToProps = (store) => {
     const activeAccount = store.selectedAccount.address;

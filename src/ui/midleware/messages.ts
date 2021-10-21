@@ -1,4 +1,4 @@
-import { ACTION, setActiveMessage, approvePending, rejectOk, approveOk, approveError } from '../actions';
+import { ACTION, approveError, approveOk, approvePending, rejectOk, setActiveMessage } from '../actions';
 import { MSG_STATUSES } from '../../constants';
 import background from '../services/Background';
 
@@ -23,21 +23,22 @@ export const updateActiveMessageReducer = (store) => (next) => (action) => {
                 case MSG_STATUSES.REJECTED_FOREVER:
                     store.dispatch(rejectOk(activeMessageUpdated.id));
                     store.dispatch(approvePending(false));
+                    background.deleteMessage(activeMessageUpdated.id);
                     break;
                 case MSG_STATUSES.SIGNED:
                 case MSG_STATUSES.PUBLISHED:
                     store.dispatch(approveOk(activeMessageUpdated.id));
                     store.dispatch(approvePending(false));
+                    background.deleteMessage(activeMessageUpdated.id);
                     break;
                 case MSG_STATUSES.FAILED:
                     store.dispatch(approvePending(false));
                     store.dispatch(
                         approveError({ error: activeMessageUpdated.err.message, message: activeMessageUpdated })
                     );
+                    background.deleteMessage(activeMessageUpdated.id);
                     break;
             }
-
-            background.deleteMessage(activeMessageUpdated.id);
         }
 
         return next(action);

@@ -84,7 +84,7 @@ class NewWalletComponent extends React.Component {
                 <div className={`${styles.greyLine} grey-line`}>{this.props.account.address}</div>
 
                 <form onSubmit={this.onSubmit}>
-                    <Button type="submit">
+                    <Button type="submit" id="continue">
                         <Trans i18nKey="newWallet.continue">Continue</Trans>
                     </Button>
                 </form>

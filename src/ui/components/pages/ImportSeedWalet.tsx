@@ -86,7 +86,7 @@ class ImportSeedComponent extends React.Component {
 
                     <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
-                    <Button type="submit" disabled={this.state.error}>
+                    <Button id="importAccount" type="submit" disabled={this.state.error}>
                         {/*{t('importSeed.importAccount')}*/}
                         <Trans i18nKey="importSeed.importAccount">Import Account</Trans>
                     </Button>

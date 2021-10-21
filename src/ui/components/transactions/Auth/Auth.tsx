@@ -26,10 +26,10 @@ export class Auth extends SignClass {
                 </div>
 
                 <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-                    <Button onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
+                    <Button id="reject" onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                         <Trans i18nKey="sign.reject">Reject</Trans>
                     </Button>
-                    <ApproveBtn onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
+                    <ApproveBtn id="approve" onClick={this.props.approve} type={BUTTON_TYPE.SUBMIT}>
                         <Trans i18nKey="sign.auth">Auth</Trans>
                     </ApproveBtn>
 

@@ -60,10 +60,11 @@ class OriginAuthComponent extends SignClass {
 
                 <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                     <DropdownButton>
-                        <Button key={'reject'} onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
+                        <Button id="reject" key={'reject'} onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
                             <Trans i18nKey="sign.reject">Reject</Trans>
                         </Button>
                         <Button
+                            id="rejectForever"
                             key={'rejectForever'}
                             onClick={this.props.rejectForever}
                             type={BUTTON_TYPE.DANGER}
@@ -72,7 +73,7 @@ class OriginAuthComponent extends SignClass {
                             <Trans i18nKey="sign.blacklist">Add to blacklist</Trans>
                         </Button>
                     </DropdownButton>
-                    <ApproveBtn onClick={(e) => this.props.approve(e, params)} type={BUTTON_TYPE.SUBMIT}>
+                    <ApproveBtn id="approve" onClick={(e) => this.props.approve(e, params)} type={BUTTON_TYPE.SUBMIT}>
                         <Trans i18nKey="sign.auth">Auth</Trans>
                     </ApproveBtn>
 

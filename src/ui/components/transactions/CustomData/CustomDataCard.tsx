@@ -1,4 +1,4 @@
-import * as styles from './index.styl';
+import * as styles from './customData.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';

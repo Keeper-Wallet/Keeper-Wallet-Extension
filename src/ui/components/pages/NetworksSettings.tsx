@@ -164,6 +164,7 @@ class NetworksSettingsComponent extends React.PureComponent {
                 <div>
                     {showSetDefaultBtn ? (
                         <Button
+                            id="setDefault"
                             disabled={disableSave || (this.state.isDefault && this.state.isDefaultMatcher)}
                             onClick={this.saveDefault}
                         >
@@ -172,7 +173,11 @@ class NetworksSettingsComponent extends React.PureComponent {
                     ) : null}
                 </div>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showCopied}>
+                <Modal
+                    animation={Modal.ANIMATION.FLASH_SCALE}
+                    showModal={this.state.showCopied}
+
+                >
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.copied">Copied!</Trans>
                     </div>
@@ -184,7 +189,11 @@ class NetworksSettingsComponent extends React.PureComponent {
                     </div>
                 </Modal>
 
-                <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={this.state.showSetDefault}>
+                <Modal
+                    animation={Modal.ANIMATION.FLASH_SCALE}
+                    showModal={this.state.showSetDefault}
+
+                >
                     <div className="modal notification">
                         <Trans i18nKey="networksSettings.setDefaultModal">Save default!</Trans>
                     </div>

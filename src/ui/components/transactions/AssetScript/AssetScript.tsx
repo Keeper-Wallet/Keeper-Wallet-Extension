@@ -1,5 +1,5 @@
-import * as styles from './index.styl';
-import * as React from 'react';
+import * as styles from './assetScript.styl';
+import * as React from 'react'
 import { Trans } from 'react-i18next';
 import { SignClass } from '../SignClass';
 import { AssetScriptCard } from './AssetScriptCard';

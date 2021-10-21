@@ -12,9 +12,9 @@ class ImportComponent extends React.PureComponent {
             <div className={styles.import}>
                 <div className={styles.content}>
                     <div className={styles.topMargin}>
-                        <div className={`import-icon ${styles.importIcon}`}></div>
+                        <i className={`import-icon ${styles.importIcon}`}> </i>
                         <form onSubmit={this.onClick.bind(this, 'new_account')}>
-                            <Button type="submit">
+                            <Button type="submit" id="createNewAccount">
                                 <Trans i18nKey="import.createNew">Create a new account</Trans>
                             </Button>
                         </form>

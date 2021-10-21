@@ -1,4 +1,4 @@
-import * as styles from './index.styl';
+import * as styles from './package.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../TransactionIcon';
@@ -52,7 +52,7 @@ export class PackageCard extends React.PureComponent<IData> {
 
         return (
             <div className={`${myClassName} ${styles.packageTransactionCard} ${styles.groupTx}`}>
-                <div className={styles.groupBottom}></div>
+                <div className={styles.groupBottom}> </div>
                 <div className={styles.groupEffect}>
                     <div className={styles.cardHeader}>
                         <div className={styles.dataTxIcon}>

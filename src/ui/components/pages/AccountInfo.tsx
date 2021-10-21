@@ -19,7 +19,7 @@ class AccountInfoComponent extends React.Component {
     copiedTimer;
     deffer;
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
         const { selectedAccount, assets, balances } = props;
         const asset = assets['WAVES'];
 
@@ -163,7 +163,7 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <div className="margin-main-big">
+                <div id="accountInfoAddress" className="margin-main-big">
                     <div className="input-title basic500 tag1">
                         <Trans i18nKey="accountInfo.address">Your address</Trans>
                     </div>
@@ -172,7 +172,7 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <div className="margin-main-big">
+                <div id="accountInfoPublicKey" className="margin-main-big">
                     <div className="input-title basic500 tag1">
                         <Trans i18nKey="accountInfo.pubKey">Public key</Trans>
                     </div>
@@ -181,7 +181,7 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <div className="margin-main-big">
+                <div id="accountInfoPrivateKey" className="margin-main-big">
                     <div className="input-title basic500 tag1">
                         <Trans i18nKey="accountInfo.privKey">Private key</Trans>
                     </div>
@@ -190,7 +190,7 @@ class AccountInfoComponent extends React.Component {
                     </div>
                 </div>
 
-                <div className="margin-main-big">
+                <div id="accountInfoBackupPhrase" className="margin-main-big">
                     <div className="input-title basic500 tag1">
                         <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
                     </div>
@@ -210,7 +210,7 @@ class AccountInfoComponent extends React.Component {
 
                 <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword}>
                     <div className="modal cover">
-                        <form className="modal-form" onClick={this.confirmPassword}>
+                        <form id="enterPassword" className="modal-form" onClick={this.confirmPassword}>
                             <i className={`lock-icon ${styles.lockIcon}`} />
 
                             <div className="margin1 relative">
@@ -233,13 +233,14 @@ class AccountInfoComponent extends React.Component {
                             </div>
 
                             <Button
+                                id="passwordEnter"
                                 disabled={this.state.passwordError || !this.state.password}
                                 className="margin-main-big"
                                 type="submit"
                             >
                                 <Trans i18nKey="accountInfo.enter">Enter</Trans>
                             </Button>
-                            <Button onClick={this.rejectPassword}>
+                            <Button id="passwordCancel" onClick={this.rejectPassword}>
                                 <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
                             </Button>
                         </form>

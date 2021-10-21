@@ -62,7 +62,7 @@ export class FinalTransaction extends React.PureComponent {
 
         return (
             <div className={styles.txFinal}>
-                <div className={className}></div>
+                <div className={className}> </div>
 
                 <div className={styles.txFinalContentWrapper}>
                     <div className={styles.finalTxContent}>
@@ -114,7 +114,7 @@ export class FinalTransaction extends React.PureComponent {
                         ) : null}
 
                         {(isShowList && isShowClose) || (isShowNext && isShowList) ? (
-                            <div className={styles.buttonMargin}></div>
+                            <div className={styles.buttonMargin}> </div>
                         ) : null}
 
                         {isShowNext ? (
@@ -124,7 +124,7 @@ export class FinalTransaction extends React.PureComponent {
                         ) : null}
 
                         {isShowClose ? (
-                            <Button onClick={onClose} className={styles.closeBtn}>
+                            <Button id="close" onClick={onClose} className={styles.closeBtn}>
                                 {isError ? <Trans i18nKey="sign.understand">I understand</Trans> : null}
                                 {isReject || isApprove ? <Trans i18nKey="sign.ok">Close</Trans> : null}
                             </Button>

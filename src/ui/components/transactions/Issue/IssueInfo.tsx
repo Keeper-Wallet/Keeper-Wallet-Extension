@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import * as styles from './index.styl';
+import * as styles from './issue.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
