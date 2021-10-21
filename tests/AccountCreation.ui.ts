@@ -221,11 +221,17 @@ describe('Account creation', function () {
 
                 describe('Confirm backup page', function () {
                     let clearButton: WebElement;
+                    const xpWriteSeed = "//div[contains(@class, '-confirmBackup-writeSeed')]",
+                        xpReadSeed = "//div[contains(@class, '-confirmBackup-readSeed')]",
+                        xpVisiblePill =
+                            "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]",
+                        PILLS_COUNT = 15;
+
                     it('Filling in a seed in the wrong word order', async function () {
                         // there is no Confirm button. An error message and a "Clear" button are displayed
                         const wrongSeed = rightSeed.split(' ').reverse();
                         const seedPills: WebElement = await this.driver.wait(
-                            until.elementLocated(By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")),
+                            until.elementLocated(By.xpath(xpWriteSeed)),
                             this.wait
                         );
                         for (const word of wrongSeed) {
@@ -252,6 +258,10 @@ describe('Account creation', function () {
                                 .findElement(By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]"))
                                 .isDisplayed()
                         ).to.be.true;
+                        expect(await this.driver.findElements(By.xpath(xpReadSeed + xpVisiblePill))).length(
+                            PILLS_COUNT
+                        );
+                        expect(await this.driver.findElements(By.xpath(xpWriteSeed + xpVisiblePill))).to.be.empty;
                     });
 
                     it('The "Clear" button resets a completely filled phrase', async function () {
@@ -266,6 +276,10 @@ describe('Account creation', function () {
                                 By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
                             )
                         ).to.be.empty;
+                        expect(await this.driver.findElements(By.xpath(xpReadSeed + xpVisiblePill))).to.be.empty;
+                        expect(await this.driver.findElements(By.xpath(xpWriteSeed + xpVisiblePill))).length(
+                            PILLS_COUNT
+                        );
                     });
 
                     it('The "Clear" button resets a partially filled phrase', function () {
@@ -275,12 +289,7 @@ describe('Account creation', function () {
 
                     it('The word can be reset by clicking (any, not only the last)', async function () {
                         const writePills: WebElement[] = await this.driver.wait(
-                            until.elementsLocated(
-                                By.xpath(
-                                    "//div[contains(@class, '-confirmBackup-writeSeed')]" +
-                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
-                                )
-                            ),
+                            until.elementsLocated(By.xpath(xpWriteSeed + xpVisiblePill)),
                             this.wait
                         );
                         for (const writePill of writePills) {
@@ -291,14 +300,10 @@ describe('Account creation', function () {
                             until.elementLocated(By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")),
                             this.wait
                         );
-                        expect(
-                            await this.driver.findElements(
-                                By.xpath(
-                                    "//div[contains(@class, '-confirmBackup-writeSeed')]" +
-                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
-                                )
-                            )
-                        ).to.be.empty;
+                        expect(await this.driver.findElements(By.xpath(xpReadSeed + xpVisiblePill))).length(
+                            PILLS_COUNT
+                        );
+                        expect(await this.driver.findElements(By.xpath(xpWriteSeed + xpVisiblePill))).to.be.empty;
 
                         const readPills: WebElement[] = await this.driver.findElements(
                             By.xpath(
@@ -311,19 +316,15 @@ describe('Account creation', function () {
                             await this.driver.sleep(PILL_ANIMATION_DELAY);
                         }
 
-                        expect(
-                            await this.driver.findElements(
-                                By.xpath(
-                                    "//div[contains(@class, '-confirmBackup-readSeed')]" +
-                                        "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
-                                )
-                            )
-                        ).to.be.empty;
+                        expect(await this.driver.findElements(By.xpath(xpReadSeed + xpVisiblePill))).to.be.empty;
+                        expect(await this.driver.findElements(By.xpath(xpWriteSeed + xpVisiblePill))).length(
+                            PILLS_COUNT
+                        );
                     });
 
                     it('Additional account successfully created while filling in the phrase in the correct order', async function () {
                         const writePills: WebElement = this.driver.wait(
-                            until.elementLocated(By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")),
+                            until.elementLocated(By.xpath(xpWriteSeed)),
                             this.wait
                         );
                         for (const word of rightSeed.split(' ')) {
