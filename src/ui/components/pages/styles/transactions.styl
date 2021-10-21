@@ -179,6 +179,7 @@
 .txHeader
   width: 100%;
   padding: 0 14px;
+  cursor: default;
 
 .txButtonsWrapper
   width: 100%;
@@ -236,91 +237,14 @@
   height: 80px;
   margin: 14px auto 0 auto;
 
-.txFinal
-  margin: 0 auto;
-  padding: 60px 0 0;
-  background: $basic50;
-  height: calc(100%-69px);
-  position: relative;
+.finalTxTitle
+  padding-left 26px
+
+.finalTxPlate
   overflow: auto;
-
-  &FooterWrapper
-    position: fixed;
-    z-index: 1000;
-    width: 100%;
-    max-width: 357px;
-    top: 50%;
-    transform: translateY(194px);
-
-  .finalTxContent
-    margin: 0 14px;
-    padding-bottom: 14px;
-
-  .finalTxTitle
-    padding-left 26px
-
-  .finalTxPlate
-    overflow: auto;
-    max-height: 240px;
-    background: $basic100;
-    word-break: break-all;
-
-    &Error
-      margin-top: -130px;
-
-  .txFooter
-    position: sticky;
-    bottom: 0;
-
-  &ButtonWrapper
-    background: $white;
-    border-top: 1px solid $basic100;
-    display: flex;
-    text-align: center;
-    flex-wrap: wrap;
-    padding: 14px 14px 0 14px;
-    width: 100%;
-
-    button
-      margin: 0;
-
-    .buttonMargin
-      min-width: 14px;
-
-  .finalTxWallet
-    margin: 0;
-    width: 100%;
-
-  .txInfoRow
-    display: flex;
-    align-items: center;
-    padding: 12px 0 12px 20px;
-    border-top: 1px dashed $basic200;
-    border-bottom: 1px dashed $basic200;
-
-    .icon
-      min-width: 48px;
-      height: 48px;
-      margin-right: 10px;
-
-    .data
-      flex-grow: 1;
-      line-height: 20px;
-
-  .closeBtn
-    margin: 0;
-    background: transparent;
-    color: $black;
-    border: 1px solid $basic200;
-    max-width: none;
-
-    &:hover
-      border: 1px solid $black;
-      background: transparent;
-
-  .nextBtn
-    margin: 0;
-    max-width: none;
+  max-height: 240px;
+  background: $basic100;
+  word-break: break-all;
 
 .txSign
   .infoBlock
@@ -376,6 +300,10 @@
   padding-right 14px;
   flex-grow: 1;
   flex-shrink: 999;
+
+.finalTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
 
 .messageTransactionIcon
   background: url(../../../assets/img/t-message-48.svg) center no-repeat;

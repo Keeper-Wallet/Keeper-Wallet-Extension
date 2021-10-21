@@ -110,7 +110,7 @@ export class FinalTransaction extends React.PureComponent {
                     )}
                 </div>
 
-                <div className={cn(styles.txButtonsWrapper, { ['buttons-wrapper']: showExtraButton })}>
+                <div className={cn(styles.txButtonsWrapper, { 'buttons-wrapper': showExtraButton })}>
                     {isShowList ? (
                         <Button onClick={onList}>
                             <Trans i18nKey="sign.pendingList">Pending list</Trans>
