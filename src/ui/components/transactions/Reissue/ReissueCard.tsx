@@ -26,7 +26,7 @@ export class ReissueCard extends React.PureComponent<IIssue> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.tokenReissue">Token Reissue</Trans>
+                            <Trans i18nKey="transactions.reissue">Reissue</Trans>
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -40,7 +40,20 @@ export class ReissueCard extends React.PureComponent<IIssue> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent} />
+                <div className={styles.cardContent}>
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.issureType">Type</Trans>
+                        </div>
+                        <div className={styles.txValue}>
+                            {tx.reissuable ? (
+                                <Trans i18nKey="transactions.reissuable">Reissuable</Trans>
+                            ) : (
+                                <Trans i18nKey="transactions.noReissuable">Not reissuable</Trans>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
