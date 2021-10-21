@@ -387,7 +387,7 @@
     "scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
     "scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
     "setAssetScriptHeader": "Set Asset Script transaction",
-    "setScriptTransaction": "Script transaction",
+    "setScriptTransaction": "Set Script",
     "setSctiptHeader": "Script transaction",
     "setSponsored": "Set Sponsorship",
     "showAll": "Show all",
