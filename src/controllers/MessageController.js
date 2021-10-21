@@ -11,6 +11,7 @@ import { ERRORS } from '../lib/KeeperError';
 import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { waves } from './wavesTransactionsController';
+import { clone } from 'ramda';
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -405,10 +406,10 @@ export class MessageController extends EventEmitter {
                 signedData = await this.signBytes(message.account.address, message.data, message.account.network);
                 break;
             case 'pairing':
-                signedData = { ...signedData, approved: 'OK' };
+                signedData = { approved: 'OK' };
                 break;
             case 'authOrigin':
-                signedData = { ...signedData, approved: 'OK' };
+                signedData = { approved: 'OK' };
                 this.setPermission(message.origin, PERMISSIONS.APPROVED);
                 break;
             default:
@@ -593,7 +594,7 @@ export class MessageController extends EventEmitter {
                     result.lease = await this.txInfo(result.data.data.leaseId);
                 }
                 // transaction json before signed
-                const filledMessage = await this._fillSignableData({ ...result });
+                const filledMessage = await this._fillSignableData(clone(result));
                 result.json = await this.jsonTx(result.account.address, filledMessage.data, result.account.network);
                 break;
             case 'cancelOrder':
