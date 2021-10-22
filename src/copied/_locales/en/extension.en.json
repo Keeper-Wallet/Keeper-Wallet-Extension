@@ -323,7 +323,7 @@
   "transactions": {
     "allowAccess": "Allow access",
     "allowAccessTitle": "Allow access",
-    "amountPerTransaction": "Amount per transaction",
+    "amountPerTransaction": "Amount for every 0.001 Waves",
     "assetId": "Asset ID",
     "assetScriptTransaction": "Set Asset Script transaction",
     "assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",

@@ -4,12 +4,13 @@ export const messageType = 'sponsorship';
 export const txType = 'transaction';
 export const SPONSOR_MODE = {
     enable: 'sponsor_enable',
-    disable : 'sponsor_disable',
+    disable: 'sponsor_disable',
 };
 
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
-    return [feeAssetId];
+    const sponsoredAssetId = (tx.minSponsoredAssetFee && tx.minSponsoredAssetFee.assetId) || 'WAVES';
+    return [feeAssetId, sponsoredAssetId];
 }
 
 export function getFee(tx) {
@@ -21,7 +22,7 @@ export function getAssetFee(tx) {
     return typeof amount === 'object' ? amount : { coins: amount, assetId: tx.assetId };
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
     return { coins: 0, assetId: 'WAVES' };
 }
 
