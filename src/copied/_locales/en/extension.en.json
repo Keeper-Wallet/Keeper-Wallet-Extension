@@ -325,7 +325,7 @@
     "allowAccessTitle": "Allow access",
     "amountPerTransaction": "Amount for every 0.001 Waves",
     "assetId": "Asset ID",
-    "assetScriptTransaction": "Set Asset Script transaction",
+    "assetScriptTransaction": "Set Asset Script",
     "assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
     "assetScriptWarningHeader": "Warning: actions can block transactions with your asset",
     "attachment": "Attachment",
