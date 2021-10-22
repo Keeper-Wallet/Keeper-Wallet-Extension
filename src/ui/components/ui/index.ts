@@ -14,3 +14,4 @@ export * from './Date/FormatDate';
 export * from './showScript/ShowScript';
 export * from './attachment/Attachment';
 export * from './CollapsedContent/CollapsedContent';
+export * from './plate';

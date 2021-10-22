@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './scriptInvocation.styl';
 import { Balance, DateFormat } from '../../ui';
-import { getAmounts, getFee } from './parseTx';
+import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
 export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
@@ -13,38 +13,19 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
         const { messageHash, data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const fee = getMoney(getFee(tx), assets);
-        const amounts = getAmounts(tx).map((item) => getMoney(item, assets));
-        const hasPayment = !!(tx.payment && tx.payment.length);
+
         return (
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.dApp">dApp</Trans>
-                    </div>
-                    <div className={styles.txValue}>{tx.dApp}</div>
-                </div>
-                {hasPayment && (
-                    <div className={styles.txRow}>
-                        <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.payment">Payment</Trans>
-                        </div>
-                        {amounts.map((amount) => (
-                            <div className={styles.txValue}>
-                                <Balance isShortFormat={true} balance={amount} showAsset={true} />
-                            </div>
-                        ))}
-                    </div>
-                )}
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.txid">TXID</Trans>
+                        <Trans i18nKey="transactions.txid" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.fee">Fee</Trans>
+                        <Trans i18nKey="transactions.fee" />
                     </div>
                     <div className={styles.txValue}>
                         <Balance isShortFormat={true} balance={fee} showAsset={true} />
@@ -53,7 +34,7 @@ export class ScriptInvocationInfo extends React.PureComponent<ITransferInfo> {
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.txTime">TX Time</Trans>
+                        <Trans i18nKey="transactions.txTime" />
                     </div>
                     <div className={styles.txValue}>
                         <DateFormat value={tx.timestamp} />

@@ -24,8 +24,30 @@
 .dataScript pre
   white-space: pre;
 
-.functionTitle
+.data
+  overflow: hidden;
+  color: $black;
+
+.dataRow
   width: 100%;
+  margin-bottom: 2px;
+  white-space: nowrap;
+
+.dataItem,
+.dataItemLast
   overflow: hidden;
   text-overflow: ellipsis;
-  color: $black;
+
+.dataItem
+  padding: 2px 7px 2px 0;
+  text-align: right;
+
+.dataItemLast
+  text-align: left
+
+.dataTable
+  width: 100%;
+  td
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;

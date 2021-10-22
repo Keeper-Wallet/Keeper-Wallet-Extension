@@ -223,6 +223,12 @@
     "rejectedOrigin": "Rejected",
     "title": "Permissions control"
   },
+  "plateComponent": {
+    "copy": "Copy",
+    "copied": "Copied!",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
   "qrCode": {
     "download": "Download QR code"
   },
@@ -324,6 +330,7 @@
     "allowAccess": "Allow access",
     "allowAccessTitle": "Allow access",
     "amountPerTransaction": "Amount for every 0.001 Waves",
+    "arguments": "Arguments",
     "assetId": "Asset ID",
     "assetScriptTransaction": "Set Asset Script",
     "assetScriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user.",
@@ -335,6 +342,7 @@
     "copied": "Copied!",
     "copy": "Copy",
     "createAlias": "Create Alias",
+    "dApp": "dApp",
     "dataHash": "Data Hash",
     "dataTransaction": "Entry in blockchain",
     "dataTransactionName": "Data",
@@ -369,7 +377,7 @@
     "packTransactionGroup": "Group",
     "packTransactions": "Transactions",
     "packTransactionsFees": "Fees",
-    "payment": "Payment",
+    "payments": "Payments",
     "permission": {
       "details": "Permission details"
     },
