@@ -9,16 +9,12 @@ export const TransactionFooter = ({ message, approve, reject, hideApprove, autoC
     return (
         <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
             <Button onClick={reject} type={BUTTON_TYPE.WARNING}>
-                <Trans i18nKey="sign.reject">Reject</Trans>
+                <Trans i18nKey="sign.reject" />
             </Button>
 
             {hideApprove ? null : (
                 <ApproveBtn onClick={approve} type={BUTTON_TYPE.SUBMIT} autoClickProtection={autoClickProtection}>
-                    {isSend ? (
-                        <Trans i18nKey="sign.confirmButton">Confirm</Trans>
-                    ) : (
-                        <Trans i18nKey="sign.signButton">Sign</Trans>
-                    )}
+                    <Trans i18nKey={isSend ? 'sign.confirmButton' : 'sign.signButton'} />
                 </ApproveBtn>
             )}
         </div>

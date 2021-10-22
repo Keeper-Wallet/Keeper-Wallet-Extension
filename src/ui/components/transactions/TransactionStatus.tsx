@@ -5,13 +5,13 @@ export const TransactionStatus = ({ isApprove, isReject, isSend, messages }: IPr
     if (isApprove) {
         return (
             <div className="headline2 center">
-                {isSend ? (
-                    <Trans i18nKey={messages?.send || 'sign.transactionSend'}>Your transaction is confirmed!</Trans>
-                ) : (
-                    <Trans i18nKey={messages?.approve || 'sign.transactionConfirmed'}>
-                        Your transaction has been signed!
-                    </Trans>
-                )}
+                <Trans
+                    i18nKey={
+                        isSend
+                            ? messages?.send || 'sign.transactionSend'
+                            : messages?.approve || 'sign.transactionConfirmed'
+                    }
+                />
             </div>
         );
     }
@@ -19,7 +19,7 @@ export const TransactionStatus = ({ isApprove, isReject, isSend, messages }: IPr
     if (isReject) {
         return (
             <div className="headline2 center">
-                <Trans i18nKey={messages?.reject || 'sign.transactionFailed'}>Your transaction is rejected!</Trans>
+                <Trans i18nKey={messages?.reject || 'sign.transactionFailed'} />
             </div>
         );
     }

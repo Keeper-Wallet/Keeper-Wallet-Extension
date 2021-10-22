@@ -60,11 +60,9 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
                     </div>
                     <div className={styles.button}>
                         <span>
-                            {isOpened ? (
-                                <Trans i18nKey="transactions.hideTransactions">Hide transactions</Trans>
-                            ) : (
-                                <Trans i18nKey="transactions.showTransactions">Show transactions</Trans>
-                            )}
+                            <Trans
+                                i18nKey={isOpened ? 'transactions.hideTransactions' : 'transactions.showTransactions'}
+                            />
                             <i className={isOpened ? styles.arrowUp : styles.arrowDown} />
                         </span>
                     </div>

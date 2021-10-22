@@ -11,7 +11,7 @@ const Error = ({ approveError }) => {
     return (
         <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
             <div className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}>
-                <Trans i18nKey="sign.someError">Something went wrong</Trans>
+                <Trans i18nKey="sign.someError" />
             </div>
             <div className={`body3 ${styles.finalTxPlate}`}>{JSON.stringify(approveError.error, null, 4)}</div>
         </div>
@@ -96,14 +96,14 @@ export class FinalTransaction extends React.PureComponent {
                     {isSend && isApprove && isNotOrder && (
                         <div className="center margin-main-big-top">
                             <a rel="noopener noreferrer" className="link black" href={txLink} target="_blank">
-                                <Trans i18nKey="sign.viewTransaction">View Transaction</Trans>
+                                <Trans i18nKey="sign.viewTransaction" />
                             </a>
                         </div>
                     )}
                     {!isNotOrder && (
                         <div className={`${styles.txRow} margin-main-top`}>
                             <div className="basic500 tx-title tag1">
-                                <Trans i18nKey="transactions.orderId">Order ID</Trans>
+                                <Trans i18nKey="transactions.orderId" />
                             </div>
                             <div className="black">{message.messageHash}</div>
                         </div>
@@ -113,20 +113,20 @@ export class FinalTransaction extends React.PureComponent {
                 <div className={cn(styles.txButtonsWrapper, { 'buttons-wrapper': showExtraButton })}>
                     {isShowList ? (
                         <Button onClick={onList}>
-                            <Trans i18nKey="sign.pendingList">Pending list</Trans>
+                            <Trans i18nKey="sign.pendingList" />
                         </Button>
                     ) : null}
 
                     {isShowNext ? (
                         <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext}>
-                            <Trans i18nKey="sign.nextTransaction">Next transaction</Trans>
+                            <Trans i18nKey="sign.nextTransaction" />
                         </Button>
                     ) : null}
 
                     {isShowClose ? (
                         <Button onClick={onClose}>
-                            {isError ? <Trans i18nKey="sign.understand">I understand</Trans> : null}
-                            {isReject || isApprove ? <Trans i18nKey="sign.ok">Close</Trans> : null}
+                            {isError ? <Trans i18nKey="sign.understand" /> : null}
+                            {isReject || isApprove ? <Trans i18nKey="sign.close" /> : null}
                         </Button>
                     ) : null}
                 </div>

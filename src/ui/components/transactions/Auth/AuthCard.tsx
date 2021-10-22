@@ -61,7 +61,7 @@ export class AuthCard extends React.PureComponent<IAuth> {
                                 <div>
                                     <div className="basic500 body3 margin-min origin-ellipsis">{name || origin}</div>
                                     <h1 className="headline1">
-                                        <Trans i18nKey="transactions.allowAccessTitle">Allow access</Trans>
+                                        <Trans i18nKey="transactions.allowAccessTitle" />
                                     </h1>
                                 </div>
                             </div>

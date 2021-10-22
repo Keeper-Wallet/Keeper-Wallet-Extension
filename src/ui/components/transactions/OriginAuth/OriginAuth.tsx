@@ -18,7 +18,7 @@ class OriginAuthComponent extends SignClass {
         const { message, assets } = this.props;
         const title = (
             <span className={styles.collapsedTitle}>
-                <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
+                <Trans i18nKey="permissionSettings.modal.title" />
             </span>
         );
 
@@ -60,7 +60,7 @@ class OriginAuthComponent extends SignClass {
                 <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                     <DropdownButton>
                         <Button key={'reject'} onClick={this.props.reject} type={BUTTON_TYPE.WARNING}>
-                            <Trans i18nKey="sign.reject">Reject</Trans>
+                            <Trans i18nKey="sign.reject" />
                         </Button>
                         <Button
                             key={'rejectForever'}
@@ -68,11 +68,11 @@ class OriginAuthComponent extends SignClass {
                             type={BUTTON_TYPE.DANGER}
                             className={'custom'}
                         >
-                            <Trans i18nKey="sign.blacklist">Add to blacklist</Trans>
+                            <Trans i18nKey="sign.blacklist" />
                         </Button>
                     </DropdownButton>
                     <ApproveBtn onClick={(e) => this.props.approve(e, params)} type={BUTTON_TYPE.SUBMIT}>
-                        <Trans i18nKey="sign.auth">Auth</Trans>
+                        <Trans i18nKey="sign.auth" />
                     </ApproveBtn>
                 </div>
             </div>

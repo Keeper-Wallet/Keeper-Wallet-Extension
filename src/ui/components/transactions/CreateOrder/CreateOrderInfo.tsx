@@ -26,7 +26,7 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.orderSell">Sell</Trans> :
+                        <Trans i18nKey="transactions.orderSell" />
                     </div>
                     <div className={styles.txValue}>
                         <Balance isShortFormat={true} balance={iGet} showAsset={true} />
@@ -35,7 +35,7 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.price">Price</Trans>
+                        <Trans i18nKey="transactions.price" />
                     </div>
                     <div className={styles.txValue}>
                         <Balance isShortFormat={true} balance={price} showAsset={true} />
@@ -44,14 +44,14 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.txid">TXID</Trans>
+                        <Trans i18nKey="transactions.txid" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.fee">Fee</Trans>
+                        <Trans i18nKey="transactions.fee" />
                     </div>
                     <div className={styles.txValue}>
                         <Balance isShortFormat={true} balance={fee} showAsset={true} />
@@ -60,7 +60,7 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
 
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.txTime">TX Time</Trans>
+                        <Trans i18nKey="transactions.txTime" />
                     </div>
                     <div className={styles.txValue}>
                         <DateFormat value={tx.timestamp} />

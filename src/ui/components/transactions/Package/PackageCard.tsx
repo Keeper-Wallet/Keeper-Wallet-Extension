@@ -60,14 +60,10 @@ export class PackageCard extends React.PureComponent<IData> {
 
                         <div>
                             <div className="basic500 body3 margin-min">
-                                {title && collapsed ? (
-                                    title
-                                ) : (
-                                    <Trans i18nKey="transactions.packTransactionGroup">Group</Trans>
-                                )}
+                                {title && collapsed ? title : <Trans i18nKey="transactions.packTransactionGroup" />}
                             </div>
                             <h1 className="headline1 margin-main">
-                                {tx.length} <Trans i18nKey="transactions.packTransactions">transactions</Trans>
+                                {tx.length} <Trans i18nKey="transactions.packTransactions" />
                             </h1>
 
                             <div className={styles.amounts}>
@@ -78,7 +74,7 @@ export class PackageCard extends React.PureComponent<IData> {
 
                     <div className={styles.origin}>
                         <div className="basic500 body3 margin-min margin-main-top">
-                            <Trans i18nKey="transactions.packTransactionsFees">Fees</Trans>
+                            <Trans i18nKey="transactions.packTransactionsFees" />
                         </div>
                         <div className="margin-min">
                             <Fees fees={fees} />

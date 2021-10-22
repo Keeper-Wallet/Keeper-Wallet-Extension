@@ -24,10 +24,10 @@ export const Unknown = (props) => {
 
             <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
                 <Button onClick={props.reject} type={BUTTON_TYPE.WARNING}>
-                    <Trans i18nKey="sign.reject">Reject</Trans>
+                    <Trans i18nKey="sign.reject" />
                 </Button>
                 <ApproveBtn onClick={props.approve} type={BUTTON_TYPE.SUBMIT}>
-                    <Trans i18nKey="sign.auth">Auth</Trans>
+                    <Trans i18nKey="sign.auth" />
                 </ApproveBtn>
             </div>
         </div>

@@ -22,10 +22,10 @@ export class CustomDataCard extends React.PureComponent<IData> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.customData">Custom Data</Trans>
+                            <Trans i18nKey="transactions.customData" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.customDataName">Sign Custom Data</Trans>
+                            <Trans i18nKey="transactions.customDataName" />
                         </h1>
                     </div>
                 </div>

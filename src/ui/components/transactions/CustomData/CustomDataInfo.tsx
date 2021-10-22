@@ -11,7 +11,7 @@ export class CustomDataInfo extends React.PureComponent<IDataInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.txid">Data hash</Trans>
+                        <Trans i18nKey="transactions.txid" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>

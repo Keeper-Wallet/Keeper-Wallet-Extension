@@ -17,7 +17,7 @@ class Tab extends React.PureComponent<ITabProps> {
 
         return (
             <li className={cn(styles.tabListItem, { [styles.tabListActive]: activeTab === label })} onClick={onClick}>
-                <Trans i18nKey={label}>{label}</Trans>
+                <Trans i18nKey={label} />
             </li>
         );
     }

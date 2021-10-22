@@ -48,7 +48,7 @@ export class Package extends SignClass {
                     </div>
 
                     <div className="margin1 marginTop3 headline3 basic500 autoScrollToo">
-                        <Trans i18nKey="transaction.details">Details</Trans>
+                        <Trans i18nKey="transactions.details" />
                     </div>
 
                     <div className={styles.packageInfo}>

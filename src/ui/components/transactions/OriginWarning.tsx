@@ -10,8 +10,6 @@ export class OriginWarning extends React.PureComponent<{ message: any }> {
             account: { network },
         } = message;
 
-        const key = (key) => `bottom.${key}`;
-
         if (!message.origin) {
             return null;
         }
@@ -22,7 +20,7 @@ export class OriginWarning extends React.PureComponent<{ message: any }> {
                 <div className={cn(styles.originNetwork, 'flex')}>
                     <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
                     <span className={styles.networkBottom}>
-                        <Trans i18nKey={key(network)}>{network}</Trans>
+                        <Trans i18nKey={`bottom.${network}`} />
                     </span>
                 </div>
             </React.Fragment>

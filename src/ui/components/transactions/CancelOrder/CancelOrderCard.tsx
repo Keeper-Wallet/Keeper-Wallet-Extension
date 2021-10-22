@@ -19,10 +19,10 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.dex">DEX</Trans>
+                            <Trans i18nKey="transactions.dex" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.orderCancel">Cancel the order</Trans>
+                            <Trans i18nKey="transactions.orderCancel" />
                         </h1>
                     </div>
                 </div>

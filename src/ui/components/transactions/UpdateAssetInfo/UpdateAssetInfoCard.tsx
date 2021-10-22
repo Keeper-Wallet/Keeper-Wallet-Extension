@@ -24,7 +24,7 @@ export class UpdateAssetInfoCard extends React.PureComponent<IUpdateAssetInfo> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.updateAssetInfo">Update Asset Info</Trans>
+                            <Trans i18nKey="transactions.updateAssetInfo" />
                         </div>
                     </div>
                 </div>

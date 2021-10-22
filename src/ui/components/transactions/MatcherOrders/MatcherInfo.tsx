@@ -11,14 +11,14 @@ export class MatcherInfo extends React.PureComponent<IAuthInfo> {
             <div>
                 <div className={`${styles.txRow}`}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.matcherTimeStamp">Matcher Time Stamp</Trans>
+                        <Trans i18nKey="transactions.matcherTimeStamp" />
                     </div>
                     <div className={styles.txValue}>{data.data.timestamp}</div>
                 </div>
 
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.dataHash">Data Hash</Trans>
+                        <Trans i18nKey="transactions.dataHash" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>

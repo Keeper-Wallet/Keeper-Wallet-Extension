@@ -38,11 +38,7 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            {isSell ? (
-                                <Trans i18nKey="transactions.orderSell">Sell</Trans>
-                            ) : (
-                                <Trans i18nKey="transactions.orderBuy">Buy</Trans>
-                            )}
+                            <Trans i18nKey={isSell ? 'transactions.orderSell' : 'transactions.orderBuy'} />
                             <span>
                                 : <Asset assetId={amount.asset.id} />/<Asset assetId={price.asset.id} />
                             </span>

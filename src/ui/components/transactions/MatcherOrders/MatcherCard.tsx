@@ -25,9 +25,7 @@ export class MatcherCard extends React.PureComponent<IMatcher> {
                                 <div>
                                     <div className="basic500 body3 margin-min origin-ellipsis">{origin}</div>
                                     <h1 className="headline1">
-                                        <Trans i18nKey="transactions.signRequestMatcher">
-                                            Sign a request to the Matcher
-                                        </Trans>
+                                        <Trans i18nKey="transactions.signRequestMatcher" />
                                     </h1>
                                 </div>
                             </div>

@@ -27,7 +27,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.transfer">Transfer</Trans>
+                            <Trans i18nKey="transactions.transfer" />
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -44,7 +44,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
                 <div className={styles.cardContent}>
                     <div className={styles.txRow}>
                         <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.recipient">Recipient</Trans>
+                            <Trans i18nKey="transactions.recipient" />
                         </div>
                         <div className={styles.txValue}>{tx.recipient}</div>
                     </div>
@@ -52,7 +52,7 @@ export class TransferCard extends React.PureComponent<ITransfer> {
                     {tx.attachment && tx.attachment.length ? (
                         <div className={`${styles.txRow} ${styles.txRowDescription}`}>
                             <div className="tx-title tag1 basic500">
-                                <Trans i18nKey="transactions.attachment">Attachment</Trans>
+                                <Trans i18nKey="transactions.attachment" />
                             </div>
                             <Attachment
                                 className={`${styles.txValue} plate fullwidth`}

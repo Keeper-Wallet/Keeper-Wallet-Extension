@@ -53,7 +53,7 @@ export class IssueCard extends React.PureComponent<IIssue> {
                     {tx.description ? (
                         <div className={styles.txRow}>
                             <div className="tx-title tag1 basic500">
-                                <Trans i18nKey="transactions.description">Description</Trans>
+                                <Trans i18nKey="transactions.description" />
                             </div>
                             <div className={styles.txValue}>{tx.description}</div>
                         </div>
@@ -61,20 +61,16 @@ export class IssueCard extends React.PureComponent<IIssue> {
 
                     <div className={styles.txRow}>
                         <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.issureType">Type</Trans>
+                            <Trans i18nKey="transactions.issueType" />
                         </div>
                         <div className={styles.txValue}>
-                            {tx.reissuable ? (
-                                <Trans i18nKey="transactions.reissuable">Reissuable</Trans>
-                            ) : (
-                                <Trans i18nKey="transactions.noReissuable">Not reissuable</Trans>
-                            )}
+                            <Trans i18nKey={tx.reissuable ? 'transactions.reissuable' : 'transactions.noReissuable'} />
                         </div>
                     </div>
 
                     <div className={styles.txRow}>
                         <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.script">Script</Trans>
+                            <Trans i18nKey="transactions.script" />
                         </div>
                         <div className={styles.txValue}>
                             <ShowScript

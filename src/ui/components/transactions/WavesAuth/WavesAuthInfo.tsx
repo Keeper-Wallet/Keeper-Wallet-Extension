@@ -12,7 +12,7 @@ export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.wavesAuthTimeStamp">Time Stamp</Trans>
+                        <Trans i18nKey="transactions.wavesAuthTimeStamp" />
                     </div>
                     <div className={'fullwidth'}>
                         <DateFormat value={data.timestamp} showRaw={true} className={'fullwidth'} />
@@ -20,13 +20,13 @@ export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
                 </div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.publicKey">Public Key</Trans>
+                        <Trans i18nKey="transactions.publicKey" />
                     </div>
                     <div className={styles.txValue}>{data.publicKey}</div>
                 </div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.dataHash">Data Hash</Trans>
+                        <Trans i18nKey="transactions.dataHash" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>

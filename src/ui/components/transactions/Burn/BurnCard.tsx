@@ -26,7 +26,7 @@ export class BurnCard extends React.PureComponent<IBurn> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.burn">Burn</Trans>
+                            <Trans i18nKey="transactions.burn" />
                         </div>
                         <h1 className="headline1">
                             <Balance split={true} addSign="- " showAsset={true} balance={amount} />
