@@ -99,16 +99,33 @@
   },
   "import": {
     "createNew": "Create a new account",
-    "importAccount": "Import Account",
-    "useHardware": "Use secure hardware",
-    "viaDevices": "Via Ledger",
-    "viaSeed": "Via SEED or Encoded"
+    "importVia": "Or import via",
+    "viaKeystore": "Keystore File",
+    "viaSeed": "Seed Phrase"
+  },
+  "importKeystore": {
+    "browse": "Browse...",
+    "chooseAccountsTitle": "Choose accounts",
+    "chooseAccountsDesc": "Select which accounts you want to import",
+    "chooseAccountsExistingDesc": "Accounts already present in Keeper",
+    "chooseAccountsExistingAccountNote": "Named <1>{{existingName}}<\/1> in Keeper",
+    "chooseAccountsNoNewAccounts": "We found no new accounts in the given Keystore file",
+    "chooseAccountsSubmitBtn": "Confirm",
+    "chooseFileSubmitBtn": "Continue",
+    "chooseFileTitle": "Import Keystore File",
+    "errorDecrypt": "Could not decrypt the Keystore file with the given password",
+    "errorFormat": "File format is not supported",
+    "errorUnexpected": "Something went wrong",
+    "keystoreLabel": "Keystore File",
+    "noFileSelected": "No file selected",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password used to create Keystore"
   },
   "importSeed": {
     "address": "Account address",
     "existError": "Seed already exist",
     "importAccount": "Import Account",
-    "importSeed": "Welcome Back",
+    "title": "Import using seed",
     "inputSeed": "Your seed is the 15 words you saved when creating your account",
     "newSeed": "Wallet Seed"
   },

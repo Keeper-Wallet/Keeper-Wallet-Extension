@@ -50,8 +50,7 @@ class ImportSeedComponent extends React.Component {
             <div className={styles.content}>
                 <div>
                     <h2 className={'title1 margin3 left'}>
-                        {/*{t('importSeed.importSeed')}*/}
-                        <Trans i18nKey="importSeed.importSeed">Welcome Back</Trans>
+                        <Trans i18nKey="importSeed.title" />
                     </h2>
                 </div>
 
