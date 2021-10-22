@@ -23,7 +23,7 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NODE_VERSION }}'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm run test
