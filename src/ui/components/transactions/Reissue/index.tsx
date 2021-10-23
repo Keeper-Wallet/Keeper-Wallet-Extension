@@ -1,7 +1,6 @@
 import { Reissue } from './Reissue';
 import { ReissueCard } from './ReissueCard';
 import { ReissueFinal } from './ReissueFinal';
-import { ReissueInfo } from './ReissueInfo';
 import * as utils from './parseTx';
 
 const reissue = {
@@ -9,7 +8,6 @@ const reissue = {
     message: Reissue,
     card: ReissueCard,
     final: ReissueFinal,
-    info: ReissueInfo,
     ...utils,
 };
 

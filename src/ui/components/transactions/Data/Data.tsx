@@ -2,8 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 
 import { DataCard } from './DataCard';
-import { DataInfo } from './DataInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const Data = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const Data = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <DataInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

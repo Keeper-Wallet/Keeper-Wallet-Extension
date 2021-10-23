@@ -2,8 +2,7 @@ import * as styles from './massTransfer.styl';
 import * as React from 'react';
 
 import { MassTransferCard } from './MassTransferCard';
-import { MassTransferInfo } from './MassTransferInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const MassTransfer = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const MassTransfer = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <MassTransferInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

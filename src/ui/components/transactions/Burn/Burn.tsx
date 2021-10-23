@@ -2,8 +2,7 @@ import * as styles from './burn.styl';
 import * as React from 'react';
 
 import { BurnCard } from './BurnCard';
-import { BurnInfo } from './BurnInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const Burn = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const Burn = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <BurnInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

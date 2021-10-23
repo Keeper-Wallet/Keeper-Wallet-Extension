@@ -2,8 +2,7 @@ import * as styles from './cancelLease.styl';
 import * as React from 'react';
 
 import { CancelLeaseCard } from './CancelLeaseCard';
-import { CancelLeaseInfo } from './CancelLeaseInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const CancelLease = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const CancelLease = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <CancelLeaseInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

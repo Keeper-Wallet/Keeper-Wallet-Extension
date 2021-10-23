@@ -8,11 +8,9 @@ export function getAssetsId(tx): Array<string> {
     return [feeAssetId];
 }
 
-export function getFee(tx) {
-    return typeof tx.fee === 'object' ? tx.fee : { coins: tx.fee, assetId: 'WAVES' };
-}
+export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAmount(tx = null) {
+export function getAmount() {
     return { coins: 0, assetId: 'WAVES' };
 }
 

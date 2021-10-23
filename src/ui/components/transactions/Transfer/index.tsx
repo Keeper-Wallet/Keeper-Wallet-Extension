@@ -1,7 +1,6 @@
 import { Transfer } from './Transfer';
 import { TransferCard } from './TransferCard';
 import { TransferFinal } from './TransferFinal';
-import { TransferInfo } from './TransferInfo';
 import * as utils from './parseTx';
 
 const transfer = {
@@ -9,7 +8,6 @@ const transfer = {
     message: Transfer,
     card: TransferCard,
     final: TransferFinal,
-    info: TransferInfo,
     ...utils,
 };
 

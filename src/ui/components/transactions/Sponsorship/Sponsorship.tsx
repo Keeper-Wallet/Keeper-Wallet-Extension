@@ -2,8 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 
 import { SponsorshipCard } from './SponsorshipCard';
-import { SponsorshipInfo } from './SponsorshipInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const Sponsorship = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const Sponsorship = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <SponsorshipInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

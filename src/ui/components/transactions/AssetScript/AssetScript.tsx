@@ -2,8 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 
 import { AssetScriptCard } from './AssetScriptCard';
-import { AssetScriptInfo } from './AssetScriptInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const AssetScript = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const AssetScript = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <AssetScriptInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

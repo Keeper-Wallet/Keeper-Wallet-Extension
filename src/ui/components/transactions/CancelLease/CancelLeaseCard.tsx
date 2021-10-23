@@ -27,7 +27,7 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.cancelLease" />
+                            <Trans i18nKey="transactions.leaseCancel" />
                         </div>
                         <h1 className="headline1">
                             <Balance

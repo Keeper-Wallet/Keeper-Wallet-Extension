@@ -2,8 +2,7 @@ import * as styles from './index.styl';
 import * as React from 'react';
 
 import { SetScriptCard } from './SetScriptCard';
-import { SetScriptInfo } from './SetScriptInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const SetScript = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const SetScript = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <SetScriptInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

@@ -2,8 +2,7 @@ import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
 
 import { ScriptInvocationCard } from './ScriptInvocationCard';
-import { ScriptInvocationInfo } from './ScriptInvocationInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const ScriptInvocation = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const ScriptInvocation = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <ScriptInvocationInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

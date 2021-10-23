@@ -2,8 +2,7 @@ import * as styles from './lease.styl';
 import * as React from 'react';
 
 import { LeaseCard } from './LeaseCard';
-import { LeaseInfo } from './LeaseInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const Lease = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const Lease = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <LeaseInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 

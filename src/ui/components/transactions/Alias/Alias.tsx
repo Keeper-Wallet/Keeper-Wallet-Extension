@@ -2,8 +2,7 @@ import * as styles from './alias.styl';
 import * as React from 'react';
 
 import { AliasCard } from './AliasCard';
-import { AliasInfo } from './AliasInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export const Alias = (props) => {
     const { message, assets } = props;
@@ -18,7 +17,7 @@ export const Alias = (props) => {
                 </div>
 
                 <TxDetailTabs>
-                    <AliasInfo message={message} assets={assets} />
+                    <TxInfo message={message} assets={assets} />
                 </TxDetailTabs>
             </div>
 
