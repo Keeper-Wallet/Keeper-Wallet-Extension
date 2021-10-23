@@ -5,14 +5,14 @@ import { Trans } from 'react-i18next';
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxHeader } from '../BaseTransaction';
 
 export const Auth = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.authTxScrollBox} transactionContent`}>
                 <div className="margin-main">

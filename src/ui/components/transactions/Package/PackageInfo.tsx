@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './index.styl';
 import { getTransactionData } from './parseTx';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 
 const MessageItem = ({ message, config, assets }) => {
     const Card = config.card;

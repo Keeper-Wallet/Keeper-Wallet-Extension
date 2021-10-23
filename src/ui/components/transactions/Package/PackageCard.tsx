@@ -1,7 +1,7 @@
 import * as styles from './index.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { getAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';

@@ -1,6 +1,5 @@
-import * as styles from './Alias/alias.styl';
-import { ShowScript } from '../ui';
-import { Tabs } from './Tabs';
+import * as styles from '../Alias/alias.styl';
+import { ShowScript, Tabs } from '../../ui';
 import * as React from 'react';
 
 const TransactionJson = ({ message }) => {
@@ -11,7 +10,7 @@ const TransactionJson = ({ message }) => {
     );
 };
 
-export const TransactionDetails = ({ children }) => {
+export const TxDetailTabs = ({ children }) => {
     return (
         <Tabs>
             <div data-label="transactions.details">{children}</div>

@@ -1,7 +1,7 @@
 import * as styles from './unknown.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
 export class UnknownCard extends React.PureComponent<IUnknown> {

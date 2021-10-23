@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { TransactionStatus } from '../TransactionStatus';
+import { TxStatus } from '../BaseTransaction';
 
 export const OriginAuthFinal = (props) => {
     return (
-        <TransactionStatus
+        <TxStatus
             {...props}
             messages={{ send: 'sign.authConfirmed', approve: 'sign.authConfirmed', reject: 'sign.authRejected' }}
         />

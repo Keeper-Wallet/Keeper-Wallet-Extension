@@ -3,15 +3,14 @@ import * as React from 'react';
 
 import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthInfo } from './WavesAuthInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export const WavesAuth = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.wavesAuthTxScrollBox} transactionContent`}>
                 <div className="margin-main">
@@ -21,7 +20,7 @@ export const WavesAuth = (props) => {
                 <WavesAuthInfo message={message} assets={assets} />
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

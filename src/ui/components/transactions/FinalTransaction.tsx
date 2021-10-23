@@ -5,7 +5,7 @@ import { Button, BUTTON_TYPE } from '../ui';
 import cn from 'classnames';
 import oauth from './OriginAuth';
 import { isMe as isOrder } from './CreateOrder/parseTx';
-import { TransactionHeader } from './TransactionHeader';
+import { TxHeader } from './BaseTransaction';
 
 const Error = ({ approveError }) => {
     return (
@@ -60,7 +60,7 @@ export class FinalTransaction extends React.PureComponent {
 
         return (
             <div className={styles.transaction}>
-                <TransactionHeader {...this.props} hideButton={true} />
+                <TxHeader {...this.props} hideButton={true} />
 
                 <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
                     {isReject || isApprove ? (

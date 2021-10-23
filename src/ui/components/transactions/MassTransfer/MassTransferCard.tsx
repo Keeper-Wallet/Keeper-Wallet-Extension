@@ -1,7 +1,7 @@
 import * as styles from './massTransfer.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance, PlateCollapsed } from '../../ui';
 import { getMoney } from '../../../utils/converters';

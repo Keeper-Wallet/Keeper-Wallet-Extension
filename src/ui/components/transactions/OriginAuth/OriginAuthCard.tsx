@@ -2,7 +2,7 @@ import * as styles from './originAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
 export class OriginAuthCard extends React.PureComponent<IOriginAuth> {

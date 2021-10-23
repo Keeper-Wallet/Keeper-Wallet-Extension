@@ -3,28 +3,26 @@ import * as React from 'react';
 
 import { DataCard } from './DataCard';
 import { DataInfo } from './DataInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
-import { TransactionDetails } from '../TransactionDetails';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
 export const Data = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.dataTxScrollBox} transactionContent`}>
                 <div className="margin-main">
                     <DataCard {...props} />
                 </div>
 
-                <TransactionDetails>
+                <TxDetailTabs>
                     <DataInfo message={message} assets={assets} />
-                </TransactionDetails>
+                </TxDetailTabs>
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

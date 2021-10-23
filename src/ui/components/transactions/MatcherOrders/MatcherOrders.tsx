@@ -3,15 +3,14 @@ import * as React from 'react';
 
 import { MatcherCard } from './MatcherCard';
 import { MatcherInfo } from './MatcherInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export const MatcherOrders = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.matcherTxScrollBox} transactionContent`}>
                 <div className="margin-main">
@@ -21,7 +20,7 @@ export const MatcherOrders = (props) => {
                 <MatcherInfo message={message} assets={assets} />
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

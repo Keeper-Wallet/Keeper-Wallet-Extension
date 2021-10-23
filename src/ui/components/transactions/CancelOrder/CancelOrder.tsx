@@ -3,15 +3,14 @@ import * as React from 'react';
 
 import { CancelOrderCard } from './CancelOrderCard';
 import { CancelOrderInfo } from './CancelOrderInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export const CancelOrder = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.cancelOrderTxScrollBox} transactionContent`}>
                 <div className="margin-main">
@@ -21,7 +20,7 @@ export const CancelOrder = (props) => {
                 <CancelOrderInfo message={message} assets={assets} />
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

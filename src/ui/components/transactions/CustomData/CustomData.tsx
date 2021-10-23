@@ -3,15 +3,14 @@ import * as React from 'react';
 
 import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export const CustomData = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.dataTxScrollBox} transactionContent`}>
                 <div className="margin-main">
@@ -21,7 +20,7 @@ export const CustomData = (props) => {
                 <CustomDataInfo message={message} assets={assets} />
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

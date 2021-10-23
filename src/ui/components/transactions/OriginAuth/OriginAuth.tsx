@@ -8,7 +8,7 @@ import { ApproveBtn, Button, BUTTON_TYPE, CollapsedContent, DropdownButton } fro
 import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
 import { BigNumber } from '@waves/bignumber';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxHeader } from '../BaseTransaction';
 import { SignClass } from '../SignClass';
 
 class OriginAuthComponent extends SignClass {
@@ -37,7 +37,7 @@ class OriginAuthComponent extends SignClass {
 
         return (
             <div className={styles.transaction}>
-                <TransactionHeader {...this.props} />
+                <TxHeader {...this.props} />
 
                 <div className={`${styles.originAuthTxScrollBox} transactionContent`} ref={this.getRef}>
                     <div className="margin-main">

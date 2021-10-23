@@ -1,7 +1,7 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance, PlateCollapsed, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';

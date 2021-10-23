@@ -5,14 +5,14 @@ import { Trans } from 'react-i18next';
 import { UnknownCard } from './UnknownCard';
 import { UnknownInfo } from './UnknownInfo';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxHeader } from '../BaseTransaction';
 
 export const Unknown = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.unknownTxScrollBox} transactionContent`}>
                 <div className="margin-main">

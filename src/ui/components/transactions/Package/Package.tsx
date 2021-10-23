@@ -4,8 +4,7 @@ import { Trans } from 'react-i18next';
 
 import { PackageCard } from './PackageCard';
 import { PackageInfo } from './PackageInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
+import { TxFooter, TxHeader } from '../BaseTransaction';
 import { SignClass } from '../SignClass';
 
 export class Package extends SignClass {
@@ -40,7 +39,7 @@ export class Package extends SignClass {
 
         return (
             <div className={styles.transaction}>
-                <TransactionHeader {...this.props} />
+                <TxHeader {...this.props} />
 
                 <div className={`${styles.dataTxScrollBox} transactionContent`} ref={this.getContainerRef}>
                     <div className={`margin-main`}>
@@ -57,7 +56,7 @@ export class Package extends SignClass {
                     </div>
                 </div>
 
-                <TransactionFooter {...this.props} />
+                <TxFooter {...this.props} />
             </div>
         );
     }

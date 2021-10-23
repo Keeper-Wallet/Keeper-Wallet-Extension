@@ -2,7 +2,7 @@ import * as styles from './wavesAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 
 export class WavesAuthCard extends React.PureComponent<IWavesAth> {
     render() {

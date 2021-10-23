@@ -3,28 +3,26 @@ import * as React from 'react';
 
 import { IssueCard } from './IssueCard';
 import { IssueInfo } from './IssueInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
-import { TransactionDetails } from '../TransactionDetails';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
 export const Issue = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.issueTxScrollBox} transactionContent`}>
                 <div className="margin-main">
                     <IssueCard {...props} />
                 </div>
 
-                <TransactionDetails>
+                <TxDetailTabs>
                     <IssueInfo message={message} assets={assets} />
-                </TransactionDetails>
+                </TxDetailTabs>
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

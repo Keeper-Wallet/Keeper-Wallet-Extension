@@ -15,3 +15,4 @@ export * from './showScript/ShowScript';
 export * from './attachment/Attachment';
 export * from './CollapsedContent/CollapsedContent';
 export * from './plate';
+export * from './Tabs';

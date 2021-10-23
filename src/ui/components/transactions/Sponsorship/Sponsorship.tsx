@@ -3,28 +3,26 @@ import * as React from 'react';
 
 import { SponsorshipCard } from './SponsorshipCard';
 import { SponsorshipInfo } from './SponsorshipInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
-import { TransactionDetails } from '../TransactionDetails';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
 export const Sponsorship = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.sponsorshipTxScrollBox} transactionContent`}>
                 <div className="margin-main">
                     <SponsorshipCard {...props} />
                 </div>
 
-                <TransactionDetails>
+                <TxDetailTabs>
                     <SponsorshipInfo message={message} assets={assets} />
-                </TransactionDetails>
+                </TxDetailTabs>
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { TransactionStatus } from '../TransactionStatus';
+import { TxStatus } from '../BaseTransaction';
 
 export const ScriptInvocationFinal = (props) => {
-    return <TransactionStatus {...props} />;
+    return <TxStatus {...props} />;
 };

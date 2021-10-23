@@ -3,28 +3,26 @@ import * as React from 'react';
 
 import { SetScriptCard } from './SetScriptCard';
 import { SetScriptInfo } from './SetScriptInfo';
-import { TransactionFooter } from '../TransactionFooter';
-import { TransactionHeader } from '../TransactionHeader';
-import { TransactionDetails } from '../TransactionDetails';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
 export const SetScript = (props) => {
     const { message, assets } = props;
 
     return (
         <div className={styles.transaction}>
-            <TransactionHeader {...props} />
+            <TxHeader {...props} />
 
             <div className={`${styles.setScriptTxScrollBox} transactionContent`}>
                 <div className="margin-main">
                     <SetScriptCard {...props} />
                 </div>
 
-                <TransactionDetails>
+                <TxDetailTabs>
                     <SetScriptInfo message={message} assets={assets} />
-                </TransactionDetails>
+                </TxDetailTabs>
             </div>
 
-            <TransactionFooter {...props} />
+            <TxFooter {...props} />
         </div>
     );
 };

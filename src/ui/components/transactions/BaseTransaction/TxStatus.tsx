@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 
-export const TransactionStatus = ({ isApprove, isReject, isSend, messages }: IProps) => {
+export const TxStatus = ({ isApprove, isReject, isSend, messages }: IProps) => {
     if (isApprove) {
         return (
             <div className="headline2 center">
