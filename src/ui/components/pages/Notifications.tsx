@@ -105,7 +105,7 @@ class NotificationsComponent extends React.Component {
             <div className={`${styles.messageList} ${styles.messageListInner}`}>
                 <div className={styles.walletWrapper}>
                     <TransactionWallet
-                        type={'clean'}
+                        type="clean"
                         onSelect={this.selectAccountHandler}
                         account={this.props.selectedAccount}
                         hideButton={false}

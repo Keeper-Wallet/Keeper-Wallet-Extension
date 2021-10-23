@@ -1,24 +1,22 @@
 import * as React from 'react';
-import { Avatar, Button } from '../ui';
+import { Avatar, Button, Copy, Modal } from '../ui';
 import cn from 'classnames';
 import * as styles from './wallet.styl';
+import { Trans } from 'react-i18next';
 
-const CONF = {
-    small: {
-        size: 28,
-        addClass: '',
-    },
-
-    clean: {
-        size: 28,
-        addClass: styles.walletClean,
-    },
-
-    big: {
-        size: 48,
-        addClass: styles.bigWalet,
-    },
+const AddressHidden = ({ address, className, size = 8 }: IAddressHiddenProps) => {
+    return (
+        <div className={className}>
+            {address.slice(0, size)}...{address.slice(-size)}
+        </div>
+    );
 };
+
+interface IAddressHiddenProps {
+    address: string;
+    className?: string;
+    size?: number;
+}
 
 export const TransactionWallet = ({
     className = '',
@@ -29,11 +27,19 @@ export const TransactionWallet = ({
     hideButton = false,
     children = null,
     type = 'small',
-    ...props
-}) => {
-    const conf = CONF[type] || CONF.small;
-    const size = conf.size;
-    className = cn(styles.wallet, className, conf.addClass, { [styles.activeWallet]: active });
+}: ITransactionWalletProps) => {
+    const [showCopied, setCopied] = React.useState(false);
+    let copyTimeout;
+    const onCopy = () => {
+        clearTimeout(copyTimeout);
+        setCopied(true);
+        copyTimeout = setTimeout(() => {
+            setCopied(false);
+        }, 1000);
+    };
+
+    const avatarSize = 28;
+    className = cn(styles.wallet, className, { [styles.walletClean]: type == 'clean', [styles.activeWallet]: active });
 
     const iconClass = cn(styles.accountIcon, 'change-account-icon');
 
@@ -51,20 +57,47 @@ export const TransactionWallet = ({
     };
 
     return (
-        <div className={`${className} ${styles.inner} ${styles.txWallet} flex`} {...props}>
+        <div className={`${className} ${styles.inner} ${styles.txWallet} flex`}>
             <div className={styles.avatar}>
-                <Avatar size={size} address={account.address} />
+                <Avatar size={avatarSize} address={account.address} />
             </div>
 
             <div className={`body3 ${styles.accountData}`}>
-                <div className={`${styles.accountName} tag1`}>{account.name}</div>
-                <div className={`basic500 ${styles.accountAddress}`}>{account.address}</div>
+                <Copy text={account.address} onCopy={onCopy}>
+                    <div className={styles.accountName}>
+                        {account.name}
+
+                        <div className={styles.tooltip}>
+                            <AddressHidden address={account.address} />
+                            <div>
+                                <Trans i18nKey="accountInfo.copyToClipboard" />
+                            </div>
+                        </div>
+                    </div>
+                </Copy>
             </div>
 
             <div className={styles.controls} onClick={clickHandler}>
                 {children}
                 {hideButton ? null : <Button type="custom" onClick={selectHandler} className={iconClass} />}
             </div>
+
+            <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopied}>
+                <div className="modal notification">
+                    <Trans i18nKey="accountInfo.copied">Copied!</Trans>
+                </div>
+            </Modal>
         </div>
     );
 };
+
+interface ITransactionWalletProps {
+    className?: string;
+    onSelect?: (account: any) => void;
+    onActive?: (account: any) => void;
+    account: any;
+    active?: boolean;
+    hideButton?: boolean;
+    children?: any;
+    type?: 'small' | 'clean';
+}

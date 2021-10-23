@@ -12,7 +12,8 @@
     "passwordError": "Incorrect password",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "seed": "Backup phrase"
+    "seed": "Backup phrase",
+    "copyToClipboard": "Click to copy to clipboard"
   },
   "assets": {
     "account": "Account",

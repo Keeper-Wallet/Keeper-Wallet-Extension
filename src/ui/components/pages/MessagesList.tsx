@@ -124,7 +124,7 @@ class MessageListComponent extends React.Component {
                 </div>
 
                 <div className={styles.walletWrapper}>
-                    <TransactionWallet type={'clean'} account={this.props.selectedAccount} hideButton={true} />
+                    <TransactionWallet type="clean" account={this.props.selectedAccount} hideButton={true} />
                 </div>
 
                 <div className={styles.messageListScrollBox}>
