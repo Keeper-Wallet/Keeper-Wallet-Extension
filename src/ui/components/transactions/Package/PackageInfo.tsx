@@ -2,15 +2,14 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './index.styl';
 import { getTransactionData } from './parseTx';
-import { TxIcon } from '../BaseTransaction';
+import { TxIcon, TxInfo } from '../BaseTransaction';
 
 const MessageItem = ({ message, config, assets }) => {
     const Card = config.card;
-    const Info = config.info;
     return (
         <div>
             <Card message={message} assets={assets} />
-            <Info message={message} assets={assets} />
+            <TxInfo message={message} assets={assets} />
         </div>
     );
 };

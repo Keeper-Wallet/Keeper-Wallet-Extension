@@ -1,7 +1,6 @@
 import { Auth } from './Auth';
 import { AuthCard } from './AuthCard';
 import { AuthFinal } from './AuthFinal';
-import { AuthInfo } from './AuthInfo';
 import * as utils from './parseTx';
 
 const auth = {
@@ -9,7 +8,6 @@ const auth = {
     message: Auth,
     card: AuthCard,
     final: AuthFinal,
-    info: AuthInfo,
     ...utils,
 };
 

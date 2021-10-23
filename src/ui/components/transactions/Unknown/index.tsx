@@ -1,7 +1,6 @@
 import { Unknown } from './Unknown';
 import { UnknownCard } from './UnknownCard';
 import { UnknownFinal } from './UnknownFinal';
-import { UnknownInfo } from './UnknownInfo';
 import * as utils from './parseTx';
 
 const unknown = {
@@ -9,7 +8,6 @@ const unknown = {
     message: Unknown,
     card: UnknownCard,
     final: UnknownFinal,
-    info: UnknownInfo,
     ...utils,
 };
 
