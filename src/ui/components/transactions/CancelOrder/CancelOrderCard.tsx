@@ -27,7 +27,14 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent} />
+                <div className={styles.cardContent}>
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.orderId" />
+                        </div>
+                        <div className={styles.txValue}>{this.props.message?.data?.data?.id}</div>
+                    </div>
+                </div>
             </div>
         );
     }

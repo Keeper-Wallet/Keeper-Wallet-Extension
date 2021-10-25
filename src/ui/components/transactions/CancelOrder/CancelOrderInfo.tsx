@@ -13,13 +13,6 @@ export class CancelOrderInfo extends React.PureComponent<ICancelOrderInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title tag1 basic500">
-                        <Trans i18nKey="transactions.orderId" />
-                    </div>
-                    <div className={styles.txValue}>{tx.id}</div>
-                </div>
-
-                <div className={styles.txRow}>
-                    <div className="tx-title tag1 basic500">
                         <Trans i18nKey="transactions.txid" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
