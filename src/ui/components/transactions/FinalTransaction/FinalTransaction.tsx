@@ -1,11 +1,11 @@
-import * as styles from './../pages/styles/transactions.styl';
+import * as styles from './final.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
+import { Button, BUTTON_TYPE } from '../../ui';
 import cn from 'classnames';
-import oauth from './OriginAuth';
-import { isMe as isOrder } from './CreateOrder/parseTx';
-import { TxHeader } from './BaseTransaction';
+import oauth from '../OriginAuth';
+import { isMe as isOrder } from '../CreateOrder/parseTx';
+import { TxHeader } from '../BaseTransaction';
 
 const Error = ({ approveError }) => {
     return (
@@ -46,10 +46,6 @@ export class FinalTransaction extends React.PureComponent {
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;
-        const className = cn(styles.txBigIcon, 'margin-main', {
-            'tx-reject-icon': isReject,
-            'tx-approve-icon': isApprove,
-        });
         const isNotOrder = !isOrder(message.data, message.type);
 
         const network = selectedAccount && selectedAccount.networkCode;
@@ -57,7 +53,7 @@ export class FinalTransaction extends React.PureComponent {
             ['W', 'wavesexplorer.com'],
             ['T', 'testnet.wavesexplorer.com'],
             ['S', 'stagenet.wavesexplorer.com'],
-            ['custom', 'wavesexplorer.com/custom']
+            ['custom', 'wavesexplorer.com/custom'],
         ]);
         const explorer = explorerUrls.get(explorerUrls.has(network) ? network : 'custom');
         const txLink = `https://${explorer}/tx/${message.messageHash}`;
@@ -74,7 +70,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.transaction}>
                 <TxHeader {...this.props} hideButton={true} />
 
-                <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
+                <div className={cn(styles.txFinalScrollBox, 'transactionContent')}>
                     {isReject || isApprove ? (
                         <div
                             className={cn(styles.txBigIcon, 'margin-main', {

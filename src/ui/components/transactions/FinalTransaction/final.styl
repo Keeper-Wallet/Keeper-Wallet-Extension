@@ -1,0 +1,15 @@
+@import '../../../styles/colors.styl';
+@import '../../pages/styles/transactions.styl';
+
+.finalTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;
+
+.finalTxTitle
+  padding-left 26px
+
+.finalTxPlate
+  overflow: auto;
+  max-height: 240px;
+  background: $basic100;
+  word-break: break-all;
