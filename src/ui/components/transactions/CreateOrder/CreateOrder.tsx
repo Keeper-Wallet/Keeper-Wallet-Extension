@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { CreateOrderCard } from './CreateOrderCard';
 import { CreateOrderInfo } from './CreateOrderInfo';
-import { TxFooter, TxHeader } from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
 export const CreateOrder = (props) => {
     const { message, assets } = props;
@@ -17,7 +17,9 @@ export const CreateOrder = (props) => {
                     <CreateOrderCard {...props} />
                 </div>
 
-                <CreateOrderInfo message={message} assets={assets} />
+                <TxDetailTabs>
+                    <CreateOrderInfo message={message} assets={assets} />
+                </TxDetailTabs>
             </div>
 
             <TxFooter {...props} />

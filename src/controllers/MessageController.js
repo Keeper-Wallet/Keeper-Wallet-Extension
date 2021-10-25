@@ -577,6 +577,8 @@ export class MessageController extends EventEmitter {
                 messageMeta = await this._getMessageDataHash(result.data, message.account);
                 result.messageHash = messageMeta.id;
                 result.bytes = Array.from(messageMeta.bytes);
+                const filledOrder = await this._fillSignableData(clone(result));
+                result.json = await this.jsonTx(result.account.address, filledOrder.data, result.account.network);
                 break;
             case 'transaction':
                 if (!result.data.type || result.data.type >= 1000) {
