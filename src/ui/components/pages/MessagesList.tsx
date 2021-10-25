@@ -17,7 +17,7 @@ import { TransactionWallet } from '../wallets';
 import * as styles from './styles/messageList.styl';
 import { Button, BUTTON_TYPE } from '../ui';
 
-const Messages = ({ messages, assets, onSelect, onReject }) => {
+const Messages = ({ messages, assets, onSelect }: IProps) => {
     return messages.map((message) => {
         try {
             const config = getConfigByTransaction(message);
@@ -32,6 +32,13 @@ const Messages = ({ messages, assets, onSelect, onReject }) => {
         }
     });
 };
+
+interface IProps {
+    messages: any;
+    assets: any;
+    onSelect: (...args: any) => void;
+    onReject: (...args: any) => void;
+}
 
 const Notifications = ({ notifications, onShow, onDelete }) => {
     return notifications.map((items) => {
@@ -135,6 +142,7 @@ class MessageListComponent extends React.Component {
                                     <Trans i18nKey="messageList.messages">Messages</Trans>
                                 </div>
                                 <Button
+                                    id="clearAllMessages"
                                     type={BUTTON_TYPE.TRANSPARENT}
                                     onClick={this.deleteAll}
                                     className={`${styles.clearAllBtn} body3 basic500`}

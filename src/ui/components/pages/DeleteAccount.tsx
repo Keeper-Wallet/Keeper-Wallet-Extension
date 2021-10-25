@@ -26,7 +26,12 @@ class DeleteAccountComponent extends React.Component {
                     </Trans>
                 </div>
                 <div>
-                    <Button onClick={this.onClickHandler} type="warning" disabled={this.state.disable}>
+                    <Button
+                        id="deleteAccount"
+                        onClick={this.onClickHandler}
+                        type="warning"
+                        disabled={this.state.disable}
+                    >
                         <Trans i18nKey="deleteUser.delete">Delete account</Trans>
                     </Button>
                 </div>

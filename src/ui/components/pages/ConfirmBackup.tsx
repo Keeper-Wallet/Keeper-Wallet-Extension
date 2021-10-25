@@ -50,7 +50,6 @@ class ConfirmBackupComponent extends React.Component {
                 </h2>
 
                 <Pills
-                    animated={true}
                     className={`${styles.readSeed} plate body3`}
                     list={selectedList}
                     selected={false}
@@ -71,6 +70,7 @@ class ConfirmBackupComponent extends React.Component {
                 <Pills className={styles.writeSeed} list={list} selected={true} onSelect={this.onSelect} />
                 {showButton ? (
                     <Button
+                        id="confirmBackup"
                         type="submit"
                         disabled={this.state.disabled}
                         className={styles.confirm}

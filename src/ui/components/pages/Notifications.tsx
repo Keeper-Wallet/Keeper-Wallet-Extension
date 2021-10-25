@@ -123,6 +123,7 @@ class NotificationsComponent extends React.Component {
                             type={'checkbox'}
                             checked={this.state.canShowNotify}
                             onChange={this.toggleCanShowHandler}
+
                         />
                         <label htmlFor="checkbox_noshow">
                             <Trans i18nKey="notifications.allowSending">Allow sending messages</Trans>
@@ -148,7 +149,7 @@ class NotificationsComponent extends React.Component {
                     {showClose && (hasNotifications || showToList) && <div className={styles.buttonsSeparator} />}
 
                     {showClose && (
-                        <Button onClick={this.closeHandler}>
+                        <Button id="closeNotification" onClick={this.closeHandler}>
                             <Trans i18nKey="notifications.closeBtn">Close</Trans>
                         </Button>
                     )}

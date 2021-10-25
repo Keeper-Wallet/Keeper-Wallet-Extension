@@ -1,0 +1,32 @@
+name: Run tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get sources
+        uses: actions/checkout@v2
+
+      - name: Read .nvmrc for Node.js version
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.nvm.outputs.NODE_VERSION }}'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Remove "dangling" Docker images
+        run: docker rmi $(docker images -f "dangling=true" -q --no-trunc)

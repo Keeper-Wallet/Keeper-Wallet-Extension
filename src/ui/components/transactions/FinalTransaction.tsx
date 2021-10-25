@@ -46,9 +46,21 @@ export class FinalTransaction extends React.PureComponent {
         const config = this.props.config;
         const FinalComponent = config.final;
         const Card = config.card;
-        const network = selectedAccount && selectedAccount.networkCode;
-        const txLink = `https://${network === 'T' ? 'testnet.' : ''}wavesexplorer.com/tx/${message.messageHash}`;
+        const className = cn(styles.txBigIcon, 'margin-main', {
+            'tx-reject-icon': isReject,
+            'tx-approve-icon': isApprove,
+        });
         const isNotOrder = !isOrder(message.data, message.type);
+
+        const network = selectedAccount && selectedAccount.networkCode;
+        const explorerUrls = new Map([
+            ['W', 'wavesexplorer.com'],
+            ['T', 'testnet.wavesexplorer.com'],
+            ['S', 'stagenet.wavesexplorer.com'],
+            ['custom', 'wavesexplorer.com/custom']
+        ]);
+        const explorer = explorerUrls.get(explorerUrls.has(network) ? network : 'custom');
+        const txLink = `https://${explorer}/tx/${message.messageHash}`;
 
         if (config.type === oauth.type && !isShowClose) {
             const method = isShowList ? 'onList' : 'onNext';
@@ -124,7 +136,7 @@ export class FinalTransaction extends React.PureComponent {
                     ) : null}
 
                     {isShowClose ? (
-                        <Button onClick={onClose}>
+                        <Button id="close" onClick={onClose}>
                             {isError ? <Trans i18nKey="sign.understand" /> : null}
                             {isReject || isApprove ? <Trans i18nKey="sign.close" /> : null}
                         </Button>

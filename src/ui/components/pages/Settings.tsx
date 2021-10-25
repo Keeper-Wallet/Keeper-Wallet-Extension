@@ -2,7 +2,7 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, PowerButton } from '../ui/buttons';
+import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 
@@ -31,7 +31,12 @@ class SettingsComponent extends React.Component {
                 </div>
 
                 <div className={`${styles.settingsMenuItem} ${styles.network}`}>
-                    <Button type="transparent" className={styles.settingsBtn} onClick={this.settingsGeneral}>
+                    <Button
+                        id="settingsGeneral"
+                        type="transparent"
+                        className={styles.settingsBtn}
+                        onClick={this.settingsGeneral}
+                    >
                         <div className="body1 left">
                             <Trans i18nKey="settings.settingsGeneral">General</Trans>
                         </div>
@@ -39,7 +44,12 @@ class SettingsComponent extends React.Component {
                 </div>
 
                 <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
-                    <Button type="transparent" className={styles.settingsBtn} onClick={this.permissionsHandler}>
+                    <Button
+                        id="settingsPermission"
+                        type="transparent"
+                        className={styles.settingsBtn}
+                        onClick={this.permissionsHandler}
+                    >
                         <div className="body1 left">
                             <Trans i18nKey="settings.permissionsControl">Permissions control</Trans>
                         </div>
@@ -47,7 +57,12 @@ class SettingsComponent extends React.Component {
                 </div>
 
                 <div className={`${styles.settingsMenuItem} ${styles.network}`}>
-                    <Button type="transparent" className={styles.settingsBtn} onClick={this.networkHandler}>
+                    <Button
+                        id="settingsNetwork"
+                        type="transparent"
+                        className={styles.settingsBtn}
+                        onClick={this.networkHandler}
+                    >
                         <div className="body1 left">
                             <Trans i18nKey="settings.network">Network</Trans>
                         </div>
@@ -104,7 +119,7 @@ class SettingsComponent extends React.Component {
                     </div>
                     <div>
                         <div className={styles.helper}>
-                            <i className={`helpIcon ${styles.helpIcon}`}></i>
+                            <i className={`helpIcon ${styles.helpIcon}`}> </i>
                             <div className={styles.tooltip}>
                                 <Trans i18nKey="settings.toolitpContent">
                                     Protect yourself from Clicker Trojans threats
@@ -118,7 +133,7 @@ class SettingsComponent extends React.Component {
                     <div className={styles.buttonsWrapper}>
                         <div>
                             <div className={styles.deleteAccounts} onClick={this.deleteHandler}>
-                                <i className={styles.icon}></i>
+                                <i className={styles.icon}> </i>
                                 <span>
                                     <Trans i18nKey="settings.deleteAccounts">Delete accounts</Trans>
                                 </span>
@@ -126,7 +141,7 @@ class SettingsComponent extends React.Component {
                         </div>
                         <div>
                             <div className={styles.logout} onClick={this.lock}>
-                                <i className={styles.icon}></i>
+                                <i className={styles.icon}> </i>
                                 <span>
                                     <Trans i18nKey="settings.logOut">Log out</Trans>
                                 </span>

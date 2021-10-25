@@ -63,6 +63,7 @@ class SettingsGeneralComponent extends React.Component {
 
                 <div className={`${styles.settingsMenuItem} ${styles.password}`}>
                     <Button
+                        id="changePassword"
                         type={BUTTON_TYPE.TRANSPARENT}
                         className={styles.settingsBtn}
                         onClick={this.passwordHandler}

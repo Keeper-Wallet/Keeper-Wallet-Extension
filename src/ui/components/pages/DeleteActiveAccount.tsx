@@ -23,7 +23,12 @@ class DeleteActiveAccountComponent extends React.Component {
                     <Trans i18nKey="deleteAccount.warn">Deleting an account will lead to its irretrievable loss!</Trans>
                 </div>
                 <div>
-                    <Button onClick={this.onClickHandler} type="warning" disabled={this.state.disable}>
+                    <Button
+                        id="deleteAccount"
+                        onClick={this.onClickHandler}
+                        type="warning"
+                        disabled={this.state.disable}
+                    >
                         <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
                     </Button>
                 </div>

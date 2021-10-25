@@ -33,7 +33,7 @@ class LoginComponent extends React.Component {
 
     getRef = (input) => (this.inputEl = input);
 
-    forgotHandler = (e) => this.props.setTab(PAGES.FORGOT);
+    forgotHandler = () => this.props.setTab(PAGES.FORGOT);
 
     componentDidMount() {
         //this.inputEl.focus();
@@ -51,6 +51,7 @@ class LoginComponent extends React.Component {
                     </div>
                     <div className="margin-main-big relative">
                         <Input
+                            id="loginPassword"
                             type="password"
                             ref={this.getRef}
                             onChange={this.onChange}
@@ -62,7 +63,7 @@ class LoginComponent extends React.Component {
                             <Trans i18nKey="login.passwordError">Wrong password</Trans>
                         </Error>
                     </div>
-                    <Button type="submit" className="margin4" disabled={!this.state.password}>
+                    <Button id="loginEnter" type="submit" className="margin4" disabled={!this.state.password}>
                         <Trans i18nKey="login.enter">Enter</Trans>
                     </Button>
                 </form>

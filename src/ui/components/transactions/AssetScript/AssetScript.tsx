@@ -1,6 +1,5 @@
-import * as styles from './index.styl';
-import * as React from 'react';
-
+import * as styles from './assetScript.styl';
+import * as React from 'react'
 import { AssetScriptCard } from './AssetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 

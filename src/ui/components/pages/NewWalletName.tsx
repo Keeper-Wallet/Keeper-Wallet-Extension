@@ -69,6 +69,7 @@ class NewWalletNameComponent extends React.Component {
                 <form onSubmit={this.onSubmit}>
                     <div className={`margin1`}>
                         <Input
+                            id="newAccountName"
                             ref={this.getRef}
                             className="margin1"
                             onChange={this.onChange}
@@ -88,6 +89,7 @@ class NewWalletNameComponent extends React.Component {
                     <div className={styles.buttons}>
                         {this.props.account.hasBackup ? (
                             <Button
+                                id="continue"
                                 type="submit"
                                 onClick={this._onSave}
                                 disabled={this.state.errors.length || this.state.disabled}
@@ -95,7 +97,7 @@ class NewWalletNameComponent extends React.Component {
                                 <Trans i18nKey="newAccountName.continue">Continue</Trans>
                             </Button>
                         ) : (
-                            <Button type="submit" disabled={this.state.errors.length}>
+                            <Button id="createBackup" type="submit" disabled={this.state.errors.length}>
                                 <Trans i18nKey="newAccountName.continueBackup">Create backup</Trans>
                             </Button>
                         )}

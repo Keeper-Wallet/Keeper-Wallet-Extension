@@ -175,7 +175,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
         return (
             <div className="modal cover">
-                <div className="modal-form">
+                <div id="originSettings" className="modal-form">
                     <h2 className={cn(styles.title)}>
                         <Trans i18nKey="permissionSettings.modal.title">Permission details</Trans>
                     </h2>
@@ -222,11 +222,12 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
                     {!inWhiteList ? (
                         <div className="buttons-wrapper">
-                            <Button onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
+                            <Button id="delete" onClick={this.deleteHandler} type={BUTTON_TYPE.WARNING}>
                                 <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
                             </Button>
 
                             <Button
+                                id="save"
                                 className={styles.test}
                                 type={BUTTON_TYPE.GENERAL}
                                 disabled={!this.state.canSave}
@@ -237,6 +238,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         </div>
                     ) : (
                         <Button
+                            id="save"
                             className={styles.test}
                             type={BUTTON_TYPE.GENERAL}
                             disabled={!this.state.canSave}
@@ -246,7 +248,12 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                         </Button>
                     )}
 
-                    <Button className={styles.cancelBtn} type={BUTTON_TYPE.TRANSPARENT} onClick={this.props.onClose}>
+                    <Button
+                        id="cancel"
+                        className={styles.cancelBtn}
+                        type={BUTTON_TYPE.TRANSPARENT}
+                        onClick={this.props.onClose}
+                    >
                         <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
                     </Button>
                 </div>
