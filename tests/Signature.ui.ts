@@ -53,7 +53,7 @@ describe('Signature', function () {
             );
             await this.driver.findElement(By.css('button#reject')).click();
             await this.driver
-                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")), this.wait)
+                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")), this.wait)
                 .findElement(By.css('button#close'))
                 .click();
             await this.driver.wait(
@@ -70,7 +70,7 @@ describe('Signature', function () {
             );
             await this.driver.findElement(By.css('button#reject')).click();
             const txFinalEl: WebElement = this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-reject-icon'))).length(1);
@@ -87,7 +87,7 @@ describe('Signature', function () {
                 .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#approve'))), this.wait)
                 .click();
             const txFinalEl: WebElement = await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-approve-icon'))).length(1);
@@ -130,7 +130,7 @@ describe('Signature', function () {
                 .click();
             await this.driver.wait(until.elementLocated(By.css('button#rejectForever')), this.wait).click();
             const txFinalEl: WebElement = await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]/../")),
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-reject-icon'))).length(1);

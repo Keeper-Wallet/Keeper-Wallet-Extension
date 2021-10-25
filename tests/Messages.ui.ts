@@ -103,7 +103,7 @@ describe('Messages', function () {
 
         expect(
             await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                 this.wait
             )
         ).not.to.be.throw;

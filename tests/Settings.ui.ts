@@ -262,7 +262,7 @@ describe('Settings', function () {
                     await this.driver.findElement(By.css('button#approve')).click();
 
                     await this.driver.wait(
-                        until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                        until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                         this.wait
                     );
                     await this.driver.findElement(By.css('button#close')).click();
@@ -339,7 +339,7 @@ describe('Settings', function () {
                     await this.driver.findElement(By.css('button#approve')).click();
 
                     await this.driver.wait(
-                        until.elementLocated(By.xpath("//div[contains(@class, '-transactions-txFinal')]")),
+                        until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                         this.wait
                     );
                     await this.driver.findElement(By.css('button#close')).click();

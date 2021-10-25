@@ -8,12 +8,17 @@ export const TxFooter = ({ message, approve, reject, hideApprove, autoClickProte
 
     return (
         <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-            <Button onClick={reject} type={BUTTON_TYPE.WARNING}>
+            <Button id="reject" onClick={reject} type={BUTTON_TYPE.WARNING}>
                 <Trans i18nKey="sign.reject" />
             </Button>
 
             {hideApprove ? null : (
-                <ApproveBtn onClick={approve} type={BUTTON_TYPE.SUBMIT} autoClickProtection={autoClickProtection}>
+                <ApproveBtn
+                    id="approve"
+                    onClick={approve}
+                    type={BUTTON_TYPE.SUBMIT}
+                    autoClickProtection={autoClickProtection}
+                >
                     <Trans i18nKey={isSend ? 'sign.confirmButton' : 'sign.signButton'} />
                 </ApproveBtn>
             )}
