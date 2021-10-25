@@ -115,8 +115,16 @@ describe('Account management', function () {
                 this.wait
             );
             const currentTab = await this.driver.getWindowHandle();
-            await this.driver.wait(until.elementLocated(By.css('a.walletIconBlack')), this.wait).click();
+            await this.driver
+                .wait(
+                    until.elementIsVisible(
+                        this.driver.wait(until.elementLocated(By.css('a.walletIconBlack')), this.wait)
+                    ),
+                    this.wait
+                )
+                .click();
 
+            await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
             const tabs = await this.driver.getAllWindowHandles();
             expect(tabs).length(2);
 
@@ -147,7 +155,14 @@ describe('Account management', function () {
                 this.wait
             );
             const currentTab = await this.driver.getWindowHandle();
-            await this.driver.wait(until.elementLocated(By.css('a.transactionsIconBlack')), this.wait).click();
+            await this.driver
+                .wait(
+                    until.elementIsVisible(
+                        this.driver.wait(until.elementLocated(By.css('a.transactionsIconBlack')), this.wait)
+                    ),
+                    this.wait
+                )
+                .click();
 
             const tabs = await this.driver.getAllWindowHandles();
             expect(tabs).length(2);

@@ -4,7 +4,7 @@ import { App, CreateNewAccount, Settings } from './utils/actions';
 import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
-    const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 100;
+    const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 1000;
 
     this.timeout(2 * 60 * 1000);
 

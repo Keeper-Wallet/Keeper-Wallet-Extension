@@ -130,7 +130,7 @@ describe('Signature', function () {
                 .click();
             await this.driver.wait(until.elementLocated(By.css('button#rejectForever')), this.wait).click();
             const txFinalEl: WebElement = await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]/../")),
+                until.elementLocated(By.xpath("//div[contains(@class, '-final-transaction')]")),
                 this.wait
             );
             expect(await txFinalEl.findElements(By.css('.tx-reject-icon'))).length(1);
