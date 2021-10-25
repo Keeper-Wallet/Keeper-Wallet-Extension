@@ -70,7 +70,7 @@ export class FinalTransaction extends React.PureComponent {
             <div className={styles.transaction}>
                 <TxHeader {...this.props} hideButton={true} />
 
-                <div className={cn(styles.txFinalScrollBox, 'transactionContent')}>
+                <div className={cn(styles.finalTxScrollBox, 'transactionContent')}>
                     {isReject || isApprove ? (
                         <div
                             className={cn(styles.txBigIcon, 'margin-main', {
