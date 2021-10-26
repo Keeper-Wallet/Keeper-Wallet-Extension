@@ -42,7 +42,14 @@ const version = extension.runtime.getManifest().version;
 const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
-setupBackgroundService().catch((e) => log.error(e));
+const bgPromise = setupBackgroundService().catch((e) => log.error(e));
+
+extension.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+        const bgService = await bgPromise;
+        bgService.messageController.clearUnusedMessages();
+    }
+});
 
 const Adapter = getAdapterByType('seed');
 const adapter = new Adapter('test seed for get seed adapter info');
@@ -138,6 +145,8 @@ async function setupBackgroundService() {
         const origin = url.parse(remotePort.sender.url).hostname;
         backgroundService.setupPageConnection(portStream, origin);
     }
+
+    return backgroundService;
 }
 
 class BackgroundService extends EventEmitter {
