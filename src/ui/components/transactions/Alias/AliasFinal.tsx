@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const AliasFinal = (props) => {
+export function AliasFinal(props) {
     return <TxStatus {...props} />;
-};
+}

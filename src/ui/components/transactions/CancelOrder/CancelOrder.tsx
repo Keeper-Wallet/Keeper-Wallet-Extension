@@ -5,7 +5,7 @@ import { CancelOrderCard } from './CancelOrderCard';
 import { CancelOrderInfo } from './CancelOrderInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
-export const CancelOrder = (props) => {
+export function CancelOrder(props) {
     const { message, assets } = props;
 
     return (
@@ -23,4 +23,4 @@ export const CancelOrder = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

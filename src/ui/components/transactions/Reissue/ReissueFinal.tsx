@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const ReissueFinal = (props) => {
+export function ReissueFinal(props) {
     return <TxStatus {...props} />;
-};
+}

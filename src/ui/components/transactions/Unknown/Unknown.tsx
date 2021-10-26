@@ -7,7 +7,7 @@ import { UnknownInfo } from './UnknownInfo';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 
-export const Unknown = (props) => {
+export function Unknown(props) {
     const { message, assets } = props;
 
     return (
@@ -32,4 +32,4 @@ export const Unknown = (props) => {
             </div>
         </div>
     );
-};
+}

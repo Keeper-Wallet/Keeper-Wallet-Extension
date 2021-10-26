@@ -4,7 +4,7 @@ import * as React from 'react';
 import { CancelLeaseCard } from './CancelLeaseCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const CancelLease = (props) => {
+export function CancelLease(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const CancelLease = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

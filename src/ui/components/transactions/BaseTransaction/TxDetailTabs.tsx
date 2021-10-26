@@ -10,7 +10,7 @@ const TransactionJson = ({ message }) => {
     );
 };
 
-export const TxDetailTabs = ({ children }) => {
+export function TxDetailTabs({ children }) {
     return (
         <Tabs>
             <div data-label="transactions.details">{children}</div>
@@ -19,4 +19,4 @@ export const TxDetailTabs = ({ children }) => {
             </div>
         </Tabs>
     );
-};
+}

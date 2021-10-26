@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const CreateOrderFinal = (props) => {
+export function CreateOrderFinal(props) {
     return <TxStatus {...props} />;
-};
+}

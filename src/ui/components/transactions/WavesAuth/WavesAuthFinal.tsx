@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const WavesAuthFinal = (props) => {
+export function WavesAuthFinal(props) {
     return (
         <TxStatus
             {...props}
@@ -12,4 +12,4 @@ export const WavesAuthFinal = (props) => {
             }}
         />
     );
-};
+}

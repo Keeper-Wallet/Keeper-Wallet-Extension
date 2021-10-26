@@ -4,7 +4,7 @@ import * as React from 'react';
 import { SponsorshipCard } from './SponsorshipCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const Sponsorship = (props) => {
+export function Sponsorship(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const Sponsorship = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

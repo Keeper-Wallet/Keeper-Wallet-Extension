@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const CustomDataFinal = (props) => {
+export function CustomDataFinal(props) {
     return (
         <TxStatus
             {...props}
@@ -12,4 +12,4 @@ export const CustomDataFinal = (props) => {
             }}
         />
     );
-};
+}

@@ -5,7 +5,7 @@ import { CreateOrderCard } from './CreateOrderCard';
 import { CreateOrderInfo } from './CreateOrderInfo';
 import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
-export const CreateOrder = (props) => {
+export function CreateOrder(props) {
     const { message, assets } = props;
 
     return (
@@ -25,4 +25,4 @@ export const CreateOrder = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

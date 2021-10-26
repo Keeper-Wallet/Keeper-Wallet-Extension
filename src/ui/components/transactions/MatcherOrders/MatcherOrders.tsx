@@ -5,7 +5,7 @@ import { MatcherCard } from './MatcherCard';
 import { MatcherInfo } from './MatcherInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
-export const MatcherOrders = (props) => {
+export function MatcherOrders(props) {
     const { message, assets } = props;
 
     return (
@@ -23,4 +23,4 @@ export const MatcherOrders = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

@@ -5,7 +5,7 @@ import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
 import { UpdateAssetInfoInfo } from './UpdateAssetInfoInfo';
 import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
 
-export const UpdateAssetInfo = (props) => {
+export function UpdateAssetInfo(props) {
     const { message, assets } = props;
 
     return (
@@ -25,4 +25,4 @@ export const UpdateAssetInfo = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

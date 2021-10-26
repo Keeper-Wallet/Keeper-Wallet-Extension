@@ -5,7 +5,7 @@ import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
-export const CustomData = (props) => {
+export function CustomData(props) {
     const { message, assets } = props;
 
     return (
@@ -23,4 +23,4 @@ export const CustomData = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

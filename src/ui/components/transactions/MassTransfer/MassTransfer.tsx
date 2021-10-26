@@ -4,7 +4,7 @@ import * as React from 'react';
 import { MassTransferCard } from './MassTransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const MassTransfer = (props) => {
+export function MassTransfer(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const MassTransfer = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

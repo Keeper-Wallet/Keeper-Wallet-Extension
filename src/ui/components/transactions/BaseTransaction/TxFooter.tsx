@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 
-export const TxFooter = ({ message, approve, reject, hideApprove, autoClickProtection }) => {
+export function TxFooter({ message, approve, reject, hideApprove, autoClickProtection }) {
     const isSend = message.broadcast;
 
     return (
@@ -24,4 +24,4 @@ export const TxFooter = ({ message, approve, reject, hideApprove, autoClickProte
             )}
         </div>
     );
-};
+}

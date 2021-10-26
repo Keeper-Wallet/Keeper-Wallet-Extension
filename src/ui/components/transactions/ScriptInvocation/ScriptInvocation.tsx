@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ScriptInvocationCard } from './ScriptInvocationCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const ScriptInvocation = (props) => {
+export function ScriptInvocation(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const ScriptInvocation = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

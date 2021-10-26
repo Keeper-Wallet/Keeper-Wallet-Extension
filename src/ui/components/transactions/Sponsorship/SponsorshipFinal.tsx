@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const SponsorshipFinal = (props) => {
+export function SponsorshipFinal(props) {
     return <TxStatus {...props} />;
-};
+}

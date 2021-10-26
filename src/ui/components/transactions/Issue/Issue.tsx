@@ -4,7 +4,7 @@ import * as React from 'react';
 import { IssueCard } from './IssueCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const Issue = (props) => {
+export function Issue(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const Issue = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

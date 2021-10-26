@@ -5,7 +5,7 @@ import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthInfo } from './WavesAuthInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
-export const WavesAuth = (props) => {
+export function WavesAuth(props) {
     const { message, assets } = props;
 
     return (
@@ -23,4 +23,4 @@ export const WavesAuth = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

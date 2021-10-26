@@ -4,7 +4,7 @@ import * as React from 'react';
 import { AliasCard } from './AliasCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const Alias = (props) => {
+export function Alias(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const Alias = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

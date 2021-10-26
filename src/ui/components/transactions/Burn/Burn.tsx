@@ -4,7 +4,7 @@ import * as React from 'react';
 import { BurnCard } from './BurnCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const Burn = (props) => {
+export function Burn(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const Burn = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

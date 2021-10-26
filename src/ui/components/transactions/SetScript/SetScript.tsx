@@ -4,7 +4,7 @@ import * as React from 'react';
 import { SetScriptCard } from './SetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const SetScript = (props) => {
+export function SetScript(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const SetScript = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

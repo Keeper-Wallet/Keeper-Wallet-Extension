@@ -1,9 +1,9 @@
 import * as styles from './assetScript.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { AssetScriptCard } from './AssetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const AssetScript = (props) => {
+export function AssetScript(props) {
     const { message, assets } = props;
 
     return (
@@ -23,4 +23,4 @@ export const AssetScript = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

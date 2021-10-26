@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const CancelLeaseFinal = (props) => {
+export function CancelLeaseFinal(props) {
     return <TxStatus {...props} />;
-};
+}

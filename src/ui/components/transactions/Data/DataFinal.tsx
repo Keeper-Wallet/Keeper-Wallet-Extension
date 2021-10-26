@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const DataFinal = (props) => {
+export function DataFinal(props) {
     return <TxStatus {...props} />;
-};
+}

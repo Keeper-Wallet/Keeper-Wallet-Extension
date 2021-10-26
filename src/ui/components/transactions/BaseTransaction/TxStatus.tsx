@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 
-export const TxStatus = ({ isApprove, isReject, isSend, messages }: IProps) => {
+export function TxStatus({ isApprove, isReject, isSend, messages }: IProps) {
     if (isApprove) {
         return (
             <div className="headline2 center">
@@ -25,7 +25,7 @@ export const TxStatus = ({ isApprove, isReject, isSend, messages }: IProps) => {
     }
 
     return null;
-};
+}
 
 interface IProps {
     isApprove: boolean;

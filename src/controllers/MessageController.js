@@ -68,7 +68,6 @@ export class MessageController extends EventEmitter {
         try {
             message = await this._generateMessage(messageData);
         } catch (e) {
-            console.log(e);
             throw ERRORS.REQUEST_ERROR(messageData);
         }
 

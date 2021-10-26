@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const AssetScriptFinal = (props) => {
+export function AssetScriptFinal(props) {
     return <TxStatus {...props} />;
-};
+}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 
-export const BurnFinal = (props) => {
+export function BurnFinal(props) {
     return <TxStatus {...props} />;
-};
+}

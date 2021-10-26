@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ReissueCard } from './ReissueCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export const Reissue = (props) => {
+export function Reissue(props) {
     const { message, assets } = props;
 
     return (
@@ -24,4 +24,4 @@ export const Reissue = (props) => {
             <TxFooter {...props} />
         </div>
     );
-};
+}

@@ -7,7 +7,7 @@ import { AuthInfo } from './AuthInfo';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 
-export const Auth = (props) => {
+export function Auth(props) {
     const { message, assets } = props;
 
     return (
@@ -32,4 +32,4 @@ export const Auth = (props) => {
             </div>
         </div>
     );
-};
+}
