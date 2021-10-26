@@ -5,7 +5,12 @@ import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-export class UpdateAssetInfoInfo extends React.PureComponent<ITransferInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class UpdateAssetInfoInfo extends React.PureComponent<IProps> {
     render() {
         const { message, assets } = this.props;
         const { messageHash, data = {} } = message;
@@ -64,9 +69,4 @@ export class UpdateAssetInfoInfo extends React.PureComponent<ITransferInfo> {
             </div>
         );
     }
-}
-
-interface ITransferInfo {
-    message: any;
-    assets: any;
 }

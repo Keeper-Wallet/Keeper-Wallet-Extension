@@ -7,7 +7,14 @@ import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class LeaseCard extends React.PureComponent<ILease> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class LeaseCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.leaseTransactionCard, this.props.className, {
             [styles.leaseCard_collapsed]: this.props.collapsed,
@@ -50,11 +57,4 @@ export class LeaseCard extends React.PureComponent<ILease> {
             </div>
         );
     }
-}
-
-interface ILease {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

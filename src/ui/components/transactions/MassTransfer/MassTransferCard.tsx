@@ -26,7 +26,14 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
     });
 };
 
-export class MassTransferCard extends React.PureComponent<IMassTransfer> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class MassTransferCard extends React.PureComponent<IProps> {
     readonly state = Object.create(null);
 
     toggleShowRecipients = (count) => {
@@ -89,11 +96,4 @@ export class MassTransferCard extends React.PureComponent<IMassTransfer> {
             </div>
         );
     }
-}
-
-interface IMassTransfer {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

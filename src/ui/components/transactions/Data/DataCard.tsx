@@ -6,7 +6,14 @@ import cn from 'classnames';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-export class DataCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class DataCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.dataTransactionCard, this.props.className, {
             [styles.dataCard_collapsed]: this.props.collapsed,
@@ -44,11 +51,4 @@ export class DataCard extends React.PureComponent<IData> {
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

@@ -7,7 +7,14 @@ import { Asset, Balance, DateFormat } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getAmountSign, getPrice, getPriceAmount, getPriceSign, messageType } from './parseTx';
 
-export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CreateOrderCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.createOrderTransactionCard, this.props.className, {
             [styles.createOrderCard_collapsed]: this.props.collapsed,
@@ -83,11 +90,4 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
             </div>
         );
     }
-}
-
-interface ICreateOrder {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

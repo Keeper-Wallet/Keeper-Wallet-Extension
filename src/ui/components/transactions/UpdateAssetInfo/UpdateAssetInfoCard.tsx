@@ -6,7 +6,14 @@ import cn from 'classnames';
 import { ShowScript } from '../../ui';
 import { messageType } from './parseTx';
 
-export class UpdateAssetInfoCard extends React.PureComponent<IUpdateAssetInfo> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class UpdateAssetInfoCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.updateAssetInfoTransactionCard, this.props.className, {
             [styles.updateAssetInfoCard_collapsed]: this.props.collapsed,
@@ -40,11 +47,4 @@ export class UpdateAssetInfoCard extends React.PureComponent<IUpdateAssetInfo> {
             </div>
         );
     }
-}
-
-interface IUpdateAssetInfo {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

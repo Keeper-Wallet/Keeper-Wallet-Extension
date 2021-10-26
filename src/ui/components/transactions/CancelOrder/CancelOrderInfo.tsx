@@ -3,7 +3,12 @@ import { Trans } from 'react-i18next';
 import * as styles from './cancelOrder.styl';
 import { DateFormat } from '../../ui';
 
-export class CancelOrderInfo extends React.PureComponent<ICancelOrderInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class CancelOrderInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash, data = {} } = message;
@@ -29,9 +34,4 @@ export class CancelOrderInfo extends React.PureComponent<ICancelOrderInfo> {
             </div>
         );
     }
-}
-
-interface ICancelOrderInfo {
-    message: any;
-    assets: any;
 }

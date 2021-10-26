@@ -14,7 +14,13 @@ const MessageItem = ({ message, config, assets }) => {
     );
 };
 
-export class PackageInfo extends React.PureComponent<IPackInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+    onToggle?: (isOpen: boolean) => void;
+}
+
+export class PackageInfo extends React.PureComponent<IProps> {
     readonly state = { isOpened: false };
 
     toggleHandler = () => {
@@ -69,10 +75,4 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
             </div>
         );
     }
-}
-
-interface IPackInfo {
-    message: any;
-    assets: any;
-    onToggle?: (isOpen: boolean) => void;
 }

@@ -5,7 +5,12 @@ import * as styles from '../../pages/styles/transactions.styl';
 import { Trans } from 'react-i18next';
 import { Balance, DateFormat } from '../../ui';
 
-export function TxInfo({ message, assets }: ITxInfo) {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export function TxInfo({ message, assets }: IProps) {
     const { messageHash, data = {} } = message;
     const tx = { type: data.type, ...data.data };
 
@@ -38,9 +43,4 @@ export function TxInfo({ message, assets }: ITxInfo) {
             </div>
         </div>
     );
-}
-
-interface ITxInfo {
-    message: any;
-    assets: any;
 }

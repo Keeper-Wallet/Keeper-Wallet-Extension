@@ -5,7 +5,14 @@ import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 
-export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CancelOrderCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.cancelOrderTransactionCard, this.props.className, {
             [styles.cancelOrderCard_collapsed]: this.props.collapsed,
@@ -38,11 +45,4 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
             </div>
         );
     }
-}
-
-interface ICancelOrder {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

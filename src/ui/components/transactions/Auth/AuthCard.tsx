@@ -19,7 +19,13 @@ const Icon = (props) => (
     </div>
 );
 
-export class AuthCard extends React.PureComponent<IAuth> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class AuthCard extends React.PureComponent<IProps> {
     readonly state = { canUseIcon: false, icon: null };
 
     componentDidMount(): void {
@@ -78,10 +84,4 @@ export class AuthCard extends React.PureComponent<IAuth> {
             </div>
         );
     }
-}
-
-interface IAuth {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

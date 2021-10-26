@@ -6,7 +6,14 @@ import cn from 'classnames';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-export class SetScriptCard extends React.PureComponent<ISetScript> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class SetScriptCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.setScriptTransactionCard, this.props.className, {
             [styles.setScriptCard_collapsed]: this.props.collapsed,
@@ -51,11 +58,4 @@ export class SetScriptCard extends React.PureComponent<ISetScript> {
             </>
         );
     }
-}
-
-interface ISetScript {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

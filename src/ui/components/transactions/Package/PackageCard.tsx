@@ -38,7 +38,14 @@ const Amounts = ({ amounts }) => {
     );
 };
 
-export class PackageCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class PackageCard extends React.PureComponent<IProps> {
     render() {
         const { message, assets, collapsed, className } = this.props;
         const { data = {}, title = '' } = message;
@@ -86,11 +93,4 @@ export class PackageCard extends React.PureComponent<IData> {
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

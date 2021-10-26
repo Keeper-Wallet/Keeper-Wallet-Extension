@@ -28,7 +28,14 @@ const AmountTable = (props) => {
     );
 };
 
-export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class ScriptInvocationCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.scriptInvocationTransactionCard, this.props.className, {
             [styles.scriptInvocationCard_collapsed]: this.props.collapsed,
@@ -105,11 +112,4 @@ export class ScriptInvocationCard extends React.PureComponent<IMassTransfer> {
             </div>
         );
     }
-}
-
-interface IMassTransfer {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

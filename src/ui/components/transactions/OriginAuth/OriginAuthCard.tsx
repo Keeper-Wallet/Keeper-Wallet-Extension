@@ -5,7 +5,13 @@ import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class OriginAuthCard extends React.PureComponent<IProps> {
     render() {
         const { message, collapsed } = this.props;
         const { origin } = message;
@@ -38,10 +44,4 @@ export class OriginAuthCard extends React.PureComponent<IOriginAuth> {
             </div>
         );
     }
-}
-
-interface IOriginAuth {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

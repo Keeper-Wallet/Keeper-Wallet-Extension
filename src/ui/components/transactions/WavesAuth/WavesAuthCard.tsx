@@ -4,7 +4,14 @@ import cn from 'classnames';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 
-export class WavesAuthCard extends React.PureComponent<IWavesAth> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+
+    message: any;
+}
+
+export class WavesAuthCard extends React.PureComponent<IProps> {
     render() {
         const { message, collapsed } = this.props;
         const { origin } = message;
@@ -46,11 +53,4 @@ export class WavesAuthCard extends React.PureComponent<IWavesAth> {
             </div>
         );
     }
-}
-
-interface IWavesAth {
-    className: string;
-    collapsed: boolean;
-
-    message: any;
 }

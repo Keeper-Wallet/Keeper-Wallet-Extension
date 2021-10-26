@@ -7,7 +7,14 @@ import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CancelLeaseCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.cancelLeaseTransactionCard, this.props.className, {
             [styles.cancelLeaseCard_collapsed]: this.props.collapsed,
@@ -51,11 +58,4 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
             </div>
         );
     }
-}
-
-interface ICancelLease {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

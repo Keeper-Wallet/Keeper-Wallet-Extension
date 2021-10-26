@@ -2,7 +2,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './customData.styl';
 
-export class CustomDataInfo extends React.PureComponent<IDataInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class CustomDataInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash } = message;
@@ -18,9 +23,4 @@ export class CustomDataInfo extends React.PureComponent<IDataInfo> {
             </div>
         );
     }
-}
-
-interface IDataInfo {
-    message: any;
-    assets: any;
 }

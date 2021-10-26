@@ -2,7 +2,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './auth.styl';
 
-export class AuthInfo extends React.PureComponent<IAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class AuthInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash } = message;
@@ -27,9 +32,4 @@ export class AuthInfo extends React.PureComponent<IAuthInfo> {
             </div>
         );
     }
-}
-
-interface IAuthInfo {
-    message: any;
-    assets: any;
 }

@@ -3,7 +3,12 @@ import { Trans } from 'react-i18next';
 import * as styles from './wavesAuth.styl';
 import { DateFormat } from '../../ui';
 
-export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class WavesAuthInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash, data } = message;
@@ -33,9 +38,4 @@ export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
             </div>
         );
     }
-}
-
-interface IWavesAuthInfo {
-    message: any;
-    assets: any;
 }

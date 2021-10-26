@@ -2,7 +2,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './matcher.styl';
 
-export class MatcherInfo extends React.PureComponent<IAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class MatcherInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash, data } = message;
@@ -25,9 +30,4 @@ export class MatcherInfo extends React.PureComponent<IAuthInfo> {
             </div>
         );
     }
-}
-
-interface IAuthInfo {
-    message: any;
-    assets: any;
 }

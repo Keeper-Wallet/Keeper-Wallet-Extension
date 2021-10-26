@@ -5,7 +5,14 @@ import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-export class MatcherCard extends React.PureComponent<IMatcher> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+
+    message: any;
+}
+
+export class MatcherCard extends React.PureComponent<IProps> {
     render() {
         const { message, collapsed } = this.props;
         const { origin } = message;
@@ -40,11 +47,4 @@ export class MatcherCard extends React.PureComponent<IMatcher> {
             </div>
         );
     }
-}
-
-interface IMatcher {
-    className: string;
-    collapsed: boolean;
-
-    message: any;
 }

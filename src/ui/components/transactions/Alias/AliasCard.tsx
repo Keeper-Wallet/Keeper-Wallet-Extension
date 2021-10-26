@@ -5,7 +5,13 @@ import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 
-export class AliasCard extends React.PureComponent<IAlias> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class AliasCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.aliasTransactionCard, this.props.className, {
             [styles.aliasCard_collapsed]: this.props.collapsed,
@@ -32,10 +38,4 @@ export class AliasCard extends React.PureComponent<IAlias> {
             </div>
         );
     }
-}
-
-interface IAlias {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

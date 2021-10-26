@@ -2,7 +2,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './originAuth.styl';
 
-export class OriginAuthInfo extends React.PureComponent<IOriginAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class OriginAuthInfo extends React.PureComponent<IProps> {
     render() {
         return (
             <div>
@@ -17,9 +22,4 @@ export class OriginAuthInfo extends React.PureComponent<IOriginAuthInfo> {
             </div>
         );
     }
-}
-
-interface IOriginAuthInfo {
-    message: any;
-    assets: any;
 }

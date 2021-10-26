@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-export class UnknownInfo extends React.PureComponent<IOriginAuthInfo> {
-    render() {
-        return <div></div>;
-    }
-}
-
-interface IOriginAuthInfo {
+interface IProps {
     message: any;
     assets: any;
+}
+
+export class UnknownInfo extends React.PureComponent<IProps> {
+    render() {
+        return <div />;
+    }
 }

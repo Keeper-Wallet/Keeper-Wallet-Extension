@@ -7,7 +7,14 @@ import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class BurnCard extends React.PureComponent<IBurn> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class BurnCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.burnTransactionCard, this.props.className, {
             [styles.burnCard_collapsed]: this.props.collapsed,
@@ -38,11 +45,4 @@ export class BurnCard extends React.PureComponent<IBurn> {
             </div>
         );
     }
-}
-
-interface IBurn {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

@@ -5,7 +5,14 @@ import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
 
-export class CustomDataCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CustomDataCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.dataTransactionCard, this.props.className, {
             [styles.dataCard_collapsed]: this.props.collapsed,
@@ -44,11 +51,4 @@ export class CustomDataCard extends React.PureComponent<IData> {
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

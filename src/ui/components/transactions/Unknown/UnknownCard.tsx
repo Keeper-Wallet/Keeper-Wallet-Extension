@@ -4,7 +4,13 @@ import cn from 'classnames';
 import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-export class UnknownCard extends React.PureComponent<IUnknown> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class UnknownCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.unknownTransactionCard, this.props.className, {
             [styles.authCard_collapsed]: this.props.collapsed,
@@ -22,10 +28,4 @@ export class UnknownCard extends React.PureComponent<IUnknown> {
             </div>
         );
     }
-}
-
-interface IUnknown {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

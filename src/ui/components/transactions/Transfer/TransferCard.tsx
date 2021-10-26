@@ -8,7 +8,14 @@ import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
 
-export class TransferCard extends React.PureComponent<ITransfer> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class TransferCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.transferTransactionCard, this.props.className, {
             [styles.transferCard_collapsed]: this.props.collapsed,
@@ -64,11 +71,4 @@ export class TransferCard extends React.PureComponent<ITransfer> {
             </div>
         );
     }
-}
-
-interface ITransfer {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

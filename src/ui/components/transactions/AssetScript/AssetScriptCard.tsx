@@ -1,12 +1,19 @@
 import * as styles from './assetScript.styl';
-import * as React from 'react'
+import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 import { Asset, ShowScript } from '../../ui';
 
-export class AssetScriptCard extends React.PureComponent<ISetScript> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class AssetScriptCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.assetScriptTransactionCard, this.props.className, {
             [styles.assetScriptCard_collapsed]: this.props.collapsed,
@@ -51,11 +58,4 @@ export class AssetScriptCard extends React.PureComponent<ISetScript> {
             </>
         );
     }
-}
-
-interface ISetScript {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

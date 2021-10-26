@@ -7,7 +7,14 @@ import { Balance, ShowScript } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class IssueCard extends React.PureComponent<IIssue> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class IssueCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.issueTransactionCard, this.props.className, {
             [styles.issueCard_collapsed]: this.props.collapsed,
@@ -85,11 +92,4 @@ export class IssueCard extends React.PureComponent<IIssue> {
             </div>
         );
     }
-}
-
-interface IIssue {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

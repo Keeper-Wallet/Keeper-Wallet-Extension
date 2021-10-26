@@ -5,7 +5,12 @@ import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class CreateOrderInfo extends React.PureComponent<IProps> {
     render() {
         const { message, assets } = this.props;
         const { messageHash, data = {} } = message;
@@ -41,9 +46,4 @@ export class CreateOrderInfo extends React.PureComponent<ICreateOrderInfo> {
             </div>
         );
     }
-}
-
-interface ICreateOrderInfo {
-    message: any;
-    assets: any;
 }

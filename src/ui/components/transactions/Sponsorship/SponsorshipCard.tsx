@@ -7,7 +7,14 @@ import { Asset, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAssetFee, SPONSOR_MODE } from './parseTx';
 
-export class SponsorshipCard extends React.PureComponent<IIssue> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class SponsorshipCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.sponsorshipTransactionCard, this.props.className, {
             [styles.sponsorshipCard_collapsed]: this.props.collapsed,
@@ -58,11 +65,4 @@ export class SponsorshipCard extends React.PureComponent<IIssue> {
             </div>
         );
     }
-}
-
-interface IIssue {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }
