@@ -26,11 +26,7 @@ export const getMoney = (amount: TAmount, assets) => {
         return new Money(amount, assets['WAVES']);
     }
 
-    if (
-        typeof amount === 'object' &&
-        (Object.prototype.hasOwnProperty.call(amount, 'tokens') ||
-            Object.prototype.hasOwnProperty.call(amount, 'coins'))
-    ) {
+    if (typeof amount === 'object' && (amount.tokens != null || amount.coins != null)) {
         return moneyLikeToMoney(amount as IMoneyLike, assets);
     }
 
