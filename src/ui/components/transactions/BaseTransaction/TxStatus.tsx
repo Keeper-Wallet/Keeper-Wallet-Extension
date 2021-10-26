@@ -1,27 +1,21 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 export function TxStatus({ isApprove, isReject, isSend, messages }: IProps) {
+    const { t } = useTranslation();
+
+    messages = {
+        send: messages?.send || t('sign.transactionSend'),
+        approve: messages?.approve || t('sign.transactionConfirmed'),
+        reject: messages?.reject || t('sign.transactionFailed'),
+    };
+
     if (isApprove) {
-        return (
-            <div className="headline2 center">
-                <Trans
-                    i18nKey={
-                        isSend
-                            ? messages?.send || 'sign.transactionSend'
-                            : messages?.approve || 'sign.transactionConfirmed'
-                    }
-                />
-            </div>
-        );
+        return <div className="headline2 center">{isSend ? messages.send : messages?.approve}</div>;
     }
 
     if (isReject) {
-        return (
-            <div className="headline2 center">
-                <Trans i18nKey={messages?.reject || 'sign.transactionFailed'} />
-            </div>
-        );
+        return <div className="headline2 center">{messages?.reject}</div>;
     }
 
     return null;
