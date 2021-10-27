@@ -75,19 +75,21 @@ export class IssueCard extends React.PureComponent<IProps> {
                         </div>
                     </div>
 
-                    <div className={styles.txRow}>
-                        <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.script" />
+                    {!!tx.script && (
+                        <div className={styles.txRow}>
+                            <div className="tx-title tag1 basic500">
+                                <Trans i18nKey="transactions.script" />
+                            </div>
+                            <div className={styles.txValue}>
+                                <ShowScript
+                                    script={tx.script}
+                                    showNotify={true}
+                                    optional={true}
+                                    hideScript={this.props.collapsed}
+                                />
+                            </div>
                         </div>
-                        <div className={styles.txValue}>
-                            <ShowScript
-                                script={tx.script}
-                                showNotify={true}
-                                optional={true}
-                                hideScript={this.props.collapsed}
-                            />
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         );

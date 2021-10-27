@@ -37,12 +37,14 @@ export class UpdateAssetInfoCard extends React.PureComponent<IProps> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <ShowScript
-                        script={tx.script}
-                        showNotify={true}
-                        optional={true}
-                        hideScript={this.props.collapsed}
-                    />
+                    {!!tx.script && (
+                        <ShowScript
+                            script={tx.script}
+                            showNotify={true}
+                            optional={true}
+                            hideScript={this.props.collapsed}
+                        />
+                    )}
                 </div>
             </div>
         );
