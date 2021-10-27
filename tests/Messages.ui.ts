@@ -15,8 +15,10 @@ describe('Messages', function () {
         });
     };
 
-    async function sendMessageFromOrigin(origin: string) {
-        await this.driver.get(`https://${origin}`);
+    async function sendMessageFromOrigin(origin: string, reload: boolean = true) {
+        if (reload) {
+            await this.driver.get(`https://${origin}`);
+        }
         await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
         await this.driver.executeScript(sendMessage);
     }
@@ -148,7 +150,7 @@ describe('Messages', function () {
     it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
         await sendMessageFromOrigin.call(this, WHITELIST[3]);
         await this.driver.sleep(NOTIFICATION_REPEAT_DELAY);
-        await sendMessageFromOrigin.call(this, WHITELIST[3]);
+        await sendMessageFromOrigin.call(this, WHITELIST[3], false);
 
         await App.open.call(this);
         expect(
