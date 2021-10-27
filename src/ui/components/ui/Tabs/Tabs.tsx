@@ -1,77 +1,65 @@
-import * as React from 'react';
 import * as styles from './tabs.styl';
+import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
-
-class Tab extends React.PureComponent<ITabProps> {
-    onClick = () => {
-        const { label, onClick } = this.props;
-        onClick(label);
-    };
-
-    render() {
-        const {
-            onClick,
-            props: { activeTab, label },
-        } = this;
-
-        return (
-            <li className={cn(styles.tabListItem, { [styles.tabListActive]: activeTab === label })} onClick={onClick}>
-                <Trans i18nKey={label} />
-            </li>
-        );
-    }
-}
 
 interface ITabProps {
-    activeTab: string;
-    label: string;
-    onClick: (tab) => void;
+    children: React.ReactNode;
+    isActive?: boolean;
+    onActivate?: () => void;
 }
 
-export class Tabs extends React.PureComponent<IProps, IState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            activeTab: this.props.children[0].props['data-label'],
-        };
-    }
-
-    onClickTabItem = (tab) => {
-        this.setState({ activeTab: tab });
-    };
-
-    render() {
-        const {
-            onClickTabItem,
-            props: { children },
-            state: { activeTab },
-        } = this;
-
-        return (
-            <div className={styles.tabs}>
-                <ol className={styles.tabList}>
-                    {children.map((child) => {
-                        const label = child.props['data-label'];
-                        return <Tab activeTab={activeTab} key={label} label={label} onClick={onClickTabItem} />;
-                    })}
-                </ol>
-                <div className={styles.tabContent}>
-                    {children.map((child) => {
-                        if (child.props['data-label'] !== activeTab) return undefined;
-                        return child.props.children;
-                    })}
-                </div>
-            </div>
-        );
-    }
+export function Tab({ children, isActive, onActivate }: ITabProps) {
+    return (
+        <li className={cn(styles.tabListItem, { [styles.tabListActive]: isActive })} onClick={onActivate}>
+            {children}
+        </li>
+    );
 }
 
-interface IProps {
-    children?: any[];
+interface ITabListProps {
+    children: React.ReactElement[];
+    activeIndex?: number;
+    onActiveTab?: (index) => void;
 }
 
-interface IState {
-    activeTab: string;
+export function TabList({ children, activeIndex, onActiveTab }: ITabListProps) {
+    return (
+        <ol className={styles.tabList}>
+            {React.Children.map(children, (child, index) =>
+                React.cloneElement(child, { isActive: index == activeIndex, onActivate: () => onActiveTab(index) })
+            )}
+        </ol>
+    );
+}
+
+interface ITabPanelsProps {
+    children: React.ReactElement[];
+    activeIndex?: number;
+}
+
+export function TabPanels({ children, activeIndex }: ITabPanelsProps) {
+    return <div className={styles.tabPanels}>{children[activeIndex]}</div>;
+}
+
+export function TabPanel({ children }) {
+    return <div className={styles.tabPanel}>{children}</div>;
+}
+
+export function Tabs({ children }) {
+    const [activeIndex, setActiveIndex] = React.useState(0);
+
+    return React.Children.map(children, (child) => {
+        if (child.type == TabPanels) {
+            return React.cloneElement(child, { activeIndex: activeIndex });
+        } else if (child.type == TabList) {
+            return React.cloneElement(child, {
+                activeIndex: activeIndex,
+                onActiveTab: (activeIndex) => {
+                    setActiveIndex(activeIndex);
+                },
+            });
+        } else {
+            return child;
+        }
+    });
 }

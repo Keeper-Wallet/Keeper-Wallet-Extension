@@ -1,6 +1,7 @@
 import * as styles from '../Alias/alias.styl';
-import { ShowScript, Tabs } from '../../ui';
+import { ShowScript, Tab, TabList, TabPanel, TabPanels, Tabs } from '../../ui';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 
 const TransactionJson = ({ message }) => {
     return (
@@ -13,10 +14,20 @@ const TransactionJson = ({ message }) => {
 export function TxDetailTabs({ children }) {
     return (
         <Tabs>
-            <div data-label="transactions.details">{children}</div>
-            <div data-label="transactions.json">
-                <TransactionJson message={children.props.message} />
-            </div>
+            <TabList>
+                <Tab>
+                    <Trans i18nKey="transactions.details" />
+                </Tab>
+                <Tab>
+                    <Trans i18nKey="transactions.json" />
+                </Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>{children}</TabPanel>
+                <TabPanel>
+                    <TransactionJson message={children.props.message} />
+                </TabPanel>
+            </TabPanels>
         </Tabs>
     );
 }
