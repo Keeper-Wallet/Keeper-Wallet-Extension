@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Attachment, Balance, PlateCollapsed } from '../../ui';
+import { Attachment, Balance, PlateCollapsable } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
@@ -78,9 +78,9 @@ export class MassTransferCard extends React.PureComponent<IProps> {
                             <Trans i18nKey="transactions.recipients" />
                         </div>
                         <div className={styles.txValue}>
-                            <PlateCollapsed className={styles.expandableList} showExpand={!collapsed}>
+                            <PlateCollapsable className={styles.expandableList} showExpand={!collapsed}>
                                 <Transfers transfers={tx.transfers} totalAmount={amount} count={tx.transfers.length} />
-                            </PlateCollapsed>
+                            </PlateCollapsable>
                         </div>
                     </div>
 

@@ -1,17 +1,12 @@
-import * as styles from '../Alias/alias.styl';
-import { ShowScript, Tab, TabList, TabPanel, TabPanels, Tabs } from '../../ui';
+import { Highlight, PlateCollapsable, Tab, TabList, TabPanel, TabPanels, Tabs } from '../../ui';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-
-const TransactionJson = ({ message }) => {
-    return (
-        <div className={styles.txRow}>
-            <ShowScript isData={false} script={JSON.stringify(JSON.parse(message.json), null, 2)} showNotify={true} />
-        </div>
-    );
-};
+import * as styles from './txdetailtabs.styl';
+import cn from 'classnames';
 
 export function TxDetailTabs({ children }) {
+    const prettyJson = JSON.stringify(JSON.parse(children.props.message.json), null, 2);
+
     return (
         <Tabs>
             <TabList>
@@ -25,7 +20,9 @@ export function TxDetailTabs({ children }) {
             <TabPanels>
                 <TabPanel>{children}</TabPanel>
                 <TabPanel>
-                    <TransactionJson message={children.props.message} />
+                    <PlateCollapsable showExpand showCopy>
+                        <Highlight className={cn('json', styles.code)}>{prettyJson}</Highlight>
+                    </PlateCollapsable>
                 </TabPanel>
             </TabPanels>
         </Tabs>

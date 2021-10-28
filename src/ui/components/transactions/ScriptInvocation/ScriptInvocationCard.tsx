@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Asset, Balance, PlateCollapsed, ShowScript } from '../../ui';
+import { Asset, Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
@@ -102,9 +102,9 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
                                 <Trans i18nKey="transactions.payments" />
                             </div>
                             <div className={styles.txValue}>
-                                <PlateCollapsed className={styles.expandableList} showExpand={!collapsed}>
+                                <PlateCollapsable className={styles.expandableList} showExpand={!collapsed}>
                                     <AmountTable amounts={amounts} />
-                                </PlateCollapsed>
+                                </PlateCollapsable>
                             </div>
                         </div>
                     )}
