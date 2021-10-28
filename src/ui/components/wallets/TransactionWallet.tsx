@@ -1,22 +1,8 @@
 import * as React from 'react';
-import { Avatar, Button, Copy, Modal } from '../ui';
+import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
 import cn from 'classnames';
 import * as styles from './wallet.styl';
 import { Trans } from 'react-i18next';
-
-const AddressHidden = ({ address, className, size = 8 }: IAddressHiddenProps) => {
-    return (
-        <div className={className}>
-            {address.slice(0, size)}...{address.slice(-size)}
-        </div>
-    );
-};
-
-interface IAddressHiddenProps {
-    address: string;
-    className?: string;
-    size?: number;
-}
 
 export const TransactionWallet = ({
     className = '',
@@ -68,7 +54,7 @@ export const TransactionWallet = ({
                         {account.name}
 
                         <div className={styles.tooltip}>
-                            <AddressHidden address={account.address} />
+                            <Ellipsis text={account.address} />
                             <div>
                                 <Trans i18nKey="accountInfo.copyToClipboard" />
                             </div>

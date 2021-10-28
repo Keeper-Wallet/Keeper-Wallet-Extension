@@ -3,21 +3,26 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Attachment, Balance, PlateCollapsed } from '../../ui';
+import { Attachment, Balance, Ellipsis, PlateCollapsed } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
 
 const MIN_COUNT = 0;
+const ADDRESS_LENGTH = 35;
 
 const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
     const assets = { [totalAmount.asset.id]: totalAmount.asset };
 
     return transfers.slice(0, count).map(({ recipient, amount }) => {
         const money = getMoney(getTransferAmount(amount, totalAmount.asset.id), assets);
+        const isAddress = recipient.length == ADDRESS_LENGTH;
+
         return (
             <div key={recipient} className={styles.txRow}>
-                <div className={cn('body3', 'tx-title-black', styles.massTransferRecipient)}>{recipient}</div>
+                <div className={cn('body3', 'tx-title-black', styles.massTransferRecipient)} title={recipient}>
+                    {isAddress ? <Ellipsis text={recipient} /> : recipient}
+                </div>
                 <div className={cn('body3', 'submit400', styles.massTransferAmount)}>
                     <Balance isShortFormat={true} balance={money} showAsset={false} />
                 </div>
