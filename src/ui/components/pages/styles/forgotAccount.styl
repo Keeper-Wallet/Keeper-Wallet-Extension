@@ -1,17 +1,18 @@
 @import './../../../styles/colors.styl';
 
 .content
-  margin: 163px 60px 0;
+  margin: 60px 40px;
   font-weight: 400;
 
-.tryAgain
-  background: url(../../../assets/img/arrow-left-14-basic-200.svg) left center no-repeat;
-  padding-left: 22px;
-  color: $black;
+.error
+  min-height: 1rem;
+  color: $error400;
+  background: none;
+  border-color: $error400;
 
-  button
-    font-size: 12px;
-    font-weight: 300;
-
-.buttonMargin
-  margin: 80px auto 44px auto;
+.errorIcon
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 24px auto;
+  display: block;
+  background-size: cover;
