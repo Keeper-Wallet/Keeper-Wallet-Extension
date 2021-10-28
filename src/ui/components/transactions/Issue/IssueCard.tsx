@@ -24,6 +24,8 @@ export class IssueCard extends React.PureComponent<IProps> {
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const amount = getMoney(getAmount(tx), assets);
+        const decimals = tx.precision || tx.decimals;
+        const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
 
         return (
             <div className={className}>
@@ -33,7 +35,7 @@ export class IssueCard extends React.PureComponent<IProps> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            {!tx.reissuable && !tx.decimals && tx.quantity == 1 ? (
+                            {isNFT ? (
                                 !tx.script ? (
                                     <Trans i18nKey="transactions.issueNFT" />
                                 ) : (
@@ -57,23 +59,36 @@ export class IssueCard extends React.PureComponent<IProps> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    {tx.description ? (
+                    {!!tx.description && (
                         <div className={styles.txRow}>
                             <div className="tx-title tag1 basic500">
                                 <Trans i18nKey="transactions.description" />
                             </div>
                             <div className={styles.txValue}>{tx.description}</div>
                         </div>
-                    ) : null}
+                    )}
 
-                    <div className={styles.txRow}>
-                        <div className="tx-title tag1 basic500">
-                            <Trans i18nKey="transactions.issueType" />
+                    {decimals && (
+                        <div className={styles.txRow}>
+                            <div className="tx-title tag1 basic500">
+                                <Trans i18nKey="transactions.decimalPoints">Decimals</Trans>
+                            </div>
+                            <div className={styles.txValue}>{decimals}</div>
                         </div>
-                        <div className={styles.txValue}>
-                            <Trans i18nKey={tx.reissuable ? 'transactions.reissuable' : 'transactions.noReissuable'} />
+                    )}
+
+                    {!isNFT && (
+                        <div className={styles.txRow}>
+                            <div className="tx-title tag1 basic500">
+                                <Trans i18nKey="transactions.issueType" />
+                            </div>
+                            <div className={styles.txValue}>
+                                <Trans
+                                    i18nKey={tx.reissuable ? 'transactions.reissuable' : 'transactions.noReissuable'}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {!!tx.script && (
                         <div className={styles.txRow}>
