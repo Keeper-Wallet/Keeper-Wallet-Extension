@@ -30,7 +30,7 @@ class SettingsComponent extends React.Component {
                     <Trans i18nKey="settings.settings">Settings</Trans>
                 </div>
 
-                <div className={`${styles.settingsMenuItem} ${styles.network}`}>
+                <div className={`${styles.settingsMenuItem} ${styles.general}`}>
                     <Button
                         id="settingsGeneral"
                         type="transparent"
