@@ -1,10 +1,11 @@
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
-import { App } from './utils/actions';
+import { App, CreateNewAccount } from './utils/actions';
 
 describe('Password management', () => {
     const PASSWORD = { SHORT: 'short', DEFAULT: 'strongpassword', NEW: 'verystrongpassword' };
+    let currentPassword: string;
 
     describe('Create password', function () {
         this.timeout(60 * 1000);
@@ -160,8 +161,9 @@ describe('Password management', () => {
 
         it('Successful password changed', async function () {
             await oldPasswordInput.sendKeys(PASSWORD.DEFAULT);
-            await newFirstPasswordInput.sendKeys(PASSWORD.NEW);
-            await newSecondPasswordInput.sendKeys(PASSWORD.NEW);
+            currentPassword = PASSWORD.NEW;
+            await newFirstPasswordInput.sendKeys(currentPassword);
+            await newSecondPasswordInput.sendKeys(currentPassword);
 
             await this.driver
                 .wait(until.elementIsEnabled(this.driver.findElement(By.css('.app button[type=submit]'))), this.wait)
@@ -192,8 +194,17 @@ describe('Password management', () => {
             );
         }
 
+        async function performLogin(password: string) {
+            await this.driver.wait(until.elementLocated(By.css('input#loginPassword')), this.wait).sendKeys(password);
+
+            await this.driver
+                .wait(until.elementIsEnabled(this.driver.findElement(By.css('button#loginEnter'))), this.wait)
+                .click();
+        }
+
         before(async function () {
             await App.open.call(this);
+            await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
         });
 
         it('Logout', async function () {
@@ -217,32 +228,108 @@ describe('Password management', () => {
         });
 
         it('Correct password login', async function () {
-            await loginInput.sendKeys(PASSWORD.NEW);
+            await loginInput.sendKeys(currentPassword);
             await loginButton.click();
-            // check we are at create new account page
-            await this.driver.wait(
-                until.elementLocated(By.xpath("//div[contains(@class, '-import-import')]")),
-                this.wait
-            );
-            expect(await this.driver.findElement(By.css('.app button[type=submit]')).getText()).matches(
-                /create a new account/i
-            );
-        });
-
-        it('Password reset', async function () {
-            await performLogout.call(this);
-            await loginForm.findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]")).click();
-            await this.driver
-                .wait(until.elementLocated(By.xpath("//div[contains(@class, '-forgotAccount-content')]")), this.wait)
-                .findElement(By.css('button[type=warning]'))
-                .click();
 
             expect(
-                await this.driver
-                    .wait(until.elementLocated(By.xpath("//div[contains(@class, '-welcome-content')]")), this.wait)
-                    .findElement(By.css('.app button[type=submit]'))
-                    .getText()
-            ).matches(/Get started/i);
+                await this.driver.wait(
+                    until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                    this.wait
+                )
+            ).not.to.be.throw;
+        });
+
+        describe('Password reset', async function () {
+            before(async function () {
+                await performLogout.call(this);
+            });
+
+            it('"I forgot password" button opens recovery page and "Delete all" button is disabled', async function () {
+                await loginForm.findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]")).click();
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-forgotAccount-content')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+                expect(await this.driver.findElement(By.css('button#resetConfirm')).isEnabled()).to.be.false;
+            });
+
+            it('Clicking "Cancel" button returns to login page and login is available', async function () {
+                await this.driver.findElement(By.css('button#resetCancel')).click();
+                expect(await this.driver.wait(until.elementLocated(By.css('input#loginPassword')), this.wait)).not.to.be
+                    .empty;
+
+                await performLogin.call(this, currentPassword);
+                expect(
+                    await this.driver.wait(
+                        until.elementLocated(By.xpath("//div[contains(@class, '-assets-assets')]")),
+                        this.wait
+                    )
+                ).not.to.be.throw;
+                await performLogout.call(this);
+            });
+
+            describe('Delete all', function () {
+                let confirmPhraseInput: WebElement,
+                    confirmPhraseErrorDiv: WebElement,
+                    resetConfirmBtn: WebElement,
+                    defaultPhrase: string;
+
+                before(async function () {
+                    await this.driver
+                        .wait(until.elementLocated(By.xpath("//div[contains(@class, '-login-content')]")), this.wait)
+                        .findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]"))
+                        .click();
+
+                    defaultPhrase = await this.driver
+                        .wait(until.elementLocated(By.css('div#defaultPhrase')), this.wait)
+                        .getText();
+
+                    confirmPhraseInput = this.driver.findElement(By.css('input#confirmPhrase'));
+
+                    confirmPhraseErrorDiv = this.driver.findElement(
+                        By.xpath(
+                            "//input[@id='confirmPhrase']//following-sibling::div[contains(@class, '-error-error')]"
+                        )
+                    );
+
+                    resetConfirmBtn = this.driver.findElement(By.css('button#resetConfirm'));
+                });
+
+                beforeEach(async function () {
+                    await confirmPhraseInput.clear();
+                });
+
+                it('Entering right confirmation phrase enables "Delete all" button', async function () {
+                    await confirmPhraseInput.sendKeys(defaultPhrase);
+                    await confirmPhraseInput.sendKeys('\t');
+                    expect(await confirmPhraseErrorDiv.getText()).to.be.empty;
+                    expect(await resetConfirmBtn.isEnabled()).to.be.true;
+                });
+
+                it('Entering wrong confirmation phrase disables "Delete all" button', async function () {
+                    await confirmPhraseInput.sendKeys(defaultPhrase.toLowerCase());
+                    await confirmPhraseInput.sendKeys('\t');
+                    expect(await confirmPhraseErrorDiv.getText()).matches(/The phrase is entered incorrectly/i);
+                    expect(await resetConfirmBtn.isEnabled()).to.be.false;
+                });
+
+                it('Entering right phrase and clicking "Delete all" removes all accounts', async function () {
+                    await confirmPhraseInput.sendKeys(defaultPhrase);
+                    await resetConfirmBtn.click();
+
+                    expect(
+                        await this.driver
+                            .wait(
+                                until.elementLocated(By.xpath("//div[contains(@class, '-welcome-content')]")),
+                                this.wait
+                            )
+                            .findElement(By.css('.app button[type=submit]'))
+                            .getText()
+                    ).matches(/Get started/i);
+                });
+            });
         });
     });
 });
