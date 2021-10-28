@@ -20,49 +20,48 @@ export class SponsorshipCard extends React.PureComponent<IProps> {
             [styles.sponsorshipCard_collapsed]: this.props.collapsed,
         });
 
-        const { message, assets } = this.props;
+        const { message, assets, collapsed } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const assetFee = getMoney(getAssetFee(tx), assets);
         const isSetSponsored = assetFee.getTokens().gt(0);
 
         return (
-            <div className={className}>
-                <div className={styles.cardHeader}>
-                    <div className={styles.sponsorshipTxIcon}>
-                        <TxIcon txType={isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable} />
-                    </div>
-                    <div>
-                        <div className="basic500 body3 margin-min">
-                            <Trans
-                                i18nKey={isSetSponsored ? 'transactions.setSponsored' : 'transactions.clearSponsored'}
-                            />
+            <>
+                <div className={className}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.sponsorshipTxIcon}>
+                            <TxIcon txType={isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable} />
                         </div>
-                        <h1 className="headline1">
-                            {isSetSponsored ? (
-                                <Balance
-                                    split={true}
-                                    showAsset={true}
-                                    balance={assetFee}
-                                    className={styles.txBalanceWrapper}
+                        <div>
+                            <div className="basic500 body3 margin-min">
+                                <Trans
+                                    i18nKey={
+                                        isSetSponsored ? 'transactions.setSponsored' : 'transactions.clearSponsored'
+                                    }
                                 />
-                            ) : (
-                                <Asset assetId={assetFee.asset.id} />
-                            )}
-                        </h1>
+                            </div>
+                            <h1 className="headline1">
+                                {isSetSponsored ? (
+                                    <Balance
+                                        split={true}
+                                        showAsset={true}
+                                        balance={assetFee}
+                                        className={styles.txBalanceWrapper}
+                                    />
+                                ) : (
+                                    <Asset assetId={assetFee.asset.id} />
+                                )}
+                            </h1>
+                        </div>
                     </div>
                 </div>
-
-                <div className={styles.cardContent}>
-                    {isSetSponsored ? (
-                        <div className={styles.txRow}>
-                            <div className="tx-title tag1 basic500">
-                                <Trans i18nKey="transactions.amountPerTransaction" />
-                            </div>
-                        </div>
-                    ) : null}
-                </div>
-            </div>
+                {!collapsed && isSetSponsored && (
+                    <div className="tag1 basic500 margin-min margin-main-top">
+                        <Trans i18nKey="transactions.amountPerTransaction" />
+                    </div>
+                )}
+            </>
         );
     }
 }

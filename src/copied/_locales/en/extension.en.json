@@ -329,7 +329,7 @@
   "transactions": {
     "allowAccess": "Allow access",
     "allowAccessTitle": "Allow access",
-    "amountPerTransaction": "Amount for every 0.001 Waves",
+    "amountPerTransaction": "This amount is equivalent to every 0.001 Waves in transaction fees",
     "arguments": "Arguments",
     "assetId": "Asset ID",
     "assetScriptTransaction": "Set Asset Script",
