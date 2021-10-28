@@ -59,7 +59,10 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
                             <Trans i18nKey="transactions.scriptInvocation" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.scriptInvocationName" />
+                            <Trans
+                                i18nKey={hasPayment ? 'transactions.paymentsCount' : 'transactions.paymentsNone'}
+                                values={{ count: tx.payment.length || 0 }}
+                            />
                         </h1>
                     </div>
                 </div>

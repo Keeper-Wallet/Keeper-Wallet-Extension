@@ -381,6 +381,9 @@
     "packTransactions": "Transactions",
     "packTransactionsFees": "Fees",
     "payments": "Payments",
+    "paymentsCount": "{{count}} Payment",
+    "paymentsCount_plural": "{{count}} Payments",
+    "paymentsNone": "No Payments",
     "permission": {
       "details": "Permission details"
     },
