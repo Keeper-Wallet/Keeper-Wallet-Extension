@@ -250,6 +250,34 @@ export class MessageController extends EventEmitter {
         }
     }
 
+    /**
+     * Removes unused messages in final states from previous versions of Waves Keeper
+     */
+    clearUnusedMessages() {
+        const unusedStatuses = [
+            MSG_STATUSES.REJECTED,
+            MSG_STATUSES.REJECTED_FOREVER,
+            MSG_STATUSES.SIGNED,
+            MSG_STATUSES.PUBLISHED,
+            MSG_STATUSES.FAILED,
+        ];
+        let unusedMessages = [],
+            actualMessages = [];
+
+        this.messages.messages.forEach((message) => {
+            const { status } = message;
+            if (unusedStatuses.indexOf(status) === -1) {
+                actualMessages.push(message);
+            } else {
+                unusedMessages.push(message);
+            }
+        });
+
+        if (unusedMessages.length) {
+            this._updateStore(actualMessages);
+        }
+    }
+
     getUnapproved() {
         return this.messages.messages.filter(({ status }) => status === MSG_STATUSES.UNAPPROVED);
     }
