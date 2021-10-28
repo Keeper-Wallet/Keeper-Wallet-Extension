@@ -93,11 +93,6 @@ export class Wallet {
         return stringify(await signable.getDataForApi());
     }
 
-    async jsonTx(tx) {
-        const signable = this._adapter.makeSignable(tx);
-        return stringify(await signable.getSignData());
-    }
-
     async signBytes(bytes) {
         return await this._adapter.signData(Uint8Array.from(bytes));
     }

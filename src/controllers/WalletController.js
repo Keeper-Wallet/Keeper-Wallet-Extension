@@ -209,18 +209,6 @@ export class WalletController {
         return await wallet.signTx(tx);
     }
 
-    /**
-     * Transaction JSON
-     * @param {string} address - wallet address
-     * @param {object} tx - transaction to sign
-     * @param {object} network
-     * @returns {Promise<object>} unsigned transaction as json string
-     */
-    async jsonTx(address, tx, network) {
-        const wallet = this._findWallet(address, network);
-        return await wallet.jsonTx(tx);
-    }
-
     async signWaves(type, data, address, network) {
         const wallet = this._findWallet(address, network);
         return await wallet.signWaves(type, data);

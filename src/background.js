@@ -229,7 +229,6 @@ class BackgroundService extends EventEmitter {
         this.messageController = new MessageController({
             initState: initState.MessageController,
             signTx: this.walletController.signTx.bind(this.walletController),
-            jsonTx: this.walletController.jsonTx.bind(this.walletController),
             signWaves: this.walletController.signWaves.bind(this.walletController),
             auth: this.walletController.auth.bind(this.walletController),
             signRequest: this.walletController.signRequest.bind(this.walletController),

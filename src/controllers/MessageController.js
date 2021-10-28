@@ -12,6 +12,9 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { waves } from './wavesTransactionsController';
 import { clone } from 'ramda';
+import create from 'parse-json-bignumber';
+
+const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
@@ -27,7 +30,6 @@ export class MessageController extends EventEmitter {
 
         // Signing methods from WalletController
         this.signTx = options.signTx;
-        this.jsonTx = options.jsonTx;
         this.signWaves = options.signWaves;
         this.auth = options.auth;
         this.signRequest = options.signRequest;
@@ -576,8 +578,7 @@ export class MessageController extends EventEmitter {
                 messageMeta = await this._getMessageDataHash(result.data, message.account);
                 result.messageHash = messageMeta.id;
                 result.bytes = Array.from(messageMeta.bytes);
-                const filledOrder = await this._fillSignableData(clone(result));
-                result.json = await this.jsonTx(result.account.address, filledOrder.data, result.account.network);
+                result.json = await this._prepareMessageJson(clone(result));
                 break;
             case 'transaction':
                 if (!result.data.type || result.data.type >= 1000) {
@@ -594,9 +595,7 @@ export class MessageController extends EventEmitter {
                 if (result.data.type === 9) {
                     result.lease = await this.txInfo(result.data.data.leaseId);
                 }
-                // transaction json before signed
-                const filledMessage = await this._fillSignableData(clone(result));
-                result.json = await this.jsonTx(result.account.address, filledMessage.data, result.account.network);
+                result.json = await this._prepareMessageJson(clone(result));
                 break;
             case 'cancelOrder':
                 result.amountAsset = message.data.amountAsset;
@@ -665,5 +664,16 @@ export class MessageController extends EventEmitter {
             matcherFee: defaultFee,
         };
         return { ...orderDefaults, ...orderParams };
+    }
+
+    async _prepareMessageJson(message) {
+        const filledMessage = await this._fillSignableData(clone(message));
+        const Adapter = getAdapterByType('seed');
+        const adapter = new Adapter(
+            'validation seed',
+            networkByteFromAddress(filledMessage.account.address).charCodeAt(0)
+        );
+        const signable = adapter.makeSignable(filledMessage.data);
+        return stringify(await signable.getSignData());
     }
 }
