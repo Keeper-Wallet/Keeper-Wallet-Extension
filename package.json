@@ -10,7 +10,7 @@
   "scripts": {
     "start": "webpack --watch",
     "dist": "NODE_ENV=production webpack",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' env DEBUG='testcontainers' mocha -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'",
     "test-dry": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --dry-run -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'"
   },
   "babel": {
