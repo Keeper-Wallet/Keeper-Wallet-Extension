@@ -4,21 +4,28 @@ import { App, CreateNewAccount, Settings } from './utils/actions';
 import { CUSTOMLIST, DEFAULT_ANIMATION_DELAY, DEFAULT_PAGE_LOAD_DELAY, WHITELIST } from './utils/constants';
 
 describe('Messages', function () {
-    const NOTIFICATION_REPEAT_DELAY = 30 * 1000 + 1000;
+    const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
 
     this.timeout(2 * 60 * 1000);
 
     const sendMessage = () => {
+        const done = arguments[arguments.length - 1];
         // @ts-ignore
         WavesKeeper.initialPromise.then((api) => {
-            api.notification({ title: 'Hello!', message: 'World!' });
+            api.notification({ title: 'Hello!', message: 'World!' }).then(done).catch(done);
         });
     };
 
-    async function sendMessageFromOrigin(origin: string) {
-        await this.driver.get(`https://${origin}`);
-        await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-        await this.driver.executeScript(sendMessage);
+    async function sendMessageFromOrigin(origin: string, isWhitelisted: boolean = true, reload: boolean = true) {
+        if (reload) {
+            await this.driver.get(`https://${origin}`);
+        }
+
+        if (isWhitelisted) {
+            return await this.driver.executeAsyncScript(sendMessage);
+        }
+
+        return await this.driver.executeScript(sendMessage);
     }
 
     before(async function () {
@@ -52,7 +59,7 @@ describe('Messages', function () {
     });
 
     it('When a message is received from a new resource, permission is requested to access', async function () {
-        await sendMessageFromOrigin.call(this, CUSTOMLIST[0]);
+        await sendMessageFromOrigin.call(this, CUSTOMLIST[0], false);
 
         await App.open.call(this);
         // permission request is shown
@@ -89,7 +96,7 @@ describe('Messages', function () {
 
     const lastOrigin = CUSTOMLIST[1];
     it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
-        await sendMessageFromOrigin.call(this, lastOrigin);
+        await sendMessageFromOrigin.call(this, lastOrigin, false);
 
         await App.open.call(this);
         // permission request is shown
@@ -146,9 +153,15 @@ describe('Messages', function () {
     });
 
     it('When receiving several messages from one resource - messages are displayed as a "batch"', async function () {
-        await sendMessageFromOrigin.call(this, WHITELIST[3]);
-        await this.driver.sleep(NOTIFICATION_REPEAT_DELAY);
-        await sendMessageFromOrigin.call(this, WHITELIST[3]);
+        let callback,
+            runs = 0,
+            success = 0;
+
+        while (success < 2) {
+            await this.driver.sleep(NOTIFICATION_POLL_INTERVAL);
+            callback = await sendMessageFromOrigin.call(this, WHITELIST[3], true, !runs++);
+            success += (callback?.code !== '18' && 1) || 0;
+        }
 
         await App.open.call(this);
         expect(
