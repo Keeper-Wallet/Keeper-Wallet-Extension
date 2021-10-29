@@ -1,18 +1,22 @@
 import * as styles from './cancelOrder.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 
-export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CancelOrderCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.cancelOrderTransactionCard, this.props.className, {
             [styles.cancelOrderCard_collapsed]: this.props.collapsed,
         });
-
-        const { message } = this.props;
 
         return (
             <div className={className}>
@@ -22,27 +26,23 @@ export class CancelOrderCard extends React.PureComponent<ICancelOrder> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.dex">DEX</Trans>
+                            <Trans i18nKey="transactions.dex" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.orderCancel">Cancel the order</Trans>
+                            <Trans i18nKey="transactions.orderCancel" />
                         </h1>
                     </div>
                 </div>
 
                 <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.orderId" />
+                        </div>
+                        <div className={styles.txValue}>{this.props.message?.data?.data?.id}</div>
                     </div>
                 </div>
             </div>
         );
     }
-}
-
-interface ICancelOrder {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

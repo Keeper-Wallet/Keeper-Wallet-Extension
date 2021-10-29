@@ -2,13 +2,19 @@ import * as styles from './wavesAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 
-export class WavesAuthCard extends React.PureComponent<IWavesAth> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+
+    message: any;
+}
+
+export class WavesAuthCard extends React.PureComponent<IProps> {
     render() {
         const { message, collapsed } = this.props;
-        const { data, origin } = message;
-        const tx = { type: data.type, ...data.data };
+        const { origin } = message;
         const className = cn(styles.wavesAuthTransactionCard, this.props.className, {
             [styles.wavesAuthCard_collapsed]: this.props.collapsed,
         });
@@ -25,9 +31,7 @@ export class WavesAuthCard extends React.PureComponent<IWavesAth> {
                                 <div>
                                     <div className="basic500 body3 margin-min origin-ellipsis">{origin}</div>
                                     <h1 className="headline1">
-                                        <Trans i18nKey="transactions.signRequesWavesAuth">
-                                            Sign a waves auth request
-                                        </Trans>
+                                        <Trans i18nKey="transactions.signRequestWavesAuth" />
                                     </h1>
                                 </div>
                             </div>
@@ -42,18 +46,11 @@ export class WavesAuthCard extends React.PureComponent<IWavesAth> {
                     <div className={styles.cardContent}>
                         <div className={styles.wavesAuthOriginAddress}>{origin}</div>
                         <div className={styles.wavesAuthOriginDescription}>
-                            <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
+                            <Trans i18nKey="transactions.originWarning" />
                         </div>
                     </div>
                 )}
             </div>
         );
     }
-}
-
-interface IWavesAth {
-    className: string;
-    collapsed: boolean;
-
-    message: any;
 }

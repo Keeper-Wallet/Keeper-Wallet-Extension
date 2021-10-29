@@ -2,14 +2,20 @@ import * as styles from './matcher.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-export class MatcherCard extends React.PureComponent<IMatcher> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+
+    message: any;
+}
+
+export class MatcherCard extends React.PureComponent<IProps> {
     render() {
         const { message, collapsed } = this.props;
-        const { data, origin } = message;
-        const tx = { type: data.type, ...data.data };
+        const { origin } = message;
         const className = cn(styles.matcherTransactionCard, this.props.className, {
             [styles.matcherCard_collapsed]: this.props.collapsed,
         });
@@ -26,9 +32,7 @@ export class MatcherCard extends React.PureComponent<IMatcher> {
                                 <div>
                                     <div className="basic500 body3 margin-min origin-ellipsis">{origin}</div>
                                     <h1 className="headline1">
-                                        <Trans i18nKey="transactions.signRequestMatcher">
-                                            Sign a request to the Matcher
-                                        </Trans>
+                                        <Trans i18nKey="transactions.signRequestMatcher" />
                                     </h1>
                                 </div>
                             </div>
@@ -39,22 +43,8 @@ export class MatcherCard extends React.PureComponent<IMatcher> {
                         </div>
                     )}
                 </div>
-                {collapsed ? null : (
-                    <div className={styles.cardContent}>
-                        <div className={styles.matcherOriginAddress}>{origin}</div>
-                        <div className={styles.matcherOriginDescription}>
-                            <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
-                        </div>
-                    </div>
-                )}
+                {collapsed ? null : <div className={styles.cardContent} />}
             </div>
         );
     }
-}
-
-interface IMatcher {
-    className: string;
-    collapsed: boolean;
-
-    message: any;
 }

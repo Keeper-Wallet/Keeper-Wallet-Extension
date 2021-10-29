@@ -1,31 +1,18 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { TxStatus } from '../BaseTransaction';
+import { useTranslation } from 'react-i18next';
 
-export class CustomDataFinal extends React.PureComponent {
-    readonly props;
+export function CustomDataFinal(props) {
+    const { t } = useTranslation();
 
-    render() {
-        const { isApprove, isReject, isSend } = this.props;
-
-        if (isApprove) {
-            return (
-                <div>
-                    <div className="headline2 center">
-                        {isSend ? <Trans i18nKey="sign.customDataSent">Your data is confirmed!</Trans> : null}
-                        {!isSend ? <Trans i18nKey="sign.customDataConfirmed">Your data has been signed!</Trans> : null}
-                    </div>
-                </div>
-            );
-        }
-
-        if (isReject) {
-            return (
-                <div className="headline2 center">
-                    <Trans i18nKey="sign.customDataFiled">Your data is rejected!</Trans>
-                </div>
-            );
-        }
-
-        return null;
-    }
+    return (
+        <TxStatus
+            {...props}
+            messages={{
+                send: t('sign.customDataSent'),
+                approve: t('sign.customDataConfirmed'),
+                reject: t('sign.customDataFailed'),
+            }}
+        />
+    );
 }

@@ -1,14 +1,20 @@
 import * as styles from './createOrder.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
-import { Asset, Balance } from '../../ui';
+import { Asset, Balance, DateFormat } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getAmountSign, getPrice, getPriceAmount, getPriceSign, messageType } from './parseTx';
 
-export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CreateOrderCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.createOrderTransactionCard, this.props.className, {
             [styles.createOrderCard_collapsed]: this.props.collapsed,
@@ -21,17 +27,6 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
         const amount = getMoney(getAmount(tx), assets);
         const price = getMoney(getPrice(tx), assets);
 
-        let iGet;
-        let sign = '';
-
-        if (!isSell) {
-            sign = `${getAmountSign(tx)} `;
-            iGet = amount;
-        } else {
-            sign = `${getPriceSign(tx)} `;
-            iGet = getPriceAmount(tx, assets);
-        }
-
         return (
             <div className={className}>
                 <div className={styles.cardHeader}>
@@ -40,11 +35,7 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            {isSell ? (
-                                <Trans i18nKey="transactions.orderSell">Sell</Trans>
-                            ) : (
-                                <Trans i18nKey="transactions.orderBuy">Buy</Trans>
-                            )}
+                            <Trans i18nKey={isSell ? 'transactions.orderSell' : 'transactions.orderBuy'} />
                             <span>
                                 : <Asset assetId={amount.asset.id} />/<Asset assetId={price.asset.id} />
                             </span>
@@ -52,9 +43,18 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
                         <h1 className="headline1">
                             <Balance
                                 split={true}
-                                addSign={sign}
+                                addSign={getAmountSign(tx)}
                                 showAsset={true}
-                                balance={iGet}
+                                balance={amount}
+                                className={styles.txBalanceWrapper}
+                            />
+                        </h1>
+                        <h1 className="headline1">
+                            <Balance
+                                split={true}
+                                addSign={getPriceSign(tx)}
+                                showAsset={true}
+                                balance={getPriceAmount(tx, assets)}
                                 className={styles.txBalanceWrapper}
                             />
                         </h1>
@@ -62,19 +62,32 @@ export class CreateOrderCard extends React.PureComponent<ICreateOrder> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.price" />
+                        </div>
+                        <div className={styles.txValue}>
+                            <Balance isShortFormat={true} balance={price} showAsset={true} />
+                        </div>
+                    </div>
+
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.expires" />
+                        </div>
+                        <div className={styles.txValue}>
+                            <DateFormat value={tx.expiration} />
+                        </div>
+                    </div>
+
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.matcherPublicKey" />
+                        </div>
+                        <div className={styles.txValue}>{tx.matcherPublicKey}</div>
                     </div>
                 </div>
             </div>
         );
     }
-}
-
-interface ICreateOrder {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-
-    message: any;
 }

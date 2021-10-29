@@ -1,15 +1,15 @@
-import * as styles from './../pages/styles/transactions.styl';
+import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { ApproveBtn, Button, BUTTON_TYPE } from '../ui';
+import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 
-export const TransactionBottom = ({ message, approve, reject, hideApprove, children, autoClickProtection }) => {
+export function TxFooter({ message, approve, reject, hideApprove, autoClickProtection }) {
     const isSend = message.broadcast;
 
     return (
         <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
             <Button id="reject" onClick={reject} type={BUTTON_TYPE.WARNING}>
-                <Trans i18nKey="sign.reject">Reject</Trans>
+                <Trans i18nKey="sign.reject" />
             </Button>
 
             {hideApprove ? null : (
@@ -19,14 +19,9 @@ export const TransactionBottom = ({ message, approve, reject, hideApprove, child
                     type={BUTTON_TYPE.SUBMIT}
                     autoClickProtection={autoClickProtection}
                 >
-                    {isSend ? (
-                        <Trans i18nKey="sign.confirmButton">Confirm</Trans>
-                    ) : (
-                        <Trans i18nKey="sign.signButton">Sign</Trans>
-                    )}
+                    <Trans i18nKey={isSend ? 'sign.confirmButton' : 'sign.signButton'} />
                 </ApproveBtn>
             )}
-            {children}
         </div>
     );
-};
+}

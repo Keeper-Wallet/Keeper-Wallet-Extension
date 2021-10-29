@@ -1,12 +1,18 @@
 import * as styles from './customData.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { ShowScript } from '../../ui';
 
-export class CustomDataCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CustomDataCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.dataTransactionCard, this.props.className, {
             [styles.dataCard_collapsed]: this.props.collapsed,
@@ -23,10 +29,10 @@ export class CustomDataCard extends React.PureComponent<IData> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.customData">Custom Data</Trans>
+                            <Trans i18nKey="sign.customData" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.customDataName">Sign Custom Data</Trans>
+                            <Trans i18nKey="sign.customDataName" />
                         </h1>
                     </div>
                 </div>
@@ -41,19 +47,8 @@ export class CustomDataCard extends React.PureComponent<IData> {
                         showNotify={true}
                         hideScript={this.props.collapsed}
                     />
-
-                    <div className={`${styles.origin} margin-main-top`}>
-                        <OriginWarning message={message} />
-                    </div>
                 </div>
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

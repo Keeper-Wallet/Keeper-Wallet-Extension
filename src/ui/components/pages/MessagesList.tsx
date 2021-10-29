@@ -79,8 +79,7 @@ class MessageListComponent extends React.Component {
     static getAssets(messages = [], assetsHash) {
         const assets = messages.reduce((acc, message) => {
             const { data } = message;
-            const txData = data.data ? data.data : data;
-            const tx = txData;
+            const tx = data.data || data;
             const config = getConfigByTransaction(message);
             const assetIds = config.getAssetsId(tx);
             assetIds.forEach((item) => {
@@ -131,6 +130,10 @@ class MessageListComponent extends React.Component {
                     </div>
                 </div>
 
+                <div className={styles.walletWrapper}>
+                    <TransactionWallet type="clean" account={this.props.selectedAccount} hideButton={true} />
+                </div>
+
                 <div className={styles.messageListScrollBox}>
                     {hasNotifications && (
                         <React.Fragment>
@@ -174,14 +177,6 @@ class MessageListComponent extends React.Component {
                             </div>
                         </React.Fragment>
                     )}
-                </div>
-
-                <div className={styles.walletWrapper}>
-                    <TransactionWallet
-                        className={styles.txWallet}
-                        account={this.props.selectedAccount}
-                        hideButton={true}
-                    />
                 </div>
             </div>
         );

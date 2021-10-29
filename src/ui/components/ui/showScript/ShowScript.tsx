@@ -56,14 +56,15 @@ const DataNoKey = ({ data, getScriptRef }) => {
                     </tr>
                 </thead>
                 {(data || []).map((item, index) => {
-                    const itemValue = Array.isArray(item.value) ? item.value : JSON.stringify(item.value);
+                    const itemValue = item.value;
+                    const itemValueJson = JSON.stringify(item.value);
                     const length = Array.isArray(itemValue) ? itemValue.length : 0;
                     return (
                         <tbody key={index}>
                             <tr className={cn(styles.dataRow)}>
                                 <td className={styles.dataItemData}>{item.type}</td>
                                 {!!length ? (
-                                    <td title={String(itemValue)} className={styles.dataItemDataLast}>
+                                    <td title={itemValueJson} className={styles.dataItemDataLast}>
                                         [
                                         {itemValue.map((item, index) =>
                                             index === length - 1 ? (
@@ -78,8 +79,8 @@ const DataNoKey = ({ data, getScriptRef }) => {
                                         )}
                                     </td>
                                 ) : (
-                                    <td title={String(itemValue)} className={styles.dataItemDataLast}>
-                                        {JSON.stringify(itemValue)}
+                                    <td title={itemValueJson} className={styles.dataItemDataLast}>
+                                        {itemValueJson}
                                     </td>
                                 )}
                             </tr>

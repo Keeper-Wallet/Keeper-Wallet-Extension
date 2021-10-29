@@ -2,7 +2,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './matcher.styl';
 
-export class MatcherInfo extends React.PureComponent<IAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class MatcherInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash, data } = message;
@@ -11,23 +16,18 @@ export class MatcherInfo extends React.PureComponent<IAuthInfo> {
             <div>
                 <div className={`${styles.txRow}`}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.matcherTimeStamp">Matcher Time Stamp</Trans>
+                        <Trans i18nKey="transactions.matcherTimeStamp" />
                     </div>
                     <div className={styles.txValue}>{data.data.timestamp}</div>
                 </div>
 
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.dataHash">Data Hash</Trans>
+                        <Trans i18nKey="transactions.dataHash" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>
             </div>
         );
     }
-}
-
-interface IAuthInfo {
-    message: any;
-    assets: any;
 }

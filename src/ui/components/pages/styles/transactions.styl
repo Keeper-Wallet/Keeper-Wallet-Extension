@@ -24,22 +24,34 @@
   align-items: center;
 
 .cardContent
-  padding-left: 58px;
-  color: $basic500;
+  .txRow
+    padding-bottom: 0;
+
+    &:last-child
+      padding-bottom: 0;
+
+    & + .txRow
+      border-top: none;
 
 .originAddress
-  font-size: 11px;
+  font-size: 12px;
   display: block;
-  margin-top: 14px;
   word-break: break-all;
   text-decoration: none;
 
-.originDescription
-  font-size: 11px;
+.originNetwork
+  font-size: 12px;
+  text-transform: capitalize;
+
+.originNetworkIcon
+  margin-right: 8px;
 
 .txBalanceWrapper
   display: flex;
   flex-wrap: wrap;
+
+.txValue
+  width: 100%;
 
 .txRow
   width: 100%;
@@ -71,7 +83,7 @@
     border-top: 1px dashed $basic200;
 
   &Description
-    padding-bottom: 0px;
+    padding-bottom: 0;
 
   &Description + .txRow
     border-top: 0 none;
@@ -98,53 +110,24 @@
     background: url(../../../assets/img/arrow-up-14-basic-200.svg) center no-repeat;
 
 .expandableList
-  background-color: $white;
-  padding: 16px 10px 0;
-  border-radius: 4px;
-  border: 1px solid $basic100;
-  margin: 0 -10px 10px;
-
-  &Header
-    display: flex;
-    align-items: center;
-    padding: 0 0 16px;
-    justify-content: space-between;
-
-  &Title
-    flex-grow: 1;
-
-  &Counter
-    background: $submit400;
-    color: $white;
-    height: 20px;
-    min-width: 20px;
-    padding: 0 6px;
-    margin-right: 8px;
-    text-align: center;
-    line-height: 20px;
-    display: block;
-    border-radius: 10px;
-
   .txRow
     background: $basic50;
     border-radius: 4px;
     margin-bottom: 10px;
     width: 100%;
-    display: flex;
-    padding: 10px;
+    display: block;
+    padding: 0;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     word-break: break-all;
     text-align: left;
     font-size: 12px;
+    clear:both;
 
   .txRow + .txRow
-    border-top: 0 none;
-
-    &Splitted
-      display: flex;
-      justify-content: space-between;
+    border-top: 1px dashed $basic200;
+    padding-top: 10px;
 
 .txBalance
   width: 100%;
@@ -163,6 +146,11 @@
 
   span:first-child
     font-weight: 600;
+
+.txHeader
+  width: 100%;
+  padding: 0 14px;
+  cursor: default;
 
 .txButtonsWrapper
   width: 100%;
@@ -218,92 +206,7 @@
 .txBigIcon
   width: 80px;
   height: 80px;
-  margin: 0 auto 4px auto;
-
-.txFinal
-  margin: 0 auto;
-  padding: 60px 0 0;
-  background: $basic50;
-  height: 456px;
-  position: relative;
-  overflow: auto;
-
-  &FooterWrapper
-    position: fixed;
-    z-index: 1000;
-    width: 100%;
-    max-width: 357px;
-    top: 50%;
-    transform: translateY(194px);
-
-  .finalTxContent
-    margin: 0 14px;
-    padding-bottom: 14px;
-
-  .finalTxTitle
-    padding-left 26px
-
-  .finalTxPlate
-    overflow: auto;
-    max-height: 240px;
-    background: $basic100;
-    word-break: break-all;
-
-    &Error
-      margin-top: -130px;
-
-  .txFooter
-    position: sticky;
-    bottom: 0;
-
-  &ButtonWrapper
-    background: $white;
-    border-top: 1px solid $basic100;
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 14px 0;
-    width: 100%;
-
-    button
-      margin: 0;
-
-    .buttonMargin
-      min-width: 14px;
-
-  .finalTxWallet
-    margin: 0;
-    width: 100%;
-
-  .txInfoRow
-    display: flex;
-    align-items: center;
-    padding: 12px 0 12px 20px;
-    border-top: 1px dashed $basic200;
-    border-bottom: 1px dashed $basic200;
-
-    .icon
-      min-width: 48px;
-      height: 48px;
-      margin-right: 10px;
-
-    .data
-      flex-grow: 1;
-      line-height: 20px;
-
-  .closeBtn
-    margin: 0;
-    background: transparent;
-    color: $black;
-    border: 1px solid $basic200;
-    max-width: none;
-
-    &:hover
-      border: 1px solid $black;
-      background: transparent;
-
-  .nextBtn
-    margin: 0;
-    max-width: none;
+  margin: 14px auto 0 auto;
 
 .txSign
   .infoBlock

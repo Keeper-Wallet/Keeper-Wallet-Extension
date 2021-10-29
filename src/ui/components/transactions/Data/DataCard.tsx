@@ -1,13 +1,19 @@
 import * as styles from './data.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-export class DataCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class DataCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.dataTransactionCard, this.props.className, {
             [styles.dataCard_collapsed]: this.props.collapsed,
@@ -24,10 +30,10 @@ export class DataCard extends React.PureComponent<IData> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.dataTransaction">Entry in blockchain</Trans>
+                            <Trans i18nKey="transactions.dataTransaction" />
                         </div>
                         <h1 className="headline1">
-                            <Trans i18nKey="transactions.dataTransactionName">Data Transaction</Trans>
+                            <Trans i18nKey="transactions.dataTransactionName" />
                         </h1>
                     </div>
                 </div>
@@ -41,19 +47,8 @@ export class DataCard extends React.PureComponent<IData> {
                         showNotify={true}
                         hideScript={this.props.collapsed}
                     />
-
-                    <div className={`${styles.origin} margin-main-top`}>
-                        <OriginWarning message={message} />
-                    </div>
                 </div>
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

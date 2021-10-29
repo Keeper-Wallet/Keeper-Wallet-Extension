@@ -1,9 +1,8 @@
 import * as styles from './package.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { getAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';
 
@@ -39,7 +38,14 @@ const Amounts = ({ amounts }) => {
     );
 };
 
-export class PackageCard extends React.PureComponent<IData> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class PackageCard extends React.PureComponent<IProps> {
     render() {
         const { message, assets, collapsed, className } = this.props;
         const { data = {}, title = '' } = message;
@@ -61,14 +67,10 @@ export class PackageCard extends React.PureComponent<IData> {
 
                         <div>
                             <div className="basic500 body3 margin-min">
-                                {title && collapsed ? (
-                                    title
-                                ) : (
-                                    <Trans i18nKey="transactions.packTransactionGroup">Group</Trans>
-                                )}
+                                {title && collapsed ? title : <Trans i18nKey="transactions.packTransactionGroup" />}
                             </div>
                             <h1 className="headline1 margin-main">
-                                {tx.length} <Trans i18nKey="transactions.packTransactions">transactions</Trans>
+                                {tx.length} <Trans i18nKey="transactions.packTransactions" />
                             </h1>
 
                             <div className={styles.amounts}>
@@ -79,27 +81,16 @@ export class PackageCard extends React.PureComponent<IData> {
 
                     <div className={styles.origin}>
                         <div className="basic500 body3 margin-min margin-main-top">
-                            <Trans i18nKey="transactions.packTransactionsFees">Fees</Trans>
+                            <Trans i18nKey="transactions.packTransactionsFees" />
                         </div>
                         <div className="margin-min">
                             <Fees fees={fees} />
                         </div>
                     </div>
 
-                    <div className={styles.cardContent}>
-                        <div className={`${styles.origin} margin-main-top`}>
-                            <OriginWarning message={message} />
-                        </div>
-                    </div>
+                    <div className={styles.cardContent} />
                 </div>
             </div>
         );
     }
-}
-
-interface IData {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

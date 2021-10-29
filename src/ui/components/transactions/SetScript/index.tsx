@@ -1,7 +1,6 @@
 import { SetScript } from './SetScript';
 import { SetScriptCard } from './SetScriptCard';
 import { SetScriptFinal } from './SetScriptFinal';
-import { SetScriptInfo } from './SetScriptInfo';
 import * as utils from './parseTx';
 
 const transfer = {
@@ -9,7 +8,6 @@ const transfer = {
     message: SetScript,
     card: SetScriptCard,
     final: SetScriptFinal,
-    info: SetScriptInfo,
     ...utils,
 };
 

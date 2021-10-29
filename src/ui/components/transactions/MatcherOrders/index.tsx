@@ -1,7 +1,6 @@
 import { MatcherOrders } from './MatcherOrders';
 import { MatcherCard } from './MatcherCard';
 import { MatcherFinal } from './MatcherFinal';
-import { MatcherInfo } from './MatcherInfo';
 import * as utils from './parseTx';
 
 const auth = {
@@ -9,7 +8,6 @@ const auth = {
     message: MatcherOrders,
     card: MatcherCard,
     final: MatcherFinal,
-    info: MatcherInfo,
     ...utils,
 };
 

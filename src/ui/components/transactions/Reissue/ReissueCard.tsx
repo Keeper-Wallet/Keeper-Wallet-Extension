@@ -1,14 +1,20 @@
 import * as styles from './reissue.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class ReissueCard extends React.PureComponent<IIssue> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class ReissueCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.reissueTransactionCard, this.props.className, {
             [styles.reissueCard_collapsed]: this.props.collapsed,
@@ -27,7 +33,7 @@ export class ReissueCard extends React.PureComponent<IIssue> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.tokenReissue">Token Reissue</Trans>
+                            <Trans i18nKey="transactions.reissue" />
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -42,18 +48,16 @@ export class ReissueCard extends React.PureComponent<IIssue> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.issueType" />
+                        </div>
+                        <div className={styles.txValue}>
+                            <Trans i18nKey={tx.reissuable ? 'transactions.reissuable' : 'transactions.noReissuable'} />
+                        </div>
                     </div>
                 </div>
             </div>
         );
     }
-}
-
-interface IIssue {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

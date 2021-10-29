@@ -1,7 +1,6 @@
 import { WavesAuth } from './WavesAuth';
 import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthFinal } from './WavesAuthFinal';
-import { WavesAuthInfo } from './WavesAuthInfo';
 import * as utils from './parseTx';
 
 const wavesAuth = {
@@ -9,7 +8,6 @@ const wavesAuth = {
     message: WavesAuth,
     card: WavesAuthCard,
     final: WavesAuthFinal,
-    info: WavesAuthInfo,
     ...utils,
 };
 

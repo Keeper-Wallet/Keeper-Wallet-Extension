@@ -19,7 +19,13 @@ const Icon = (props) => (
     </div>
 );
 
-export class AuthCard extends React.PureComponent<IAuth> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class AuthCard extends React.PureComponent<IProps> {
     readonly state = { canUseIcon: false, icon: null };
 
     componentDidMount(): void {
@@ -61,7 +67,7 @@ export class AuthCard extends React.PureComponent<IAuth> {
                                 <div>
                                     <div className="basic500 body3 margin-min origin-ellipsis">{name || origin}</div>
                                     <h1 className="headline1">
-                                        <Trans i18nKey="transactions.allowAccessTitle">Allow access</Trans>
+                                        <Trans i18nKey="transactions.allowAccessTitle" />
                                     </h1>
                                 </div>
                             </div>
@@ -75,21 +81,7 @@ export class AuthCard extends React.PureComponent<IAuth> {
                         </div>
                     )}
                 </div>
-                {collapsed ? null : (
-                    <div className={styles.cardContent}>
-                        <div className={styles.originAuthOriginAddress}>{origin}</div>
-                        <div className={styles.originAuthOriginDescription}>
-                            <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
-                        </div>
-                    </div>
-                )}
             </div>
         );
     }
-}
-
-interface IAuth {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

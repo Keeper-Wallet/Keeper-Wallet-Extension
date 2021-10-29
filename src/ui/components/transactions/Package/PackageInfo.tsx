@@ -2,20 +2,25 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon, TxInfo } from '../BaseTransaction';
 
 const MessageItem = ({ message, config, assets }) => {
     const Card = config.card;
-    const Info = config.info;
     return (
         <div>
             <Card message={message} assets={assets} />
-            <Info message={message} assets={assets} />
+            <TxInfo message={message} assets={assets} />
         </div>
     );
 };
 
-export class PackageInfo extends React.PureComponent<IPackInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+    onToggle?: (isOpen: boolean) => void;
+}
+
+export class PackageInfo extends React.PureComponent<IProps> {
     readonly state = { isOpened: false };
 
     toggleHandler = () => {
@@ -60,11 +65,9 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
                     </div>
                     <div className={styles.button}>
                         <span>
-                            {isOpened ? (
-                                <Trans i18nKey="transactions.hideTransactions">Hide transactions</Trans>
-                            ) : (
-                                <Trans i18nKey="transactions.showTransactions">Show transactions</Trans>
-                            )}
+                            <Trans
+                                i18nKey={isOpened ? 'transactions.hideTransactions' : 'transactions.showTransactions'}
+                            />
                             <i className={isOpened ? styles.arrowUp : styles.arrowDown} />
                         </span>
                     </div>
@@ -72,10 +75,4 @@ export class PackageInfo extends React.PureComponent<IPackInfo> {
             </div>
         );
     }
-}
-
-interface IPackInfo {
-    message: any;
-    assets: any;
-    onToggle?: (isOpen: boolean) => void;
 }

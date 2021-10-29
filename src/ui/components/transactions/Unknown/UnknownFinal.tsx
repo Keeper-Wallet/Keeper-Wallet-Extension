@@ -1,31 +1,18 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { TxStatus } from '../BaseTransaction';
+import { useTranslation } from 'react-i18next';
 
-export class UnknownFinal extends React.PureComponent {
-    readonly props;
+export function UnknownFinal(props) {
+    const { t } = useTranslation();
 
-    render() {
-        const { isApprove, isReject, isSend } = this.props;
-
-        if (isApprove) {
-            return (
-                <div>
-                    <div className="margin-main headline2">
-                        {isSend ? <Trans i18nKey="sign.authConfirmed">Request has been signed!</Trans> : null}
-                        {!isSend ? <Trans i18nKey="sign.authConfirmed">Request has been signed!</Trans> : null}
-                    </div>
-                </div>
-            );
-        }
-
-        if (isReject) {
-            return (
-                <div className="margin-main-large headline2">
-                    <Trans i18nKey="sign.authRejected">Request has not been signed</Trans>
-                </div>
-            );
-        }
-
-        return null;
-    }
+    return (
+        <TxStatus
+            {...props}
+            messages={{
+                send: t('sign.authConfirmed'),
+                approve: t('sign.authConfirmed'),
+                reject: t('sign.authRejected'),
+            }}
+        />
+    );
 }

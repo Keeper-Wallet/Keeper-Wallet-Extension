@@ -3,7 +3,12 @@ import { Trans } from 'react-i18next';
 import * as styles from './wavesAuth.styl';
 import { DateFormat } from '../../ui';
 
-export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
+interface IProps {
+    message: any;
+    assets: any;
+}
+
+export class WavesAuthInfo extends React.PureComponent<IProps> {
     render() {
         const { message } = this.props;
         const { messageHash, data } = message;
@@ -12,7 +17,7 @@ export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
             <div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.wavesAuthTimeStamp">Time Stamp</Trans>
+                        <Trans i18nKey="transactions.wavesAuthTimeStamp" />
                     </div>
                     <div className={'fullwidth'}>
                         <DateFormat value={data.timestamp} showRaw={true} className={'fullwidth'} />
@@ -20,22 +25,17 @@ export class WavesAuthInfo extends React.PureComponent<IWavesAuthInfo> {
                 </div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.publicKey">Public Key</Trans>
+                        <Trans i18nKey="transactions.publicKey" />
                     </div>
                     <div className={styles.txValue}>{data.publicKey}</div>
                 </div>
                 <div className={styles.txRow}>
                     <div className="tx-title body3 basic500">
-                        <Trans i18nKey="transactions.dataHash">Data Hash</Trans>
+                        <Trans i18nKey="transactions.dataHash" />
                     </div>
                     <div className={styles.txValue}>{messageHash}</div>
                 </div>
             </div>
         );
     }
-}
-
-interface IWavesAuthInfo {
-    message: any;
-    assets: any;
 }

@@ -44,11 +44,11 @@ const MESSAGES = [
     packageTx,
     customData,
     updateAssetInfo,
-    wavesAuth
+    wavesAuth,
 ];
 
 export { FinalTransaction } from './FinalTransaction';
 
-export const getConfigByTransaction = ({ data: tx, type = null}) => {
+export function getConfigByTransaction({ data: tx, type = null }) {
     return MESSAGES.find((config) => config.isMe(tx, type)) || unknown;
-};
+}

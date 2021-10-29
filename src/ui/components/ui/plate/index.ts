@@ -1,0 +1,1 @@
+export { PlateCollapsed } from './Plate';

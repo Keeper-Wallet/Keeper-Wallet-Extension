@@ -1,40 +1,35 @@
-import {SIGN_TYPE} from '@waves/signature-adapter';
-import {BigNumber} from '@waves/bignumber';
+import { SIGN_TYPE } from '@waves/signature-adapter';
+import { BigNumber } from '@waves/bignumber';
 
 export const messageType = 'script_invocation';
 export const txType = 'transaction';
-
 
 export function getTransferAmount(amount, assetId) {
     if (typeof amount === 'object') {
         amount.assetId = assetId;
         return amount;
     }
-    
+
     return { coins: amount, assetId };
 }
 
 export function getAssetsId(tx): Array<string> {
     const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
-    const amountAssetId = [];
-    
-    (tx.payment || []).map(item => {
+    const amountAssetId = (tx.payment || []).map((item) => {
         switch (typeof item) {
             case 'string':
                 return 'WAVES';
             case 'number':
-                return  'WAVES';
+                return 'WAVES';
             case 'object':
-                return  item && item.assetId ? item.assetId : 'WAVES';
+                return item && item.assetId ? item.assetId : 'WAVES';
         }
     });
-    
-    return [ ...amountAssetId, feeAssetId ];
+
+    return [...amountAssetId, feeAssetId];
 }
 
-export function getFee(tx) {
-    return typeof tx.fee === 'object' ? tx.fee : { coins: tx.fee, assetId: 'WAVES' };
-}
+export { getFee } from '../BaseTransaction/parseTx';
 
 export function getAmounts(tx) {
     const amounts = [];
@@ -56,7 +51,7 @@ export function getAmounts(tx) {
         }
         const assetId = item.assetId || 'WAVES';
 
-        amounts.push({coins, tokens, assetId});
+        amounts.push({ coins, tokens, assetId });
     });
 
     return amounts;

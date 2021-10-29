@@ -1,7 +1,6 @@
-import {ScriptInvocation} from './ScriptInvocation';
-import {ScriptInvocationCard} from './ScriptInvocationCard';
-import {ScriptInvocationFinal} from './ScriptInvocationFinal';
-import {ScriptInvocationInfo} from './ScriptInvocationInfo';
+import { ScriptInvocation } from './ScriptInvocation';
+import { ScriptInvocationCard } from './ScriptInvocationCard';
+import { ScriptInvocationFinal } from './ScriptInvocationFinal';
 import * as utils from './parseTx';
 
 const scriptInvocation = {
@@ -9,8 +8,7 @@ const scriptInvocation = {
     message: ScriptInvocation,
     card: ScriptInvocationCard,
     final: ScriptInvocationFinal,
-    info: ScriptInvocationInfo,
-        ...utils,
+    ...utils,
 };
 
 export default scriptInvocation;

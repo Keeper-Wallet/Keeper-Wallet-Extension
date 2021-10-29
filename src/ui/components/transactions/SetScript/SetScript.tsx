@@ -1,34 +1,27 @@
 import * as styles from './setScript.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+
 import { SetScriptCard } from './SetScriptCard';
-import { SetScriptInfo } from './SetScriptInfo';
-import { TransactionBottom } from '../TransactionBottom';
-import { TransactionWallet } from '../../wallets';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export class SetScript extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export function SetScript(props) {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.setScriptTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.confirmationRequest">Confirmation request</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TxHeader {...props} />
 
-                    <div className="margin-main">
-                        <SetScriptCard {...this.props} />
-                    </div>
-
-                    <SetScriptInfo message={message} assets={assets} />
+            <div className={`${styles.setScriptTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <SetScriptCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <TxDetailTabs>
+                    <TxInfo message={message} assets={assets} />
+                </TxDetailTabs>
             </div>
-        );
-    }
+
+            <TxFooter {...props} />
+        </div>
+    );
 }

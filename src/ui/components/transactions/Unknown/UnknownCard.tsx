@@ -1,14 +1,17 @@
 import * as styles from './unknown.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-export class UnknownCard extends React.PureComponent<IUnknown> {
+interface IProps {
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class UnknownCard extends React.PureComponent<IProps> {
     render() {
-        const { message } = this.props;
-        const { origin } = message;
         const className = cn(styles.unknownTransactionCard, this.props.className, {
             [styles.authCard_collapsed]: this.props.collapsed,
         });
@@ -21,19 +24,8 @@ export class UnknownCard extends React.PureComponent<IUnknown> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.unknownOriginAddress}>{origin}</div>
-                    <div className={styles.unknownOriginDescription}>
-                        <Trans i18nKey="transactions.originWarning">wants to access your Waves Address</Trans>
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }
-}
-
-interface IUnknown {
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

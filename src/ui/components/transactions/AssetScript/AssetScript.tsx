@@ -1,34 +1,26 @@
 import * as styles from './assetScript.styl';
-import * as React from 'react'
-import { Trans } from 'react-i18next';
-import { SignClass } from '../SignClass';
+import * as React from 'react';
 import { AssetScriptCard } from './AssetScriptCard';
-import { AssetScriptInfo } from './AssetScriptInfo';
-import { TransactionBottom } from '../TransactionBottom';
-import { TransactionWallet } from '../../wallets';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
-export class AssetScript extends SignClass {
-    render() {
-        const { message, assets } = this.props;
+export function AssetScript(props) {
+    const { message, assets } = props;
 
-        return (
-            <div className={styles.transaction}>
-                <div className={`${styles.assetScriptTxScrollBox} transactionContent`}>
-                    <div className="margin-main margin-main-top headline3 basic500">
-                        <Trans i18nKey="transactions.confirmationRequest">Confirmation request</Trans>
-                    </div>
+    return (
+        <div className={styles.transaction}>
+            <TxHeader {...props} />
 
-                    <div className="margin-main">
-                        <AssetScriptCard {...this.props} />
-                    </div>
-
-                    <AssetScriptInfo message={message} assets={assets} />
+            <div className={`${styles.assetScriptTxScrollBox} transactionContent`}>
+                <div className="margin-main">
+                    <AssetScriptCard {...props} />
                 </div>
 
-                <TransactionBottom {...this.props}>
-                    <TransactionWallet account={this.props.selectedAccount} onSelect={this.props.selectAccount} />
-                </TransactionBottom>
+                <TxDetailTabs>
+                    <TxInfo message={message} assets={assets} />
+                </TxDetailTabs>
             </div>
-        );
-    }
+
+            <TxFooter {...props} />
+        </div>
+    );
 }

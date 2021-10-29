@@ -24,6 +24,10 @@
   cursor: pointer;
   height: 64px;
 
+  &Clean
+    background: none;
+    border: none;
+
   .walletCopyTooltip
     right: 35px;
     white-space: nowrap;
@@ -155,25 +159,27 @@
     overflow: hidden;
     text-overflow: ellipsis;
 
-  div
-    height: 16px;
-
 // custom wallet design in transactions
 .txWallet
   border-radius: 0;
-  width: calc(100% + 28px);
+  width: calc(100% + 24px);
   flex-wrap: nowrap;
   box-shadow: none;
   height: 58px;
   margin: -14px -0 0 -14px;
   cursor: default;
-  border-bottom: 1px solid $basic100;
 
   .avatar
     margin-right: 8px;
 
   .accountName
-    height: 16px;
+    font-size: 14px;
+    line-height 24px;
+    cursor: pointer;
+
+    &:hover
+      .tooltip
+        display: block;
 
   .controls
     bottom: 50%;
@@ -197,23 +203,25 @@
 
 // todo @uIsk / remove !important
 
-.bigWalet
-  &.txWallet
-    border-bottom: 0 none;
-    height: auto;
-    padding: 12px 20px;
-    border-top: 1px dashed $basic200;
+.tooltip
+  display: none;
+  background: rgba(0, 0, 0, 0.8);
+  color: $white;
+  border-radius: 2px;
+  padding: 10px;
+  margin-top: 10px;
+  position: absolute;
+  font-size: 12px;
+
+  &::after
+    display: block;
+    content: '';
     position: absolute;
-    bottom: 0;
-
-    .avatar
-      margin-right: 10px;
-
-    .accountName
-      font-size: 14px;
-      line-height: 20px;
-      height: 20px;
-
-    .accountAddress
-      font-size: 11px;
-      line-height: 20px;
+    left: 5px;
+    top: -5px;
+    z-index: -1;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid rgba(0, 0, 0, 0.8);

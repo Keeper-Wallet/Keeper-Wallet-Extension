@@ -1,59 +1,67 @@
 import * as styles from './sponsorship.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
-import { Asset } from '../../ui';
+import { Asset, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAssetFee, SPONSOR_MODE } from './parseTx';
 
-export class SponsorshipCard extends React.PureComponent<IIssue> {
+interface IProps {
+    assets: any;
+    className?: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class SponsorshipCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.sponsorshipTransactionCard, this.props.className, {
             [styles.sponsorshipCard_collapsed]: this.props.collapsed,
         });
 
-        const { message, assets } = this.props;
+        const { message, assets, collapsed } = this.props;
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const assetFee = getMoney(getAssetFee(tx), assets);
         const isSetSponsored = assetFee.getTokens().gt(0);
-        const conf = {
-            key: isSetSponsored ? 'setSponsored' : 'clearSponsored',
-            title: isSetSponsored ? 'Set Sponsorship' : 'Disable Sponsorship',
-            icon: isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable,
-        };
 
         return (
-            <div className={className}>
-                <div className={styles.cardHeader}>
-                    <div className={styles.sponsorshipTxIcon}>
-                        <TxIcon txType={conf.icon} />
-                    </div>
-                    <div>
-                        <div className="basic500 body3 margin-min">
-                            <Trans i18nKey={`transactions.${conf.key}`}>{conf.title}</Trans>
+            <>
+                <div className={className}>
+                    <div className={styles.cardHeader}>
+                        <div className={styles.sponsorshipTxIcon}>
+                            <TxIcon txType={isSetSponsored ? SPONSOR_MODE.enable : SPONSOR_MODE.disable} />
                         </div>
-                        <h1 className="headline1">
-                            <Asset assetId={assetFee.asset.id} />
-                        </h1>
+                        <div>
+                            <div className="basic500 body3 margin-min">
+                                <Trans
+                                    i18nKey={
+                                        isSetSponsored ? 'transactions.setSponsored' : 'transactions.clearSponsored'
+                                    }
+                                />
+                            </div>
+                            <h1 className="headline1">
+                                {isSetSponsored ? (
+                                    <Balance
+                                        split={true}
+                                        showAsset={true}
+                                        balance={assetFee}
+                                        className={styles.txBalanceWrapper}
+                                    />
+                                ) : (
+                                    <Asset assetId={assetFee.asset.id} />
+                                )}
+                            </h1>
+                        </div>
                     </div>
                 </div>
-
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                {!collapsed && isSetSponsored && (
+                    <div className="tag1 basic500 margin-min margin-main-top">
+                        <Trans i18nKey="transactions.amountPerTransaction" />
                     </div>
-                </div>
-            </div>
+                )}
+            </>
         );
     }
-}
-
-interface IIssue {
-    assets: any;
-    className?: string;
-    collapsed: boolean;
-    message: any;
 }

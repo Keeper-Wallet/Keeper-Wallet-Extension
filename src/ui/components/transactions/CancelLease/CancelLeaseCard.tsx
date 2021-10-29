@@ -1,14 +1,20 @@
 import * as styles from './cancelLease.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class CancelLeaseCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.cancelLeaseTransactionCard, this.props.className, {
             [styles.cancelLeaseCard_collapsed]: this.props.collapsed,
@@ -19,7 +25,6 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
 
         const tx = { type: data.type, ...data.data };
         const amount = getMoney(getAmount(tx, message), assets);
-        const hasLease = !amount.getCoins().isNaN();
 
         return (
             <div className={className}>
@@ -29,7 +34,7 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.cancelLease">Cancel Lease</Trans>
+                            <Trans i18nKey="transactions.leaseCancel" />
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -43,18 +48,14 @@ export class CancelLeaseCard extends React.PureComponent<ICancelLease> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.recipient" />
+                        </div>
+                        <div className={styles.txValue}>{message.lease.recipient}</div>
                     </div>
                 </div>
             </div>
         );
     }
-}
-
-interface ICancelLease {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

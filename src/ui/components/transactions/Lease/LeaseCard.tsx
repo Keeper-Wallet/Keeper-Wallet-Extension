@@ -1,14 +1,20 @@
 import * as styles from './lease.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class LeaseCard extends React.PureComponent<ILease> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class LeaseCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.leaseTransactionCard, this.props.className, {
             [styles.leaseCard_collapsed]: this.props.collapsed,
@@ -27,7 +33,7 @@ export class LeaseCard extends React.PureComponent<ILease> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.lease">Start Lease</Trans>
+                            <Trans i18nKey="transactions.lease" />
                         </div>
                         <h1 className="headline1">
                             <Balance
@@ -41,18 +47,14 @@ export class LeaseCard extends React.PureComponent<ILease> {
                 </div>
 
                 <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
+                    <div className={styles.txRow}>
+                        <div className="tx-title tag1 basic500">
+                            <Trans i18nKey="transactions.recipient" />
+                        </div>
+                        <div className={styles.txValue}>{tx.recipient}</div>
                     </div>
                 </div>
             </div>
         );
     }
-}
-
-interface ILease {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }

@@ -1,14 +1,20 @@
 import * as styles from './burn.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../TransactionIcon';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { OriginWarning } from '../OriginWarning';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-export class BurnCard extends React.PureComponent<IBurn> {
+interface IProps {
+    assets: any;
+    className: string;
+    collapsed: boolean;
+    message: any;
+}
+
+export class BurnCard extends React.PureComponent<IProps> {
     render() {
         const className = cn(styles.burnTransactionCard, this.props.className, {
             [styles.burnCard_collapsed]: this.props.collapsed,
@@ -27,7 +33,7 @@ export class BurnCard extends React.PureComponent<IBurn> {
                     </div>
                     <div>
                         <div className="basic500 body3 margin-min">
-                            <Trans i18nKey="transactions.burn">Token Burn</Trans>
+                            <Trans i18nKey="transactions.burn" />
                         </div>
                         <h1 className="headline1">
                             <Balance split={true} addSign="- " showAsset={true} balance={amount} />
@@ -35,19 +41,8 @@ export class BurnCard extends React.PureComponent<IBurn> {
                     </div>
                 </div>
 
-                <div className={styles.cardContent}>
-                    <div className={styles.origin}>
-                        <OriginWarning message={message} />
-                    </div>
-                </div>
+                <div className={styles.cardContent} />
             </div>
         );
     }
-}
-
-interface IBurn {
-    assets: any;
-    className: string;
-    collapsed: boolean;
-    message: any;
 }
