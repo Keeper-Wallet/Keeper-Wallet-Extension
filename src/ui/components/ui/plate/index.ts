@@ -1,1 +1,1 @@
-export { PlateCollapsed } from './Plate';
+export * from './Plate';

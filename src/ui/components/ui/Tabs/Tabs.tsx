@@ -20,11 +20,12 @@ interface ITabListProps {
     children: React.ReactElement[];
     activeIndex?: number;
     onActiveTab?: (index) => void;
+    className?: string;
 }
 
-export function TabList({ children, activeIndex, onActiveTab }: ITabListProps) {
+export function TabList({ children, activeIndex, onActiveTab, className }: ITabListProps) {
     return (
-        <ol className={styles.tabList}>
+        <ol className={cn(styles.tabList, className)}>
             {React.Children.map(children, (child, index) =>
                 React.cloneElement(child, { isActive: index == activeIndex, onActivate: () => onActiveTab(index) })
             )}
