@@ -702,6 +702,6 @@ export class MessageController extends EventEmitter {
             networkByteFromAddress(filledMessage.account.address).charCodeAt(0)
         );
         const signable = adapter.makeSignable(filledMessage.data);
-        return stringify(await signable.getSignData());
+        return stringify({ ...(await signable.getSignData()), sender: message.account.address });
     }
 }
