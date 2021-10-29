@@ -92,7 +92,7 @@
   },
   "forgotPassword": {
     "attention": "Attention!",
-    "attentionMessage": "To reset the password, you need to delete all your accounts from Waves Keeper, set a new password, import each your account again from the Seed phrase.",
+    "attentionMessage": "To reset the password, you need to delete all accounts from Waves Keeper, set a new password, import each of your account again from the Seed phrase.",
     "warningMessage": "If you have not saved the Seed phrase or Private key, then you will not be able to recover access to your account.",
     "continueMessage": "To continue, type this into the field below",
     "phrase": "DELETE ALL ACCOUNTS",
