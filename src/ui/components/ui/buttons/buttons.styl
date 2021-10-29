@@ -127,6 +127,15 @@
     &:hover
       background-color: $error300;
 
+    &.disabled,
+    &:disabled,
+    &[disabled]
+      opacity: 0.5;
+      cursor: default;
+
+      &:hover
+        opacity: 0.5;
+
   &.danger
     background-color: $error600;
     color: $white;

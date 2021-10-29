@@ -93,10 +93,13 @@
   },
   "forgotPassword": {
     "attention": "Attention!",
-    "delete": "Delete accounts",
-    "restore": "Restore all",
-    "tryAgain": "Try again",
-    "warn": "If you forget your password, you must restore all your accounts from their SEEDs and set a new password."
+    "attentionMessage": "To reset the password, you need to delete all accounts from Waves Keeper, set a new password, import each of your account again from the Seed phrase.",
+    "warningMessage": "If you have not saved the Seed phrase or Private key, then you will not be able to recover access to your account.",
+    "continueMessage": "To continue, type this into the field below",
+    "phrase": "DELETE ALL ACCOUNTS",
+    "phraseError": "The phrase is entered incorrectly",
+    "resetConfirm": "Delete all",
+    "resetCancel": "Cancel"
   },
   "import": {
     "createNew": "Create a new account",
