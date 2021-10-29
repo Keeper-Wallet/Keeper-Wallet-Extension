@@ -4,10 +4,6 @@ import { Trans } from 'react-i18next';
 import * as styles from './txdetailtabs.styl';
 import cn from 'classnames';
 
-const PrettyJSON = ({ data }) => {
-    return <Highlight className={cn('json', 'body3', styles.code)}>{data}</Highlight>;
-};
-
 export function TxDetailTabs({ children }) {
     const prettyJson = JSON.stringify(JSON.parse(children.props.message.json), null, 2);
 
@@ -25,7 +21,7 @@ export function TxDetailTabs({ children }) {
                 <TabPanel>{children}</TabPanel>
                 <TabPanel>
                     <PlateCollapsable showExpand showCopy>
-                        <PrettyJSON data={prettyJson} />
+                        <Highlight className={cn('json', 'body3', styles.code)} data={prettyJson} />
                     </PlateCollapsable>
                 </TabPanel>
             </TabPanels>

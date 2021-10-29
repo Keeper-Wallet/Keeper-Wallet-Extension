@@ -3,32 +3,24 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/idea.css';
 
 interface IProps {
-    children: React.ReactNode;
+    data: string;
     className: string;
 }
 
 export class Highlight extends React.Component<IProps> {
-    refEl;
+    private preRef = React.createRef<HTMLPreElement>();
 
     componentDidMount() {
-        this.highlight();
+        hljs.highlightElement(this.preRef.current);
     }
 
     render() {
-        const { className, children } = this.props;
+        const { className, data } = this.props;
 
         return (
-            <pre ref={this.getRef} className={className}>
-                {children}
+            <pre ref={this.preRef} className={className}>
+                {data}
             </pre>
         );
     }
-
-    getRef = (el) => {
-        this.refEl = el;
-    };
-
-    highlight = () => {
-        hljs.highlightElement(this.refEl);
-    };
 }
