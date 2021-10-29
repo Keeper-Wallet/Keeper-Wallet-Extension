@@ -24,7 +24,7 @@ export class IssueCard extends React.PureComponent<IProps> {
         const { data = {} } = message;
         const tx = { type: data.type, ...data.data };
         const amount = getMoney(getAmount(tx), assets);
-        const decimals = tx.precision || tx.decimals;
+        const decimals = tx.precision || tx.decimals || 0;
         const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
 
         return (
@@ -68,7 +68,7 @@ export class IssueCard extends React.PureComponent<IProps> {
                         </div>
                     )}
 
-                    {decimals && (
+                    {!isNFT && (
                         <div className={styles.txRow}>
                             <div className="tx-title tag1 basic500">
                                 <Trans i18nKey="transactions.decimalPoints">Decimals</Trans>
