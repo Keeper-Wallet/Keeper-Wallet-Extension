@@ -6,11 +6,10 @@ COPY package-lock.json .
 
 RUN npm install
 
-COPY . .
-RUN echo '{}' > config.json
+# COPY . .
+# RUN echo '{}' > config.json
 
-RUN npm run dist
+# RUN npm run dist
 
-FROM selenium/standalone-chrome as selenium
-COPY --from=builder /app/dist/chrome /app
+FROM selenium/standalone-chrome-debug as selenium
 EXPOSE 4444

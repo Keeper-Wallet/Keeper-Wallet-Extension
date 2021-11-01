@@ -11,13 +11,13 @@ export const mochaHooks = () => {
         async beforeAll() {
             this.timeout(15 * 60 * 1000);
             this.wait = 10 * 1000;
-            this.selenium = await (await GenericContainer.fromDockerfile(path.resolve(__dirname, '..', '..')).build())
-                .withExposedPorts(4444)
-                .start();
+            // this.selenium = await (await GenericContainer.fromDockerfile(path.resolve(__dirname, '..', '..')).build())
+            //     .withExposedPorts(4444)
+            //     .start();
 
             this.driver = new Builder()
                 .forBrowser('chrome')
-                .usingServer(`http://${this.selenium.getHost()}:${this.selenium.getMappedPort(4444)}/wd/hub`)
+                .usingServer(`http://127.0.0.1:4444/wd/hub`)
                 .setChromeOptions(
                     new chrome.Options().addArguments(`--load-extension=${extPath}`, '--disable-dev-shm-usage')
                 )
