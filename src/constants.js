@@ -88,9 +88,7 @@ export const DEFAULT_FEE_CONFIG = {
         },
         3: {
             fee: 100000000,
-        },
-        5: {
-            fee: 100000000,
+            nftFee: 100000,
         },
         7: {
             add_smart_account_fee: false,
@@ -104,9 +102,6 @@ export const DEFAULT_FEE_CONFIG = {
         },
         13: {
             fee: 1000000,
-        },
-        14: {
-            fee: 100000000,
         },
         15: {
             fee: 100000000,
