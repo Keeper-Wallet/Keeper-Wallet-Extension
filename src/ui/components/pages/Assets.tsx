@@ -1,15 +1,16 @@
 import * as styles from './styles/assets.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { WalletItem, ActiveWallet } from '../wallets';
+import { ActiveWallet, WalletItem } from '../wallets';
 import { Trans } from 'react-i18next';
-import { getBalances, getAsset, selectAccount, setActiveAccount } from '../../actions';
+import { getAsset, getBalances, selectAccount, setActiveAccount, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
+import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 
 class AssetsComponent extends React.Component {
     props;
@@ -30,6 +31,9 @@ class AssetsComponent extends React.Component {
         event.preventDefault();
         this.props.setTab(PAGES.QR_CODE_SELECTED);
     };
+
+    dismissFeatureInfo = () => this.props.setUiState({ isFeatureUpdateShown: true });
+    exportToKeystore = () => this.props.setTab(PAGES.EXPORT_ACCOUNTS);
 
     render() {
         if (this.state.loading) {
@@ -123,6 +127,16 @@ class AssetsComponent extends React.Component {
                         </div>
                     </div>
                 </Modal>
+
+                <Modal animation={Modal.ANIMATION.FLASH} showModal={this.props.showUpdateInfo}>
+                    <FeatureUpdateInfo
+                        onClose={this.dismissFeatureInfo}
+                        onSubmit={() => {
+                            this.dismissFeatureInfo();
+                            this.exportToKeystore();
+                        }}
+                    />
+                </Modal>
             </div>
         );
     }
@@ -189,7 +203,7 @@ class AssetsComponent extends React.Component {
         this.closeModals();
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props) {
         const asset = props.assets['WAVES'];
 
         if (!props.activeAccount) {
@@ -230,6 +244,7 @@ const mapStateToProps = function (store: any) {
         balances: store.balances,
         assets: store.assets,
         notifications: store.localState.notifications,
+        showUpdateInfo: !store.uiState.isFeatureUpdateShown && !!store.accounts.length,
     };
 };
 
@@ -238,6 +253,7 @@ const actions = {
     getBalances,
     selectAccount,
     setActiveAccount,
+    setUiState,
 };
 
 export const Assets = connect(mapStateToProps, actions)(AssetsComponent);

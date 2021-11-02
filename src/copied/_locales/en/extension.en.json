@@ -113,6 +113,14 @@
     "resetConfirm": "Delete all",
     "resetCancel": "Cancel"
   },
+  "featureUpdateInfo": {
+    "intro": "Keeper cares about safety of your funds. Please be aware that your backup (seed) phrases only belong to you!",
+    "recommendation": "So we highly recommend to export your accounts into a keystore file. This may prevent you from losing them.",
+    "keystoreInfo": "Keystore file is a secure place where you can store seed phrases encrypted with your password.",
+    "keystoreImport": "You can later import them from this file back into the Keeper.",
+    "backupBtn": "Back up to a keystore file",
+    "cancelBtn": "I'll do it later"
+  },
   "import": {
     "createNew": "Create a new account",
     "importVia": "Or import via",

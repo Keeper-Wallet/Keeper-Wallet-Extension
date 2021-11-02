@@ -45,8 +45,15 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 const bgPromise = setupBackgroundService().catch((e) => log.error(e));
 
 extension.runtime.onInstalled.addListener(async (details) => {
+    const bgService = await bgPromise;
+
+    bgService.uiStateController.setUiState({
+        isFeatureUpdateShown:
+            details.reason === extension.runtime.OnInstalledReason.INSTALL ||
+            !!bgService.uiStateController.getUiState().isFeatureUpdateShown,
+    });
+
     if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-        const bgService = await bgPromise;
         bgService.messageController.clearUnusedMessages();
     }
 });
