@@ -170,7 +170,9 @@ export const uiState = store => next => action => {
 
 export const changeNetwork = store => next => action => {
   if (action.type === ACTION.CHANGE_NETWORK) {
-    background.setNetwork(action.payload).then(() => setTab(PAGES.ROOT));
+    background
+      .setNetwork(action.payload)
+      .then(() => store.dispatch(setTab(PAGES.ROOT)));
     return null;
   }
 
