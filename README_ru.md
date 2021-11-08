@@ -40,11 +40,10 @@
 Пример:
 
 ```js
-WavesKeeper.initialPromise
-    .then((keeperApi) => {
-        /*...инициализация работы приложения с WavesKeeper*/
-        keeperApi.publicState().then(state => startApp(state));
-    })
+WavesKeeper.initialPromise.then(keeperApi => {
+  /*...инициализация работы приложения с WavesKeeper*/
+  keeperApi.publicState().then(state => startApp(state));
+});
 ```
 
 В Waves Keeper, для большей безопасности и удобства использования,
@@ -66,30 +65,31 @@ WavesKeeper.initialPromise
 
 ```js
 WavesKeeper.publicState()
-    .then(state => {
-        console.log(state); //вывод в консоль результата
-        /*...обработка данных */
-    }).catch(error => {
-        console.error(error); //вывод в консоль результата
-        /*...обработка ошибок */
-    })
+  .then(state => {
+    console.log(state); //вывод в консоль результата
+    /*...обработка данных */
+  })
+  .catch(error => {
+    console.error(error); //вывод в консоль результата
+    /*...обработка ошибок */
+  });
 ```
 
 или
 
 ```js
 const getPublicState = async () => {
-    try {
-        const state = await WavesKeeper.publicState();
-        console.log(state); //вывод в консоль результата
-        /*...обработка данных */
-    } catch(error) {
-        console.error(error); //вывод в консоль результата
-        /*...обработка ошибок */
-    }
+  try {
+    const state = await WavesKeeper.publicState();
+    console.log(state); //вывод в консоль результата
+    /*...обработка данных */
+  } catch (error) {
+    console.error(error); //вывод в консоль результата
+    /*...обработка ошибок */
   }
+};
 
-  const result = await getPublicState();
+const result = await getPublicState();
 ```
 
 ОТВЕТ
@@ -147,11 +147,13 @@ WavesKeeper.encryptMessage(`текст для шифрования`, `публи
 Пример:
 
 ```js
-WavesKeeper
-    .encryptMessage('My message', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc', 'для меня')
-    .then((encryptedMessage) => {
-        console.log(encryptedMessage);
-    });
+WavesKeeper.encryptMessage(
+  'My message',
+  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
+  'для меня'
+).then(encryptedMessage => {
+  console.log(encryptedMessage);
+});
 ```
 
 Возможные ошибки
@@ -167,16 +169,22 @@ WavesKeeper
 Вы можете расшифровать сообщение, зашифрованное для вас пользователем сети Waves, зная сообщение и публичный ключ отправителя.
 
 ```js
-WavesKeeper.decryptMessage(`зашифрованный текст`, `публичный ключ в кодировке base58`, `префикс строкой уникальный для каждого приложения`)
+WavesKeeper.decryptMessage(
+  `зашифрованный текст`,
+  `публичный ключ в кодировке base58`,
+  `префикс строкой уникальный для каждого приложения`
+);
 ```
 
 Example:
 
 ```js
-WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc')
-    .then((message) => {
-        console.log(message);
-    });
+WavesKeeper.decryptMessage(
+  '**encrypted msg**',
+  '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc'
+).then(message => {
+  console.log(message);
+});
 ```
 
 Возможные ошибки
@@ -198,8 +206,8 @@ WavesKeeper.decryptMessage('**encrypted msg**', '416z9d8DQDy5MPTqDhvReRBaPb19gEy
 Пример:
 
 ```js
-WavesKeeper.on("update", state => {
-    //state бъект как из WavesKeeper.publicState
+WavesKeeper.on('update', state => {
+  //state бъект как из WavesKeeper.publicState
 });
 ```
 
@@ -220,8 +228,8 @@ WavesKeeper.on("update", state => {
 
 ```js
 WavesKeeper.notification({
-    title: 'Hello!',
-    message: 'Congratulation!!!'
+  title: 'Hello!',
+  message: 'Congratulation!!!',
 });
 ```
 
@@ -240,32 +248,33 @@ WavesKeeper.notification({
 Пример:
 
 ```js
-const authData = { data: "Auth on my site" };
+const authData = { data: 'Auth on my site' };
 WavesKeeper.auth(authData)
-    .then(auth => {
-        console.log(auth); //вывод в консоль результата
-        /*...обработка данных */
-    }).catch(error => {
-        console.error(error); //вывод в консоль результата
-        /*...обработка ошибок */
-    });
+  .then(auth => {
+    console.log(auth); //вывод в консоль результата
+    /*...обработка данных */
+  })
+  .catch(error => {
+    console.error(error); //вывод в консоль результата
+    /*...обработка ошибок */
+  });
 ```
 
 или
 
 ```js
 const getAuthData = async authData => {
-    try {
-        const state = await WavesKeeper.auth(authData);
-        console.log(state); //вывод в консоль результата
-        /*...обработка данных */
-    } catch(error) {
-        console.error(error); //вывод в консоль результата
-        /*...обработка ошибок */
-    }
-}
+  try {
+    const state = await WavesKeeper.auth(authData);
+    console.log(state); //вывод в консоль результата
+    /*...обработка данных */
+  } catch (error) {
+    console.error(error); //вывод в консоль результата
+    /*...обработка ошибок */
+  }
+};
 
-const authData = { data: "Auth on my site" };
+const authData = { data: 'Auth on my site' };
 getAuthData(authData);
 ```
 
@@ -281,20 +290,22 @@ getAuthData(authData);
 
 ```js
 const authData = {
-    data: "Generated string from server",
-    name: "My test App",
-    icon: "/img/icons/waves_logo.svg",
-    referrer: "https://waves.exchange/",
-    successPath: "login"
+  data: 'Generated string from server',
+  name: 'My test App',
+  icon: '/img/icons/waves_logo.svg',
+  referrer: 'https://waves.exchange/',
+  successPath: 'login',
 };
 
-WavesKeeper.auth(authData).then((data) => {
+WavesKeeper.auth(authData)
+  .then(data => {
     //data - данные от кипера
     //проверка подписи и сохранение адреса...
     console.log(data);
-}).catch((error) => {
+  })
+  .catch(error => {
     //обработка ошибки
-});
+  });
 ```
 
 При удачном подтверждении кипер в Promise вернет объект содержащий данные для проверки подписи:
@@ -321,24 +332,26 @@ WavesKeeper.auth(authData).then((data) => {
 
 ```js
 const txData = {
-    type: 4,
-    data: {
-        amount: {
-            assetId: "WAVES",
-            tokens: "1.567"
-        },
-        fee: {
-            assetId: "WAVES",
-            tokens: "0.001"
-        },
-        recipient: "test"
-    }
+  type: 4,
+  data: {
+    amount: {
+      assetId: 'WAVES',
+      tokens: '1.567',
+    },
+    fee: {
+      assetId: 'WAVES',
+      tokens: '0.001',
+    },
+    recipient: 'test',
+  },
 };
-WavesKeeper.signTransaction(txData).then((data) => {
+WavesKeeper.signTransaction(txData)
+  .then(data => {
     //data - строка готовая для отсылки на ноду(сервер) сети Waves
-}).catch((error) => {
+  })
+  .catch(error => {
     //Обработка ошибок
-});
+  });
 ```
 
 > Апи возвращает строки, а не объект, так как в javascript при работе с 8 байтными целыми (long) происходит потеря точности.
@@ -348,8 +361,21 @@ WavesKeeper.signTransaction(txData).then((data) => {
 В примере мы подписываем транзакцию на перевод токенов Waves на алиас `test` в сети Waves.
 
 ОТВЕТ
+
 ```json
-{"version":2,"assetId":"", "amount":156700000,"feeAssetId":"",fee:100000, "recipient":"получатель","attachment":"", "timestamp":1548770230589,"senderPublicKey":"публичный ключ","proofs":["подпись"],"type":4}
+{
+  "version": 2,
+  "assetId": "",
+  "amount": 156700000,
+  "feeAssetId": "",
+  "fee": 100000,
+  "recipient": "получатель",
+  "attachment": "",
+  "timestamp": 1548770230589,
+  "senderPublicKey": "публичный ключ",
+  "proofs": ["подпись"],
+  "type": 4
+}
 ```
 
 ОШИБКИ
@@ -366,25 +392,27 @@ WavesKeeper.signTransaction(txData).then((data) => {
 
 ```js
 const txData = {
-    type: 4,
-    data: {
-        amount: {
-            assetId: "WAVES",
-            tokens: "1.567"
-        },
-        fee: {
-            assetId: "WAVES",
-            tokens: "0.001"
-        },
-        recipient: "test"
-    }
+  type: 4,
+  data: {
+    amount: {
+      assetId: 'WAVES',
+      tokens: '1.567',
+    },
+    fee: {
+      assetId: 'WAVES',
+      tokens: '0.001',
+    },
+    recipient: 'test',
+  },
 };
 
-WavesKeeper.signAndPublishTransaction(txData).then((data) => {
+WavesKeeper.signAndPublishTransaction(txData)
+  .then(data => {
     //data - строка готовая для отсылки на ноду(сервер) сети Waves
-}).catch((error) => {
+  })
+  .catch(error => {
     //Обработка ошибок
-});
+  });
 ```
 
 ОТВЕТ
@@ -418,35 +446,39 @@ WavesKeeper.signAndPublishTransaction(txData).then((data) => {
 Пример:
 
 ```js
-const name = "For Test";
-const tx = [{
+const name = 'For Test';
+const tx = [
+  {
     type: 4,
     data: {
-        amount: {
-            assetId: "WAVES",
-            tokens: "1.567"
-        },
-        fee: {
-            assetId: "WAVES",
-            tokens: "0.001"
-        },
-        recipient: "test"
-}},{
+      amount: {
+        assetId: 'WAVES',
+        tokens: '1.567',
+      },
+      fee: {
+        assetId: 'WAVES',
+        tokens: '0.001',
+      },
+      recipient: 'test',
+    },
+  },
+  {
     type: 4,
     data: {
-        amount: {
-            assetId: "WAVES",
-            tokens: "0.51"
-        },
-        fee: {
-            assetId: "WAVES",
-            tokens: "0.001"
-        },
-        recipient: "merry"
-    }
-}];
+      amount: {
+        assetId: 'WAVES',
+        tokens: '0.51',
+      },
+      fee: {
+        assetId: 'WAVES',
+        tokens: '0.001',
+      },
+      recipient: 'merry',
+    },
+  },
+];
 
-WavesKeeper.signTransactionPackage(tx, name)
+WavesKeeper.signTransactionPackage(tx, name);
 ```
 
 Подписать 2 транзакции:
@@ -516,23 +548,25 @@ MoneyLike может иметь вид:
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 3,
-    data: {
-        "name": "Best Token",
-        "description": "Greate token",
-        "quantity": 1000000,
-        "precision": 2,
-        "reissuable": true,
-        "fee": {
-             "tokens": "1",
-             "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я создал свой ассет!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 3,
+  data: {
+    name: 'Best Token',
+    description: 'Greate token',
+    quantity: 1000000,
+    precision: 2,
+    reissuable: true,
+    fee: {
+      tokens: '1',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я создал свой ассет!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха мы выпускаем новыйй ассет в количестве 1000000 шт.
@@ -551,17 +585,19 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 4,
-    data: {
-        amount: { tokens: "3.3333333", assetId: "WAVES" },
-        fee: { tokens: "0.001", assetId: "WAVES"},
-        recipient: "merry"
-    }
-}).then((tx) => {
-    console.log("Ура! Я смог отправить Waves!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 4,
+  data: {
+    amount: { tokens: '3.3333333', assetId: 'WAVES' },
+    fee: { tokens: '0.001', assetId: 'WAVES' },
+    recipient: 'merry',
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я смог отправить Waves!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 ###### [Тип 5 REISSUE - довыпуск токенов](https://docs.waves.tech/ru/blockchain/transaction-type/reissue-transaction)
@@ -577,21 +613,23 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 5,
-    data: {
-        "quantity": 1000,
-        "assetId": "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
-        "reissuable": true,
-        "fee": {
-            "tokens": "1",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я довыпустил ассет!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 5,
+  data: {
+    quantity: 1000,
+    assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+    reissuable: true,
+    fee: {
+      tokens: '1',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я довыпустил ассет!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха мы довыпускаем новый ассет в количестве 1000000 `coins`,
@@ -609,20 +647,22 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 6,
-    data: {
-        amount: 1000,
-        assetId: "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS",
-        fee: {
-            "tokens": "0.001",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я сжег лишнее!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 6,
+  data: {
+    amount: 1000,
+    assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я сжег лишнее!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха сжигается 1000 `coins`.
@@ -639,20 +679,22 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 8,
-    data: {
-        "amount": 1000,
-        "recipient": "merry",
-        "fee": {
-            "tokens": "0.001",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я смог передать в лизинг!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 8,
+  data: {
+    amount: 1000,
+    recipient: 'merry',
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я смог передать в лизинг!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха передается в лизинг 0.00001000 Waves.
@@ -668,19 +710,21 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 9,
-    data: {
-        leaseId: "6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS",
-        fee: {
-            "tokens": "0.001",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я отменил лизинг!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 9,
+  data: {
+    leaseId: '6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS',
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я отменил лизинг!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха отменяется лизинг.
@@ -696,19 +740,21 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 10,
-    data: {
-        alias: "testAlias",
-        fee: {
-            "tokens": "0.001",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я теперь с алиасом!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 10,
+  data: {
+    alias: 'testAlias',
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я теперь с алиасом!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха для адреса создается алиас (дополнительное имя).
@@ -727,23 +773,25 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 11,
-    data: {
-        totalAmount: { assetId: "WAVES", coins: 0},
-        transfers: [
-            { recipient: "alias1", amount: "200000" },
-            { recipient: "alias2", amount: "200000" },
-        ],
-        fee: {
-            "tokens": "0.002",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я друзьям отправил приветов!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 11,
+  data: {
+    totalAmount: { assetId: 'WAVES', coins: 0 },
+    transfers: [
+      { recipient: 'alias1', amount: '200000' },
+      { recipient: 'alias2', amount: '200000' },
+    ],
+    fee: {
+      tokens: '0.002',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я друзьям отправил приветов!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха на адреса alias1, alias2 придет по 0.002 Waves.
@@ -762,24 +810,26 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 12,
-    data: {
-        data: [
-            { key: "string", value: "testVal", type: "string" },
-            { key: "binary", value: "base64:AbCd", type: "binary" },
-            { key: "integer", value: 20, type: "integer" },
-            { key: "boolean", value: false, type: "boolean" },
-        ],
-        fee: {
-            "tokens": "0.01",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я сохранил данные!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 12,
+  data: {
+    data: [
+      { key: 'string', value: 'testVal', type: 'string' },
+      { key: 'binary', value: 'base64:AbCd', type: 'binary' },
+      { key: 'integer', value: 20, type: 'integer' },
+      { key: 'boolean', value: false, type: 'boolean' },
+    ],
+    fee: {
+      tokens: '0.01',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я сохранил данные!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха в стейте будут храниться новые данные.
@@ -798,19 +848,21 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 13,
-    data: {
-        script: "",
-        fee: {
-            "tokens": "0.04",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я отменил скрипт!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 13,
+  data: {
+    script: '',
+    fee: {
+      tokens: '0.04',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я отменил скрипт!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха удалится скрипт с аккаунта.
@@ -819,19 +871,21 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 13,
-    data: {
-        script: "base64:AQa3b8tH",
-        fee: {
-            "tokens": "0.01",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я поставил скрипт!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 13,
+  data: {
+    script: 'base64:AQa3b8tH',
+    fee: {
+      tokens: '0.01',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я поставил скрипт!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха на аккаунте будет новый скрипт, разрешающий на аккаунте любые транзакции без подписи (будьте осторожны!).
@@ -847,22 +901,24 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 14,
-    data: {
-        minSponsoredAssetFee: {
-            assetId: "6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS",
-            tokens: 0.1
-        },
-        fee: {
-            "tokens": "1",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я стал спонсором!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 14,
+  data: {
+    minSponsoredAssetFee: {
+      assetId: '6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS',
+      tokens: 0.1,
+    },
+    fee: {
+      tokens: '1',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я стал спонсором!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха, в ассете можно платить комиссию за трансфер
@@ -882,20 +938,22 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 15,
-    data: {
-        assetId: "",
-        script: "base64:AQa3b8tH",
-        fee: {
-            "tokens": "0.01",
-            "assetId": "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я переставил скрипт на ассете!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 15,
+  data: {
+    assetId: '',
+    script: 'base64:AQa3b8tH',
+    fee: {
+      tokens: '0.01',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я переставил скрипт на ассете!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха на ассете будет переписан скрипт
@@ -917,29 +975,31 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-    type: 16,
-    data: {
-        fee: {
-            "tokens": "0.05",
-            "assetId": "WAVES"
+  type: 16,
+  data: {
+    fee: {
+      tokens: '0.05',
+      assetId: 'WAVES',
+    },
+    dApp: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
+    call: {
+      function: 'tellme',
+      args: [
+        {
+          type: 'string',
+          value: 'Will?',
         },
-        dApp: '3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU',
-        call: {
-            function: 'tellme',
-            args: [
-                {
-                    "type": "string",
-                    "value": "Will?"
-                }
-            ]
-        },
-        payment: [{assetId: "WAVES", tokens: 2}]
-    }
-}).then((tx) => {
-    console.log("Ура! Я выполнил скрипт!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+      ],
+    },
+    payment: [{ assetId: 'WAVES', tokens: 2 }],
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я выполнил скрипт!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 В случае успеха будет запущен скрипт
@@ -977,29 +1037,31 @@ WavesKeeper.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signOrder({
-    type: 1002,
-    data: {
-        matcherPublicKey: "7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy",
-        orderType: "sell",
-        expiration: Date.now() + 100000,
-        amount: {
-            tokens: "100",
-            assetId: "WAVES"
-        },
-        price: {
-            tokens: "0.01",
-            assetId: "8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS"
-        },
-        matcherFee: {
-            tokens: "0.03",
-            assetId: "WAVES"
-        }
-    }
-}).then((tx) => {
-    console.log("Ура! Я подписал ордер!!!");
-}).catch((error) => {
-    console.error("Что-то пошло не так", error);
-});
+  type: 1002,
+  data: {
+    matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
+    orderType: 'sell',
+    expiration: Date.now() + 100000,
+    amount: {
+      tokens: '100',
+      assetId: 'WAVES',
+    },
+    price: {
+      tokens: '0.01',
+      assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+    },
+    matcherFee: {
+      tokens: '0.03',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я подписал ордер!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 ОТВЕТ:
@@ -1045,10 +1107,10 @@ WavesKeeper.signOrder({
 
 ```js
 WavesKeeper.signCancelOrder({
-    type: 1003,
-    data: {
-        id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'
-    }
+  type: 1003,
+  data: {
+    id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
+  },
 });
 ```
 
@@ -1070,17 +1132,19 @@ WavesKeeper.signCancelOrder({
 
 ```js
 WavesKeeper.signAndPublishCancelOrder({
-    type: 1003,
-    priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
-    amountAsset: 'WAVES',
-    data: {
-        id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap'
-    }
-}).then(() => {
+  type: 1003,
+  priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+  amountAsset: 'WAVES',
+  data: {
+    id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
+  },
+})
+  .then(() => {
     console.log('Ура! Я отменил ордер');
-}).catch((error) => {
+  })
+  .catch(error => {
     console.error('Что-то пошло не так', error);
-});
+  });
 ```
 
 ОТВЕТ:
@@ -1117,10 +1181,10 @@ WavesKeeper.signAndPublishCancelOrder({
 
 ```js
 WavesKeeper.signRequest({
-    type: 1001,
-    data: {
-        timestamp: 234234242423423
-    }
+  type: 1001,
+  data: {
+    timestamp: 234234242423423,
+  },
 });
 ```
 
@@ -1147,12 +1211,13 @@ WavesKeeper.signRequest({
 
 ```js
 WavesKeeper.signCustomData({
-     version: 1,
-     binary: 'base64:AADDEE=='
+  version: 1,
+  binary: 'base64:AADDEE==',
 });
 ```
 
 ОТВЕТ:
+
 ```js
 {
     version: 1,
@@ -1180,8 +1245,8 @@ WavesKeeper.signCustomData({
 
 ```js
 WavesKeeper.signCustomData({
-    version: 2,
-    data: [{ type: 'string', key: 'name', value: 'Mr. First' }]
+  version: 2,
+  data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
 });
 ```
 
@@ -1194,7 +1259,7 @@ WavesKeeper.signCustomData({
         signature: '...',
         publicKey: '...'
    }
-```      
+```
 
 ОШИБКИ:
 
@@ -1203,7 +1268,9 @@ WavesKeeper.signCustomData({
 - `{ message: "Invalid data", data: "Причина", code: 9 }` - неверные/неполные данные запроса
 
 #### verifyCustomData
+
 Валидация подписи данных типа:
+
 ```js
 {
     version: 1,
@@ -1212,7 +1279,9 @@ WavesKeeper.signCustomData({
     publicKey: '...'
 }
 ```
+
 или
+
 ```js
 {
     version: 2,
@@ -1223,33 +1292,42 @@ WavesKeeper.signCustomData({
 ```
 
 Пример:
+
 ```js
 WavesKeeper.verifyCustomData({
-    version: 2,
-    data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
-    signature: 'wrong signature',
-    publicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy'
-}).then((result) => { console.log(result) } ); //true/false
+  version: 2,
+  data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
+  signature: 'wrong signature',
+  publicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
+}).then(result => {
+  console.log(result);
+}); //true/false
 ```
 
 #### resourceIsApproved
+
 Проверка разрешения использования Keeper API.
 
 Пример:
 
 ```js
-WavesKeeper.resourceIsApproved().then(result => { console.log(result) });
-```     
+WavesKeeper.resourceIsApproved().then(result => {
+  console.log(result);
+});
+```
 
 Ответ: true/false
 
 #### resourceIsBlocked
+
 Проверка запрета на использование Keeper API.
 
 Пример:
 
 ```js
-WavesKeeper.resourceIsBlocked().then(result => { console.log(result) });
-```     
+WavesKeeper.resourceIsBlocked().then(result => {
+  console.log(result);
+});
+```
 
 Ответ: true/false

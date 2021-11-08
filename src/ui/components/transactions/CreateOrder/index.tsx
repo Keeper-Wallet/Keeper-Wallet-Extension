@@ -4,11 +4,11 @@ import { CreateOrderFinal } from './CreateOrderFinal';
 import * as utils from './parseTx';
 
 const transfer = {
-    type: utils.messageType,
-    message: CreateOrder,
-    card: CreateOrderCard,
-    final: CreateOrderFinal,
-    ...utils,
+  type: utils.messageType,
+  message: CreateOrder,
+  card: CreateOrderCard,
+  final: CreateOrderFinal,
+  ...utils,
 };
 
 export default transfer;

@@ -5,27 +5,27 @@ import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
 interface IProps {
-    className: string;
-    collapsed: boolean;
-    message: any;
+  className: string;
+  collapsed: boolean;
+  message: any;
 }
 
 export class UnknownCard extends React.PureComponent<IProps> {
-    render() {
-        const className = cn(styles.unknownTransactionCard, this.props.className, {
-            [styles.authCard_collapsed]: this.props.collapsed,
-        });
+  render() {
+    const className = cn(styles.unknownTransactionCard, this.props.className, {
+      [styles.authCard_collapsed]: this.props.collapsed,
+    });
 
-        return (
-            <div className={className}>
-                <div className={styles.cardHeader}>
-                    <div className={styles.unknownTxIcon}>
-                        <TxIcon txType={messageType} />
-                    </div>
-                </div>
+    return (
+      <div className={className}>
+        <div className={styles.cardHeader}>
+          <div className={styles.unknownTxIcon}>
+            <TxIcon txType={messageType} />
+          </div>
+        </div>
 
-                <div className={styles.cardContent} />
-            </div>
-        );
-    }
+        <div className={styles.cardContent} />
+      </div>
+    );
+  }
 }

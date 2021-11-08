@@ -6,21 +6,21 @@ import { CustomDataInfo } from './CustomDataInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export function CustomData(props) {
-    const { message, assets } = props;
+  const { message, assets } = props;
 
-    return (
-        <div className={styles.transaction}>
-            <TxHeader {...props} />
+  return (
+    <div className={styles.transaction}>
+      <TxHeader {...props} />
 
-            <div className={`${styles.dataTxScrollBox} transactionContent`}>
-                <div className="margin-main">
-                    <CustomDataCard {...props} />
-                </div>
-
-                <CustomDataInfo message={message} assets={assets} />
-            </div>
-
-            <TxFooter {...props} />
+      <div className={`${styles.dataTxScrollBox} transactionContent`}>
+        <div className="margin-main">
+          <CustomDataCard {...props} />
         </div>
-    );
+
+        <CustomDataInfo message={message} assets={assets} />
+      </div>
+
+      <TxFooter {...props} />
+    </div>
+  );
 }

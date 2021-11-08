@@ -242,7 +242,7 @@
       "amount": "Spending limit",
       "cancel": "Cancel",
       "delete": "Delete",
-      "description": "This allows <1>{{originName}}<\/1> to automatically sign transactions on your behalf.",
+      "description": "This allows <1>{{originName}}</1> to automatically sign transactions on your behalf.",
       "save": "Save",
       "time": "Resolution time",
       "time15m": "For 15 minutes",

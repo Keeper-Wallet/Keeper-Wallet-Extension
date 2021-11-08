@@ -1,18 +1,16 @@
 export class TrezorWallet {
-    constructor(publicKey) {
-        this.publicKey = publicKey;
-        this.type = 'trezor'
-    }
+  constructor(publicKey) {
+    this.publicKey = publicKey;
+    this.type = 'trezor';
+  }
 
-    getAccount() {
-        return {publicKey: this.publicKey, type: this.type}
-    }
+  getAccount() {
+    return { publicKey: this.publicKey, type: this.type };
+  }
 
-    serialize() {
-        return this.publicKey
-    }
+  serialize() {
+    return this.publicKey;
+  }
 
-    getSecret() {
-
-    }
+  getSecret() {}
 }

@@ -1,10 +1,10 @@
-const Duplex = require('readable-stream').Duplex
-const inherits = require('util').inherits
-const noop = function () {}
+const Duplex = require('readable-stream').Duplex;
+const inherits = require('util').inherits;
+const noop = function () {};
 
-module.exports = PortDuplexStream
+module.exports = PortDuplexStream;
 
-inherits(PortDuplexStream, Duplex)
+inherits(PortDuplexStream, Duplex);
 
 /**
  * Creates a stream that's both readable and writable.
@@ -13,13 +13,13 @@ inherits(PortDuplexStream, Duplex)
  * @class
  * @param {Object} port Remote Port object
  */
-function PortDuplexStream (port) {
+function PortDuplexStream(port) {
   Duplex.call(this, {
     objectMode: true,
-  })
-  this._port = port
-  port.onMessage.addListener(this._onMessage.bind(this))
-  port.onDisconnect.addListener(this._onDisconnect.bind(this))
+  });
+  this._port = port;
+  port.onMessage.addListener(this._onMessage.bind(this));
+  port.onDisconnect.addListener(this._onDisconnect.bind(this));
 }
 
 /**
@@ -31,13 +31,13 @@ function PortDuplexStream (port) {
  */
 PortDuplexStream.prototype._onMessage = function (msg) {
   if (Buffer.isBuffer(msg)) {
-    delete msg._isBuffer
-    var data = new Buffer(msg)
-    this.push(data)
+    delete msg._isBuffer;
+    var data = new Buffer(msg);
+    this.push(data);
   } else {
-    this.push(msg)
+    this.push(msg);
   }
-}
+};
 
 /**
  * Callback triggered when the remote Port
@@ -46,19 +46,18 @@ PortDuplexStream.prototype._onMessage = function (msg) {
  * @private
  */
 PortDuplexStream.prototype._onDisconnect = function () {
-  this.destroy()
-}
+  this.destroy();
+};
 
 /**
  * Explicitly sets read operations to a no-op
  */
-PortDuplexStream.prototype._read = noop
-
+PortDuplexStream.prototype._read = noop;
 
 /**
  * Called internally when data should be written to
  * this writable stream.
- * 
+ *
  * @private
  * @param {*} msg Arbitrary object to write
  * @param {string} encoding Encoding to use when writing payload
@@ -67,14 +66,14 @@ PortDuplexStream.prototype._read = noop
 PortDuplexStream.prototype._write = function (msg, encoding, cb) {
   try {
     if (Buffer.isBuffer(msg)) {
-      var data = msg.toJSON()
-      data._isBuffer = true
-      this._port.postMessage(data)
+      var data = msg.toJSON();
+      data._isBuffer = true;
+      this._port.postMessage(data);
     } else {
-      this._port.postMessage(msg)
+      this._port.postMessage(msg);
     }
   } catch (err) {
-    return cb(new Error('PortDuplexStream - disconnected'))
+    return cb(new Error('PortDuplexStream - disconnected'));
   }
-  cb()
-}
+  cb();
+};

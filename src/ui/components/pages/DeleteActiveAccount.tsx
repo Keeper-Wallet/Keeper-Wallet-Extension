@@ -6,43 +6,48 @@ import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
 
 class DeleteActiveAccountComponent extends React.Component {
-    state = { disable: false };
-    props;
-    onClickHandler = () => {
-        this.props.deleteActiveAccount(null);
-        this.setState({ disable: false });
-    };
+  state = { disable: false };
+  props;
+  onClickHandler = () => {
+    this.props.deleteActiveAccount(null);
+    this.setState({ disable: false });
+  };
 
-    render() {
-        return (
-            <div className={styles.content}>
-                <h2 className="title1 margin2">
-                    <Trans i18nKey="deleteAccount.attention">Attention!</Trans>
-                </h2>
-                <div className="margin4 body1">
-                    <Trans i18nKey="deleteAccount.warn">Deleting an account will lead to its irretrievable loss!</Trans>
-                </div>
-                <div>
-                    <Button
-                        id="deleteAccount"
-                        onClick={this.onClickHandler}
-                        type="warning"
-                        disabled={this.state.disable}
-                    >
-                        <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className={styles.content}>
+        <h2 className="title1 margin2">
+          <Trans i18nKey="deleteAccount.attention">Attention!</Trans>
+        </h2>
+        <div className="margin4 body1">
+          <Trans i18nKey="deleteAccount.warn">
+            Deleting an account will lead to its irretrievable loss!
+          </Trans>
+        </div>
+        <div>
+          <Button
+            id="deleteAccount"
+            onClick={this.onClickHandler}
+            type="warning"
+            disabled={this.state.disable}
+          >
+            <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
 
 const actions = {
-    deleteActiveAccount,
+  deleteActiveAccount,
 };
 
 const mapStateToProps = function () {
-    return {};
+  return {};
 };
 
-export const DeleteActiveAccount = connect(mapStateToProps, actions)(DeleteActiveAccountComponent);
+export const DeleteActiveAccount = connect(
+  mapStateToProps,
+  actions
+)(DeleteActiveAccountComponent);

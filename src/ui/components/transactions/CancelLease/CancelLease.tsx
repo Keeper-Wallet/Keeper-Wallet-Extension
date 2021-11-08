@@ -5,23 +5,23 @@ import { CancelLeaseCard } from './CancelLeaseCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export function CancelLease(props) {
-    const { message, assets } = props;
+  const { message, assets } = props;
 
-    return (
-        <div className={styles.transaction}>
-            <TxHeader {...props} />
+  return (
+    <div className={styles.transaction}>
+      <TxHeader {...props} />
 
-            <div className={`${styles.cancelLeaseTxScrollBox} transactionContent`}>
-                <div className="margin-main">
-                    <CancelLeaseCard {...props} />
-                </div>
-
-                <TxDetailTabs>
-                    <TxInfo message={message} assets={assets} />
-                </TxDetailTabs>
-            </div>
-
-            <TxFooter {...props} />
+      <div className={`${styles.cancelLeaseTxScrollBox} transactionContent`}>
+        <div className="margin-main">
+          <CancelLeaseCard {...props} />
         </div>
-    );
+
+        <TxDetailTabs>
+          <TxInfo message={message} assets={assets} />
+        </TxDetailTabs>
+      </div>
+
+      <TxFooter {...props} />
+    </div>
+  );
 }

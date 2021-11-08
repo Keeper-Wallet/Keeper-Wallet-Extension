@@ -3,32 +3,28 @@ import * as styles from './buttons.styl';
 import * as myStyles from './powerBtn.styl';
 import cn from 'classnames';
 
+export function PowerButton({
+  className,
+  onClick,
+  enabled,
+  children,
+  ...props
+}: IProps) {
+  const btnClassName = cn(className, myStyles.powerBtn, {
+    [myStyles.powerBtnOn]: enabled,
+  });
 
-export function PowerButton({ className, onClick, enabled, children, ...props }: IProps ) {
-    
-    const btnClassName = cn(
-        className,
-        myStyles.powerBtn,
-        {
-            [myStyles.powerBtnOn]: enabled,
-        }
-    );
-
-    return (
-        <button
-            onClick={onClick}
-            className={btnClassName}
-            {...props}
-        >
-            {children}
-        </button>
-    );
+  return (
+    <button onClick={onClick} className={btnClassName} {...props}>
+      {children}
+    </button>
+  );
 }
 
 interface IProps {
-    className?: string;
-    onClick?: (...args: any) => any;
-    enabled?: boolean;
-    children?: any;
-    disabled?: boolean;
+  className?: string;
+  onClick?: (...args: any) => any;
+  enabled?: boolean;
+  children?: any;
+  disabled?: boolean;
 }

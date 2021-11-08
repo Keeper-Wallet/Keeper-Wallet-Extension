@@ -6,21 +6,21 @@ import { MatcherInfo } from './MatcherInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
 
 export function MatcherOrders(props) {
-    const { message, assets } = props;
+  const { message, assets } = props;
 
-    return (
-        <div className={styles.transaction}>
-            <TxHeader {...props} />
+  return (
+    <div className={styles.transaction}>
+      <TxHeader {...props} />
 
-            <div className={`${styles.matcherTxScrollBox} transactionContent`}>
-                <div className="margin-main">
-                    <MatcherCard {...props} />
-                </div>
-
-                <MatcherInfo message={message} assets={assets} />
-            </div>
-
-            <TxFooter {...props} />
+      <div className={`${styles.matcherTxScrollBox} transactionContent`}>
+        <div className="margin-main">
+          <MatcherCard {...props} />
         </div>
-    );
+
+        <MatcherInfo message={message} assets={assets} />
+      </div>
+
+      <TxFooter {...props} />
+    </div>
+  );
 }

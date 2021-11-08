@@ -39,9 +39,7 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": [
-      "background.js"
-    ],
+    "scripts": ["background.js"],
     "persistent": true
   },
   "browser_action": {
@@ -67,25 +65,12 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "contentscript.js"
-      ],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentscript.js"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
-  "permissions": [
-    "storage",
-    "unlimitedStorage",
-    "clipboardWrite",
-    "idle"
-  ],
-  "web_accessible_resources": [
-    "inpage.js"
-  ]
+  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "idle"],
+  "web_accessible_resources": ["inpage.js"]
 }

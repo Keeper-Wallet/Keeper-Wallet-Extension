@@ -4,11 +4,11 @@ import { SponsorshipFinal } from './SponsorshipFinal';
 import * as utils from './parseTx';
 
 const transfer = {
-    type: utils.messageType,
-    message: Sponsorship,
-    card: SponsorshipCard,
-    final: SponsorshipFinal,
-    ...utils,
+  type: utils.messageType,
+  message: Sponsorship,
+  card: SponsorshipCard,
+  final: SponsorshipFinal,
+  ...utils,
 };
 
 export default transfer;
