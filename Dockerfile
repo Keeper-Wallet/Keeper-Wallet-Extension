@@ -1,17 +1,16 @@
 FROM node:10 as builder
 WORKDIR /app
-
-COPY package.json .
-COPY package-lock.json .
-
-RUN npm install
-
-COPY . .
 RUN echo '{}' > config.json
 
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY src ./src
+COPY scripts ./scripts
+COPY .babelrc init_config.json tsconfig.json webpack.config.js ./
 RUN npm run dist
 
 FROM selenium/standalone-chrome as selenium
-COPY --from=builder /app/dist/chrome /app
-COPY --from=builder /app/tests/fixtures /fixtures
 EXPOSE 4444
+COPY --from=builder /app/dist/chrome /app
+COPY tests/fixtures /fixtures
