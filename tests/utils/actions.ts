@@ -49,9 +49,7 @@ export const App = {
 
 export const CreateNewAccount = {
     importAccount: async function (name: string, seed: string) {
-        await this.driver
-            .wait(until.elementLocated(By.xpath("//div[contains(@class,'-import-importChooser')]")), this.wait)
-            .click();
+        await this.driver.wait(until.elementLocated(By.css('[data-testid="importSeed"]')), this.wait).click();
 
         await this.driver
             .wait(until.elementLocated(By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")), this.wait)

@@ -91,6 +91,18 @@
     "delete": "Delete account",
     "warn": "Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEED."
   },
+  "exportKeystore": {
+    "cancelBtn": "Cancel",
+    "chooseAccountsDesc": "Select which accounts you want to export. They will be encrypted and exported into a Keystore file",
+    "chooseAccountsExportBtn": "Export {{count}} account",
+    "chooseAccountsExportBtn_plural": "Export {{count}} accounts",
+    "chooseAccountsTitle": "Export to Keystore file",
+    "passwordError": "Incorrect password",
+    "passwordLabel": "Password",
+    "passwordVerifyDesc": "Please enter your Keeper password to confirm that it's really you",
+    "passwordVerifyImportantNote": "<attention>Attention:</attention> this password will also be used to encrypt the resulting file. If you forget it, you won't be able to restore your accounts.",
+    "verifyBtn": "Verify"
+  },
   "forgotPassword": {
     "attention": "Attention!",
     "attentionMessage": "To reset the password, you need to delete all accounts from Waves Keeper, set a new password, import each of your account again from the Seed phrase.",
@@ -103,18 +115,35 @@
   },
   "import": {
     "createNew": "Create a new account",
-    "importAccount": "Import Account",
-    "useHardware": "Use secure hardware",
-    "viaDevices": "Via Ledger",
-    "viaSeed": "Via SEED or Encoded"
+    "importVia": "Or import via",
+    "viaKeystore": "Keystore File",
+    "viaSeed": "Seed Phrase"
+  },
+  "importKeystore": {
+    "browse": "Browse...",
+    "chooseAccountsTitle": "Choose accounts",
+    "chooseAccountsDesc": "Select which accounts you want to import",
+    "chooseAccountsExistingAccountNote": "Already exists in Keeper as {{existingName}}",
+    "chooseAccountsImportBtn": "Import {{count}} account",
+    "chooseAccountsImportBtn_plural": "Import {{count}} accounts",
+    "chooseAccountsSkipBtn": "Skip",
+    "chooseFileSubmitBtn": "Continue",
+    "chooseFileTitle": "Import Keystore File",
+    "errorDecrypt": "Could not decrypt the Keystore file with the given password",
+    "errorFormat": "File format is not supported",
+    "errorUnexpected": "Something went wrong",
+    "keystoreLabel": "Keystore File",
+    "noFileSelected": "No file selected",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password used to create Keystore"
   },
   "importSeed": {
     "address": "Account address",
     "existError": "Seed already exist",
     "importAccount": "Import Account",
-    "importSeed": "Welcome Back",
     "inputSeed": "Your seed is the 15 words you saved when creating your account",
-    "newSeed": "Wallet Seed"
+    "newSeed": "Wallet Seed",
+    "title": "Import using seed"
   },
   "info": {
     "joinUs": "Join the Waves Community",
@@ -242,6 +271,7 @@
     "autoClickEnable": "Enabled",
     "delete": "Delete all accounts",
     "deleteAccounts": "Delete accounts",
+    "export": "Export accounts",
     "langs": "Change language",
     "logOut": "Log out",
     "network": "Network",

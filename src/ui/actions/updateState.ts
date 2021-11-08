@@ -5,8 +5,9 @@ import { equals } from 'ramda';
 export function updateState(state) {
     const actions = [];
     const {
+        accounts = [],
         currentLocale,
-        currentNetworkAccounts: accounts = [],
+        currentNetworkAccounts = [],
         selectedAccount = {},
         initialized,
         locked,
@@ -139,9 +140,16 @@ export function updateState(state) {
         });
     }
     
-    if (!equals(accounts, currentState.accounts)) {
+    if (!equals(currentNetworkAccounts, currentState.accounts)) {
         actions.push({
             type: ACTION.UPDATE_ACCOUNTS,
+            payload: currentNetworkAccounts
+        });
+    }
+
+    if (!equals(accounts, currentState.allNetworksAccounts)) {
+        actions.push({
+            type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
             payload: accounts
         });
     }

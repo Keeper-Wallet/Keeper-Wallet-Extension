@@ -210,7 +210,7 @@ class AccountInfoComponent extends React.Component {
 
                 <Modal animation={Modal.ANIMATION.FLASH} showModal={this.state.showPassword}>
                     <div className="modal cover">
-                        <form id="enterPassword" className="modal-form" onClick={this.confirmPassword}>
+                        <form id="enterPassword" className="modal-form" onSubmit={this.confirmPassword}>
                             <i className={`lock-icon ${styles.lockIcon}`} />
 
                             <div className="margin1 relative">

@@ -29,6 +29,23 @@ describe('Settings', function () {
     before(async function () {
         await App.initVault.call(this, DEFAULT_PASSWORD);
         await CreateNewAccount.importAccount.call(this, 'rich', 'waves private node seed with waves tokens');
+        await this.driver
+            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")), this.wait)
+            .click();
+        await CreateNewAccount.importAccount.call(
+            this,
+            'test',
+            'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category'
+        );
+        await this.driver
+            .wait(until.elementLocated(By.xpath("//div[contains(@class, '-assets-addAccount')]")), this.wait)
+            .click();
+        await CreateNewAccount.importAccount.call(
+            this,
+            'test3',
+            'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant'
+        );
+
         await Settings.setMaxSessionTimeout.call(this);
 
         await App.open.call(this);
@@ -40,6 +57,16 @@ describe('Settings', function () {
             until.elementLocated(By.xpath("//div[contains(@class, '-settings-content')]")),
             this.wait
         );
+    });
+
+    describe('Export accounts', function () {
+        it('creates an encrypted keystore file containing account details', async function () {
+            await this.driver.wait(until.elementLocated(By.css('[data-testid=exportMenuItem]')), this.wait).click();
+            await this.driver.findElement(By.css('input[value="3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1"]')).click();
+            await this.driver.findElement(By.css('[data-testid="exportButton"]')).click();
+            await this.driver.findElement(By.css('[data-testid="passwordInput"]')).sendKeys(DEFAULT_PASSWORD);
+            await this.driver.findElement(By.css('[data-testid="verifyButton"]')).click();
+        });
     });
 
     describe('Network', function () {

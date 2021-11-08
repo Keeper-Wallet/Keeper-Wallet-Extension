@@ -11,6 +11,7 @@ const createSimpleReducer = (def, type) => (store = def, action) => type === act
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
 export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer([], ACTION.UPDATE_ACCOUNTS);
+export const allNetworksAccounts = createSimpleReducer([], ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS);
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 export const selectedAccount = createSimpleReducer({}, ACTION.UPDATE_SELECTED_ACCOUNT);
 export const networks = createSimpleReducer([], ACTION.UPDATE_NETWORKS);
