@@ -4,11 +4,11 @@ import { PackageFinal } from './PackageFinal';
 import * as utils from './parseTx';
 
 const transfer = {
-    type: utils.messageType,
-    message: Package,
-    card: PackageCard,
-    final: PackageFinal,
-    ...utils,
+  type: utils.messageType,
+  message: Package,
+  card: PackageCard,
+  final: PackageFinal,
+  ...utils,
 };
 
 export default transfer;

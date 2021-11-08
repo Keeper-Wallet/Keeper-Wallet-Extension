@@ -1,11 +1,19 @@
 import { ACTION } from './constants';
 
-const createMVAction = type => (payload = null) => ({ type, payload });
-const createCommonAction = (type, pending) => (error = false) => createMVAction(type)({ pending, error });
+const createMVAction =
+  type =>
+  (payload = null) => ({ type, payload });
+const createCommonAction =
+  (type, pending) =>
+  (error = false) =>
+    createMVAction(type)({ pending, error });
 
 export const createNew = createMVAction(ACTION.SET_PASSWORD);
 export const newUser = createCommonAction(ACTION.SET_PASSWORD_PENDING, true);
-export const newUserUpdate = createCommonAction(ACTION.SET_PASSWORD_UPDATE, false);
+export const newUserUpdate = createCommonAction(
+  ACTION.SET_PASSWORD_UPDATE,
+  false
+);
 
 export const login = createMVAction(ACTION.LOGIN);
 export const loginPending = createCommonAction(ACTION.LOGIN_PENDING, true);
@@ -22,7 +30,9 @@ export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const loading = createMVAction(ACTION.LOADING);
 export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
 export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
-export const notificationChangeName = createMVAction(ACTION.NOTIFICATION_NAME_CHANGED);
+export const notificationChangeName = createMVAction(
+  ACTION.NOTIFICATION_NAME_CHANGED
+);
 
 export const approvePending = createMVAction(ACTION.APPROVE_PENDING);
 export const approveOk = createMVAction(ACTION.APPROVE_OK);

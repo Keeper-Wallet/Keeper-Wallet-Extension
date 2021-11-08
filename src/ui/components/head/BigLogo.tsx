@@ -3,16 +3,17 @@ import * as styles from './head.styl';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 
-export const BigLogo = ({ className='', noTitle=false }) => {
+export const BigLogo = ({ className = '', noTitle = false }) => {
+  className = cn(styles.bigLogo, className, 'center');
 
-    className = cn(styles.bigLogo, className, 'center');
-
-    return <div className={className}>
-        <div className={styles.bigLogoImg}></div>
-        {
-            noTitle ? null : <div className={styles.bigLogoTitle}>
-                    <Trans i18nKey='ui.logoTitle'>Keep your Waves keys safe online</Trans>
-                </div>
-        }
+  return (
+    <div className={className}>
+      <div className={styles.bigLogoImg}></div>
+      {noTitle ? null : (
+        <div className={styles.bigLogoTitle}>
+          <Trans i18nKey="ui.logoTitle">Keep your Waves keys safe online</Trans>
+        </div>
+      )}
     </div>
-}
+  );
+};

@@ -23,32 +23,32 @@ import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 
 const MESSAGES = [
-    auth,
-    alias,
-    originAuth,
-    transfer,
-    burn,
-    lease,
-    cancelLease,
-    createOrder,
-    cancelOrder,
-    matcher,
-    massTransfer,
-    issue,
-    reissue,
-    sponsorShip,
-    data,
-    setScript,
-    assetScript,
-    scriptInvocation,
-    packageTx,
-    customData,
-    updateAssetInfo,
-    wavesAuth,
+  auth,
+  alias,
+  originAuth,
+  transfer,
+  burn,
+  lease,
+  cancelLease,
+  createOrder,
+  cancelOrder,
+  matcher,
+  massTransfer,
+  issue,
+  reissue,
+  sponsorShip,
+  data,
+  setScript,
+  assetScript,
+  scriptInvocation,
+  packageTx,
+  customData,
+  updateAssetInfo,
+  wavesAuth,
 ];
 
 export { FinalTransaction } from './FinalTransaction';
 
 export function getConfigByTransaction({ data: tx, type = null }) {
-    return MESSAGES.find((config) => config.isMe(tx, type)) || unknown;
+  return MESSAGES.find(config => config.isMe(tx, type)) || unknown;
 }

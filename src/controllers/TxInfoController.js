@@ -1,25 +1,32 @@
 export class TxInfoController {
-    constructor(options = {}) {
-        this.getNode = options.getNode;
-        this.getNetwork = options.getNetwork;
+  constructor(options = {}) {
+    this.getNode = options.getNode;
+    this.getNetwork = options.getNetwork;
+  }
+
+  async txInfo(txId) {
+    const API_BASE = this.getNode();
+    const url = new URL(`transactions/info/${txId}`, API_BASE).toString();
+
+    let resp = await fetch(url);
+    switch (resp.status) {
+      case 200:
+        const tx = await resp
+          .text()
+          .then(text =>
+            JSON.parse(
+              text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
+            )
+          );
+
+        return tx;
+      case 400:
+        const error = await resp.json();
+        throw new Error(
+          `Could not find info for tx with id: ${txId}. ${error.message}`
+        );
+      default:
+        throw new Error(await resp.text());
     }
-
-    async txInfo(txId) {
-        const API_BASE = this.getNode();
-        const url = new URL(`transactions/info/${txId}`, API_BASE).toString();
-
-        let resp = await fetch(url);
-        switch (resp.status) {
-            case 200:
-                const tx = await resp.text()
-                    .then(text => JSON.parse(text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm,'$1"$2"')));
-
-                return tx;
-            case 400:
-                const error = await resp.json();
-                throw new Error(`Could not find info for tx with id: ${txId}. ${error.message}`);
-            default:
-                throw new Error(await resp.text())
-        }
-    }
+  }
 }

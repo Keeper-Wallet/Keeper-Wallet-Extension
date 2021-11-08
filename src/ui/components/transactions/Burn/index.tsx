@@ -4,11 +4,11 @@ import { BurnFinal } from './BurnFinal';
 import * as utils from './parseTx';
 
 const burn = {
-    type: utils.messageType,
-    message: Burn,
-    card: BurnCard,
-    final: BurnFinal,
-    ...utils,
+  type: utils.messageType,
+  message: Burn,
+  card: BurnCard,
+  final: BurnFinal,
+  ...utils,
 };
 
 export default burn;

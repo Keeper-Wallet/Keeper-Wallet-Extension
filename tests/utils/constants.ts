@@ -1,13 +1,13 @@
 export const WHITELIST = [
-    'swop.fi',
-    'waves.exchange',
-    'testnet.waves.exchange',
-    'oracles.wavesexplorer.com',
-    'tokenrating.wavesexplorer.com',
-    'waves-dapp.com',
-    'waves-ide.com',
-    'wavesducks.com',
-    'vires.finance',
+  'swop.fi',
+  'waves.exchange',
+  'testnet.waves.exchange',
+  'oracles.wavesexplorer.com',
+  'tokenrating.wavesexplorer.com',
+  'waves-dapp.com',
+  'waves-ide.com',
+  'wavesducks.com',
+  'vires.finance',
 ];
 
 export const CUSTOMLIST = ['waves.tech', 'docs.waves.tech'];

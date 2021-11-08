@@ -9,9 +9,9 @@ module.exports = class ExtensionStore {
    * @constructor
    */
   constructor() {
-    this.isSupported = !!(extension.storage.local);
+    this.isSupported = !!extension.storage.local;
     if (!this.isSupported) {
-      log.error('Storage local API not available.')
+      log.error('Storage local API not available.');
     }
   }
 
@@ -25,9 +25,9 @@ module.exports = class ExtensionStore {
     // extension.storage.local always returns an obj
     // if the object is empty, treat it as undefined
     if (isEmpty(result)) {
-      return undefined
+      return undefined;
     } else {
-      return result
+      return result;
     }
   }
 
@@ -37,7 +37,7 @@ module.exports = class ExtensionStore {
    * @return {Promise<void>}
    */
   async set(state) {
-    return this._set(state)
+    return this._set(state);
   }
 
   /**
@@ -51,12 +51,12 @@ module.exports = class ExtensionStore {
       local.get(null, (/** @type {any} */ result) => {
         const err = extension.runtime.lastError;
         if (err) {
-          reject(err)
+          reject(err);
         } else {
-          resolve(result)
+          resolve(result);
         }
-      })
-    })
+      });
+    });
   }
 
   /**
@@ -66,19 +66,19 @@ module.exports = class ExtensionStore {
    * @private
    */
   _set(obj) {
-    const local = extension.storage.local
+    const local = extension.storage.local;
     return new Promise((resolve, reject) => {
       local.set(obj, () => {
-        const err = extension.runtime.lastError
+        const err = extension.runtime.lastError;
         if (err) {
-          reject(err)
+          reject(err);
         } else {
-          resolve()
+          resolve();
         }
-      })
-    })
+      });
+    });
   }
-}
+};
 
 /**
  * Returns whether or not the given object contains no keys
@@ -86,5 +86,5 @@ module.exports = class ExtensionStore {
  * @returns {boolean}
  */
 function isEmpty(obj) {
-  return Object.keys(obj).length === 0
+  return Object.keys(obj).length === 0;
 }

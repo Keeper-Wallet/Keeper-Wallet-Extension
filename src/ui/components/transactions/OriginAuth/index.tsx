@@ -4,11 +4,11 @@ import { OriginAuthFinal } from './OriginAuthFinal';
 import * as utils from './parseTx';
 
 const originAuth = {
-    type: utils.messageType,
-    message: OriginAuth,
-    card: OriginAuthCard,
-    final: OriginAuthFinal,
-    ...utils,
+  type: utils.messageType,
+  message: OriginAuth,
+  card: OriginAuthCard,
+  final: OriginAuthFinal,
+  ...utils,
 };
 
 export default originAuth;

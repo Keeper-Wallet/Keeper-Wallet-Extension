@@ -14,29 +14,29 @@
  *  }}
  */
 const ERRORS_DATA = {
-    8: { msg: 'Invalid data format', name: 'INVALID_FORMAT' },
-    9: { msg: 'Invalid request data', name: 'REQUEST_ERROR' },
-    10: { msg: 'User denied message', name: 'USER_DENIED' },
-    11: { msg: 'Unknown error', name: 'UNKNOWN' },
-    12: { msg: 'Api rejected by user', name: 'API_DENIED' },
-    13: { msg: 'Init Waves Keeper and add account', name: 'INIT_KEEPER' },
-    14: { msg: 'Add Waves Keeper account', name: 'EMPTY_KEEPER' },
-    15: { msg: 'Filed request', name: 'FAILED_MSG' },
-    16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
-    17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
-    18: { msg: 'Can\'t sent notification', name: 'NOTIFICATION_ERROR' },
-    19: { msg: 'Incorrect notification data', name: 'NOTIFICATION_DATA_ERROR' },
+  8: { msg: 'Invalid data format', name: 'INVALID_FORMAT' },
+  9: { msg: 'Invalid request data', name: 'REQUEST_ERROR' },
+  10: { msg: 'User denied message', name: 'USER_DENIED' },
+  11: { msg: 'Unknown error', name: 'UNKNOWN' },
+  12: { msg: 'Api rejected by user', name: 'API_DENIED' },
+  13: { msg: 'Init Waves Keeper and add account', name: 'INIT_KEEPER' },
+  14: { msg: 'Add Waves Keeper account', name: 'EMPTY_KEEPER' },
+  15: { msg: 'Filed request', name: 'FAILED_MSG' },
+  16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
+  17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
+  18: { msg: "Can't sent notification", name: 'NOTIFICATION_ERROR' },
+  19: { msg: 'Incorrect notification data', name: 'NOTIFICATION_DATA_ERROR' },
 };
 
 const DEF_CODE = 11;
 const DEF_ERR = ERRORS_DATA[DEF_CODE].msg;
 
 class KeeperError extends Error {
-    constructor(text = DEF_ERR, code = DEF_CODE, data = null) {
-        super(text);
-        this.data = data;
-        this.code = code;
-    }
+  constructor(text = DEF_ERR, code = DEF_CODE, data = null) {
+    super(text);
+    this.data = data;
+    this.code = code;
+  }
 }
 
 /**
@@ -57,8 +57,11 @@ class KeeperError extends Error {
  *  }
  * }
  */
-export const ERRORS = Object.entries(ERRORS_DATA).reduce((acc, [code, data]) => {
+export const ERRORS = Object.entries(ERRORS_DATA).reduce(
+  (acc, [code, data]) => {
     const { msg, name } = data;
-    acc[name] = (e) => new KeeperError(msg, code, e);
+    acc[name] = e => new KeeperError(msg, code, e);
     return acc;
-}, Object.create(null));
+  },
+  Object.create(null)
+);

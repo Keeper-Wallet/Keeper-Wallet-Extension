@@ -4,26 +4,30 @@ export const messageType = 'transfer';
 export const txType = 'transaction';
 
 export function getAssetsId(tx): Array<string> {
-    const feeAssetId = tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
-    const amountAssetId = tx.amount && tx.amount.assetId ? tx.amount.assetId : tx.assetId || 'WAVES';
+  const feeAssetId =
+    tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
+  const amountAssetId =
+    tx.amount && tx.amount.assetId ? tx.amount.assetId : tx.assetId || 'WAVES';
 
-    if (feeAssetId === amountAssetId) {
-        return [amountAssetId];
-    }
+  if (feeAssetId === amountAssetId) {
+    return [amountAssetId];
+  }
 
-    return [amountAssetId, feeAssetId];
+  return [amountAssetId, feeAssetId];
 }
 
 export { getFee } from '../BaseTransaction/parseTx';
 
 export function getAmount(tx = null) {
-    return typeof tx.amount === 'object' ? tx.amount : { coins: tx.amount, assetId: 'WAVES' };
+  return typeof tx.amount === 'object'
+    ? tx.amount
+    : { coins: tx.amount, assetId: 'WAVES' };
 }
 
 export function getAmountSign() {
-    return '-';
+  return '-';
 }
 
 export function isMe(tx: any, type: string) {
-    return tx.type === SIGN_TYPE.TRANSFER && type === txType;
+  return tx.type === SIGN_TYPE.TRANSFER && type === txType;
 }

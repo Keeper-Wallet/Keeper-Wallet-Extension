@@ -1,18 +1,16 @@
 export class LedgerWallet {
-    constructor(publicKey) {
-        this.publicKey = publicKey;
-        this.type = 'ledger'
-    }
+  constructor(publicKey) {
+    this.publicKey = publicKey;
+    this.type = 'ledger';
+  }
 
-    getAccount() {
-        return {publicKey: this.publicKey, type: this.type}
-    }
+  getAccount() {
+    return { publicKey: this.publicKey, type: this.type };
+  }
 
-    serialize() {
-        return this.publicKey
-    }
+  serialize() {
+    return this.publicKey;
+  }
 
-    getSecret(){
-
-    }
+  getSecret() {}
 }

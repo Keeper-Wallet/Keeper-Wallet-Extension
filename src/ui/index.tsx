@@ -14,21 +14,21 @@ import backgroundService from './services/Background';
 store.dispatch(setLangs(LANGS));
 
 export async function initApp(background: any) {
-    backgroundService.init(background);
-    backgroundService.on(updateState);
-    backgroundService.getNetworks();
-    backgroundService.getState();
-    document.addEventListener('mousemove', () => backgroundService.updateIdle());
-    document.addEventListener('keyup', () => backgroundService.updateIdle());
-    document.addEventListener('mousedown', () => backgroundService.updateIdle());
-    document.addEventListener('focus', () => backgroundService.updateIdle());
+  backgroundService.init(background);
+  backgroundService.on(updateState);
+  backgroundService.getNetworks();
+  backgroundService.getState();
+  document.addEventListener('mousemove', () => backgroundService.updateIdle());
+  document.addEventListener('keyup', () => backgroundService.updateIdle());
+  document.addEventListener('mousedown', () => backgroundService.updateIdle());
+  document.addEventListener('focus', () => backgroundService.updateIdle());
 }
 
 ReactDOM.render(
-    <Provider store={store}>
-        <div className="app">
-            <Root />
-        </div>
-    </Provider>,
-    document.getElementById('app-content')
+  <Provider store={store}>
+    <div className="app">
+      <Root />
+    </div>
+  </Provider>,
+  document.getElementById('app-content')
 );
