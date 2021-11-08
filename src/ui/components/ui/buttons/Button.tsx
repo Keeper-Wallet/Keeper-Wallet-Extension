@@ -25,7 +25,7 @@ export function Button({ id, className, type, withIcon, children, ...props }: IP
         [styles.danger]: type === BUTTON_TYPE.DANGER,
         [styles.interface]: type === BUTTON_TYPE.INTERFACE,
         [styles.custom]: type === BUTTON_TYPE.CUSTOM,
-        [styles.default]: !type,
+        [styles.default]: !Object.values(BUTTON_TYPE).includes(type),
     });
 
     return (

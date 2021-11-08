@@ -3,15 +3,18 @@ import ObservableStore from 'obs-store';
 export class UiStateController {
     constructor(options = {}) {
         const defaults = {
-            uiState: {}
+            uiState: {},
         };
         const initState = Object.assign({}, defaults, options.initState);
         this.store = new ObservableStore(initState);
     }
 
-    // Public
+    getUiState() {
+        return this.store.getState().uiState;
+    }
+
     setUiState(uiState) {
-        this.store.updateState({uiState});
-        return this.store.getState();
+        this.store.updateState({ uiState });
+        return this.getUiState();
     }
 }
