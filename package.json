@@ -8,6 +8,8 @@
   },
   "license": "ISC",
   "scripts": {
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --list-different .",
     "start": "webpack --watch",
     "dist": "NODE_ENV=production webpack",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' DEBUG='testcontainers' mocha -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'",
