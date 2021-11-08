@@ -13,8 +13,13 @@ interface Props {
 }
 
 export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
+    const passwordInputRef = React.useRef<Input | null>(null);
     const [password, setPassword] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
+
+    React.useLayoutEffect(() => {
+        passwordInputRef.current.focus();
+    }, []);
 
     return (
         <Modal animation={Modal.ANIMATION.FLASH} showModal>
@@ -47,6 +52,7 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
                             className="margin1"
                             data-testid="passwordInput"
                             error={passwordError}
+                            ref={passwordInputRef}
                             type="password"
                             value={password}
                             onChange={(event) => {
