@@ -234,6 +234,11 @@ class Background {
     return this.background.getUserList(type, from, to);
   }
 
+  async sendEvent(event: string, properties: {} = {}) {
+    await this.initPromise;
+    return this.background.sendEvent(event, properties);
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);

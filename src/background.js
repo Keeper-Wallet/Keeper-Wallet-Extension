@@ -383,9 +383,7 @@ class BackgroundService extends EventEmitter {
 
       // wallets
       addWallet: async account => {
-        const data = await this.walletController.addWallet(account);
-        this.statisticsController.addEvent('addWallet');
-        return data;
+        return await this.walletController.addWallet(account);
       },
       removeWallet: async (address, network) =>
         this.walletController.removeWallet(address, network),
@@ -488,6 +486,9 @@ class BackgroundService extends EventEmitter {
           canUse,
           0
         );
+      },
+      sendEvent: async (event, properties) => {
+        return this.statisticsController.addEvent(event, properties);
       },
     };
   }

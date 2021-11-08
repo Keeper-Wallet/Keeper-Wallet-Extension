@@ -1,9 +1,14 @@
-import { ACTION } from '../actions/constants';
-import { setTab, addUserReceive, addUserSend } from '../actions';
+import {
+  ACTION,
+  addUserReceive,
+  addUserSend,
+  sendEvent,
+  setTab,
+} from '../actions';
 import background from '../services/Background';
 
 export const addAccount = store => next => action => {
-  const { type, payload } = action;
+  const { type, payload, meta } = action;
 
   if (type === ACTION.SAVE_NEW_ACCOUNT) {
     const { currentNetwork, networks } = store.getState();
@@ -23,6 +28,7 @@ export const addAccount = store => next => action => {
         () => {
           store.dispatch(addUserReceive());
           store.dispatch(setTab('assets'));
+          store.dispatch(sendEvent('addWallet', { type: meta.type }));
         },
         e => {
           store.dispatch(addUserReceive(e));
@@ -39,6 +45,7 @@ export const addAccount = store => next => action => {
       )
     ).then(() => {
       store.dispatch(setTab('assets'));
+      store.dispatch(sendEvent('addWallet', { type: meta.type }));
     });
   }
 

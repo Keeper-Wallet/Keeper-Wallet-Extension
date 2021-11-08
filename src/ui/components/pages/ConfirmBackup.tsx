@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
-import { setUiState, user } from '../../actions';
+import { setUiState, user, WALLET_TYPE } from '../../actions';
 
 const SHUFFLE_COUNT = 500;
 
@@ -116,7 +116,7 @@ class ConfirmBackupComponent extends React.Component {
     this.props.setUiState({
       account: null,
     });
-    this.props.addUser(this.props.account);
+    this.props.addUser(this.props.account, WALLET_TYPE.NEW);
     this.setState({ disabled: true });
   }
 
