@@ -986,28 +986,16 @@ describe('Account creation', function () {
 
                     await this.driver.findElement(By.css('[data-testid="submitButton"]')).click();
 
-                    await Promise.all([
-                        this.driver.wait(
-                            until.elementLocated(
-                                By.xpath(
-                                    "//div[contains(@class, '-assets-assets')]" +
-                                        "//div[contains(@class, '-wallet-inner')]" +
-                                        "//div[contains(@class, '-wallet-accountName')][text()='test (1)']"
-                                )
-                            ),
-                            this.wait
+                    await this.driver.wait(
+                        until.elementLocated(
+                            By.xpath(
+                                "//div[contains(@class, '-assets-assets')]" +
+                                    "//div[contains(@class, '-wallet-inner')]" +
+                                    "//div[contains(@class, '-wallet-accountName')][text()='test3']"
+                            )
                         ),
-                        this.driver.wait(
-                            until.elementLocated(
-                                By.xpath(
-                                    "//div[contains(@class, '-assets-assets')]" +
-                                        "//div[contains(@class, '-wallet-inner')]" +
-                                        "//div[contains(@class, '-wallet-accountName')][text()='test3']"
-                                )
-                            ),
-                            this.wait
-                        ),
-                    ]);
+                        this.wait
+                    );
 
                     await new Promise((resolve) => setTimeout(resolve, DEFAULT_ANIMATION_DELAY));
 
@@ -1157,28 +1145,16 @@ describe('Account creation', function () {
 
                     await this.driver.findElement(By.css('[data-testid="submitButton"]')).click();
 
-                    await Promise.all([
-                        this.driver.wait(
-                            until.elementLocated(
-                                By.xpath(
-                                    "//div[contains(@class, '-assets-assets')]" +
-                                        "//div[contains(@class, '-wallet-inner')]" +
-                                        "//div[contains(@class, '-wallet-accountName')][text()='test (1)']"
-                                )
-                            ),
-                            this.wait
+                    await this.driver.wait(
+                        until.elementLocated(
+                            By.xpath(
+                                "//div[contains(@class, '-assets-assets')]" +
+                                    "//div[contains(@class, '-wallet-inner')]" +
+                                    "//div[contains(@class, '-wallet-accountName')][text()='test3']"
+                            )
                         ),
-                        this.driver.wait(
-                            until.elementLocated(
-                                By.xpath(
-                                    "//div[contains(@class, '-assets-assets')]" +
-                                        "//div[contains(@class, '-wallet-inner')]" +
-                                        "//div[contains(@class, '-wallet-accountName')][text()='test3']"
-                                )
-                            ),
-                            this.wait
-                        ),
-                    ]);
+                        this.wait
+                    );
 
                     await new Promise((resolve) => setTimeout(resolve, DEFAULT_ANIMATION_DELAY));
 

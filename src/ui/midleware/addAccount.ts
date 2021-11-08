@@ -25,10 +25,8 @@ export const addAccount = (store) => (next) => (action) => {
     }
 
     if (type === ACTION.BATCH_ADD_ACCOUNTS) {
-        payload.forEach((account) => {
-            background.addWallet({ ...account, lastActive: Date.now() }).then(() => {
-                store.dispatch(setTab('assets'));
-            });
+        Promise.all(payload.map((account) => background.addWallet({ ...account, lastActive: Date.now() }))).then(() => {
+            store.dispatch(setTab('assets'));
         });
     }
 
