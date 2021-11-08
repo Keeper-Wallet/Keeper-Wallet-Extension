@@ -31,6 +31,22 @@ interface Props {
 export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
     const [selected, setSelected] = React.useState(() => new Set(accounts.map(({ address }) => address)));
 
+    function toggleSelected(accounts: ExportKeystoreAccount[], isSelected: boolean) {
+        setSelected((prevSelected) => {
+            const newSelected = new Set(prevSelected);
+
+            accounts.forEach((acc) => {
+                if (isSelected) {
+                    newSelected.add(acc.address);
+                } else {
+                    newSelected.delete(acc.address);
+                }
+            });
+
+            return newSelected;
+        });
+    }
+
     return (
         <form
             className={styles.root}
@@ -64,56 +80,34 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
                                     className={styles.checkbox}
                                     type="checkbox"
                                     onChange={(event) => {
-                                        const newChecked = event.currentTarget.checked;
-
-                                        setSelected((prevSelected) => {
-                                            const newSelected = new Set(prevSelected);
-
-                                            accounts.forEach((acc) => {
-                                                if (newChecked) {
-                                                    newSelected.add(acc.address);
-                                                } else {
-                                                    newSelected.delete(acc.address);
-                                                }
-                                            });
-
-                                            return newSelected;
-                                        });
+                                        toggleSelected(accounts, event.currentTarget.checked);
                                     }}
                                 />
                             </header>
 
                             <ul className={styles.accountList}>
-                                {accounts.map(({ address, name }) => (
-                                    <li key={address} className={styles.accountListItem} title={address}>
+                                {accounts.map((account) => (
+                                    <li
+                                        key={account.address}
+                                        className={styles.accountListItem}
+                                        title={account.address}
+                                    >
                                         <div className={styles.accountInfo}>
-                                            <Avatar size={40} address={address} />
+                                            <Avatar size={40} address={account.address} />
 
                                             <div className={styles.accountInfoText}>
-                                                <div className={styles.accountName}>{name}</div>
+                                                <div className={styles.accountName}>{account.name}</div>
                                             </div>
                                         </div>
 
                                         <input
-                                            checked={selected.has(address)}
+                                            checked={selected.has(account.address)}
                                             className={styles.checkbox}
                                             name="selected"
                                             type="checkbox"
-                                            value={address}
+                                            value={account.address}
                                             onChange={(event) => {
-                                                const newChecked = event.currentTarget.checked;
-
-                                                setSelected((prevSelected) => {
-                                                    const newSelected = new Set(prevSelected);
-
-                                                    if (newChecked) {
-                                                        newSelected.add(address);
-                                                    } else {
-                                                        newSelected.delete(address);
-                                                    }
-
-                                                    return newSelected;
-                                                });
+                                                toggleSelected([account], event.currentTarget.checked);
                                             }}
                                         />
                                     </li>
