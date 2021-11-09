@@ -7,6 +7,10 @@
     "url": "git+https://github.com:wavesplatform/waves-keeper.git"
   },
   "license": "ISC",
+  "engineStrict": true,
+  "engines": {
+    "node": "^10.24.1"
+  },
   "scripts": {
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
@@ -100,9 +104,5 @@
     "url-loader": "^1.1.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.3.9"
-  },
-  "engineStrict": true,
-  "engines": {
-    "node": "^10.24.1"
   }
 }
