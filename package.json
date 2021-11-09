@@ -15,7 +15,7 @@
     "dev": "webpack --watch",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
-    "test": "env DEBUG=testcontainers mocha",
+    "test": "mocha",
     "dist": "NODE_ENV=production webpack"
   },
   "mocha": {

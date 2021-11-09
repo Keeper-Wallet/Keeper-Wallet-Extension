@@ -34,3 +34,5 @@ jobs:
 
       - name: Run tests
         run: npm test
+        env:
+          DEBUG: testcontainers
