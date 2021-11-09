@@ -48,10 +48,13 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       '/app/test/fixtures',
       'ro'
     )
-    .withExposedPorts(4444)
+    .withExposedPorts(4444, 5900)
     .start();
 
-  await forwardPort(4444, this.selenium.getMappedPort(4444));
+  await Promise.all([
+    forwardPort(4444, this.selenium.getMappedPort(4444)),
+    forwardPort(5900, this.selenium.getMappedPort(5900)),
+  ]);
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
