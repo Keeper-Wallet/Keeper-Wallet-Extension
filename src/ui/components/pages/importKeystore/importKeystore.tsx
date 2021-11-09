@@ -10,7 +10,7 @@ import {
 } from './chooseAccounts';
 import { connect } from 'react-redux';
 import { batchAddAccounts } from 'ui/actions/user';
-import { WALLET_TYPE, WalletTypes } from '../../../actions';
+import { WalletTypes } from '../../../services/Background';
 
 function readFileAsText(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -68,7 +68,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
       if (typeof profiles === 'string') {
         return {
-          type: WALLET_TYPE.KEYSTORE,
+          type: WalletTypes.Keystore,
           decrypt: password => {
             try {
               return JSON.parse(
@@ -88,7 +88,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
         typeof encryptionRounds === 'number'
       ) {
         return {
-          type: WALLET_TYPE.KEYSTORE_WX,
+          type: WalletTypes.KeystoreWx,
           decrypt: password => {
             try {
               const accounts: ExchangeKeystoreAccount[] = JSON.parse(

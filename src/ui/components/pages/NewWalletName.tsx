@@ -2,9 +2,10 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { newAccountName, setUiState, user, WALLET_TYPE } from '../../actions';
+import { newAccountName, setUiState, user } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
+import { WalletTypes } from '../../services/Background';
 
 class NewWalletNameComponent extends React.Component {
   inputEl: Input;
@@ -142,7 +143,7 @@ class NewWalletNameComponent extends React.Component {
 
   _onSave = e => {
     e.preventDefault();
-    this.props.addUser(this.props.account, WALLET_TYPE.SEED);
+    this.props.addUser(this.props.account, WalletTypes.Seed);
     this.setState({ disabled: true });
   };
 
@@ -150,7 +151,7 @@ class NewWalletNameComponent extends React.Component {
     e.preventDefault();
 
     if (this.props.account.hasBackup) {
-      this.props.addUser(this.props.account, WALLET_TYPE.SEED);
+      this.props.addUser(this.props.account, WalletTypes.Seed);
       return null;
     }
 

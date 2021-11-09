@@ -1,5 +1,5 @@
 import { ACTION } from './constants';
-import { WalletTypes } from './statistics';
+import { WalletTypes } from '../services/Background';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 

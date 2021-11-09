@@ -1,10 +1,4 @@
-import {
-  ACTION,
-  addUserReceive,
-  addUserSend,
-  sendEvent,
-  setTab,
-} from '../actions';
+import { ACTION, addUserReceive, addUserSend, setTab } from '../actions';
 import background from '../services/Background';
 
 export const addAccount = store => next => action => {
@@ -28,7 +22,7 @@ export const addAccount = store => next => action => {
         () => {
           store.dispatch(addUserReceive());
           store.dispatch(setTab('assets'));
-          store.dispatch(sendEvent('addWallet', { type: meta.type }));
+          background.sendEvent('addWallet', { type: meta.type });
         },
         e => {
           store.dispatch(addUserReceive(e));
@@ -45,7 +39,7 @@ export const addAccount = store => next => action => {
       )
     ).then(() => {
       store.dispatch(setTab('assets'));
-      store.dispatch(sendEvent('addWallet', { type: meta.type }));
+      background.sendEvent('addWallet', { type: meta.type });
     });
   }
 

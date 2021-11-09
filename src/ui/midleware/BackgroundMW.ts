@@ -245,11 +245,3 @@ export const lock = store => next => action => {
   }
   return next(action);
 };
-
-export const statistics = store => next => action => {
-  if (action.type === ACTION.SEND_EVENT) {
-    background.sendEvent(action.meta.event, action.payload);
-  }
-
-  return next(action);
-};
