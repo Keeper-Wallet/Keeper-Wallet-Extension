@@ -17,7 +17,7 @@ export const mochaHooks = () => ({
       )
       .withBindMount(
         path.resolve(__dirname, '..', 'fixtures'),
-        '/app/tests/fixtures',
+        '/app/test/fixtures',
         'ro'
       )
       .withExposedPorts(4444)
