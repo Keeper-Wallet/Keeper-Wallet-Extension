@@ -16,7 +16,16 @@
     "prettier:check": "prettier --list-different .",
     "start": "webpack --watch",
     "dist": "NODE_ENV=production webpack",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' DEBUG='testcontainers' mocha --extension ts -r ts-node/register -r test/utils/hooks.ts"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' DEBUG='testcontainers' mocha"
+  },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "test/utils/hooks.ts"
+    ]
   },
   "dependencies": {
     "@babel/core": "^7.2.2",
