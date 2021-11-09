@@ -14,29 +14,13 @@ declare module 'mocha' {
   }
 }
 
-function forwardPort(fromPort: number, toPort: number) {
-  return new Promise((resolve, reject) => {
-    const server = net
-      .createServer(from => {
-        const to = net.createConnection({ port: toPort });
-        from.pipe(to);
-        to.pipe(from);
-
-        to.once('error', () => {
-          server.close();
-        });
-      })
-      .once('listening', resolve)
-      .once('error', reject)
-      .listen(fromPort);
-  });
-}
-
 interface GlobalFixturesContext {
   selenium: StartedTestContainer;
 }
 
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
+  const exposedPorts = [4444, 5900];
+
   this.selenium = await new GenericContainer('selenium/standalone-chrome')
     .withBindMount(
       path.resolve(__dirname, '..', '..', 'dist'),
@@ -48,13 +32,33 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       '/app/test/fixtures',
       'ro'
     )
-    .withExposedPorts(4444, 5900)
+    .withExposedPorts(...exposedPorts)
     .start();
 
-  await Promise.all([
-    forwardPort(4444, this.selenium.getMappedPort(4444)),
-    forwardPort(5900, this.selenium.getMappedPort(5900)),
-  ]);
+  await Promise.all(
+    exposedPorts.map(
+      (port: number) =>
+        new Promise((resolve, reject) => {
+          net
+            .createServer(from => {
+              const to = net.createConnection({
+                port: this.selenium.getMappedPort(port),
+              });
+
+              from.pipe(to);
+              to.pipe(from);
+
+              to.once('error', () => {
+                from.destroy();
+              });
+            })
+            .once('listening', resolve)
+            .once('error', reject)
+            .listen(port)
+            .unref();
+        })
+    )
+  );
 }
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
