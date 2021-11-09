@@ -1,5 +1,6 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
+import * as net from 'net';
 import * as mocha from 'mocha';
 import * as path from 'path';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
@@ -9,9 +10,52 @@ declare module 'mocha' {
   interface Context {
     driver: WebDriver;
     extensionUrl: string;
-    selenium: StartedTestContainer;
     wait: number;
   }
+}
+
+function forwardPort(fromPort: number, toPort: number) {
+  return new Promise((resolve, reject) => {
+    const server = net
+      .createServer(from => {
+        const to = net.createConnection({ port: toPort });
+        from.pipe(to);
+        to.pipe(from);
+
+        to.once('error', () => {
+          server.close();
+        });
+      })
+      .once('listening', resolve)
+      .once('error', reject)
+      .listen(fromPort);
+  });
+}
+
+interface GlobalFixturesContext {
+  selenium: StartedTestContainer;
+}
+
+export async function mochaGlobalSetup(this: GlobalFixturesContext) {
+  this.selenium = await new GenericContainer('selenium/standalone-chrome')
+    .withBindMount(
+      path.resolve(__dirname, '..', '..', 'dist'),
+      '/app/dist',
+      'ro'
+    )
+    .withBindMount(
+      path.resolve(__dirname, '..', 'fixtures'),
+      '/app/test/fixtures',
+      'ro'
+    )
+    .withExposedPorts(4444)
+    .start();
+
+  await forwardPort(4444, this.selenium.getMappedPort(4444));
+}
+
+export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
+  await this.selenium.stop();
 }
 
 export const mochaHooks = () => ({
@@ -19,27 +63,9 @@ export const mochaHooks = () => ({
     this.timeout(15 * 60 * 1000);
     this.wait = 10 * 1000;
 
-    this.selenium = await new GenericContainer('selenium/standalone-chrome')
-      .withBindMount(
-        path.resolve(__dirname, '..', '..', 'dist'),
-        '/app/dist',
-        'ro'
-      )
-      .withBindMount(
-        path.resolve(__dirname, '..', 'fixtures'),
-        '/app/test/fixtures',
-        'ro'
-      )
-      .withExposedPorts(4444)
-      .start();
-
     this.driver = new Builder()
       .forBrowser('chrome')
-      .usingServer(
-        `http://${this.selenium.getHost()}:${this.selenium.getMappedPort(
-          4444
-        )}/wd/hub`
-      )
+      .usingServer(`http://localhost:4444/wd/hub`)
       .setChromeOptions(
         new chrome.Options().addArguments(
           `--load-extension=/app/dist/chrome`,
@@ -69,7 +95,6 @@ export const mochaHooks = () => ({
 
   afterAll(this: mocha.Context, done: mocha.Done) {
     this.driver && this.driver.quit();
-    this.selenium && this.selenium.stop();
     done();
   },
 });
