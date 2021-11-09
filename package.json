@@ -12,11 +12,11 @@
     "node": "^10.24.1"
   },
   "scripts": {
+    "start": "webpack --watch",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
-    "start": "webpack --watch",
-    "dist": "NODE_ENV=production webpack",
-    "test": "env DEBUG=testcontainers mocha"
+    "test": "env DEBUG=testcontainers mocha",
+    "dist": "NODE_ENV=production webpack"
   },
   "mocha": {
     "extension": [
