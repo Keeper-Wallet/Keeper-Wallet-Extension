@@ -994,13 +994,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1156,13 +1158,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1408,13 +1412,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1617,13 +1623,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))

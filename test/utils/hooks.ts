@@ -1,11 +1,21 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import * as chrome from 'selenium-webdriver/chrome';
+import * as mocha from 'mocha';
 import * as path from 'path';
-import { GenericContainer } from 'testcontainers';
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { App } from './actions';
 
+declare module 'mocha' {
+  interface Context {
+    driver: WebDriver;
+    extensionUrl: string;
+    selenium: StartedTestContainer;
+    wait: number;
+  }
+}
+
 export const mochaHooks = () => ({
-  async beforeAll() {
+  async beforeAll(this: mocha.Context) {
     this.timeout(15 * 60 * 1000);
     this.wait = 10 * 1000;
 
@@ -51,11 +61,13 @@ export const mochaHooks = () => ({
         break;
       }
     }
+
     // this helps extension to be ready
     await this.driver.get('chrome://new-tab-page');
     await App.open.call(this);
   },
-  afterAll(done) {
+
+  afterAll(this: mocha.Context, done: mocha.Done) {
     this.driver && this.driver.quit();
     this.selenium && this.selenium.stop();
     done();
