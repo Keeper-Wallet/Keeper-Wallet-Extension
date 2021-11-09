@@ -382,11 +382,7 @@ class BackgroundService extends EventEmitter {
       setUiState: async state => this.uiStateController.setUiState(state),
 
       // wallets
-      addWallet: async account => {
-        const data = await this.walletController.addWallet(account);
-        this.statisticsController.addEvent('addWallet');
-        return data;
-      },
+      addWallet: async account => this.walletController.addWallet(account),
       removeWallet: async (address, network) =>
         this.walletController.removeWallet(address, network),
       lock: async () => this.walletController.lock(),
@@ -489,6 +485,8 @@ class BackgroundService extends EventEmitter {
           0
         );
       },
+      sendEvent: async (event, properties) =>
+        this.statisticsController.addEvent(event, properties),
     };
   }
 

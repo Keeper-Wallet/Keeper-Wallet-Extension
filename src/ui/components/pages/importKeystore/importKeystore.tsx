@@ -5,11 +5,12 @@ import { ImportKeystoreChooseFile } from './chooseFile';
 import {
   ImportKeystoreChooseAccounts,
   ImportKeystoreExistingAccount,
-  ImportKeystoreProfiles,
   ImportKeystoreNetwork,
+  ImportKeystoreProfiles,
 } from './chooseAccounts';
 import { connect } from 'react-redux';
 import { batchAddAccounts } from 'ui/actions/user';
+import { WalletTypes } from '../../../services/Background';
 
 function readFileAsText(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -44,6 +45,7 @@ interface ExchangeKeystoreAccount {
 }
 
 interface EncryptedKeystore {
+  type: WalletTypes;
   decrypt: (password: string) => Record<
     ImportKeystoreNetwork,
     {
@@ -66,6 +68,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
       if (typeof profiles === 'string') {
         return {
+          type: WalletTypes.Keystore,
           decrypt: password => {
             try {
               return JSON.parse(
@@ -85,6 +88,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
         typeof encryptionRounds === 'number'
       ) {
         return {
+          type: WalletTypes.KeystoreWx,
           decrypt: password => {
             try {
               const accounts: ExchangeKeystoreAccount[] = JSON.parse(
@@ -133,7 +137,8 @@ interface Props {
       network: string;
       seed: string;
       type: string;
-    }>
+    }>,
+    type: WalletTypes
   ) => void;
   allNetworksAccounts: ImportKeystoreExistingAccount[];
   setTab: (newTab: string) => void;
@@ -160,6 +165,7 @@ export const ImportKeystore = connect(
   const [profiles, setProfiles] = React.useState<ImportKeystoreProfiles | null>(
     null
   );
+  const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
 
   if (profiles == null) {
     return (
@@ -220,7 +226,7 @@ export const ImportKeystore = connect(
                 }
               });
             });
-
+            setWalletType(keystore.type);
             setProfiles(newProfiles);
           } catch (err) {
             setError(t('importKeystore.errorUnexpected'));
@@ -245,7 +251,8 @@ export const ImportKeystore = connect(
             name: acc.name,
             network: findNetworkByNetworkCode(acc.networkCode),
             hasBackup: true,
-          }))
+          })),
+          walletType
         );
       }}
     />

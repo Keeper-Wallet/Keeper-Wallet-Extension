@@ -1,11 +1,13 @@
 import { ACTION } from './constants';
+import { WalletTypes } from '../services/Background';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 
-export function user(account) {
+export function user(account, type: WalletTypes) {
   return {
     type: ACTION.SAVE_NEW_ACCOUNT,
     payload: account,
+    meta: { type },
   };
 }
 
@@ -37,11 +39,13 @@ export function batchAddAccounts(
     network: string;
     seed: string;
     type: string;
-  }>
+  }>,
+  type: WalletTypes
 ) {
   return {
     type: ACTION.BATCH_ADD_ACCOUNTS,
     payload: accounts,
+    meta: { type },
   };
 }
 

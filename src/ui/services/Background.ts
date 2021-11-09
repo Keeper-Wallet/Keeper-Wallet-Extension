@@ -234,6 +234,12 @@ class Background {
     return this.background.getUserList(type, from, to);
   }
 
+  async sendEvent(event: 'addWallet', properties: { type: string });
+  async sendEvent(event: string, properties: any = {}) {
+    await this.initPromise;
+    return this.background.sendEvent(event, properties);
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);
@@ -272,4 +278,11 @@ export interface IState {
 
 export interface IUiState {
   tab: string;
+}
+
+export enum WalletTypes {
+  New = 'new',
+  Seed = 'seed',
+  Keystore = 'keystore',
+  KeystoreWx = 'keystore_wx',
 }
