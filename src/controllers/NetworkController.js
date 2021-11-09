@@ -1,11 +1,9 @@
 import ObservableStore from 'obs-store';
 
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
-
 export class NetworkController {
   constructor(options = {}) {
     const defaults = {
-      currentNetwork: WAVESKEEPER_DEBUG ? 'testnet' : 'mainnet',
+      currentNetwork: 'mainnet',
       customNodes: {
         mainnet: null,
         stagenet: null,
