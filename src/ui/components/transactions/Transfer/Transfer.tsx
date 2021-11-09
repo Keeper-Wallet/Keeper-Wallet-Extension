@@ -5,7 +5,7 @@ import { TransferCard } from './TransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export function Transfer(props) {
-  const { message, assets } = props;
+  const { sponsoredBalance } = props;
 
   return (
     <div className={styles.transaction}>
@@ -17,7 +17,7 @@ export function Transfer(props) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo message={message} assets={assets} />
+          <TxInfo sponsoredBalance={sponsoredBalance} />
         </TxDetailTabs>
       </div>
 

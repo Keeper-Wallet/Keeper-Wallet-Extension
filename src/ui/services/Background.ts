@@ -179,6 +179,11 @@ class Background {
     return this.background.reject(messageId, forever);
   }
 
+  async updateTransactionFee(messageId, fee): Promise<void> {
+    await this.initPromise;
+    return this.background.updateTransactionFee(messageId, fee);
+  }
+
   async setNetwork(network): Promise<void> {
     await this.initPromise;
     return this.background.setNetwork(network);
@@ -206,15 +211,15 @@ class Background {
     return this.background.setCustomMatcher(url, network);
   }
 
-  async assetInfo(assetId: string): Promise<any> {
+  async assetInfo(assetId: string, force: boolean): Promise<any> {
     assetId = assetId || 'WAVES';
 
-    if (this._assetsStore[assetId]) {
+    if (!force && this._assetsStore[assetId]) {
       return await this._assetsStore[assetId];
     }
 
     await this.initPromise;
-    this._assetsStore[assetId] = this.background.assetInfo(assetId);
+    this._assetsStore[assetId] = this.background.assetInfo(assetId, force);
 
     try {
       return await this._assetsStore[assetId];

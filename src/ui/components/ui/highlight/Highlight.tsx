@@ -14,6 +14,10 @@ export class Highlight extends React.Component<IProps> {
     hljs.highlightElement(this.preRef.current);
   }
 
+  shouldComponentUpdate(nextProps: Readonly<IProps>): boolean {
+    return nextProps.data != this.props.data;
+  }
+
   render() {
     const { className, data } = this.props;
 

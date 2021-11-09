@@ -13,9 +13,12 @@ import {
   setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { FinalTransaction, getConfigByTransaction } from '../transactions';
+import { BalanceAssets } from '../transactions/BaseTransaction';
+import { BigNumber } from '@waves/bignumber';
+import { DEFAULT_FEE_CONFIG } from '../../../constants';
 
 class MessagesComponent extends React.Component {
   readonly state = {} as any;
@@ -24,7 +27,7 @@ class MessagesComponent extends React.Component {
 
   static getDerivedStateFromProps(props, state) {
     const {
-      balance: sourceBalance,
+      balance,
       selectedAccount,
       assets,
       activeMessage,
@@ -38,8 +41,14 @@ class MessagesComponent extends React.Component {
       return { loading: true, selectedAccount };
     }
 
-    const assetInstance = new Asset(assets['WAVES']);
-    const balance = new Money(sourceBalance || 0, assetInstance);
+    const sponsoredBalance = Object.fromEntries(
+      Object.entries(balance.assets as BalanceAssets).filter(
+        ([, assetBalance]) =>
+          new BigNumber(assetBalance.sponsorBalance).gte(
+            DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee
+          ) && assetBalance.minSponsoredAssetFee != null
+      )
+    );
 
     const { transactionStatus } = props;
     const isExistMsg =
@@ -48,10 +57,9 @@ class MessagesComponent extends React.Component {
       activeMessage.id === state.activeMessage.id;
 
     if (isExistMsg) {
-      const balance = Money.fromTokens(sourceBalance || 0, assetInstance);
       loading = false;
       return {
-        balance,
+        sponsoredBalance,
         selectedAccount,
         assets,
         transactionStatus,
@@ -63,12 +71,18 @@ class MessagesComponent extends React.Component {
 
     const sourceSignData = activeMessage.data || {};
     const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
-    const needGetAssets = Object.keys(parsedData.assets).filter(
-      id => assets[id] === undefined
+    const sponsoredAssets = Object.keys(sponsoredBalance);
+    const needGetAssets = new Set(
+      Object.keys(parsedData.assets)
+        .concat(sponsoredAssets)
+        .filter(id => assets[id] === undefined)
     );
-    needGetAssets.forEach(id => props.getAsset(id));
 
-    if (needGetAssets.length) {
+    needGetAssets.forEach(id =>
+      props.getAsset(id, sponsoredAssets.includes(id))
+    );
+
+    if (needGetAssets.size) {
       return { loading, selectedAccount };
     }
 
@@ -81,7 +95,7 @@ class MessagesComponent extends React.Component {
       activeMessage,
       config,
       txHash,
-      balance,
+      sponsoredBalance,
       assets,
       messages,
       notifications,
@@ -187,19 +201,28 @@ class MessagesComponent extends React.Component {
       );
     }
 
-    const { activeMessage } = this.state;
+    const {
+      activeMessage,
+      assets,
+      approvePending,
+      txHash,
+      sponsoredBalance,
+      selectedAccount,
+      autoClickProtection,
+    } = this.state;
     const conf = getConfigByTransaction(activeMessage);
     const { message: Component, type } = conf;
 
     return (
       <Component
         txType={type}
-        autoClickProtection={this.props.autoClickProtection}
-        pending={this.state.approvePending}
-        txHash={this.state.txHash}
-        assets={this.state.assets}
+        autoClickProtection={autoClickProtection}
+        pending={approvePending}
+        txHash={txHash}
+        assets={assets}
+        sponsoredBalance={sponsoredBalance}
         message={activeMessage}
-        selectedAccount={this.state.selectedAccount}
+        selectedAccount={selectedAccount}
         onClose={this.closeHandler}
         onNext={this.nextHandler}
         onList={this.toListHandler}
@@ -207,7 +230,7 @@ class MessagesComponent extends React.Component {
         rejectForever={this.rejectForeverHandler}
         approve={this.approveHandler}
         selectAccount={this.selectAccountHandler}
-      ></Component>
+      />
     );
   }
 

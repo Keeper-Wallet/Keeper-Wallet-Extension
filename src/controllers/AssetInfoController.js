@@ -43,7 +43,7 @@ export class AssetInfoController {
     return WAVES;
   }
 
-  async assetInfo(assetId) {
+  async assetInfo(assetId, force) {
     const { assets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return WAVES;
@@ -53,9 +53,10 @@ export class AssetInfoController {
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
     if (
+      force ||
       !assets[network] ||
       !assets[network][assetId] ||
-      assets[network][assetId].scripted == null
+      assets[network][assetId].minSponsoredFee === undefined
     ) {
       let resp = await fetch(url);
       switch (resp.status) {
@@ -80,6 +81,7 @@ export class AssetInfoController {
             scripted: assetInfo.scripted,
             reissuable: assetInfo.reissuable,
             displayName: assetInfo.ticker || assetInfo.name,
+            minSponsoredFee: assetInfo.minSponsoredAssetFee,
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = mapped;

@@ -5,8 +5,7 @@ import { ScriptInvocationCard } from './ScriptInvocationCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export function ScriptInvocation(props) {
-  const { message, assets } = props;
-
+  const { sponsoredBalance } = props;
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />
@@ -19,7 +18,7 @@ export function ScriptInvocation(props) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo message={message} assets={assets} />
+          <TxInfo sponsoredBalance={sponsoredBalance} />
         </TxDetailTabs>
       </div>
 

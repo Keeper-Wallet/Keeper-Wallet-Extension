@@ -5,8 +5,6 @@ import { BurnCard } from './BurnCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export function Burn(props) {
-  const { message, assets } = props;
-
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />
@@ -17,7 +15,7 @@ export function Burn(props) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo message={message} assets={assets} />
+          <TxInfo />
         </TxDetailTabs>
       </div>
 

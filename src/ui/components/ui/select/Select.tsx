@@ -9,7 +9,7 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
 
   selectHandler = (item: TSelectItem<T>) => {
     this.setState({ showList: false, value: item.value, id: item.id });
-    this.props.onSelectItem(item.id);
+    this.props.onSelectItem(item.id, item.value);
     this.removeClickOut();
   };
 
@@ -99,7 +99,7 @@ const List = ({ list, onSelect, isShow }) => {
         <div
           key={item.id}
           className={styles.listItem}
-          onClick={e => onSelect(item)}
+          onClick={() => onSelect(item)}
         >
           {item.text}
         </div>
@@ -120,7 +120,7 @@ interface IProps<T> extends React.ComponentProps<'div'> {
   selectList: Array<TSelectItem<T>>;
   description?: TText;
   selected?: string | number;
-  onSelectItem?: (id: string | number) => void;
+  onSelectItem?: (id: string | number, value?: T) => void;
 }
 
 interface IState<T> {

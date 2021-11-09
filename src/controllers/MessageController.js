@@ -222,6 +222,20 @@ export class MessageController extends EventEmitter {
     this.emit(`${message.id}:finished`, message);
   }
 
+  /**
+   * Update transaction fee
+   * @param {string} id - message id
+   * @param {IMoneyLike} fee
+   */
+  async updateTransactionFee(id, fee) {
+    const message = this._getMessageById(id);
+    message.data.data.fee = fee;
+    const updatedMsg = await this._generateMessage(message);
+    updatedMsg.id = id;
+    this._updateMessage(updatedMsg);
+    return updatedMsg;
+  }
+
   updateBadge() {
     this._updateBadge(this.store.getState().messages);
   }
@@ -698,6 +712,9 @@ export class MessageController extends EventEmitter {
         result.data.data = this._prepareTx(result.data.data, message.account);
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
         result.data.data = { ...result.data.data, ...feeData };
+        result.data.data.initialFee = result.data.data.initialFee || {
+          ...result.data.data.fee,
+        };
         messageMeta = await this._getMessageDataHash(
           result.data,
           message.account
