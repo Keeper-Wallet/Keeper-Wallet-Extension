@@ -771,7 +771,7 @@ describe('Account creation', function () {
       it('can decrypt the correct keeper keystore file', async function () {
         await this.driver
           .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/fixtures/keystore-keeper.json');
+          .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
@@ -806,7 +806,7 @@ describe('Account creation', function () {
       it('can decrypt the correct exchange keystore file', async function () {
         await this.driver
           .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/fixtures/keystore-exchange.json');
+          .sendKeys('/app/tests/fixtures/keystore-exchange.json');
 
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
@@ -867,7 +867,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1043,7 +1043,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1223,7 +1223,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1295,7 +1295,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1504,7 +1504,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/tests/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))

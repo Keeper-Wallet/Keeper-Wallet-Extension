@@ -27,6 +27,11 @@ jobs:
       - name: Check code formatting
         run: npm run prettier:check
 
+      - name: Build
+        run: |
+          echo '{}' > config.json
+          npm run dist
+
       - name: Run tests
         run: npm run test
 
