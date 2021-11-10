@@ -23,7 +23,6 @@ class AssetsComponent extends React.Component {
   state = {} as any;
   _currentActive;
   _sorted;
-  _t;
 
   static getDerivedStateFromProps(props) {
     const asset = props.assets['WAVES'];
