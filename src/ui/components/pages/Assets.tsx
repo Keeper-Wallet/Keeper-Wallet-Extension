@@ -122,28 +122,9 @@ export const Assets = connect(
         this.props.setTab(PAGES.ACCOUNT_INFO);
       };
 
-      const otherAccounts = this.props.accounts
-        .filter(account => account.address !== activeAddress)
-        .map(account => (
-          <CSSTransition
-            key={account.address}
-            classNames="animate_wallets"
-            timeout={600}
-          >
-            <WalletItem
-              account={account}
-              active={false}
-              balance={this.state.balances[account.address]}
-              leaseBalance={this.state.lease[account.address]}
-              onSelect={onSelectHandler}
-              onActive={account => {
-                this.props.selectAccount(account);
-                this.setState({ showActivated: true, name: account.name });
-                setTimeout(() => this.setState({ showActivated: false }), 1000);
-              }}
-            />
-          </CSSTransition>
-        ));
+      const otherAccounts = this.props.accounts.filter(
+        account => account.address !== activeAddress
+      );
 
       return (
         <div className={styles.assets}>
@@ -175,17 +156,42 @@ export const Assets = connect(
             </CSSTransition>
           </TransitionGroup>
           <div className="wallets-list">
-            <div>
-              {otherAccounts.length ? (
+            {otherAccounts.length !== 0 && (
+              <>
                 <div className={`${styles.otherWalletsTitle} basic500 body3`}>
                   <Trans i18nKey="assets.inStorage">Other accounts</Trans>
                 </div>
-              ) : null}
 
-              <div className={styles.walletListWrapper}>
-                <TransitionGroup>{otherAccounts}</TransitionGroup>
-              </div>
-            </div>
+                <TransitionGroup>
+                  {otherAccounts.map(account => (
+                    <CSSTransition
+                      key={account.address}
+                      classNames="animate_wallets"
+                      timeout={600}
+                    >
+                      <WalletItem
+                        account={account}
+                        active={false}
+                        balance={this.state.balances[account.address]}
+                        leaseBalance={this.state.lease[account.address]}
+                        onSelect={onSelectHandler}
+                        onActive={account => {
+                          this.props.selectAccount(account);
+                          this.setState({
+                            showActivated: true,
+                            name: account.name,
+                          });
+                          setTimeout(
+                            () => this.setState({ showActivated: false }),
+                            1000
+                          );
+                        }}
+                      />
+                    </CSSTransition>
+                  ))}
+                </TransitionGroup>
+              </>
+            )}
 
             <div
               className={`body1 basic500 border-dashed ${styles.addAccount}`}
