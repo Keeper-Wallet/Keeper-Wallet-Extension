@@ -44,7 +44,6 @@ interface Props {
 
 interface State {
   balancesMoney: Record<string, Money>;
-  deletedNotify: boolean;
   leaseMoney: Record<string, Money>;
   showActivated: boolean;
   showCopy: boolean;
@@ -72,7 +71,6 @@ export const Assets = connect(
   class Assets extends React.Component<Props, State> {
     state: State = {
       balancesMoney: {},
-      deletedNotify: false,
       leaseMoney: {},
       showActivated: false,
       showCopy: false,
@@ -83,7 +81,6 @@ export const Assets = connect(
       assets,
       balances,
       getAsset,
-      notifications,
     }: Props): Partial<State> | null {
       const asset = assets['WAVES'];
 
@@ -107,17 +104,14 @@ export const Assets = connect(
         leaseMoney[key] = new Money(leasedOut, assetInstance);
       });
 
-      return {
-        balancesMoney,
-        leaseMoney,
-        deletedNotify: notifications.deleted,
-      };
+      return { balancesMoney, leaseMoney };
     }
 
     render() {
       const {
         accounts,
         activeAccount,
+        notifications,
         selectAccount,
         setActiveAccount,
         setTab,
@@ -125,13 +119,7 @@ export const Assets = connect(
         showUpdateInfo,
       } = this.props;
 
-      const {
-        balancesMoney,
-        deletedNotify,
-        leaseMoney,
-        showActivated,
-        showCopy,
-      } = this.state;
+      const { balancesMoney, leaseMoney, showActivated, showCopy } = this.state;
 
       if (!activeAccount) {
         return <Intro />;
@@ -239,7 +227,7 @@ export const Assets = connect(
 
           <Modal
             animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={deletedNotify}
+            showModal={notifications.deleted}
           >
             <div className="modal notification active-asset">
               <div>
