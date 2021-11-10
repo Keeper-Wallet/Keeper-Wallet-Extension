@@ -121,7 +121,16 @@ export const Assets = connect(
         showUpdateInfo,
       } = this.props;
 
-      if (this.state.loading) {
+      const {
+        balances,
+        deletedNotify,
+        lease,
+        loading,
+        showActivated,
+        showCopy,
+      } = this.state;
+
+      if (loading) {
         return <Intro />;
       }
 
@@ -149,8 +158,8 @@ export const Assets = connect(
               <ActiveWallet
                 account={activeAccount}
                 active
-                balance={this.state.balances[activeAccount.address]}
-                leaseBalance={this.state.lease[activeAccount.address]}
+                balance={balances[activeAccount.address]}
+                leaseBalance={lease[activeAccount.address]}
                 onCopy={() => {
                   this.setState({ showCopy: true });
                   setTimeout(() => this.setState({ showCopy: false }), 1000);
@@ -182,8 +191,8 @@ export const Assets = connect(
                       <WalletItem
                         account={account}
                         active={false}
-                        balance={this.state.balances[account.address]}
-                        leaseBalance={this.state.lease[account.address]}
+                        balance={balances[account.address]}
+                        leaseBalance={lease[account.address]}
                         onSelect={onSelectHandler}
                         onActive={account => {
                           selectAccount(account);
@@ -211,10 +220,7 @@ export const Assets = connect(
             </div>
           </div>
 
-          <Modal
-            animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={this.state.showCopy}
-          >
+          <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
             <div className="modal notification">
               <Trans i18nKey="assets.copied" />
             </div>
@@ -222,7 +228,7 @@ export const Assets = connect(
 
           <Modal
             animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={this.state.showActivated}
+            showModal={showActivated}
           >
             <div className="modal notification active-asset">
               <div>
@@ -233,7 +239,7 @@ export const Assets = connect(
 
           <Modal
             animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={this.state.deletedNotify}
+            showModal={deletedNotify}
           >
             <div className="modal notification active-asset">
               <div>
