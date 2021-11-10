@@ -17,14 +17,53 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import cn from 'classnames';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
-class AssetsComponent extends React.Component {
-  props;
-  state = {} as any;
+interface Account {
+  address: string;
+  name: string;
+  type: string;
+}
+
+interface Balance {
+  available: string;
+  leasedOut: string;
+}
+
+interface Props {
+  accounts: Account[];
+  activeAccount: Account;
+  assets: Record<'WAVES', IAssetInfo>;
+  balances: Record<string, Balance>;
+  getAsset: (assetId: string) => unknown;
+  getBalances: unknown;
+  notifications: { deleted?: boolean };
+  selectAccount: (account: Account) => void;
+  selectedAccount: unknown;
+  setActiveAccount: (account: Account) => void;
+  setTab: (newTab: string) => void;
+  setUiState: (newUiState: unknown) => void;
+  showUpdateInfo: boolean;
+}
+
+interface State {
+  balances?: Record<string, Balance>;
+  deletedNotify?: boolean;
+  lease?: Record<string, Balance>;
+  loading?: boolean;
+  name?: string;
+  showActivated?: boolean;
+  showCopy?: boolean;
+  showSelected?: boolean;
+  topScrollMain?: boolean;
+}
+
+class AssetsComponent extends React.Component<Props, State> {
+  state: State = {};
   _currentActive;
   _sorted;
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(props: Props): Partial<State> | null {
     const asset = props.assets['WAVES'];
 
     if (!props.activeAccount) {
@@ -211,7 +250,7 @@ class AssetsComponent extends React.Component {
     );
   }
 
-  getFilteredAndSortedAccounts(activeAddress) {
+  getFilteredAndSortedAccounts(activeAddress: string): Account[] {
     if (!activeAddress) {
       return [];
     }
