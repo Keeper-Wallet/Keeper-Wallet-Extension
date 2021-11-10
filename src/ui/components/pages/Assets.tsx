@@ -5,7 +5,6 @@ import { ActiveWallet, WalletItem } from '../wallets';
 import { Trans } from 'react-i18next';
 import {
   getAsset,
-  getBalances,
   selectAccount,
   setActiveAccount,
   setUiState,
@@ -36,10 +35,8 @@ interface Props {
   assets: Record<'WAVES', IAssetInfo>;
   balances: Record<string, Balance>;
   getAsset: (assetId: string) => unknown;
-  getBalances: unknown;
   notifications: { deleted?: boolean };
   selectAccount: (account: Account) => void;
-  selectedAccount: unknown;
   setActiveAccount: (account: Account) => void;
   setTab: (newTab: string) => void;
   setUiState: (newUiState: unknown) => void;
@@ -322,12 +319,8 @@ class AssetsComponent extends React.Component<Props, State> {
 
 const mapStateToProps = function (store: any) {
   const activeAccount = store.selectedAccount.address;
-  const selected = store.localState.assets.account
-    ? store.localState.assets.account.address
-    : activeAccount;
 
   return {
-    selectedAccount: store.accounts.find(({ address }) => address === selected),
     activeAccount: store.accounts.find(
       ({ address }) => address === activeAccount
     ),
@@ -342,7 +335,6 @@ const mapStateToProps = function (store: any) {
 
 const actions = {
   getAsset,
-  getBalances,
   selectAccount,
   setActiveAccount,
   setUiState,
