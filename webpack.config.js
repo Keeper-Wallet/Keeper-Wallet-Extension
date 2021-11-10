@@ -7,7 +7,7 @@ const getVersion = require('./scripts/getVersion');
 const devConf = conf => ({
   ...conf,
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
   module: {
     ...conf.module,
     rules: [
