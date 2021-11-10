@@ -78,15 +78,21 @@ export const Assets = connect(
       showCopy: false,
     };
 
-    static getDerivedStateFromProps(props: Props): Partial<State> | null {
-      const asset = props.assets['WAVES'];
+    static getDerivedStateFromProps({
+      activeAccount,
+      assets,
+      balances,
+      getAsset,
+      notifications,
+    }: Props): Partial<State> | null {
+      const asset = assets['WAVES'];
 
-      if (!props.activeAccount) {
+      if (!activeAccount) {
         return null;
       }
 
       if (!asset) {
-        props.getAsset('WAVES');
+        getAsset('WAVES');
         return { balances: {}, lease: {} };
       }
 
@@ -95,7 +101,7 @@ export const Assets = connect(
       const leaseMoney: Record<string, Money> = {};
 
       Object.entries<{ available: string; leasedOut: string }>(
-        props.balances
+        balances
       ).forEach(([key, balance]) => {
         if (!balance) {
           return null;
@@ -105,7 +111,7 @@ export const Assets = connect(
         leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
       });
 
-      const { deleted: deletedNotify } = props.notifications;
+      const { deleted: deletedNotify } = notifications;
       return {
         balances: balancesMoney,
         lease: leaseMoney,
