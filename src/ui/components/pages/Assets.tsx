@@ -111,18 +111,28 @@ export const Assets = connect(
     }
 
     render() {
+      const {
+        accounts,
+        activeAccount,
+        selectAccount,
+        setActiveAccount,
+        setTab,
+        setUiState,
+        showUpdateInfo,
+      } = this.props;
+
       if (this.state.loading) {
         return <Intro />;
       }
 
-      const { address: activeAddress } = this.props.activeAccount;
+      const { address: activeAddress } = activeAccount;
 
       const onSelectHandler = account => {
-        this.props.setActiveAccount(account);
-        this.props.setTab(PAGES.ACCOUNT_INFO);
+        setActiveAccount(account);
+        setTab(PAGES.ACCOUNT_INFO);
       };
 
-      const otherAccounts = this.props.accounts.filter(
+      const otherAccounts = accounts.filter(
         account => account.address !== activeAddress
       );
 
@@ -138,7 +148,7 @@ export const Assets = connect(
               timeout={600}
             >
               <ActiveWallet
-                account={this.props.activeAccount}
+                account={activeAccount}
                 active
                 balance={this.state.balances[activeAddress]}
                 leaseBalance={this.state.lease[activeAddress]}
@@ -150,7 +160,7 @@ export const Assets = connect(
                 onShowQr={event => {
                   event.stopPropagation();
                   event.preventDefault();
-                  this.props.setTab(PAGES.QR_CODE_SELECTED);
+                  setTab(PAGES.QR_CODE_SELECTED);
                 }}
               />
             </CSSTransition>
@@ -176,7 +186,7 @@ export const Assets = connect(
                         leaseBalance={this.state.lease[account.address]}
                         onSelect={onSelectHandler}
                         onActive={account => {
-                          this.props.selectAccount(account);
+                          selectAccount(account);
                           this.setState({
                             showActivated: true,
                             name: account.name,
@@ -195,7 +205,7 @@ export const Assets = connect(
 
             <div
               className={`body1 basic500 border-dashed ${styles.addAccount}`}
-              onClick={() => this.props.setTab(PAGES.IMPORT_FROM_ASSETS)}
+              onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
             >
               <Trans i18nKey="assets.addAccount">Add an account</Trans>
             </div>
@@ -232,17 +242,14 @@ export const Assets = connect(
             </div>
           </Modal>
 
-          <Modal
-            animation={Modal.ANIMATION.FLASH}
-            showModal={this.props.showUpdateInfo}
-          >
+          <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
             <FeatureUpdateInfo
               onClose={() => {
-                this.props.setUiState({ isFeatureUpdateShown: true });
+                setUiState({ isFeatureUpdateShown: true });
               }}
               onSubmit={() => {
-                this.props.setUiState({ isFeatureUpdateShown: true });
-                this.props.setTab(PAGES.EXPORT_ACCOUNTS);
+                setUiState({ isFeatureUpdateShown: true });
+                setTab(PAGES.EXPORT_ACCOUNTS);
               }}
             />
           </Modal>
