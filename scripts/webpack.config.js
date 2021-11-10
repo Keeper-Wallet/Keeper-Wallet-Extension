@@ -86,6 +86,7 @@ module.exports = ({
   plugins.push(new WebpackCustomActions({ onBuildEnd: [getPlatforms] }));
 
   return {
+    stats: 'errors-warnings',
     entry: {
       ui: path.resolve(SOURCE_FOLDER, 'ui.js'),
       background: path.resolve(SOURCE_FOLDER, 'background.js'),
