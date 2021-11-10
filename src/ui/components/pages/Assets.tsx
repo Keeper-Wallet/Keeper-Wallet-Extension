@@ -151,7 +151,7 @@ export const Assets = connect(
         .filter(account => account.address !== activeAddress)
         .map(account => (
           <CSSTransition
-            key={`${account.address}_${account.name}_${account.type}`}
+            key={account.address}
             classNames="animate_wallets"
             timeout={600}
           >
@@ -160,7 +160,6 @@ export const Assets = connect(
               active={false}
               balance={this.state.balances[account.address]}
               leaseBalance={this.state.lease[account.address]}
-              key={`${account.address}_${account.name}_${account.type}`}
               onSelect={this.onSelectHandler}
               onActive={this.onSetActiveHandler}
             />
@@ -182,11 +181,7 @@ export const Assets = connect(
               classNames="animate_active_wallet"
               timeout={600}
             >
-              <ActiveWallet
-                onCopy={this.copyActiveHandler}
-                {...activeProps}
-                key={activeAddress}
-              />
+              <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} />
             </CSSTransition>
           </TransitionGroup>
           <div
@@ -226,10 +221,7 @@ export const Assets = connect(
             animation={Modal.ANIMATION.FLASH_SCALE}
             showModal={this.state.showActivated}
           >
-            <div
-              className="modal notification active-asset"
-              key={this.state.name}
-            >
+            <div className="modal notification active-asset">
               <div>
                 <Trans i18nKey="assets.setActive">Active account changed</Trans>
               </div>
@@ -240,7 +232,7 @@ export const Assets = connect(
             animation={Modal.ANIMATION.FLASH_SCALE}
             showModal={this.state.deletedNotify}
           >
-            <div className="modal notification active-asset" key="deleted">
+            <div className="modal notification active-asset">
               <div>
                 <Trans i18nKey="assets.deleteAccount">Delete account</Trans>
               </div>
