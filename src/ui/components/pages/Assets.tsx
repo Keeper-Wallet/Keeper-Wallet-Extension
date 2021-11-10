@@ -24,6 +24,43 @@ class AssetsComponent extends React.Component {
   _currentActive;
   _sorted;
   _t;
+
+  static getDerivedStateFromProps(props) {
+    const asset = props.assets['WAVES'];
+
+    if (!props.activeAccount) {
+      return { loading: true };
+    }
+
+    if (!asset) {
+      props.getAsset('WAVES');
+      return { balances: {}, lease: {}, loading: false };
+    }
+
+    const assetInstance = new Asset(asset);
+    const balancesMoney = {};
+    const leaseMoney = {};
+
+    Object.entries<{ available: string; leasedOut: string }>(
+      props.balances
+    ).forEach(([key, balance]) => {
+      if (!balance) {
+        return null;
+      }
+
+      balancesMoney[key] = new Money(balance.available, assetInstance);
+      leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+    });
+
+    const { deleted: deletedNotify } = props.notifications;
+    return {
+      balances: balancesMoney,
+      lease: leaseMoney,
+      loading: false,
+      deletedNotify,
+    };
+  }
+
   addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
   onSelectHandler = account => this.showInfo(account);
   onSetActiveHandler = account => this.setActive(account);
@@ -242,42 +279,6 @@ class AssetsComponent extends React.Component {
   onCopyModal() {
     this.setState({ showCopy: true });
     this.closeModals();
-  }
-
-  static getDerivedStateFromProps(props) {
-    const asset = props.assets['WAVES'];
-
-    if (!props.activeAccount) {
-      return { loading: true };
-    }
-
-    if (!asset) {
-      props.getAsset('WAVES');
-      return { balances: {}, lease: {}, loading: false };
-    }
-
-    const assetInstance = new Asset(asset);
-    const balancesMoney = {};
-    const leaseMoney = {};
-
-    Object.entries<{ available: string; leasedOut: string }>(
-      props.balances
-    ).forEach(([key, balance]) => {
-      if (!balance) {
-        return null;
-      }
-
-      balancesMoney[key] = new Money(balance.available, assetInstance);
-      leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
-    });
-
-    const { deleted: deletedNotify } = props.notifications;
-    return {
-      balances: balancesMoney,
-      lease: leaseMoney,
-      loading: false,
-      deletedNotify,
-    };
   }
 }
 
