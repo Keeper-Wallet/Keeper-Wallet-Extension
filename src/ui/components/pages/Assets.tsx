@@ -43,9 +43,9 @@ interface Props {
 }
 
 interface State {
-  balances: Record<string, Money>;
+  balancesMoney: Record<string, Money>;
   deletedNotify: boolean;
-  lease: Record<string, Money>;
+  leaseMoney: Record<string, Money>;
   showActivated: boolean;
   showCopy: boolean;
 }
@@ -71,9 +71,9 @@ export const Assets = connect(
 )(
   class Assets extends React.Component<Props, State> {
     state: State = {
-      balances: {},
+      balancesMoney: {},
       deletedNotify: false,
-      lease: {},
+      leaseMoney: {},
       showActivated: false,
       showCopy: false,
     };
@@ -93,7 +93,7 @@ export const Assets = connect(
 
       if (!asset) {
         getAsset('WAVES');
-        return { balances: {}, lease: {} };
+        return { balancesMoney: {}, leaseMoney: {} };
       }
 
       const assetInstance = new Asset(asset);
@@ -108,8 +108,8 @@ export const Assets = connect(
       });
 
       return {
-        balances: balancesMoney,
-        lease: leaseMoney,
+        balancesMoney,
+        leaseMoney,
         deletedNotify: notifications.deleted,
       };
     }
@@ -125,8 +125,13 @@ export const Assets = connect(
         showUpdateInfo,
       } = this.props;
 
-      const { balances, deletedNotify, lease, showActivated, showCopy } =
-        this.state;
+      const {
+        balancesMoney,
+        deletedNotify,
+        leaseMoney,
+        showActivated,
+        showCopy,
+      } = this.state;
 
       if (!activeAccount) {
         return <Intro />;
@@ -156,8 +161,8 @@ export const Assets = connect(
               <ActiveWallet
                 account={activeAccount}
                 active
-                balance={balances[activeAccount.address]}
-                leaseBalance={lease[activeAccount.address]}
+                balance={balancesMoney[activeAccount.address]}
+                leaseBalance={leaseMoney[activeAccount.address]}
                 onCopy={() => {
                   this.setState({ showCopy: true });
                   setTimeout(() => this.setState({ showCopy: false }), 1000);
@@ -189,8 +194,8 @@ export const Assets = connect(
                       <WalletItem
                         account={account}
                         active={false}
-                        balance={balances[account.address]}
-                        leaseBalance={lease[account.address]}
+                        balance={balancesMoney[account.address]}
+                        leaseBalance={leaseMoney[account.address]}
                         onSelect={onSelectHandler}
                         onActive={account => {
                           selectAccount(account);
