@@ -111,11 +111,10 @@ export const Assets = connect(
         leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
       });
 
-      const { deleted: deletedNotify } = notifications;
       return {
         balances: balancesMoney,
         lease: leaseMoney,
-        deletedNotify,
+        deletedNotify: notifications.deleted,
       };
     }
 
