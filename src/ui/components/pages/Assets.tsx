@@ -77,16 +77,11 @@ export const Assets = connect(
     };
 
     static getDerivedStateFromProps({
-      activeAccount,
       assets,
       balances,
       getAsset,
     }: Props): Partial<State> | null {
       const assetInfo = assets['WAVES'];
-
-      if (!activeAccount) {
-        return null;
-      }
 
       if (!assetInfo) {
         getAsset('WAVES');
