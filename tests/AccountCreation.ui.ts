@@ -860,7 +860,7 @@ describe('Account creation', function () {
       }
 
       describe('when no accounts exist', function () {
-        it.skip('allows to select and import all accounts', async function () {
+        it('allows to select and import all accounts', async function () {
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -946,6 +946,8 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
+          await Network.switchTo.call(this, 'Testnet');
+
           await this.driver.wait(
             until.elementLocated(
               By.xpath("//div[contains(@class, '-assets-assets')]")
@@ -1026,7 +1028,7 @@ describe('Account creation', function () {
       });
 
       describe('when some, but not all accounts already exist', function () {
-        it.skip('allows to select only unexisting accounts', async function () {
+        it('allows to select only unexisting accounts', async function () {
           await this.driver
             .wait(
               until.elementLocated(
@@ -1206,7 +1208,7 @@ describe('Account creation', function () {
       });
 
       describe('when all accounts exist', function () {
-        it.skip('does not allow selecting anything and shows the "Skip" button', async function () {
+        it('does not allow selecting anything and shows the "Skip" button', async function () {
           await this.driver
             .wait(
               until.elementLocated(
