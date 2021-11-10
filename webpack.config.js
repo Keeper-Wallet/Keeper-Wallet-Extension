@@ -1,3 +1,4 @@
+const path = require('path');
 const WebpackCustomActions = require('./scripts/WebpackCustomActionsPlugin');
 const clearDist = require('./scripts/clearDist');
 const conf = require('./scripts/webpack.config');
@@ -13,6 +14,15 @@ const devConf = conf => ({
       {
         enforce: 'pre',
         test: /\.js$/,
+        exclude: [
+          '@waves/data-entities',
+          '@waves/money-like-to-node',
+          '@waves/node-api-js',
+          '@waves/ts-lib-crypto',
+        ].map(
+          moduleName =>
+            new RegExp(path.join(__dirname, 'node_modules', moduleName))
+        ),
         loader: 'source-map-loader',
       },
       ...conf.module.rules,
