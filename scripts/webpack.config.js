@@ -105,22 +105,7 @@ module.exports = ({
           /*configFile: "./path/to/tsconfig.json" */
         }),
       ],
-      extensions: [
-        '.ts',
-        '.tsx',
-        '.js',
-        '.json',
-        '.styl',
-        '.css',
-        '.png',
-        '.jpg',
-        '.gif',
-        '.svg',
-        '.woff',
-        '.woff2',
-        '.ttf',
-        '.otf',
-      ],
+      extensions: ['.ts', '.tsx', '.js'],
     },
 
     plugins,
