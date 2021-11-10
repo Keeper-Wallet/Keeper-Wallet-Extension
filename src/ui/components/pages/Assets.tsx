@@ -125,15 +125,13 @@ export const Assets = connect(
         return <Intro />;
       }
 
-      const { address: activeAddress } = activeAccount;
-
       const onSelectHandler = account => {
         setActiveAccount(account);
         setTab(PAGES.ACCOUNT_INFO);
       };
 
       const otherAccounts = accounts.filter(
-        account => account.address !== activeAddress
+        account => account.address !== activeAccount.address
       );
 
       return (
@@ -143,15 +141,15 @@ export const Assets = connect(
           </div>
           <TransitionGroup className={styles.activeAnimationSpan}>
             <CSSTransition
-              key={activeAddress}
+              key={activeAccount.address}
               classNames="animate_active_wallet"
               timeout={600}
             >
               <ActiveWallet
                 account={activeAccount}
                 active
-                balance={this.state.balances[activeAddress]}
-                leaseBalance={this.state.lease[activeAddress]}
+                balance={this.state.balances[activeAccount.address]}
+                leaseBalance={this.state.lease[activeAccount.address]}
                 onCopy={() => {
                   this.setState({ showCopy: true });
                   setTimeout(() => this.setState({ showCopy: false }), 1000);
