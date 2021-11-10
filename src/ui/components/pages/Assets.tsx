@@ -76,8 +76,6 @@ export const Assets = connect(
 )(
   class Assets extends React.Component<Props, State> {
     state: State = {};
-    _currentActive;
-    _sorted;
 
     static getDerivedStateFromProps(props: Props): Partial<State> | null {
       const asset = props.assets['WAVES'];
@@ -149,8 +147,9 @@ export const Assets = connect(
         active: true,
       };
 
-      const wallets = this.getFilteredAndSortedAccounts(activeAddress).map(
-        account =>
+      const wallets = this.props.accounts
+        .filter(account => account.address !== activeAddress)
+        .map(account =>
           account ? (
             <CSSTransition
               key={`${account.address}_${account.name}_${account.type}`}
@@ -168,7 +167,7 @@ export const Assets = connect(
               />
             </CSSTransition>
           ) : null
-      );
+        );
 
       const scrollClassName = cn('scroll-container', {
         'lock-scroll': this.state.topScrollMain,
@@ -264,49 +263,6 @@ export const Assets = connect(
           </Modal>
         </div>
       );
-    }
-
-    getFilteredAndSortedAccounts(activeAddress: string): Account[] {
-      if (!activeAddress) {
-        return [];
-      }
-      this._sorted = this._sorted || [];
-      const hash = {};
-      this.props.accounts.forEach(account => (hash[account.address] = account));
-
-      this._sorted = this._sorted
-        .map(account => {
-          const { address } = account || { address: null };
-          const data = hash[address];
-          delete hash[address];
-          return data;
-        })
-        .filter(Boolean);
-      delete hash[activeAddress];
-      this._sorted = [...this._sorted, ...Object.values(hash).filter(Boolean)];
-      this._sorted.sort((acc, acc2) => {
-        const lastLogin1 = acc.lastLogin || 0;
-        const lastLogin2 = acc2.lastlogin || 0;
-        return lastLogin2 - lastLogin1;
-      });
-      if (this._currentActive === activeAddress) {
-        return this._sorted;
-      }
-
-      if (!this._currentActive) {
-        this._currentActive = activeAddress;
-        return this._sorted;
-      }
-
-      const last = this.props.accounts.find(
-        account => account.address === this._currentActive
-      );
-      this._sorted = this._sorted.filter(
-        account => account.address !== activeAddress
-      );
-      this._sorted.unshift(last);
-      this._currentActive = activeAddress;
-      return this._sorted;
     }
 
     setActive(account) {
