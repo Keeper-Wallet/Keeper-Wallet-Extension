@@ -43,9 +43,9 @@ interface Props {
 }
 
 interface State {
-  balances?: Record<string, Balance>;
+  balances?: Record<string, Money>;
   deletedNotify?: boolean;
-  lease?: Record<string, Balance>;
+  lease?: Record<string, Money>;
   loading?: boolean;
   name?: string;
   showActivated?: boolean;
@@ -87,8 +87,8 @@ export const Assets = connect(
       }
 
       const assetInstance = new Asset(asset);
-      const balancesMoney = {};
-      const leaseMoney = {};
+      const balancesMoney: Record<string, Money> = {};
+      const leaseMoney: Record<string, Money> = {};
 
       Object.entries<{ available: string; leasedOut: string }>(
         props.balances
