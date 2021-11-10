@@ -50,7 +50,6 @@ interface State {
   name?: string;
   showActivated?: boolean;
   showCopy?: boolean;
-  showSelected?: boolean;
 }
 
 export const Assets = connect(
@@ -111,20 +110,6 @@ export const Assets = connect(
       };
     }
 
-    addWalletHandler = () => this.props.setTab(PAGES.IMPORT_FROM_ASSETS);
-    onSelectHandler = account => this.showInfo(account);
-    onSetActiveHandler = account => this.setActive(account);
-    copyActiveHandler = () => this.onCopyModal();
-    showQrHandler = event => {
-      event.stopPropagation();
-      event.preventDefault();
-      this.props.setTab(PAGES.QR_CODE_SELECTED);
-    };
-
-    dismissFeatureInfo = () =>
-      this.props.setUiState({ isFeatureUpdateShown: true });
-    exportToKeystore = () => this.props.setTab(PAGES.EXPORT_ACCOUNTS);
-
     render() {
       if (this.state.loading) {
         return <Intro />;
@@ -132,12 +117,21 @@ export const Assets = connect(
 
       const { address: activeAddress } = this.props.activeAccount;
 
+      const onSelectHandler = account => {
+        this.props.setActiveAccount(account);
+        this.props.setTab(PAGES.ACCOUNT_INFO);
+      };
+
       const activeProps = {
         account: this.props.activeAccount,
         balance: this.state.balances[activeAddress],
         leaseBalance: this.state.lease[activeAddress],
-        onSelect: this.onSelectHandler,
-        onShowQr: this.showQrHandler,
+        onSelect: onSelectHandler,
+        onShowQr: event => {
+          event.stopPropagation();
+          event.preventDefault();
+          this.props.setTab(PAGES.QR_CODE_SELECTED);
+        },
         active: true,
       };
 
@@ -154,8 +148,12 @@ export const Assets = connect(
               active={false}
               balance={this.state.balances[account.address]}
               leaseBalance={this.state.lease[account.address]}
-              onSelect={this.onSelectHandler}
-              onActive={this.onSetActiveHandler}
+              onSelect={onSelectHandler}
+              onActive={account => {
+                this.props.selectAccount(account);
+                this.setState({ showActivated: true, name: account.name });
+                setTimeout(() => this.setState({ showActivated: false }), 1000);
+              }}
             />
           </CSSTransition>
         ));
@@ -171,7 +169,13 @@ export const Assets = connect(
               classNames="animate_active_wallet"
               timeout={600}
             >
-              <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} />
+              <ActiveWallet
+                onCopy={() => {
+                  this.setState({ showCopy: true });
+                  setTimeout(() => this.setState({ showCopy: false }), 1000);
+                }}
+                {...activeProps}
+              />
             </CSSTransition>
           </TransitionGroup>
           <div className="wallets-list">
@@ -189,7 +193,7 @@ export const Assets = connect(
 
             <div
               className={`body1 basic500 border-dashed ${styles.addAccount}`}
-              onClick={this.addWalletHandler}
+              onClick={() => this.props.setTab(PAGES.IMPORT_FROM_ASSETS)}
             >
               <Trans i18nKey="assets.addAccount">Add an account</Trans>
             </div>
@@ -231,41 +235,17 @@ export const Assets = connect(
             showModal={this.props.showUpdateInfo}
           >
             <FeatureUpdateInfo
-              onClose={this.dismissFeatureInfo}
+              onClose={() => {
+                this.props.setUiState({ isFeatureUpdateShown: true });
+              }}
               onSubmit={() => {
-                this.dismissFeatureInfo();
-                this.exportToKeystore();
+                this.props.setUiState({ isFeatureUpdateShown: true });
+                this.props.setTab(PAGES.EXPORT_ACCOUNTS);
               }}
             />
           </Modal>
         </div>
       );
-    }
-
-    setActive(account) {
-      this.props.selectAccount(account);
-      this.setState({ showActivated: true, name: account.name });
-      this.closeModals();
-    }
-
-    showInfo(account) {
-      this.props.setActiveAccount(account);
-      this.props.setTab(PAGES.ACCOUNT_INFO);
-    }
-
-    closeModals() {
-      const showSelected = false;
-      const showActivated = false;
-      const showCopy = false;
-      setTimeout(
-        () => this.setState({ showSelected, showActivated, showCopy }),
-        1000
-      );
-    }
-
-    onCopyModal() {
-      this.setState({ showCopy: true });
-      this.closeModals();
     }
   }
 );
