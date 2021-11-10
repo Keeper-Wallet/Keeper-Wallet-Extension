@@ -13,7 +13,6 @@ import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal } from '../ui';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import cn from 'classnames';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
@@ -52,7 +51,6 @@ interface State {
   showActivated?: boolean;
   showCopy?: boolean;
   showSelected?: boolean;
-  topScrollMain?: boolean;
 }
 
 export const Assets = connect(
@@ -117,10 +115,6 @@ export const Assets = connect(
     onSelectHandler = account => this.showInfo(account);
     onSetActiveHandler = account => this.setActive(account);
     copyActiveHandler = () => this.onCopyModal();
-    scrollHandler = e => {
-      const value = e.target.scrollTop;
-      this.setState({ topScrollMain: value > 90 });
-    };
     showQrHandler = event => {
       event.stopPropagation();
       event.preventDefault();
@@ -166,10 +160,6 @@ export const Assets = connect(
           </CSSTransition>
         ));
 
-      const scrollClassName = cn('scroll-container', {
-        'lock-scroll': this.state.topScrollMain,
-      });
-
       return (
         <div className={styles.assets}>
           <div className={styles.activeAccountTitle}>
@@ -184,10 +174,7 @@ export const Assets = connect(
               <ActiveWallet onCopy={this.copyActiveHandler} {...activeProps} />
             </CSSTransition>
           </TransitionGroup>
-          <div
-            className={`${scrollClassName} wallets-list`}
-            onScroll={this.scrollHandler}
-          >
+          <div className="wallets-list">
             <div>
               {otherAccounts.length ? (
                 <div className={`${styles.otherWalletsTitle} basic500 body3`}>
