@@ -46,7 +46,6 @@ interface State {
   balances: Record<string, Money>;
   deletedNotify: boolean;
   lease: Record<string, Money>;
-  loading: boolean;
   showActivated: boolean;
   showCopy: boolean;
 }
@@ -75,7 +74,6 @@ export const Assets = connect(
       balances: {},
       deletedNotify: false,
       lease: {},
-      loading: false,
       showActivated: false,
       showCopy: false,
     };
@@ -84,12 +82,12 @@ export const Assets = connect(
       const asset = props.assets['WAVES'];
 
       if (!props.activeAccount) {
-        return { loading: true };
+        return null;
       }
 
       if (!asset) {
         props.getAsset('WAVES');
-        return { balances: {}, lease: {}, loading: false };
+        return { balances: {}, lease: {} };
       }
 
       const assetInstance = new Asset(asset);
@@ -111,7 +109,6 @@ export const Assets = connect(
       return {
         balances: balancesMoney,
         lease: leaseMoney,
-        loading: false,
         deletedNotify,
       };
     }
@@ -127,16 +124,10 @@ export const Assets = connect(
         showUpdateInfo,
       } = this.props;
 
-      const {
-        balances,
-        deletedNotify,
-        lease,
-        loading,
-        showActivated,
-        showCopy,
-      } = this.state;
+      const { balances, deletedNotify, lease, showActivated, showCopy } =
+        this.state;
 
-      if (loading) {
+      if (!activeAccount) {
         return <Intro />;
       }
 
