@@ -147,7 +147,7 @@ export const Assets = connect(
         active: true,
       };
 
-      const wallets = this.props.accounts
+      const otherAccounts = this.props.accounts
         .filter(account => account.address !== activeAddress)
         .map(account =>
           account ? (
@@ -196,14 +196,14 @@ export const Assets = connect(
             onScroll={this.scrollHandler}
           >
             <div>
-              {wallets.length ? (
+              {otherAccounts.length ? (
                 <div className={`${styles.otherWalletsTitle} basic500 body3`}>
                   <Trans i18nKey="assets.inStorage">Other accounts</Trans>
                 </div>
               ) : null}
 
               <div className={styles.walletListWrapper}>
-                <TransitionGroup>{wallets}</TransitionGroup>
+                <TransitionGroup>{otherAccounts}</TransitionGroup>
               </div>
             </div>
 
