@@ -1,7 +1,33 @@
+const WebpackCustomActions = require('./scripts/WebpackCustomActionsPlugin');
+const clearDist = require('./scripts/clearDist');
 const conf = require('./scripts/webpack.config');
-const prodConf = require('./scripts/webpack.prod.config');
-const defConf = require('./scripts/webpack.dev.config');
 const getVersion = require('./scripts/getVersion');
+
+const devConf = conf => ({
+  ...conf,
+  mode: 'development',
+  devtool: 'inline-source-map',
+  module: {
+    ...conf.module,
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'source-map-loader',
+      },
+      ...conf.module.rules,
+    ],
+  },
+});
+
+const prodConf = conf => ({
+  ...conf,
+  mode: 'production',
+  plugins: [
+    ...conf.plugins,
+    new WebpackCustomActions({ onBuildStart: [clearDist] }),
+  ],
+});
 
 module.exports = () => {
   const version = getVersion();
@@ -9,7 +35,7 @@ module.exports = () => {
     throw 'Build failed';
   }
   const isProduction = process.env.NODE_ENV === 'production';
-  const configFn = isProduction ? prodConf : defConf;
+  const configFn = isProduction ? prodConf : devConf;
   return configFn({
     ...conf({
       version,
