@@ -47,7 +47,6 @@ interface State {
   deletedNotify?: boolean;
   lease?: Record<string, Money>;
   loading?: boolean;
-  name?: string;
   showActivated?: boolean;
   showCopy?: boolean;
 }
@@ -196,10 +195,7 @@ export const Assets = connect(
                         onSelect={onSelectHandler}
                         onActive={account => {
                           selectAccount(account);
-                          this.setState({
-                            showActivated: true,
-                            name: account.name,
-                          });
+                          this.setState({ showActivated: true });
                           setTimeout(
                             () => this.setState({ showActivated: false }),
                             1000
