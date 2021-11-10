@@ -43,12 +43,12 @@ interface Props {
 }
 
 interface State {
-  balances?: Record<string, Money>;
-  deletedNotify?: boolean;
-  lease?: Record<string, Money>;
-  loading?: boolean;
-  showActivated?: boolean;
-  showCopy?: boolean;
+  balances: Record<string, Money>;
+  deletedNotify: boolean;
+  lease: Record<string, Money>;
+  loading: boolean;
+  showActivated: boolean;
+  showCopy: boolean;
 }
 
 export const Assets = connect(
@@ -71,7 +71,14 @@ export const Assets = connect(
   }
 )(
   class Assets extends React.Component<Props, State> {
-    state: State = {};
+    state: State = {
+      balances: {},
+      deletedNotify: false,
+      lease: {},
+      loading: false,
+      showActivated: false,
+      showCopy: false,
+    };
 
     static getDerivedStateFromProps(props: Props): Partial<State> | null {
       const asset = props.assets['WAVES'];
