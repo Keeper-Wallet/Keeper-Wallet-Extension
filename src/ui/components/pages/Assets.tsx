@@ -149,25 +149,23 @@ export const Assets = connect(
 
       const otherAccounts = this.props.accounts
         .filter(account => account.address !== activeAddress)
-        .map(account =>
-          account ? (
-            <CSSTransition
+        .map(account => (
+          <CSSTransition
+            key={`${account.address}_${account.name}_${account.type}`}
+            classNames="animate_wallets"
+            timeout={600}
+          >
+            <WalletItem
+              account={account}
+              active={false}
+              balance={this.state.balances[account.address]}
+              leaseBalance={this.state.lease[account.address]}
               key={`${account.address}_${account.name}_${account.type}`}
-              classNames="animate_wallets"
-              timeout={600}
-            >
-              <WalletItem
-                account={account}
-                active={false}
-                balance={this.state.balances[account.address]}
-                leaseBalance={this.state.lease[account.address]}
-                key={`${account.address}_${account.name}_${account.type}`}
-                onSelect={this.onSelectHandler}
-                onActive={this.onSetActiveHandler}
-              />
-            </CSSTransition>
-          ) : null
-        );
+              onSelect={this.onSelectHandler}
+              onActive={this.onSetActiveHandler}
+            />
+          </CSSTransition>
+        ));
 
       const scrollClassName = cn('scroll-container', {
         'lock-scroll': this.state.topScrollMain,
