@@ -82,26 +82,26 @@ export const Assets = connect(
       balances,
       getAsset,
     }: Props): Partial<State> | null {
-      const asset = assets['WAVES'];
+      const assetInfo = assets['WAVES'];
 
       if (!activeAccount) {
         return null;
       }
 
-      if (!asset) {
+      if (!assetInfo) {
         getAsset('WAVES');
         return { balancesMoney: {}, leaseMoney: {} };
       }
 
-      const assetInstance = new Asset(asset);
+      const asset = new Asset(assetInfo);
       const balancesMoney: Record<string, Money> = {};
       const leaseMoney: Record<string, Money> = {};
 
       Object.entries<{ available: string; leasedOut: string }>(
         balances
       ).forEach(([key, { available, leasedOut }]) => {
-        balancesMoney[key] = new Money(available, assetInstance);
-        leaseMoney[key] = new Money(leasedOut, assetInstance);
+        balancesMoney[key] = new Money(available, asset);
+        leaseMoney[key] = new Money(leasedOut, asset);
       });
 
       return { balancesMoney, leaseMoney };
