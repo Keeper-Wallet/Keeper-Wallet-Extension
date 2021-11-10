@@ -43,8 +43,6 @@ interface Props {
 }
 
 interface State {
-  balancesMoney: Record<string, Money>;
-  leaseMoney: Record<string, Money>;
   showActivated: boolean;
   showCopy: boolean;
 }
@@ -70,35 +68,9 @@ export const Assets = connect(
 )(
   class Assets extends React.Component<Props, State> {
     state: State = {
-      balancesMoney: {},
-      leaseMoney: {},
       showActivated: false,
       showCopy: false,
     };
-
-    static getDerivedStateFromProps({
-      assets,
-      balances,
-    }: Props): Partial<State> | null {
-      const assetInfo = assets['WAVES'];
-
-      if (!assetInfo) {
-        return null;
-      }
-
-      const asset = new Asset(assetInfo);
-      const balancesMoney: Record<string, Money> = {};
-      const leaseMoney: Record<string, Money> = {};
-
-      Object.entries<{ available: string; leasedOut: string }>(
-        balances
-      ).forEach(([key, { available, leasedOut }]) => {
-        balancesMoney[key] = new Money(available, asset);
-        leaseMoney[key] = new Money(leasedOut, asset);
-      });
-
-      return { balancesMoney, leaseMoney };
-    }
 
     componentDidMount() {
       const { assets, getAsset } = this.props;
@@ -112,6 +84,8 @@ export const Assets = connect(
       const {
         accounts,
         activeAccount,
+        assets,
+        balances,
         notifications,
         selectAccount,
         setActiveAccount,
@@ -120,7 +94,7 @@ export const Assets = connect(
         showUpdateInfo,
       } = this.props;
 
-      const { balancesMoney, leaseMoney, showActivated, showCopy } = this.state;
+      const { showActivated, showCopy } = this.state;
 
       if (!activeAccount) {
         return <Intro />;
@@ -134,6 +108,22 @@ export const Assets = connect(
       const otherAccounts = accounts.filter(
         account => account.address !== activeAccount.address
       );
+
+      const balancesMoney: Record<string, Money> = {};
+      const leaseMoney: Record<string, Money> = {};
+
+      const assetInfo = assets['WAVES'];
+
+      if (assetInfo) {
+        const asset = new Asset(assetInfo);
+
+        Object.entries<{ available: string; leasedOut: string }>(
+          balances
+        ).forEach(([key, { available, leasedOut }]) => {
+          balancesMoney[key] = new Money(available, asset);
+          leaseMoney[key] = new Money(leasedOut, asset);
+        });
+      }
 
       return (
         <div className={styles.assets}>
