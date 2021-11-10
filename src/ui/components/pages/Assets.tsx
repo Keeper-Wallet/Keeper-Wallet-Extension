@@ -102,13 +102,9 @@ export const Assets = connect(
 
       Object.entries<{ available: string; leasedOut: string }>(
         balances
-      ).forEach(([key, balance]) => {
-        if (!balance) {
-          return null;
-        }
-
-        balancesMoney[key] = new Money(balance.available, assetInstance);
-        leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+      ).forEach(([key, { available, leasedOut }]) => {
+        balancesMoney[key] = new Money(available, assetInstance);
+        leaseMoney[key] = new Money(leasedOut, assetInstance);
       });
 
       return {
