@@ -122,19 +122,6 @@ export const Assets = connect(
         this.props.setTab(PAGES.ACCOUNT_INFO);
       };
 
-      const activeProps = {
-        account: this.props.activeAccount,
-        balance: this.state.balances[activeAddress],
-        leaseBalance: this.state.lease[activeAddress],
-        onSelect: onSelectHandler,
-        onShowQr: event => {
-          event.stopPropagation();
-          event.preventDefault();
-          this.props.setTab(PAGES.QR_CODE_SELECTED);
-        },
-        active: true,
-      };
-
       const otherAccounts = this.props.accounts
         .filter(account => account.address !== activeAddress)
         .map(account => (
@@ -170,11 +157,20 @@ export const Assets = connect(
               timeout={600}
             >
               <ActiveWallet
+                account={this.props.activeAccount}
+                active
+                balance={this.state.balances[activeAddress]}
+                leaseBalance={this.state.lease[activeAddress]}
                 onCopy={() => {
                   this.setState({ showCopy: true });
                   setTimeout(() => this.setState({ showCopy: false }), 1000);
                 }}
-                {...activeProps}
+                onSelect={onSelectHandler}
+                onShowQr={event => {
+                  event.stopPropagation();
+                  event.preventDefault();
+                  this.props.setTab(PAGES.QR_CODE_SELECTED);
+                }}
               />
             </CSSTransition>
           </TransitionGroup>
