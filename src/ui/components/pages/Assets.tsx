@@ -137,8 +137,9 @@ export const Assets = connect(
       return (
         <div className={styles.assets}>
           <div className={styles.activeAccountTitle}>
-            <Trans i18nKey="assets.activeAccount">Active account</Trans>
+            <Trans i18nKey="assets.activeAccount" />
           </div>
+
           <TransitionGroup className={styles.activeAnimationSpan}>
             <CSSTransition
               key={activeAccount.address}
@@ -163,11 +164,12 @@ export const Assets = connect(
               />
             </CSSTransition>
           </TransitionGroup>
+
           <div className="wallets-list">
             {otherAccounts.length !== 0 && (
               <>
                 <div className={`${styles.otherWalletsTitle} basic500 body3`}>
-                  <Trans i18nKey="assets.inStorage">Other accounts</Trans>
+                  <Trans i18nKey="assets.inStorage" />
                 </div>
 
                 <TransitionGroup>
@@ -205,7 +207,7 @@ export const Assets = connect(
               className={`body1 basic500 border-dashed ${styles.addAccount}`}
               onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
             >
-              <Trans i18nKey="assets.addAccount">Add an account</Trans>
+              <Trans i18nKey="assets.addAccount" />
             </div>
           </div>
 
@@ -214,7 +216,7 @@ export const Assets = connect(
             showModal={this.state.showCopy}
           >
             <div className="modal notification">
-              <Trans i18nKey="assets.copied">Copied!</Trans>
+              <Trans i18nKey="assets.copied" />
             </div>
           </Modal>
 
@@ -224,7 +226,7 @@ export const Assets = connect(
           >
             <div className="modal notification active-asset">
               <div>
-                <Trans i18nKey="assets.setActive">Active account changed</Trans>
+                <Trans i18nKey="assets.setActive" />
               </div>
             </div>
           </Modal>
@@ -235,7 +237,7 @@ export const Assets = connect(
           >
             <div className="modal notification active-asset">
               <div>
-                <Trans i18nKey="assets.deleteAccount">Delete account</Trans>
+                <Trans i18nKey="assets.deleteAccount" />
               </div>
             </div>
           </Modal>
