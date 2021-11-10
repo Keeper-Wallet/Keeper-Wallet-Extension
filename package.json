@@ -7,19 +7,29 @@
     "url": "git+https://github.com:wavesplatform/waves-keeper.git"
   },
   "license": "ISC",
+  "engineStrict": true,
+  "engines": {
+    "node": "^10.24.1"
+  },
   "scripts": {
+    "dev": "webpack --watch",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
-    "start": "webpack --watch",
-    "dist": "NODE_ENV=production webpack",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' DEBUG='testcontainers' mocha -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'",
-    "test-dry": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --dry-run -r ts-node/register -r tests/utils/hooks.ts 'tests/**/*.ui.ts'"
+    "test:dev": "mocha --watch",
+    "test": "mocha",
+    "dist": "NODE_ENV=production webpack"
   },
-  "babel": {
-    "presets": [
-      "env",
-      "react",
-      "stage-2"
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "test/utils/hooks.ts"
+    ],
+    "watchFiles": [
+      "dist",
+      "test"
     ]
   },
   "dependencies": {
@@ -107,9 +117,5 @@
     "url-loader": "^1.1.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.3.9"
-  },
-  "engineStrict": true,
-  "engines": {
-    "node": "^10.24.1"
   }
 }

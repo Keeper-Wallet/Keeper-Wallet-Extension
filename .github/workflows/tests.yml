@@ -27,8 +27,12 @@ jobs:
       - name: Check code formatting
         run: npm run prettier:check
 
-      - name: Run tests
-        run: npm run test
+      - name: Build
+        run: |
+          echo '{}' > config.json
+          npm run dist
 
-      - name: Remove "dangling" Docker images
-        run: docker rmi $(docker images -f "dangling=true" -q --no-trunc)
+      - name: Run tests
+        run: npm test
+        env:
+          DEBUG: testcontainers

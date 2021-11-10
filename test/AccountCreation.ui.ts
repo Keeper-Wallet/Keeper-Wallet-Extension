@@ -771,7 +771,7 @@ describe('Account creation', function () {
       it('can decrypt the correct keeper keystore file', async function () {
         await this.driver
           .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/fixtures/keystore-keeper.json');
+          .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
@@ -806,7 +806,7 @@ describe('Account creation', function () {
       it('can decrypt the correct exchange keystore file', async function () {
         await this.driver
           .findElement(By.css('[data-testid="fileInput"]'))
-          .sendKeys('/fixtures/keystore-exchange.json');
+          .sendKeys('/app/test/fixtures/keystore-exchange.json');
 
         await this.driver
           .findElement(By.css('[data-testid="passwordInput"]'))
@@ -867,7 +867,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -994,13 +994,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1043,7 +1045,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1156,13 +1158,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1223,7 +1227,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1295,7 +1299,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1408,13 +1412,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
@@ -1504,7 +1510,7 @@ describe('Account creation', function () {
 
           await this.driver
             .findElement(By.css('[data-testid="fileInput"]'))
-            .sendKeys('/fixtures/keystore-keeper.json');
+            .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
           await this.driver
             .findElement(By.css('[data-testid="passwordInput"]'))
@@ -1617,13 +1623,15 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault = await this.driver.executeAsyncScript(function () {
-            const cb = arguments[arguments.length - 1];
-            // @ts-ignore
-            chrome.storage.local.get('WalletController', storage =>
-              cb(storage.WalletController.vault)
-            );
-          });
+          const vault: string = await this.driver.executeAsyncScript(
+            function () {
+              const cb = arguments[arguments.length - 1];
+              // @ts-ignore
+              chrome.storage.local.get('WalletController', storage =>
+                cb(storage.WalletController.vault)
+              );
+            }
+          );
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
