@@ -79,13 +79,11 @@ export const Assets = connect(
     static getDerivedStateFromProps({
       assets,
       balances,
-      getAsset,
     }: Props): Partial<State> | null {
       const assetInfo = assets['WAVES'];
 
       if (!assetInfo) {
-        getAsset('WAVES');
-        return { balancesMoney: {}, leaseMoney: {} };
+        return null;
       }
 
       const asset = new Asset(assetInfo);
@@ -100,6 +98,14 @@ export const Assets = connect(
       });
 
       return { balancesMoney, leaseMoney };
+    }
+
+    componentDidMount() {
+      const { assets, getAsset } = this.props;
+
+      if (!assets['WAVES']) {
+        getAsset('WAVES');
+      }
     }
 
     render() {
