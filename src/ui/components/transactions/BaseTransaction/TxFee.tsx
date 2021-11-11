@@ -68,10 +68,7 @@ export const TxFee = connect(
     return initialFee
       .convertTo(asset, assetTo.getTokens().div(assetFrom.getTokens()))
       .getTokens()
-      .roundTo(
-        Number(!!assetTo.getTokens().getDecimalsCount()) + 1,
-        BigNumber.ROUND_MODE.ROUND_UP
-      );
+      .roundTo(assetTo.asset.precision, BigNumber.ROUND_MODE.ROUND_UP);
   }
 
   return (
