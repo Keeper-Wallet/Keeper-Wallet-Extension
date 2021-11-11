@@ -6,10 +6,15 @@ export * from './notifications';
 
 const MAX_HISTORY = 10;
 
-const createSimpleReducer =
-  (def, type) =>
-  (store = def, action) =>
-    type === action.type ? action.payload : store;
+function createSimpleReducer<
+  TState = unknown,
+  TActionType extends string = string
+>(initialState: TState, actionType: TActionType) {
+  return (
+    state = initialState,
+    action: { type: TActionType; payload: TState }
+  ) => (actionType === action.type ? action.payload : state);
+}
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
 export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
@@ -19,7 +24,7 @@ export const allNetworksAccounts = createSimpleReducer(
   ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS
 );
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
-export const selectedAccount = createSimpleReducer(
+export const selectedAccount = createSimpleReducer<{ address?: string }>(
   {},
   ACTION.UPDATE_SELECTED_ACCOUNT
 );
@@ -40,19 +45,19 @@ export const idleOptions = createSimpleReducer(
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
-export const messages = (store = [], action: any) => {
+export const messages = (state = [], action: any) => {
   if (ACTION.UPDATE_MESSAGES === action.type) {
     return [...action.payload.unapprovedMessages];
   }
 
-  return store;
+  return state;
 };
 
-export const assets = (store = {}, action: any) => {
+export const assets = (state = {}, action: any) => {
   if (ACTION.UPDATE_ASSET === action.type) {
-    return { ...store, ...action.payload };
+    return { ...state, ...action.payload };
   }
-  return store;
+  return state;
 };
 
 export const backTabs = (state = [], { type, payload }) => {
@@ -64,4 +69,4 @@ export const backTabs = (state = [], { type, payload }) => {
   return state;
 };
 
-export const version = (store = '') => store;
+export const version = (state = '') => state;
