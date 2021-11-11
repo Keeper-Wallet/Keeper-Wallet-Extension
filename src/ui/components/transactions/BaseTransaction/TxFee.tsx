@@ -65,10 +65,11 @@ export const TxFee = connect(
       initialFee.asset
     );
 
-    return initialFee
-      .convertTo(asset, assetTo.getTokens().div(assetFrom.getTokens()))
-      .getTokens()
-      .roundTo(assetTo.asset.precision, BigNumber.ROUND_MODE.ROUND_UP);
+    return convertTo(
+      initialFee,
+      asset,
+      assetTo.getTokens().div(assetFrom.getTokens())
+    ).getTokens();
   }
 
   return (
@@ -102,3 +103,19 @@ export const TxFee = connect(
     </div>
   );
 });
+
+function convertTo(money, asset, exchangeRate) {
+  if (money.asset === asset) {
+    return money;
+  } else {
+    const difference = money.asset.precision - asset.precision;
+    const divider = new BigNumber(10).pow(difference);
+    const coins = money.getCoins();
+    const result = coins
+      .mul(exchangeRate)
+      .div(divider)
+      .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP)
+      .toFixed();
+    return new Money(new BigNumber(result), asset);
+  }
+}
