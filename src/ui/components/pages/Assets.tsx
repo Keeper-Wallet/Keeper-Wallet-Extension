@@ -43,11 +43,6 @@ interface Props {
   showUpdateInfo: boolean;
 }
 
-interface State {
-  showActivated: boolean;
-  showCopy: boolean;
-}
-
 export const Assets = connect(
   (store: AppState) => ({
     activeAccount: store.accounts.find(
@@ -66,181 +61,164 @@ export const Assets = connect(
     setActiveAccount,
     setUiState,
   }
-)(
-  class Assets extends React.Component<Props, State> {
-    state: State = {
-      showActivated: false,
-      showCopy: false,
-    };
+)(function Assets({
+  accounts,
+  activeAccount,
+  assets,
+  balances,
+  getAsset,
+  notifications,
+  selectAccount,
+  setActiveAccount,
+  setTab,
+  setUiState,
+  showUpdateInfo,
+}: Props) {
+  const [showActivated, setShowActivated] = React.useState(false);
+  const [showCopy, setShowCopy] = React.useState(false);
 
-    componentDidMount() {
-      const { assets, getAsset } = this.props;
-
-      if (!assets['WAVES']) {
-        getAsset('WAVES');
-      }
+  React.useEffect(() => {
+    if (!assets['WAVES']) {
+      getAsset('WAVES');
     }
+  }, [assets, getAsset]);
 
-    render() {
-      const {
-        accounts,
-        activeAccount,
-        assets,
-        balances,
-        notifications,
-        selectAccount,
-        setActiveAccount,
-        setTab,
-        setUiState,
-        showUpdateInfo,
-      } = this.props;
-
-      const { showActivated, showCopy } = this.state;
-
-      if (!activeAccount) {
-        return <Intro />;
-      }
-
-      const onSelectHandler = account => {
-        setActiveAccount(account);
-        setTab(PAGES.ACCOUNT_INFO);
-      };
-
-      const otherAccounts = accounts.filter(
-        account => account.address !== activeAccount.address
-      );
-
-      const balancesMoney: Record<string, Money> = {};
-      const leaseMoney: Record<string, Money> = {};
-
-      const assetInfo = assets['WAVES'];
-
-      if (assetInfo) {
-        const asset = new Asset(assetInfo);
-
-        Object.entries<{ available: string; leasedOut: string }>(
-          balances
-        ).forEach(([key, { available, leasedOut }]) => {
-          balancesMoney[key] = new Money(available, asset);
-          leaseMoney[key] = new Money(leasedOut, asset);
-        });
-      }
-
-      return (
-        <div className={styles.assets}>
-          <div className={styles.activeAccountTitle}>
-            <Trans i18nKey="assets.activeAccount" />
-          </div>
-
-          <TransitionGroup className={styles.activeAnimationSpan}>
-            <CSSTransition
-              key={activeAccount.address}
-              classNames="animate_active_wallet"
-              timeout={600}
-            >
-              <ActiveWallet
-                account={activeAccount}
-                active
-                balance={balancesMoney[activeAccount.address]}
-                leaseBalance={leaseMoney[activeAccount.address]}
-                onCopy={() => {
-                  this.setState({ showCopy: true });
-                  setTimeout(() => this.setState({ showCopy: false }), 1000);
-                }}
-                onSelect={onSelectHandler}
-                onShowQr={event => {
-                  event.stopPropagation();
-                  event.preventDefault();
-                  setTab(PAGES.QR_CODE_SELECTED);
-                }}
-              />
-            </CSSTransition>
-          </TransitionGroup>
-
-          <div className="wallets-list">
-            {otherAccounts.length !== 0 && (
-              <>
-                <div className={`${styles.otherWalletsTitle} basic500 body3`}>
-                  <Trans i18nKey="assets.inStorage" />
-                </div>
-
-                <TransitionGroup>
-                  {otherAccounts.map(account => (
-                    <CSSTransition
-                      key={account.address}
-                      classNames="animate_wallets"
-                      timeout={600}
-                    >
-                      <WalletItem
-                        account={account}
-                        active={false}
-                        balance={balancesMoney[account.address]}
-                        leaseBalance={leaseMoney[account.address]}
-                        onSelect={onSelectHandler}
-                        onActive={account => {
-                          selectAccount(account);
-                          this.setState({ showActivated: true });
-                          setTimeout(
-                            () => this.setState({ showActivated: false }),
-                            1000
-                          );
-                        }}
-                      />
-                    </CSSTransition>
-                  ))}
-                </TransitionGroup>
-              </>
-            )}
-
-            <div
-              className={`body1 basic500 border-dashed ${styles.addAccount}`}
-              onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
-            >
-              <Trans i18nKey="assets.addAccount" />
-            </div>
-          </div>
-
-          <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
-            <div className="modal notification">
-              <Trans i18nKey="assets.copied" />
-            </div>
-          </Modal>
-
-          <Modal
-            animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={showActivated}
-          >
-            <div className="modal notification active-asset">
-              <div>
-                <Trans i18nKey="assets.setActive" />
-              </div>
-            </div>
-          </Modal>
-
-          <Modal
-            animation={Modal.ANIMATION.FLASH_SCALE}
-            showModal={notifications.deleted}
-          >
-            <div className="modal notification active-asset">
-              <div>
-                <Trans i18nKey="assets.deleteAccount" />
-              </div>
-            </div>
-          </Modal>
-
-          <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
-            <FeatureUpdateInfo
-              onClose={() => {
-                setUiState({ isFeatureUpdateShown: true });
-              }}
-              onSubmit={() => {
-                setUiState({ isFeatureUpdateShown: true });
-                setTab(PAGES.EXPORT_ACCOUNTS);
-              }}
-            />
-          </Modal>
-        </div>
-      );
-    }
+  if (!activeAccount) {
+    return <Intro />;
   }
-);
+
+  const onSelectHandler = account => {
+    setActiveAccount(account);
+    setTab(PAGES.ACCOUNT_INFO);
+  };
+
+  const otherAccounts = accounts.filter(
+    account => account.address !== activeAccount.address
+  );
+
+  const balancesMoney: Record<string, Money> = {};
+  const leaseMoney: Record<string, Money> = {};
+
+  const assetInfo = assets['WAVES'];
+
+  if (assetInfo) {
+    const asset = new Asset(assetInfo);
+
+    Object.entries<{ available: string; leasedOut: string }>(balances).forEach(
+      ([key, { available, leasedOut }]) => {
+        balancesMoney[key] = new Money(available, asset);
+        leaseMoney[key] = new Money(leasedOut, asset);
+      }
+    );
+  }
+
+  return (
+    <div className={styles.assets}>
+      <div className={styles.activeAccountTitle}>
+        <Trans i18nKey="assets.activeAccount" />
+      </div>
+
+      <TransitionGroup className={styles.activeAnimationSpan}>
+        <CSSTransition
+          key={activeAccount.address}
+          classNames="animate_active_wallet"
+          timeout={600}
+        >
+          <ActiveWallet
+            account={activeAccount}
+            active
+            balance={balancesMoney[activeAccount.address]}
+            leaseBalance={leaseMoney[activeAccount.address]}
+            onCopy={() => {
+              setShowCopy(true);
+              setTimeout(() => setShowCopy(false), 1000);
+            }}
+            onSelect={onSelectHandler}
+            onShowQr={event => {
+              event.stopPropagation();
+              event.preventDefault();
+              setTab(PAGES.QR_CODE_SELECTED);
+            }}
+          />
+        </CSSTransition>
+      </TransitionGroup>
+
+      <div className="wallets-list">
+        {otherAccounts.length !== 0 && (
+          <>
+            <div className={`${styles.otherWalletsTitle} basic500 body3`}>
+              <Trans i18nKey="assets.inStorage" />
+            </div>
+
+            <TransitionGroup>
+              {otherAccounts.map(account => (
+                <CSSTransition
+                  key={account.address}
+                  classNames="animate_wallets"
+                  timeout={600}
+                >
+                  <WalletItem
+                    account={account}
+                    active={false}
+                    balance={balancesMoney[account.address]}
+                    leaseBalance={leaseMoney[account.address]}
+                    onSelect={onSelectHandler}
+                    onActive={account => {
+                      selectAccount(account);
+                      setShowActivated(true);
+                      setTimeout(() => setShowActivated(false), 1000);
+                    }}
+                  />
+                </CSSTransition>
+              ))}
+            </TransitionGroup>
+          </>
+        )}
+
+        <div
+          className={`body1 basic500 border-dashed ${styles.addAccount}`}
+          onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
+        >
+          <Trans i18nKey="assets.addAccount" />
+        </div>
+      </div>
+
+      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
+        <div className="modal notification">
+          <Trans i18nKey="assets.copied" />
+        </div>
+      </Modal>
+
+      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showActivated}>
+        <div className="modal notification active-asset">
+          <div>
+            <Trans i18nKey="assets.setActive" />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        animation={Modal.ANIMATION.FLASH_SCALE}
+        showModal={notifications.deleted}
+      >
+        <div className="modal notification active-asset">
+          <div>
+            <Trans i18nKey="assets.deleteAccount" />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
+        <FeatureUpdateInfo
+          onClose={() => {
+            setUiState({ isFeatureUpdateShown: true });
+          }}
+          onSubmit={() => {
+            setUiState({ isFeatureUpdateShown: true });
+            setTab(PAGES.EXPORT_ACCOUNTS);
+          }}
+        />
+      </Modal>
+    </div>
+  );
+});
