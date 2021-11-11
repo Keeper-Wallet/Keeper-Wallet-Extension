@@ -72,6 +72,18 @@ export const TxFee = connect(
     ).getTokens();
   }
 
+  function getOption(assetId) {
+    const tokens = feeInAsset(assets[assetId]);
+    return {
+      id: assetId,
+      value: tokens.toFixed(),
+      text: `${tokens.toFormat()} ${
+        (assets && assets[assetId].displayName) || assetId
+      }`,
+      name: (assets && assets[assetId].displayName) || assetId,
+    };
+  }
+
   return (
     <div>
       {!isEditable ? (
@@ -79,18 +91,11 @@ export const TxFee = connect(
       ) : (
         <Select
           className="fullwidth"
-          selectList={Object.entries(sponsoredBalance)
-            .concat([['WAVES', null]])
-            .map(([assetId]) => {
-              const tokens = feeInAsset(assets[assetId]);
-              return {
-                id: assetId,
-                value: tokens.toFormat(),
-                text: `${tokens.toFormat()} ${
-                  (assets && assets[assetId].displayName) || assetId
-                }`,
-              };
-            })}
+          selectList={[getOption('WAVES')].concat(
+            Object.keys(sponsoredBalance)
+              .map(getOption)
+              .sort((a, b) => a.name.localeCompare(b.name))
+          )}
           selected={fee.asset.id}
           onSelectItem={(id, tokens) =>
             updateTransactionFee(message.id, {
