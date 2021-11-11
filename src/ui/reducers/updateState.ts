@@ -21,10 +21,14 @@ export const uiState = createSimpleReducer<{ isFeatureUpdateShown?: boolean }>(
   {},
   ACTION.UPDATE_UI_STATE
 );
-export const accounts = createSimpleReducer<Array<{ address: string }>>(
-  [],
-  ACTION.UPDATE_ACCOUNTS
-);
+export const accounts = createSimpleReducer<
+  Array<{
+    address: string;
+    name: string;
+    network: string;
+    type: string;
+  }>
+>([], ACTION.UPDATE_ACCOUNTS);
 export const allNetworksAccounts = createSimpleReducer(
   [],
   ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS
@@ -39,7 +43,15 @@ export const currentNetwork = createSimpleReducer(
   '',
   ACTION.UPDATE_CURRENT_NETWORK
 );
-export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
+export const balances = createSimpleReducer<
+  Record<
+    string,
+    {
+      available: string;
+      leasedOut: string;
+    }
+  >
+>({}, ACTION.UPDATE_BALANCES);
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);
 export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);

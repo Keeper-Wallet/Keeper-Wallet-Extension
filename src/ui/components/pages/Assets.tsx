@@ -15,50 +15,29 @@ import { Modal } from '../ui';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { AppState, useAppDispatch } from 'ui/store';
-
-interface Account {
-  address: string;
-  name: string;
-  type: string;
-}
-
-interface Balance {
-  available: string;
-  leasedOut: string;
-}
+import { useAppDispatch, useAppSelector } from 'ui/store';
 
 interface Props {
-  accounts: Account[];
-  activeAccount: Account;
-  assets: Record<'WAVES', IAssetInfo>;
-  balances: Record<string, Balance>;
-  notifications: { deleted?: boolean };
   setTab: (newTab: string) => void;
-  showUpdateInfo: boolean;
 }
 
-export const Assets = connect((store: AppState) => ({
-  activeAccount: store.accounts.find(
-    ({ address }) => address === store.selectedAccount.address
-  ),
-  accounts: store.accounts,
-  balances: store.balances,
-  assets: store.assets,
-  notifications: store.localState.notifications,
-  showUpdateInfo:
-    !store.uiState.isFeatureUpdateShown && !!store.accounts.length,
-}))(function Assets({
-  accounts,
-  activeAccount,
-  assets,
-  balances,
-  notifications,
-  setTab,
-  showUpdateInfo,
-}: Props) {
+export function Assets({ setTab }: Props) {
   const dispatch = useAppDispatch();
+  const accounts = useAppSelector(state => state.accounts);
+
+  const activeAccount = useAppSelector(state =>
+    state.accounts.find(
+      ({ address }) => address === state.selectedAccount.address
+    )
+  );
+
+  const assets = useAppSelector(state => state.assets);
+  const balances = useAppSelector(state => state.balances);
+  const notifications = useAppSelector(state => state.localState.notifications);
+  const showUpdateInfo = useAppSelector(
+    state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
+  );
+
   const [showActivated, setShowActivated] = React.useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
@@ -206,4 +185,4 @@ export const Assets = connect((store: AppState) => ({
       </Modal>
     </div>
   );
-});
+}

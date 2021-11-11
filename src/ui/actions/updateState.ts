@@ -9,7 +9,13 @@ interface Account {
 
 interface UpdateStateInput {
   accounts?: Account[];
-  balances?: unknown[];
+  balances?: Record<
+    string,
+    {
+      available: string;
+      leasedOut: string;
+    }
+  >;
   config?: unknown;
   currentLocale: string;
   currentNetwork?: string;

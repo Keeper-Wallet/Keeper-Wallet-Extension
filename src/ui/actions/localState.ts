@@ -1,8 +1,9 @@
 import { ACTION } from './constants';
 
-const createMVAction =
-  type =>
-  (payload = null) => ({ type, payload });
+function createMVAction<TPayload>(type: string) {
+  return (payload: TPayload | null = null) => ({ type, payload });
+}
+
 const createCommonAction =
   (type, pending) =>
   (error = false) =>
@@ -28,9 +29,13 @@ export const addBackTab = createMVAction(ACTION.ADD_BACK_TAB);
 export const removeBackTab = createMVAction(ACTION.REMOVE_BACK_TAB);
 export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const loading = createMVAction(ACTION.LOADING);
-export const notificationDelete = createMVAction(ACTION.NOTIFICATION_DELETE);
-export const notificationSelect = createMVAction(ACTION.NOTIFICATION_SELECT);
-export const notificationChangeName = createMVAction(
+export const notificationDelete = createMVAction<boolean>(
+  ACTION.NOTIFICATION_DELETE
+);
+export const notificationSelect = createMVAction<boolean>(
+  ACTION.NOTIFICATION_SELECT
+);
+export const notificationChangeName = createMVAction<boolean>(
   ACTION.NOTIFICATION_NAME_CHANGED
 );
 
