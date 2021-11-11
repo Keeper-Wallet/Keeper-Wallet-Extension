@@ -2,7 +2,33 @@ import { store } from '../store';
 import { ACTION } from './constants';
 import { equals } from 'ramda';
 
-export function updateState(state) {
+interface Account {
+  address: string;
+  network: string;
+}
+
+interface UpdateStateInput {
+  accounts?: Account[];
+  balances?: unknown[];
+  config?: unknown;
+  currentLocale: string;
+  currentNetwork?: string;
+  currentNetworkAccounts: Account[];
+  customCodes?: unknown;
+  customMatchers?: unknown;
+  customNodes?: unknown;
+  idleOptions?: unknown;
+  initialized: boolean;
+  locked: boolean;
+  messages?: unknown[];
+  networks?: unknown[];
+  myNotifications?: unknown[];
+  origins?: unknown;
+  selectedAccount?: { address?: string; network?: string };
+  uiState?: unknown;
+}
+
+export function updateState(state: UpdateStateInput) {
   const actions = [];
   const {
     accounts = [],
