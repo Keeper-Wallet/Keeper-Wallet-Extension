@@ -1,3 +1,4 @@
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ACTION } from '../actions/constants';
 
 export * from './localState';
@@ -63,27 +64,38 @@ export const idleOptions = createSimpleReducer(
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
-export const messages = (state = [], action: any) => {
-  if (ACTION.UPDATE_MESSAGES === action.type) {
+export const messages = (
+  state: unknown[] = [],
+  action: { type: string; payload: { unapprovedMessages: unknown[] } }
+) => {
+  if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
   }
 
   return state;
 };
 
-export const assets = (state = {}, action: any) => {
-  if (ACTION.UPDATE_ASSET === action.type) {
+export const assets = (
+  state: Record<string, IAssetInfo> = {},
+  action: { type: string; payload: Record<string, IAssetInfo> }
+) => {
+  if (action.type === ACTION.UPDATE_ASSET) {
     return { ...state, ...action.payload };
   }
+
   return state;
 };
 
-export const backTabs = (state = [], { type, payload }) => {
+export const backTabs = (
+  state: unknown[] = [],
+  { type, payload }: { type: string; payload: unknown }
+) => {
   if (type === ACTION.ADD_BACK_TAB) {
     state = [...state, payload].slice(-MAX_HISTORY);
   } else if (type === ACTION.REMOVE_BACK_TAB) {
     state = state.slice(0, -1);
   }
+
   return state;
 };
 
