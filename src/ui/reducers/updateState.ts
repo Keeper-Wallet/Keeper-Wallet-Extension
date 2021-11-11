@@ -17,8 +17,14 @@ function createSimpleReducer<
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
-export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
-export const accounts = createSimpleReducer([], ACTION.UPDATE_ACCOUNTS);
+export const uiState = createSimpleReducer<{ isFeatureUpdateShown?: boolean }>(
+  {},
+  ACTION.UPDATE_UI_STATE
+);
+export const accounts = createSimpleReducer<Array<{ address: string }>>(
+  [],
+  ACTION.UPDATE_ACCOUNTS
+);
 export const allNetworksAccounts = createSimpleReducer(
   [],
   ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS

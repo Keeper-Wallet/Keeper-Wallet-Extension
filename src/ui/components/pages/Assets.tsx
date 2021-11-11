@@ -16,6 +16,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { AppState } from 'ui/store';
 
 interface Account {
   address: string;
@@ -48,7 +49,7 @@ interface State {
 }
 
 export const Assets = connect(
-  (store: any) => ({
+  (store: AppState) => ({
     activeAccount: store.accounts.find(
       ({ address }) => address === store.selectedAccount.address
     ),

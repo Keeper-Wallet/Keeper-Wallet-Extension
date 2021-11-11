@@ -11,8 +11,12 @@ if (WAVESKEEPER_DEBUG) {
   };
 }
 
+const reducer = combineReducers(reducers);
+
+export type AppState = ReturnType<typeof reducer>;
+
 export const store = createStore(
-  combineReducers(reducers),
+  reducer,
   { version: extension.runtime.getManifest().version },
   applyMiddleware(...Object.values(middleware))
 );
