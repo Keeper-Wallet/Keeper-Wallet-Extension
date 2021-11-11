@@ -1,3 +1,4 @@
+import { useDispatch } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import * as reducers from './reducers/updateState';
 import * as middleware from './midleware';
@@ -20,3 +21,5 @@ export const store = createStore(
   { version: extension.runtime.getManifest().version },
   applyMiddleware(...Object.values(middleware))
 );
+
+export const useAppDispatch = () => useDispatch<typeof store.dispatch>();

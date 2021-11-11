@@ -16,7 +16,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { AppState } from 'ui/store';
+import { AppState, useAppDispatch } from 'ui/store';
 
 interface Account {
   address: string;
@@ -34,61 +34,46 @@ interface Props {
   activeAccount: Account;
   assets: Record<'WAVES', IAssetInfo>;
   balances: Record<string, Balance>;
-  getAsset: (assetId: string) => unknown;
   notifications: { deleted?: boolean };
-  selectAccount: (account: Account) => void;
-  setActiveAccount: (account: Account) => void;
   setTab: (newTab: string) => void;
-  setUiState: (newUiState: unknown) => void;
   showUpdateInfo: boolean;
 }
 
-export const Assets = connect(
-  (store: AppState) => ({
-    activeAccount: store.accounts.find(
-      ({ address }) => address === store.selectedAccount.address
-    ),
-    accounts: store.accounts,
-    balances: store.balances,
-    assets: store.assets,
-    notifications: store.localState.notifications,
-    showUpdateInfo:
-      !store.uiState.isFeatureUpdateShown && !!store.accounts.length,
-  }),
-  {
-    getAsset,
-    selectAccount,
-    setActiveAccount,
-    setUiState,
-  }
-)(function Assets({
+export const Assets = connect((store: AppState) => ({
+  activeAccount: store.accounts.find(
+    ({ address }) => address === store.selectedAccount.address
+  ),
+  accounts: store.accounts,
+  balances: store.balances,
+  assets: store.assets,
+  notifications: store.localState.notifications,
+  showUpdateInfo:
+    !store.uiState.isFeatureUpdateShown && !!store.accounts.length,
+}))(function Assets({
   accounts,
   activeAccount,
   assets,
   balances,
-  getAsset,
   notifications,
-  selectAccount,
-  setActiveAccount,
   setTab,
-  setUiState,
   showUpdateInfo,
 }: Props) {
+  const dispatch = useAppDispatch();
   const [showActivated, setShowActivated] = React.useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
   React.useEffect(() => {
     if (!assets['WAVES']) {
-      getAsset('WAVES');
+      dispatch(getAsset('WAVES'));
     }
-  }, [assets, getAsset]);
+  }, [assets, dispatch, getAsset]);
 
   if (!activeAccount) {
     return <Intro />;
   }
 
   const onSelectHandler = account => {
-    setActiveAccount(account);
+    dispatch(setActiveAccount(account));
     setTab(PAGES.ACCOUNT_INFO);
   };
 
@@ -164,7 +149,7 @@ export const Assets = connect(
                     leaseBalance={leaseMoney[account.address]}
                     onSelect={onSelectHandler}
                     onActive={account => {
-                      selectAccount(account);
+                      dispatch(selectAccount(account));
                       setShowActivated(true);
                       setTimeout(() => setShowActivated(false), 1000);
                     }}
@@ -211,10 +196,10 @@ export const Assets = connect(
       <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
         <FeatureUpdateInfo
           onClose={() => {
-            setUiState({ isFeatureUpdateShown: true });
+            dispatch(setUiState({ isFeatureUpdateShown: true }));
           }}
           onSubmit={() => {
-            setUiState({ isFeatureUpdateShown: true });
+            dispatch(setUiState({ isFeatureUpdateShown: true }));
             setTab(PAGES.EXPORT_ACCOUNTS);
           }}
         />
