@@ -33,7 +33,9 @@ class NewWalletComponent extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    const { account, isGenerateNew, notSaveAccount, ...otherProps } = props;
+
+    const { account, isGenerateNew, notSaveAccount } = props;
+
     const networkCode =
       this.props.customCodes[this.props.currentNetwork] ||
       this.props.networks.find(({ name }) => this.props.currentNetwork === name)
