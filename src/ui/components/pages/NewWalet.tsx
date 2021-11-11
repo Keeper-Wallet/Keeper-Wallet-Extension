@@ -7,13 +7,33 @@ import { AvatarList, Button } from '../ui';
 import { seedUtils } from '@waves/waves-transactions';
 import { PAGES } from '../../pageConfig';
 
-class NewWalletComponent extends React.Component {
+interface Account {
+  address: string;
+}
+
+interface Network {
+  code: string;
+  name: string;
+}
+
+interface Props {
+  account: Account;
+  currentNetwork: string;
+  customCodes: unknown;
+  isGenerateNew?: boolean;
+  networks: Network[];
+  newAccountSelect: (newAccount: Account) => void;
+  notSaveAccount: unknown;
+  setTab: (newTab: string) => void;
+}
+
+class NewWalletComponent extends React.Component<Props> {
   static list = [];
-  props;
   state;
 
-  constructor({ isGenerateNew, ...props }) {
+  constructor(props: Props) {
     super(props);
+    const { account, isGenerateNew, notSaveAccount, ...otherProps } = props;
     const networkCode =
       this.props.customCodes[this.props.currentNetwork] ||
       this.props.networks.find(({ name }) => this.props.currentNetwork === name)
@@ -25,14 +45,13 @@ class NewWalletComponent extends React.Component {
 
     const list = NewWalletComponent.list;
 
-    if (props.notSaveAccount) {
-      this._onSelect(props.notSaveAccount);
+    if (notSaveAccount) {
+      this._onSelect(notSaveAccount);
       this.props.setTab(PAGES.SAVE_BACKUP);
     } else {
       const selected =
-        list.find(
-          item => props.account && item.address === props.account.address
-        ) || list[0];
+        list.find(item => account && item.address === account.address) ||
+        list[0];
       this._onSelect(selected);
     }
 

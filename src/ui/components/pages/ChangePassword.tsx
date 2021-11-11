@@ -9,13 +9,11 @@ import { CONFIG } from '../../appConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-const mapStateToProps = function (store: any) {
-  return {
-    account: store.localState.changePassword,
-  };
-};
+interface Props {
+  changePassword: (p1: string, p2: string) => void;
+}
 
-class ChangePasswordComponent extends React.PureComponent {
+class ChangePasswordComponent extends React.PureComponent<Props> {
   inputEl: Input;
   state = {
     firstValue: '',
@@ -28,9 +26,6 @@ class ChangePasswordComponent extends React.PureComponent {
     passwordError: false,
     showChanged: false,
     oldEqualNewError: false,
-  };
-  props: {
-    changePassword: (p1: string, p2: string) => void;
   };
 
   getRef = input => (this.inputEl = input);
@@ -286,6 +281,6 @@ class ChangePasswordComponent extends React.PureComponent {
   }
 }
 
-export const ChangePassword = connect(mapStateToProps, { changePassword })(
+export const ChangePassword = connect(undefined, { changePassword })(
   ChangePasswordComponent
 );
