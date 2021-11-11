@@ -6,7 +6,7 @@ on:
 
 jobs:
   report:
-    if: contains(github.event.head_commit.message, "KEEP-")
+    if: "contains(github.event.head_commit.message, 'KEEP-')"
     runs-on: ubuntu-latest
     steps:
       - name: Get list of issues
