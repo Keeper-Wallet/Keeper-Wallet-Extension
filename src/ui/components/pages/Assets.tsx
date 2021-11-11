@@ -1,6 +1,6 @@
 import * as styles from './styles/assets.styl';
+import cn from 'classnames';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { ActiveWallet, WalletItem } from '../wallets';
 import { Trans } from 'react-i18next';
 import {
@@ -16,6 +16,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { Tabs, Tab, TabList, TabPanel, TabPanels } from '../ui/Tabs/Tabs';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -82,7 +83,7 @@ export function Assets({ setTab }: Props) {
         <Trans i18nKey="assets.activeAccount" />
       </div>
 
-      <TransitionGroup className={styles.activeAnimationSpan}>
+      <TransitionGroup className={styles.activeAccountTransitionGroup}>
         <CSSTransition
           key={activeAccount.address}
           classNames="animate_active_wallet"
@@ -107,45 +108,48 @@ export function Assets({ setTab }: Props) {
         </CSSTransition>
       </TransitionGroup>
 
-      <div className="wallets-list">
-        {otherAccounts.length !== 0 && (
-          <>
-            <div className={`${styles.otherWalletsTitle} basic500 body3`}>
-              <Trans i18nKey="assets.inStorage" />
+      <Tabs>
+        <TabList className={cn(styles.tabs, 'body3')}>
+          <Tab>
+            <Trans i18nKey="assets.inStorage" />
+          </Tab>
+        </TabList>
+        <TabPanels className={styles.tabPanels}>
+          <TabPanel className="wallets-list">
+            {otherAccounts.length !== 0 && (
+              <TransitionGroup>
+                {otherAccounts.map(account => (
+                  <CSSTransition
+                    key={account.address}
+                    classNames="animate_wallets"
+                    timeout={600}
+                  >
+                    <WalletItem
+                      account={account}
+                      active={false}
+                      balance={balancesMoney[account.address]}
+                      leaseBalance={leaseMoney[account.address]}
+                      onSelect={onSelectHandler}
+                      onActive={account => {
+                        dispatch(selectAccount(account));
+                        setShowActivated(true);
+                        setTimeout(() => setShowActivated(false), 1000);
+                      }}
+                    />
+                  </CSSTransition>
+                ))}
+              </TransitionGroup>
+            )}
+
+            <div
+              className={`body1 basic500 border-dashed ${styles.addAccount}`}
+              onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
+            >
+              <Trans i18nKey="assets.addAccount" />
             </div>
-
-            <TransitionGroup>
-              {otherAccounts.map(account => (
-                <CSSTransition
-                  key={account.address}
-                  classNames="animate_wallets"
-                  timeout={600}
-                >
-                  <WalletItem
-                    account={account}
-                    active={false}
-                    balance={balancesMoney[account.address]}
-                    leaseBalance={leaseMoney[account.address]}
-                    onSelect={onSelectHandler}
-                    onActive={account => {
-                      dispatch(selectAccount(account));
-                      setShowActivated(true);
-                      setTimeout(() => setShowActivated(false), 1000);
-                    }}
-                  />
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
-          </>
-        )}
-
-        <div
-          className={`body1 basic500 border-dashed ${styles.addAccount}`}
-          onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
-        >
-          <Trans i18nKey="assets.addAccount" />
-        </div>
-      </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
 
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
         <div className="modal notification">

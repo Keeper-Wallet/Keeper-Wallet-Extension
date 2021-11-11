@@ -1,30 +1,26 @@
 @import '../../../styles/colors.styl';
 
 .assets
-  width: 100%;
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding: 14px;
   height: 552px;
   background: $basic50;
-  padding-bottom: 30px;
+  padding-bottom: 35px;
   overflow: hidden;
 
-  &::after
-    display: block;
+  &::before
     content: '';
-    width: 100%;
-    height: 112px;
     position: absolute;
     top: 0;
+    right: 0;
     left: 0;
-    z-index: 0;
-    background: -moz-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
-    background: -webkit-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
+    height: 112px;
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
 
-.otherWalletsTitle
-  height: 52px;
-  padding-top: 24px;
+.tabs
+  margin-top: 24px;
 
 .addAccount
   display: flex;
@@ -49,18 +45,18 @@
   margin-top: 100px;
   margin-bottom: 44px;
 
-.activeAnimationSpan
+.activeAccountTransitionGroup
   position: relative;
   display: inline-block;
   z-index: 10;
   width: 100%;
 
-:global .wallets-list
+.tabPanels
+  flex: 1 1 0;
   overflow: auto;
-  max-height: 404px;
+  padding-top: 8px;
   margin-right: -14px;
   padding-right: 14px;
-  position: relative;
 
 :global .animate_wallets-enter
   animation-name: animation-show;
