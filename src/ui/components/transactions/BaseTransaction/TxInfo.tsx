@@ -28,13 +28,10 @@ interface Props {
   sponsoredBalance?: BalanceAssets;
 }
 
-export const TxInfo = connect(
-  (store: any, ownProps?: any) => ({
-    message: ownProps?.message || store.activePopup?.msg,
-    assets: ownProps?.assets || store.assets,
-  }),
-  null
-)(function TxInfo({ message, sponsoredBalance }: Props) {
+export const TxInfo = connect((store: any, ownProps?: any) => ({
+  message: ownProps?.message || store.activePopup?.msg,
+  assets: ownProps?.assets || store.assets,
+}))(function TxInfo({ message, sponsoredBalance }: Props) {
   const { messageHash, data = {} } = message;
   const tx = { type: data.type, ...data.data };
 
