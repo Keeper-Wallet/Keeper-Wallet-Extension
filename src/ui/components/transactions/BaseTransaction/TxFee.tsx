@@ -10,6 +10,8 @@ import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getFee } from './parseTx';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 
+const WAVES_MIN_FEE = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
+
 interface Props {
   isEditable: boolean;
   fee: Money;
@@ -52,28 +54,13 @@ export const TxFee = connect(
   updateTransactionFee,
   message,
 }: Props) {
-  function feeInAsset(asset: Asset) {
-    const minWavesFee = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
-    const assetTo = new Money(
-      asset.id === 'WAVES' ? minWavesFee : asset.minSponsoredFee,
-      asset
-    );
-    const assetFrom = new Money(
-      initialFee.asset.id === 'WAVES'
-        ? minWavesFee
-        : initialFee.asset.minSponsoredFee,
-      initialFee.asset
-    );
-
-    return convertTo(
-      initialFee,
-      asset,
-      assetTo.getTokens().div(assetFrom.getTokens())
-    ).getTokens();
-  }
-
-  function getOption(assetId) {
-    const tokens = feeInAsset(assets[assetId]);
+  function getOption(assetId: string): {
+    id: string;
+    value: string;
+    text: string;
+    name: string;
+  } {
+    const tokens = convert(initialFee, assets[assetId]).getTokens();
     return {
       id: assetId,
       value: tokens.toFixed(),
@@ -109,18 +96,35 @@ export const TxFee = connect(
   );
 });
 
-function convertTo(money, asset, exchangeRate) {
-  if (money.asset === asset) {
-    return money;
-  } else {
-    const difference = money.asset.precision - asset.precision;
-    const divider = new BigNumber(10).pow(difference);
-    const coins = money.getCoins();
-    const result = coins
-      .mul(exchangeRate)
-      .div(divider)
-      .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP)
-      .toFixed();
-    return new Money(new BigNumber(result), asset);
+function convert(fee: Money, toAsset: Asset): Money {
+  const isFromWaves = fee.asset.id === 'WAVES';
+  const isToWaves = toAsset.id === 'WAVES';
+
+  if (isFromWaves === isToWaves) {
+    return fee;
   }
+
+  const convertCoins = isFromWaves ? fromWaves : toWaves;
+  const sponsorship = isFromWaves
+    ? toAsset.minSponsoredFee
+    : fee.asset.minSponsoredFee;
+  return new Money(convertCoins(fee.toCoins(), sponsorship), toAsset);
+}
+
+type Amount = string | number | BigNumber;
+
+function fromWaves(wavesFee: Amount, sponsorship: Amount) {
+  if (wavesFee == 0 || sponsorship == 0) return 0;
+  return new BigNumber(wavesFee)
+    .mul(new BigNumber(sponsorship))
+    .div(new BigNumber(WAVES_MIN_FEE))
+    .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP);
+}
+
+function toWaves(assetFee: Amount, sponsorship: Amount) {
+  if (assetFee == 0 || sponsorship == 0) return 0;
+  return new BigNumber(assetFee)
+    .mul(new BigNumber(WAVES_MIN_FEE))
+    .div(new BigNumber(sponsorship))
+    .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP);
 }
