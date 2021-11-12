@@ -120,7 +120,7 @@ interface IProps<T> extends React.ComponentProps<'div'> {
   selectList: Array<TSelectItem<T>>;
   description?: TText;
   selected?: string | number;
-  onSelectItem?: (id: string | number, value?: T) => void;
+  onSelectItem?: (id: string | number, value: T) => void;
 }
 
 interface IState<T> {
