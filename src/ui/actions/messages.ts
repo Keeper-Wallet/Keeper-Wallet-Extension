@@ -23,6 +23,5 @@ export const rejectForever = messageId => ({
 
 export const updateTransactionFee = (messageId: string, fee: IMoneyLike) => ({
   type: ACTION.UPDATE_TRANSACTION_FEE,
-  payload: fee,
-  meta: { messageId },
+  payload: { messageId, fee },
 });
