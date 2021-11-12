@@ -41,7 +41,7 @@ export const TxFee = connect(
     const minSponsorBalance: Money = convertFee(initialFee, assets['WAVES']);
 
     const sponsoredBalance = Object.entries(
-      ownProps.sponsoredBalance as BalanceAssets
+      (ownProps.sponsoredBalance as BalanceAssets) || {}
     ).filter(
       ([assetId, assetBalance]) =>
         new BigNumber(assetBalance.sponsorBalance).gte(
