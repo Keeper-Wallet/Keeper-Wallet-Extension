@@ -152,10 +152,23 @@ module.exports = ({
         },
         {
           test: /\.css/,
-          loader: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: ['css-loader'],
-          }),
+          oneOf: [
+            {
+              test: /\.module\.css$/,
+              loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [
+                  'css-loader?modules,localIdentName="[name]-[local]-[hash:base64:6]"',
+                ],
+              }),
+            },
+            {
+              loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader'],
+              }),
+            },
+          ],
         },
       ],
     },
