@@ -91,12 +91,13 @@ export const TxFee = connect(
   }
 
   let options: FeeOption[] = [];
-  if ('WAVES' in sponsoredBalance) {
+  if ('WAVES' in sponsoredBalance || initialFee.asset.id === 'WAVES') {
     options.push(getOption('WAVES'));
     sponsoredBalance = omit(['WAVES'], sponsoredBalance);
   }
   if (initialFee.asset.id !== 'WAVES') {
     options.push(getOption(initialFee.asset.id));
+    sponsoredBalance = omit([initialFee.asset.id], sponsoredBalance);
   }
   options.push(
     ...Object.keys(sponsoredBalance)
@@ -106,7 +107,7 @@ export const TxFee = connect(
 
   return (
     <div>
-      {!isEditable && options.length > 1 ? (
+      {!isEditable || options.length <= 1 ? (
         <Balance isShortFormat={true} balance={fee} showAsset={true} />
       ) : (
         <Select
