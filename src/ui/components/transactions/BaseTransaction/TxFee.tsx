@@ -106,7 +106,7 @@ export const TxFee = connect(
 
   return (
     <div>
-      {!isEditable ? (
+      {!isEditable && options.length > 1 ? (
         <Balance isShortFormat={true} balance={fee} showAsset={true} />
       ) : (
         <Select
