@@ -50,12 +50,14 @@ export class BalanceController {
       accounts.map(async account => {
         try {
           const address = account.address;
-          const wavesBalances = await this.getByUrl(
-            `addresses/balance/details/${address}`
+
+          const [wavesBalances, assetBalances] = await Promise.all(
+            [
+              `addresses/balance/details/${address}`,
+              `assets/balance/${address}`,
+            ].map(url => this.getByUrl(url))
           );
-          const assetBalances = await this.getByUrl(
-            `assets/balance/${address}`
-          );
+
           const available = new BigNumber(wavesBalances.available);
           const regular = new BigNumber(wavesBalances.regular);
           const leasedOut = regular.sub(available);
