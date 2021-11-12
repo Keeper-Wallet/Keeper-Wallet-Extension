@@ -61,6 +61,13 @@ export const updateActiveMessageReducer = store => next => action => {
     store.dispatch(setActiveMessage(action.payload ? null : message));
   }
 
+  if (action.type === ACTION.UPDATE_TRANSACTION_FEE) {
+    const { messageId, fee } = action.payload;
+    background
+      .updateTransactionFee(messageId, fee)
+      .then(message => store.dispatch(setActiveMessage(message)));
+  }
+
   return next(action);
 };
 

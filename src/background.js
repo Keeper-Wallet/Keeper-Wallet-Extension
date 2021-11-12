@@ -415,9 +415,11 @@ class BackgroundService extends EventEmitter {
         this.statisticsController.sendTxEvent(message);
         return approveData;
       },
-      reject: async (messageId, forever) => {
-        this.messageController.reject(messageId, forever);
-      },
+      reject: async (messageId, forever) =>
+        this.messageController.reject(messageId, forever),
+      updateTransactionFee: this.messageController.updateTransactionFee.bind(
+        this.messageController
+      ),
       // notifications
       setReadNotification: async id =>
         this.notificationsController.setMessageStatus(
@@ -445,8 +447,8 @@ class BackgroundService extends EventEmitter {
         await ExternalDeviceController.getUserList(type, from, to),
 
       // asset information
-      assetInfo: async assetId =>
-        await this.assetInfoController.assetInfo(assetId),
+      assetInfo: async (assetId, force) =>
+        await this.assetInfoController.assetInfo(assetId, force),
 
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),

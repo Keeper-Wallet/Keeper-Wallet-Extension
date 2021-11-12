@@ -6,7 +6,12 @@ export class Input extends React.Component {
   props: any;
 
   el: HTMLInputElement;
-  getRef = element => (this.el = element);
+  getRef = element => {
+    this.el = element;
+    if (this.props.inputRef) {
+      this.props.inputRef.current = element;
+    }
+  };
 
   focus() {
     this.el.focus();
@@ -17,7 +22,8 @@ export class Input extends React.Component {
   }
 
   render() {
-    let { className, error, multiLine, ...props } = this.props;
+    let { className, error, multiLine, inputRef, ...props } = this.props;
+
     className = cn(styles.input, className, {
       [styles.error]: error,
       [styles.checkbox]: props.type === 'checkbox',

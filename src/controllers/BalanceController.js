@@ -50,35 +50,50 @@ export class BalanceController {
       accounts.map(async account => {
         try {
           const address = account.address;
-          const wavesBalances = await this.getByUrl(
-            `addresses/balance/details/${address}`
+
+          const [wavesBalances, assetBalances] = await Promise.all(
+            [
+              `addresses/balance/details/${address}`,
+              `assets/balance/${address}`,
+            ].map(url => this.getByUrl(url))
           );
+
           const available = new BigNumber(wavesBalances.available);
           const regular = new BigNumber(wavesBalances.regular);
           const leasedOut = regular.sub(available);
-          return {
-            available: available.toString(),
-            leasedOut: leasedOut.toString(),
+
+          return [
             address,
-            network: currentNetwork,
-          };
+            {
+              available: available.toString(),
+              leasedOut: leasedOut.toString(),
+              network: currentNetwork,
+              assets: Object.fromEntries(
+                assetBalances.balances.map(info => [
+                  info.assetId,
+                  {
+                    minSponsoredAssetFee:
+                      info.minSponsoredAssetFee &&
+                      new BigNumber(info.minSponsoredAssetFee).toString(),
+                    sponsorBalance:
+                      info.sponsorBalance &&
+                      new BigNumber(info.sponsorBalance).toString(),
+                    balance:
+                      info.balance && new BigNumber(info.balance).toString(),
+                  },
+                ])
+              ),
+            },
+          ];
         } catch (e) {
           return null;
         }
       })
     );
 
-    const balances = data.reduce((prev, next) => {
-      if (next) {
-        const { address, ...balance } = next;
-        prev[address] = balance;
-      }
-      return prev;
-    }, Object.create(null));
-
     const oldBalances = this.store.getState().balances;
     this.store.updateState({
-      balances: Object.assign({}, oldBalances, balances),
+      balances: Object.assign({}, oldBalances, Object.fromEntries(data)),
     });
   }
 }

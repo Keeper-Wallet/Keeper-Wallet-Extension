@@ -5,8 +5,6 @@ import { MassTransferCard } from './MassTransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
 
 export function MassTransfer(props) {
-  const { message, assets } = props;
-
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />
@@ -17,7 +15,7 @@ export function MassTransfer(props) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo message={message} assets={assets} />
+          <TxInfo />
         </TxDetailTabs>
       </div>
 

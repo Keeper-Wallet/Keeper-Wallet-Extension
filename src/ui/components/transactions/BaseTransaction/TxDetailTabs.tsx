@@ -8,17 +8,20 @@ import {
   Tabs,
 } from '../../ui';
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import * as styles from './txdetailtabs.styl';
 import cn from 'classnames';
 
-export function TxDetailTabs({ children }) {
-  const prettyJson = JSON.stringify(
-    JSON.parse(children.props.message.json),
-    null,
-    2
-  );
+interface Props {
+  message: any;
+  children?: React.ReactNode;
+}
 
+export const TxDetailTabs = connect(
+  (store: any) => ({ message: store.activePopup?.msg }),
+  null
+)(function TxDetailTabs({ message, children }: Props) {
   return (
     <Tabs>
       <TabList className="body3">
@@ -35,11 +38,11 @@ export function TxDetailTabs({ children }) {
           <PlateCollapsable showExpand showCopy>
             <Highlight
               className={cn('json', 'body3', styles.code)}
-              data={prettyJson}
+              data={JSON.stringify(JSON.parse(message.json), null, 2)}
             />
           </PlateCollapsable>
         </TabPanel>
       </TabPanels>
     </Tabs>
   );
-}
+});

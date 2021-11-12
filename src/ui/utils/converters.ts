@@ -40,7 +40,7 @@ export const getMoney = (amount: TAmount, assets) => {
 
 type TAmount = IMoneyLike | BigNumber | Money | string | number;
 
-interface IMoneyLike {
+export interface IMoneyLike {
   coins?: number | string | BigNumber;
   tokens?: number | string | BigNumber;
   assetId: string;
