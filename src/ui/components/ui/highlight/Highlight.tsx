@@ -2,29 +2,19 @@ import * as React from 'react';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/idea.css';
 
-interface IProps {
+interface Props {
   data: string;
   className: string;
 }
 
-export class Highlight extends React.Component<IProps> {
-  private preRef = React.createRef<HTMLPreElement>();
+export function Highlight({ data, className }: Props) {
+  const preRef = React.useRef<HTMLPreElement>();
 
-  componentDidMount() {
-    hljs.highlightElement(this.preRef.current);
-  }
+  React.useLayoutEffect(() => hljs.highlightElement(preRef.current), []);
 
-  shouldComponentUpdate(nextProps: Readonly<IProps>): boolean {
-    return nextProps.data != this.props.data;
-  }
-
-  render() {
-    const { className, data } = this.props;
-
-    return (
-      <pre ref={this.preRef} className={className}>
-        {data}
-      </pre>
-    );
-  }
+  return (
+    <pre ref={preRef} className={className}>
+      {data}
+    </pre>
+  );
 }
