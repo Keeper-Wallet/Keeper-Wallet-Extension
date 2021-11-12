@@ -5,21 +5,21 @@ import { Trans } from 'react-i18next';
 import { DateFormat } from '../../ui';
 import { TxFee } from './TxFee';
 
-interface BalanceAsset {
-  balance: string;
-  minSponsoredAssetFee: string;
-  sponsorBalance: string;
+export interface Balance {
+  assets: BalanceAssets;
+  available: string;
+  leasedOut: string;
+  network: string;
 }
 
 export interface BalanceAssets {
   [assetId: string]: BalanceAsset;
 }
 
-export interface Balance {
-  assets: BalanceAssets;
-  available: string;
-  leasedOut: string;
-  network: string;
+export interface BalanceAsset {
+  balance: string;
+  minSponsoredAssetFee: string;
+  sponsorBalance: string;
 }
 
 interface Props {

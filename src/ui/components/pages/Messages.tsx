@@ -17,7 +17,6 @@ import { Money } from '@waves/data-entities';
 import { Intro } from './Intro';
 import { FinalTransaction, getConfigByTransaction } from '../transactions';
 import { BalanceAssets } from '../transactions/BaseTransaction';
-import { BigNumber } from '@waves/bignumber';
 import { DEFAULT_FEE_CONFIG } from '../../../constants';
 
 class MessagesComponent extends React.Component {
@@ -41,12 +40,17 @@ class MessagesComponent extends React.Component {
       return { loading: true, selectedAccount };
     }
 
-    const sponsoredBalance = Object.fromEntries(
-      Object.entries(balance.assets as BalanceAssets).filter(
-        ([, assetBalance]) =>
-          new BigNumber(assetBalance.sponsorBalance).gte(
-            DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee
-          ) && assetBalance.minSponsoredAssetFee != null
+    const sponsoredBalance: BalanceAssets = Object.fromEntries(
+      Object.entries({
+        WAVES: {
+          balance: balance.available,
+          minSponsoredAssetFee:
+            DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee,
+          sponsorBalance: balance.available,
+        },
+        ...balance.assets,
+      } as BalanceAssets).filter(
+        ([, assetBalance]) => assetBalance.minSponsoredAssetFee != null
       )
     );
 
@@ -59,7 +63,6 @@ class MessagesComponent extends React.Component {
     if (isExistMsg) {
       loading = false;
       return {
-        sponsoredBalance,
         selectedAccount,
         assets,
         transactionStatus,

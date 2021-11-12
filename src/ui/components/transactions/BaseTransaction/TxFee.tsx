@@ -9,6 +9,7 @@ import { updateTransactionFee } from '../../../actions';
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getFee } from './parseTx';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { omit } from 'ramda';
 
 const WAVES_MIN_FEE = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
 
@@ -22,15 +23,37 @@ interface Props {
   message: any;
 }
 
+type FeeOption = {
+  id: string;
+  value: string;
+  text: string;
+  name: string;
+};
+
 export const TxFee = connect(
   (store: any, ownProps?: any) => {
     const message = ownProps?.message || store.activePopup?.msg;
     const assets = ownProps?.assets || store.assets;
 
     const fee = getMoney(getFee({ ...message?.data?.data }), assets);
+    const initialFee = getMoney(message?.data?.data?.initialFee, assets);
+
+    const minSponsorBalance: Money = convertFee(initialFee, assets['WAVES']);
+
+    const sponsoredBalance = Object.entries(
+      ownProps.sponsoredBalance as BalanceAssets
+    ).filter(
+      ([assetId, assetBalance]) =>
+        new BigNumber(assetBalance.sponsorBalance).gte(
+          minSponsorBalance.getCoins()
+        ) &&
+        new BigNumber(assetBalance.balance).gte(
+          convertFee(initialFee, assets[assetId]).getCoins()
+        )
+    );
 
     const isEditable =
-      !!ownProps.sponsoredBalance &&
+      !!sponsoredBalance.length &&
       [TRANSACTION_TYPE.TRANSFER, TRANSACTION_TYPE.INVOKE_SCRIPT].includes(
         message.data.type
       ) &&
@@ -39,9 +62,10 @@ export const TxFee = connect(
     return {
       message,
       fee,
-      initialFee: getMoney(message?.data?.data?.initialFee, assets),
+      initialFee,
       assets,
       isEditable,
+      sponsoredBalance: Object.fromEntries(sponsoredBalance),
     };
   },
   { updateTransactionFee }
@@ -54,13 +78,8 @@ export const TxFee = connect(
   updateTransactionFee,
   message,
 }: Props) {
-  function getOption(assetId: string): {
-    id: string;
-    value: string;
-    text: string;
-    name: string;
-  } {
-    const tokens = convert(initialFee, assets[assetId]).getTokens();
+  function getOption(assetId: string): FeeOption {
+    const tokens = convertFee(initialFee, assets[assetId]).getTokens();
     return {
       id: assetId,
       value: tokens.toFixed(),
@@ -71,6 +90,20 @@ export const TxFee = connect(
     };
   }
 
+  let options: FeeOption[] = [];
+  if ('WAVES' in sponsoredBalance) {
+    options.push(getOption('WAVES'));
+    sponsoredBalance = omit(['WAVES'], sponsoredBalance);
+  }
+  if (initialFee.asset.id !== 'WAVES') {
+    options.push(getOption(initialFee.asset.id));
+  }
+  options.push(
+    ...Object.keys(sponsoredBalance)
+      .map(getOption)
+      .sort((a, b) => a.name.localeCompare(b.name))
+  );
+
   return (
     <div>
       {!isEditable ? (
@@ -78,11 +111,7 @@ export const TxFee = connect(
       ) : (
         <Select
           className="fullwidth"
-          selectList={[getOption('WAVES')].concat(
-            Object.keys(sponsoredBalance)
-              .map(getOption)
-              .sort((a, b) => a.name.localeCompare(b.name))
-          )}
+          selectList={options}
           selected={fee.asset.id}
           onSelectItem={(id, tokens) =>
             updateTransactionFee(message.id, {
@@ -96,35 +125,15 @@ export const TxFee = connect(
   );
 });
 
-function convert(fee: Money, toAsset: Asset): Money {
-  const isFromWaves = fee.asset.id === 'WAVES';
-  const isToWaves = toAsset.id === 'WAVES';
-
-  if (isFromWaves === isToWaves) {
-    return fee;
-  }
-
-  const convertCoins = isFromWaves ? fromWaves : toWaves;
-  const sponsorship = isFromWaves
-    ? toAsset.minSponsoredFee
-    : fee.asset.minSponsoredFee;
-  return new Money(convertCoins(fee.toCoins(), sponsorship), toAsset);
-}
-
-type Amount = string | number | BigNumber;
-
-function fromWaves(wavesFee: Amount, sponsorship: Amount) {
-  if (wavesFee == 0 || sponsorship == 0) return 0;
-  return new BigNumber(wavesFee)
-    .mul(new BigNumber(sponsorship))
-    .div(new BigNumber(WAVES_MIN_FEE))
-    .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP);
-}
-
-function toWaves(assetFee: Amount, sponsorship: Amount) {
-  if (assetFee == 0 || sponsorship == 0) return 0;
-  return new BigNumber(assetFee)
-    .mul(new BigNumber(WAVES_MIN_FEE))
-    .div(new BigNumber(sponsorship))
-    .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP);
+function convertFee(from: Money, toAsset: Asset): Money {
+  const isWaves = (assetId: string) => assetId === 'WAVES';
+  const minSponsoredFee = (asset: Asset) =>
+    !isWaves(asset.id) ? asset.minSponsoredFee : WAVES_MIN_FEE;
+  return new Money(
+    new BigNumber(from.toCoins())
+      .mul(new BigNumber(minSponsoredFee(toAsset)))
+      .div(new BigNumber(minSponsoredFee(from.asset)))
+      .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP),
+    toAsset
+  );
 }
