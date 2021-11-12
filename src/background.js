@@ -419,15 +419,11 @@ class BackgroundService extends EventEmitter {
         this.statisticsController.sendTxEvent(message);
         return approveData;
       },
-      reject: async (messageId, forever) => {
-        this.messageController.reject(messageId, forever);
-      },
-      updateTransactionFee: async (messageId, fee) => {
-        return await this.messageController.updateTransactionFee(
-          messageId,
-          fee
-        );
-      },
+      reject: async (messageId, forever) =>
+        this.messageController.reject(messageId, forever),
+      updateTransactionFee: this.messageController.updateTransactionFee.bind(
+        this.messageController
+      ),
       // notifications
       setReadNotification: async id =>
         this.notificationsController.setMessageStatus(
