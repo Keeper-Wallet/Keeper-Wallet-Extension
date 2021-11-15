@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import log from 'loglevel';
 import EventEmitter from 'events';
 
 export class PreferencesController extends EventEmitter {
@@ -18,6 +17,10 @@ export class PreferencesController extends EventEmitter {
     this.store = new ObservableStore(initState);
 
     this.getNetwork = options.getNetwork;
+  }
+
+  getSelectedAccount() {
+    return this.store.getState().selectedAccount;
   }
 
   setCurrentLocale(key) {
