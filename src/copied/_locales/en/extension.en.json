@@ -18,6 +18,22 @@
     "seed": "Backup phrase",
     "copyToClipboard": "Click to copy to clipboard"
   },
+  "assetInfo": {
+    "id": "ID",
+    "displayName": "Name",
+    "ticker": "Ticker",
+    "precision": "Decimals points",
+    "quantity": "Total issued",
+    "type": "Type",
+    "reissuable": "Reissuable",
+    "notReissuable": "Not reissuable",
+    "scripted": "Scripted",
+    "notScripted": "Not scripted",
+    "minSponsoredFee": "Sponsored Asset Fee",
+    "sender": "Issuer",
+    "timestamp": "Issue date",
+    "closeBtn": "Close"
+  },
   "assets": {
     "account": "Account",
     "activatedModal": "Account set active!",
