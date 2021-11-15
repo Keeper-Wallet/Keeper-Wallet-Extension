@@ -14,13 +14,19 @@ interface Props {
 
 export function AssetItem({ balance, assetId, className, onClick }: Props) {
   const displayName = balance && balance.asset.displayName;
+  console.log(balance?.asset);
 
   return (
     <div
       className={cn(styles.wallet, className, styles.inner, 'flex')}
       onClick={() => onClick(assetId)}
     >
-      <AssetLogo assetId={assetId} name={displayName} />
+      <AssetLogo
+        assetId={assetId}
+        name={displayName}
+        hasSponsorship={!!balance?.asset?.minSponsoredFee}
+        hasScript={balance?.asset?.hasScript}
+      />
 
       <div className={cn('body1', styles.accountData)}>
         <div className={cn('basic500', styles.accountName)}>
