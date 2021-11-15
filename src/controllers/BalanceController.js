@@ -13,7 +13,7 @@ export class BalanceController {
     this.getNetwork = options.getNetwork;
     this.getNode = options.getNode;
     this.getCode = options.getCode;
-    this.getAccount = options.getAccount;
+    this.getSelectedAccount = options.getSelectedAccount;
     this.isLocked = options.isLocked;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
@@ -44,7 +44,7 @@ export class BalanceController {
     const accounts = this.getAccounts().filter(
       ({ network }) => network === currentNetwork
     );
-    const activeAccount = this.getAccount();
+    const activeAccount = this.getSelectedAccount();
 
     if (this.isLocked() || accounts.length < 1) return;
 
@@ -54,13 +54,8 @@ export class BalanceController {
           const address = account.address;
           const isActiveAddress = address === activeAccount.address;
 
-          let balanceUrls = [
-            `addresses/balance/details/${address}`,
-            ...(isActiveAddress ? [`assets/balance/${address}`] : []),
-          ];
-
-          const [wavesBalances, assetBalances] = await Promise.all(
-            balanceUrls.map(url => this.getByUrl(url))
+          const wavesBalances = await this.getByUrl(
+            `addresses/balance/details/${address}`
           );
 
           const available = new BigNumber(wavesBalances.available);
@@ -76,7 +71,9 @@ export class BalanceController {
               ...(isActiveAddress
                 ? {
                     assets: Object.fromEntries(
-                      assetBalances.balances.map(info => [
+                      (
+                        await this.getByUrl(`assets/balance/${address}`)
+                      ).balances.map(info => [
                         info.assetId,
                         {
                           minSponsoredAssetFee:

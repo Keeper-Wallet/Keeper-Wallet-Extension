@@ -254,7 +254,7 @@ class BackgroundService extends EventEmitter {
       getCode: this.networkController.getNetworkCode.bind(
         this.networkController
       ),
-      getAccount: this.preferencesController.getSelectedAccount.bind(
+      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController
       ),
       isLocked: this.walletController.isLocked.bind(this.walletController),
