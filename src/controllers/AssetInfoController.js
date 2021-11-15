@@ -56,7 +56,8 @@ export class AssetInfoController {
       force ||
       !assets[network] ||
       !assets[network][assetId] ||
-      assets[network][assetId].minSponsoredFee === undefined
+      assets[network][assetId].minSponsoredFee === undefined ||
+      assets[network][assetId].hasScript === undefined
     ) {
       let resp = await fetch(url);
       switch (resp.status) {
@@ -78,7 +79,7 @@ export class AssetInfoController {
             height: assetInfo.issueHeight,
             timestamp: new Date(parseInt(assetInfo.issueTimestamp)).toJSON(),
             sender: assetInfo.issuer,
-            scripted: assetInfo.scripted,
+            hasScript: assetInfo.scripted,
             reissuable: assetInfo.reissuable,
             displayName: assetInfo.ticker || assetInfo.name,
             minSponsoredFee: assetInfo.minSponsoredAssetFee,

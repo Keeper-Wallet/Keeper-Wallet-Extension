@@ -1,5 +1,5 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { ACTION } from '../actions/constants';
+import { ACTION } from '../actions';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -70,6 +70,13 @@ export const balances = createSimpleReducer<
     {
       available: string;
       leasedOut: string;
+      assets: {
+        [assetId: string]: {
+          balance: string;
+          sponsorBalance: string;
+          minSponsoredAssetFee: string;
+        };
+      };
     }
   >
 >({}, ACTION.UPDATE_BALANCES);
