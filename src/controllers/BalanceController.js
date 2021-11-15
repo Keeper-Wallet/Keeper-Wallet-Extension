@@ -2,8 +2,6 @@ import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
 export class BalanceController {
-  active = true;
-
   constructor(options = {}) {
     const defaults = {
       balances: {},
@@ -15,6 +13,8 @@ export class BalanceController {
     this.getNetwork = options.getNetwork;
     this.getNode = options.getNode;
     this.getCode = options.getCode;
+    this.getSelectedAccount = options.getSelectedAccount;
+    this.isLocked = options.isLocked;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
@@ -44,18 +44,18 @@ export class BalanceController {
     const accounts = this.getAccounts().filter(
       ({ network }) => network === currentNetwork
     );
-    if (!this.active || accounts.length < 1) return;
+    const activeAccount = this.getSelectedAccount();
+
+    if (this.isLocked() || accounts.length < 1) return;
 
     const data = await Promise.all(
       accounts.map(async account => {
         try {
           const address = account.address;
+          const isActiveAddress = address === activeAccount.address;
 
-          const [wavesBalances, assetBalances] = await Promise.all(
-            [
-              `addresses/balance/details/${address}`,
-              `assets/balance/${address}`,
-            ].map(url => this.getByUrl(url))
+          const wavesBalances = await this.getByUrl(
+            `addresses/balance/details/${address}`
           );
 
           const available = new BigNumber(wavesBalances.available);
@@ -68,21 +68,28 @@ export class BalanceController {
               available: available.toString(),
               leasedOut: leasedOut.toString(),
               network: currentNetwork,
-              assets: Object.fromEntries(
-                assetBalances.balances.map(info => [
-                  info.assetId,
-                  {
-                    minSponsoredAssetFee:
-                      info.minSponsoredAssetFee &&
-                      new BigNumber(info.minSponsoredAssetFee).toString(),
-                    sponsorBalance:
-                      info.sponsorBalance &&
-                      new BigNumber(info.sponsorBalance).toString(),
-                    balance:
-                      info.balance && new BigNumber(info.balance).toString(),
-                  },
-                ])
-              ),
+              ...(isActiveAddress
+                ? {
+                    assets: Object.fromEntries(
+                      (
+                        await this.getByUrl(`assets/balance/${address}`)
+                      ).balances.map(info => [
+                        info.assetId,
+                        {
+                          minSponsoredAssetFee:
+                            info.minSponsoredAssetFee &&
+                            new BigNumber(info.minSponsoredAssetFee).toString(),
+                          sponsorBalance:
+                            info.sponsorBalance &&
+                            new BigNumber(info.sponsorBalance).toString(),
+                          balance:
+                            info.balance &&
+                            new BigNumber(info.balance).toString(),
+                        },
+                      ])
+                    ),
+                  }
+                : undefined),
             },
           ];
         } catch (e) {

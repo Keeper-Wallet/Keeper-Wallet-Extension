@@ -82,6 +82,10 @@ export class WalletController {
     this.store.updateState({ locked: false });
   }
 
+  isLocked() {
+    return this.store.getState().locked;
+  }
+
   initVault(password) {
     if (!password || typeof password !== 'string') {
       throw new Error('Password is needed to init vault');
