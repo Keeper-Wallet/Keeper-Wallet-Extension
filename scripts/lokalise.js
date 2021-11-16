@@ -1,4 +1,5 @@
 const request = require('request');
+const config = require('../init_config.json');
 const https = require('https');
 const fs = require('fs');
 const unZipper = require('unzipper');
