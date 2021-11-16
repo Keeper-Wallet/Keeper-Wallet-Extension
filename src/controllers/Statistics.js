@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { libs } from '@waves/waves-transactions';
-import { statisticsApiKey } from '../../config';
+import { statisticsApiKey } from '../../config.json';
 import extension from 'extensionizer';
 import { detect } from '../lib/detectBrowser';
 import { WAVESKEEPER_ENV } from '../constants';

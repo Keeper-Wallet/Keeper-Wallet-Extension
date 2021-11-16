@@ -15,6 +15,7 @@
     "dev": "webpack --watch",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
+    "typecheck": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha",
     "dist": "NODE_ENV=production webpack"

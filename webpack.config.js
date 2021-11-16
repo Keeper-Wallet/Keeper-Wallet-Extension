@@ -1,15 +1,43 @@
+const path = require('path');
+const WebpackCustomActions = require('./scripts/WebpackCustomActionsPlugin');
+const clearDist = require('./scripts/clearDist');
 const conf = require('./scripts/webpack.config');
-const prodConf = require('./scripts/webpack.prod.config');
-const defConf = require('./scripts/webpack.dev.config');
 const getVersion = require('./scripts/getVersion');
-const buildConfig = require('./init_config.json');
 
-const config = { ...buildConfig };
+const devConf = conf => ({
+  ...conf,
+  mode: 'development',
+  devtool: 'cheap-module-inline-source-map',
+  module: {
+    ...conf.module,
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        exclude: [
+          '@waves/data-entities',
+          '@waves/money-like-to-node',
+          '@waves/node-api-js',
+          '@waves/ts-lib-crypto',
+        ].map(
+          moduleName =>
+            new RegExp(path.join(__dirname, 'node_modules', moduleName))
+        ),
+        loader: 'source-map-loader',
+      },
+      ...conf.module.rules,
+    ],
+  },
+});
 
-const DIST = config.DIST || 'dist';
-const LANGS = config.LANGS || ['en'];
-const PAGE_TITLE = config.PAGE_TITLE || 'Waves Keeper';
-const PLATFORMS = config.PLATFORMS || ['chrome', 'firefox', 'opera', 'edge'];
+const prodConf = conf => ({
+  ...conf,
+  mode: 'production',
+  plugins: [
+    ...conf.plugins,
+    new WebpackCustomActions({ onBuildStart: [clearDist] }),
+  ],
+});
 
 module.exports = () => {
   const version = getVersion();
@@ -17,14 +45,14 @@ module.exports = () => {
     throw 'Build failed';
   }
   const isProduction = process.env.NODE_ENV === 'production';
-  const configFn = isProduction ? prodConf : defConf;
+  const configFn = isProduction ? prodConf : devConf;
   return configFn({
     ...conf({
       version,
-      DIST,
-      PLATFORMS,
-      LANGS,
-      PAGE_TITLE,
+      DIST: 'dist',
+      PLATFORMS: ['chrome', 'firefox', 'opera', 'edge'],
+      LANGS: ['en'],
+      PAGE_TITLE: 'Waves Keeper',
       isProduction,
     }),
   });

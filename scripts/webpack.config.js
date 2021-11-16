@@ -45,6 +45,10 @@ module.exports = ({
 
   const plugins = [];
 
+  if (process.stdout.isTTY) {
+    plugins.push(new webpack.ProgressPlugin());
+  }
+
   plugins.push(
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -86,6 +90,7 @@ module.exports = ({
   plugins.push(new WebpackCustomActions({ onBuildEnd: [getPlatforms] }));
 
   return {
+    stats: 'errors-warnings',
     entry: {
       ui: path.resolve(SOURCE_FOLDER, 'ui.js'),
       background: path.resolve(SOURCE_FOLDER, 'background.js'),
@@ -104,22 +109,7 @@ module.exports = ({
           /*configFile: "./path/to/tsconfig.json" */
         }),
       ],
-      extensions: [
-        '.ts',
-        '.tsx',
-        '.js',
-        '.json',
-        '.styl',
-        '.css',
-        '.png',
-        '.jpg',
-        '.gif',
-        '.svg',
-        '.woff',
-        '.woff2',
-        '.ttf',
-        '.otf',
-      ],
+      extensions: ['.ts', '.tsx', '.js'],
     },
 
     plugins,
@@ -137,7 +127,7 @@ module.exports = ({
         },
         {
           test: /\.tsx?$/,
-          loader: 'babel-loader!awesome-typescript-loader',
+          loader: 'babel-loader!awesome-typescript-loader?transpileOnly',
           exclude: /node_modules/,
         },
         {
@@ -162,10 +152,23 @@ module.exports = ({
         },
         {
           test: /\.css/,
-          loader: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: ['css-loader'],
-          }),
+          oneOf: [
+            {
+              test: /\.module\.css$/,
+              loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [
+                  'css-loader?modules,localIdentName="[name]-[local]-[hash:base64:6]"',
+                ],
+              }),
+            },
+            {
+              loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader'],
+              }),
+            },
+          ],
         },
       ],
     },
