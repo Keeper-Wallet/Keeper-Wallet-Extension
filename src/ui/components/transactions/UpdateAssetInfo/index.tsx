@@ -3,7 +3,7 @@ import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
 import { UpdateAssetInfoFinal } from './UpdateAssetInfoFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const updateAssetInfo = {
   type: utils.messageType,
   message: UpdateAssetInfo,
   card: UpdateAssetInfoCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default updateAssetInfo;

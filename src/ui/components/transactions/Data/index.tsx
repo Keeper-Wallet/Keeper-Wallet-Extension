@@ -3,7 +3,7 @@ import { DataCard } from './DataCard';
 import { DataFinal } from './DataFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const data = {
   type: utils.messageType,
   message: Data,
   card: DataCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default data;

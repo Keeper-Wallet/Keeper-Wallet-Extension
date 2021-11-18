@@ -3,7 +3,7 @@ import { AssetScriptCard } from './AssetScriptCard';
 import { AssetScriptFinal } from './AssetScriptFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const assetScript = {
   type: utils.messageType,
   message: AssetScript,
   card: AssetScriptCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default assetScript;
