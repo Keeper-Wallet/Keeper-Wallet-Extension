@@ -264,6 +264,10 @@ class BackgroundService extends EventEmitter {
       this.balanceController.updateBalances()
     );
 
+    this.walletController.store.subscribe(() =>
+      this.balanceController.updateBalances()
+    );
+
     // AssetInfo. Provides information about assets
     this.assetInfoController = new AssetInfoController({
       initState: initState.AssetInfoController,
