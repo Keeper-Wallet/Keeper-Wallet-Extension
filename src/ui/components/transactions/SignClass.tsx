@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TransactionWallet } from '../wallets';
+import { TransactionWallet } from '../wallets/TransactionWallet';
 
 export class SignClass extends React.PureComponent {
   readonly props;

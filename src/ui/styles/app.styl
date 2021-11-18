@@ -1,6 +1,51 @@
 @import "./colors.styl";
 @import "./fonts.styl";
 
+:global .black
+  color: $black;
+
+:global .white
+  color: $white;
+
+:global .basic50
+  color: $basic50;
+
+:global .basic100
+  color: $basic100;
+
+:global .basic200
+  color: $basic200;
+
+:global .basic500
+  color: $basic500
+
+:global .accent50
+  color: $accent50;
+
+:global .disabled400
+  color: $disabled400;
+
+:global .disabled500
+  color: $disabled500;
+
+:global .info400
+  color: $info400;
+
+:global .submit200
+  color: $submit200;
+
+:global .submit400
+  color: $submit400;
+
+:global .success400
+  color: $success400;
+
+:global .error400
+  color: $error400;
+
+:global .error500
+  color: $error500;
+
 :global html
   background: $accent50;
   width: 100% !important;
@@ -408,7 +453,7 @@ $layout-44 = 44px;
   opacity: 0;
   z-index: 10;
 
-:global .showTooltip:not(.active-account-icon):hover + .tooltip
+:global .showTooltip:hover + .tooltip
   display: block;
   opacity: 1;
 

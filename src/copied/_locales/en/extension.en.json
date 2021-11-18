@@ -1,4 +1,7 @@
 {
+  "accountCard": {
+    "infoTooltip": "Account info"
+  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -18,15 +21,12 @@
   "assets": {
     "account": "Account",
     "activatedModal": "Account set active!",
-    "activeAccount": "Active account",
     "addAccount": "Add account",
     "changeName": "Account name changed",
     "copied": "Copied!",
     "deleteAccount": "Delete account",
     "inStorage": "Other accounts",
-    "lastUpdate": "Last update:",
-    "selectedModal": "Account selected",
-    "setActive": "Set active!"
+    "lastUpdate": "Last update:"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
@@ -81,6 +81,7 @@
     "selectWord": "Please, tap each word in the correct order",
     "wrongSeed": "Wrong order, try again"
   },
+  "copyAddress": "Copy address",
   "deleteAccount": {
     "attention": "Attention!",
     "delete": "Delete account",
@@ -228,6 +229,10 @@
     "description": "wants to access your Waves Address",
     "title": "Allow access"
   },
+  "otherAccounts": {
+    "addAccount": "Add account",
+    "title": "Other accounts"
+  },
   "pairing": {
     "appInfo": "Download our mobile applications below:",
     "scanInfo": "Scan the code below with your iPhone or Android device to pair it with your account.",
@@ -295,6 +300,7 @@
     "time_idle": "Browser timeout",
     "toolitpContent": "Protect yourself from Clicker Trojans threats"
   },
+  "showQR": "Show QR",
   "showScriptComponent": {
     "copied": "Copied!",
     "copy": "Copy",
@@ -475,7 +481,9 @@
     "activeAccount": "Active account",
     "logo-title": "Keep your Waves keys safe online",
     "logoTitle": "Keep your Waves keys safe online",
-    "showQR": "Show QR"
+    "showQR": "Show QR",
+    "transactions": "Transactions",
+    "wallet": "Wallet"
   },
   "ur": {
     "activeNow": "Active",
@@ -483,10 +491,7 @@
     "unactive": "Make active"
   },
   "wallet": {
-    "lease": "Leased",
-    "tooltip": {
-      "makeActive": "Make active"
-    }
+    "lease": "Leased"
   },
   "welcome": {
     "getStarted": "Get Started",

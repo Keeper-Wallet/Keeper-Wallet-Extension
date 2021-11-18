@@ -1,0 +1,88 @@
+.root {
+  position: relative;
+  padding: 14px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
+  background: #fff;
+}
+
+.accountInfo {
+  display: flex;
+  position: relative;
+}
+
+.accountInfoText {
+  margin-left: 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.accountName {
+  margin-bottom: 8px;
+  overflow: hidden;
+  color: #9ba6b2;
+  text-overflow: ellipsis;
+}
+
+.otherAccountsButton {
+  align-self: center;
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  background: url(../../assets/img/changeaccount-18-basic-500-accent.svg)
+    no-repeat center;
+  background-size: 16px;
+}
+
+.otherAccountsTooltip {
+  top: 3px;
+  right: 34px;
+  white-space: nowrap;
+}
+
+.otherAccountsTooltip::after {
+  top: 12px;
+  right: -3px;
+  bottom: auto;
+}
+
+.selectableOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  position: relative;
+  margin-top: 18px;
+  width: 100%;
+  height: 26px;
+  font-size: 12px;
+}
+
+.controlsExpand {
+  flex-grow: 1;
+}
+
+.copyTooltip {
+  top: -38px;
+  right: 35px;
+  white-space: nowrap;
+}
+
+.showQrTooltip {
+  right: 0;
+  bottom: -40px;
+  white-space: nowrap;
+}
+
+.showQrTooltip::after {
+  top: -2px;
+  bottom: auto;
+}

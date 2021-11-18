@@ -3,7 +3,7 @@ import { WalletTypes } from '../services/Background';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 
-export function user(account, type: WalletTypes) {
+export function addUser(account, type: WalletTypes) {
   return {
     type: ACTION.SAVE_NEW_ACCOUNT,
     payload: account,

@@ -76,7 +76,10 @@ function loading(state = true, { type, payload }) {
   return state;
 }
 
-function notifications(state = {}, { type, payload }) {
+function notifications(
+  state: { changeName?: boolean; deleted?: boolean; selected?: boolean } = {},
+  { type, payload }: { type: string; payload: boolean }
+) {
   switch (type) {
     case ACTION.NOTIFICATION_SELECT:
       return { ...state, selected: payload };

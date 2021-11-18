@@ -98,7 +98,7 @@ class AccountInfoComponent extends React.Component {
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
     const { address, network, name, publicKey } = selectedAccount;
-    const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
+    const { activeAddressLink, walletLink } = getExplorerUrls(network, address);
 
     return (
       <div className={styles.content}>
@@ -138,27 +138,23 @@ class AccountInfoComponent extends React.Component {
           </div>
 
           <div className={`margin-main-big ${styles.buttonsWrapper}`}>
-            {walletLink && (
-              <a
-                href={walletLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="button walletIconBlack button-wallet"
-              >
-                <Trans i18nKey="ui.wallet">Wallet</Trans>
-              </a>
-            )}
+            <a
+              href={walletLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button walletIconBlack button-wallet"
+            >
+              <Trans i18nKey="ui.wallet">Wallet</Trans>
+            </a>
 
-            {activeAddressLink && (
-              <a
-                href={activeAddressLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transactionsIconBlack button button-wallet"
-              >
-                <Trans i18nKey="ui.transactions">Transactions</Trans>
-              </a>
-            )}
+            <a
+              href={activeAddressLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transactionsIconBlack button button-wallet"
+            >
+              <Trans i18nKey="ui.transactions">Transactions</Trans>
+            </a>
 
             <span className={styles.walletBtnSeparator} />
 

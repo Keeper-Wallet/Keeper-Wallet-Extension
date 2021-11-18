@@ -11,13 +11,7 @@ export const addAccount = store => next => action => {
     ).code;
 
     background
-      .addWallet({
-        ...payload,
-        networkCode,
-        currentNetwork,
-        network: currentNetwork,
-        lastActive: Date.now(),
-      })
+      .addWallet({ ...payload, networkCode, network: currentNetwork })
       .then(
         () => {
           store.dispatch(addUserReceive());
@@ -33,14 +27,12 @@ export const addAccount = store => next => action => {
   }
 
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
-    Promise.all(
-      payload.map(account =>
-        background.addWallet({ ...account, lastActive: Date.now() })
-      )
-    ).then(() => {
-      store.dispatch(setTab('assets'));
-      background.sendEvent('addWallet', { type: meta.type });
-    });
+    Promise.all(payload.map(account => background.addWallet(account))).then(
+      () => {
+        store.dispatch(setTab('assets'));
+        background.sendEvent('addWallet', { type: meta.type });
+      }
+    );
   }
 
   return next(action);

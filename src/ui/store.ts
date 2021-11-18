@@ -1,3 +1,4 @@
+import { useSelector, TypedUseSelectorHook, useDispatch } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import * as reducers from './reducers/updateState';
 import * as middleware from './midleware';
@@ -11,8 +12,16 @@ if (WAVESKEEPER_DEBUG) {
   };
 }
 
+const reducer = combineReducers(reducers);
+
+export type AppState = ReturnType<typeof reducer>;
+
+export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
+
 export const store = createStore(
-  combineReducers(reducers),
+  reducer,
   { version: extension.runtime.getManifest().version },
   applyMiddleware(...Object.values(middleware))
 );
+
+export const useAppDispatch = () => useDispatch<typeof store.dispatch>();

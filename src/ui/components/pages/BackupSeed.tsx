@@ -1,12 +1,7 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  newAccountSelect,
-  setUiState,
-  setUiStateAndSetTab,
-  user,
-} from '../../actions';
+import { setUiState, setUiStateAndSetTab } from '../../actions';
 import { Trans } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
@@ -113,8 +108,6 @@ const mapStateToProps = function (store: any) {
 const actions = {
   setUiState,
   setUiStateAndSetTab,
-  addUser: user,
-  newAccountSelect,
 };
 
 export const BackUpSeed = connect(

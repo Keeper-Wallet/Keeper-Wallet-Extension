@@ -1,30 +1,30 @@
 @import '../../../styles/colors.styl';
 
 .assets
-  width: 100%;
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding: 14px;
   height: 552px;
   background: $basic50;
-  padding-bottom: 30px;
+  padding-bottom: 35px;
   overflow: hidden;
 
-  &::after
-    display: block;
+  &::before
     content: '';
-    width: 100%;
-    height: 112px;
     position: absolute;
     top: 0;
+    right: 0;
     left: 0;
-    z-index: 0;
-    background: -moz-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
-    background: -webkit-linear-gradient(left, #6b94ff 0%, #1f5af6 100%);
+    height: 112px;
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
 
-.otherWalletsTitle
-  height: 52px;
-  padding-top: 24px;
+.activeAccount
+  position: relative;
+  z-index: 1;
+
+.tabs
+  margin-top: 24px;
 
 .addAccount
   display: flex;
@@ -49,35 +49,12 @@
   margin-top: 100px;
   margin-bottom: 44px;
 
-.activeAnimationSpan
-  position: relative;
-  display: inline-block;
-  z-index: 10;
-  width: 100%;
-
-:global .wallets-list
+.tabPanels
+  flex: 1 1 0;
   overflow: auto;
-  max-height: 404px;
+  padding-top: 8px;
   margin-right: -14px;
   padding-right: 14px;
-  position: relative;
-
-:global .animate_wallets-enter
-  animation-name: animation-show;
-  animation-duration: 0.6s;
-  animation-fill-mode: both;
-
-:global .animate_wallets-exit
-  animation-name: animation-hide;
-  animation-duration: 0.6s;
-  animation-fill-mode: both;
-
-.activeAccountTitle
-  position: relative;
-  z-index: 1;
-  font-size: 12px;
-  color: $white;
-  height: 22px;
 
 .notifier
   width: 48px;
@@ -112,70 +89,3 @@
     justify-content: center;
     padding: 0 5px;
     font-size: 10px;
-
-@keyframes :global(animation-show)
-  0%
-    opacity: 0;
-    height: 0;
-    padding: 0 14px;
-    margin-bottom: 0px;
-  50%
-    opacity: 0;
-    height: 0;
-    padding: 0 14px;
-    margin-bottom: 0px;
-  50.01%
-    opacity: 0;
-    height: 0;
-    padding: 0 14px;
-    margin-bottom: 0px;
-  100%
-    opacity: 1;
-    padding: 14px 14px;
-    margin-bottom: 8px;
-    height: 64px
-
-@keyframes :global(animation-hide)
-  0%
-    opacity: 1;
-  50%
-    opacity: 0;
-    padding: 14px 14px;
-    margin-bottom: 8px;
-  50.01%
-    opacity: 0;
-    height: 64px;
-  100%
-    height: 0;
-    opacity: 0;
-    padding: 0px 14px;
-    margin-bottom: 0px;
-
-:global .animate_active_wallet-enter
-  animation-name: animation-active-show;
-  animation-duration: 0.6s;
-  animation-fill-mode: both;
-  position: absolute;
-
-:global .animate_active_wallet-exit
-  animation-name: animation-active-hide;
-  animation-duration: 0.6s;
-  animation-fill-mode: both;
-
-@keyframes :global(animation-active-show)
-  0%
-    opacity: 0;
-    transform: translate(0, -151%);
-
-  100%
-    opacity: 1;
-    transform: translate(0, 0);
-
-@keyframes :global(animation-active-hide)
-  0%
-    opacity: 1;
-    transform: translate(0, 0);
-
-  100%
-    opacity: 0;
-    transform: translate(0, 151%);

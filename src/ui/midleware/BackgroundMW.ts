@@ -94,7 +94,6 @@ export const selectAccount = store => next => action => {
         store.dispatch(notificationSelect(true));
         setTimeout(() => store.dispatch(notificationSelect(false)), 1000);
       });
-    return null;
   }
 
   return next(action);

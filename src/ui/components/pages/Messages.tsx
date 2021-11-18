@@ -35,7 +35,7 @@ class MessagesComponent extends React.Component {
     } = props;
     let loading = true;
 
-    if (!assets || !assets['WAVES']) {
+    if (!assets || !assets['WAVES'] || !balance) {
       props.getAsset('WAVES');
       return { loading: true, selectedAccount };
     }
