@@ -33,6 +33,7 @@ interface Message {
     message: unknown;
   }>;
   getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
+  getAmounts?: (tx: unknown) => IMoneyLike[];
   getAmountSign: (tx: unknown) => string;
   getAssetsId: (tx: unknown) => string[];
   getFee: (tx: unknown) => IMoneyLike;
