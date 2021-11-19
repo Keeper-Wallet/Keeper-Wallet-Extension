@@ -428,6 +428,7 @@ A package transaction signature. Sometimes several transactions need to be simul
 - `13` - assigns the dApp script or account script to the sender's account
 - `14` - configures sponsorship
 - `15` - modifies the asset script
+- `16` - calls the function from a dApp script or account script
 
 Example:
 
