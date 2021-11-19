@@ -30,7 +30,7 @@ export function getAmount(tx = null) {
 }
 
 export function getAmountSign() {
-  return '+';
+  return '+' as const;
 }
 
 export function isMe(tx: any, type: string) {

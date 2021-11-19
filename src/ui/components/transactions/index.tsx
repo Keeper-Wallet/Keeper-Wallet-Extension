@@ -34,7 +34,7 @@ interface Message {
   }>;
   getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
   getAmounts?: (tx: unknown) => IMoneyLike[];
-  getAmountSign: (tx: unknown) => string;
+  getAmountSign: (tx: unknown) => '-' | '+' | '';
   getAssetsId: (tx: unknown) => string[];
   getFee: (tx: unknown) => IMoneyLike;
   isMe: (tx: unknown, type: unknown) => boolean;

@@ -60,25 +60,28 @@ export function getPackageAmounts(tx = null, assets) {
     return [];
   }
 
-  return tx.reduce<Array<{ amount: Money; sign: string }>>((acc, item) => {
-    const { tx, config } = getTransactionData(item);
+  return tx.reduce<Array<{ amount: Money; sign: '-' | '+' | '' }>>(
+    (acc, item) => {
+      const { tx, config } = getTransactionData(item);
 
-    function addAmount(amount: IMoneyLike | Money) {
-      const money = getMoney(amount, assets);
-      if (money.getTokens().gt(0)) {
-        const sign = config.getAmountSign(tx);
-        acc.push({ amount: money, sign });
+      function addAmount(amount: IMoneyLike | Money) {
+        const money = getMoney(amount, assets);
+        if (money.getTokens().gt(0)) {
+          const sign = config.getAmountSign(tx);
+          acc.push({ amount: money, sign });
+        }
       }
-    }
 
-    if (config.getAmount) {
-      addAmount(config.getAmount(tx, item));
-    } else {
-      config.getAmounts(tx).forEach(addAmount);
-    }
+      if (config.getAmount) {
+        addAmount(config.getAmount(tx, item));
+      } else {
+        config.getAmounts(tx).forEach(addAmount);
+      }
 
-    return acc;
-  }, []);
+      return acc;
+    },
+    []
+  );
 }
 
 export function getAmount(tx = null) {
@@ -86,7 +89,7 @@ export function getAmount(tx = null) {
 }
 
 export function getAmountSign() {
-  return '';
+  return '' as const;
 }
 
 export function isMe(tx: any, type: string) {

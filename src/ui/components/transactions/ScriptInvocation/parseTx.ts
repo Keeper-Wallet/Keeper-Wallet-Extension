@@ -60,7 +60,7 @@ export function getAmounts(tx) {
 }
 
 export function getAmountSign() {
-  return '-';
+  return '-' as const;
 }
 
 export function isMe(tx: any, type: string) {
