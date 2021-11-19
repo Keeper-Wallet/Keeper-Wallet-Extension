@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { getAmounts, getFees, messageType } from './parseTx';
+import { getPackageAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';
 
 const Fees = ({ fees }) => {
@@ -56,7 +56,7 @@ export class PackageCard extends React.PureComponent<IProps> {
     const { data = {}, title = '' } = message;
     const tx = [...data];
     const fees = getFees(tx, assets);
-    const amounts = getAmounts(tx, assets);
+    const amounts = getPackageAmounts(tx, assets);
     const myClassName = cn(styles.dataTransactionCard, className, {
       [styles.dataCard_collapsed]: collapsed,
     });

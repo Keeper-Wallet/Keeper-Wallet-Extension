@@ -54,7 +54,7 @@ export function getFees(tx, assets) {
   }, Object.create(null));
 }
 
-export function getAmounts(tx = null, assets) {
+export function getPackageAmounts(tx = null, assets) {
   if (!Array.isArray(tx)) {
     return [];
   }
