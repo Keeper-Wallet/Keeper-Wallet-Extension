@@ -30,7 +30,7 @@ interface Message {
     assets?: unknown;
     className?: string;
     collapsed: boolean;
-    message: Message;
+    message: unknown;
   }>;
   getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
   getAmountSign: (tx: unknown) => string;
