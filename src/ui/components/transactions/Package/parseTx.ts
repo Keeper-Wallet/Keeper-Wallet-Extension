@@ -1,5 +1,5 @@
 import { BigNumber } from '@waves/bignumber';
-import { getMoney } from '../../../utils/converters';
+import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
 import { Money } from '@waves/data-entities';
 
@@ -62,11 +62,21 @@ export function getPackageAmounts(tx = null, assets) {
 
   return tx.reduce<Array<{ amount: Money; sign: string }>>((acc, item) => {
     const { tx, config } = getTransactionData(item);
-    const amount = getMoney(config.getAmount(tx, item), assets);
-    if (amount.getTokens().gt(0)) {
-      const sign = config.getAmountSign(tx);
-      acc.push({ amount, sign });
+
+    function addAmount(amount: IMoneyLike | Money) {
+      const money = getMoney(amount, assets);
+      if (money.getTokens().gt(0)) {
+        const sign = config.getAmountSign(tx);
+        acc.push({ amount: money, sign });
+      }
     }
+
+    if (config.getAmount) {
+      addAmount(config.getAmount(tx, item));
+    } else {
+      config.getAmounts(tx).forEach(addAmount);
+    }
+
     return acc;
   }, []);
 }
