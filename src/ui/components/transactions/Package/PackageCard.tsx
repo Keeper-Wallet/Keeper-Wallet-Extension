@@ -22,27 +22,6 @@ const Fees = ({ fees }) => {
   );
 };
 
-const Amounts = ({ amounts }) => {
-  const moneys = Object.values(amounts);
-
-  return (
-    <div>
-      {moneys.map(({ amount, sign }, index) => {
-        return (
-          <div key={`${index}${amount.asset.id}`}>
-            <Balance
-              balance={amount}
-              split={true}
-              showAsset={true}
-              addSign={`${sign} `}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
 interface IProps {
   assets: any;
   className?: string;
@@ -85,7 +64,16 @@ export class PackageCard extends React.PureComponent<IProps> {
               </h1>
 
               <div className={styles.amounts}>
-                <Amounts amounts={amounts} />
+                {amounts.map(({ amount, sign }, index) => (
+                  <div key={`${index}${amount.asset.id}`}>
+                    <Balance
+                      balance={amount}
+                      split
+                      showAsset
+                      addSign={`${sign} `}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
