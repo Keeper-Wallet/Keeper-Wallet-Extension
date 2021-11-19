@@ -1,3 +1,5 @@
+import { ComponentType } from 'react';
+import { IMoneyLike } from 'ui/utils/converters';
 import auth from './Auth';
 import alias from './Alias';
 import originAuth from './OriginAuth';
@@ -21,8 +23,41 @@ import unknown from './Unknown';
 import customData from './CustomData';
 import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
+import { Money } from '@waves/data-entities';
 
-const MESSAGES = [
+interface Message {
+  card: ComponentType<{
+    assets?: unknown;
+    className?: string;
+    collapsed: boolean;
+    message: Message;
+  }>;
+  getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
+  getAmountSign: (tx: unknown) => string;
+  getAssetsId: (tx: unknown) => string[];
+  getFee: (tx: unknown) => IMoneyLike;
+  isMe: (tx: unknown, type: unknown) => boolean;
+  message: ComponentType<{
+    approve?: unknown;
+    assets?: unknown;
+    autoClickProtection?: unknown;
+    message?: unknown;
+    pending?: unknown;
+    reject?: unknown;
+    rejectForever?: unknown;
+    selectAccount?: unknown;
+    selectedAccount?: unknown;
+    sponsoredBalance?: unknown;
+    txHash?: unknown;
+    txType?: unknown;
+    onClose?: unknown;
+    onList?: unknown;
+    onNext?: unknown;
+  }>;
+  type: unknown;
+}
+
+const MESSAGES: Message[] = [
   auth,
   alias,
   originAuth,
@@ -49,6 +84,6 @@ const MESSAGES = [
 
 export { FinalTransaction } from './FinalTransaction';
 
-export function getConfigByTransaction({ data: tx, type = null }) {
+export function getConfigByTransaction({ data: tx, type = null }): Message {
   return MESSAGES.find(config => config.isMe(tx, type)) || unknown;
 }
