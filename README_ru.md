@@ -968,7 +968,7 @@ WavesKeeper.signAndPublishTransaction({
     - `type` "binary"/string/"integer"/"boolean" - тип,
     - `value` /string/string/number/boolean зависит от типа
 - `*fee` MoneyLike комиссия
-- `*payment` массив MoneyLike (пока поддерживается 1 платеж)
+- `*payment` массив MoneyLike
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
 
