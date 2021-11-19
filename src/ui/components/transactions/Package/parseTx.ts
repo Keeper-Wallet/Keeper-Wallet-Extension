@@ -1,6 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { getMoney } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
+import { Money } from '@waves/data-entities';
 
 export const messageType = 'transactionPackage';
 export const txType = 'transactionPackage';
@@ -59,7 +60,7 @@ export function getPackageAmounts(tx = null, assets) {
     return [];
   }
 
-  return tx.reduce((acc, item) => {
+  return tx.reduce<Array<{ amount: Money; sign: string }>>((acc, item) => {
     const { tx, config } = getTransactionData(item);
     const amount = getMoney(config.getAmount(tx, item), assets);
     if (amount.getTokens().gt(0)) {
