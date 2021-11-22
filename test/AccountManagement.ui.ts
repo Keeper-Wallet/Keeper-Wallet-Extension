@@ -88,12 +88,13 @@ describe('Account management', function () {
 
   describe('Opening a new Wallet tab by clicking the "Wallet" button', function () {
     it('Mainnet', async function () {
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
-        ),
-        this.wait
-      );
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
+          this.wait
+        )
+        .click();
+
       const currentTab = await this.driver.getWindowHandle();
       await this.driver
         .wait(
@@ -119,6 +120,7 @@ describe('Account management', function () {
       }
       await this.driver.switchTo().window(currentTab);
       await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
+      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
     });
 
     it('Testnet');
