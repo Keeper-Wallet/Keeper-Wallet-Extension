@@ -4,8 +4,12 @@ import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
 
+interface AssetDetail extends Asset {
+  originTransactionId: string;
+}
+
 interface Props {
-  asset: Asset;
+  asset: AssetDetail;
   onCopy: () => void;
   onClose: () => void;
 }
