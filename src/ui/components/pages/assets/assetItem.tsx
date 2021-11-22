@@ -14,7 +14,6 @@ interface Props {
 
 export function AssetItem({ balance, assetId, className, onClick }: Props) {
   const displayName = balance && balance.asset.displayName;
-  console.log(balance?.asset);
 
   return (
     <div
@@ -24,7 +23,7 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
       <AssetLogo
         assetId={assetId}
         name={displayName}
-        hasSponsorship={!!balance?.asset?.minSponsoredFee}
+        hasSponsorship={balance?.asset?.minSponsoredFee.isPositive()}
         hasScript={balance?.asset?.hasScript}
       />
 
@@ -44,3 +43,5 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
     </div>
   );
 }
+
+export function NftItem({}) {}

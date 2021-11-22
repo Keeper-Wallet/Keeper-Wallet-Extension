@@ -31,9 +31,14 @@ const BalanceComponent = ({
 }: IProps) => {
   let balanceOut: Money;
 
+  React.useEffect(() => {
+    if (!assets[assetId]) {
+      getAsset(assetId);
+    }
+  }, []);
+
   switch (true) {
     case !assets[assetId]:
-      getAsset(assetId);
       return <Loading>{children}</Loading>;
     case !balance:
       return <Loading>{children}</Loading>;

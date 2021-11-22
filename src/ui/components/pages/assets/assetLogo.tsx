@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './assets.styl';
+import * as styles from './assetLogo.styl';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
 

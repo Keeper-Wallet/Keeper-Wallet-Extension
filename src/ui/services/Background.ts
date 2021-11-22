@@ -1,3 +1,5 @@
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+
 class Background {
   static instance: Background;
   background: any;
@@ -227,6 +229,10 @@ class Background {
       delete this._assetsStore[assetId];
       throw e;
     }
+  }
+
+  async nftInfo(): Promise<IAssetInfo[]> {
+    return this.background.nftInfo();
   }
 
   async deleteNotifications(ids) {

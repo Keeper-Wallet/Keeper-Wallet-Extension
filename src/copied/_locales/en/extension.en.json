@@ -44,6 +44,8 @@
     "inStorage": "Other accounts",
     "lastUpdate": "Last update:",
     "selectAccountNotification": "Active account changed"
+    "assets": "Assets",
+    "nfts": "NFTs"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

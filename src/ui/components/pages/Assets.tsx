@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans } from 'react-i18next';
-import { getAsset, setActiveAccount, setUiState } from '../../actions';
+import { getAsset, getNfts, setActiveAccount, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal, Tab, TabList, TabPanel, TabPanels, Tabs } from '../ui';
@@ -30,6 +30,7 @@ export function Assets({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
+  const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
@@ -43,7 +44,11 @@ export function Assets({ setTab }: Props) {
     if (!assets['WAVES']) {
       dispatch(getAsset('WAVES'));
     }
-  }, [assets, dispatch, getAsset]);
+  }, [assets, dispatch]);
+
+  React.useEffect(() => {
+    dispatch(getNfts());
+  }, []);
 
   if (!activeAccount) {
     return <Intro />;
@@ -91,10 +96,10 @@ export function Assets({ setTab }: Props) {
       <Tabs>
         <TabList className={cn(styles.tabs, 'body3')}>
           <Tab>
-            <Trans i18nKey="assets.TODO">Assets</Trans>
+            <Trans i18nKey="assets.assets" />
           </Tab>
           <Tab>
-            <Trans i18nKey="assets.TODO">NFTs</Trans>
+            <Trans i18nKey="assets.nfts" />
           </Tab>
         </TabList>
         <TabPanels className={styles.tabPanels}>
@@ -117,7 +122,24 @@ export function Assets({ setTab }: Props) {
               />
             ))}
           </TabPanel>
-          <TabPanel>NFT list</TabPanel>
+          <TabPanel>
+            {nfts &&
+              nfts.map(nft => (
+                <AssetItem
+                  key={nft.id}
+                  balance={
+                    assets &&
+                    assets[nft.id] &&
+                    new Money(new BigNumber(nft.quantity), new Asset(nft))
+                  }
+                  assetId={nft.id}
+                  onClick={assetId => {
+                    setAsset(nfts.find(nft => nft.id === assetId));
+                    setShowAsset(true);
+                  }}
+                />
+              ))}
+          </TabPanel>
         </TabPanels>
       </Tabs>
 

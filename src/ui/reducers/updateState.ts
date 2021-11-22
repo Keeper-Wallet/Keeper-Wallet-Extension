@@ -113,6 +113,17 @@ export const assets = (
   return state;
 };
 
+export const nfts = (
+  state: IAssetInfo[] = null,
+  action: { type: string; payload: IAssetInfo[] }
+) => {
+  if (action.type === ACTION.UPDATE_NFTS) {
+    return action.payload;
+  }
+
+  return state;
+};
+
 export const backTabs = (
   state: unknown[] = [],
   { type, payload }: { type: string; payload: unknown }
