@@ -58,7 +58,8 @@ export class AssetInfoController {
       !assets[network] ||
       !assets[network][assetId] ||
       assets[network][assetId].minSponsoredFee === undefined ||
-      assets[network][assetId].hasScript === undefined
+      assets[network][assetId].hasScript === undefined ||
+      assets[network][assetId].originTransactionId === undefined
     ) {
       let resp = await fetch(url);
       switch (resp.status) {
@@ -84,6 +85,7 @@ export class AssetInfoController {
             reissuable: assetInfo.reissuable,
             displayName: assetInfo.ticker || assetInfo.name,
             minSponsoredFee: assetInfo.minSponsoredAssetFee,
+            originTransactionId: assetInfo.originTransactionId,
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = mapped;
@@ -129,6 +131,7 @@ export class AssetInfoController {
           hasScript: nft.scripted,
           displayName: nft.ticker || nft.name,
           minSponsoredFee: nft.minSponsoredAssetFee,
+          originTransactionId: nft.originTransactionId,
         }));
       default:
         throw new Error(await resp.text());

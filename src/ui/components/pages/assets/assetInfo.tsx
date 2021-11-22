@@ -2,6 +2,7 @@ import { Trans } from 'react-i18next';
 import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
+import { useAppSelector } from '../../../store';
 
 interface Props {
   asset: Asset;
@@ -10,6 +11,20 @@ interface Props {
 }
 
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
+  const selectedAccount = useAppSelector(state => state.selectedAccount);
+
+  const network = selectedAccount && selectedAccount.networkCode;
+  const explorerUrls = new Map([
+    ['W', 'wavesexplorer.com'],
+    ['T', 'testnet.wavesexplorer.com'],
+    ['S', 'stagenet.wavesexplorer.com'],
+    ['custom', 'wavesexplorer.com/custom'],
+  ]);
+  const explorer = explorerUrls.get(
+    explorerUrls.has(network) ? network : 'custom'
+  );
+  const txLink = `https://${explorer}/tx/${asset.originTransactionId}`;
+
   return (
     <div className="modal cover">
       <div className="modal-form">
@@ -108,6 +123,17 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           <div className="tag1">
             <DateFormat value={asset.timestamp} />
           </div>
+        </div>
+
+        <div className="center margin-main">
+          <a
+            rel="noopener noreferrer"
+            className="link black"
+            href={txLink}
+            target="_blank"
+          >
+            <Trans i18nKey="sign.viewTransaction" />
+          </a>
         </div>
 
         <Button onClick={onClose} type="button">

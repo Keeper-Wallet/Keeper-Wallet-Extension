@@ -45,6 +45,7 @@ export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 interface SelectedAccountState {
   address?: string;
+  networkCode?: string;
 }
 
 export function selectedAccount(
