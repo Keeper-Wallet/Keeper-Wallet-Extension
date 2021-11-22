@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from '../../wallets/wallet.styl';
+import * as styles from './assetItem.styl';
 import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';
@@ -17,7 +17,7 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
 
   return (
     <div
-      className={cn(styles.wallet, className, styles.inner, 'flex')}
+      className={cn(styles.assetCard, className, 'flex')}
       onClick={() => onClick(assetId)}
     >
       <AssetLogo
@@ -27,8 +27,8 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
         hasScript={balance?.asset?.hasScript}
       />
 
-      <div className={cn('body1', styles.accountData)}>
-        <div className={cn('basic500', styles.accountName)}>
+      <div className={cn('body1', styles.assetData)}>
+        <div className={cn('basic500', styles.assetName)}>
           {displayName || <Loader />}
         </div>
         <div className={styles.balance}>
@@ -43,5 +43,3 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
     </div>
   );
 }
-
-export function NftItem({}) {}

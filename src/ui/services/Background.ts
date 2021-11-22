@@ -1,4 +1,4 @@
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { Asset } from '@waves/data-entities';
 
 class Background {
   static instance: Background;
@@ -231,7 +231,7 @@ class Background {
     }
   }
 
-  async nftInfo(): Promise<IAssetInfo[]> {
+  async nftInfo(): Promise<Asset[]> {
     return this.background.nftInfo();
   }
 

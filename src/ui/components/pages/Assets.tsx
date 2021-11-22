@@ -13,6 +13,7 @@ import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { BigNumber } from '@waves/bignumber';
 import { AssetItem } from './assets/assetItem';
+import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
 
 interface Props {
@@ -125,14 +126,9 @@ export function Assets({ setTab }: Props) {
           <TabPanel>
             {nfts &&
               nfts.map(nft => (
-                <AssetItem
+                <NftItem
                   key={nft.id}
-                  balance={
-                    assets &&
-                    assets[nft.id] &&
-                    new Money(new BigNumber(nft.quantity), new Asset(nft))
-                  }
-                  assetId={nft.id}
+                  asset={nft}
                   onClick={assetId => {
                     setAsset(nfts.find(nft => nft.id === assetId));
                     setShowAsset(true);
