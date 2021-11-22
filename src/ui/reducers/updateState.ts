@@ -1,5 +1,6 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ACTION } from '../actions';
+import { Asset } from '@waves/data-entities';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -113,16 +114,7 @@ export const assets = (
   return state;
 };
 
-export const nfts = (
-  state: IAssetInfo[] = null,
-  action: { type: string; payload: IAssetInfo[] }
-) => {
-  if (action.type === ACTION.UPDATE_NFTS) {
-    return action.payload;
-  }
-
-  return state;
-};
+export const nfts = createSimpleReducer<Asset[]>([], ACTION.UPDATE_NFTS);
 
 export const backTabs = (
   state: unknown[] = [],
