@@ -115,7 +115,11 @@ export const assets = (
   return state;
 };
 
-export const nfts = createSimpleReducer<Asset[]>([], ACTION.UPDATE_NFTS);
+interface NftDetail extends Asset {
+  originTransactionId: string;
+  issuer: string;
+}
+export const nfts = createSimpleReducer<NftDetail[]>([], ACTION.UPDATE_NFTS);
 
 export const backTabs = (
   state: unknown[] = [],

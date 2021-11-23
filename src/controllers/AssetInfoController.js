@@ -132,6 +132,7 @@ export class AssetInfoController {
           displayName: nft.ticker || nft.name,
           minSponsoredFee: nft.minSponsoredAssetFee,
           originTransactionId: nft.originTransactionId,
+          issuer: nft.issuer,
         }));
       default:
         throw new Error(await resp.text());

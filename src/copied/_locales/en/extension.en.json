@@ -45,7 +45,9 @@
     "lastUpdate": "Last update:",
     "selectAccountNotification": "Active account changed"
     "assets": "Assets",
-    "nfts": "NFTs"
+    "nfts": "NFTs",
+    "emptyAssets": "You don't have any asset yet",
+    "emptyNFTs": "You don't have any NFT yet"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
