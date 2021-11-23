@@ -45,7 +45,7 @@ async function startUi() {
   // This way every time background calls sendUpdate with its state we get event with new background state
   const eventEmitter = new EventEmitter();
   const emitterApi = {
-    sendUpdate: async state => eventEmitter.emit('update', state),
+    sendUpdate: async state => backgroundService.receiveUpdatedState(state),
     // This method is used in Microsoft Edge browser
     closeEdgeNotificationWindow: async () => {
       if (
@@ -58,11 +58,7 @@ async function startUi() {
   const dnode = setupDnode(connectionStream, emitterApi, 'api');
   const background = await new Promise<any>(resolve => {
     dnode.once('remote', background => {
-      let backgroundWithPromises = transformMethods(cbToPromise, background);
-      // Add event emitter api to background object
-
-      backgroundWithPromises.on = eventEmitter.on.bind(eventEmitter);
-      resolve(backgroundWithPromises);
+      resolve(transformMethods(cbToPromise, background));
     });
   });
 

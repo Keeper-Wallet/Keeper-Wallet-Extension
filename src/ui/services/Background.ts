@@ -34,7 +34,6 @@ class Background {
   }
 
   init(background) {
-    background.on('update', this.receiveUpdatedState.bind(this));
     this.background = background;
     this._defer.resolve();
   }
