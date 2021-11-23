@@ -281,6 +281,13 @@
   "qrCode": {
     "download": "Download QR code"
   },
+  "send": {
+    "amountInputLabel": "Amount",
+    "assetInputLabel": "Asset",
+    "recipientInputLabel": "Recipient",
+    "submitButtonText": "Send",
+    "title": "Send assets"
+  },
   "settings": {
     "autoClick": "Auto-click protection",
     "autoClickDisable": "Disabled",

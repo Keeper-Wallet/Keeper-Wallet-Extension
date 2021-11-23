@@ -1,0 +1,36 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 48px);
+  overflow: auto;
+}
+
+.header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  border-bottom: 1px solid #edf0f4;
+  padding: 14px;
+  background: #fff;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.form {
+  flex: 1 1 auto;
+  position: relative;
+  padding: 14px;
+  background: #f8f9fb;
+}
+
+.submitButtonWrapper {
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+  border-top: 1px solid #edf0f4;
+  padding: 14px;
+  background: #fff;
+}

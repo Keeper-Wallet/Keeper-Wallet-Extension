@@ -68,6 +68,11 @@ export const balances = createSimpleReducer<
   Record<
     string,
     {
+      assets?: {
+        balance: string;
+        minSponsoredAssetFee: string;
+        sponsorBalance: string;
+      };
       available: string;
       leasedOut: string;
     }
