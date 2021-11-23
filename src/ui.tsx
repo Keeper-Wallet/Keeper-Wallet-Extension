@@ -74,7 +74,6 @@ async function startUi() {
 
   backgroundService.init(background);
   backgroundService.on(createUpdateState(store));
-  backgroundService.getNetworks();
   backgroundService.getState();
   document.addEventListener('mousemove', () => backgroundService.updateIdle());
   document.addEventListener('keyup', () => backgroundService.updateIdle());

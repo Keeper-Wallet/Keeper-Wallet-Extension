@@ -81,9 +81,13 @@ class Background {
 
   async getState() {
     await this.initPromise;
-    const data = await this.background.getState();
-    this.receiveUpdatedState(data);
-    return data;
+
+    const [state, networks] = await Promise.all([
+      this.background.getState(),
+      this.background.getNetworks(),
+    ]);
+
+    this.receiveUpdatedState({ ...state, networks });
   }
 
   async setCurrentLocale(lng): Promise<void> {
@@ -188,13 +192,6 @@ class Background {
   async setNetwork(network): Promise<void> {
     await this.initPromise;
     return this.background.setNetwork(network);
-  }
-
-  async getNetworks(): Promise<void> {
-    await this.initPromise;
-    const networks = await this.background.getNetworks();
-    this.receiveUpdatedState({ networks });
-    return networks;
   }
 
   async setCustomNode(url, network): Promise<void> {
