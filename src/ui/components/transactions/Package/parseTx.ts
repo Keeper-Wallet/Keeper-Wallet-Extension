@@ -43,7 +43,9 @@ export function getFees(tx, assets) {
       tokens: 0,
       assetId: fee.assetId,
     };
-    accFee.coins = new BigNumber(accFee.coins).add(fee.coins || 0);
+    accFee.coins = new BigNumber(accFee.coins).add(
+      fee.coins || (fee as { amount?: string | number }).amount || 0
+    );
     accFee.tokens = new BigNumber(accFee.tokens).add(fee.tokens || 0);
     acc[fee.assetId] = accFee;
     return acc;
