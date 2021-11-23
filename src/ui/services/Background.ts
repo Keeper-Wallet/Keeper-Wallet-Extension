@@ -236,6 +236,10 @@ class Background {
     return this.background.nftInfo();
   }
 
+  async historyInfo(): Promise<any> {
+    return this.background.historyInfo();
+  }
+
   async deleteNotifications(ids) {
     await this.initPromise;
     return this.background.deleteNotifications(ids);

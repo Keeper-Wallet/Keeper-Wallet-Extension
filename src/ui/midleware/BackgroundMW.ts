@@ -10,6 +10,7 @@ import {
   setUiState,
   updateActiveState,
   updateAsset,
+  updateHistory,
   updateNfts,
 } from '../actions';
 import background from '../services/Background';
@@ -212,6 +213,17 @@ export const getNfts = store => next => action => {
       () => {
         store.dispatch(updateNfts([]));
       }
+    );
+  }
+
+  return next(action);
+};
+
+export const getHistory = store => next => action => {
+  if (action.type === ACTION.GET_HISTORY) {
+    background.historyInfo().then(
+      messages => store.dispatch(updateHistory(messages))
+      // () => store.dispatch(updateHistory([]))
     );
   }
 
