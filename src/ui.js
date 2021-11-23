@@ -25,6 +25,17 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 startUi().catch(log.error);
 
 async function startUi() {
+  store.dispatch(setLangs(LANGS));
+
+  ReactDOM.render(
+    <Provider store={store}>
+      <div className="app">
+        <Root />
+      </div>
+    </Provider>,
+    document.getElementById('app-content')
+  );
+
   const port = extension.runtime.connect({ name: 'ui' });
   const connectionStream = new PortStream(port);
 
@@ -77,14 +88,3 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
 }
-
-store.dispatch(setLangs(LANGS));
-
-ReactDOM.render(
-  <Provider store={store}>
-    <div className="app">
-      <Root />
-    </div>
-  </Provider>,
-  document.getElementById('app-content')
-);
