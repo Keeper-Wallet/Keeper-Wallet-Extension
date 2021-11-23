@@ -3,15 +3,15 @@ import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 import './ui/i18n';
 
-import EventEmitter from 'events';
-import extension from 'extensionizer';
+import * as EventEmitter from 'events';
+import * as extension from 'extensionizer';
 import log from 'loglevel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
-import PortStream from './lib/port-stream.js';
+import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
 import { updateState } from './ui/actions/updateState';
 import { Root } from './ui/components/Root';
@@ -54,7 +54,7 @@ async function startUi() {
     },
   };
   const dnode = setupDnode(connectionStream, emitterApi, 'api');
-  const background = await new Promise(resolve => {
+  const background = await new Promise<any>(resolve => {
     dnode.once('remote', background => {
       let backgroundWithPromises = transformMethods(cbToPromise, background);
       // Add event emitter api to background object
@@ -66,7 +66,7 @@ async function startUi() {
 
   // global access to service on debug
   if (WAVESKEEPER_DEBUG) {
-    global.background = background;
+    (global as any).background = background;
   }
 
   // If popup is opened close notification window
