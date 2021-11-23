@@ -13,11 +13,11 @@ import { Provider } from 'react-redux';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
-import { updateState } from './ui/actions/updateState';
+import { createUpdateState } from './ui/actions/updateState';
 import { Root } from './ui/components/Root';
 import { LANGS } from './ui/i18n';
 import backgroundService from './ui/services/Background';
-import { store } from './ui/store';
+import { createUiStore } from './ui/store';
 
 const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
@@ -25,6 +25,8 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 startUi().catch(log.error);
 
 async function startUi() {
+  const store = createUiStore();
+
   store.dispatch(setLangs(LANGS));
 
   ReactDOM.render(
@@ -75,7 +77,7 @@ async function startUi() {
   }
 
   backgroundService.init(background);
-  backgroundService.on(updateState);
+  backgroundService.on(createUpdateState(store));
   backgroundService.getNetworks();
   backgroundService.getState();
   document.addEventListener('mousemove', () => backgroundService.updateIdle());

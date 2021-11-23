@@ -18,10 +18,14 @@ export type AppState = ReturnType<typeof reducer>;
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 
-export const store = createStore(
-  reducer,
-  { version: extension.runtime.getManifest().version },
-  applyMiddleware(...Object.values(middleware))
-);
+export function createUiStore() {
+  return createStore(
+    reducer,
+    { version: extension.runtime.getManifest().version },
+    applyMiddleware(...Object.values(middleware))
+  );
+}
 
-export const useAppDispatch = () => useDispatch<typeof store.dispatch>();
+export type UiStore = ReturnType<typeof createUiStore>;
+
+export const useAppDispatch = () => useDispatch<UiStore['dispatch']>();
