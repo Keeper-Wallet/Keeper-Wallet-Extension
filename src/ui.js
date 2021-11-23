@@ -67,16 +67,11 @@ async function startUi() {
   // global access to service on debug
   if (WAVESKEEPER_DEBUG) {
     global.background = background;
-    console.log('inited');
   }
 
   // If popup is opened close notification window
   if (extension.extension.getViews({ type: 'popup' }).length > 0) {
     await background.closeNotificationWindow();
-  }
-
-  if (WAVESKEEPER_DEBUG) {
-    console.log('closed windows');
   }
 
   backgroundService.init(background);
