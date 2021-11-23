@@ -7,6 +7,7 @@ import { Trans } from 'react-i18next';
 import {
   getAsset,
   getBalances,
+  getHistory,
   getNfts,
   setActiveAccount,
   setUiState,
@@ -21,6 +22,7 @@ import { BigNumber } from '@waves/bignumber';
 import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
+import { getConfigByTransaction } from '../transactions';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -37,6 +39,7 @@ export function Assets({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
+  const history = useAppSelector(state => state.history);
   const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
@@ -55,6 +58,7 @@ export function Assets({ setTab }: Props) {
 
   React.useEffect(() => {
     dispatch(getNfts());
+    dispatch(getHistory());
     dispatch(getBalances());
   }, []);
 
@@ -112,6 +116,9 @@ export function Assets({ setTab }: Props) {
           </Tab>
           <Tab>
             <Trans i18nKey="assets.nfts" />
+          </Tab>
+          <Tab>
+            <Trans i18nKey="assets.history" />
           </Tab>
         </TabList>
         <TabPanels className={styles.tabPanels}>
@@ -173,6 +180,30 @@ export function Assets({ setTab }: Props) {
                 </div>
               ))
             )}
+          </TabPanel>
+          <TabPanel>
+            {!history.length && (
+              <div className="basic500 center margin-min-top">
+                <Trans i18nKey="assets.emptyHistory" />
+              </div>
+            )}
+            {history.map(msg => {
+              const activeMsg = {
+                data: { data: msg, type: msg.type },
+                type: 'transaction',
+              };
+              const conf = getConfigByTransaction(activeMsg);
+              const { card: Card } = conf;
+              return (
+                <Card
+                  className="margin-main"
+                  key={msg.id}
+                  message={activeMsg}
+                  assets={assets}
+                  collapsed={true}
+                />
+              );
+            })}
           </TabPanel>
         </TabPanels>
       </Tabs>
