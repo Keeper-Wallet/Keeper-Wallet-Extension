@@ -34,7 +34,7 @@ class Background {
   }
 
   init(background) {
-    background.on('update', this._onUpdate.bind(this));
+    background.on('update', this.receiveUpdatedState.bind(this));
     this.background = background;
     this._defer.resolve();
   }
@@ -83,7 +83,7 @@ class Background {
   async getState() {
     await this.initPromise;
     const data = await this.background.getState();
-    this._onUpdate(data);
+    this.receiveUpdatedState(data);
     return data;
   }
 
@@ -194,7 +194,7 @@ class Background {
   async getNetworks(): Promise<void> {
     await this.initPromise;
     const networks = await this.background.getNetworks();
-    this._onUpdate({ networks });
+    this.receiveUpdatedState({ networks });
     return networks;
   }
 
@@ -282,7 +282,7 @@ class Background {
     return this.background.updateIdle();
   }
 
-  _onUpdate(state: IState) {
+  receiveUpdatedState(state: IState) {
     for (const cb of this.onUpdateCb) {
       cb(state);
     }
