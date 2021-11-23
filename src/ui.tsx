@@ -3,7 +3,6 @@ import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 import './ui/i18n';
 
-import * as EventEmitter from 'events';
 import * as extension from 'extensionizer';
 import log from 'loglevel';
 import * as React from 'react';
@@ -41,9 +40,6 @@ async function startUi() {
   const port = extension.runtime.connect({ name: 'ui' });
   const connectionStream = new PortStream(port);
 
-  // Bind event emitter to background function sendUpdate.
-  // This way every time background calls sendUpdate with its state we get event with new background state
-  const eventEmitter = new EventEmitter();
   const emitterApi = {
     sendUpdate: async state => backgroundService.receiveUpdatedState(state),
     // This method is used in Microsoft Edge browser
