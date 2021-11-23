@@ -37,11 +37,13 @@ async function startUi() {
     document.getElementById('app-content')
   );
 
+  const updateState = createUpdateState(store);
+
   const port = extension.runtime.connect({ name: 'ui' });
   const connectionStream = new PortStream(port);
 
   const emitterApi = {
-    sendUpdate: async state => backgroundService.receiveUpdatedState(state),
+    sendUpdate: async state => updateState(state),
     // This method is used in Microsoft Edge browser
     closeEdgeNotificationWindow: async () => {
       if (
@@ -51,6 +53,7 @@ async function startUi() {
       }
     },
   };
+
   const dnode = setupDnode(connectionStream, emitterApi, 'api');
   const background = await new Promise<any>(resolve => {
     dnode.once('remote', background => {
@@ -68,9 +71,14 @@ async function startUi() {
     await background.closeNotificationWindow();
   }
 
+  const [state, networks] = await Promise.all([
+    background.getState(),
+    background.getNetworks(),
+  ]);
+
+  updateState({ ...state, networks });
+
   backgroundService.init(background);
-  backgroundService.on(createUpdateState(store));
-  backgroundService.getState();
   document.addEventListener('mousemove', () => backgroundService.updateIdle());
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());

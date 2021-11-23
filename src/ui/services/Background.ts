@@ -4,7 +4,6 @@ class Background {
   static instance: Background;
   background: any;
   initPromise: Promise<void>;
-  onUpdateCb: Array<(state) => void> = [];
   updatedByUser = false;
   _defer;
   _assetsStore;
@@ -19,18 +18,6 @@ class Background {
       this._defer.reject = rej;
     });
     this._defer.promise = this.initPromise;
-  }
-
-  on(cb: (state) => void) {
-    if (this.onUpdateCb.indexOf(cb) > -1) {
-      return null;
-    }
-
-    this.onUpdateCb.push(cb);
-  }
-
-  off(cb) {
-    this.onUpdateCb = this.onUpdateCb.filter(cb2 => cb2 !== cb);
   }
 
   init(background) {
@@ -77,17 +64,6 @@ class Background {
   }) {
     await this.initPromise;
     return this.background.setNotificationPermissions(options);
-  }
-
-  async getState() {
-    await this.initPromise;
-
-    const [state, networks] = await Promise.all([
-      this.background.getState(),
-      this.background.getNetworks(),
-    ]);
-
-    this.receiveUpdatedState({ ...state, networks });
   }
 
   async setCurrentLocale(lng): Promise<void> {
@@ -277,31 +253,9 @@ class Background {
     await this.initPromise;
     return this.background.updateIdle();
   }
-
-  receiveUpdatedState(state: IState) {
-    for (const cb of this.onUpdateCb) {
-      cb(state);
-    }
-  }
 }
 
 export default new Background();
-
-export interface IState {
-  locked?: boolean;
-  hasAccount?: boolean;
-  currentLocale?: string;
-  accounts?: Array<any>;
-  currentNetwork?: string;
-  messages?: Array<any>;
-  balances?: any;
-  uiState?: IUiState;
-  networks?: Array<{ name; code }>;
-}
-
-export interface IUiState {
-  tab: string;
-}
 
 export enum WalletTypes {
   New = 'new',
