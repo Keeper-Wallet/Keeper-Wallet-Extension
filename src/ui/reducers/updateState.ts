@@ -1,6 +1,5 @@
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ACTION } from '../actions';
-import { Asset } from '@waves/data-entities';
+import { AssetDetail } from '../services/Background';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -105,8 +104,8 @@ export const messages = (
 };
 
 export const assets = (
-  state: Record<string, IAssetInfo> = {},
-  action: { type: string; payload: Record<string, IAssetInfo> }
+  state: Record<string, AssetDetail> = {},
+  action: { type: string; payload: Record<string, AssetDetail> }
 ) => {
   if (action.type === ACTION.UPDATE_ASSET) {
     return { ...state, ...action.payload };
@@ -115,11 +114,7 @@ export const assets = (
   return state;
 };
 
-interface NftDetail extends Asset {
-  originTransactionId: string;
-  issuer: string;
-}
-export const nfts = createSimpleReducer<NftDetail[]>([], ACTION.UPDATE_NFTS);
+export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
 
 export const backTabs = (
   state: unknown[] = [],
