@@ -83,6 +83,14 @@ export const updateLang = store => next => action => {
   return next(action);
 };
 
+export const updateBalances = store => next => action => {
+  if (action.type === ACTION.GET_BALANCES) {
+    background.updateBalances();
+  }
+
+  return next(action);
+};
+
 export const selectAccount = store => next => action => {
   if (
     action.type === ACTION.SELECT_ACCOUNT &&

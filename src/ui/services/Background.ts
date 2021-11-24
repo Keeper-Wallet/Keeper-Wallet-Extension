@@ -251,6 +251,11 @@ class Background {
     return this.background.sendEvent(event, properties);
   }
 
+  async updateBalances() {
+    await this.initPromise;
+    return this.background.updateBalances();
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);

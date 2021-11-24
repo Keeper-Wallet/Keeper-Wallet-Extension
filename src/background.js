@@ -501,6 +501,9 @@ class BackgroundService extends EventEmitter {
       },
       sendEvent: async (event, properties) =>
         this.statisticsController.addEvent(event, properties),
+      updateBalances: this.balanceController.updateBalances.bind(
+        this.balanceController
+      ),
     };
   }
 
