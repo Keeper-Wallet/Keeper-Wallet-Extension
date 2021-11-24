@@ -232,6 +232,7 @@ class Background {
   }
 
   async nftInfo(): Promise<AssetDetail[]> {
+    await this.initPromise;
     return this.background.nftInfo();
   }
 

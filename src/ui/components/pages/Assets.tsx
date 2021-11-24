@@ -4,7 +4,13 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans } from 'react-i18next';
-import { getAsset, getNfts, setActiveAccount, setUiState } from '../../actions';
+import {
+  getAsset,
+  getBalances,
+  getNfts,
+  setActiveAccount,
+  setUiState,
+} from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import { Modal, Tab, TabList, TabPanel, TabPanels, Tabs } from '../ui';
@@ -49,6 +55,7 @@ export function Assets({ setTab }: Props) {
 
   React.useEffect(() => {
     dispatch(getNfts());
+    dispatch(getBalances());
   }, []);
 
   if (!activeAccount) {
