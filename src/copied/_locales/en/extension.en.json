@@ -26,7 +26,8 @@
     "copied": "Copied!",
     "deleteAccount": "Delete account",
     "inStorage": "Other accounts",
-    "lastUpdate": "Last update:"
+    "lastUpdate": "Last update:",
+    "selectAccountNotification": "Active account changed"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

@@ -89,6 +89,17 @@ export function Assets({ setTab }: Props) {
 
       <Modal
         animation={Modal.ANIMATION.FLASH_SCALE}
+        showModal={notifications.selected}
+      >
+        <div className="modal notification">
+          <div>
+            <Trans i18nKey="assets.selectAccountNotification" />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        animation={Modal.ANIMATION.FLASH_SCALE}
         showModal={notifications.deleted}
       >
         <div className="modal notification active-asset">
