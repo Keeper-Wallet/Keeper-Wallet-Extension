@@ -1,0 +1,48 @@
+.historyCard {
+  width: 100%;
+  background: #fff;
+  display: flex;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  border-radius: 4px;
+  padding: 8px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  cursor: default;
+  height: 64px;
+}
+
+
+.historyData {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.historyLabel {
+  height: 24px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyLabelOnly {
+  line-height: 24px;
+}
+
+.historyIcon {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 1rem;
+  text-align: center;
+  color: #EDF0F4;
+  margin-right: 8px;
+
+}
+
+.historyIcon div {
+  width: 48px;
+  height: 48px;
+}

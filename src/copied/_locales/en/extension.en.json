@@ -51,6 +51,25 @@
     "emptyHistory": "There's nothing to show yet",
     "history": "History"
   },
+  "history": {
+    "transfer": "Sent",
+    "receive": "Received",
+    "selfTransfer": "Self-transferred",
+    "reissue": "Asset Reissue",
+    "burn": "Asset Burning",
+    "lease": "Started WAVES Staking",
+    "leaseIncoming": "Incoming Leasing",
+    "leaseCancel": "Canceled WAVES Staking",
+    "createAlias": "Created Alias",
+    "massTransfer": "Sent",
+    "dataTransaction": "Data Transaction",
+    "setScript": "Set Script Transaction",
+    "setScriptCancel": "Cancel Script Transaction",
+    "sponsorshipEnable": "Enabled sponsorship for {{ name }}",
+    "sponsorshipDisable": "Disabled sponsorship for {{ name }}",
+    "setAssetScript": "Set Asset Script for {{ name }}",
+    "scriptInvocation": "Contract Invocation"
+  },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
     "cancel": "Cancel creation",

@@ -22,7 +22,7 @@ import { BigNumber } from '@waves/bignumber';
 import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
-import { getConfigByTransaction } from '../transactions';
+import { HistoryItem } from './assets/historyItem';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -182,28 +182,15 @@ export function Assets({ setTab }: Props) {
             )}
           </TabPanel>
           <TabPanel>
-            {!history.length && (
+            {!history.length ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyHistory" />
               </div>
+            ) : (
+              history.map(tx => (
+                <HistoryItem tx={tx} className="" onClick={() => void 0} />
+              ))
             )}
-            {history.map(msg => {
-              const activeMsg = {
-                data: { data: msg, type: msg.type },
-                type: 'transaction',
-              };
-              const conf = getConfigByTransaction(activeMsg);
-              const { card: Card } = conf;
-              return (
-                <Card
-                  className="margin-main"
-                  key={msg.id}
-                  message={activeMsg}
-                  assets={assets}
-                  collapsed={true}
-                />
-              );
-            })}
           </TabPanel>
         </TabPanels>
       </Tabs>
