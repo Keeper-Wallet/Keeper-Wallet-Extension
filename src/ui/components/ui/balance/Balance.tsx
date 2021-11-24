@@ -38,9 +38,7 @@ const BalanceComponent = ({
   }, []);
 
   switch (true) {
-    case !assets[assetId]:
-      return <Loading>{children}</Loading>;
-    case !balance:
+    case !assets[assetId] || !balance:
       return <Loading>{children}</Loading>;
     case balance instanceof Money && !balance.getTokens().isNaN():
       balanceOut = balance as Money;

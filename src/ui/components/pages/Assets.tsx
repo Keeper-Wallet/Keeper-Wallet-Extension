@@ -15,7 +15,6 @@ import { BigNumber } from '@waves/bignumber';
 import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
-import * as R from 'ramda';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -75,6 +74,10 @@ export function Assets({ setTab }: Props) {
     );
   }
 
+  const assetEntries = Object.entries<{ balance: string }>(
+    balances[activeAccount.address]?.assets || {}
+  );
+
   return (
     <div className={styles.assets}>
       <div className={styles.activeAccount}>
@@ -106,63 +109,63 @@ export function Assets({ setTab }: Props) {
         </TabList>
         <TabPanels className={styles.tabPanels}>
           <TabPanel>
-            {R.isEmpty(balances[activeAccount.address]?.assets || {}) && (
+            {assetEntries.length === 0 ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyAssets" />
               </div>
+            ) : (
+              assetEntries.map(([assetId, { balance }]) => (
+                <AssetItem
+                  key={assetId}
+                  balance={
+                    assets &&
+                    assets[assetId] &&
+                    new Money(
+                      new BigNumber(balance),
+                      new Asset(assets[assetId])
+                    )
+                  }
+                  assetId={assetId}
+                  onClick={assetId => {
+                    setAsset(assets[assetId]);
+                    setShowAsset(true);
+                  }}
+                />
+              ))
             )}
-            {Object.entries<{ balance: string }>(
-              balances[activeAccount.address]?.assets || {}
-            ).map(([assetId, { balance }]) => (
-              <AssetItem
-                key={assetId}
-                balance={
-                  assets &&
-                  assets[assetId] &&
-                  new Money(new BigNumber(balance), new Asset(assets[assetId]))
-                }
-                assetId={assetId}
-                onClick={assetId => {
-                  setAsset(assets[assetId]);
-                  setShowAsset(true);
-                }}
-              />
-            ))}
           </TabPanel>
           <TabPanel>
-            {!nfts.length && (
+            {nfts.length === 0 ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyNFTs" />
               </div>
+            ) : (
+              Object.entries<Asset[]>(
+                nfts.reduce(
+                  (result, item) => ({
+                    ...result,
+                    [item.issuer]: [...(result[item.issuer] || []), item],
+                  }),
+                  {}
+                )
+              ).map(([issuer, issuerNfts], index) => (
+                <div
+                  className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+                >
+                  <div className="basic500 margin-min">{issuer}</div>
+                  {issuerNfts.map(nft => (
+                    <NftItem
+                      key={nft.id}
+                      asset={nft}
+                      onClick={assetId => {
+                        setAsset(nfts.find(nft => nft.id === assetId));
+                        setShowAsset(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              ))
             )}
-            {Object.entries<Asset[]>(
-              nfts.reduce(
-                (result, item) => ({
-                  ...result,
-                  [item.issuer]: [...(result[item.issuer] || []), item],
-                }),
-                {}
-              )
-            ).map(([issuer, issuerNfts], index) => (
-              <div
-                className={cn({
-                  'margin-min-top': !index,
-                  'margin-main-top': !!index,
-                })}
-              >
-                <div className="basic500 margin-min">{issuer}</div>
-                {issuerNfts.map(nft => (
-                  <NftItem
-                    key={nft.id}
-                    asset={nft}
-                    onClick={assetId => {
-                      setAsset(nfts.find(nft => nft.id === assetId));
-                      setShowAsset(true);
-                    }}
-                  />
-                ))}
-              </div>
-            ))}
           </TabPanel>
         </TabPanels>
       </Tabs>

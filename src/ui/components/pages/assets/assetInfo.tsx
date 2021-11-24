@@ -15,9 +15,10 @@ interface Props {
 }
 
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
-  const selectedAccount = useAppSelector(state => state.selectedAccount);
+  const networkCode = useAppSelector(
+    state => state.selectedAccount.networkCode
+  );
 
-  const network = selectedAccount && selectedAccount.networkCode;
   const explorerUrls = new Map([
     ['W', 'wavesexplorer.com'],
     ['T', 'testnet.wavesexplorer.com'],
@@ -25,7 +26,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
     ['custom', 'wavesexplorer.com/custom'],
   ]);
   const explorer = explorerUrls.get(
-    explorerUrls.has(network) ? network : 'custom'
+    explorerUrls.has(networkCode) ? networkCode : 'custom'
   );
   const txLink = `https://${explorer}/tx/${asset.originTransactionId}`;
 
@@ -51,7 +52,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           <div className="tag1">{asset.displayName}</div>
         </div>
 
-        {!!asset.ticker && (
+        {asset.ticker && (
           <div className="margin-main">
             <div className="input-title basic500 tag1">
               <Trans i18nKey="assetInfo.ticker" />
@@ -83,7 +84,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           <div className="tag1">
             <Trans
               i18nKey={
-                !!asset.reissuable
+                asset.reissuable
                   ? 'assetInfo.reissuable'
                   : 'assetInfo.notReissuable'
               }
@@ -91,9 +92,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             ,
             <Trans
               i18nKey={
-                !!asset.hasScript
-                  ? 'assetInfo.scripted'
-                  : 'assetInfo.notScripted'
+                asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted'
               }
             />
           </div>
