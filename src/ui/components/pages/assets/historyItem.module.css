@@ -19,6 +19,7 @@
   text-align: left;
 }
 
+.historyInfo,
 .historyLabel {
   height: 24px;
   max-width: 220px;
@@ -45,4 +46,31 @@
 .historyIcon div {
   width: 48px;
   height: 48px;
+}
+
+.infoButton {
+  position: absolute;
+  right: 14px;
+  bottom: 19px;
+  border: 0;
+  padding: 0;
+  border-radius: 2px;
+  background: none;
+  cursor: pointer;
+}
+
+.infoIcon {
+  width: 28px;
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.infoIcon:hover {
+  fill: #9ba6b2;
+}
+
+.infoTooltip {
+  top: -13px;
+  right: 15px;
+  white-space: nowrap;
 }

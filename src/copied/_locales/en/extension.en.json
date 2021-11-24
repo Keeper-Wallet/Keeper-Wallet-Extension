@@ -51,7 +51,8 @@
     "emptyHistory": "There's nothing to show yet",
     "history": "History"
   },
-  "history": {
+  "historyCard": {
+    "issue": "Asset Generation",
     "transfer": "Sent",
     "receive": "Received",
     "selfTransfer": "Self-transferred",
@@ -68,7 +69,8 @@
     "sponsorshipEnable": "Enabled sponsorship for {{ name }}",
     "sponsorshipDisable": "Disabled sponsorship for {{ name }}",
     "setAssetScript": "Set Asset Script for {{ name }}",
-    "scriptInvocation": "Contract Invocation"
+    "scriptInvocation": "Contract Invocation",
+    "infoTooltip": "Show in Explorer"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

@@ -3,6 +3,7 @@ import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
+import { getTxLink } from './helpers';
 
 interface AssetDetail extends Asset {
   originTransactionId: string;
@@ -19,16 +20,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
     state => state.selectedAccount.networkCode
   );
 
-  const explorerUrls = new Map([
-    ['W', 'wavesexplorer.com'],
-    ['T', 'testnet.wavesexplorer.com'],
-    ['S', 'stagenet.wavesexplorer.com'],
-    ['custom', 'wavesexplorer.com/custom'],
-  ]);
-  const explorer = explorerUrls.get(
-    explorerUrls.has(networkCode) ? networkCode : 'custom'
-  );
-  const txLink = `https://${explorer}/tx/${asset.originTransactionId}`;
+  const txLink = getTxLink(asset.originTransactionId, networkCode);
 
   return (
     <div className="modal cover">
