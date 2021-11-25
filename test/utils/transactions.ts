@@ -143,5 +143,5 @@ export const PACKAGE = [
   BURN,
   LEASE,
   CANCEL_LEASE,
-  ALIAS,
+  INVOKE_SCRIPT,
 ];

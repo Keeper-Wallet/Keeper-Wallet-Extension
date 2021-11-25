@@ -3,7 +3,7 @@ import { CreateOrderCard } from './CreateOrderCard';
 import { CreateOrderFinal } from './CreateOrderFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const createOrder = {
   type: utils.messageType,
   message: CreateOrder,
   card: CreateOrderCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default createOrder;

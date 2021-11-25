@@ -3,7 +3,7 @@ import { SponsorshipCard } from './SponsorshipCard';
 import { SponsorshipFinal } from './SponsorshipFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const sponsorShip = {
   type: utils.messageType,
   message: Sponsorship,
   card: SponsorshipCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default sponsorShip;

@@ -19,7 +19,10 @@ export const moneyLikeToMoney = (amount: IMoneyLike, assets): Money => {
   }
 };
 
-export const getMoney = (amount: TAmount, assets) => {
+export const getMoney = (
+  amount: IMoneyLike | BigNumber | Money | string | number,
+  assets
+) => {
   if (amount instanceof Money) {
     return amount;
   }
@@ -28,17 +31,19 @@ export const getMoney = (amount: TAmount, assets) => {
     return new Money(amount, assets['WAVES']);
   }
 
-  if (
-    typeof amount === 'object' &&
-    (amount.tokens != null || amount.coins != null)
-  ) {
-    return moneyLikeToMoney(amount as IMoneyLike, assets);
+  if (typeof amount === 'object') {
+    if (amount.tokens != null || amount.coins != null) {
+      return moneyLikeToMoney(amount, assets);
+    }
+
+    return new Money(
+      (amount as { amount?: number | string }).amount || 0,
+      assets[amount.assetId || 'WAVES']
+    );
   }
 
-  return new Money(new BigNumber(amount as string), assets['WAVES']);
+  return new Money(new BigNumber(amount), assets['WAVES']);
 };
-
-type TAmount = IMoneyLike | BigNumber | Money | string | number;
 
 export interface IMoneyLike {
   coins?: number | string | BigNumber;

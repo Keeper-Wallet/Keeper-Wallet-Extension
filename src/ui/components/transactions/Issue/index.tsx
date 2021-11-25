@@ -3,7 +3,7 @@ import { IssueCard } from './IssueCard';
 import { IssueFinal } from './IssueFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const issue = {
   type: utils.messageType,
   message: Issue,
   card: IssueCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default issue;
