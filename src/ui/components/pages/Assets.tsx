@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   getAsset,
   getBalances,
@@ -23,6 +23,23 @@ import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
 import { HistoryItem } from './assets/historyItem';
+import { ITransaction } from '@waves/ts-types';
+import { WithId } from '@waves/waves-transactions/dist/transactions';
+
+const MONTH = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -30,6 +47,7 @@ interface Props {
 
 export function Assets({ setTab }: Props) {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
@@ -87,6 +105,17 @@ export function Assets({ setTab }: Props) {
 
   const assetEntries = Object.entries<{ balance: string }>(
     balances[activeAccount.address]?.assets || {}
+  );
+
+  const historyEntries = Object.entries<(ITransaction<any> & WithId)[]>(
+    history.reduce((result, tx) => {
+      const d = new Date(tx.timestamp);
+      const date = `${t(`date.${MONTH[d.getMonth()]}`)} ${d.getDate()}`;
+      return {
+        ...result,
+        [date]: [...(result[date] || []), tx],
+      };
+    }, {})
   );
 
   return (
@@ -183,18 +212,26 @@ export function Assets({ setTab }: Props) {
             )}
           </TabPanel>
           <TabPanel>
-            {!history.length ? (
+            {!historyEntries.length ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyHistory" />
               </div>
             ) : (
-              history.map(tx => (
-                <HistoryItem
-                  key={tx.id}
-                  tx={tx}
-                  className=""
-                  onClick={() => void 0}
-                />
+              historyEntries.map(([date, txArr], index) => (
+                <div
+                  key={date}
+                  className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+                >
+                  <div className="basic500 margin-min">{date}</div>
+                  {txArr.map(tx => (
+                    <HistoryItem
+                      key={tx.id}
+                      tx={tx}
+                      className=""
+                      onClick={() => void 0}
+                    />
+                  ))}
+                </div>
               ))
             )}
           </TabPanel>
