@@ -507,6 +507,13 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.balanceController.updateBalances.bind(
         this.balanceController
       ),
+      broadcastTransaction: data =>
+        this.messageController.newMessage({
+          data,
+          type: 'transaction',
+          broadcast: true,
+          account: this.getState().selectedAccount,
+        }),
     };
   }
 

@@ -113,7 +113,7 @@ export class MessageController extends EventEmitter {
     this._updateStore(messages);
 
     let showNotification = true;
-    if (this.canAutoApprove(message.origin, message.data)) {
+    if (message.origin && this.canAutoApprove(message.origin, message.data)) {
       showNotification = false;
       this.approve(message.id);
     }

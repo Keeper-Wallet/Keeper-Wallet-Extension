@@ -292,3 +292,11 @@ export const lock = store => next => action => {
   }
   return next(action);
 };
+
+export const broadcastTransaction = () => next => action => {
+  if (action.type === ACTION.BROADCAST_TRANSACTION) {
+    background.broadcastTransaction(action.payload);
+  }
+
+  return next(action);
+};

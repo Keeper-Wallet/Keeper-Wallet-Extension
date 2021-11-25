@@ -11,6 +11,8 @@ import { Select } from '../ui/select/Select';
 import { difference } from 'ramda';
 import { getAsset, getBalances } from 'ui/actions';
 import { Loader, Error } from '../ui';
+import { TransactionType } from 'ui/services/Background';
+import { broadcastTransaction } from 'ui/actions/transactions';
 
 export function Send() {
   const { t } = useTranslation();
@@ -118,6 +120,8 @@ export function Send() {
     };
   }, []);
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   return (
     <form
       className={styles.root}
@@ -132,7 +136,18 @@ export function Send() {
           return;
         }
 
-        console.log(recipientValue, assetValue, amountValue, attachmentValue);
+        setIsSubmitting(true);
+
+        dispatch(
+          broadcastTransaction({
+            type: TransactionType.Transfer,
+            data: {
+              amount: { assetId: assetValue, tokens: amountValue },
+              recipient: recipientValue,
+              attachment: attachmentValue,
+            },
+          })
+        );
       }}
     >
       <div>
@@ -240,7 +255,7 @@ export function Send() {
         <div className={styles.submitButtonWrapper}>
           <Button
             className="fullwidth"
-            disabled={isLoadingAssets}
+            disabled={isLoadingAssets || isSubmitting}
             type="submit"
           >
             <Trans i18nKey="send.submitButtonText" />
