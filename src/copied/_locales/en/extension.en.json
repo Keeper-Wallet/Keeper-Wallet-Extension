@@ -359,6 +359,18 @@
   "qrCode": {
     "download": "Download QR code"
   },
+  "send": {
+    "amountInputLabel": "Amount",
+    "amountRequiredError": "Amount is required",
+    "attachmentInputLabel": "Attachment ({{count}}/{{max}} byte)",
+    "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
+    "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
+    "assetInputLabel": "Asset",
+    "recipientInputLabel": "Recipient",
+    "recipientRequiredError": "Recipient is required",
+    "submitButtonText": "Send",
+    "title": "Send assets"
+  },
   "settings": {
     "autoClick": "Auto-click protection",
     "autoClickDisable": "Disabled",
