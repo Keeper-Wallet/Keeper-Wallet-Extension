@@ -21,15 +21,12 @@
 
 .historyInfo,
 .historyLabel {
+  line-height: 24px;
   height: 24px;
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.historyLabelOnly {
-  line-height: 24px;
 }
 
 .historyIcon {
@@ -70,6 +67,11 @@
   fill: #9ba6b2;
 }
 
+.txIconTooltip {
+  top: 12px;
+  left: 60px;
+  white-space: nowrap;
+}
 .infoTooltip {
   top: -13px;
   right: 15px;

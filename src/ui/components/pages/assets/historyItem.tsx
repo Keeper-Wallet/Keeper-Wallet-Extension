@@ -1,17 +1,16 @@
 import cn from 'classnames';
 import * as styles from './historyItem.module.css';
-import { Balance, Ellipsis, Loader } from '../../ui';
+import { Balance, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { useAppDispatch, useAppSelector } from '../../../store';
+import { useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { getTxLink } from './helpers';
-import { getAsset } from '../../../actions';
+import { BigNumber } from '@waves/bignumber';
 
 export function HistoryItem({ tx, className, onClick }) {
-  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
@@ -19,47 +18,50 @@ export function HistoryItem({ tx, className, onClick }) {
   );
   const assets = useAppSelector(state => state.assets);
 
-  let label, info, messageType;
+  let tooltip, label, info, messageType, addSign;
   let assetId = tx.assetId || 'WAVES';
   let asset = assets[assetId];
-  // fetch price asset for exchange transaction
-  const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
-  const priceAsset = assets[priceAssetId];
-  React.useEffect(() => {
-    if (!priceAsset) {
-      dispatch(getAsset(priceAssetId));
-    }
-  }, []);
 
   switch (tx.type) {
     case SIGN_TYPE.ISSUE:
-      label = t('historyCard.issue');
+      const decimals = tx.precision || tx.decimals || 0;
+      const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
+      label = isNFT
+        ? !tx.script
+          ? t('historyCard.issueNFT')
+          : t('historyCard.issueSmartNFT')
+        : !tx.script
+        ? t('historyCard.issueToken')
+        : t('historyCard.issueSmartToken');
       info = (
         <Balance
           split
           showAsset
           assetId={assetId}
-          balance={assets && asset && new Money(tx.quantity, new Asset(asset))}
+          balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
       messageType = 'issue';
 
       break;
     case SIGN_TYPE.TRANSFER:
-      label = t('historyCard.transfer');
+      tooltip = t('historyCard.transfer');
+      label = tx.recipient;
+      addSign = '-';
       messageType = 'transfer';
-      let addSign = '-';
 
       if (tx.recipient === address) {
-        messageType = 'receive';
-        label = t('historyCard.receive');
+        tooltip = t('historyCard.receive');
+        label = tx.sender;
         addSign = '+';
+        messageType = 'receive';
       }
 
       if (tx.sender === tx.recipient) {
-        messageType = 'self-transfer';
-        label = t('historyCard.selfTransfer');
+        tooltip = t('historyCard.selfTransfer');
+        label = tx.sender;
         addSign = '';
+        messageType = 'self-transfer';
       }
 
       info = (
@@ -68,7 +70,7 @@ export function HistoryItem({ tx, className, onClick }) {
           showAsset
           addSign={addSign}
           assetId={assetId}
-          balance={assets && asset && new Money(tx.amount, new Asset(asset))}
+          balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
       break;
@@ -80,7 +82,7 @@ export function HistoryItem({ tx, className, onClick }) {
           showAsset
           addSign="+"
           assetId={assetId}
-          balance={assets && asset && new Money(tx.quantity, new Asset(asset))}
+          balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
       messageType = 'reissue';
@@ -93,81 +95,141 @@ export function HistoryItem({ tx, className, onClick }) {
           showAsset
           addSign="-"
           assetId={assetId}
-          balance={assets && asset && new Money(tx.amount, new Asset(asset))}
+          balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
       messageType = 'burn';
       break;
     case SIGN_TYPE.EXCHANGE:
-      messageType = 'create-order';
       assetId = tx.order1.assetPair.amountAsset || 'WAVES';
       asset = assets[assetId];
-      label = t('historyCard.exchange', {
-        from: asset?.displayName,
-        to: priceAsset?.displayName,
-      });
+      const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
+      const priceAsset = assets[priceAssetId];
+
+      let assetAmount = null,
+        totalPriceAmount = null;
+      if (asset) {
+        assetAmount = new Money(tx.order1.amount, new Asset(asset));
+
+        if (priceAsset) {
+          const priceAmount = new Money(
+            new BigNumber(tx.order1.price).div(
+              new BigNumber(10).pow(
+                8 +
+                  (tx.order1.version < 3
+                    ? priceAsset.precision - asset.precision
+                    : 0)
+              )
+            ),
+            new Asset(priceAsset)
+          );
+          totalPriceAmount = assetAmount.convertTo(
+            priceAmount.asset,
+            priceAmount.getTokens()
+          );
+        }
+      }
+
+      tooltip = t('historyCard.exchange');
+      label = (
+        <Balance
+          split
+          showAsset
+          assetId={priceAssetId}
+          addSign="-"
+          balance={totalPriceAmount}
+        />
+      );
       info = (
         <Balance
           split
           showAsset
           assetId={assetId}
           addSign="+"
-          balance={
-            assets && asset && new Money(tx.order1.amount, new Asset(asset))
-          }
+          balance={assetAmount}
         />
       );
+      messageType = 'create-order';
       break;
     case SIGN_TYPE.LEASE:
-      label = t('historyCard.lease');
+      tooltip = t('historyCard.lease');
+      label = tx.recipient;
+      addSign = '-';
+
       if (tx.recipient === address) {
-        label = t('historyCard.leaseIncoming');
+        tooltip = t('historyCard.leaseIncoming');
+        label = tx.sender;
+        addSign = '+';
       }
+
       info = (
         <Balance
           split
           showAsset
           assetId={assetId}
-          balance={assets && asset && new Money(tx.amount, new Asset(asset))}
+          addSign={addSign}
+          balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
       messageType = 'lease';
       break;
     case SIGN_TYPE.CANCEL_LEASING:
-      label = t('historyCard.leaseCancel');
+      tooltip = t('historyCard.leaseCancel');
+      label = tx.lease.recipient;
+      addSign = '+';
+
+      if (tx.lease.recipient === address) {
+        label = tx.lease.sender;
+        addSign = '-';
+      }
+
       info = (
         <Balance
           split
           showAsset
           assetId={assetId}
-          balance={
-            assets && asset && new Money(tx.lease.amount, new Asset(asset))
-          }
+          addSign={addSign}
+          balance={asset && new Money(tx.lease.amount, new Asset(asset))}
         />
       );
       messageType = 'cancel-leasing';
       break;
     case SIGN_TYPE.CREATE_ALIAS:
       label = t('historyCard.createAlias');
+      info = tx.alias;
       messageType = 'create-alias';
       break;
     case SIGN_TYPE.MASS_TRANSFER:
-      label = t('historyCard.massTransfer');
+      tooltip = t('historyCard.massTransferReceive');
+      label = tx.sender;
+      // todo calculate by address/alias
+      addSign = '+';
+      let balance = asset && new Money(tx.totalAmount, new Asset(asset));
+      messageType = 'mass_transfer_receive';
+
+      if (tx.sender === address) {
+        tooltip = t('historyCard.massTransfer');
+        label = t('historyCard.massTransferRecipient', {
+          count: tx.transfers.length,
+        });
+        addSign = '-';
+        balance = asset && new Money(tx.totalAmount, new Asset(asset));
+        messageType = 'mass_transfer';
+      }
+
       info = (
         <Balance
           split
           showAsset
           assetId={assetId}
-          addSign="-"
-          balance={
-            assets && asset && new Money(tx.totalAmount, new Asset(asset))
-          }
+          addSign={addSign}
+          balance={balance}
         />
       );
-      messageType = 'mass_transfer';
       break;
     case SIGN_TYPE.DATA:
-      label = t('historyCard.dataTransaction');
+      tooltip = t('historyCard.dataTransaction');
+      label = t('historyCard.dataTransactionEntry', { count: tx.data.length });
       messageType = 'data';
       break;
     case SIGN_TYPE.SET_SCRIPT:
@@ -181,24 +243,40 @@ export function HistoryItem({ tx, className, onClick }) {
 
       break;
     case SIGN_TYPE.SPONSORSHIP:
-      label = t('historyCard.sponsorshipEnable', { name: asset.displayName });
+      label = t('historyCard.sponsorshipEnable');
       messageType = 'sponsor_enable';
+      info = (
+        <Balance
+          split
+          showAsset
+          assetId={assetId}
+          balance={
+            asset && new Money(tx.minSponsoredAssetFee, new Asset(asset))
+          }
+        />
+      );
 
       if (!tx.minSponsoredAssetFee) {
-        label = t('historyCard.sponsorshipDisable', {
-          name: asset.displayName,
-        });
+        label = t('historyCard.sponsorshipDisable');
+        info = asset.displayName;
         messageType = 'sponsor_disable';
       }
       break;
     case SIGN_TYPE.SET_ASSET_SCRIPT:
-      label = t('historyCard.setAssetScript', { name: asset.displayName });
+      label = t('historyCard.setAssetScript');
+      info = asset.displayName;
       messageType = 'set-asset-script';
       break;
     case SIGN_TYPE.SCRIPT_INVOCATION:
-      label = t('historyCard.scriptInvocation');
-      info = <Ellipsis text={tx.dApp} />;
+      tooltip = t('historyCard.scriptInvocation');
+      label = tx.dApp;
+      info = tx.call?.function || 'default';
       messageType = 'script_invocation';
+      break;
+    case SIGN_TYPE.UPDATE_ASSET_INFO:
+      label = t('history.updateAssetInfo');
+      info = asset.displayName;
+      messageType = 'issue';
       break;
     default:
       label = <Loader />;
@@ -212,16 +290,21 @@ export function HistoryItem({ tx, className, onClick }) {
       className={cn(styles.historyCard, className, 'flex')}
       onClick={() => onClick(assetId)}
     >
-      <div className={styles.historyIcon}>
+      <div className={cn(styles.historyIcon, 'showTooltip')}>
         <TxIcon txType={messageType} />
       </div>
+
+      {tooltip && (
+        <div className={cn(styles.txIconTooltip, 'tooltip__right')}>
+          {tooltip}
+        </div>
+      )}
 
       <div className={cn('body1', styles.historyData)}>
         <div
           className={cn(
-            !info ? styles.historyLabelOnly : 'basic500',
-            styles.historyLabel,
-            {}
+            info && typeof label === 'string' && 'basic500',
+            styles.historyLabel
           )}
           title={typeof label === 'string' ? label : ''}
         >
