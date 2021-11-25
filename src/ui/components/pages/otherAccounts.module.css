@@ -27,6 +27,12 @@
   background: #f8f9fb;
 }
 
+.noAccountsNote {
+  color: #9ba6b2;
+  font-size: 14px;
+  text-align: center;
+}
+
 .addAccount {
   text-align: center;
 }

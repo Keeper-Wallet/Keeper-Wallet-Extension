@@ -232,6 +232,7 @@
   },
   "otherAccounts": {
     "addAccount": "Add account",
+    "noAccountsNote": "You have no other accounts in the current network",
     "title": "Other accounts"
   },
   "pairing": {
