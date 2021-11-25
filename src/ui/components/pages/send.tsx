@@ -2,6 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useIMask } from 'react-imask';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
@@ -91,6 +92,32 @@ export function Send() {
     attachmentByteCount > 140 ? t('send.attachmentMaxLengthError') : null;
   const showAttachmentError = attachmentError != null && attachmentTouched;
 
+  const amountMask = useIMask({
+    mapToRadix: ['.', ','],
+    mask: Number,
+    radix: '.',
+    scale: assets[assetValue].precision,
+    thousandsSeparator: ' ',
+  });
+
+  React.useEffect(() => {
+    const mask = amountMask.maskRef.current;
+
+    if (!mask) {
+      return;
+    }
+
+    function handleAccept() {
+      setAmountValue(mask.unmaskedValue);
+    }
+
+    mask.on('accept', handleAccept);
+
+    return () => {
+      mask.off('accept', handleAccept);
+    };
+  }, []);
+
   return (
     <form
       className={styles.root}
@@ -172,12 +199,9 @@ export function Send() {
             <Input
               autoComplete="off"
               error={showAmountError}
-              value={amountValue}
+              inputRef={amountMask.ref}
               onBlur={() => {
                 setAmountTouched(true);
-              }}
-              onChange={event => {
-                setAmountValue(event.currentTarget.value);
               }}
             />
 
