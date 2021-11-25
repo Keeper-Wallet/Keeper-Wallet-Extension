@@ -4,12 +4,14 @@ import { Balance, Ellipsis, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { useAppSelector } from '../../../store';
+import { useAppDispatch, useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { getTxLink } from './helpers';
+import { getAsset } from '../../../actions';
 
 export function HistoryItem({ tx, className, onClick }) {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
@@ -20,6 +22,14 @@ export function HistoryItem({ tx, className, onClick }) {
   let label, info, messageType;
   let assetId = tx.assetId || 'WAVES';
   let asset = assets[assetId];
+  // fetch price asset for exchange transaction
+  const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
+  const priceAsset = assets[priceAssetId];
+  React.useEffect(() => {
+    if (!priceAsset) {
+      dispatch(getAsset(priceAssetId));
+    }
+  }, []);
 
   switch (tx.type) {
     case SIGN_TYPE.ISSUE:
@@ -87,6 +97,26 @@ export function HistoryItem({ tx, className, onClick }) {
         />
       );
       messageType = 'burn';
+      break;
+    case SIGN_TYPE.EXCHANGE:
+      messageType = 'create-order';
+      assetId = tx.order1.assetPair.amountAsset || 'WAVES';
+      asset = assets[assetId];
+      label = t('historyCard.exchange', {
+        from: asset?.displayName,
+        to: priceAsset?.displayName,
+      });
+      info = (
+        <Balance
+          split
+          showAsset
+          assetId={assetId}
+          addSign="+"
+          balance={
+            assets && asset && new Money(tx.order1.amount, new Asset(asset))
+          }
+        />
+      );
       break;
     case SIGN_TYPE.LEASE:
       label = t('historyCard.lease');
@@ -170,11 +200,11 @@ export function HistoryItem({ tx, className, onClick }) {
       info = <Ellipsis text={tx.dApp} />;
       messageType = 'script_invocation';
       break;
-    case SIGN_TYPE.CREATE_ORDER:
-      messageType = 'create-order';
+    default:
+      label = <Loader />;
+      info = <Loader />;
+      messageType = 'unknown';
       break;
-    case SIGN_TYPE.CANCEL_ORDER:
-      messageType = 'cancel-order';
   }
 
   return (
@@ -193,8 +223,9 @@ export function HistoryItem({ tx, className, onClick }) {
             styles.historyLabel,
             {}
           )}
+          title={typeof label === 'string' ? label : ''}
         >
-          {!asset ? <Loader /> : label || tx.id}
+          {!asset ? <Loader /> : label}
         </div>
         {!!info && <div className={styles.historyInfo}>{info}</div>}
       </div>

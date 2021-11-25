@@ -164,6 +164,7 @@ export function Assets({ setTab }: Props) {
                 )
               ).map(([issuer, issuerNfts], index) => (
                 <div
+                  key={issuer}
                   className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
                 >
                   <div className="basic500 margin-min">{issuer}</div>
@@ -188,7 +189,12 @@ export function Assets({ setTab }: Props) {
               </div>
             ) : (
               history.map(tx => (
-                <HistoryItem tx={tx} className="" onClick={() => void 0} />
+                <HistoryItem
+                  key={tx.id}
+                  tx={tx}
+                  className=""
+                  onClick={() => void 0}
+                />
               ))
             )}
           </TabPanel>

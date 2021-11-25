@@ -58,6 +58,7 @@
     "selfTransfer": "Self-transferred",
     "reissue": "Asset Reissue",
     "burn": "Asset Burning",
+    "exchange": "Exchange Buy: {{ from }}/{{ to }}",
     "lease": "Started WAVES Staking",
     "leaseIncoming": "Incoming Leasing",
     "leaseCancel": "Canceled WAVES Staking",
