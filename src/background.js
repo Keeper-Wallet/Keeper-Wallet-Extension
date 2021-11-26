@@ -281,9 +281,6 @@ class BackgroundService extends EventEmitter {
     });
 
     this.txinfoController = new TxInfoController({
-      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
-        this.preferencesController
-      ),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),

@@ -74,15 +74,15 @@ export function Assets({ setTab }: Props) {
     }
   }, [assets, dispatch]);
 
-  React.useEffect(() => {
-    dispatch(getNfts());
-    dispatch(getHistory());
-    dispatch(getBalances());
-  }, []);
-
   if (!activeAccount) {
     return <Intro />;
   }
+
+  React.useEffect(() => {
+    dispatch(getNfts());
+    dispatch(getHistory(activeAccount.address));
+    dispatch(getBalances());
+  }, []);
 
   const onSelectHandler = account => {
     dispatch(setActiveAccount(account));

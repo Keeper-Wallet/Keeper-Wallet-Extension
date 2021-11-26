@@ -2,7 +2,6 @@ export class TxInfoController {
   constructor(options = {}) {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
-    this.getSelectedAccount = options.getSelectedAccount;
   }
 
   async txInfo(txId) {
@@ -29,10 +28,9 @@ export class TxInfoController {
     }
   }
 
-  async txHistory(limit = 100) {
-    const selectedAccount = this.getSelectedAccount();
+  async txHistory(address, limit = 100) {
     const url = new URL(
-      `transactions/address/${selectedAccount.address}/limit/${limit}`,
+      `transactions/address/${address}/limit/${limit}`,
       this.getNode()
     ).toString();
 

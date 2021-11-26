@@ -221,7 +221,7 @@ export const getNfts = store => next => action => {
 
 export const getHistory = store => next => action => {
   if (action.type === ACTION.GET_HISTORY) {
-    background.historyInfo().then(
+    background.historyInfo(action.payload).then(
       messages => store.dispatch(updateHistory(messages))
       // () => store.dispatch(updateHistory([]))
     );
