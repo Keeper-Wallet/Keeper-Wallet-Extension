@@ -167,6 +167,7 @@ export function Send() {
               autoComplete="off"
               autoFocus
               error={showRecipientError}
+              spellCheck={false}
               value={recipientValue}
               onBlur={() => {
                 setRecipientTouched(true);
