@@ -5,6 +5,12 @@
   overflow: auto;
 }
 
+.wrapper {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
   position: sticky;
   z-index: 1;

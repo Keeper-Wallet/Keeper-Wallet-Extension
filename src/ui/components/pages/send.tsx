@@ -150,7 +150,7 @@ export function Send() {
         );
       }}
     >
-      <div>
+      <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
             <Trans i18nKey="send.title" />
@@ -234,7 +234,7 @@ export function Send() {
             />
           </div>
 
-          <div className="margin-main-big">
+          <div>
             <Input
               autoComplete="off"
               error={showAttachmentError}
