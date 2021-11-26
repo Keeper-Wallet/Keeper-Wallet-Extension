@@ -1,5 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
+import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useIMask } from 'react-imask';
@@ -77,6 +78,11 @@ export function Send() {
   const [recipientTouched, setRecipientTouched] = React.useState(false);
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
+    : !(
+        validators.isValidAddress(recipientValue) ||
+        validators.isValidAliasName(recipientValue)
+      )
+    ? t('send.recipientInvalidError')
     : null;
   const showRecipientError = recipientError != null && recipientTouched;
 

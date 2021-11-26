@@ -367,6 +367,7 @@
     "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
     "assetInputLabel": "Asset",
     "recipientInputLabel": "Recipient",
+    "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",
     "submitButtonText": "Send",
     "title": "Send assets"
