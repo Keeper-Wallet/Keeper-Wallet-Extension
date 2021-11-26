@@ -75,16 +75,14 @@ export function Assets({ setTab }: Props) {
     }
   }, [assets, dispatch]);
 
-  if (!activeAccount) {
-    return <Intro />;
-  }
-
-  const address = activeAccount.address;
+  const address = activeAccount && activeAccount.address;
 
   React.useEffect(() => {
-    dispatch(getNfts(address));
-    dispatch(getHistory(address));
-    dispatch(getAliases(address));
+    if (address) {
+      dispatch(getNfts(address));
+      dispatch(getHistory(address));
+      dispatch(getAliases(address));
+    }
     dispatch(getBalances());
   }, []);
 
@@ -92,6 +90,10 @@ export function Assets({ setTab }: Props) {
     dispatch(setActiveAccount(account));
     setTab(PAGES.ACCOUNT_INFO);
   };
+
+  if (!activeAccount) {
+    return <Intro />;
+  }
 
   const balancesMoney: Record<string, Money> = {};
 
