@@ -206,7 +206,7 @@ export const getAsset = store => next => action => {
 
 export const getNfts = store => next => action => {
   if (action.type === ACTION.GET_NFTS) {
-    background.nftInfo().then(
+    background.nftInfo(action.payload).then(
       nfts => {
         store.dispatch(updateNfts(nfts));
       },

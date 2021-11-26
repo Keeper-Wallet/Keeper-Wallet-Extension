@@ -231,9 +231,9 @@ class Background {
     }
   }
 
-  async nftInfo(): Promise<AssetDetail[]> {
+  async nftInfo(address: string, limit: number = 1000): Promise<AssetDetail[]> {
     await this.initPromise;
-    return this.background.nftInfo();
+    return this.background.nftInfo(address, limit);
   }
 
   async historyInfo(address: string, limit: number = 100): Promise<any> {

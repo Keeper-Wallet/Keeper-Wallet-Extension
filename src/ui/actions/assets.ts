@@ -5,7 +5,10 @@ export const getAsset = (payload: string, force = false) => ({
   payload,
   meta: { force },
 });
-export const getNfts = () => ({ type: ACTION.GET_NFTS });
+export const getNfts = (address: string) => ({
+  type: ACTION.GET_NFTS,
+  payload: address,
+});
 export const getHistory = (address: string) => ({
   type: ACTION.GET_HISTORY,
   payload: address,

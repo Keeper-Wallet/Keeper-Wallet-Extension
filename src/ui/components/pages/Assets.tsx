@@ -79,7 +79,7 @@ export function Assets({ setTab }: Props) {
   }
 
   React.useEffect(() => {
-    dispatch(getNfts());
+    dispatch(getNfts(activeAccount.address));
     dispatch(getHistory(activeAccount.address));
     dispatch(getBalances());
   }, []);
