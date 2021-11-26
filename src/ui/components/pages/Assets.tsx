@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans, useTranslation } from 'react-i18next';
 import {
+  getAliases,
   getAsset,
   getBalances,
   getHistory,
@@ -78,9 +79,12 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
+  const address = activeAccount.address;
+
   React.useEffect(() => {
-    dispatch(getNfts(activeAccount.address));
-    dispatch(getHistory(activeAccount.address));
+    dispatch(getNfts(address));
+    dispatch(getHistory(address));
+    dispatch(getAliases(address));
     dispatch(getBalances());
   }, []);
 
@@ -104,7 +108,7 @@ export function Assets({ setTab }: Props) {
   }
 
   const assetEntries = Object.entries<{ balance: string }>(
-    balances[activeAccount.address]?.assets || {}
+    balances[address]?.assets || {}
   );
 
   const historyEntries = Object.entries<(ITransaction<any> & WithId)[]>(
@@ -123,7 +127,7 @@ export function Assets({ setTab }: Props) {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          balance={balancesMoney[activeAccount.address]}
+          balance={balancesMoney[address]}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

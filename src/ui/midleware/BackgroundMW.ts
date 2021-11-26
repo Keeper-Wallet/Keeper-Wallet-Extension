@@ -9,6 +9,7 @@ import {
   setTab,
   setUiState,
   updateActiveState,
+  updateAliases,
   updateAsset,
   updateHistory,
   updateNfts,
@@ -221,10 +222,19 @@ export const getNfts = store => next => action => {
 
 export const getHistory = store => next => action => {
   if (action.type === ACTION.GET_HISTORY) {
-    background.historyInfo(action.payload).then(
-      messages => store.dispatch(updateHistory(messages))
-      // () => store.dispatch(updateHistory([]))
-    );
+    background
+      .historyInfo(action.payload)
+      .then(messages => store.dispatch(updateHistory(messages)));
+  }
+
+  return next(action);
+};
+
+export const getAliases = store => next => action => {
+  if (action.type === ACTION.GET_ALIASES) {
+    background
+      .aliasByAddress(action.payload)
+      .then(aliases => store.dispatch(updateAliases(aliases)));
   }
 
   return next(action);

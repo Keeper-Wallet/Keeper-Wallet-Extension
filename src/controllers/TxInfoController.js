@@ -50,4 +50,26 @@ export class TxInfoController {
         throw new Error(await resp.text());
     }
   }
+
+  async aliasByAddress(address) {
+    const url = new URL(
+      `alias/by-address/${address}`,
+      this.getNode()
+    ).toString();
+
+    let resp = await fetch(url);
+
+    switch (resp.status) {
+      case 200:
+        return resp
+          .text()
+          .then(text =>
+            JSON.parse(
+              text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
+            )
+          );
+      default:
+        throw new Error(await resp.text());
+    }
+  }
 }

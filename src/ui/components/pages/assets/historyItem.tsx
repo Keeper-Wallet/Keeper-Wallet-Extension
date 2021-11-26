@@ -17,6 +17,7 @@ export function HistoryItem({ tx, className, onClick }) {
     state => state.selectedAccount.networkCode
   );
   const assets = useAppSelector(state => state.assets);
+  const aliases = useAppSelector(state => state.aliases);
 
   let tooltip, label, info, messageType, addSign;
   let assetId = tx.assetId || 'WAVES';
@@ -202,9 +203,25 @@ export function HistoryItem({ tx, className, onClick }) {
     case SIGN_TYPE.MASS_TRANSFER:
       tooltip = t('historyCard.massTransferReceive');
       label = tx.sender;
-      // todo calculate by address/alias
+
       addSign = '+';
-      let balance = asset && new Money(tx.totalAmount, new Asset(asset));
+      let balance =
+        asset &&
+        new Money(
+          tx.transfers.reduce(
+            (
+              result: BigNumber,
+              transfer: { amount: number; recipient: string }
+            ) =>
+              result.add(
+                [address, ...aliases].includes(transfer.recipient)
+                  ? transfer.amount
+                  : 0
+              ),
+            new BigNumber(0)
+          ),
+          new Asset(asset)
+        );
       messageType = 'mass_transfer_receive';
 
       if (tx.sender === address) {

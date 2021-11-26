@@ -241,6 +241,11 @@ class Background {
     return this.background.historyInfo(address, limit);
   }
 
+  async aliasByAddress(address: string): Promise<string[]> {
+    await this.initPromise;
+    return this.background.aliasByAddress(address);
+  }
+
   async deleteNotifications(ids) {
     await this.initPromise;
     return this.background.deleteNotifications(ids);

@@ -125,6 +125,8 @@ export const history = createSimpleReducer<(ITransaction & WithId)[]>(
   ACTION.UPDATE_HISTORY
 );
 
+export const aliases = createSimpleReducer<string[]>([], ACTION.UPDATE_ALIASES);
+
 export const backTabs = (
   state: unknown[] = [],
   { type, payload }: { type: string; payload: unknown }

@@ -461,6 +461,10 @@ class BackgroundService extends EventEmitter {
       nftInfo: this.assetInfoController.nftInfo.bind(this.assetInfoController),
 
       historyInfo: this.txinfoController.txHistory.bind(this.txinfoController),
+      aliasByAddress: this.txinfoController.aliasByAddress.bind(
+        this.txinfoController
+      ),
+
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
 
