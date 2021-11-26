@@ -13,7 +13,6 @@
   height: 64px;
 }
 
-
 .historyData {
   flex-grow: 1;
   text-align: left;
@@ -36,9 +35,8 @@
   line-height: 48px;
   font-size: 1rem;
   text-align: center;
-  color: #EDF0F4;
+  color: #edf0f4;
   margin-right: 8px;
-
 }
 
 .historyIcon div {
@@ -72,6 +70,7 @@
   left: 60px;
   white-space: nowrap;
 }
+
 .infoTooltip {
   top: -13px;
   right: 15px;
