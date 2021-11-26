@@ -295,7 +295,7 @@ export function HistoryItem({ tx, className, onClick }) {
       </div>
 
       {tooltip && (
-        <div className={cn(styles.txIconTooltip, 'tooltip__right')}>
+        <div className={cn(styles.txIconTooltip, 'tooltip', 'tooltip-right')}>
           {tooltip}
         </div>
       )}

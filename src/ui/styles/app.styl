@@ -416,26 +416,9 @@ $layout-44 = 44px;
     bottom: -2px;
     position: absolute;
 
-:global .tooltip__right
-  background: $black;
-  color: $white;
-  font-size: 14px;
-  height: 32px;
-  position: absolute;
-  display: none;
-  transition: .3s;
-  border-radius: 2px;
-  padding: 8px 14px !important;
-
-  &::after
-    background: $black;
-    width: 10px;
-    height: 10px;
-    content: '';
-    transform: rotate(45deg);
+  &.tooltip-right::after
     left: -2px;
     bottom: 7px;
-    position: absolute;
 
 :global #app-modal
   position: absolute;
@@ -469,14 +452,12 @@ $layout-44 = 44px;
   box-shadow: 0 0 0 300px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
 
-:global .tooltip,
-:global .tooltip_right
+:global .tooltip
   display: none;
   opacity: 0;
   z-index: 10;
 
 :global .showTooltip:hover + .tooltip
-:global .showTooltip:hover + .tooltip__right
   display: block;
   opacity: 1;
 
