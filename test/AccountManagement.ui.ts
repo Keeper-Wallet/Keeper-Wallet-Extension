@@ -1,4 +1,4 @@
-import { App, CreateNewAccount, Assets } from './utils/actions';
+import { App, Assets, CreateNewAccount } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
@@ -107,47 +107,6 @@ describe('Account management', function () {
         .click();
 
       await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-      const tabs = await this.driver.getAllWindowHandles();
-      expect(tabs).length(2);
-
-      for (const tab of tabs) {
-        if (tab !== currentTab) {
-          await this.driver.switchTo().window(tab);
-          await this.driver.close();
-        }
-      }
-      await this.driver.switchTo().window(currentTab);
-      await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
-    });
-
-    it('Testnet');
-
-    it('Stagenet');
-
-    it('Custom');
-  });
-
-  describe('Opening a new Explorer tab by clicking the "Transactions" button', function () {
-    it('Mainnet', async function () {
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
-        ),
-        this.wait
-      );
-      const currentTab = await this.driver.getWindowHandle();
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(By.css('a.transactionsIconBlack')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
-
       const tabs = await this.driver.getAllWindowHandles();
       expect(tabs).length(2);
 
