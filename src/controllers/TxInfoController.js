@@ -45,7 +45,10 @@ export class TxInfoController {
               text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
             )
           )
-          .then(arr => arr.length && arr[0]);
+          .then(arr => (Array.isArray(arr) && arr[0]) || []);
+      case 400:
+        const error = await resp.json();
+        throw new Error(error.message);
       default:
         throw new Error(await resp.text());
     }
