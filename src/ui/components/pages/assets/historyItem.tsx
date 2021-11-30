@@ -313,8 +313,8 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       className={cn(styles.historyCard, className, 'flex')}
       onClick={() => onClick(assetId)}
     >
-      <div className={cn(styles.historyIcon, 'showTooltip')}>
-        <TxIcon txType={messageType} />
+      <div className={cn(styles.historyIconWrapper, 'showTooltip')}>
+        <TxIcon txType={messageType} className={styles.historyIcon} />
       </div>
 
       {tooltip && (
