@@ -8,8 +8,8 @@ import {
   getAliases,
   getAsset,
   getBalances,
-  getHistory,
   getNfts,
+  getTxHistory,
   setActiveAccount,
   setUiState,
 } from '../../actions';
@@ -58,7 +58,7 @@ export function Assets({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
-  const history = useAppSelector(state => state.history);
+  const txHistory = useAppSelector(state => state.txHistory);
   const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
@@ -80,7 +80,7 @@ export function Assets({ setTab }: Props) {
   React.useEffect(() => {
     if (address) {
       dispatch(getNfts(address));
-      dispatch(getHistory(address));
+      dispatch(getTxHistory(address));
       dispatch(getAliases(address));
     }
     dispatch(getBalances());
@@ -114,7 +114,7 @@ export function Assets({ setTab }: Props) {
   );
 
   const historyEntries = Object.entries<(ITransaction<any> & WithId)[]>(
-    history.reduce((result, tx) => {
+    txHistory.reduce((result, tx) => {
       const d = new Date(tx.timestamp);
       const date = `${t(`date.${MONTH[d.getMonth()]}`)} ${d.getDate()}`;
       return {

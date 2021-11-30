@@ -11,8 +11,8 @@ import {
   updateActiveState,
   updateAliases,
   updateAsset,
-  updateHistory,
   updateNfts,
+  updateTxHistory,
 } from '../actions';
 import background from '../services/Background';
 import { i18n } from '../i18n';
@@ -220,11 +220,11 @@ export const getNfts = store => next => action => {
   return next(action);
 };
 
-export const getHistory = store => next => action => {
-  if (action.type === ACTION.GET_HISTORY) {
+export const getTxHistory = store => next => action => {
+  if (action.type === ACTION.GET_TX_HISTORY) {
     background
       .txHistory(action.payload)
-      .then(messages => store.dispatch(updateHistory(messages)));
+      .then(messages => store.dispatch(updateTxHistory(messages)));
   }
 
   return next(action);

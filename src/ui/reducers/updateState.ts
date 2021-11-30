@@ -120,9 +120,9 @@ export const assets = (
 
 export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
 
-export const history = createSimpleReducer<(ITransaction & WithId)[]>(
+export const txHistory = createSimpleReducer<(ITransaction & WithId)[]>(
   [],
-  ACTION.UPDATE_HISTORY
+  ACTION.UPDATE_TX_HISTORY
 );
 
 export const aliases = createSimpleReducer<string[]>([], ACTION.UPDATE_ALIASES);
