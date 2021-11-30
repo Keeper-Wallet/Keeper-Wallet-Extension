@@ -10,7 +10,13 @@ import { Asset, Money } from '@waves/data-entities';
 import { getTxLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
 
-export function HistoryItem({ tx, className, onClick }) {
+interface Props {
+  tx: any;
+  className?: string;
+  onClick?: (assetId: string) => void;
+}
+
+export function HistoryItem({ tx, className, onClick }: Props) {
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(

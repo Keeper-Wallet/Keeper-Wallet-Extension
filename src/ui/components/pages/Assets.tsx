@@ -121,7 +121,7 @@ export function Assets({ setTab }: Props) {
       const date = `${t(`date.${MONTH[d.getMonth()]}`)} ${d.getDate()}`;
       return {
         ...result,
-        [date]: [...(result[date] || []), tx,
+        [date]: [...(result[date] || []), tx],
       };
     }, {})
   );
@@ -232,12 +232,7 @@ export function Assets({ setTab }: Props) {
                 >
                   <div className="basic500 margin-min">{date}</div>
                   {txArr.map(tx => (
-                    <HistoryItem
-                      key={tx.id}
-                      tx={tx}
-                      className=""
-                      onClick={() => void 0}
-                    />
+                    <HistoryItem key={tx.id} tx={tx} />
                   ))}
                 </div>
               ))
