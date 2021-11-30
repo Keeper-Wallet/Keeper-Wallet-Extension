@@ -3,7 +3,7 @@ import { SetScriptCard } from './SetScriptCard';
 import { SetScriptFinal } from './SetScriptFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const setScript = {
   type: utils.messageType,
   message: SetScript,
   card: SetScriptCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default setScript;

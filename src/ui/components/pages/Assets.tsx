@@ -204,7 +204,9 @@ export function Assets({ setTab }: Props) {
                   key={issuer}
                   className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
                 >
-                  <div className="basic500 margin-min">{issuer}</div>
+                  <div className="basic500 margin-min">
+                    <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
+                  </div>
                   {issuerNfts.map(nft => (
                     <NftItem
                       key={nft.id}
@@ -244,6 +246,28 @@ export function Assets({ setTab }: Props) {
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
         <div className="modal notification">
           <Trans i18nKey="assets.copied" />
+        </div>
+      </Modal>
+
+      <Modal
+        animation={Modal.ANIMATION.FLASH_SCALE}
+        showModal={notifications.accountCreationSuccess}
+      >
+        <div className="modal notification">
+          <div>
+            <Trans i18nKey="assets.accountCreationSuccessNotification" />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        animation={Modal.ANIMATION.FLASH_SCALE}
+        showModal={notifications.accountImportSuccess}
+      >
+        <div className="modal notification">
+          <div>
+            <Trans i18nKey="assets.accountImportSuccessNotification" />
+          </div>
         </div>
       </Modal>
 

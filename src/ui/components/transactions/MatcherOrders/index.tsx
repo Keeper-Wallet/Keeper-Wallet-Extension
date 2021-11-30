@@ -3,7 +3,7 @@ import { MatcherCard } from './MatcherCard';
 import { MatcherFinal } from './MatcherFinal';
 import * as utils from './parseTx';
 
-const auth = {
+const matcher = {
   type: utils.messageType,
   message: MatcherOrders,
   card: MatcherCard,
@@ -11,4 +11,4 @@ const auth = {
   ...utils,
 };
 
-export default auth;
+export default matcher;

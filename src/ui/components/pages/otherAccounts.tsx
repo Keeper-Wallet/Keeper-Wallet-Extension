@@ -52,7 +52,11 @@ export function OtherAccountsPage({ setTab }: Props) {
       </header>
 
       <div className={styles.accounts}>
-        {otherAccounts.length !== 0 &&
+        {otherAccounts.length === 0 ? (
+          <p className={styles.noAccountsNote}>
+            <Trans i18nKey="otherAccounts.noAccountsNote" />
+          </p>
+        ) : (
           otherAccounts.map(account => (
             <AccountCard
               key={account.address}
@@ -67,7 +71,8 @@ export function OtherAccountsPage({ setTab }: Props) {
                 setTab(PAGES.ACCOUNT_INFO);
               }}
             />
-          ))}
+          ))
+        )}
 
         <div className={styles.addAccount}>
           <button

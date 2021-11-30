@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { getAmounts, getFees, messageType } from './parseTx';
+import { getPackageAmounts, getFees, messageType } from './parseTx';
 import { Balance } from '../../ui';
 
 const Fees = ({ fees }) => {
@@ -15,27 +15,6 @@ const Fees = ({ fees }) => {
         return (
           <div key={fee.asset.id}>
             <Balance balance={fee} isShortFormat={true} showAsset={true} />
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const Amounts = ({ amounts }) => {
-  const moneys = Object.values(amounts);
-
-  return (
-    <div>
-      {moneys.map(({ amount, sign }, index) => {
-        return (
-          <div key={`${index}${amount.asset.id}`}>
-            <Balance
-              balance={amount}
-              split={true}
-              showAsset={true}
-              addSign={`${sign} `}
-            />
           </div>
         );
       })}
@@ -56,7 +35,7 @@ export class PackageCard extends React.PureComponent<IProps> {
     const { data = {}, title = '' } = message;
     const tx = [...data];
     const fees = getFees(tx, assets);
-    const amounts = getAmounts(tx, assets);
+    const amounts = getPackageAmounts(tx, assets);
     const myClassName = cn(styles.dataTransactionCard, className, {
       [styles.dataCard_collapsed]: collapsed,
     });
@@ -85,7 +64,16 @@ export class PackageCard extends React.PureComponent<IProps> {
               </h1>
 
               <div className={styles.amounts}>
-                <Amounts amounts={amounts} />
+                {amounts.map(({ amount, sign }, index) => (
+                  <div key={`${index}${amount.asset.id}`}>
+                    <Balance
+                      balance={amount}
+                      split
+                      showAsset
+                      addSign={`${sign} `}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

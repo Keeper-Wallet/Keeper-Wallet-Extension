@@ -36,12 +36,15 @@
   },
   "assets": {
     "account": "Account",
+    "accountCreationSuccessNotification": "Account created",
+    "accountImportSuccessNotification": "Account import succeeded",
     "activatedModal": "Account set active!",
     "addAccount": "Add account",
     "changeName": "Account name changed",
     "copied": "Copied!",
     "deleteAccount": "Delete account",
     "inStorage": "Other accounts",
+    "issuedBy": "Issued by {{ issuer }}",
     "lastUpdate": "Last update:",
     "selectAccountNotification": "Active account changed",
     "assets": "Assets",
@@ -301,6 +304,7 @@
   },
   "otherAccounts": {
     "addAccount": "Add account",
+    "noAccountsNote": "You have no other accounts in the current network",
     "title": "Other accounts"
   },
   "pairing": {
