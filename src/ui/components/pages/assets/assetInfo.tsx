@@ -91,7 +91,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
                   : 'assetInfo.notReissuable'
               }
             />
-            ,
+            ,&nbsp;
             <Trans
               i18nKey={
                 asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted'

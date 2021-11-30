@@ -47,7 +47,8 @@
     "assets": "Assets",
     "nfts": "NFTs",
     "emptyAssets": "You don't have any asset yet",
-    "emptyNFTs": "You don't have any NFT yet"
+    "emptyNFTs": "You don't have any NFT yet",
+    "issuedBy": "Issued by {{ issuer }}"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

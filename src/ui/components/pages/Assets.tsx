@@ -159,7 +159,9 @@ export function Assets({ setTab }: Props) {
                 <div
                   className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
                 >
-                  <div className="basic500 margin-min">{issuer}</div>
+                  <div className="basic500 margin-min">
+                    <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
+                  </div>
                   {issuerNfts.map(nft => (
                     <NftItem
                       key={nft.id}

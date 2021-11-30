@@ -17,7 +17,12 @@ export function NftItem({ asset, className, onClick }: Props) {
       className={cn(styles.nftCard, className, 'flex')}
       onClick={() => onClick(asset.id)}
     >
-      <AssetLogo assetId={asset.id} name={asset.displayName} />
+      <AssetLogo
+        assetId={asset.id}
+        name={asset.displayName}
+        hasScript={asset.hasScript}
+        hasSponsorship={!!asset.minSponsoredFee}
+      />
 
       <div className={cn('body1', styles.nftData)}>
         <div className={cn('basic500', styles.nftName)}>
