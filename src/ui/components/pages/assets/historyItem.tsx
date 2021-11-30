@@ -140,9 +140,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         }
       }
 
-      tooltip = t(
-        !isTxFailed ? 'historyCard.exchange' : 'historyCard.exchangeFailed'
-      );
+      tooltip = t('historyCard.exchange');
       label = (
         <Balance
           split
@@ -296,11 +294,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       messageType = 'set-asset-script';
       break;
     case SIGN_TYPE.SCRIPT_INVOCATION:
-      tooltip = t(
-        !isTxFailed
-          ? 'historyCard.scriptInvocation'
-          : 'historyCard.scriptInvocationFailed'
-      );
+      tooltip = t('historyCard.scriptInvocation');
       label = tx.dApp;
       info = tx.call?.function || 'default';
       messageType = 'script_invocation';
@@ -316,8 +310,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       messageType = 'unknown';
       break;
   }
-
-  tooltip = `${isTxFailed ? t('historyCard.failed') : ''} ${tooltip}`;
 
   return (
     <div
@@ -348,7 +340,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
 
       {tooltip && (
         <div className={cn(styles.txIconTooltip, 'tooltip', 'tooltip-right')}>
-          {tooltip}
+          {isTxFailed && t('historyCard.failed')} {tooltip}
         </div>
       )}
 
