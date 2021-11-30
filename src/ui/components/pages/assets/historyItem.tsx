@@ -140,7 +140,9 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         }
       }
 
-      tooltip = t('historyCard.exchange');
+      tooltip = t(
+        !isTxFailed ? 'historyCard.exchange' : 'historyCard.exchangeFailed'
+      );
       label = (
         <Balance
           split
