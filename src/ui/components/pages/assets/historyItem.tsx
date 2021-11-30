@@ -26,6 +26,9 @@ export function HistoryItem({ tx, className, onClick }: Props) {
   const aliases = useAppSelector(state => state.aliases);
 
   let tooltip, label, info, messageType, addSign;
+  const isTxFailed =
+    [SIGN_TYPE.SCRIPT_INVOCATION, SIGN_TYPE.EXCHANGE].includes(tx.type) &&
+    tx.applicationStatus === 'failed';
   let assetId = tx.assetId || 'WAVES';
   let asset = assets[assetId];
 
@@ -137,7 +140,9 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         }
       }
 
-      tooltip = t('historyCard.exchange');
+      tooltip = t(
+        !isTxFailed ? 'historyCard.exchange' : 'historyCard.exchangeFailed'
+      );
       label = (
         <Balance
           split
@@ -291,7 +296,11 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       messageType = 'set-asset-script';
       break;
     case SIGN_TYPE.SCRIPT_INVOCATION:
-      tooltip = t('historyCard.scriptInvocation');
+      tooltip = t(
+        !isTxFailed
+          ? 'historyCard.scriptInvocation'
+          : 'historyCard.scriptInvocationFailed'
+      );
       label = tx.dApp;
       info = tx.call?.function || 'default';
       messageType = 'script_invocation';
@@ -315,6 +324,25 @@ export function HistoryItem({ tx, className, onClick }: Props) {
     >
       <div className={cn(styles.historyIconWrapper, 'showTooltip')}>
         <TxIcon txType={messageType} className={styles.historyIcon} />
+
+        {isTxFailed && (
+          <div className={styles.txSubIconContainer}>
+            <div className={styles.txSubIcon}>
+              <svg viewBox="0 0 10 10" className={styles.txSubIconSvg}>
+                <rect
+                  width="10"
+                  height="10"
+                  fill="#D8D8D8"
+                  fillOpacity="0.01"
+                />
+                <path
+                  d="M5.64011 5.00002L8.20071 2.43942C8.37749 2.26264 8.37749 1.97604 8.20071 1.79927C8.02394 1.62249 7.73733 1.62249 7.56056 1.79927L4.99996 4.35987L2.43936 1.79927C2.26258 1.62249 1.97598 1.62249 1.79921 1.79927C1.62243 1.97604 1.62243 2.26264 1.79921 2.43942L4.35981 5.00002L1.79921 7.56062C1.62243 7.7374 1.62243 8.024 1.79921 8.20077C1.97598 8.37755 2.26258 8.37755 2.43936 8.20077L4.99996 5.64017L7.56056 8.20077C7.73733 8.37755 8.02394 8.37755 8.20071 8.20077C8.37749 8.024 8.37749 7.7374 8.20071 7.56062L5.64011 5.00002Z"
+                  fill="#E5494D"
+                />
+              </svg>
+            </div>
+          </div>
+        )}
       </div>
 
       {tooltip && (

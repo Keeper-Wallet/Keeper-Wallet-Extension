@@ -62,6 +62,7 @@
     "reissue": "Reissue Asset",
     "burn": "Burn Asset",
     "exchange": "Exchange",
+    "exchangeFailed": "Failed Exchange",
     "lease": "Started WAVES Staking",
     "leaseIncoming": "Incoming Leasing",
     "leaseCancel": "Canceled WAVES Staking",
@@ -79,6 +80,7 @@
     "sponsorshipDisable": "Disabled sponsorship",
     "setAssetScript": "Set Asset Script",
     "scriptInvocation": "Contract Invocation",
+    "scriptInvocationFailed": "Failed Contract Invocation",
     "updateAssetInfo": "Update Asset Info",
     "infoTooltip": "Show in Explorer"
   },
