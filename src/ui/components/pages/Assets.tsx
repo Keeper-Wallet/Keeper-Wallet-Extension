@@ -24,8 +24,10 @@ import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
 import { HistoryItem } from './assets/historyItem';
-import { ITransaction } from '@waves/ts-types';
-import { WithId } from '@waves/waves-transactions/dist/transactions';
+import {
+  ITransaction,
+  WithId,
+} from '@waves/waves-transactions/dist/transactions';
 
 const MONTH = [
   'Jan',
@@ -113,13 +115,13 @@ export function Assets({ setTab }: Props) {
     balances[address]?.assets || {}
   );
 
-  const historyEntries = Object.entries<(ITransaction<any> & WithId)[]>(
+  const historyEntries = Object.entries<Array<ITransaction & WithId>>(
     txHistory.reduce((result, tx) => {
       const d = new Date(tx.timestamp);
       const date = `${t(`date.${MONTH[d.getMonth()]}`)} ${d.getDate()}`;
       return {
         ...result,
-        [date]: [...(result[date] || []), tx],
+        [date]: [...(result[date] || []), tx,
       };
     }, {})
   );
