@@ -20,6 +20,8 @@
   },
   "assets": {
     "account": "Account",
+    "accountCreationSuccessNotification": "Account created",
+    "accountImportSuccessNotification": "Account import succeeded",
     "activatedModal": "Account set active!",
     "addAccount": "Add account",
     "changeName": "Account name changed",
