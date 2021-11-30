@@ -40,7 +40,7 @@ export class TxInfoController {
 
     switch (resp.status) {
       case 200:
-        return resp.json().then(arr => (Array.isArray(arr) && arr[0]) || []);
+        return resp.json().then(arr => arr[0]);
       case 400:
         const error = await resp.json();
         throw new Error(error.message);
