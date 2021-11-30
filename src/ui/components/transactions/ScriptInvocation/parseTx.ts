@@ -1,5 +1,6 @@
 import { SIGN_TYPE } from '@waves/signature-adapter';
 import { BigNumber } from '@waves/bignumber';
+import { IMoneyLike } from 'ui/utils/converters';
 
 export const messageType = 'script_invocation';
 export const txType = 'transaction';
@@ -33,7 +34,7 @@ export function getAssetsId(tx): Array<string> {
 export { getFee } from '../BaseTransaction/parseTx';
 
 export function getAmounts(tx) {
-  const amounts = [];
+  const amounts: IMoneyLike[] = [];
 
   (tx.payment || []).forEach(item => {
     let tokens = new BigNumber(0);
@@ -59,7 +60,7 @@ export function getAmounts(tx) {
 }
 
 export function getAmountSign() {
-  return '-';
+  return '-' as const;
 }
 
 export function isMe(tx: any, type: string) {

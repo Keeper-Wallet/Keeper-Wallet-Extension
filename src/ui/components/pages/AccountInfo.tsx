@@ -13,7 +13,7 @@ import {
   Modal,
 } from '../ui';
 import background from '../../services/Background';
-import { getAsset, selectAccount } from '../../actions';
+import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { seedUtils } from '@waves/waves-transactions';
@@ -71,8 +71,6 @@ class AccountInfoComponent extends React.Component {
   inputPassword = event =>
     this.setState({ password: event.target.value, passwordError: false });
 
-  setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
-
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
   showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
@@ -91,8 +89,7 @@ class AccountInfoComponent extends React.Component {
   };
 
   render() {
-    const { selectedAccount, activeAccount } = this.props;
-    const isActive = selectedAccount.address === activeAccount.address;
+    const { selectedAccount } = this.props;
     const { onCopyHandler } = this;
     const { leaseBalance } = this.state;
     const showLease =
@@ -157,15 +154,6 @@ class AccountInfoComponent extends React.Component {
             </a>
 
             <span className={styles.walletBtnSeparator} />
-
-            <Button
-              onClick={this.setActiveAccount}
-              disabled={isActive}
-              type={BUTTON_TYPE.CUSTOM}
-              className={
-                isActive ? styles.activeAccount : styles.inActiveAccount
-              }
-            />
 
             <div className="relative">
               <Button
@@ -398,9 +386,6 @@ const mapStateToProps = function (store: any) {
 
   return {
     selectedAccount: store.accounts.find(({ address }) => address === selected),
-    activeAccount: store.accounts.find(
-      ({ address }) => address === activeAccount
-    ),
     balances: store.balances,
     assets: store.assets,
     notifications: store.localState.notifications,
@@ -413,7 +398,6 @@ const mapStateToProps = function (store: any) {
 
 const actions = {
   getAsset,
-  selectAccount,
 };
 
 export const AccountInfo = connect(

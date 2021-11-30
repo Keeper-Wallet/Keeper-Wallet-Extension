@@ -3,7 +3,7 @@ import { CancelLeaseCard } from './CancelLeaseCard';
 import { CancelLeaseFinal } from './CancelLeaseFinal';
 import * as utils from './parseTx';
 
-const lease = {
+const cancelLease = {
   type: utils.messageType,
   message: CancelLease,
   card: CancelLeaseCard,
@@ -11,4 +11,4 @@ const lease = {
   ...utils,
 };
 
-export default lease;
+export default cancelLease;

@@ -3,7 +3,7 @@ import { MassTransferCard } from './MassTransferCard';
 import { MassTransferFinal } from './MassTransferFinal';
 import * as utils from './parseTx';
 
-const transfer = {
+const massTransfer = {
   type: utils.messageType,
   message: MassTransfer,
   card: MassTransferCard,
@@ -11,4 +11,4 @@ const transfer = {
   ...utils,
 };
 
-export default transfer;
+export default massTransfer;

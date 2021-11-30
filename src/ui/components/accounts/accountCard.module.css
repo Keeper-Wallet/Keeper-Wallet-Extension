@@ -1,4 +1,6 @@
 .root {
+  display: flex;
+  align-items: center;
   position: relative;
   margin-bottom: 8px;
   padding: 14px;
@@ -36,11 +38,8 @@
 }
 
 .infoButton {
-  position: absolute;
-  right: 14px;
-  bottom: 19px;
-  border: 0;
-  padding: 0;
+  position: relative;
+  margin-left: auto;
   border-radius: 2px;
   background: none;
   cursor: pointer;

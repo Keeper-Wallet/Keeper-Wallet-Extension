@@ -36,6 +36,8 @@
   },
   "assets": {
     "account": "Account",
+    "accountCreationSuccessNotification": "Account created",
+    "accountImportSuccessNotification": "Account import succeeded",
     "activatedModal": "Account set active!",
     "addAccount": "Add account",
     "changeName": "Account name changed",
@@ -253,6 +255,7 @@
   },
   "otherAccounts": {
     "addAccount": "Add account",
+    "noAccountsNote": "You have no other accounts in the current network",
     "title": "Other accounts"
   },
   "pairing": {

@@ -1,5 +1,12 @@
-import { ACTION, addUserReceive, addUserSend, setTab } from '../actions';
-import background from '../services/Background';
+import {
+  ACTION,
+  addUserReceive,
+  addUserSend,
+  notificationAccountCreationSuccess,
+  notificationAccountImportSuccess,
+  setTab,
+} from '../actions';
+import background, { WalletTypes } from '../services/Background';
 
 export const addAccount = store => next => action => {
   const { type, payload, meta } = action;
@@ -16,6 +23,19 @@ export const addAccount = store => next => action => {
         () => {
           store.dispatch(addUserReceive());
           store.dispatch(setTab('assets'));
+
+          if (meta.type === WalletTypes.New) {
+            store.dispatch(notificationAccountCreationSuccess(true));
+            setTimeout(() => {
+              store.dispatch(notificationAccountCreationSuccess(false));
+            }, 1000);
+          } else if (meta.type === WalletTypes.Seed) {
+            store.dispatch(notificationAccountImportSuccess(true));
+            setTimeout(() => {
+              store.dispatch(notificationAccountImportSuccess(false));
+            }, 1000);
+          }
+
           background.sendEvent('addWallet', { type: meta.type });
         },
         e => {
@@ -30,6 +50,10 @@ export const addAccount = store => next => action => {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
         store.dispatch(setTab('assets'));
+        store.dispatch(notificationAccountImportSuccess(true));
+        setTimeout(() => {
+          store.dispatch(notificationAccountImportSuccess(false));
+        }, 1000);
         background.sendEvent('addWallet', { type: meta.type });
       }
     );

@@ -10,7 +10,7 @@ const MAX_HISTORY = 10;
 function createSimpleReducer<
   TState = unknown,
   TActionType extends string = string
->(initialState: TState, actionType: TActionType) {
+  >(initialState: TState, actionType: TActionType) {
   return (
     state = initialState,
     action: { type: TActionType; payload: TState }
@@ -29,7 +29,7 @@ export const accounts = createSimpleReducer<
     network: string;
     type: string;
   }>
->([], ACTION.UPDATE_ACCOUNTS);
+  >([], ACTION.UPDATE_ACCOUNTS);
 export const allNetworksAccounts = createSimpleReducer<
   Array<{
     address: string;
@@ -39,7 +39,7 @@ export const allNetworksAccounts = createSimpleReducer<
     publicKey: string;
     type: string;
   }>
->([], ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS);
+  >([], ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS);
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 interface SelectedAccountState {
@@ -79,8 +79,8 @@ export const balances = createSimpleReducer<
         };
       };
     }
-  >
->({}, ACTION.UPDATE_BALANCES);
+    >
+  >({}, ACTION.UPDATE_BALANCES);
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);
 export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);

@@ -428,6 +428,7 @@ A package transaction signature. Sometimes several transactions need to be simul
 - `13` - assigns the dApp script or account script to the sender's account
 - `14` - configures sponsorship
 - `15` - modifies the asset script
+- `16` - calls the function from a dApp script
 
 Example:
 
@@ -955,7 +956,7 @@ In case of a success, the asset's script will be reset.
     - `type` "binary"/string/"integer"/"boolean" - type,
     - `value` /string/string/number/boolean - value for type
 - `*fee` MoneyLike – fee
-- `*payment` array MoneyLike (at now can use only 1 payment)
+- `*payment` array MoneyLike
 - `*senderPublicKey` string - public key in base58
 - `*timestamp` number/string - number/string – time in ms
 
