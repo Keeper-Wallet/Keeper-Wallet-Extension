@@ -74,6 +74,7 @@ export function ActiveAccountCard({
       <div className={styles.controls}>
         <button
           className="sendIconBlack button button-wallet"
+          data-testid="sendAssetsButton"
           onClick={onSendClick}
         >
           <Trans i18nKey="activeAccountCard.sendButton" />

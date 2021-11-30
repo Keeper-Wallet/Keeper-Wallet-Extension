@@ -38,6 +38,7 @@ export class TransferCard extends React.PureComponent<IProps> {
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="transferAmount"
                 split={true}
                 addSign="- "
                 showAsset={true}
@@ -53,7 +54,9 @@ export class TransferCard extends React.PureComponent<IProps> {
             <div className="tx-title tag1 basic500">
               <Trans i18nKey="transactions.recipient" />
             </div>
-            <div className={styles.txValue}>{tx.recipient}</div>
+            <div className={styles.txValue} data-testid="recipient">
+              {tx.recipient}
+            </div>
           </div>
 
           {tx.attachment && tx.attachment.length ? (
@@ -62,8 +65,9 @@ export class TransferCard extends React.PureComponent<IProps> {
                 <Trans i18nKey="transactions.attachment" />
               </div>
               <Attachment
-                className={`${styles.txValue} plate fullwidth`}
                 attachment={readAttachment(tx.attachment)}
+                className={`${styles.txValue} plate fullwidth`}
+                data-testid="attachmentContent"
               />
             </div>
           ) : null}

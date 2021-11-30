@@ -20,17 +20,18 @@ export function Send() {
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
 
-  const wavesBalance = useAppSelector(
-    state =>
-      new Money(
-        new BigNumber(state.balances[state.selectedAccount.address].available),
-        new Asset(assets['WAVES'])
-      )
+  const accountBalance = useAppSelector(
+    state => state.balances[state.selectedAccount.address]
   );
 
-  const assetBalances = useAppSelector(
-    state => state.balances[state.selectedAccount.address].assets
-  );
+  const wavesBalance =
+    accountBalance &&
+    new Money(
+      new BigNumber(accountBalance.available),
+      new Asset(assets['WAVES'])
+    );
+
+  const assetBalances = accountBalance?.assets;
 
   const assetIdsToRequest = React.useMemo(() => {
     if (!assetBalances) {
@@ -54,25 +55,6 @@ export function Send() {
       dispatch(getAsset(assetId));
     });
   }, [assetIdsToRequest, dispatch]);
-
-  const isLoadingAssets = !assetBalances || assetIdsToRequest.length !== 0;
-
-  const assetOptions = isLoadingAssets
-    ? []
-    : Object.entries(assetBalances).map(([assetId, { balance }]) => {
-        const asset = assets[assetId];
-
-        const balanceMoney = new Money(
-          new BigNumber(balance),
-          new Asset(asset)
-        );
-
-        return {
-          id: asset.id,
-          text: `${asset.name} (${balanceMoney.toTokens()})`,
-          value: asset.id,
-        };
-      });
 
   const [recipientValue, setRecipientValue] = React.useState('');
   const [recipientTouched, setRecipientTouched] = React.useState(false);
@@ -172,6 +154,7 @@ export function Send() {
             <Input
               autoComplete="off"
               autoFocus
+              data-testid="recipientInput"
               error={showRecipientError}
               spellCheck={false}
               value={recipientValue}
@@ -191,9 +174,11 @@ export function Send() {
           </div>
 
           <div className="margin-main-big">
-            {isLoadingAssets ? (
+            {!wavesBalance ||
+            !assetBalances ||
+            assetIdsToRequest.length !== 0 ? (
               <Loader />
-            ) : assetOptions.length === 0 ? (
+            ) : Object.keys(assetBalances).length === 0 ? (
               'WAVES'
             ) : (
               <Select
@@ -204,7 +189,24 @@ export function Send() {
                     text: `WAVES (${wavesBalance.toTokens()})`,
                     value: 'WAVES',
                   },
-                ].concat(assetOptions)}
+                ].concat(
+                  Object.entries(assetBalances).map(
+                    ([assetId, { balance }]) => {
+                      const asset = assets[assetId];
+
+                      const balanceMoney = new Money(
+                        new BigNumber(balance),
+                        new Asset(asset)
+                      );
+
+                      return {
+                        id: asset.id,
+                        text: `${asset.name} (${balanceMoney.toTokens()})`,
+                        value: asset.id,
+                      };
+                    }
+                  )
+                )}
                 selected={assetValue}
                 onSelectItem={(id, value) => {
                   setAssetValue(value);
@@ -220,6 +222,7 @@ export function Send() {
           <div className="margin-main-big">
             <Input
               autoComplete="off"
+              data-testid="amountInput"
               error={showAmountError}
               inputRef={amountMask.ref}
               onBlur={() => {
@@ -243,6 +246,7 @@ export function Send() {
           <div>
             <Input
               autoComplete="off"
+              data-testid="attachmentInput"
               error={showAttachmentError}
               multiLine
               rows={4}
@@ -262,7 +266,8 @@ export function Send() {
         <div className={styles.submitButtonWrapper}>
           <Button
             className="fullwidth"
-            disabled={isLoadingAssets || isSubmitting}
+            data-testid="submitButton"
+            disabled={isSubmitting}
             type="submit"
           >
             <Trans i18nKey="send.submitButtonText" />
