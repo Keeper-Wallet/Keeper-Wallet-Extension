@@ -5,15 +5,21 @@ import cn from 'classnames';
 import * as styles from './featureUpdateInfo.styl';
 
 export function FeatureUpdateInfo({ onClose, onSubmit }) {
+  function preventDefault(func) {
+    return function (evt) {
+      evt.preventDefault();
+      func();
+    };
+  }
   return (
     <div className="modal cover">
-      <form
-        className="modal-form"
-        onSubmit={evt => {
-          evt.preventDefault();
-          onSubmit();
-        }}
-      >
+      <form className="modal-form" onSubmit={preventDefault(onSubmit)}>
+        <Button
+          className="modal-close"
+          onClick={preventDefault(onClose)}
+          type="transparent"
+        />
+
         <i className={`lock-icon ${styles.lockIcon}`} />
 
         <p className={cn('margin1', 'body1')}>
@@ -28,16 +34,12 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
           <Trans i18nKey="featureUpdateInfo.keystoreInfo" />
         </p>
 
-        <p className={cn('margin1', 'body1')}>
+        <p className={cn('margin-main-big', 'body1')}>
           <Trans i18nKey="featureUpdateInfo.keystoreImport" />
         </p>
 
-        <Button className="margin1" type="submit">
+        <Button type="submit">
           <Trans i18nKey="featureUpdateInfo.backupBtn" />
-        </Button>
-
-        <Button onClick={onClose} type="button">
-          <Trans i18nKey="featureUpdateInfo.cancelBtn" />
         </Button>
       </form>
     </div>

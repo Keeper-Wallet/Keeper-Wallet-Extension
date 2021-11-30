@@ -403,6 +403,17 @@ $layout-44 = 44px;
   box-shadow: 0 0 0 300px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
 
+:global .modal-close
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  &::after
+    content: '\2715';
+    line-height: 1rem;
+    font-size: 1rem;
+    color: $basic500;
+
 :global .tooltip
   display: none;
   opacity: 0;
