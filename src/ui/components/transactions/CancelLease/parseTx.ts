@@ -26,7 +26,7 @@ export function getAmount(tx = null, message) {
 }
 
 export function getAmountSign() {
-  return '+';
+  return '+' as const;
 }
 
 export function isMe(tx: any, type: string) {

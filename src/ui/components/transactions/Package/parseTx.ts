@@ -1,6 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
-import { getMoney } from '../../../utils/converters';
+import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
+import { Money } from '@waves/data-entities';
 
 export const messageType = 'transactionPackage';
 export const txType = 'transactionPackage';
@@ -42,7 +43,9 @@ export function getFees(tx, assets) {
       tokens: 0,
       assetId: fee.assetId,
     };
-    accFee.coins = new BigNumber(accFee.coins).add(fee.coins || 0);
+    accFee.coins = new BigNumber(accFee.coins).add(
+      fee.coins || (fee as { amount?: string | number }).amount || 0
+    );
     accFee.tokens = new BigNumber(accFee.tokens).add(fee.tokens || 0);
     acc[fee.assetId] = accFee;
     return acc;
@@ -54,20 +57,33 @@ export function getFees(tx, assets) {
   }, Object.create(null));
 }
 
-export function getAmounts(tx = null, assets) {
+export function getPackageAmounts(tx = null, assets) {
   if (!Array.isArray(tx)) {
     return [];
   }
 
-  return tx.reduce((acc, item) => {
-    const { tx, config } = getTransactionData(item);
-    const amount = getMoney(config.getAmount(tx, item), assets);
-    if (amount.getTokens().gt(0)) {
-      const sign = config.getAmountSign(tx);
-      acc.push({ amount, sign });
-    }
-    return acc;
-  }, []);
+  return tx.reduce<Array<{ amount: Money; sign: '-' | '+' | '' }>>(
+    (acc, item) => {
+      const { tx, config } = getTransactionData(item);
+
+      function addAmount(amount: IMoneyLike | Money) {
+        const money = getMoney(amount, assets);
+        if (money.getTokens().gt(0)) {
+          const sign = config.getAmountSign(tx);
+          acc.push({ amount: money, sign });
+        }
+      }
+
+      if (config.getAmount) {
+        addAmount(config.getAmount(tx, item));
+      } else {
+        config.getAmounts(tx).forEach(addAmount);
+      }
+
+      return acc;
+    },
+    []
+  );
 }
 
 export function getAmount(tx = null) {
@@ -75,7 +91,7 @@ export function getAmount(tx = null) {
 }
 
 export function getAmountSign() {
-  return '';
+  return '' as const;
 }
 
 export function isMe(tx: any, type: string) {
