@@ -5,9 +5,16 @@ import cn from 'classnames';
 import { loading, setNetwork } from '../../actions';
 import { Network } from './components';
 
-class BottomComponent extends React.Component {
-  props: IProps;
+interface Props {
+  className?: string;
+  noChangeNetwork?: boolean;
+  hide?: boolean;
+  version: string;
+  locked: boolean;
+  initialized: boolean;
+}
 
+class BottomComponent extends React.Component<Props> {
   render() {
     const hideNet =
       this.props.locked || !this.props.initialized || this.props.hide;
@@ -35,12 +42,3 @@ const mapStateToProps = ({ version, state }) => ({
 export const Bottom = connect(mapStateToProps, { setNetwork, loading })(
   BottomComponent
 );
-
-interface IProps {
-  className?: string;
-  noChangeNetwork: boolean;
-  hide?: boolean;
-  version: string;
-  locked: boolean;
-  initialized: boolean;
-}

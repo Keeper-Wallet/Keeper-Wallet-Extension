@@ -5,7 +5,7 @@ import { Trans } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui';
 
-export interface ImportKeystoreExistingAccount {
+interface ImportKeystoreExistingAccount {
   address: string;
   name: string;
   network: string;

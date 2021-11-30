@@ -76,8 +76,23 @@ function loading(state = true, { type, payload }) {
   return state;
 }
 
-function notifications(state = {}, { type, payload }) {
+interface NotificationsState {
+  accountCreationSuccess?: boolean;
+  accountImportSuccess?: boolean;
+  changeName?: boolean;
+  deleted?: boolean;
+  selected?: boolean;
+}
+
+function notifications(
+  state: NotificationsState = {},
+  { type, payload }: { type: string; payload: boolean }
+): NotificationsState {
   switch (type) {
+    case ACTION.NOTIFICATION_ACCOUNT_CREATION_SUCCESS:
+      return { ...state, accountCreationSuccess: payload };
+    case ACTION.NOTIFICATION_ACCOUNT_IMPORT_SUCCESS:
+      return { ...state, accountImportSuccess: payload };
     case ACTION.NOTIFICATION_SELECT:
       return { ...state, selected: payload };
     case ACTION.NOTIFICATION_DELETE:

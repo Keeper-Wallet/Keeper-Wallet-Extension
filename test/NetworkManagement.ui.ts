@@ -73,18 +73,7 @@ describe('Network management', function () {
         );
         await this.driver
           .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, '-assets-assets')]" +
-                      "//div[contains(@class, '-wallet-activeWallet')]" +
-                      "//div[contains(@class, '-wallet-accountName')]"
-                  )
-                ),
-                this.wait
-              )
-            ),
+            until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
             this.wait
           )
           .click();
