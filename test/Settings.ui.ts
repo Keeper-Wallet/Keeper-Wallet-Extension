@@ -1,4 +1,4 @@
-import { App, CreateNewAccount, Network, Settings } from './utils/actions';
+import { App, CreateNewAccount, Settings, Assets } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import {
@@ -40,27 +40,13 @@ describe('Settings', function () {
       'rich',
       'waves private node seed with waves tokens'
     );
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-addAccount')]")
-        ),
-        this.wait
-      )
-      .click();
+    await Assets.addAccount.call(this);
     await CreateNewAccount.importAccount.call(
       this,
       'test',
       'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category'
     );
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-addAccount')]")
-        ),
-        this.wait
-      )
-      .click();
+    await Assets.addAccount.call(this);
     await CreateNewAccount.importAccount.call(
       this,
       'test3',

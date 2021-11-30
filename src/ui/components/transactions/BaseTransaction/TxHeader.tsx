@@ -1,4 +1,4 @@
-import { TransactionWallet } from '../../wallets';
+import { TransactionWallet } from '../../wallets/TransactionWallet';
 import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';

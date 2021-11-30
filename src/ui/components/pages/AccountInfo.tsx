@@ -13,7 +13,7 @@ import {
   Modal,
 } from '../ui';
 import background from '../../services/Background';
-import { getAsset, selectAccount } from '../../actions';
+import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { seedUtils } from '@waves/waves-transactions';
@@ -71,8 +71,6 @@ class AccountInfoComponent extends React.Component {
   inputPassword = event =>
     this.setState({ password: event.target.value, passwordError: false });
 
-  setActiveAccount = () => this.props.selectAccount(this.props.selectedAccount);
-
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
   showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
@@ -91,14 +89,13 @@ class AccountInfoComponent extends React.Component {
   };
 
   render() {
-    const { selectedAccount, activeAccount } = this.props;
-    const isActive = selectedAccount.address === activeAccount.address;
+    const { selectedAccount } = this.props;
     const { onCopyHandler } = this;
     const { leaseBalance } = this.state;
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
     const { address, network, name, publicKey } = selectedAccount;
-    const { walletLink, activeAddressLink } = getExplorerUrls(network, address);
+    const { activeAddressLink, walletLink } = getExplorerUrls(network, address);
 
     return (
       <div className={styles.content}>
@@ -138,38 +135,25 @@ class AccountInfoComponent extends React.Component {
           </div>
 
           <div className={`margin-main-big ${styles.buttonsWrapper}`}>
-            {walletLink && (
-              <a
-                href={walletLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="button walletIconBlack button-wallet"
-              >
-                <Trans i18nKey="ui.wallet">Wallet</Trans>
-              </a>
-            )}
+            <a
+              href={walletLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button walletIconBlack button-wallet"
+            >
+              <Trans i18nKey="ui.wallet">Wallet</Trans>
+            </a>
 
-            {activeAddressLink && (
-              <a
-                href={activeAddressLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transactionsIconBlack button button-wallet"
-              >
-                <Trans i18nKey="ui.transactions">Transactions</Trans>
-              </a>
-            )}
+            <a
+              href={activeAddressLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transactionsIconBlack button button-wallet"
+            >
+              <Trans i18nKey="ui.transactions">Transactions</Trans>
+            </a>
 
             <span className={styles.walletBtnSeparator} />
-
-            <Button
-              onClick={this.setActiveAccount}
-              disabled={isActive}
-              type={BUTTON_TYPE.CUSTOM}
-              className={
-                isActive ? styles.activeAccount : styles.inActiveAccount
-              }
-            />
 
             <div className="relative">
               <Button
@@ -402,9 +386,6 @@ const mapStateToProps = function (store: any) {
 
   return {
     selectedAccount: store.accounts.find(({ address }) => address === selected),
-    activeAccount: store.accounts.find(
-      ({ address }) => address === activeAccount
-    ),
     balances: store.balances,
     assets: store.assets,
     notifications: store.localState.notifications,
@@ -417,7 +398,6 @@ const mapStateToProps = function (store: any) {
 
 const actions = {
   getAsset,
-  selectAccount,
 };
 
 export const AccountInfo = connect(

@@ -89,33 +89,21 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ accounts });
   }
 
-  selectAccount(address, network, lastActive = Date.now()) {
+  selectAccount(address, network) {
     let selectedAccount = this.store.getState().selectedAccount;
     if (
       !selectedAccount ||
       selectedAccount.address !== address ||
       selectedAccount.network !== network
     ) {
-      selectedAccount = this._getAccountByAddress(address, network);
+      selectedAccount = this.store
+        .getState()
+        .accounts.find(
+          account => account.address === address && account.network === network
+        );
 
-      const accounts = this.store.getState().accounts.map(account => {
-        const selected = account.selected || 0;
-        let isSelected =
-          account.address === address && account.network === network;
-        return isSelected
-          ? { ...account, lastActive, selected: selected + 1 }
-          : account;
-      });
-
-      this.store.updateState({ selectedAccount, accounts });
+      this.store.updateState({ selectedAccount });
       this.emit('accountChange');
     }
-  }
-
-  _getAccountByAddress(address, network) {
-    const accounts = this.store.getState().accounts;
-    return accounts.find(
-      account => account.address === address && account.network === network
-    );
   }
 }

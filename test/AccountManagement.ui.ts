@@ -1,4 +1,5 @@
-import { App, CreateNewAccount } from './utils/actions';
+import * as mocha from 'mocha';
+import { App, CreateNewAccount, Assets } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
@@ -8,11 +9,6 @@ import {
   DEFAULT_SWITCH_TABS_DELAY,
 } from './utils/constants';
 
-const ACCOUNTS = {
-  RICH: { NAME: 'rich', SEED: 'waves private node seed with waves tokens' },
-  POOR: { NAME: 'poor', SEED: 'waves private node seed without waves tokens' },
-};
-
 describe('Account management', function () {
   this.timeout(60 * 1000);
 
@@ -20,72 +16,37 @@ describe('Account management', function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
     await CreateNewAccount.importAccount.call(
       this,
-      ACCOUNTS.RICH.NAME,
-      ACCOUNTS.RICH.SEED
+      'rich',
+      'waves private node seed with waves tokens'
     );
 
-    await this.driver
-      .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-addAccount')]")
-        ),
-        this.wait
-      )
-      .click();
+    await Assets.addAccount.call(this);
     await CreateNewAccount.importAccount.call(
       this,
-      ACCOUNTS.POOR.NAME,
-      ACCOUNTS.POOR.SEED
+      'poor',
+      'waves private node seed without waves tokens'
     );
   });
 
-  after(async function () {
-    await App.resetVault.call(this);
-  });
+  after(App.resetVault);
 
   describe('Accounts list', function () {
     it('Change active account', async function () {
-      const inactiveAccount = this.driver.wait(
-        until.elementIsVisible(
-          this.driver.wait(
-            until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-assets-assets')]" +
-                  "//div[contains(@class, 'wallets-list')]" +
-                  "//div[contains(@class, '-wallet-wallet-')]"
-              )
-            ),
-            this.wait
-          )
-        ),
-        this.wait
-      );
-      const inactiveAccountName = await inactiveAccount
-        .findElement(By.xpath("//div[contains(@class, '-wallet-accountName')]"))
-        .getText();
-      await inactiveAccount
-        .findElement(By.css('div.inactive-account-icon'))
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+          this.wait
+        )
         .click();
 
-      expect(
-        await this.driver
-          .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, '-assets-assets')]" +
-                      "//div[contains(@class, '-wallet-activeWallet')]" +
-                      "//div[contains(@class, '-wallet-accountName')]"
-                  )
-                ),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).to.be.equal(inactiveAccountName);
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="accountCard"]')),
+          this.wait
+        )
+        .click();
+
+      expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
     });
 
     it('Updating account balances on import');
@@ -103,11 +64,7 @@ describe('Account management', function () {
         await this.driver
           .wait(
             until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-assets-assets')]" +
-                  "//div[contains(@class, '-wallet-activeWallet')]" +
-                  "//div[contains(@class, 'showQrIcon')]"
-              )
+              By.css('[data-testid="activeAccountCard"] .showQrIcon')
             ),
             this.wait
           )
@@ -162,9 +119,6 @@ describe('Account management', function () {
       }
       await this.driver.switchTo().window(currentTab);
       await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
-
-      // clicking by <a> element propagates click event to element, so we should go back after
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
     });
 
     it('Testnet');
@@ -206,9 +160,6 @@ describe('Account management', function () {
       }
       await this.driver.switchTo().window(currentTab);
       await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
-
-      // clicking by <a> element propagates click event to element, so we should go back after
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
     });
 
     it('Testnet');
@@ -218,19 +169,7 @@ describe('Account management', function () {
     it('Custom');
   });
 
-  function accountPropertiesShouldBeRight(isActive: boolean) {
-    it('Displayed right status icon', async function () {
-      const activeStatusCls = isActive
-        ? '-accountInfo-activeAccount'
-        : '-accountInfo-inActiveAccount';
-
-      expect(
-        await this.driver.findElement(
-          By.xpath(`//button[contains(@class, '${activeStatusCls}')]`)
-        )
-      ).not.to.be.throw;
-    });
-
+  function accountPropertiesShouldBeRight(this: mocha.Context) {
     it('Go to the address QR code screen', async function () {
       await this.driver.findElement(By.css('button.showQrIcon')).click();
 
@@ -487,16 +426,19 @@ describe('Account management', function () {
   }
 
   describe('Inactive account', async function () {
+    before(async function () {
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+          this.wait
+        )
+        .click();
+    });
+
     it('By clicking on account - go to the account properties screen', async function () {
       await this.driver
         .wait(
-          until.elementLocated(
-            By.xpath(
-              "//div[contains(@class, '-assets-assets')]" +
-                "//div[contains(@class, 'wallets-list')]" +
-                "//div[contains(@class, '-wallet-wallet-')]"
-            )
-          ),
+          until.elementLocated(By.css('[data-testid="accountInfoButton"]')),
           this.wait
         )
         .click();
@@ -511,19 +453,14 @@ describe('Account management', function () {
       ).not.to.be.throw;
     });
 
-    accountPropertiesShouldBeRight.call(this, false);
+    accountPropertiesShouldBeRight.call(this);
   });
 
   describe('Active account', async function () {
     it('By clicking on account - go to the account properties screen', async function () {
       await this.driver
         .wait(
-          until.elementLocated(
-            By.xpath(
-              "//div[contains(@class, '-assets-assets')]" +
-                "//div[contains(@class, '-wallet-activeWallet')]"
-            )
-          ),
+          until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
           this.wait
         )
         .click();
@@ -538,6 +475,6 @@ describe('Account management', function () {
       ).not.to.be.throw;
     });
 
-    accountPropertiesShouldBeRight.call(this, true);
+    accountPropertiesShouldBeRight.call(this);
   });
 });

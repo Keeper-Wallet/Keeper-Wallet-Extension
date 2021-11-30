@@ -9,7 +9,7 @@ import {
   setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { TransactionWallet } from '../wallets';
+import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 

@@ -31,6 +31,7 @@ import {
 } from './components/pages';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
+import { OtherAccountsPage } from './components/pages/otherAccounts';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -52,6 +53,7 @@ export const PAGES = {
   IMPORT_SEED_BACK: 'import_seed_back',
   EXPORT_ACCOUNTS: 'export_accounts',
   ASSETS: 'assets',
+  OTHER_ACCOUNTS: 'other_accounts',
   SETTINGS: 'settings',
   INFO: 'info',
   ACCOUNT_INFO: 'account_info',
@@ -274,6 +276,16 @@ export const PAGES_CONF = {
       hasLogo: true,
       hasSettings: true,
       back: null,
+    },
+  },
+  [PAGES.OTHER_ACCOUNTS]: {
+    component: OtherAccountsPage,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      back: true,
+      hasLogo: true,
     },
   },
   [PAGES.SETTINGS]: {

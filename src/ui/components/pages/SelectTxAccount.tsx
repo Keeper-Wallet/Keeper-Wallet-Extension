@@ -12,7 +12,7 @@ import {
   updateActiveState,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { TransactionWallet } from '../wallets';
+import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
 
 class SelectTxAccountComponent extends React.PureComponent {
