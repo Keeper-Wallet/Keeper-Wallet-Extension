@@ -13,7 +13,7 @@ import {
 import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
-import { TransactionWallet } from '../wallets';
+import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button, BUTTON_TYPE } from '../ui';
 

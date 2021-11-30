@@ -92,10 +92,10 @@ module.exports = ({
   return {
     stats: 'errors-warnings',
     entry: {
-      ui: path.resolve(SOURCE_FOLDER, 'ui.js'),
-      background: path.resolve(SOURCE_FOLDER, 'background.js'),
-      contentscript: path.resolve(SOURCE_FOLDER, 'contentscript.js'),
-      inpage: path.resolve(SOURCE_FOLDER, 'inpage.js'),
+      ui: path.resolve(SOURCE_FOLDER, 'ui'),
+      background: path.resolve(SOURCE_FOLDER, 'background'),
+      contentscript: path.resolve(SOURCE_FOLDER, 'contentscript'),
+      inpage: path.resolve(SOURCE_FOLDER, 'inpage'),
     },
     output: {
       filename: '[name].js',

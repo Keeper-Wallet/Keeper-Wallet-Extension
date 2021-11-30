@@ -7,30 +7,28 @@ export function networkByteFromAddress(address: string): string {
 }
 
 export function getExplorerUrls(network: string, address: string) {
-  const result = {
-    walletLink: null,
-    activeAddressLink: null,
-  };
-
   switch (network) {
     case 'mainnet':
-      result.walletLink = 'https://waves.exchange/import/waveskeeper';
-      result.activeAddressLink = `https://wavesexplorer.com/address/${address}`;
-      break;
+      return {
+        activeAddressLink: `https://wavesexplorer.com/address/${address}`,
+        walletLink: 'https://waves.exchange/import/waveskeeper',
+      };
     case 'testnet':
-      result.walletLink = 'https://testnet.waves.exchange/import/waveskeeper';
-      result.activeAddressLink = `https://testnet.wavesexplorer.com/address/${address}`;
-      break;
+      return {
+        activeAddressLink: `https://testnet.wavesexplorer.com/address/${address}`,
+        walletLink: 'https://testnet.waves.exchange/import/waveskeeper',
+      };
     case 'stagenet':
-      result.walletLink = 'https://stagenet.waves.exchange/import/waveskeeper';
-      result.activeAddressLink = `https://stagenet.wavesexplorer.com/address/${address}`;
-      break;
+      return {
+        activeAddressLink: `https://stagenet.wavesexplorer.com/address/${address}`,
+        walletLink: 'https://stagenet.waves.exchange/import/waveskeeper',
+      };
     default:
-      result.walletLink = 'https://waves.exchange/import/waveskeeper';
-      result.activeAddressLink = `https://wavesexplorer.com/address/${address}`;
+      return {
+        activeAddressLink: `https://wavesexplorer.com/address/${address}`,
+        walletLink: 'https://waves.exchange/import/waveskeeper',
+      };
   }
-
-  return result;
 }
 
 export function addressFromPublicKey(pk: string, byte: string): string {

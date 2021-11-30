@@ -2,13 +2,13 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { newAccountName, setUiState, user } from '../../actions';
+import { addUser, newAccountName, setUiState } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
+import { AppState } from 'ui/store';
 
 class NewWalletNameComponent extends React.Component {
-  inputEl: Input;
   readonly props;
   readonly state = { disabled: false, errors: [] } as any;
 
@@ -66,8 +66,6 @@ class NewWalletNameComponent extends React.Component {
 
   onBlur = () => this._onBlur();
 
-  getRef = input => (this.inputEl = input);
-
   render() {
     return (
       <div className={styles.content}>
@@ -79,7 +77,6 @@ class NewWalletNameComponent extends React.Component {
           <div className={`margin1`}>
             <Input
               id="newAccountName"
-              ref={this.getRef}
               className="margin1"
               onChange={this.onChange}
               value={this.props.account.name || ''}
@@ -124,10 +121,6 @@ class NewWalletNameComponent extends React.Component {
     );
   }
 
-  componentDidMount() {
-    //this.inputEl.focus();
-  }
-
   _onChange(e) {
     const newName = e.target.value;
     this.props.newAccountName(newName);
@@ -159,18 +152,17 @@ class NewWalletNameComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (state: AppState) {
   return {
-    account: store.localState.newAccount,
-    accountSave: store.localState.addNewAccount,
-    accounts: store.accounts,
-    addUser: user,
+    account: state.localState.newAccount,
+    accountSave: state.localState.addNewAccount,
+    accounts: state.accounts,
   };
 };
 
 const actions = {
   newAccountName,
-  addUser: user,
+  addUser,
   setUiState,
 };
 

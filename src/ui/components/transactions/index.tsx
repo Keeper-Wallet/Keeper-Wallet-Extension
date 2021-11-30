@@ -38,23 +38,7 @@ interface Message {
   getAssetsId: (tx: unknown) => string[];
   getFee: (tx: unknown) => IMoneyLike;
   isMe: (tx: unknown, type: unknown) => boolean;
-  message: ComponentType<{
-    approve?: unknown;
-    assets?: unknown;
-    autoClickProtection?: unknown;
-    message?: unknown;
-    pending?: unknown;
-    reject?: unknown;
-    rejectForever?: unknown;
-    selectAccount?: unknown;
-    selectedAccount?: unknown;
-    sponsoredBalance?: unknown;
-    txHash?: unknown;
-    txType?: unknown;
-    onClose?: unknown;
-    onList?: unknown;
-    onNext?: unknown;
-  }>;
+  message: ComponentType<any>;
   type: unknown;
 }
 

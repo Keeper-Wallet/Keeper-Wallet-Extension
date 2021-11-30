@@ -3,8 +3,9 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
-import { setUiState, user } from '../../actions';
+import { addUser, setUiState } from '../../actions';
 import { WalletTypes } from '../../services/Background';
+import { AppState } from 'ui/store';
 
 const SHUFFLE_COUNT = 500;
 
@@ -154,14 +155,14 @@ class ConfirmBackupComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (state: AppState) {
   return {
-    account: store.localState.newAccount,
-    ...store.localState.addNewAccount,
+    account: state.localState.newAccount,
+    ...state.localState.addNewAccount,
   };
 };
 
 export const ConfirmBackup = connect(mapStateToProps, {
-  addUser: user,
+  addUser,
   setUiState,
 })(ConfirmBackupComponent);

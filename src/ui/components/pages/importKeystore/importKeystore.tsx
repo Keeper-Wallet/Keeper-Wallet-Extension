@@ -4,13 +4,12 @@ import { seedUtils } from '@waves/waves-transactions';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import {
   ImportKeystoreChooseAccounts,
-  ImportKeystoreExistingAccount,
   ImportKeystoreNetwork,
   ImportKeystoreProfiles,
 } from './chooseAccounts';
-import { connect } from 'react-redux';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 
 function readFileAsText(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -130,36 +129,14 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 }
 
 interface Props {
-  batchAddAccounts: (
-    accounts: Array<{
-      hasBackup: boolean;
-      name: string;
-      network: string;
-      seed: string;
-      type: string;
-    }>,
-    type: WalletTypes
-  ) => void;
-  allNetworksAccounts: ImportKeystoreExistingAccount[];
   setTab: (newTab: string) => void;
 }
 
-const mapStateToProps = (store: any) => ({
-  allNetworksAccounts: store.allNetworksAccounts,
-});
-
-const actions = {
-  batchAddAccounts,
-};
-
-export const ImportKeystore = connect(
-  mapStateToProps,
-  actions
-)(function ImportKeystore({
-  allNetworksAccounts,
-  batchAddAccounts,
-  setTab,
-}: Props) {
+export function ImportKeystore({ setTab }: Props) {
+  const dispatch = useAppDispatch();
+  const allNetworksAccounts = useAppSelector(
+    state => state.allNetworksAccounts
+  );
   const { t } = useTranslation();
   const [error, setError] = React.useState<string | null>(null);
   const [profiles, setProfiles] = React.useState<ImportKeystoreProfiles | null>(
@@ -244,17 +221,19 @@ export const ImportKeystore = connect(
         setTab('');
       }}
       onSubmit={selectedAccounts => {
-        batchAddAccounts(
-          selectedAccounts.map(acc => ({
-            seed: acc.seed,
-            type: 'seed',
-            name: acc.name,
-            network: findNetworkByNetworkCode(acc.networkCode),
-            hasBackup: true,
-          })),
-          walletType
+        dispatch(
+          batchAddAccounts(
+            selectedAccounts.map(acc => ({
+              seed: acc.seed,
+              type: 'seed',
+              name: acc.name,
+              network: findNetworkByNetworkCode(acc.networkCode),
+              hasBackup: true,
+            })),
+            walletType
+          )
         );
       }}
     />
   );
-});
+}

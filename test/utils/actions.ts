@@ -3,11 +3,15 @@
  *
  * NOTE: Each of them needs to bind `this` from test.
  */
-import { By, until } from 'selenium-webdriver';
+import * as mocha from 'mocha';
+import { By, until, WebElement } from 'selenium-webdriver';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './constants';
 
 export const App = {
-  initVault: async function (password: string = DEFAULT_PASSWORD) {
+  initVault: async function (
+    this: mocha.Context,
+    password: string = DEFAULT_PASSWORD
+  ) {
     await App.open.call(this);
 
     await this.driver
@@ -46,7 +50,7 @@ export const App = {
     );
   },
 
-  resetVault: async function () {
+  resetVault: async function (this: mocha.Context) {
     await App.open.call(this);
 
     await this.driver
@@ -71,7 +75,7 @@ export const App = {
       .wait(until.elementLocated(By.css('button#deleteAccount')), this.wait)
       .click();
   },
-  open: async function () {
+  open: async function (this: mocha.Context) {
     await this.driver.get(this.extensionUrl);
     await this.driver.wait(
       until.elementIsVisible(
@@ -82,8 +86,74 @@ export const App = {
   },
 };
 
+export const Assets = {
+  addAccount: async function (this: mocha.Context) {
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+        this.wait
+      )
+      .click();
+
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="addAccountButton"]')),
+        this.wait
+      )
+      .click();
+  },
+  getActiveAccountName: async function (this: mocha.Context) {
+    return this.driver
+      .wait(
+        until.elementLocated(
+          By.css(
+            '[data-testid="activeAccountCard"] [data-testid="accountName"]'
+          )
+        ),
+        this.wait,
+        'Could not get active account name'
+      )
+      .getText();
+  },
+  getOtherAccountNames: async function (this: mocha.Context) {
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+        this.wait
+      )
+      .click();
+
+    const accountNameElements = await this.driver
+      .wait(
+        until.elementsLocated(
+          By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+        ),
+        500
+      )
+      .catch((): WebElement[] => []);
+
+    const accountNames = await Promise.all(
+      accountNameElements.map(accName => accName.getText())
+    );
+
+    await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+
+    return accountNames;
+  },
+  getAllAccountNames: async function (this: mocha.Context) {
+    return [
+      await Assets.getActiveAccountName.call(this),
+      ...(await Assets.getOtherAccountNames.call(this)),
+    ];
+  },
+};
+
 export const CreateNewAccount = {
-  importAccount: async function (name: string, seed: string) {
+  importAccount: async function (
+    this: mocha.Context,
+    name: string,
+    seed: string
+  ) {
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="importSeed"]')),
@@ -129,7 +199,7 @@ export const CreateNewAccount = {
 };
 
 export const Settings = {
-  rootSettings: async function () {
+  rootSettings: async function (this: mocha.Context) {
     await this.driver
       .wait(
         until.elementLocated(
@@ -139,14 +209,14 @@ export const Settings = {
       )
       .click();
   },
-  generalSettings: async function () {
+  generalSettings: async function (this: mocha.Context) {
     await Settings.rootSettings.call(this);
     await this.driver
       .wait(until.elementLocated(By.css('button#settingsGeneral')), this.wait)
       .click();
   },
 
-  setSessionTimeout: async function (index: number) {
+  setSessionTimeout: async function (this: mocha.Context, index: number) {
     // refresh timeout by focus window
     await this.driver.executeScript(() => {
       window.focus();
@@ -174,17 +244,17 @@ export const Settings = {
       .click();
   },
 
-  setMinSessionTimeout: async function () {
+  setMinSessionTimeout: async function (this: mocha.Context) {
     const FIRST = 1;
     await Settings.setSessionTimeout.call(this, FIRST);
   },
 
-  setMaxSessionTimeout: async function () {
+  setMaxSessionTimeout: async function (this: mocha.Context) {
     const LAST = -1;
     await Settings.setSessionTimeout.call(this, LAST);
   },
 
-  permissionSettings: async function () {
+  permissionSettings: async function (this: mocha.Context) {
     await Settings.rootSettings.call(this);
     await this.driver
       .wait(
@@ -194,7 +264,7 @@ export const Settings = {
       .click();
   },
 
-  clearCustomList: async function () {
+  clearCustomList: async function (this: mocha.Context) {
     await Settings.permissionSettings.call(this);
 
     for (const originEl of await this.driver.findElements(
@@ -219,7 +289,7 @@ export const Settings = {
 };
 
 export const Network = {
-  switchTo: async function (network: string) {
+  switchTo: async function (this: mocha.Context, network: string) {
     await this.driver
       .wait(
         until.elementLocated(

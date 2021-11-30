@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 import * as styles from './styles/pairingAccountQr.styl';
 import { QRCode } from '../ui';
 import { pairingGetData, pairingSetData } from '../../actions';
-import { TransactionWallet } from '../wallets';
+import { TransactionWallet } from '../wallets/TransactionWallet';
 import { PAGES } from '../../pageConfig';
 import { Intro } from './Intro';
 import cn from 'classnames';

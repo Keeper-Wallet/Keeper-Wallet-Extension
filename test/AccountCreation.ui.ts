@@ -1,16 +1,23 @@
 import { By, Key, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
+import * as mocha from 'mocha';
 import { clear } from './utils';
-import { App, Settings, Network, CreateNewAccount } from './utils/actions';
+import {
+  App,
+  Settings,
+  Network,
+  CreateNewAccount,
+  Assets,
+} from './utils/actions';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 import { seedUtils } from '@waves/waves-transactions';
 
 describe('Account creation', function () {
   this.timeout(60 * 1000);
 
-  async function deleteAllAccounts() {
+  async function deleteAllAccounts(this: mocha.Context) {
     while (true) {
-      let form: WebElement = await this.driver.wait(
+      await this.driver.wait(
         until.elementLocated(
           By.xpath(
             "//div[(contains(@class, '-assets-assets') or contains(@class, '-import-import'))]"
@@ -18,18 +25,16 @@ describe('Account creation', function () {
         ),
         this.wait
       );
-      let activeWalletEl: WebElement[] = await form.findElements(
-        By.xpath(
-          "//div[contains(@class, '-wallet-activeWallet')]" +
-            "//div[contains(@class, '-wallet-accountName')]"
-        )
+
+      const activeAccountCards = await this.driver.findElements(
+        By.css('[data-testid="activeAccountCard"]')
       );
 
-      if (!activeWalletEl.length) {
+      if (!activeAccountCards.length) {
         break;
       }
 
-      await activeWalletEl[0].click();
+      await activeAccountCards[0].click();
 
       await this.driver
         .wait(
@@ -41,9 +46,13 @@ describe('Account creation', function () {
         .click();
 
       await this.driver
-        .wait(until.elementLocated(By.css('button#deleteAccount')), this.wait)
+        .wait(until.elementLocated(By.id('deleteAccount')), this.wait)
         .click();
     }
+
+    expect(
+      await this.driver.findElements(By.id('createNewAccount'))
+    ).to.have.length(1);
   }
 
   before(async function () {
@@ -97,7 +106,7 @@ describe('Account creation', function () {
       ).split(' ');
       await this.driver.findElement(By.css('button#continue')).click();
 
-      const writePills: WebElement = this.driver.wait(
+      const writePills = this.driver.wait(
         until.elementLocated(
           By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")
         ),
@@ -118,39 +127,16 @@ describe('Account creation', function () {
         .wait(until.elementLocated(By.css('button#confirmBackup')), this.wait)
         .click();
 
-      expect(
-        await this.driver
-          .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, '-assets-assets')]" +
-                      "//div[contains(@class, '-wallet-activeWallet')]" +
-                      "//div[contains(@class, '-wallet-accountName')]"
-                  )
-                ),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).to.be.equals(ACCOUNTS.FIRST);
+      expect(await Assets.getActiveAccountName.call(this)).to.equal(
+        ACCOUNTS.FIRST
+      );
     });
 
     describe('Creating an additional account via the "Add account" button', function () {
       describe('When you already have 1 account', function () {
         describe('Create new account page', function () {
           before(async function () {
-            await this.driver
-              .wait(
-                until.elementLocated(
-                  By.xpath("//div[contains(@class, '-assets-addAccount')]")
-                ),
-                this.wait
-              )
-              .click();
+            await Assets.addAccount.call(this);
 
             await this.driver
               .wait(
@@ -191,13 +177,13 @@ describe('Account creation', function () {
           });
 
           it('You can select any account from the list of 5 generated', async function () {
-            const addressEl: WebElement = this.driver.wait(
+            const addressEl = this.driver.wait(
               until.elementLocated(
                 By.xpath("//div[contains(@class, '-newwallet-greyLine')]")
               )
             );
             let prevAddress = null;
-            const avatarList: WebElement[] = await this.driver.findElements(
+            const avatarList = await this.driver.findElements(
               By.xpath("//div[contains(@class, '-avatar-avatar-')]")
             );
             expect(avatarList).length(5);
@@ -291,7 +277,7 @@ describe('Account creation', function () {
           it('Filling in a seed in the wrong word order', async function () {
             // there is no Confirm button. An error message and a "Clear" button are displayed
             const wrongSeed = rightSeed.split(' ').reverse();
-            const seedPills: WebElement = await this.driver.wait(
+            const seedPills = await this.driver.wait(
               until.elementLocated(By.xpath(xpWriteSeed)),
               this.wait
             );
@@ -306,7 +292,7 @@ describe('Account creation', function () {
                 .click();
               await this.driver.sleep(PILL_ANIMATION_DELAY);
             }
-            const errorDiv: WebElement = this.driver.wait(
+            const errorDiv = this.driver.wait(
               until.elementLocated(
                 By.xpath("//div[contains(@class,'-error-error')]")
               )
@@ -370,7 +356,7 @@ describe('Account creation', function () {
           });
 
           it('The word can be reset by clicking (any, not only the last)', async function () {
-            const writePills: WebElement[] = await this.driver.wait(
+            const writePills = await this.driver.wait(
               until.elementsLocated(By.xpath(xpWriteSeed + xpVisiblePill)),
               this.wait
             );
@@ -395,7 +381,7 @@ describe('Account creation', function () {
               )
             ).to.be.empty;
 
-            const readPills: WebElement[] = await this.driver.findElements(
+            const readPills = await this.driver.findElements(
               By.xpath(
                 "//div[contains(@class, '-confirmBackup-readSeed')]" +
                   "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
@@ -419,7 +405,7 @@ describe('Account creation', function () {
           });
 
           it('Additional account successfully created while filling in the phrase in the correct order', async function () {
-            const writePills: WebElement = this.driver.wait(
+            const writePills = this.driver.wait(
               until.elementLocated(By.xpath(xpWriteSeed)),
               this.wait
             );
@@ -441,25 +427,9 @@ describe('Account creation', function () {
               )
               .click();
 
-            expect(
-              await this.driver
-                .wait(
-                  until.elementIsVisible(
-                    this.driver.wait(
-                      until.elementLocated(
-                        By.xpath(
-                          "//div[contains(@class, '-assets-assets')]" +
-                            "//div[contains(@class, 'wallets-list')]" +
-                            "//div[contains(@class, '-wallet-accountName')]"
-                        )
-                      ),
-                      this.wait
-                    )
-                  ),
-                  this.wait
-                )
-                .getText()
-            ).to.be.equals(ACCOUNTS.ANY);
+            expect(await Assets.getOtherAccountNames.call(this)).to.include(
+              ACCOUNTS.ANY
+            );
           });
         });
       });
@@ -519,38 +489,15 @@ describe('Account creation', function () {
         )
         .click();
 
-      expect(
-        await this.driver
-          .wait(
-            until.elementIsVisible(
-              this.driver.wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, '-assets-assets')]" +
-                      "//div[contains(@class, '-wallet-activeWallet')]" +
-                      "//div[contains(@class, '-wallet-accountName')]"
-                  )
-                ),
-                this.wait
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).to.be.equals(ACCOUNTS.FIRST.NAME);
+      expect(await Assets.getActiveAccountName.call(this)).to.be.equals(
+        ACCOUNTS.FIRST.NAME
+      );
     });
 
     describe('Importing an additional account via the "Add account" button', function () {
       describe('When you already have 1 account', function () {
         before(async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+          await Assets.addAccount.call(this);
 
           await this.driver
             .wait(
@@ -673,25 +620,9 @@ describe('Account creation', function () {
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
-            expect(
-              await this.driver
-                .wait(
-                  until.elementIsVisible(
-                    this.driver.wait(
-                      until.elementLocated(
-                        By.xpath(
-                          "//div[contains(@class, '-assets-assets')]" +
-                            "//div[contains(@class, 'wallets-list')]" +
-                            "//div[contains(@class, '-wallet-accountName')]"
-                        )
-                      ),
-                      this.wait
-                    )
-                  ),
-                  this.wait
-                )
-                .getText()
-            ).to.be.equals(ACCOUNTS.MORE_25_CHARS.NAME);
+            expect(await Assets.getOtherAccountNames.call(this)).to.include(
+              ACCOUNTS.MORE_25_CHARS.NAME
+            );
           });
         });
       });
@@ -724,24 +655,18 @@ describe('Account creation', function () {
           .click();
       });
 
-      function extractParsedAccountsFromDOM() {
+      function extractParsedAccountsFromDOM(this: mocha.Context) {
         return this.driver
-          .findElements(By.css('[data-testid="accountsGroup"]'), this.wait)
+          .findElements(By.css('[data-testid="accountsGroup"]'))
           .then(accountGroups =>
             Promise.all(
               accountGroups.map(group =>
                 Promise.all([
                   group
-                    .findElement(
-                      By.css('[data-testid="accountsGroupLabel"]'),
-                      this.wait
-                    )
+                    .findElement(By.css('[data-testid="accountsGroupLabel"]'))
                     .getText(),
                   group
-                    .findElements(
-                      By.css('[data-testid="accountCard"]'),
-                      this.wait
-                    )
+                    .findElements(By.css('[data-testid="accountCard"]'))
                     .then(accountCards =>
                       Promise.all(
                         accountCards.map(card =>
@@ -831,7 +756,7 @@ describe('Account creation', function () {
     });
 
     describe('actual import', function () {
-      function extractAccountCheckboxesFromDOM() {
+      function extractAccountCheckboxesFromDOM(this: mocha.Context) {
         return this.driver
           .findElements(By.css('[data-testid="accountCard"]'))
           .then(cards =>
@@ -841,7 +766,7 @@ describe('Account creation', function () {
                   card.getAttribute('title'),
                   card
                     .findElement(By.css('[data-testid="accountName"]'))
-                    .then(accountName => accountName.getText()),
+                    .getText(),
                   card.findElement(By.name('selected')).then(
                     checkbox =>
                       checkbox
@@ -948,48 +873,14 @@ describe('Account creation', function () {
 
           await Network.switchTo.call(this, 'Testnet');
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
+            await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test']);
 
           await Network.switchTo.call(this, 'Stagenet');
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
+            await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test4']);
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
@@ -1031,14 +922,8 @@ describe('Account creation', function () {
 
       describe('when some, but not all accounts already exist', function () {
         it('allows to select only unexisting accounts', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+          await Assets.addAccount.call(this);
+
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -1083,77 +968,22 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
           await Network.switchTo.call(this, 'Testnet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
 
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
+            await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test', 'test3']);
 
           await Network.switchTo.call(this, 'Stagenet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
 
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
+            await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test4']);
 
           await Network.switchTo.call(this, 'Mainnet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
 
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
+            await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test2']);
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
@@ -1213,14 +1043,8 @@ describe('Account creation', function () {
 
       describe('when all accounts exist', function () {
         it('does not allow selecting anything and shows the "Skip" button', async function () {
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+          await Assets.addAccount.call(this);
+
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -1266,33 +1090,23 @@ describe('Account creation', function () {
             .click();
 
           await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
+            until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
             this.wait
           );
         });
       });
 
       describe('when the user already has an account with the same name, but different address', function () {
+        this.beforeEach(deleteAllAccounts);
+
         it('adds suffix to the name', async function () {
-          await App.resetVault.call(this);
-          await App.initVault.call(this);
-          await Network.switchTo.call(this, 'Testnet');
           await CreateNewAccount.importAccount.call(
             this,
-            'test',
+            'test2',
             'this is the seed for the test account'
           );
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+          await Assets.addAccount.call(this);
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -1310,25 +1124,10 @@ describe('Account creation', function () {
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          ).to.include.deep.members([
             {
-              name: 'test2',
+              name: 'test2 (1)',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-            {
-              name: 'test (1)',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: true,
-            },
-            {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: true,
-            },
-            {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
               selected: true,
             },
           ]);
@@ -1337,78 +1136,13 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-assets-assets')]" +
-                  "//div[contains(@class, '-wallet-inner')]" +
-                  "//div[contains(@class, '-wallet-accountName')][text()='test3']"
-              )
-            ),
-            this.wait
-          );
-
           await new Promise(resolve =>
             setTimeout(resolve, DEFAULT_ANIMATION_DELAY)
           );
 
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test', 'test (1)', 'test3']);
-
-          await Network.switchTo.call(this, 'Stagenet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
-          expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test4']);
-
-          await Network.switchTo.call(this, 'Mainnet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
-          expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test2']);
+            await Assets.getAllAccountNames.call(this)
+          ).to.have.ordered.members(['test2', 'test2 (1)']);
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
@@ -1424,86 +1158,34 @@ describe('Account creation', function () {
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.deep.equal([
-            {
-              address: '3NCcwK7MUc4ZwtiBbJBnrqqw6dxwdj8aQrc',
-              name: 'test',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: '6qqBjSPoBEUtayn3TPgC1twGii7ivhAB7LGwfy2ntjyE',
-              seed: 'this is the seed for the test account',
-              type: 'seed',
-            },
+          ).to.include.deep.members([
             {
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              name: 'test2',
+              name: 'test2 (1)',
               network: 'mainnet',
               networkCode: 'W',
               publicKey: '57tdgQxNNfehn9BQQm834NMiesYzXFEhnPaw1z5yNzHD',
               seed: 'odor refuse imitate busy purity where capital rebuild follow foil sorry tornado dress boring envelope',
-              type: 'seed',
-            },
-            {
-              seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
-              publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              networkCode: 'S',
-              network: 'stagenet',
-              type: 'seed',
-              name: 'test4',
-            },
-            {
-              seed: 'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category',
-              publicKey: '3Z1t3d8pyJU3R9ZqonaJsBT9XuDVbf5xoECFgudtKGTw',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              networkCode: 'T',
-              network: 'testnet',
-              type: 'seed',
-              name: 'test (1)',
-            },
-            {
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              name: 'test3',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: '3ufbp8wCLhWqbXtbakBR95FgqSdm66UYaNieuoEKyztS',
-              seed: 'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant',
               type: 'seed',
             },
           ]);
         });
 
         it('increments the number in suffix if it already exists', async function () {
-          await App.resetVault.call(this);
-          await App.initVault.call(this);
-          await Network.switchTo.call(this, 'Testnet');
           await CreateNewAccount.importAccount.call(
             this,
-            'test',
+            'test2',
             'this is a seed for the test account'
           );
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+
+          await Assets.addAccount.call(this);
           await CreateNewAccount.importAccount.call(
             this,
-            'test (1)',
+            'test2 (1)',
             'this is an another seed for the test account'
           );
 
-          await this.driver
-            .wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-assets-addAccount')]")
-              ),
-              this.wait
-            )
-            .click();
+          await Assets.addAccount.call(this);
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -1521,25 +1203,10 @@ describe('Account creation', function () {
 
           expect(
             await extractAccountCheckboxesFromDOM.call(this)
-          ).to.have.deep.ordered.members([
+          ).to.include.deep.members([
             {
-              name: 'test2',
+              name: 'test2 (2)',
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              selected: true,
-            },
-            {
-              name: 'test (2)',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              selected: true,
-            },
-            {
-              name: 'test3',
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              selected: true,
-            },
-            {
-              name: 'test4',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
               selected: true,
             },
           ]);
@@ -1548,78 +1215,13 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-assets-assets')]" +
-                  "//div[contains(@class, '-wallet-inner')]" +
-                  "//div[contains(@class, '-wallet-accountName')][text()='test3']"
-              )
-            ),
-            this.wait
-          );
-
           await new Promise(resolve =>
             setTimeout(resolve, DEFAULT_ANIMATION_DELAY)
           );
 
           expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test', 'test (1)', 'test (2)', 'test3']);
-
-          await Network.switchTo.call(this, 'Stagenet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
-          expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test4']);
-
-          await Network.switchTo.call(this, 'Mainnet');
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          );
-
-          expect(
-            await this.driver
-              .findElements(
-                By.xpath(
-                  "//div[contains(@class, '-assets-assets')]" +
-                    "//div[contains(@class, '-wallet-inner')]" +
-                    "//div[contains(@class, '-wallet-accountName')]"
-                )
-              )
-              .then(accountNames =>
-                Promise.all(accountNames.map(accName => accName.getText()))
-              )
-          ).to.have.ordered.members(['test2']);
+            await Assets.getAllAccountNames.call(this)
+          ).to.have.ordered.members(['test2', 'test2 (1)', 'test2 (2)']);
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
@@ -1635,59 +1237,14 @@ describe('Account creation', function () {
 
           expect(
             JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.deep.equal([
-            {
-              address: '3MyZvqgx6E9b1GTvuL5dgMQmeXvxANYGmWE',
-              name: 'test',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: '9qnE2ZZjnsmmYPKCeiRj1wQVneGWSYXDhyDDQwmkLMht',
-              seed: 'this is a seed for the test account',
-              type: 'seed',
-            },
-            {
-              address: '3MvL177rYof5hps3GhrWSmBGgAwF3paZ19o',
-              name: 'test (1)',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: 'B2e7hxGiiZnQFY6iwF6jn9gABYZ44bFBMHKXtiXJPTVk',
-              seed: 'this is an another seed for the test account',
-              type: 'seed',
-            },
+          ).to.include.deep.members([
             {
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
-              name: 'test2',
+              name: 'test2 (2)',
               network: 'mainnet',
               networkCode: 'W',
               publicKey: '57tdgQxNNfehn9BQQm834NMiesYzXFEhnPaw1z5yNzHD',
               seed: 'odor refuse imitate busy purity where capital rebuild follow foil sorry tornado dress boring envelope',
-              type: 'seed',
-            },
-            {
-              seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
-              publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
-              address: '3MWxaD2xCMBUHnKkLJUqH3xFca2ak8wdd6D',
-              networkCode: 'S',
-              network: 'stagenet',
-              type: 'seed',
-              name: 'test4',
-            },
-            {
-              seed: 'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category',
-              publicKey: '3Z1t3d8pyJU3R9ZqonaJsBT9XuDVbf5xoECFgudtKGTw',
-              address: '3Mxpw1i3ZP6TbiuMU1qUdv6vSBoSvkCfQ8h',
-              networkCode: 'T',
-              network: 'testnet',
-              type: 'seed',
-              name: 'test (2)',
-            },
-            {
-              address: '3Mxpfxhrwyn4ynCi7WpogBQ8ccP2iD86jNi',
-              name: 'test3',
-              network: 'testnet',
-              networkCode: 'T',
-              publicKey: '3ufbp8wCLhWqbXtbakBR95FgqSdm66UYaNieuoEKyztS',
-              seed: 'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant',
               type: 'seed',
             },
           ]);
