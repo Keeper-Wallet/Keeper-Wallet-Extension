@@ -1,3 +1,4 @@
+import * as mocha from 'mocha';
 import { App, CreateNewAccount, Assets } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
@@ -168,19 +169,7 @@ describe('Account management', function () {
     it('Custom');
   });
 
-  function accountPropertiesShouldBeRight(isActive: boolean) {
-    it('Displayed right status icon', async function () {
-      const activeStatusCls = isActive
-        ? '-accountInfo-activeAccount'
-        : '-accountInfo-inActiveAccount';
-
-      expect(
-        await this.driver.findElement(
-          By.xpath(`//button[contains(@class, '${activeStatusCls}')]`)
-        )
-      ).not.to.be.throw;
-    });
-
+  function accountPropertiesShouldBeRight(this: mocha.Context) {
     it('Go to the address QR code screen', async function () {
       await this.driver.findElement(By.css('button.showQrIcon')).click();
 
@@ -464,7 +453,7 @@ describe('Account management', function () {
       ).not.to.be.throw;
     });
 
-    accountPropertiesShouldBeRight.call(this, false);
+    accountPropertiesShouldBeRight.call(this);
   });
 
   describe('Active account', async function () {
@@ -486,6 +475,6 @@ describe('Account management', function () {
       ).not.to.be.throw;
     });
 
-    accountPropertiesShouldBeRight.call(this, true);
+    accountPropertiesShouldBeRight.call(this);
   });
 });
