@@ -223,7 +223,7 @@ export const getNfts = store => next => action => {
 export const getHistory = store => next => action => {
   if (action.type === ACTION.GET_HISTORY) {
     background
-      .historyInfo(action.payload)
+      .txHistory(action.payload)
       .then(messages => store.dispatch(updateHistory(messages)));
   }
 

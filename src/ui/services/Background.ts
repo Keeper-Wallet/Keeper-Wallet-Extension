@@ -236,9 +236,9 @@ class Background {
     return this.background.nftInfo(address, limit);
   }
 
-  async historyInfo(address: string, limit: number = 100): Promise<any> {
+  async txHistory(address: string, limit: number = 100): Promise<any> {
     await this.initPromise;
-    return this.background.historyInfo(address, limit);
+    return this.background.txHistory(address, limit);
   }
 
   async aliasByAddress(address: string): Promise<string[]> {
