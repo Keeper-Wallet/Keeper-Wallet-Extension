@@ -114,10 +114,10 @@
     "resetCancel": "Cancel"
   },
   "featureUpdateInfo": {
-    "intro": "Keeper cares about safety of your funds. Please be aware that your backup (seed) phrases only belong to you!",
-    "recommendation": "So we highly recommend to export your accounts into a keystore file. This may prevent you from losing them.",
+    "intro": "Waves Keeper cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
+    "recommendation": "So we highly recommend to create a backup file with seed phrases of all your accounts.",
     "keystoreInfo": "Keystore file is a secure place where you can store seed phrases encrypted with your password.",
-    "keystoreImport": "You can later import them from this file back into the Keeper.",
+    "keystoreImport": "You can later import accounts from this file back into Waves Keeper.",
     "backupBtn": "Back up to a keystore file",
     "cancelBtn": "I'll do it later"
   },

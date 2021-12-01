@@ -210,6 +210,12 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
     return (
       <div className="modal cover">
         <div id="originSettings" className="modal-form">
+          <Button
+            className="modal-close"
+            onClick={this.props.onClose}
+            type="transparent"
+          />
+
           <h2 className={cn(styles.title)}>
             <Trans i18nKey="permissionSettings.modal.title">
               Permission details
