@@ -115,10 +115,14 @@ export function Assets({ setTab }: Props) {
     balances[address]?.assets || {}
   );
 
+  const thisYear = new Date().getFullYear();
   const historyEntries = Object.entries<Array<ITransaction & WithId>>(
     txHistory.reduce((result, tx) => {
       const d = new Date(tx.timestamp);
-      const date = `${t(`date.${MONTH[d.getMonth()]}`)} ${d.getDate()}`;
+      const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
+      const date = `${(year !== thisYear && year) || ''} ${t(
+        `date.${MONTH[month]}`
+      )} ${day}`;
       return {
         ...result,
         [date]: [...(result[date] || []), tx],
