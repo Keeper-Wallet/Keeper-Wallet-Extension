@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as styles from './historyItem.module.css';
-import { Balance, Loader } from '../../ui';
+import { Balance, Ellipsis, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { SIGN_TYPE } from '@waves/signature-adapter';
@@ -9,6 +9,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { getTxLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
+
+function Address({ base58 }) {
+  return <Ellipsis text={base58} size={12} className="basic500" />;
+}
 
 interface Props {
   tx: any;
@@ -56,20 +60,20 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       break;
     case SIGN_TYPE.TRANSFER:
       tooltip = t('historyCard.transfer');
-      label = tx.recipient;
+      label = <Address base58={tx.recipient} />;
       addSign = '-';
       messageType = 'transfer';
 
       if (tx.recipient === address) {
         tooltip = t('historyCard.receive');
-        label = tx.sender;
+        label = <Address base58={tx.sender} />;
         addSign = '+';
         messageType = 'receive';
       }
 
       if (tx.sender === tx.recipient) {
         tooltip = t('historyCard.selfTransfer');
-        label = tx.sender;
+        label = <Address base58={tx.sender} />;
         addSign = '';
         messageType = 'self-transfer';
       }
@@ -163,12 +167,12 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       break;
     case SIGN_TYPE.LEASE:
       tooltip = t('historyCard.lease');
-      label = tx.recipient;
+      label = <Address base58={tx.recipient} />;
       addSign = '-';
 
       if (tx.recipient === address) {
         tooltip = t('historyCard.leaseIncoming');
-        label = tx.sender;
+        label = <Address base58={tx.sender} />;
         addSign = '+';
       }
 
@@ -185,11 +189,11 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       break;
     case SIGN_TYPE.CANCEL_LEASING:
       tooltip = t('historyCard.leaseCancel');
-      label = tx.lease.recipient;
+      label = <Address base58={tx.lease.recipient} />;
       addSign = '+';
 
       if (tx.lease.recipient === address) {
-        label = tx.lease.sender;
+        label = <Address base58={tx.lease.sender} />;
         addSign = '-';
       }
 
@@ -211,7 +215,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       break;
     case SIGN_TYPE.MASS_TRANSFER:
       tooltip = t('historyCard.massTransferReceive');
-      label = tx.sender;
+      label = <Address base58={tx.sender} />;
 
       addSign = '+';
       let balance =
@@ -295,7 +299,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       break;
     case SIGN_TYPE.SCRIPT_INVOCATION:
       tooltip = t('historyCard.scriptInvocation');
-      label = tx.dApp;
+      label = <Address base58={tx.dApp} />;
       info = tx.call?.function || 'default';
       messageType = 'script_invocation';
       break;
