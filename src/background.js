@@ -275,9 +275,6 @@ class BackgroundService extends EventEmitter {
         this.networkController
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
-      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
-        this.preferencesController
-      ),
     });
 
     this.txinfoController = new TxInfoController({
@@ -462,6 +459,12 @@ class BackgroundService extends EventEmitter {
         await this.assetInfoController.assetInfo(assetId, compareFields),
 
       nftInfo: this.assetInfoController.nftInfo.bind(this.assetInfoController),
+
+      txHistory: this.txinfoController.txHistory.bind(this.txinfoController),
+      aliasByAddress: this.txinfoController.aliasByAddress.bind(
+        this.txinfoController
+      ),
+
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
 

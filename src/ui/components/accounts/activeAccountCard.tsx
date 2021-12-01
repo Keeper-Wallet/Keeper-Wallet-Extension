@@ -32,10 +32,7 @@ export function ActiveAccountCard({
   onOtherAccountsClick,
   onShowQr,
 }: Props) {
-  const { activeAddressLink, walletLink } = getExplorerUrls(
-    account.network,
-    account.address
-  );
+  const { walletLink } = getExplorerUrls(account.network);
 
   return (
     <div className={styles.root} data-testid="activeAccountCard">
@@ -83,15 +80,6 @@ export function ActiveAccountCard({
           target="_blank"
         >
           <Trans i18nKey="ui.wallet" />
-        </a>
-
-        <a
-          className="transactionsIconBlack button button-wallet"
-          href={activeAddressLink}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <Trans i18nKey="ui.transactions" />
         </a>
 
         <span className={styles.controlsExpand} />
