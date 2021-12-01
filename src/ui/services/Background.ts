@@ -1,3 +1,5 @@
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+
 class Background {
   static instance: Background;
   background: any;
@@ -211,7 +213,7 @@ class Background {
     return this.background.setCustomMatcher(url, network);
   }
 
-  async assetInfo(assetId: string, force: boolean): Promise<any> {
+  async assetInfo(assetId: string, force: boolean): Promise<AssetDetail> {
     assetId = assetId || 'WAVES';
 
     if (!force && this._assetsStore[assetId]) {
@@ -229,6 +231,11 @@ class Background {
     }
   }
 
+  async nftInfo(): Promise<AssetDetail[]> {
+    await this.initPromise;
+    return this.background.nftInfo();
+  }
+
   async deleteNotifications(ids) {
     await this.initPromise;
     return this.background.deleteNotifications(ids);
@@ -243,6 +250,11 @@ class Background {
   async sendEvent(event: string, properties: any = {}) {
     await this.initPromise;
     return this.background.sendEvent(event, properties);
+  }
+
+  async updateBalances() {
+    await this.initPromise;
+    return this.background.updateBalances();
   }
 
   async _updateIdle() {
@@ -290,4 +302,10 @@ export enum WalletTypes {
   Seed = 'seed',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
+}
+
+export interface AssetDetail extends IAssetInfo {
+  displayName: string;
+  originTransactionId: string;
+  issuer?: string;
 }

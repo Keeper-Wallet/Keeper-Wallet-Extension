@@ -69,7 +69,7 @@ export const calculateFeeFabric =
       assetIds.map(id => assetInfoController.assetInfo(id))
     );
     const smartAssets = assets
-      .filter(asset => asset.scripted)
+      .filter(asset => asset.hasScript)
       .map(asset => asset.id);
 
     if (type === SIGN_TYPE.CREATE_ORDER) {

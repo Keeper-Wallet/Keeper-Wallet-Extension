@@ -26,19 +26,23 @@ const BalanceComponent = ({
   isShortFormat,
   children,
   assets,
+  assetId = 'WAVES',
   ...props
 }: IProps) => {
   let balanceOut: Money;
 
+  React.useEffect(() => {
+    if (!assets[assetId]) {
+      getAsset(assetId);
+    }
+  }, []);
+
   switch (true) {
-    case !balance:
+    case !assets[assetId] || !balance:
       return <Loading>{children}</Loading>;
     case balance instanceof Money && !balance.getTokens().isNaN():
       balanceOut = balance as Money;
       break;
-    case !assets['WAVES']:
-      getAsset('WAVES');
-      return <Loading>{children}</Loading>;
     case new BigNumber(balance as string).isNaN() === false:
       balanceOut = Money.fromTokens(balance as string, assets['WAVES']);
       break;
@@ -84,6 +88,7 @@ export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(
 
 interface IProps {
   balance: Money | string | BigNumber;
+  assetId?: string;
   split?: boolean;
   showAsset?: boolean;
   isShortFormat?: boolean;

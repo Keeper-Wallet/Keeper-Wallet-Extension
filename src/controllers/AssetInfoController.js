@@ -34,6 +34,7 @@ export class AssetInfoController {
     };
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
+    this.getSelectedAccount = options.getSelectedAccount;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
@@ -56,7 +57,9 @@ export class AssetInfoController {
       force ||
       !assets[network] ||
       !assets[network][assetId] ||
-      assets[network][assetId].minSponsoredFee === undefined
+      assets[network][assetId].minSponsoredFee === undefined ||
+      assets[network][assetId].hasScript === undefined ||
+      assets[network][assetId].originTransactionId === undefined
     ) {
       let resp = await fetch(url);
       switch (resp.status) {
@@ -78,10 +81,11 @@ export class AssetInfoController {
             height: assetInfo.issueHeight,
             timestamp: new Date(parseInt(assetInfo.issueTimestamp)).toJSON(),
             sender: assetInfo.issuer,
-            scripted: assetInfo.scripted,
+            hasScript: assetInfo.scripted,
             reissuable: assetInfo.reissuable,
             displayName: assetInfo.ticker || assetInfo.name,
             minSponsoredFee: assetInfo.minSponsoredAssetFee,
+            originTransactionId: assetInfo.originTransactionId,
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = mapped;
@@ -98,5 +102,40 @@ export class AssetInfoController {
     }
 
     return assets[network][assetId];
+  }
+
+  async nftInfo(limit = 1000) {
+    const address = this.getSelectedAccount().address;
+    let resp = await fetch(
+      new URL(`assets/nft/${address}/limit/${limit}`, this.getNode()).toString()
+    );
+    switch (resp.status) {
+      case 200:
+        let nfts = await resp
+          .text()
+          .then(text =>
+            JSON.parse(
+              text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
+            )
+          );
+        return nfts.map(nft => ({
+          id: nft.assetId,
+          name: nft.name,
+          precision: nft.decimals,
+          description: nft.description,
+          height: nft.issueHeight,
+          timestamp: new Date(parseInt(nft.issueTimestamp)).toJSON(),
+          sender: nft.issuer,
+          quantity: nft.quantity,
+          reissuable: nft.reissuable,
+          hasScript: nft.scripted,
+          displayName: nft.ticker || nft.name,
+          minSponsoredFee: nft.minSponsoredAssetFee,
+          originTransactionId: nft.originTransactionId,
+          issuer: nft.issuer,
+        }));
+      default:
+        throw new Error(await resp.text());
+    }
   }
 }
