@@ -1,5 +1,9 @@
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
+import {
+  ITransaction,
+  WithId,
+} from '@waves/waves-transactions/dist/transactions';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -115,6 +119,13 @@ export const assets = (
 };
 
 export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
+
+export const txHistory = createSimpleReducer<Array<ITransaction & WithId>>(
+  [],
+  ACTION.UPDATE_TX_HISTORY
+);
+
+export const aliases = createSimpleReducer<string[]>([], ACTION.UPDATE_ALIASES);
 
 export const backTabs = (
   state: unknown[] = [],

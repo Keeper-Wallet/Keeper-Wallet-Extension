@@ -9,8 +9,10 @@ import {
   setTab,
   setUiState,
   updateActiveState,
+  updateAliases,
   updateAsset,
   updateNfts,
+  updateTxHistory,
 } from '../actions';
 import background from '../services/Background';
 import { i18n } from '../i18n';
@@ -204,7 +206,7 @@ export const getAsset = store => next => action => {
 
 export const getNfts = store => next => action => {
   if (action.type === ACTION.GET_NFTS) {
-    background.nftInfo().then(
+    background.nftInfo(action.payload).then(
       nfts => {
         store.dispatch(updateNfts(nfts));
       },
@@ -212,6 +214,26 @@ export const getNfts = store => next => action => {
         store.dispatch(updateNfts([]));
       }
     );
+  }
+
+  return next(action);
+};
+
+export const getTxHistory = store => next => action => {
+  if (action.type === ACTION.GET_TX_HISTORY) {
+    background
+      .txHistory(action.payload)
+      .then(messages => store.dispatch(updateTxHistory(messages)));
+  }
+
+  return next(action);
+};
+
+export const getAliases = store => next => action => {
+  if (action.type === ACTION.GET_ALIASES) {
+    background
+      .aliasByAddress(action.payload)
+      .then(aliases => store.dispatch(updateAliases(aliases)));
   }
 
   return next(action);

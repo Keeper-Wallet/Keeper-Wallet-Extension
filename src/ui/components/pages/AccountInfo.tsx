@@ -95,7 +95,7 @@ class AccountInfoComponent extends React.Component {
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
     const { address, network, name, publicKey } = selectedAccount;
-    const { activeAddressLink, walletLink } = getExplorerUrls(network, address);
+    const { walletLink } = getExplorerUrls(network);
 
     return (
       <div className={styles.content}>
@@ -142,15 +142,6 @@ class AccountInfoComponent extends React.Component {
               className="button walletIconBlack button-wallet"
             >
               <Trans i18nKey="ui.wallet">Wallet</Trans>
-            </a>
-
-            <a
-              href={activeAddressLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transactionsIconBlack button button-wallet"
-            >
-              <Trans i18nKey="ui.transactions">Transactions</Trans>
             </a>
 
             <span className={styles.walletBtnSeparator} />

@@ -6,26 +6,22 @@ export function networkByteFromAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
 }
 
-export function getExplorerUrls(network: string, address: string) {
+export function getExplorerUrls(network: string) {
   switch (network) {
     case 'mainnet':
       return {
-        activeAddressLink: `https://wavesexplorer.com/address/${address}`,
         walletLink: 'https://waves.exchange/import/waveskeeper',
       };
     case 'testnet':
       return {
-        activeAddressLink: `https://testnet.wavesexplorer.com/address/${address}`,
         walletLink: 'https://testnet.waves.exchange/import/waveskeeper',
       };
     case 'stagenet':
       return {
-        activeAddressLink: `https://stagenet.wavesexplorer.com/address/${address}`,
         walletLink: 'https://stagenet.waves.exchange/import/waveskeeper',
       };
     default:
       return {
-        activeAddressLink: `https://wavesexplorer.com/address/${address}`,
         walletLink: 'https://waves.exchange/import/waveskeeper',
       };
   }
