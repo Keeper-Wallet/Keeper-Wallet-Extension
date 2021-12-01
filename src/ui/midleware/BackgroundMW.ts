@@ -10,6 +10,7 @@ import {
   setUiState,
   updateActiveState,
   updateAsset,
+  updateNfts,
 } from '../actions';
 import background from '../services/Background';
 import { i18n } from '../i18n';
@@ -79,6 +80,14 @@ export const updateLang = store => next => action => {
   ) {
     i18n.changeLanguage(action.payload);
   }
+  return next(action);
+};
+
+export const updateBalances = store => next => action => {
+  if (action.type === ACTION.GET_BALANCES) {
+    background.updateBalances();
+  }
+
   return next(action);
 };
 
@@ -186,6 +195,21 @@ export const getAsset = store => next => action => {
       },
       () => {
         store.dispatch(updateAsset({ [action.payload]: {} }));
+      }
+    );
+  }
+
+  return next(action);
+};
+
+export const getNfts = store => next => action => {
+  if (action.type === ACTION.GET_NFTS) {
+    background.nftInfo().then(
+      nfts => {
+        store.dispatch(updateNfts(nfts));
+      },
+      () => {
+        store.dispatch(updateNfts([]));
       }
     );
   }

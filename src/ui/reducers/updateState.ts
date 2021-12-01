@@ -1,5 +1,5 @@
-import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { ACTION } from '../actions/constants';
+import { ACTION } from '../actions';
+import { AssetDetail } from '../services/Background';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -44,6 +44,7 @@ export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 interface SelectedAccountState {
   address?: string;
+  networkCode?: string;
 }
 
 export function selectedAccount(
@@ -70,6 +71,13 @@ export const balances = createSimpleReducer<
     {
       available: string;
       leasedOut: string;
+      assets: {
+        [assetId: string]: {
+          balance: string;
+          sponsorBalance: string;
+          minSponsoredAssetFee: string;
+        };
+      };
     }
   >
 >({}, ACTION.UPDATE_BALANCES);
@@ -96,8 +104,8 @@ export const messages = (
 };
 
 export const assets = (
-  state: Record<string, IAssetInfo> = {},
-  action: { type: string; payload: Record<string, IAssetInfo> }
+  state: Record<string, AssetDetail> = {},
+  action: { type: string; payload: Record<string, AssetDetail> }
 ) => {
   if (action.type === ACTION.UPDATE_ASSET) {
     return { ...state, ...action.payload };
@@ -105,6 +113,8 @@ export const assets = (
 
   return state;
 };
+
+export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
 
 export const backTabs = (
   state: unknown[] = [],

@@ -1,0 +1,26 @@
+@import '../../../styles/colors.styl';
+
+.nftCard
+  width: 100%;
+  background: $white;
+  display: flex;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  border-radius: 4px;
+  padding: 14px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  cursor: pointer;
+  height: 64px;
+
+.nftData
+  flex-grow: 1;
+  text-align: left;
+
+.nftName
+  height: 24px;
+  line-height: 24px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
