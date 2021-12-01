@@ -3,12 +3,12 @@ import * as styles from './historyItem.module.css';
 import { Balance, Ellipsis, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
-import { SIGN_TYPE } from '@waves/signature-adapter';
 import { useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { getTxLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
@@ -35,7 +35,19 @@ export function HistoryItem({ tx, className, onClick }: Props) {
   let asset = assets[assetId];
 
   switch (tx.type) {
-    case SIGN_TYPE.ISSUE:
+    case TRANSACTION_TYPE.GENESIS:
+      tooltip = label = t('historyCard.genesis');
+      info = (
+        <Balance
+          split
+          showAsset
+          assetId={assetId}
+          balance={asset && new Money(tx.amount, new Asset(asset))}
+        />
+      );
+      messageType = 'receive';
+      break;
+    case TRANSACTION_TYPE.ISSUE:
       const decimals = tx.precision || tx.decimals || 0;
       const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
       tooltip = t('historyCard.issue');
@@ -58,21 +70,31 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       messageType = 'issue';
 
       break;
-    case SIGN_TYPE.TRANSFER:
-      tooltip = t('historyCard.transfer');
+    case TRANSACTION_TYPE.PAYMENT:
+    case TRANSACTION_TYPE.TRANSFER:
+      tooltip =
+        tx.type === TRANSACTION_TYPE.TRANSFER
+          ? t('historyCard.transfer')
+          : t('historyCard.payment');
       label = <Address base58={tx.recipient} />;
       addSign = '-';
       messageType = 'transfer';
 
       if (tx.recipient === address) {
-        tooltip = t('historyCard.receive');
+        tooltip =
+          tx.type === TRANSACTION_TYPE.TRANSFER
+            ? t('historyCard.transferReceive')
+            : t('historyCard.paymentReceive');
         label = <Address base58={tx.sender} />;
         addSign = '+';
         messageType = 'receive';
       }
 
       if (tx.sender === tx.recipient) {
-        tooltip = t('historyCard.selfTransfer');
+        tooltip =
+          tx.type === TRANSACTION_TYPE.TRANSFER
+            ? t('historyCard.transferSelf')
+            : t('historyCard.paymentSelf');
         label = <Address base58={tx.sender} />;
         addSign = '';
         messageType = 'self-transfer';
@@ -88,7 +110,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         />
       );
       break;
-    case SIGN_TYPE.REISSUE:
+    case TRANSACTION_TYPE.REISSUE:
       tooltip = label = t('historyCard.reissue');
       info = (
         <Balance
@@ -101,7 +123,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       );
       messageType = 'reissue';
       break;
-    case SIGN_TYPE.BURN:
+    case TRANSACTION_TYPE.BURN:
       tooltip = label = t('historyCard.burn');
       info = (
         <Balance
@@ -114,7 +136,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       );
       messageType = 'burn';
       break;
-    case SIGN_TYPE.EXCHANGE:
+    case TRANSACTION_TYPE.EXCHANGE:
       assetId = tx.order1.assetPair.amountAsset || 'WAVES';
       asset = assets[assetId];
       const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
@@ -165,7 +187,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       );
       messageType = 'create-order';
       break;
-    case SIGN_TYPE.LEASE:
+    case TRANSACTION_TYPE.LEASE:
       tooltip = t('historyCard.lease');
       label = <Address base58={tx.recipient} />;
       addSign = '-';
@@ -187,7 +209,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       );
       messageType = 'lease';
       break;
-    case SIGN_TYPE.CANCEL_LEASING:
+    case TRANSACTION_TYPE.CANCEL_LEASE:
       tooltip = t('historyCard.leaseCancel');
       label = <Address base58={tx.lease.recipient} />;
       addSign = '+';
@@ -208,12 +230,12 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       );
       messageType = 'cancel-leasing';
       break;
-    case SIGN_TYPE.CREATE_ALIAS:
+    case TRANSACTION_TYPE.ALIAS:
       tooltip = label = t('historyCard.createAlias');
       info = tx.alias;
       messageType = 'create-alias';
       break;
-    case SIGN_TYPE.MASS_TRANSFER:
+    case TRANSACTION_TYPE.MASS_TRANSFER:
       tooltip = t('historyCard.massTransferReceive');
       label = <Address base58={tx.sender} />;
 
@@ -257,12 +279,12 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         />
       );
       break;
-    case SIGN_TYPE.DATA:
+    case TRANSACTION_TYPE.DATA:
       tooltip = t('historyCard.dataTransaction');
       label = t('historyCard.dataTransactionEntry', { count: tx.data.length });
       messageType = 'data';
       break;
-    case SIGN_TYPE.SET_SCRIPT:
+    case TRANSACTION_TYPE.SET_SCRIPT:
       tooltip = label = t('historyCard.setScript');
       messageType = 'set-script';
 
@@ -272,7 +294,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       }
 
       break;
-    case SIGN_TYPE.SPONSORSHIP:
+    case TRANSACTION_TYPE.SPONSORSHIP:
       tooltip = label = t('historyCard.sponsorshipEnable');
       messageType = 'sponsor_enable';
       info = (
@@ -292,18 +314,18 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         messageType = 'sponsor_disable';
       }
       break;
-    case SIGN_TYPE.SET_ASSET_SCRIPT:
+    case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
       tooltip = label = t('historyCard.setAssetScript');
       info = asset.displayName;
       messageType = 'set-asset-script';
       break;
-    case SIGN_TYPE.SCRIPT_INVOCATION:
+    case TRANSACTION_TYPE.INVOKE_SCRIPT:
       tooltip = t('historyCard.scriptInvocation');
       label = <Address base58={tx.dApp} />;
       info = tx.call?.function || 'default';
       messageType = 'script_invocation';
       break;
-    case SIGN_TYPE.UPDATE_ASSET_INFO:
+    case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
       tooltip = label = t('history.updateAssetInfo');
       info = asset.displayName;
       messageType = 'issue';
