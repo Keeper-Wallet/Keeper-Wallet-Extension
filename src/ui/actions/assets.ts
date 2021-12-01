@@ -10,5 +10,9 @@ export const getAsset = (
   payload,
   meta: { compareFields },
 });
+export const getNfts = () => ({
+  type: ACTION.GET_NFTS,
+});
+export const updateNfts = createAction(ACTION.UPDATE_NFTS);
 export const updateAsset = createAction(ACTION.UPDATE_ASSET);
 export const setActiveAccount = createAction(ACTION.SET_ACTIVE_ACCOUNT);

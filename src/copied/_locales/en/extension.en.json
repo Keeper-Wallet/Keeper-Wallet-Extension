@@ -18,6 +18,22 @@
     "seed": "Backup phrase",
     "copyToClipboard": "Click to copy to clipboard"
   },
+  "assetInfo": {
+    "id": "ID",
+    "displayName": "Name",
+    "ticker": "Ticker",
+    "precision": "Decimals points",
+    "quantity": "Total issued",
+    "type": "Type",
+    "reissuable": "Reissuable",
+    "notReissuable": "Not reissuable",
+    "scripted": "Scripted",
+    "notScripted": "Not scripted",
+    "minSponsoredFee": "Sponsored Asset Fee",
+    "sender": "Issuer",
+    "timestamp": "Issue date",
+    "closeBtn": "Close"
+  },
   "assets": {
     "account": "Account",
     "accountCreationSuccessNotification": "Account created",
@@ -29,7 +45,12 @@
     "deleteAccount": "Delete account",
     "inStorage": "Other accounts",
     "lastUpdate": "Last update:",
-    "selectAccountNotification": "Active account changed"
+    "selectAccountNotification": "Active account changed",
+    "assets": "Assets",
+    "nfts": "NFTs",
+    "emptyAssets": "You don't have any asset yet",
+    "emptyNFTs": "You don't have any NFT yet",
+    "issuedBy": "Issued by {{ issuer }}"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

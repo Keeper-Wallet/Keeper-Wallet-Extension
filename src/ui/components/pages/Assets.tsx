@@ -1,14 +1,26 @@
 import * as styles from './styles/assets.styl';
+import cn from 'classnames';
 import * as React from 'react';
+import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans } from 'react-i18next';
-import { getAsset, setActiveAccount, setUiState } from '../../actions';
+import {
+  getAsset,
+  getBalances,
+  getNfts,
+  setActiveAccount,
+  setUiState,
+} from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
-import { Modal } from '../ui';
+import { Modal, Tab, TabList, TabPanel, TabPanels, Tabs } from '../ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { BigNumber } from '@waves/bignumber';
+import { AssetItem } from './assets/assetItem';
+import { NftItem } from './assets/nftItem';
+import { AssetInfo } from './assets/assetInfo';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -25,10 +37,13 @@ export function Assets({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
+  const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
   );
+  const [asset, setAsset] = useState(null);
+  const [showAsset, setShowAsset] = useState(false);
 
   const [showCopy, setShowCopy] = React.useState(false);
 
@@ -36,7 +51,12 @@ export function Assets({ setTab }: Props) {
     if (!assets['WAVES']) {
       dispatch(getAsset('WAVES'));
     }
-  }, [assets, dispatch, getAsset]);
+  }, [assets, dispatch]);
+
+  React.useEffect(() => {
+    dispatch(getNfts());
+    dispatch(getBalances());
+  }, []);
 
   if (!activeAccount) {
     return <Intro />;
@@ -55,11 +75,15 @@ export function Assets({ setTab }: Props) {
     const asset = new Asset(assetInfo);
 
     Object.entries<{ available: string }>(balances).forEach(
-      ([key, { available }]) => {
-        balancesMoney[key] = new Money(available, asset);
+      ([address, { available }]) => {
+        balancesMoney[address] = new Money(available, asset);
       }
     );
   }
+
+  const assetEntries = Object.entries<{ balance: string }>(
+    balances[activeAccount.address]?.assets || {}
+  );
 
   return (
     <div className={styles.assets}>
@@ -80,6 +104,80 @@ export function Assets({ setTab }: Props) {
           }}
         />
       </div>
+
+      <Tabs>
+        <TabList className={cn(styles.tabs, 'body3')}>
+          <Tab>
+            <Trans i18nKey="assets.assets" />
+          </Tab>
+          <Tab>
+            <Trans i18nKey="assets.nfts" />
+          </Tab>
+        </TabList>
+        <TabPanels className={styles.tabPanels}>
+          <TabPanel>
+            {assetEntries.length === 0 ? (
+              <div className="basic500 center margin-min-top">
+                <Trans i18nKey="assets.emptyAssets" />
+              </div>
+            ) : (
+              assetEntries.map(([assetId, { balance }]) => (
+                <AssetItem
+                  key={assetId}
+                  balance={
+                    assets &&
+                    assets[assetId] &&
+                    new Money(
+                      new BigNumber(balance),
+                      new Asset(assets[assetId])
+                    )
+                  }
+                  assetId={assetId}
+                  onClick={assetId => {
+                    setAsset(assets[assetId]);
+                    setShowAsset(true);
+                  }}
+                />
+              ))
+            )}
+          </TabPanel>
+          <TabPanel>
+            {nfts.length === 0 ? (
+              <div className="basic500 center margin-min-top">
+                <Trans i18nKey="assets.emptyNFTs" />
+              </div>
+            ) : (
+              Object.entries<Asset[]>(
+                nfts.reduce(
+                  (result, item) => ({
+                    ...result,
+                    [item.issuer]: [...(result[item.issuer] || []), item],
+                  }),
+                  {}
+                )
+              ).map(([issuer, issuerNfts], index) => (
+                <div
+                  className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+                >
+                  <div className="basic500 margin-min">
+                    <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
+                  </div>
+                  {issuerNfts.map(nft => (
+                    <NftItem
+                      key={nft.id}
+                      asset={nft}
+                      onClick={assetId => {
+                        setAsset(nfts.find(nft => nft.id === assetId));
+                        setShowAsset(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              ))
+            )}
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
 
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
         <div className="modal notification">
@@ -129,6 +227,21 @@ export function Assets({ setTab }: Props) {
             <Trans i18nKey="assets.deleteAccount" />
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        animation={Modal.ANIMATION.FLASH}
+        showModal={showAsset}
+        onExited={() => setAsset(null)}
+      >
+        <AssetInfo
+          asset={asset}
+          onCopy={() => {
+            setShowCopy(true);
+            setTimeout(() => setShowCopy(false), 1000);
+          }}
+          onClose={() => setShowAsset(false)}
+        />
       </Modal>
 
       <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
