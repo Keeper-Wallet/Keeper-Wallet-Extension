@@ -571,12 +571,7 @@
     "wavesAuthTimeStamp": "Time Stamp"
   },
   "ui": {
-    "accountName": "Account name",
-    "activeAccount": "Active account",
-    "logo-title": "Keep your Waves keys safe online",
-    "logoTitle": "Keep your Waves keys safe online",
-    "showQR": "Show QR",
-    "wallet": "Wallet"
+    "logoTitle": "Keep your Waves keys safe online"
   },
   "ur": {
     "activeNow": "Active",

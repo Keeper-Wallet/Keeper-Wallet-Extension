@@ -17,7 +17,6 @@ import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { seedUtils } from '@waves/waves-transactions';
-import { getExplorerUrls } from 'ui/utils/waves';
 
 const { Seed } = seedUtils;
 
@@ -73,8 +72,6 @@ class AccountInfoComponent extends React.Component {
 
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
-  showQrHandler = () => this.props.setTab(PAGES.QR_CODE_SELECTED);
-
   onCopyHandler = () => this.setCopiedModal();
 
   getInputPassRef = el => {
@@ -94,13 +91,12 @@ class AccountInfoComponent extends React.Component {
     const { leaseBalance } = this.state;
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
-    const { address, network, name, publicKey } = selectedAccount;
-    const { walletLink } = getExplorerUrls(network);
+    const { address, name, publicKey } = selectedAccount;
 
     return (
       <div className={styles.content}>
-        <div className="relative">
-          <div className={`flex margin-main-big ${styles.wallet}`}>
+        <div className={styles.header}>
+          <div className={`flex ${styles.wallet}`}>
             <Avatar className={styles.avatar} address={address} size={48} />
             <div className={styles.accountData}>
               <div>
@@ -130,30 +126,6 @@ class AccountInfoComponent extends React.Component {
                     </span>
                   </div>
                 ) : null}
-              </div>
-            </div>
-          </div>
-
-          <div className={`margin-main-big ${styles.buttonsWrapper}`}>
-            <a
-              href={walletLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button walletIconBlack button-wallet"
-            >
-              <Trans i18nKey="ui.wallet">Wallet</Trans>
-            </a>
-
-            <span className={styles.walletBtnSeparator} />
-
-            <div className="relative">
-              <Button
-                type={BUTTON_TYPE.CUSTOM}
-                className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
-                onClick={this.showQrHandler}
-              />
-              <div className={`${styles.wallerShowQrTooltip} tooltip`}>
-                <Trans i18nKey="showQR">Show QR</Trans>
               </div>
             </div>
           </div>

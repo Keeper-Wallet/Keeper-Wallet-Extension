@@ -86,50 +86,6 @@ describe('Account management', function () {
     });
   });
 
-  describe('Opening a new Wallet tab by clicking the "Wallet" button', function () {
-    it('Mainnet', async function () {
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
-          this.wait
-        )
-        .click();
-
-      const currentTab = await this.driver.getWindowHandle();
-      await this.driver
-        .wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(By.css('a.walletIconBlack')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-        .click();
-
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
-      const tabs = await this.driver.getAllWindowHandles();
-      expect(tabs).length(2);
-
-      for (const tab of tabs) {
-        if (tab !== currentTab) {
-          await this.driver.switchTo().window(tab);
-          await this.driver.close();
-        }
-      }
-      await this.driver.switchTo().window(currentTab);
-      await this.driver.sleep(DEFAULT_SWITCH_TABS_DELAY);
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-    });
-
-    it('Testnet');
-
-    it('Stagenet');
-
-    it('Custom');
-  });
-
   function accountPropertiesShouldBeRight(this: mocha.Context) {
     it('Go to the address QR code screen', async function () {
       await this.driver.findElement(By.css('button.showQrIcon')).click();
