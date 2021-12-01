@@ -34,6 +34,7 @@ export class AssetInfoController {
     };
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
+    this.getSelectedAccount = options.getSelectedAccount;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
