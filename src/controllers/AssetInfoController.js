@@ -34,7 +34,6 @@ export class AssetInfoController {
     };
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
-    this.getSelectedAccount = options.getSelectedAccount;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
@@ -104,8 +103,7 @@ export class AssetInfoController {
     return assets[network][assetId];
   }
 
-  async nftInfo(limit = 1000) {
-    const address = this.getSelectedAccount().address;
+  async nftInfo(address, limit = 1000) {
     let resp = await fetch(
       new URL(`assets/nft/${address}/limit/${limit}`, this.getNode()).toString()
     );

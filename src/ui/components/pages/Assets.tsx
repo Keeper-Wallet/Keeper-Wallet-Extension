@@ -3,11 +3,13 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
+  getAliases,
   getAsset,
   getBalances,
   getNfts,
+  getTxHistory,
   setActiveAccount,
   setUiState,
 } from '../../actions';
@@ -21,6 +23,26 @@ import { BigNumber } from '@waves/bignumber';
 import { AssetItem } from './assets/assetItem';
 import { NftItem } from './assets/nftItem';
 import { AssetInfo } from './assets/assetInfo';
+import { HistoryItem } from './assets/historyItem';
+import {
+  ITransaction,
+  WithId,
+} from '@waves/waves-transactions/dist/transactions';
+
+const MONTH = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -28,6 +50,7 @@ interface Props {
 
 export function Assets({ setTab }: Props) {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
@@ -37,6 +60,7 @@ export function Assets({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
+  const txHistory = useAppSelector(state => state.txHistory);
   const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
@@ -53,19 +77,25 @@ export function Assets({ setTab }: Props) {
     }
   }, [assets, dispatch]);
 
+  const address = activeAccount && activeAccount.address;
+
   React.useEffect(() => {
-    dispatch(getNfts());
+    if (address) {
+      dispatch(getNfts(address));
+      dispatch(getTxHistory(address));
+      dispatch(getAliases(address));
+    }
     dispatch(getBalances());
   }, []);
-
-  if (!activeAccount) {
-    return <Intro />;
-  }
 
   const onSelectHandler = account => {
     dispatch(setActiveAccount(account));
     setTab(PAGES.ACCOUNT_INFO);
   };
+
+  if (!activeAccount) {
+    return <Intro />;
+  }
 
   const balancesMoney: Record<string, Money> = {};
 
@@ -82,7 +112,22 @@ export function Assets({ setTab }: Props) {
   }
 
   const assetEntries = Object.entries<{ balance: string }>(
-    balances[activeAccount.address]?.assets || {}
+    balances[address]?.assets || {}
+  );
+
+  const thisYear = new Date().getFullYear();
+  const historyEntries = Object.entries<Array<ITransaction & WithId>>(
+    txHistory.reduce((result, tx) => {
+      const d = new Date(tx.timestamp);
+      const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
+      const date = `${(year !== thisYear && year) || ''} ${t(
+        `date.${MONTH[month]}`
+      )} ${day}`;
+      return {
+        ...result,
+        [date]: [...(result[date] || []), tx],
+      };
+    }, {})
   );
 
   return (
@@ -90,7 +135,7 @@ export function Assets({ setTab }: Props) {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          balance={balancesMoney[activeAccount.address]}
+          balance={balancesMoney[address]}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);
@@ -112,6 +157,9 @@ export function Assets({ setTab }: Props) {
           </Tab>
           <Tab>
             <Trans i18nKey="assets.nfts" />
+          </Tab>
+          <Tab>
+            <Trans i18nKey="assets.history" />
           </Tab>
         </TabList>
         <TabPanels className={styles.tabPanels}>
@@ -157,6 +205,7 @@ export function Assets({ setTab }: Props) {
                 )
               ).map(([issuer, issuerNfts], index) => (
                 <div
+                  key={issuer}
                   className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
                 >
                   <div className="basic500 margin-min">
@@ -171,6 +220,25 @@ export function Assets({ setTab }: Props) {
                         setShowAsset(true);
                       }}
                     />
+                  ))}
+                </div>
+              ))
+            )}
+          </TabPanel>
+          <TabPanel>
+            {!historyEntries.length ? (
+              <div className="basic500 center margin-min-top">
+                <Trans i18nKey="assets.emptyHistory" />
+              </div>
+            ) : (
+              historyEntries.map(([date, txArr], index) => (
+                <div
+                  key={date}
+                  className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+                >
+                  <div className="basic500 margin-min">{date}</div>
+                  {txArr.map(tx => (
+                    <HistoryItem key={tx.id} tx={tx} />
                   ))}
                 </div>
               ))
