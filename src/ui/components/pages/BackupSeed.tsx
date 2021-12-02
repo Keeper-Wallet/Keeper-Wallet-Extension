@@ -44,7 +44,7 @@ class BackUpSeedComponent extends React.Component {
 
         <Button
           id="continue"
-          className="submit margin-main-big"
+          className="margin-main-big"
           type="submit"
           onClick={this.onClick}
           disabled={this.state.disabled}
@@ -52,11 +52,7 @@ class BackUpSeedComponent extends React.Component {
           <Trans i18nKey="backupSeed.continue">Continue</Trans>
         </Button>
 
-        <Button
-          id="cancelCreation"
-          className="button default"
-          onClick={this.cancelHandler}
-        >
+        <Button id="cancelCreation" onClick={this.cancelHandler}>
           <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
         </Button>
 
