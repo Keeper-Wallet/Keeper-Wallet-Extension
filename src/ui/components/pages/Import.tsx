@@ -6,7 +6,7 @@ import { Button, Modal } from '../ui';
 import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { connect } from 'react-redux';
-import { setTab, setUiState } from '../../actions';
+import { setUiState } from '../../actions';
 import { AnyAction } from 'redux';
 import { PAGES } from '../../pageConfig';
 
@@ -19,10 +19,10 @@ interface Props {
 export const Import = connect((state: any) => ({
   showUpdateInfo:
     !state.uiState.isFeatureUpdateShown && !!state.allNetworksAccounts.length,
-}))(function Import({ showUpdateInfo, dispatch }: Props) {
+}))(function Import({ showUpdateInfo, setTab, dispatch }: Props) {
   const dismissFeatureInfo = () =>
     dispatch(setUiState({ isFeatureUpdateShown: true }));
-  const exportToKeystore = () => dispatch(setTab(PAGES.EXPORT_ACCOUNTS));
+  const exportToKeystore = () => setTab(PAGES.EXPORT_ACCOUNTS);
 
   return (
     <div className={styles.root}>
@@ -37,7 +37,7 @@ export const Import = connect((state: any) => ({
       <Button
         id="createNewAccount"
         type="submit"
-        onClick={() => dispatch(setTab('new_account'))}
+        onClick={() => setTab('new_account')}
       >
         <Trans i18nKey="import.createNew" />
       </Button>
@@ -52,7 +52,7 @@ export const Import = connect((state: any) => ({
             className="fullwidth"
             data-testid="importSeed"
             type="transparent"
-            onClick={() => dispatch(setTab('import_seed'))}
+            onClick={() => setTab('import_seed')}
           >
             <div className="body1">
               <Trans i18nKey="import.viaSeed" />
@@ -65,7 +65,7 @@ export const Import = connect((state: any) => ({
             className="fullwidth"
             data-testid="importKeystore"
             type="transparent"
-            onClick={() => dispatch(setTab('import_keystore'))}
+            onClick={() => setTab('import_keystore')}
           >
             <div className="body1">
               <Trans i18nKey="import.viaKeystore" />
