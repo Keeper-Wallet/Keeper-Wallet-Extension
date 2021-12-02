@@ -17,6 +17,7 @@ import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import {
   Button,
+  BUTTON_TYPE,
   Input,
   Modal,
   Tab,
@@ -53,10 +54,44 @@ const MONTH = [
   'Dec',
 ];
 
-function SearchInput({ value, onInput }) {
+const colorBasic500 = '#9BA6B2';
+const colorSubmit = '#1F5AF6';
+
+function SearchInput({ value, onInput, onClear }) {
   return (
-    <div className="flex grow">
-      <Input className={styles.searchInput} onInput={onInput} value={value} />
+    <div className={cn('flex grow', styles.searchInputWrapper)}>
+      <Input
+        className={styles.searchInput}
+        onInput={onInput}
+        value={value}
+        spellCheck={false}
+      />
+      {value && (
+        <Button
+          className={styles.searchClose}
+          type={BUTTON_TYPE.CUSTOM}
+          onClick={onClear}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              width="18"
+              height="18"
+              fill="currentColor"
+              fillOpacity="0.01"
+            />
+            <path
+              d="M10.1523 9L14.7614 4.39091C15.0795 4.07272 15.0795 3.55683 14.7614 3.23864C14.4432 2.92045 13.9273 2.92045 13.6091 3.23864L9 7.84773L4.39091 3.23864C4.07272 2.92045 3.55683 2.92045 3.23864 3.23864C2.92045 3.55683 2.92045 4.07272 3.23864 4.39091L7.84773 9L3.23864 13.6091C2.92045 13.9273 2.92045 14.4432 3.23864 14.7614C3.55683 15.0795 4.07272 15.0795 4.39091 14.7614L9 10.1523L13.6091 14.7614C13.9273 15.0795 14.4432 15.0795 14.7614 14.7614C15.0795 14.4432 15.0795 13.9273 14.7614 13.6091L10.1523 9Z"
+              fill="currentColor"
+            />
+          </svg>
+        </Button>
+      )}
     </div>
   );
 }
@@ -66,9 +101,6 @@ interface Props {
 }
 
 export function Assets({ setTab }: Props) {
-  const colorBasic500 = '#9BA6B2';
-  const colorSubmit = '#1F5AF6';
-
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -89,9 +121,9 @@ export function Assets({ setTab }: Props) {
   const [asset, setAsset] = useState(null);
   const [showAsset, setShowAsset] = useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
-  const [assetTerm, setAssetTerm] = useState(null);
-  const [nftTerm, setNftTerm] = useState(null);
-  const [txHistoryTerm, setTxHistoryTerm] = useState(null);
+  const [assetTerm, setAssetTerm] = useState('');
+  const [nftTerm, setNftTerm] = useState('');
+  const [txHistoryTerm, setTxHistoryTerm] = useState('');
   const [onlyMyAssets, setOnlyMyAssets] = useState(false);
   const [onlyMyNfts, setOnlyMyNfts] = useState(false);
   const [showTxHistoryFilters, setShowTxHistoryFilters] = useState(false);
@@ -195,7 +227,8 @@ export function Assets({ setTab }: Props) {
             <div className="flex margin1">
               <SearchInput
                 value={assetTerm}
-                onInput={e => setAssetTerm(e.value.text)}
+                onInput={e => setAssetTerm(e.target.value)}
+                onClear={() => setAssetTerm('')}
               />
               <div
                 className={cn('showTooltip', styles.filterBtn)}
@@ -254,7 +287,8 @@ export function Assets({ setTab }: Props) {
             <div className="flex grow margin1">
               <SearchInput
                 value={nftTerm}
-                onInput={e => setNftTerm(e.value.text)}
+                onInput={e => setNftTerm(e.target.value)}
+                onClear={() => setNftTerm('')}
               />
               <div
                 className={cn('showTooltip', styles.filterBtn)}
@@ -322,7 +356,8 @@ export function Assets({ setTab }: Props) {
             <div className="flex grow margin1">
               <SearchInput
                 value={txHistoryTerm}
-                onInput={e => setTxHistoryTerm(e.value.text)}
+                onInput={e => setTxHistoryTerm(e.target.value)}
+                onClear={() => setTxHistoryTerm('')}
               />
               <div
                 className={cn('showTooltip', styles.filterBtn)}
