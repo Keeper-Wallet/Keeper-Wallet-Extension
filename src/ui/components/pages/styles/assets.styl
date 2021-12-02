@@ -89,3 +89,38 @@
     justify-content: center;
     padding: 0 5px;
     font-size: 10px;
+
+.searchInput
+  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll 7px;
+  height: 32px;
+  padding-left: 30px;
+  border: none;
+  border-radius: unset;
+  border-bottom: solid 1px #9BA6B2;
+
+  &:hover
+    border: none;
+    border-bottom: solid 1px #9BA6B2;
+
+  &:focus
+    outline: none;
+    border: none;
+    border-bottom: 1px solid $submit400;
+
+.filterBtn
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 26px;
+  height: 26px;
+  margin: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+
+  &:hover
+    background-color: #edf0f4
+
+.filterTooltip
+  top: 152px;
+  right: 22px;
+  white-space: nowrap;

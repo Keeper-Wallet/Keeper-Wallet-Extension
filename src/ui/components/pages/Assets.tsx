@@ -15,7 +15,16 @@ import {
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
-import { Modal, Tab, TabList, TabPanel, TabPanels, Tabs } from '../ui';
+import {
+  Button,
+  Input,
+  Modal,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from '../ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -44,11 +53,22 @@ const MONTH = [
   'Dec',
 ];
 
+function SearchInput({ value, onInput }) {
+  return (
+    <div className="flex grow">
+      <Input className={styles.searchInput} onInput={onInput} value={value} />
+    </div>
+  );
+}
+
 interface Props {
   setTab: (newTab: string) => void;
 }
 
 export function Assets({ setTab }: Props) {
+  const colorBasic500 = '#9BA6B2';
+  const colorSubmit = '#1F5AF6';
+
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -57,7 +77,6 @@ export function Assets({ setTab }: Props) {
       ({ address }) => address === state.selectedAccount.address
     )
   );
-
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
   const txHistory = useAppSelector(state => state.txHistory);
@@ -66,10 +85,16 @@ export function Assets({ setTab }: Props) {
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
   );
+
   const [asset, setAsset] = useState(null);
   const [showAsset, setShowAsset] = useState(false);
-
   const [showCopy, setShowCopy] = React.useState(false);
+  const [assetTerm, setAssetTerm] = useState(null);
+  const [nftTerm, setNftTerm] = useState(null);
+  const [txHistoryTerm, setTxHistoryTerm] = useState(null);
+  const [onlyMyAssets, setOnlyMyAssets] = useState(false);
+  const [onlyMyNfts, setOnlyMyNfts] = useState(false);
+  const [showTxHistoryFilters, setShowTxHistoryFilters] = useState(false);
 
   React.useEffect(() => {
     if (!assets['WAVES']) {
@@ -167,6 +192,39 @@ export function Assets({ setTab }: Props) {
         </TabList>
         <TabPanels className={styles.tabPanels}>
           <TabPanel>
+            <div className="flex margin1">
+              <SearchInput
+                value={assetTerm}
+                onInput={e => setAssetTerm(e.value.text)}
+              />
+              <div
+                className={cn('showTooltip', styles.filterBtn)}
+                onClick={() => setOnlyMyAssets(!onlyMyAssets)}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill={onlyMyAssets ? colorSubmit : colorBasic500}
+                    fillOpacity=".01"
+                    d="M0 0h14v14H0z"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
+                    fill={onlyMyAssets ? colorSubmit : colorBasic500}
+                  />
+                </svg>
+              </div>
+              <div className={cn(styles.filterTooltip, 'tooltip')}>
+                <Trans i18nKey="Only my assets" />
+              </div>
+            </div>
+
             {assetEntries.length === 0 ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyAssets" />
@@ -193,6 +251,38 @@ export function Assets({ setTab }: Props) {
             )}
           </TabPanel>
           <TabPanel>
+            <div className="flex grow margin1">
+              <SearchInput
+                value={nftTerm}
+                onInput={e => setNftTerm(e.value.text)}
+              />
+              <div
+                className={cn('showTooltip', styles.filterBtn)}
+                onClick={() => setOnlyMyNfts(!onlyMyNfts)}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill={onlyMyNfts ? colorSubmit : colorBasic500}
+                    fillOpacity=".01"
+                    d="M0 0h14v14H0z"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
+                    fill={onlyMyNfts ? colorSubmit : colorBasic500}
+                  />
+                </svg>
+              </div>
+              <div className={cn(styles.filterTooltip, 'tooltip')}>
+                <Trans i18nKey="Only my NFTs" />
+              </div>
+            </div>
             {nfts.length === 0 ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyNFTs" />
@@ -229,6 +319,31 @@ export function Assets({ setTab }: Props) {
             )}
           </TabPanel>
           <TabPanel>
+            <div className="flex grow margin1">
+              <SearchInput
+                value={txHistoryTerm}
+                onInput={e => setTxHistoryTerm(e.value.text)}
+              />
+              <div
+                className={cn('showTooltip', styles.filterBtn)}
+                onClick={() => setShowTxHistoryFilters(!showTxHistoryFilters)}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0.186163 1.40875C1.9633 3.675 5.24485 7.875 5.24485 7.875V13.125C5.24485 13.6063 5.64075 14 6.12463 14H7.88417C8.36805 14 8.76394 13.6063 8.76394 13.125V7.875C8.76394 7.875 12.0367 3.675 13.8138 1.40875C14.2625 0.83125 13.849 0 13.1188 0H0.881183C0.150972 0 -0.262521 0.83125 0.186163 1.40875Z"
+                    fill={showTxHistoryFilters ? colorSubmit : colorBasic500}
+                  />
+                </svg>
+              </div>
+              <div className={cn(styles.filterTooltip, 'tooltip')}>
+                <Trans i18nKey="Apply filters" />
+              </div>
+            </div>
             {!historyEntries.length ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyHistory" />
@@ -325,6 +440,22 @@ export function Assets({ setTab }: Props) {
             setTab(PAGES.EXPORT_ACCOUNTS);
           }}
         />
+      </Modal>
+
+      <Modal animation={Modal.ANIMATION.FLASH} showModal={showTxHistoryFilters}>
+        <div className="modal cover">
+          <form
+            className="modal-form"
+            onSubmit={e => {
+              e.preventDefault();
+              setShowTxHistoryFilters(false);
+            }}
+          >
+            <Button type="submit">
+              <Trans i18nKey="Apply" />
+            </Button>
+          </form>
+        </div>
       </Modal>
     </div>
   );
