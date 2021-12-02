@@ -87,20 +87,6 @@ describe('Account management', function () {
   });
 
   function accountPropertiesShouldBeRight(this: mocha.Context) {
-    it('Go to the address QR code screen', async function () {
-      await this.driver.findElement(By.css('button.showQrIcon')).click();
-
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, '-selectedAccountQr')]")
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
-      await this.driver.findElement(By.css('div.arrow-back-icon')).click();
-    });
-
     describe('Address', function () {
       it('Is displayed', async function () {
         expect(
