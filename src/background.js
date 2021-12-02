@@ -581,8 +581,8 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getInpageApi(origin) {
-    const newMessage = async (data, type, options, broadcast, title = '') => {
+  getNewMessageFn(origin) {
+    return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
         data = data.data;
@@ -613,6 +613,10 @@ class BackgroundService extends EventEmitter {
 
       return await this.messageController.getMessageResult(result.id);
     };
+  }
+
+  getInpageApi(origin) {
+    const newMessage = this.getNewMessageFn(origin);
 
     const newNotification = data => {
       const { selectedAccount } = this.getState();
