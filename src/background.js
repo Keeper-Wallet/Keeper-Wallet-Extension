@@ -363,6 +363,8 @@ class BackgroundService extends EventEmitter {
   }
 
   getApi() {
+    const newMessage = this.getNewMessageFn();
+
     // RPC API object. Only async functions allowed
     return {
       // state
@@ -505,13 +507,8 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.balanceController.updateBalances.bind(
         this.balanceController
       ),
-      broadcastTransaction: data =>
-        this.messageController.newMessage({
-          data,
-          type: 'transaction',
-          broadcast: true,
-          account: this.getState().selectedAccount,
-        }),
+      signAndPublishTransaction: data =>
+        newMessage(data, 'transaction', undefined, true),
     };
   }
 
@@ -589,7 +586,9 @@ class BackgroundService extends EventEmitter {
         data.isRequest = true;
       }
 
-      await this.validatePermission(origin);
+      if (origin) {
+        await this.validatePermission(origin);
+      }
 
       const { noSign, ...result } = await this.messageController.newMessage({
         data,
@@ -605,10 +604,12 @@ class BackgroundService extends EventEmitter {
         return result;
       }
 
-      if (this.permissionsController.canApprove(origin, data)) {
-        this.messageController.approve(result.id);
-      } else {
-        this.emit('Show notification');
+      if (origin) {
+        if (this.permissionsController.canApprove(origin, data)) {
+          this.messageController.approve(result.id);
+        } else {
+          this.emit('Show notification');
+        }
       }
 
       return await this.messageController.getMessageResult(result.id);

@@ -241,9 +241,9 @@ class Background {
     return this.background.updateBalances();
   }
 
-  async broadcastTransaction(data: Transaction) {
+  async signAndPublishTransaction(data: Transaction) {
     await this.initPromise;
-    return this.background.broadcastTransaction(data);
+    return this.background.signAndPublishTransaction(data);
   }
 
   async _updateIdle() {

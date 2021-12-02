@@ -293,9 +293,9 @@ export const lock = store => next => action => {
   return next(action);
 };
 
-export const broadcastTransaction = () => next => action => {
-  if (action.type === ACTION.BROADCAST_TRANSACTION) {
-    background.broadcastTransaction(action.payload);
+export const signAndPublishTransaction = () => next => action => {
+  if (action.type === ACTION.SIGN_AND_PUBLISH_TRANSACTION) {
+    background.signAndPublishTransaction(action.payload);
   }
 
   return next(action);

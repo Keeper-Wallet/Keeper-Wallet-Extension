@@ -1,9 +1,9 @@
 import { Transaction } from 'ui/services/Background';
 import { ACTION } from './constants';
 
-export function broadcastTransaction(transaction: Transaction) {
+export function signAndPublishTransaction(transaction: Transaction) {
   return {
-    type: ACTION.BROADCAST_TRANSACTION,
+    type: ACTION.SIGN_AND_PUBLISH_TRANSACTION,
     payload: transaction,
   };
 }
