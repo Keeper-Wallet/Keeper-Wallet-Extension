@@ -3,9 +3,10 @@ import { Button } from '../ui';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './featureUpdateInfo.styl';
+import background from '../../../ui/services/Background';
 
 export function FeatureUpdateInfo({ onClose, onSubmit }) {
-  function preventDefault(func) {
+  function preventDefault(func: () => void) {
     return function (evt) {
       evt.preventDefault();
       func();
@@ -16,7 +17,12 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
       <form className="modal-form" onSubmit={preventDefault(onSubmit)}>
         <Button
           className="modal-close"
-          onClick={preventDefault(onClose)}
+          onClick={preventDefault(function close() {
+            background.sendEvent('click', {
+              id: 'featureUpdateInfo.closeBtn',
+            });
+            onClose();
+          })}
           type="transparent"
         />
 
@@ -38,7 +44,12 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
           <Trans i18nKey="featureUpdateInfo.keystoreImport" />
         </p>
 
-        <Button type="submit">
+        <Button
+          type="submit"
+          onClick={() =>
+            background.sendEvent('click', { id: 'featureUpdateInfo.backupBtn' })
+          }
+        >
           <Trans i18nKey="featureUpdateInfo.backupBtn" />
         </Button>
       </form>
