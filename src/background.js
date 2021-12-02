@@ -589,8 +589,6 @@ class BackgroundService extends EventEmitter {
         data.isRequest = true;
       }
 
-      const { selectedAccount } = this.getState();
-
       await this.validatePermission(origin);
 
       const { noSign, ...result } = await this.messageController.newMessage({
@@ -600,7 +598,7 @@ class BackgroundService extends EventEmitter {
         origin,
         options,
         broadcast,
-        account: selectedAccount,
+        account: this.getState().selectedAccount,
       });
 
       if (noSign) {
