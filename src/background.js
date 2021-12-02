@@ -307,8 +307,6 @@ class BackgroundService extends EventEmitter {
       ),
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       getPackConfig: () => this.remoteConfigController.getPackConfig(),
-      canAutoApprove: (origin, tx) =>
-        this.permissionsController.canApprove(origin, tx),
     });
 
     // Notifications
@@ -604,19 +602,21 @@ class BackgroundService extends EventEmitter {
         broadcast,
         account: selectedAccount,
       };
-      const { noSign, showNotification, ...result } =
-        await this.messageController.newMessage(messageData);
-      const { id: messageId } = result;
+      const { noSign, ...result } = await this.messageController.newMessage(
+        messageData
+      );
 
       if (noSign) {
         return result;
       }
 
-      if (showNotification) {
+      if (this.permissionsController.canApprove(origin, data)) {
+        this.messageController.approve(result.id);
+      } else {
         this.emit('Show notification');
       }
 
-      return await this.messageController.getMessageResult(messageId);
+      return await this.messageController.getMessageResult(result.id);
     };
 
     const newNotification = data => {

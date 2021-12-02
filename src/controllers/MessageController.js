@@ -100,7 +100,6 @@ export class MessageController extends EventEmitter {
         id: message.id,
         hash: message.messageHash,
         bytes: message.bytes,
-        showNotification: false,
       };
     }
 
@@ -112,12 +111,7 @@ export class MessageController extends EventEmitter {
 
     this._updateStore(messages);
 
-    let showNotification = true;
-    if (message.origin && this.canAutoApprove(message.origin, message.data)) {
-      showNotification = false;
-      this.approve(message.id);
-    }
-    return { id: message.id, showNotification };
+    return { id: message.id };
   }
 
   // Todo: Find appropriate name. What if message has already been finished?
