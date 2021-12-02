@@ -6,7 +6,7 @@ import * as styles from './featureUpdateInfo.styl';
 import background from '../../../ui/services/Background';
 
 export function FeatureUpdateInfo({ onClose, onSubmit }) {
-  function preventDefault(func: (...args: any[]) => void) {
+  function preventDefault(func: () => void) {
     return function (evt) {
       evt.preventDefault();
       func();
