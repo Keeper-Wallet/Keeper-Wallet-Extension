@@ -1,16 +1,29 @@
 import * as styles from './styles/import.styl';
-import { seedUtils } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button } from '../ui';
+import { Button, Modal } from '../ui';
 import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
+import { FeatureUpdateInfo } from './FeatureUpdateInfo';
+import { connect } from 'react-redux';
+import { setTab, setUiState } from '../../actions';
+import { AnyAction } from 'redux';
+import { PAGES } from '../../pageConfig';
 
 interface Props {
+  showUpdateInfo: boolean;
   setTab: (newTab: string) => void;
+  dispatch: (action: AnyAction) => void;
 }
 
-export function Import({ setTab }: Props) {
+export const Import = connect((state: any) => ({
+  showUpdateInfo:
+    !state.uiState.isFeatureUpdateShown && !!state.allNetworksAccounts.length,
+}))(function Import({ showUpdateInfo, dispatch }: Props) {
+  const dismissFeatureInfo = () =>
+    dispatch(setUiState({ isFeatureUpdateShown: true }));
+  const exportToKeystore = () => dispatch(setTab(PAGES.EXPORT_ACCOUNTS));
+
   return (
     <div className={styles.root}>
       <img
@@ -24,9 +37,7 @@ export function Import({ setTab }: Props) {
       <Button
         id="createNewAccount"
         type="submit"
-        onClick={() => {
-          setTab('new_account');
-        }}
+        onClick={() => dispatch(setTab('new_account'))}
       >
         <Trans i18nKey="import.createNew" />
       </Button>
@@ -41,9 +52,7 @@ export function Import({ setTab }: Props) {
             className="fullwidth"
             data-testid="importSeed"
             type="transparent"
-            onClick={() => {
-              setTab('import_seed');
-            }}
+            onClick={() => dispatch(setTab('import_seed'))}
           >
             <div className="body1">
               <Trans i18nKey="import.viaSeed" />
@@ -56,9 +65,7 @@ export function Import({ setTab }: Props) {
             className="fullwidth"
             data-testid="importKeystore"
             type="transparent"
-            onClick={() => {
-              setTab('import_keystore');
-            }}
+            onClick={() => dispatch(setTab('import_keystore'))}
           >
             <div className="body1">
               <Trans i18nKey="import.viaKeystore" />
@@ -66,6 +73,16 @@ export function Import({ setTab }: Props) {
           </Button>
         </div>
       </div>
+
+      <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
+        <FeatureUpdateInfo
+          onClose={dismissFeatureInfo}
+          onSubmit={() => {
+            dismissFeatureInfo();
+            exportToKeystore();
+          }}
+        />
+      </Modal>
     </div>
   );
-}
+});
