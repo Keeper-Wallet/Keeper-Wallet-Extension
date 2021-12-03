@@ -181,7 +181,7 @@ export const changeNetwork = store => next => action => {
 
 export const getAsset = store => next => action => {
   if (action.type === ACTION.GET_ASSETS) {
-    background.assetInfo(action.payload, action.meta.force).then(
+    background.assetInfo(action.payload, action.meta.compareFields).then(
       data => {
         store.dispatch(updateAsset({ [action.payload]: data }));
       },
@@ -189,7 +189,6 @@ export const getAsset = store => next => action => {
         store.dispatch(updateAsset({ [action.payload]: {} }));
       }
     );
-    return null;
   }
 
   return next(action);

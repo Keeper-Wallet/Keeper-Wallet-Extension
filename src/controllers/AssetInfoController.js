@@ -43,7 +43,7 @@ export class AssetInfoController {
     return WAVES;
   }
 
-  async assetInfo(assetId, force) {
+  async assetInfo(assetId, compareFields = {}) {
     const { assets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return WAVES;
@@ -52,12 +52,17 @@ export class AssetInfoController {
     const API_BASE = this.getNode();
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
-    if (
-      force ||
-      !assets[network] ||
-      !assets[network][assetId] ||
-      assets[network][assetId].minSponsoredFee === undefined
-    ) {
+    const asset = assets[network] ? assets[network][assetId] : null;
+    // fetch information about the asset if one of the compared fields
+    // is not equal to the value from the storage
+    const force =
+      Object.keys(compareFields).length !== 0 &&
+      Object.keys(asset).reduce((prev, field) => {
+        // != because sometimes compare field value mismatches asset field type
+        return prev && compareFields[field] != asset[field];
+      }, false);
+
+    if (force || !asset || asset.minSponsoredFee === undefined) {
       let resp = await fetch(url);
       switch (resp.status) {
         case 200:
