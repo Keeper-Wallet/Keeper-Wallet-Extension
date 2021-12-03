@@ -12,7 +12,6 @@ import { Select } from '../ui/select/Select';
 import { difference } from 'ramda';
 import { getAsset, getBalances } from 'ui/actions';
 import { Loader, Error } from '../ui';
-import { TransactionType } from 'ui/services/Background';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
 
 export function Send() {
@@ -128,7 +127,7 @@ export function Send() {
 
         dispatch(
           signAndPublishTransaction({
-            type: TransactionType.Transfer,
+            type: 4,
             data: {
               amount: { assetId: assetValue, tokens: amountValue },
               recipient: recipientValue,

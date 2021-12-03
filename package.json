@@ -84,6 +84,7 @@
     "@types/resize-observer-browser": "^0.1.6",
     "@types/selenium-webdriver": "^4.0.15",
     "@waves/signature-generator": "^5.2.1",
+    "@waves/waveskeeper-types": "^0.2.1",
     "awesome-typescript-loader": "^5.2.1",
     "babel": "^6.23.0",
     "babel-core": "^6.24.1",

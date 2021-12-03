@@ -1,7 +1,5 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
-import { IMoneyLike } from 'ui/utils/converters';
-
 class Background {
   static instance: Background;
   background: any;
@@ -241,7 +239,7 @@ class Background {
     return this.background.updateBalances();
   }
 
-  async signAndPublishTransaction(data: Transaction) {
+  async signAndPublishTransaction(data: WavesKeeper.TSignTransactionData) {
     await this.initPromise;
     return this.background.signAndPublishTransaction(data);
   }
@@ -276,31 +274,3 @@ export interface AssetDetail extends IAssetInfo {
   originTransactionId: string;
   issuer?: string;
 }
-
-export enum TransactionType {
-  Issue = 3,
-  Transfer = 4,
-}
-
-interface IssueTransactionData {
-  description: string;
-  fee?: IMoneyLike;
-  name: string;
-  precision: number;
-  quantity: number | string;
-  reissuable: boolean;
-  script?: string;
-  senderPublicKey?: string;
-  timestamp?: number | string;
-}
-
-interface TransferTransactionData {
-  amount: IMoneyLike;
-  attachment?: string;
-  fee?: IMoneyLike;
-  recipient: string;
-}
-
-export type Transaction =
-  | { type: TransactionType.Issue; data: IssueTransactionData }
-  | { type: TransactionType.Transfer; data: TransferTransactionData };
