@@ -291,3 +291,11 @@ export const lock = store => next => action => {
   }
   return next(action);
 };
+
+export const signAndPublishTransaction = () => next => action => {
+  if (action.type === ACTION.SIGN_AND_PUBLISH_TRANSACTION) {
+    background.signAndPublishTransaction(action.payload);
+  }
+
+  return next(action);
+};

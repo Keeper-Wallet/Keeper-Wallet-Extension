@@ -75,7 +75,7 @@ export const balances = createSimpleReducer<
     {
       available: string;
       leasedOut: string;
-      assets: {
+      assets?: {
         [assetId: string]: {
           balance: string;
           sponsorBalance: string;

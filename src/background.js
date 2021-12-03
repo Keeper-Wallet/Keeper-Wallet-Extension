@@ -307,8 +307,6 @@ class BackgroundService extends EventEmitter {
       ),
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       getPackConfig: () => this.remoteConfigController.getPackConfig(),
-      canAutoApprove: (origin, tx) =>
-        this.permissionsController.canApprove(origin, tx),
     });
 
     // Notifications
@@ -365,6 +363,8 @@ class BackgroundService extends EventEmitter {
   }
 
   getApi() {
+    const newMessage = this.getNewMessageFn();
+
     // RPC API object. Only async functions allowed
     return {
       // state
@@ -507,6 +507,8 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.balanceController.updateBalances.bind(
         this.balanceController
       ),
+      signAndPublishTransaction: data =>
+        newMessage(data, 'transaction', undefined, true),
     };
   }
 
@@ -576,41 +578,46 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getInpageApi(origin) {
-    const newMessage = async (data, type, options, broadcast, title = '') => {
+  getNewMessageFn(origin) {
+    return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
         data = data.data;
         data.isRequest = true;
       }
 
-      const { selectedAccount } = this.getState();
+      if (origin) {
+        await this.validatePermission(origin);
+      }
 
-      await this.validatePermission(origin);
-
-      const messageData = {
+      const { noSign, ...result } = await this.messageController.newMessage({
         data,
         type,
         title,
         origin,
         options,
         broadcast,
-        account: selectedAccount,
-      };
-      const { noSign, showNotification, ...result } =
-        await this.messageController.newMessage(messageData);
-      const { id: messageId } = result;
+        account: this.getState().selectedAccount,
+      });
 
       if (noSign) {
         return result;
       }
 
-      if (showNotification) {
-        this.emit('Show notification');
+      if (origin) {
+        if (this.permissionsController.canApprove(origin, data)) {
+          this.messageController.approve(result.id);
+        } else {
+          this.emit('Show notification');
+        }
       }
 
-      return await this.messageController.getMessageResult(messageId);
+      return await this.messageController.getMessageResult(result.id);
     };
+  }
+
+  getInpageApi(origin) {
+    const newMessage = this.getNewMessageFn(origin);
 
     const newNotification = data => {
       const { selectedAccount } = this.getState();

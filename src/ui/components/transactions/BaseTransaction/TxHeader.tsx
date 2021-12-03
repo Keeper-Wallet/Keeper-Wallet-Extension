@@ -5,7 +5,7 @@ import cn from 'classnames';
 import { Trans } from 'react-i18next';
 
 const OriginWarning = ({ message }) => {
-  if (!message.origin) {
+  if (!message.origin && !message.account?.network) {
     return null;
   }
 

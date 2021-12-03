@@ -32,6 +32,7 @@ import {
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
+import { Send } from './components/pages/send';
 
 import { ImportSeed } from './components/pages/ImportSeedWalet';
 
@@ -74,6 +75,7 @@ export const PAGES = {
   MESSAGES_LIST: 'messages_list',
   FORGOT: 'forgot_password',
   CHANGE_TX_ACCOUNT: 'change_tx_account',
+  SEND: 'send',
   ROOT: '',
 };
 
@@ -501,6 +503,16 @@ export const PAGES_CONF = {
       hasLogo: false,
       hasSettings: true,
       back: false,
+    },
+  },
+  [PAGES.SEND]: {
+    component: Send,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      back: true,
+      hasLogo: true,
     },
   },
 };

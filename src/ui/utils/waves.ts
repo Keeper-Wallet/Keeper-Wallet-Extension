@@ -6,27 +6,6 @@ export function networkByteFromAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
 }
 
-export function getExplorerUrls(network: string) {
-  switch (network) {
-    case 'mainnet':
-      return {
-        walletLink: 'https://waves.exchange/import/waveskeeper',
-      };
-    case 'testnet':
-      return {
-        walletLink: 'https://testnet.waves.exchange/import/waveskeeper',
-      };
-    case 'stagenet':
-      return {
-        walletLink: 'https://stagenet.waves.exchange/import/waveskeeper',
-      };
-    default:
-      return {
-        walletLink: 'https://waves.exchange/import/waveskeeper',
-      };
-  }
-}
-
 export function addressFromPublicKey(pk: string, byte: string): string {
   return new seedUtils.Seed(pk, byte).address;
 }

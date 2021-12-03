@@ -14,7 +14,12 @@ export function TxFooter({
 
   return (
     <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-      <Button id="reject" onClick={reject} type={BUTTON_TYPE.WARNING}>
+      <Button
+        data-testid="rejectButton"
+        id="reject"
+        onClick={reject}
+        type={BUTTON_TYPE.WARNING}
+      >
         <Trans i18nKey="sign.reject" />
       </Button>
 
