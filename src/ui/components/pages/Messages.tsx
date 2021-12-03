@@ -18,6 +18,7 @@ import { Intro } from './Intro';
 import { FinalTransaction, getConfigByTransaction } from '../transactions';
 import { BalanceAssets } from '../transactions/BaseTransaction';
 import { DEFAULT_FEE_CONFIG } from '../../../constants';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 class MessagesComponent extends React.Component {
   readonly state = {} as any;
@@ -74,16 +75,22 @@ class MessagesComponent extends React.Component {
 
     const sourceSignData = activeMessage.data || {};
     const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
-    const sponsoredAssets = Object.keys(sponsoredBalance);
+    const sponsoredAssets = [
+      TRANSACTION_TYPE.TRANSFER,
+      TRANSACTION_TYPE.INVOKE_SCRIPT,
+    ].includes(sourceSignData.type)
+      ? Object.keys(sponsoredBalance)
+      : [];
     const needGetAssets = new Set(
       Object.keys(parsedData.assets)
         .concat(sponsoredAssets)
-        .filter(id => assets[id] === undefined)
+        .filter(id => !Object.keys(assets).includes(id))
     );
 
-    needGetAssets.forEach(id =>
-      props.getAsset(id, sponsoredAssets.includes(id))
-    );
+    if (needGetAssets) {
+      const assetId = needGetAssets.values().next().value;
+      props.getAsset(assetId, sponsoredAssets.includes(assetId));
+    }
 
     if (needGetAssets.size) {
       return { loading, selectedAccount };
