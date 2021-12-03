@@ -455,8 +455,8 @@ class BackgroundService extends EventEmitter {
         await ExternalDeviceController.getUserList(type, from, to),
 
       // asset information
-      assetInfo: async (assetId, force) =>
-        await this.assetInfoController.assetInfo(assetId, force),
+      assetInfo: async (assetId, compareFields) =>
+        await this.assetInfoController.assetInfo(assetId, compareFields),
 
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),

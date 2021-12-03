@@ -211,15 +211,21 @@ class Background {
     return this.background.setCustomMatcher(url, network);
   }
 
-  async assetInfo(assetId: string, force: boolean): Promise<any> {
+  async assetInfo(
+    assetId: string,
+    compareFields: { [assetField: string]: any } = {}
+  ): Promise<any> {
     assetId = assetId || 'WAVES';
 
-    if (!force && this._assetsStore[assetId]) {
+    if (this._assetsStore[assetId]) {
       return await this._assetsStore[assetId];
     }
 
     await this.initPromise;
-    this._assetsStore[assetId] = this.background.assetInfo(assetId, force);
+    this._assetsStore[assetId] = this.background.assetInfo(
+      assetId,
+      compareFields
+    );
 
     try {
       return await this._assetsStore[assetId];

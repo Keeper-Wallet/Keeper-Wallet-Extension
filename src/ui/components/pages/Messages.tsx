@@ -87,12 +87,17 @@ class MessagesComponent extends React.Component {
         .filter(id => !Object.keys(assets).includes(id))
     );
 
-    if (needGetAssets) {
-      const assetId = needGetAssets.values().next().value;
-      props.getAsset(assetId, sponsoredAssets.includes(assetId));
-    }
-
-    if (needGetAssets.size) {
+    const nextAssetId = needGetAssets.values().next().value;
+    if (nextAssetId) {
+      props.getAsset(
+        nextAssetId,
+        sponsoredAssets.includes(nextAssetId)
+          ? {
+              minSponsoredFee:
+                sponsoredBalance[nextAssetId].minSponsoredAssetFee,
+            }
+          : {}
+      );
       return { loading, selectedAccount };
     }
 
