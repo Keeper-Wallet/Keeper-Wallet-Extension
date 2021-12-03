@@ -2,6 +2,9 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
+  "activeAccountCard": {
+    "sendButton": "Send"
+  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -356,6 +359,19 @@
   "qrCode": {
     "download": "Download QR code"
   },
+  "send": {
+    "amountInputLabel": "Amount",
+    "amountRequiredError": "Amount is required",
+    "attachmentInputLabel": "Attachment ({{count}}/{{max}} byte)",
+    "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
+    "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
+    "assetInputLabel": "Asset",
+    "recipientInputLabel": "Recipient",
+    "recipientInvalidError": "Recipient value is invalid",
+    "recipientRequiredError": "Recipient is required",
+    "submitButtonText": "Send",
+    "title": "Send assets"
+  },
   "settings": {
     "autoClick": "Auto-click protection",
     "autoClickDisable": "Disabled",
@@ -555,12 +571,7 @@
     "wavesAuthTimeStamp": "Time Stamp"
   },
   "ui": {
-    "accountName": "Account name",
-    "activeAccount": "Active account",
-    "logo-title": "Keep your Waves keys safe online",
-    "logoTitle": "Keep your Waves keys safe online",
-    "showQR": "Show QR",
-    "wallet": "Wallet"
+    "logoTitle": "Keep your Waves keys safe online"
   },
   "ur": {
     "activeNow": "Active",

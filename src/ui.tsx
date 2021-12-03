@@ -3,7 +3,6 @@ import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 import './ui/i18n';
 
-import * as EventEmitter from 'events';
 import * as extension from 'extensionizer';
 import log from 'loglevel';
 import * as React from 'react';
@@ -38,14 +37,13 @@ async function startUi() {
     document.getElementById('app-content')
   );
 
+  const updateState = createUpdateState(store);
+
   const port = extension.runtime.connect({ name: 'ui' });
   const connectionStream = new PortStream(port);
 
-  // Bind event emitter to background function sendUpdate.
-  // This way every time background calls sendUpdate with its state we get event with new background state
-  const eventEmitter = new EventEmitter();
   const emitterApi = {
-    sendUpdate: async state => eventEmitter.emit('update', state),
+    sendUpdate: async state => updateState(state),
     // This method is used in Microsoft Edge browser
     closeEdgeNotificationWindow: async () => {
       if (
@@ -55,14 +53,11 @@ async function startUi() {
       }
     },
   };
+
   const dnode = setupDnode(connectionStream, emitterApi, 'api');
   const background = await new Promise<any>(resolve => {
     dnode.once('remote', background => {
-      let backgroundWithPromises = transformMethods(cbToPromise, background);
-      // Add event emitter api to background object
-
-      backgroundWithPromises.on = eventEmitter.on.bind(eventEmitter);
-      resolve(backgroundWithPromises);
+      resolve(transformMethods(cbToPromise, background));
     });
   });
 
@@ -76,10 +71,14 @@ async function startUi() {
     await background.closeNotificationWindow();
   }
 
+  const [state, networks] = await Promise.all([
+    background.getState(),
+    background.getNetworks(),
+  ]);
+
+  updateState({ ...state, networks });
+
   backgroundService.init(background);
-  backgroundService.on(createUpdateState(store));
-  backgroundService.getNetworks();
-  backgroundService.getState();
   document.addEventListener('mousemove', () => backgroundService.updateIdle());
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());

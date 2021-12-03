@@ -3,7 +3,6 @@ import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
-import { getExplorerUrls } from '../../utils/waves';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
@@ -21,6 +20,7 @@ interface Props {
   onClick: (account: Account) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
+  onSendClick: () => void;
   onShowQr: () => void;
 }
 
@@ -30,10 +30,9 @@ export function ActiveAccountCard({
   onClick,
   onCopy,
   onOtherAccountsClick,
+  onSendClick,
   onShowQr,
 }: Props) {
-  const { walletLink } = getExplorerUrls(account.network);
-
   return (
     <div className={styles.root} data-testid="activeAccountCard">
       <div className={styles.accountInfo}>
@@ -73,14 +72,13 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        <a
-          className="walletIconBlack button button-wallet"
-          href={walletLink}
-          rel="noopener noreferrer"
-          target="_blank"
+        <button
+          className="sendIconBlack button button-wallet"
+          data-testid="sendAssetsButton"
+          onClick={onSendClick}
         >
-          <Trans i18nKey="ui.wallet" />
-        </a>
+          <Trans i18nKey="activeAccountCard.sendButton" />
+        </button>
 
         <span className={styles.controlsExpand} />
 

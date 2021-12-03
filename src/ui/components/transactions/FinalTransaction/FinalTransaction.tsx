@@ -150,7 +150,7 @@ export class FinalTransaction extends React.PureComponent {
           ) : null}
 
           {isShowClose ? (
-            <Button id="close" onClick={onClose}>
+            <Button data-testid="closeTransaction" id="close" onClick={onClose}>
               {isError ? <Trans i18nKey="sign.understand" /> : null}
               {isReject || isApprove ? <Trans i18nKey="sign.close" /> : null}
             </Button>

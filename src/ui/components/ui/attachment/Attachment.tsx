@@ -8,6 +8,7 @@ const { base58Encode } = libs.crypto;
 export const Attachment: React.FunctionComponent<IAttachment> = ({
   attachment,
   className,
+  ...otherProps
 }) => {
   const myClassName = cn(styles.attachment, className);
   let text = '';
@@ -19,7 +20,11 @@ export const Attachment: React.FunctionComponent<IAttachment> = ({
     text = attachment;
   }
 
-  return <div className={myClassName}>{text}</div>;
+  return (
+    <div className={myClassName} {...otherProps}>
+      {text}
+    </div>
+  );
 };
 
 interface IAttachment {
