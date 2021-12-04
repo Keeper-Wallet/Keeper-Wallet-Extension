@@ -52,12 +52,12 @@ export class AssetInfoController {
     const API_BASE = this.getNode();
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
-    const asset = assets[network] ? assets[network][assetId] : null;
+    const asset = assets[network] && assets[network][assetId];
     // fetch information about the asset if one of the compared fields
     // is not equal to the value from the storage
     const force =
       Object.keys(compareFields).length !== 0 &&
-      Object.keys(asset).reduce((prev, field) => {
+      Object.keys(asset || {}).reduce((prev, field) => {
         // != because sometimes compare field value mismatches asset field type
         return prev && compareFields[field] != asset[field];
       }, false);
