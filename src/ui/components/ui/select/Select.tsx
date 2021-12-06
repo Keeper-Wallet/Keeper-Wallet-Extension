@@ -76,8 +76,11 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
         ref={this.getRef}
       >
         <Title text={this.props.description} />
-        <div className={styles.selectInput} onClick={this.clickHandler}>
-          {text}
+        <div
+          className={cn(styles.selectInput, 'cant-select')}
+          onClick={this.clickHandler}
+        >
+          <div className={styles.listItemSelected}>{text}</div>
         </div>
         <List
           isShow={this.state.showList}
@@ -94,7 +97,7 @@ const Title = ({ text }) =>
 
 const List = ({ list, onSelect, isShow }) => {
   return !isShow ? null : (
-    <div className={styles.list}>
+    <div className={cn(styles.list, 'cant-select')}>
       {list.map(item => (
         <div
           key={item.id}
