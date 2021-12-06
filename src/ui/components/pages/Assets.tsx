@@ -58,9 +58,12 @@ const colorBasic500 = '#9BA6B2';
 const colorSubmit = '#1F5AF6';
 
 function SearchInput({ value, onInput, onClear }) {
+  const input = React.createRef<Input>();
+
   return (
     <div className={cn('flex grow', styles.searchInputWrapper)}>
       <Input
+        ref={input}
         className={styles.searchInput}
         onInput={onInput}
         value={value}
@@ -70,7 +73,10 @@ function SearchInput({ value, onInput, onClear }) {
         <Button
           className={styles.searchClose}
           type={BUTTON_TYPE.CUSTOM}
-          onClick={onClear}
+          onClick={() => {
+            input.current.focus();
+            onClear();
+          }}
         >
           <svg
             width="14"
@@ -170,21 +176,68 @@ export function Assets({ setTab }: Props) {
 
   const assetEntries = Object.entries<{ balance: string }>(
     balances[address]?.assets || {}
+  ).filter(
+    ([assetId]) =>
+      (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
+      (!assetTerm ||
+        assetId === assetTerm ||
+        (assets && (assets[assetId]?.displayName ?? '').toLowerCase()).indexOf(
+          assetTerm.toLowerCase()
+        ) !== -1)
+  );
+
+  const nftEntries = Object.entries<Asset[]>(
+    nfts
+      .filter(
+        nft =>
+          (!onlyMyNfts || nft.issuer === address) &&
+          (!nftTerm ||
+            nft.id === nftTerm ||
+            nft.displayName.toLowerCase().indexOf(nftTerm.toLowerCase()) !== -1)
+      )
+      .reduce(
+        (result, item) => ({
+          ...result,
+          [item.issuer]: [...(result[item.issuer] || []), item],
+        }),
+        {}
+      )
   );
 
   const thisYear = new Date().getFullYear();
   const historyEntries = Object.entries<Array<ITransaction & WithId>>(
-    txHistory.reduce((result, tx) => {
-      const d = new Date(tx.timestamp);
-      const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
-      const date = `${(year !== thisYear && year) || ''} ${t(
-        `date.${MONTH[month]}`
-      )} ${day}`;
-      return {
-        ...result,
-        [date]: [...(result[date] || []), tx],
-      };
-    }, {})
+    txHistory
+      .filter(
+        (
+          tx: any // TODO better types
+        ) =>
+          !txHistoryTerm ||
+          tx.id === txHistoryTerm ||
+          tx.assetId === txHistoryTerm ||
+          (assets &&
+            (assets[tx.assetId]?.displayName ?? '')
+              .toLowerCase()
+              .indexOf(txHistoryTerm.toLowerCase()) !== -1) ||
+          tx.sender === txHistoryTerm ||
+          tx.recipient === txHistoryTerm ||
+          (tx.alias ?? '')
+            .toLowerCase()
+            .indexOf(txHistoryTerm.toLowerCase()) !== -1 ||
+          (tx.call?.function ?? '')
+            .toLowerCase()
+            .indexOf(txHistoryTerm.toLowerCase()) !== -1
+      )
+      .reduce((result, tx) => {
+        const d = new Date(tx.timestamp);
+        const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
+        const date = `${(year !== thisYear && year) || ''} ${t(
+          `date.${MONTH[month]}`
+        )} ${day}`;
+        return {
+          ...result,
+          [date]: [...(result[date] || []), tx],
+        };
+      }, {})
   );
 
   return (
@@ -317,20 +370,12 @@ export function Assets({ setTab }: Props) {
                 <Trans i18nKey="Only my NFTs" />
               </div>
             </div>
-            {nfts.length === 0 ? (
+            {nftEntries.length === 0 ? (
               <div className="basic500 center margin-min-top">
                 <Trans i18nKey="assets.emptyNFTs" />
               </div>
             ) : (
-              Object.entries<Asset[]>(
-                nfts.reduce(
-                  (result, item) => ({
-                    ...result,
-                    [item.issuer]: [...(result[item.issuer] || []), item],
-                  }),
-                  {}
-                )
-              ).map(([issuer, issuerNfts], index) => (
+              nftEntries.map(([issuer, issuerNfts], index) => (
                 <div
                   key={issuer}
                   className={index === 0 ? 'margin-min-top' : 'margin-main-top'}

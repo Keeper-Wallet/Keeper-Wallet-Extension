@@ -67,7 +67,8 @@ export class AssetInfoController {
       !asset ||
       asset.minSponsoredFee === undefined ||
       assets[network][assetId].hasScript === undefined ||
-      assets[network][assetId].originTransactionId === undefined
+      assets[network][assetId].originTransactionId === undefined ||
+      assets[network][assetId].issuer === undefined
     ) {
       let resp = await fetch(url);
       switch (resp.status) {
@@ -94,6 +95,7 @@ export class AssetInfoController {
             displayName: assetInfo.ticker || assetInfo.name,
             minSponsoredFee: assetInfo.minSponsoredAssetFee,
             originTransactionId: assetInfo.originTransactionId,
+            issuer: assetInfo.issuer,
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = mapped;
