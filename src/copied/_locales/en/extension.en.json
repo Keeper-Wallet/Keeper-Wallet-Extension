@@ -55,7 +55,9 @@
     "emptyAssets": "You don't have any asset yet",
     "emptyNFTs": "You don't have any NFT yet",
     "emptyHistory": "There's nothing to show yet",
-    "history": "History"
+    "history": "History",
+    "onlyMyAssets": "Only My Assets",
+    "onlyMyNfts": "Only My NFTs"
   },
   "historyCard": {
     "burn": "Burn Asset",
@@ -93,6 +95,27 @@
     "transferReceive": "Incoming Transfer",
     "transferSelf": "Self-transfer",
     "updateAssetInfo": "Update Asset Info"
+  },
+  "historyFilters": {
+    "all": "All",
+    "incoming": "Only Incoming",
+    "outgoing": "Only Outgoing",
+    "issue": "Issue",
+    "transfer": "Transfer",
+    "reissue": "Reissue",
+    "burn": "Burn",
+    "exchange": "Exchange",
+    "lease": "Lease",
+    "cancelLease": "Cancel Lease",
+    "alias": "Alias",
+    "massTransfer": "Mass Transfer",
+    "data": "Data",
+    "setScript": "Set Script",
+    "sponsorship": "Sponsorship",
+    "setAssetScript": "Set Asset Script",
+    "invokeScript": "Invoke Script",
+    "updateAssetInfo": "Update Asset Info",
+    "type": "Transaction Type"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",

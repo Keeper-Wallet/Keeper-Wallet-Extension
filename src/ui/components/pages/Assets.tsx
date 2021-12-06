@@ -20,6 +20,7 @@ import {
   BUTTON_TYPE,
   Input,
   Modal,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -38,6 +39,7 @@ import {
   ITransaction,
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 const MONTH = [
   'Jan',
@@ -55,6 +57,8 @@ const MONTH = [
 ];
 
 const colorBasic500 = '#9BA6B2';
+const colorOut = '#FFAF00';
+const colorIn = '#81C926';
 const colorSubmit = '#1F5AF6';
 
 function SearchInput({ value, onInput, onClear }) {
@@ -64,7 +68,7 @@ function SearchInput({ value, onInput, onClear }) {
     <div className={cn('flex grow', styles.searchInputWrapper)}>
       <Input
         ref={input}
-        className={styles.searchInput}
+        className={cn(styles.searchInput, 'font300')}
         onInput={onInput}
         value={value}
         spellCheck={false}
@@ -116,6 +120,7 @@ export function Assets({ setTab }: Props) {
     )
   );
   const assets = useAppSelector(state => state.assets);
+  const aliases = useAppSelector(state => state.aliases);
   const balances = useAppSelector(state => state.balances);
   const txHistory = useAppSelector(state => state.txHistory);
   const nfts = useAppSelector(state => state.nfts);
@@ -127,12 +132,6 @@ export function Assets({ setTab }: Props) {
   const [asset, setAsset] = useState(null);
   const [showAsset, setShowAsset] = useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
-  const [assetTerm, setAssetTerm] = useState('');
-  const [nftTerm, setNftTerm] = useState('');
-  const [txHistoryTerm, setTxHistoryTerm] = useState('');
-  const [onlyMyAssets, setOnlyMyAssets] = useState(false);
-  const [onlyMyNfts, setOnlyMyNfts] = useState(false);
-  const [showTxHistoryFilters, setShowTxHistoryFilters] = useState(false);
 
   React.useEffect(() => {
     if (!assets['WAVES']) {
@@ -141,6 +140,7 @@ export function Assets({ setTab }: Props) {
   }, [assets, dispatch]);
 
   const address = activeAccount && activeAccount.address;
+  const addressAlias = [address, ...aliases];
 
   React.useEffect(() => {
     if (address) {
@@ -174,6 +174,8 @@ export function Assets({ setTab }: Props) {
     );
   }
 
+  const [assetTerm, setAssetTerm] = useState('');
+  const [onlyMyAssets, setOnlyMyAssets] = useState(false);
   const assetEntries = Object.entries<{ balance: string }>(
     balances[address]?.assets || {}
   ).filter(
@@ -186,6 +188,8 @@ export function Assets({ setTab }: Props) {
         ) !== -1)
   );
 
+  const [nftTerm, setNftTerm] = useState('');
+  const [onlyMyNfts, setOnlyMyNfts] = useState(false);
   const nftEntries = Object.entries<Asset[]>(
     nfts
       .filter(
@@ -204,28 +208,66 @@ export function Assets({ setTab }: Props) {
       )
   );
 
+  const [txHistoryTerm, setTxHistoryTerm] = useState('');
+  const [txHistoryType, setTxHistoryType] = useState(null);
+  const [txHistoryIncoming, setTxHistoryIncoming] = useState(false);
+  const [txHistoryOutgoing, setTxHistoryOutgoing] = useState(false);
   const thisYear = new Date().getFullYear();
   const historyEntries = Object.entries<Array<ITransaction & WithId>>(
     txHistory
       .filter(
         (
           tx: any // TODO better types
-        ) =>
-          !txHistoryTerm ||
-          tx.id === txHistoryTerm ||
-          tx.assetId === txHistoryTerm ||
-          (assets &&
-            (assets[tx.assetId]?.displayName ?? '')
-              .toLowerCase()
-              .indexOf(txHistoryTerm.toLowerCase()) !== -1) ||
-          tx.sender === txHistoryTerm ||
-          tx.recipient === txHistoryTerm ||
-          (tx.alias ?? '')
-            .toLowerCase()
-            .indexOf(txHistoryTerm.toLowerCase()) !== -1 ||
-          (tx.call?.function ?? '')
-            .toLowerCase()
-            .indexOf(txHistoryTerm.toLowerCase()) !== -1
+        ) => {
+          const hasMassTransfers = (tx.transfers ?? []).reduce(
+            (
+              result: boolean,
+              transfer: { amount: number; recipient: string }
+            ) => result || addressAlias.includes(transfer.recipient),
+            false
+          );
+          const hasInvokePayments = (tx.payments ?? []).length !== 0;
+          const hasInvokeTransfers = (tx.stateChanges?.transfer ?? []).reduce(
+            (
+              result: boolean,
+              transfer: {
+                address: string;
+                asset: string;
+                amount: string | number;
+              }
+            ) => result || addressAlias.includes(transfer.address),
+            false
+          );
+
+          return (
+            (!txHistoryTerm ||
+              tx.id === txHistoryTerm ||
+              tx.assetId === txHistoryTerm ||
+              (assets &&
+                (assets[tx.assetId]?.displayName ?? '')
+                  .toLowerCase()
+                  .indexOf(txHistoryTerm.toLowerCase()) !== -1) ||
+              tx.sender === txHistoryTerm ||
+              tx.recipient === txHistoryTerm ||
+              (tx.alias ?? '')
+                .toLowerCase()
+                .indexOf(txHistoryTerm.toLowerCase()) !== -1 ||
+              (tx.call?.function ?? '')
+                .toLowerCase()
+                .indexOf(txHistoryTerm.toLowerCase()) !== -1) &&
+            (!txHistoryType || tx.type === txHistoryType) &&
+            (!txHistoryIncoming ||
+              (!addressAlias.includes(tx.sender) &&
+                (addressAlias.includes(tx.recipient) || hasMassTransfers)) ||
+              hasInvokeTransfers) &&
+            (!txHistoryOutgoing ||
+              (tx.type === TRANSACTION_TYPE.TRANSFER &&
+                addressAlias.includes(tx.sender)) ||
+              (tx.type === TRANSACTION_TYPE.MASS_TRANSFER &&
+                !hasMassTransfers) ||
+              (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
+          );
+        }
       )
       .reduce((result, tx) => {
         const d = new Date(tx.timestamp);
@@ -307,7 +349,7 @@ export function Assets({ setTab }: Props) {
                 </svg>
               </div>
               <div className={cn(styles.filterTooltip, 'tooltip')}>
-                <Trans i18nKey="Only my assets" />
+                <Trans i18nKey="assets.onlyMyAssets" />
               </div>
             </div>
 
@@ -367,7 +409,7 @@ export function Assets({ setTab }: Props) {
                 </svg>
               </div>
               <div className={cn(styles.filterTooltip, 'tooltip')}>
-                <Trans i18nKey="Only my NFTs" />
+                <Trans i18nKey="assets.onlyMyNfts" />
               </div>
             </div>
             {nftEntries.length === 0 ? (
@@ -404,24 +446,143 @@ export function Assets({ setTab }: Props) {
                 onInput={e => setTxHistoryTerm(e.target.value)}
                 onClear={() => setTxHistoryTerm('')}
               />
+              <Select
+                className={cn('showTooltip', styles.filterTxSelect)}
+                selected={txHistoryType}
+                onSelectItem={(id, value) => setTxHistoryType(value)}
+                selectList={[
+                  {
+                    id: null,
+                    value: null,
+                    text: t('historyFilters.all'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.ISSUE,
+                    value: TRANSACTION_TYPE.ISSUE,
+                    text: t('historyFilters.issue'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.TRANSFER,
+                    value: TRANSACTION_TYPE.TRANSFER,
+                    text: t('historyFilters.transfer'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.REISSUE,
+                    value: TRANSACTION_TYPE.REISSUE,
+                    text: t('historyFilters.reissue'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.BURN,
+                    value: TRANSACTION_TYPE.BURN,
+                    text: t('historyFilters.burn'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.EXCHANGE,
+                    value: TRANSACTION_TYPE.EXCHANGE,
+                    text: t('historyFilters.exchange'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.LEASE,
+                    value: TRANSACTION_TYPE.LEASE,
+                    text: t('historyFilters.lease'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.CANCEL_LEASE,
+                    value: TRANSACTION_TYPE.CANCEL_LEASE,
+                    text: t('historyFilters.cancelLease'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.ALIAS,
+                    value: TRANSACTION_TYPE.ALIAS,
+                    text: t('historyFilters.alias'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.MASS_TRANSFER,
+                    value: TRANSACTION_TYPE.MASS_TRANSFER,
+                    text: t('historyFilters.massTransfer'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.DATA,
+                    value: TRANSACTION_TYPE.DATA,
+                    text: t('historyFilters.data'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.SET_SCRIPT,
+                    value: TRANSACTION_TYPE.SET_SCRIPT,
+                    text: t('historyFilters.setScript'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.SPONSORSHIP,
+                    value: TRANSACTION_TYPE.SPONSORSHIP,
+                    text: t('historyFilters.sponsorship'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.SET_ASSET_SCRIPT,
+                    value: TRANSACTION_TYPE.SET_ASSET_SCRIPT,
+                    text: t('historyFilters.setAssetScript'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.INVOKE_SCRIPT,
+                    value: TRANSACTION_TYPE.INVOKE_SCRIPT,
+                    text: t('historyFilters.invokeScript'),
+                  },
+                  {
+                    id: TRANSACTION_TYPE.UPDATE_ASSET_INFO,
+                    value: TRANSACTION_TYPE.UPDATE_ASSET_INFO,
+                    text: t('historyFilters.updateAssetInfo'),
+                  },
+                ]}
+              />
+              <div className={cn(styles.filterTxTooltip, 'tooltip')}>
+                <Trans i18nKey="historyFilters.type" />
+              </div>
+
               <div
                 className={cn('showTooltip', styles.filterBtn)}
-                onClick={() => setShowTxHistoryFilters(!showTxHistoryFilters)}
+                onClick={() => setTxHistoryIncoming(!txHistoryIncoming)}
               >
                 <svg
                   width="14"
                   height="14"
+                  viewBox="0 0 14 14"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M0.186163 1.40875C1.9633 3.675 5.24485 7.875 5.24485 7.875V13.125C5.24485 13.6063 5.64075 14 6.12463 14H7.88417C8.36805 14 8.76394 13.6063 8.76394 13.125V7.875C8.76394 7.875 12.0367 3.675 13.8138 1.40875C14.2625 0.83125 13.849 0 13.1188 0H0.881183C0.150972 0 -0.262521 0.83125 0.186163 1.40875Z"
-                    fill={showTxHistoryFilters ? colorSubmit : colorBasic500}
+                    d="M3.5 8.75L7 12.25M7 12.25L10.5 8.75M7 12.25V1.75"
+                    stroke={txHistoryIncoming ? colorIn : colorBasic500}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </div>
               <div className={cn(styles.filterTooltip, 'tooltip')}>
-                <Trans i18nKey="Apply filters" />
+                <Trans i18nKey="historyFilters.incoming" />
+              </div>
+
+              <div
+                className={cn('showTooltip', styles.filterBtn)}
+                onClick={() => setTxHistoryOutgoing(!txHistoryOutgoing)}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3.5 5.25L7 1.75M7 1.75L10.5 5.25M7 1.75V12.25"
+                    stroke={txHistoryOutgoing ? colorOut : colorBasic500}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div className={cn(styles.filterTooltip, 'tooltip')}>
+                <Trans i18nKey="historyFilters.outgoing" />
               </div>
             </div>
             {!historyEntries.length ? (
@@ -520,22 +681,6 @@ export function Assets({ setTab }: Props) {
             setTab(PAGES.EXPORT_ACCOUNTS);
           }}
         />
-      </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH} showModal={showTxHistoryFilters}>
-        <div className="modal cover">
-          <form
-            className="modal-form"
-            onSubmit={e => {
-              e.preventDefault();
-              setShowTxHistoryFilters(false);
-            }}
-          >
-            <Button type="submit">
-              <Trans i18nKey="Apply" />
-            </Button>
-          </form>
-        </div>
       </Modal>
     </div>
   );
