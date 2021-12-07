@@ -557,7 +557,7 @@ export function Assets({ setTab }: Props) {
                   />
                 </svg>
               </div>
-              <div className={cn(styles.filterTooltip, 'tooltip')}>
+              <div className={cn(styles.filterIncomingTooltip, 'tooltip')}>
                 <Trans i18nKey="historyFilters.incoming" />
               </div>
 
