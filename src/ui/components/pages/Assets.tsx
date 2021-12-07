@@ -40,6 +40,7 @@ import {
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { colors } from './assets/helpers';
 
 const MONTH = [
   'Jan',
@@ -55,11 +56,6 @@ const MONTH = [
   'Nov',
   'Dec',
 ];
-
-const colorBasic500 = '#9BA6B2';
-const colorOut = '#FFAF00';
-const colorIn = '#81C926';
-const colorSubmit = '#1F5AF6';
 
 function SearchInput({ value, onInput, onClear }) {
   const input = React.createRef<Input>();
@@ -336,7 +332,7 @@ export function Assets({ setTab }: Props) {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    fill={onlyMyAssets ? colorSubmit : colorBasic500}
+                    fill={onlyMyAssets ? colors.submit400 : colors.basic500}
                     fillOpacity=".01"
                     d="M0 0h14v14H0z"
                   />
@@ -344,7 +340,7 @@ export function Assets({ setTab }: Props) {
                     fillRule="evenodd"
                     clipRule="evenodd"
                     d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-                    fill={onlyMyAssets ? colorSubmit : colorBasic500}
+                    fill={onlyMyAssets ? colors.submit400 : colors.basic500}
                   />
                 </svg>
               </div>
@@ -396,7 +392,7 @@ export function Assets({ setTab }: Props) {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    fill={onlyMyNfts ? colorSubmit : colorBasic500}
+                    fill={onlyMyNfts ? colors.submit400 : colors.basic500}
                     fillOpacity=".01"
                     d="M0 0h14v14H0z"
                   />
@@ -404,7 +400,7 @@ export function Assets({ setTab }: Props) {
                     fillRule="evenodd"
                     clipRule="evenodd"
                     d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-                    fill={onlyMyNfts ? colorSubmit : colorBasic500}
+                    fill={onlyMyNfts ? colors.submit400 : colors.basic500}
                   />
                 </svg>
               </div>
@@ -550,7 +546,7 @@ export function Assets({ setTab }: Props) {
                 >
                   <path
                     d="M3.5 8.75L7 12.25M7 12.25L10.5 8.75M7 12.25V1.75"
-                    stroke={txHistoryIncoming ? colorIn : colorBasic500}
+                    stroke={txHistoryIncoming ? colors.in : colors.basic500}
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -574,7 +570,7 @@ export function Assets({ setTab }: Props) {
                 >
                   <path
                     d="M3.5 5.25L7 1.75M7 1.75L10.5 5.25M7 1.75V12.25"
-                    stroke={txHistoryOutgoing ? colorOut : colorBasic500}
+                    stroke={txHistoryOutgoing ? colors.out : colors.basic500}
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"

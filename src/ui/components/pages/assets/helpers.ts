@@ -11,3 +11,11 @@ export function getTxLink(txId: string, networkCode: string): string {
   );
   return `https://${explorer}/tx/${txId}`;
 }
+
+export const colors = {
+  basic200: '#DAE1E9',
+  basic500: '#9BA6B2',
+  submit400: '#1F5AF6',
+  out: '#FFAF00',
+  in: '#81C926',
+};

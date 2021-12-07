@@ -11,7 +11,6 @@
   position: relative;
   z-index: 1;
   margin-bottom: 8px;
-  cursor: pointer;
   height: 64px;
 
 .nftData
@@ -24,3 +23,29 @@
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
+
+.infoButton {
+  position: absolute;
+  right: 14px;
+  bottom: 19px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.infoIcon {
+  width: 28px;
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.infoIcon:hover {
+  fill: #9ba6b2;
+}
+
+.infoTooltip {
+  top: -15px;
+  right: 16px;
+  white-space: nowrap;
+}

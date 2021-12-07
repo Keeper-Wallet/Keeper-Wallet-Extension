@@ -65,15 +65,15 @@
   fill: #9ba6b2;
 }
 
-.txIconTooltip {
-  top: 12px;
-  left: 60px;
+.infoTooltip {
+  top: -15px;
+  right: 16px;
   white-space: nowrap;
 }
 
-.infoTooltip {
-  top: -13px;
-  right: 15px;
+.txIconTooltip {
+  top: 12px;
+  left: 60px;
   white-space: nowrap;
 }
 

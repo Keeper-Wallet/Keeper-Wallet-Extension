@@ -11,7 +11,7 @@
   position: relative;
   z-index: 1;
   margin-bottom: 8px;
-  cursor: pointer;
+  cursor: default;
   height: 64px;
 
 .assetData
@@ -23,3 +23,57 @@
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
+
+
+.favBtn {
+  position: absolute;
+  right: 40px;
+  bottom: 19px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.favIcon {
+  width: 28px;
+  vertical-align: middle;
+}
+
+.favIcon:hover {
+  stroke: #9ba6b2;
+}
+
+.favTooltip {
+  top: -15px;
+  right: 46px;
+  white-space: nowrap;
+}
+
+.infoButton {
+  position: absolute;
+  right: 14px;
+  bottom: 19px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+
+.infoIcon {
+  width: 28px;
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.infoIcon:hover {
+  fill: #9ba6b2;
+}
+
+.infoTooltip {
+  top: -15px;
+  right: 16px;
+  white-space: nowrap;
+}

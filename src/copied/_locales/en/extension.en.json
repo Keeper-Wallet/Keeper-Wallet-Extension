@@ -35,7 +35,10 @@
     "minSponsoredFee": "Sponsored Asset Fee",
     "sender": "Issuer",
     "timestamp": "Issue date",
-    "closeBtn": "Close"
+    "closeBtn": "Close",
+    "infoTooltip": "Asset Info",
+    "favAddTooltip": "Add to Favorites",
+    "favRemoveTooltip": "Remove from Favorites"
   },
   "assets": {
     "account": "Account",
