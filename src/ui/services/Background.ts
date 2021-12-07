@@ -209,6 +209,11 @@ class Background {
     }
   }
 
+  async assetFavorite(assetId: string): Promise<AssetDetail> {
+    await this.initPromise;
+    return this.background.assetFavorite(assetId);
+  }
+
   async nftInfo(address: string, limit: number = 1000): Promise<AssetDetail[]> {
     await this.initPromise;
     return this.background.nftInfo(address, limit);
@@ -280,4 +285,5 @@ export interface AssetDetail extends IAssetInfo {
   displayName: string;
   originTransactionId: string;
   issuer?: string;
+  isFavorite?: boolean;
 }

@@ -6,6 +6,8 @@ import cn from 'classnames';
 import { AssetLogo } from './assetLogo';
 import { colors } from './helpers';
 import { Trans } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { favoriteAsset } from '../../../actions';
 
 interface Props {
   balance: Money;
@@ -15,8 +17,12 @@ interface Props {
 }
 
 export function AssetItem({ balance, assetId, className, onClick }: Props) {
-  const displayName = balance && balance.asset.displayName;
-  const [isFav, setFav] = React.useState(false);
+  const dispatch = useAppDispatch();
+  const assets = useAppSelector(state => state.assets);
+  const asset = assets[assetId];
+
+  const displayName = asset?.displayName;
+  const isFavorite = asset?.isFavorite;
 
   return (
     <div className={cn(styles.assetCard, className, 'flex')}>
@@ -44,12 +50,12 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
       <button
         className={cn(styles.favBtn, 'showTooltip')}
         type="button"
-        onClick={() => setFav(!isFav)}
+        onClick={() => dispatch(favoriteAsset(assetId))}
       >
         <svg
           className={styles.favIcon}
-          fill={isFav ? colors.submit400 : 'none'}
-          stroke={isFav ? colors.submit400 : colors.basic200}
+          fill={isFavorite ? colors.submit400 : 'none'}
+          stroke={isFavorite ? colors.submit400 : colors.basic200}
           width="26"
           height="26"
           viewBox="0 0 18 18"
@@ -58,7 +64,13 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
         </svg>
       </button>
       <div className={cn(styles.favTooltip, 'tooltip')}>
-        <Trans i18nKey="assetInfo.favAddTooltip" />
+        <Trans
+          i18nKey={
+            isFavorite
+              ? 'assetInfo.favRemoveTooltip'
+              : 'assetInfo.favAddTooltip'
+          }
+        />
       </div>
 
       <button

@@ -98,7 +98,7 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
           };
           assets[network] = assets[network] || {};
-          assets[network][assetId] = mapped;
+          assets[network][assetId] = { ...assets[network][assetId], ...mapped };
           this.store.updateState({ assets });
           break;
         case 400:
@@ -112,6 +112,19 @@ export class AssetInfoController {
     }
 
     return assets[network][assetId];
+  }
+
+  async assetFavorite(assetId) {
+    const { assets } = this.store.getState();
+    const network = this.getNetwork();
+    const asset = assets[network][assetId] || {};
+
+    if (Object.keys(asset).length !== 0) {
+      assets[network][assetId].isFavorite = !asset.isFavorite;
+      this.store.updateState({ assets });
+    }
+
+    return asset;
   }
 
   async nftInfo(address, limit = 1000) {

@@ -457,6 +457,9 @@ class BackgroundService extends EventEmitter {
       // asset information
       assetInfo: async (assetId, compareFields) =>
         await this.assetInfoController.assetInfo(assetId, compareFields),
+      assetFavorite: this.assetInfoController.assetFavorite.bind(
+        this.assetInfoController
+      ),
 
       nftInfo: this.assetInfoController.nftInfo.bind(this.assetInfoController),
 

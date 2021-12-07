@@ -204,6 +204,15 @@ export const getAsset = store => next => action => {
   return next(action);
 };
 
+export const favoriteAsset = store => next => action => {
+  if (action.type === ACTION.FAVORITE_ASSET) {
+    background
+      .assetFavorite(action.payload)
+      .then(asset => store.dispatch(updateAsset({ [action.payload]: asset })));
+  }
+  return next(action);
+};
+
 export const getNfts = store => next => action => {
   if (action.type === ACTION.GET_NFTS) {
     background.nftInfo(action.payload).then(

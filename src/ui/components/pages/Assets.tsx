@@ -174,15 +174,27 @@ export function Assets({ setTab }: Props) {
   const [onlyMyAssets, setOnlyMyAssets] = useState(false);
   const assetEntries = Object.entries<{ balance: string }>(
     balances[address]?.assets || {}
-  ).filter(
-    ([assetId]) =>
-      (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
-      (!assetTerm ||
-        assetId === assetTerm ||
-        (assets && (assets[assetId]?.displayName ?? '').toLowerCase()).indexOf(
-          assetTerm.toLowerCase()
-        ) !== -1)
-  );
+  )
+    .filter(
+      ([assetId]) =>
+        (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
+        (!assetTerm ||
+          assetId === assetTerm ||
+          (
+            assets && (assets[assetId]?.displayName ?? '').toLowerCase()
+          ).indexOf(assetTerm.toLowerCase()) !== -1)
+    )
+    .sort(
+      ([a], [b]) =>
+        assets &&
+        assets[a] &&
+        assets[b] &&
+        (assets[a].isFavorite < assets[b].isFavorite
+          ? 1
+          : assets[a].isFavorite > assets[b].isFavorite
+          ? -1
+          : 0)
+    );
 
   const [nftTerm, setNftTerm] = useState('');
   const [onlyMyNfts, setOnlyMyNfts] = useState(false);
