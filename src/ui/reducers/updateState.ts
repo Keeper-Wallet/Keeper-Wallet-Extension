@@ -22,10 +22,14 @@ function createSimpleReducer<
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
-export const uiState = createSimpleReducer<{ isFeatureUpdateShown?: boolean }>(
-  {},
-  ACTION.UPDATE_UI_STATE
-);
+export const uiState = createSimpleReducer<{
+  isFeatureUpdateShown?: boolean;
+  assetFilters?: {
+    term: string;
+    onlyMy: boolean;
+    onlyFavorites: boolean;
+  };
+}>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<
   Array<{
     address: string;

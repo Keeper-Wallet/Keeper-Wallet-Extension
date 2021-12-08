@@ -60,6 +60,7 @@
     "emptyHistory": "There's nothing to show yet",
     "history": "History",
     "onlyMyAssets": "Only My Assets",
+    "onlyFavorites": "Only Favorites",
     "onlyMyNfts": "Only My NFTs"
   },
   "historyCard": {
