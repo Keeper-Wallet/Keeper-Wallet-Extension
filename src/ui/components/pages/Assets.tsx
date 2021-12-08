@@ -179,11 +179,13 @@ export function Assets({ setTab }: Props) {
         assets &&
         assets[a] &&
         assets[b] &&
-        (assets[a].isFavorite < assets[b].isFavorite
+        (!!assets[a].isFavorite < !!assets[b].isFavorite
           ? 1
-          : assets[a].isFavorite > assets[b].isFavorite
+          : !!assets[a].isFavorite > !!assets[b].isFavorite
           ? -1
-          : 0)
+          : (assets[a].displayName ?? '').localeCompare(
+              assets[b].displayName ?? ''
+            ))
     );
 
   const [nftTerm, setNftTerm] = useState('');
