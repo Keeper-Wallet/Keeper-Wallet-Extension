@@ -37,7 +37,7 @@ import {
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { colors } from './assets/helpers';
+import { applyHistoryFilters, colors, contains } from './assets/helpers';
 
 const MONTH = [
   'Jan',
@@ -148,18 +148,12 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
-  const balancesMoney: Record<string, Money> = {};
-
   const assetInfo = assets['WAVES'];
 
+  let wavesBalance;
   if (assetInfo) {
     const asset = new Asset(assetInfo);
-
-    Object.entries<{ available: string }>(balances).forEach(
-      ([address, { available }]) => {
-        balancesMoney[address] = new Money(available, asset);
-      }
-    );
+    wavesBalance = new Money(balances[address]?.available || 0, asset);
   }
 
   const [assetTerm, setAssetTerm] = useState('');
@@ -174,9 +168,9 @@ export function Assets({ setTab }: Props) {
             assets && (assets[assetId]?.displayName ?? '').toLowerCase()
           ).indexOf(assetTerm.toLowerCase()) !== -1)
     )
+
     .sort(
       ([a], [b]) =>
-        assets &&
         assets[a] &&
         assets[b] &&
         (!!assets[a].isFavorite < !!assets[b].isFavorite
@@ -195,10 +189,9 @@ export function Assets({ setTab }: Props) {
       .filter(
         nft =>
           (!onlyMyNfts || nft.issuer === address) &&
-          (!nftTerm ||
-            nft.id === nftTerm ||
-            nft.displayName.toLowerCase().indexOf(nftTerm.toLowerCase()) !== -1)
+          (!nftTerm || nft.id === nftTerm || contains(nft.displayName, nftTerm))
       )
+      .sort((a, b) => (a.displayName ?? '').localeCompare(b.displayName ?? ''))
       .reduce(
         (result, item) => ({
           ...result,
@@ -216,58 +209,14 @@ export function Assets({ setTab }: Props) {
   const historyEntries = Object.entries<Array<ITransaction & WithId>>(
     (txHistory || [])
       .filter(
-        (
-          tx: any // TODO better types
-        ) => {
-          const hasMassTransfers = (tx.transfers ?? []).reduce(
-            (
-              result: boolean,
-              transfer: { amount: number; recipient: string }
-            ) => result || addressAlias.includes(transfer.recipient),
-            false
-          );
-          const hasInvokePayments = (tx.payments ?? []).length !== 0;
-          const hasInvokeTransfers = (tx.stateChanges?.transfer ?? []).reduce(
-            (
-              result: boolean,
-              transfer: {
-                address: string;
-                asset: string;
-                amount: string | number;
-              }
-            ) => result || addressAlias.includes(transfer.address),
-            false
-          );
-
-          return (
-            (!txHistoryTerm ||
-              tx.id === txHistoryTerm ||
-              tx.assetId === txHistoryTerm ||
-              (assets &&
-                (assets[tx.assetId]?.displayName ?? '')
-                  .toLowerCase()
-                  .indexOf(txHistoryTerm.toLowerCase()) !== -1) ||
-              tx.sender === txHistoryTerm ||
-              tx.recipient === txHistoryTerm ||
-              (tx.alias ?? '')
-                .toLowerCase()
-                .indexOf(txHistoryTerm.toLowerCase()) !== -1 ||
-              (tx.call?.function ?? '')
-                .toLowerCase()
-                .indexOf(txHistoryTerm.toLowerCase()) !== -1) &&
-            (!txHistoryType || tx.type === txHistoryType) &&
-            (!txHistoryIncoming ||
-              (!addressAlias.includes(tx.sender) &&
-                (addressAlias.includes(tx.recipient) || hasMassTransfers)) ||
-              hasInvokeTransfers) &&
-            (!txHistoryOutgoing ||
-              (tx.type === TRANSACTION_TYPE.TRANSFER &&
-                addressAlias.includes(tx.sender)) ||
-              (tx.type === TRANSACTION_TYPE.MASS_TRANSFER &&
-                !hasMassTransfers) ||
-              (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
-          );
-        }
+        applyHistoryFilters({
+          term: txHistoryTerm,
+          type: txHistoryType,
+          isIncoming: txHistoryIncoming,
+          isOutgoing: txHistoryOutgoing,
+          addressOrAlias: addressAlias,
+          assets: assets,
+        })
       )
       .reduce((result, tx) => {
         const d = new Date(tx.timestamp);
@@ -287,7 +236,7 @@ export function Assets({ setTab }: Props) {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          balance={balancesMoney[address]}
+          balance={wavesBalance}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);
@@ -362,7 +311,6 @@ export function Assets({ setTab }: Props) {
                 <AssetItem
                   key={assetId}
                   balance={
-                    assets &&
                     assets[assetId] &&
                     new Money(
                       new BigNumber(balance),
