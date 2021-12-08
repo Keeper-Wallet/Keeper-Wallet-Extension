@@ -3,15 +3,20 @@ import * as React from 'react';
 import cn from 'classnames';
 
 interface TabProps {
+  className?: string;
   children: React.ReactNode;
   isActive?: boolean;
   onActivate?: () => void;
 }
 
-export function Tab({ children, isActive, onActivate }: TabProps) {
+export function Tab({ className, children, isActive, onActivate }: TabProps) {
   return (
     <li
-      className={cn(styles.tabListItem, { [styles.tabListActive]: isActive })}
+      className={cn(
+        styles.tabListItem,
+        { [styles.tabListActive]: isActive },
+        className
+      )}
       onClick={onActivate}
     >
       {children}

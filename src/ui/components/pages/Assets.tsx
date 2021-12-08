@@ -151,14 +151,14 @@ export function Assets({ setTab }: Props) {
       </div>
 
       <Tabs>
-        <TabList className={cn(styles.tabs, 'body3')}>
-          <Tab>
+        <TabList className={cn(styles.tabs, 'body3', 'flex')}>
+          <Tab className="fullwidth center">
             <Trans i18nKey="assets.assets" />
           </Tab>
-          <Tab>
+          <Tab className="fullwidth center">
             <Trans i18nKey="assets.nfts" />
           </Tab>
-          <Tab>
+          <Tab className="fullwidth center">
             <Trans i18nKey="assets.history" />
           </Tab>
         </TabList>
