@@ -151,7 +151,7 @@ export function Assets({ setTab }: Props) {
       </div>
 
       <Tabs>
-        <TabList className={cn(styles.tabs, 'body3', 'flex')}>
+        <TabList className="flex body3 margin-main-top">
           <Tab className="fullwidth center">
             <Trans i18nKey="assets.assets" />
           </Tab>

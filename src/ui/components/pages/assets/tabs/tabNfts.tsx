@@ -38,7 +38,7 @@ export function TabNfts({ onItemClick }) {
 
   return (
     <TabPanel>
-      <div className="flex grow margin1">
+      <div className="flex relative grow margin1">
         <SearchInput
           value={nftTerm}
           onInput={e => setNftTerm(e.target.value)}
@@ -49,10 +49,11 @@ export function TabNfts({ onItemClick }) {
           onClick={() => setOnlyMyNfts(!onlyMyNfts)}
         >
           <svg
+            className={styles.filterBtnIcon}
             width="14"
             height="14"
+            viewBox="0 0 14 14"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               fill={onlyMyNfts ? colors.submit400 : colors.basic500}
@@ -67,7 +68,7 @@ export function TabNfts({ onItemClick }) {
             />
           </svg>
         </div>
-        <div className={cn(styles.filterTooltip, 'tooltip')}>
+        <div className={cn(styles.filterFirstBtnTooltip, 'tooltip')}>
           <Trans i18nKey="assets.onlyMyNfts" />
         </div>
       </div>

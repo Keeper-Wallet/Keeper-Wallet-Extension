@@ -126,7 +126,7 @@ export function TabTxHistory() {
 
   return (
     <TabPanel>
-      <div className="flex grow margin1">
+      <div className="flex relative grow margin1">
         <SearchInput
           value={term}
           onInput={e => setTerm(e.target.value)}
@@ -147,22 +147,31 @@ export function TabTxHistory() {
           onClick={() => setOnlyIn(!onlyIn)}
         >
           <svg
-            width="14"
-            height="14"
+            className={styles.filterBtnIcon}
+            width="12"
+            height="12"
             viewBox="0 0 14 14"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M3.5 8.75L7 12.25M7 12.25L10.5 8.75M7 12.25V1.75"
-              stroke={onlyIn ? colors.in : colors.basic500}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <g clipPath="url(#clip0_288_13493)">
+              <path
+                d="M12.7653 4.78956C12.7556 4.16098 12.2574 3.65792 11.6454 3.6589C11.0335 3.65988 10.5337 4.16454 10.5221 4.79315L11.0013 9.65964L2.12261 0.53773C1.68523 0.0883596 0.974976 0.0894951 0.536225 0.540267C0.0974734 0.991038 0.0963682 1.72075 0.533755 2.17012L9.41241 11.292L4.67569 10.7998C4.06385 10.8117 3.57265 11.3252 3.5717 11.9538C3.57074 12.5825 4.06039 13.0944 4.6722 13.1044L12.1169 13.5923C12.7363 13.5912 13.2392 13.0746 13.2402 12.4382L12.7653 4.78956Z"
+                fill={onlyIn ? colors.in : colors.basic500}
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_288_13493">
+                <rect
+                  width="14"
+                  height="14"
+                  fill="white"
+                  transform="matrix(1 0 0 -1 0 14)"
+                />
+              </clipPath>
+            </defs>
           </svg>
         </div>
-        <div className={cn(styles.filterIncomingTooltip, 'tooltip')}>
+        <div className={cn(styles.filterSecondBtnTooltip, 'tooltip')}>
           <Trans i18nKey="historyFilters.incoming" />
         </div>
 
@@ -171,22 +180,26 @@ export function TabTxHistory() {
           onClick={() => setOnlyOut(!onlyOut)}
         >
           <svg
-            width="14"
-            height="14"
+            className={styles.filterBtnIcon}
+            width="12"
+            height="12"
             viewBox="0 0 14 14"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M3.5 5.25L7 1.75M7 1.75L10.5 5.25M7 1.75V12.25"
-              stroke={onlyOut ? colors.out : colors.basic500}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <g clipPath="url(#clip0_288_13492)">
+              <path
+                d="M12.7653 9.21044C12.7556 9.83902 12.2574 10.3421 11.6454 10.3411C11.0335 10.3401 10.5337 9.83546 10.5221 9.20685L11.0013 4.34036L2.12261 13.4623C1.68523 13.9116 0.974976 13.9105 0.536225 13.4597C0.0974734 13.009 0.0963682 12.2793 0.533755 11.8299L9.41241 2.70797L4.67569 3.20022C4.06385 3.18832 3.57265 2.67485 3.5717 2.04616C3.57074 1.41747 4.06039 0.905561 4.6722 0.895614L12.1169 0.407693C12.7363 0.40878 13.2392 0.925431 13.2402 1.56179L12.7653 9.21044Z"
+                fill={onlyOut ? colors.out : colors.basic500}
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_288_13492">
+                <rect width="14" height="14" fill="white" />
+              </clipPath>
+            </defs>
           </svg>
         </div>
-        <div className={cn(styles.filterTooltip, 'tooltip')}>
+        <div className={cn(styles.filterFirstBtnTooltip, 'tooltip')}>
           <Trans i18nKey="historyFilters.outgoing" />
         </div>
       </div>

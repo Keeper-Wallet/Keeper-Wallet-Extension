@@ -46,7 +46,7 @@ export function TabAssets({ onItemClick }) {
     );
   return (
     <TabPanel>
-      <div className="flex margin1">
+      <div className="flex relative margin1">
         <SearchInput
           value={assetTerm}
           onInput={e => setAssetTerm(e.target.value)}
@@ -57,7 +57,7 @@ export function TabAssets({ onItemClick }) {
           onClick={() => setOnlyFavorites(!onlyFavorites)}
         >
           <svg
-            className={styles.favIcon}
+            className={styles.filterBtnIcon}
             fill={onlyFavorites ? colors.submit400 : 'none'}
             stroke={onlyFavorites ? colors.submit400 : colors.basic500}
             width="18"
@@ -67,7 +67,7 @@ export function TabAssets({ onItemClick }) {
             <path d="M10.6472 6.66036L10.7648 6.9373L11.0645 6.96315L15.2801 7.32666L12.0848 10.0999L11.8574 10.2972L11.9254 10.5904L12.8808 14.7108L9.25837 12.5244L9 12.3685L8.74163 12.5244L5.12113 14.7096L6.08193 10.5911L6.15049 10.2972L5.92239 10.0996L2.72308 7.32803L6.93477 6.97071L7.2352 6.94522L7.35286 6.66761L9.00035 2.78048L10.6472 6.66036Z" />
           </svg>
         </div>
-        <div className={cn(styles.filterTooltip, 'tooltip')}>
+        <div className={cn(styles.filterSecondBtnTooltip, 'tooltip')}>
           <Trans i18nKey="assets.onlyFavorites" />
         </div>
         <div
@@ -75,10 +75,11 @@ export function TabAssets({ onItemClick }) {
           onClick={() => setOnlyMyAssets(!onlyMyAssets)}
         >
           <svg
+            className={styles.filterBtnIcon}
             width="14"
             height="14"
+            viewBox="0 0 14 14"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               fill={onlyMyAssets ? colors.submit400 : colors.basic500}
@@ -93,7 +94,7 @@ export function TabAssets({ onItemClick }) {
             />
           </svg>
         </div>
-        <div className={cn(styles.filterTooltip, 'tooltip')}>
+        <div className={cn(styles.filterFirstBtnTooltip, 'tooltip')}>
           <Trans i18nKey="assets.onlyMyAssets" />
         </div>
       </div>

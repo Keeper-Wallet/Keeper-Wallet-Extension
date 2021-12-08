@@ -128,19 +128,22 @@
   align-items: center;
   width: 26px;
   height: 26px;
-  margin: 3px;
   border-radius: 2px;
   cursor: pointer;
 
   &:hover
-    background-color: #edf0f4
+    background-color: #edf0f4;
+
+.filterBtnIcon
+  width: 26px;
 
 .filterTxSelect
-  width: 96px
-  margin-left: 9px
+  min-width: 96px;
+  width: 96px;
+  margin: 0 3px 0 6px;
   border-bottom: solid 1px #9BA6B2;
   & > div:first-child
-    background: none
+    background: none;
     height: 32px;
     padding: 0 14px 0 8px;
     border: none;
@@ -152,17 +155,26 @@
       right: 0;
       top: 50%;
 
-.filterTooltip
-  top: 152px;
-  right: 21px;
+.filterFirstBtnTooltip
+  top: auto;
+  right: 30px;
   white-space: nowrap;
+  &:after
+    right: -2px;
+    bottom: auto;
 
-.filterIncomingTooltip
-  top: 152px;
-  right: 49px;
+.filterSecondBtnTooltip
+  top: auto;
+  right: 56px;
   white-space: nowrap;
+  &:after
+    right: -2px;
+    bottom: auto;
 
 .filterTxTooltip
-  top: 152px;
-  right: 70px;
+  top: auto;
+  right: 156px;
   white-space: nowrap;
+  &:after
+    right: -2px;
+    bottom: auto;
