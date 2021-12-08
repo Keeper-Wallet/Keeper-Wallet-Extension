@@ -11,8 +11,22 @@ import { useAppDispatch, useAppSelector } from '../../../../store';
 import { setUiState } from '../../../../actions';
 import { TabPanel } from '../../../ui';
 
-export function TabAssets({ onAssetClick }) {
+function useFilter(name: string, field: string) {
   const dispatch = useAppDispatch();
+  const filters = useAppSelector(state => state.uiState[name]);
+
+  function setFilter(value: any) {
+    dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
+  }
+
+  return [filters[field], setFilter];
+}
+
+function useAssetFilter(field: string) {
+  return useFilter('assetFilters', field);
+}
+
+export function TabAssets({ onAssetClick }) {
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
       ({ address }) => address === state.selectedAccount.address
@@ -20,22 +34,13 @@ export function TabAssets({ onAssetClick }) {
   );
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
-  const filters = useAppSelector(state => state.uiState?.assetFilters);
+
+  const [assetTerm, setAssetTerm] = useAssetFilter('term');
+  const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
+  const [onlyFavorites, setOnlyFavorites] = useAssetFilter('onlyFavorites');
 
   const address = activeAccount && activeAccount.address;
   const myAssets = balances[address]?.assets;
-
-  const assetTerm = filters?.term;
-  const setAssetTerm = (value: string) =>
-    dispatch(setUiState({ assetFilters: { ...filters, term: value } }));
-
-  const onlyMyAssets = filters?.onlyMy;
-  const setOnlyMyAssets = (flag: boolean) =>
-    dispatch(setUiState({ assetFilters: { ...filters, onlyMy: flag } }));
-
-  const onlyFavorites = filters?.onlyFavorites || false;
-  const setOnlyFavorites = (flag: boolean) =>
-    dispatch(setUiState({ assetFilters: { ...filters, onlyFavorites: flag } }));
 
   const assetEntries = Object.entries<{ balance: string }>(myAssets || {})
     .filter(
