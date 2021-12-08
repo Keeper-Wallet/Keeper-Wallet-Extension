@@ -17,10 +17,9 @@ function Address({ base58 }) {
 interface Props {
   tx: any;
   className?: string;
-  onClick?: (assetId: string) => void;
 }
 
-export function HistoryItem({ tx, className, onClick }: Props) {
+export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
@@ -337,10 +336,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
   }
 
   return (
-    <div
-      className={cn(styles.historyCard, className, 'flex')}
-      onClick={() => onClick(assetId)}
-    >
+    <div className={cn(styles.historyCard, className, 'flex')}>
       <div className={cn(styles.historyIconWrapper, 'showTooltip')}>
         <TxIcon txType={messageType} className={styles.historyIcon} />
         {isTxFailed && (
