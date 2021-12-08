@@ -38,12 +38,7 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
           {displayName || <Loader />}
         </div>
         <div className={styles.balance}>
-          <Balance
-            isShortFormat={false}
-            split={true}
-            balance={balance}
-            assetId={assetId}
-          />
+          <Balance isShortFormat={false} split={true} balance={balance} />
         </div>
       </div>
 

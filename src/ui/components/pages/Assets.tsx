@@ -5,11 +5,8 @@ import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans, useTranslation } from 'react-i18next';
 import {
-  getAliases,
   getAsset,
   getBalances,
-  getNfts,
-  getTxHistory,
   setActiveAccount,
   setUiState,
 } from '../../actions';
@@ -116,10 +113,7 @@ export function Assets({ setTab }: Props) {
     )
   );
   const assets = useAppSelector(state => state.assets);
-  const aliases = useAppSelector(state => state.aliases);
   const balances = useAppSelector(state => state.balances);
-  const txHistory = useAppSelector(state => state.txHistory);
-  const nfts = useAppSelector(state => state.nfts);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
@@ -136,14 +130,12 @@ export function Assets({ setTab }: Props) {
   }, [assets, dispatch]);
 
   const address = activeAccount && activeAccount.address;
-  const addressAlias = [address, ...aliases];
+  const txHistory = balances[address]?.txHistory;
+  const myAssets = balances[address]?.assets;
+  const myNfts = balances[address]?.nfts;
+  const addressAlias = [address, ...(balances[address]?.aliases || [])];
 
   React.useEffect(() => {
-    if (address) {
-      dispatch(getNfts(address));
-      dispatch(getTxHistory(address));
-      dispatch(getAliases(address));
-    }
     dispatch(getBalances());
   }, []);
 
@@ -172,9 +164,7 @@ export function Assets({ setTab }: Props) {
 
   const [assetTerm, setAssetTerm] = useState('');
   const [onlyMyAssets, setOnlyMyAssets] = useState(false);
-  const assetEntries = Object.entries<{ balance: string }>(
-    balances[address]?.assets || {}
-  )
+  const assetEntries = Object.entries<{ balance: string }>(myAssets || {})
     .filter(
       ([assetId]) =>
         (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
@@ -199,7 +189,7 @@ export function Assets({ setTab }: Props) {
   const [nftTerm, setNftTerm] = useState('');
   const [onlyMyNfts, setOnlyMyNfts] = useState(false);
   const nftEntries = Object.entries<Asset[]>(
-    nfts
+    (myNfts || [])
       .filter(
         nft =>
           (!onlyMyNfts || nft.issuer === address) &&
@@ -222,7 +212,7 @@ export function Assets({ setTab }: Props) {
   const [txHistoryOutgoing, setTxHistoryOutgoing] = useState(false);
   const thisYear = new Date().getFullYear();
   const historyEntries = Object.entries<Array<ITransaction & WithId>>(
-    txHistory
+    (txHistory || [])
       .filter(
         (
           tx: any // TODO better types
@@ -438,7 +428,7 @@ export function Assets({ setTab }: Props) {
                       key={nft.id}
                       asset={nft}
                       onClick={assetId => {
-                        setAsset(nfts.find(nft => nft.id === assetId));
+                        setAsset(myNfts.find(nft => nft.id === assetId));
                         setShowAsset(true);
                       }}
                     />

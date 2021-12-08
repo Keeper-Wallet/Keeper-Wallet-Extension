@@ -16,7 +16,7 @@ import { equals } from 'ramda';
 import LocalStore from './lib/local-store';
 import {
   AssetInfoController,
-  BalanceController,
+  CurrentAccountController,
   ExternalDeviceController,
   IdleController,
   MessageController,
@@ -240,9 +240,26 @@ class BackgroundService extends EventEmitter {
       }
     });
 
+    this.networkController.store.subscribe(() =>
+      this.currentAccountController.updateBalances()
+    );
+
+    this.walletController.store.subscribe(() =>
+      this.currentAccountController.updateBalances()
+    );
+
+    // AssetInfo. Provides information about assets
+    this.assetInfoController = new AssetInfoController({
+      initState: initState.AssetInfoController,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+      getNode: this.networkController.getNode.bind(this.networkController),
+    });
+
     // Balance. Polls balances for accounts
-    this.balanceController = new BalanceController({
-      initState: initState.BalanceController,
+    this.currentAccountController = new CurrentAccountController({
+      initState: initState.CurrentAccountController,
       getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
@@ -258,23 +275,9 @@ class BackgroundService extends EventEmitter {
         this.preferencesController
       ),
       isLocked: this.walletController.isLocked.bind(this.walletController),
-    });
-
-    this.networkController.store.subscribe(() =>
-      this.balanceController.updateBalances()
-    );
-
-    this.walletController.store.subscribe(() =>
-      this.balanceController.updateBalances()
-    );
-
-    // AssetInfo. Provides information about assets
-    this.assetInfoController = new AssetInfoController({
-      initState: initState.AssetInfoController,
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
+      updateAssets: this.assetInfoController.updateAssets.bind(
+        this.assetInfoController
       ),
-      getNode: this.networkController.getNode.bind(this.networkController),
     });
 
     this.txinfoController = new TxInfoController({
@@ -338,7 +341,7 @@ class BackgroundService extends EventEmitter {
       WalletController: this.walletController.store,
       NetworkController: this.networkController.store,
       MessageController: this.messageController.store,
-      BalanceController: this.balanceController.store,
+      CurrentAccountController: this.currentAccountController.store,
       PermissionsController: this.permissionsController.store,
       UiStateController: this.uiStateController.store,
       AssetInfoController: this.assetInfoController.store,
@@ -445,7 +448,7 @@ class BackgroundService extends EventEmitter {
       setCustomCode: async (code, network) => {
         this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
-        this.balanceController.restartPolling();
+        this.currentAccountController.restartPolling();
       },
       setCustomMatcher: async (url, network) =>
         this.networkController.setCustomMatcher(url, network),
@@ -460,14 +463,6 @@ class BackgroundService extends EventEmitter {
       assetFavorite: this.assetInfoController.assetFavorite.bind(
         this.assetInfoController
       ),
-
-      nftInfo: this.assetInfoController.nftInfo.bind(this.assetInfoController),
-
-      txHistory: this.txinfoController.txHistory.bind(this.txinfoController),
-      aliasByAddress: this.txinfoController.aliasByAddress.bind(
-        this.txinfoController
-      ),
-
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
 
@@ -507,8 +502,8 @@ class BackgroundService extends EventEmitter {
       },
       sendEvent: async (event, properties) =>
         this.statisticsController.addEvent(event, properties),
-      updateBalances: this.balanceController.updateBalances.bind(
-        this.balanceController
+      updateBalances: this.currentAccountController.updateBalances.bind(
+        this.currentAccountController
       ),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),

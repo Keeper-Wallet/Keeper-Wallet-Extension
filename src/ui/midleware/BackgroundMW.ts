@@ -9,10 +9,6 @@ import {
   setTab,
   setUiState,
   updateActiveState,
-  updateAliases,
-  updateAsset,
-  updateNfts,
-  updateTxHistory,
 } from '../actions';
 import background from '../services/Background';
 import { i18n } from '../i18n';
@@ -191,14 +187,7 @@ export const changeNetwork = store => next => action => {
 
 export const getAsset = store => next => action => {
   if (action.type === ACTION.GET_ASSETS) {
-    background.assetInfo(action.payload, action.meta.compareFields).then(
-      data => {
-        store.dispatch(updateAsset({ [action.payload]: data }));
-      },
-      () => {
-        store.dispatch(updateAsset({ [action.payload]: {} }));
-      }
-    );
+    background.assetInfo(action.payload, action.meta.compareFields);
   }
 
   return next(action);
@@ -206,45 +195,8 @@ export const getAsset = store => next => action => {
 
 export const favoriteAsset = store => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
-    background
-      .assetFavorite(action.payload)
-      .then(asset => store.dispatch(updateAsset({ [action.payload]: asset })));
+    background.assetFavorite(action.payload);
   }
-  return next(action);
-};
-
-export const getNfts = store => next => action => {
-  if (action.type === ACTION.GET_NFTS) {
-    background.nftInfo(action.payload).then(
-      nfts => {
-        store.dispatch(updateNfts(nfts));
-      },
-      () => {
-        store.dispatch(updateNfts([]));
-      }
-    );
-  }
-
-  return next(action);
-};
-
-export const getTxHistory = store => next => action => {
-  if (action.type === ACTION.GET_TX_HISTORY) {
-    background
-      .txHistory(action.payload)
-      .then(messages => store.dispatch(updateTxHistory(messages)));
-  }
-
-  return next(action);
-};
-
-export const getAliases = store => next => action => {
-  if (action.type === ACTION.GET_ALIASES) {
-    background
-      .aliasByAddress(action.payload)
-      .then(aliases => store.dispatch(updateAliases(aliases)));
-  }
-
   return next(action);
 };
 

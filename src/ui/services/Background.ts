@@ -214,21 +214,6 @@ class Background {
     return this.background.assetFavorite(assetId);
   }
 
-  async nftInfo(address: string, limit: number = 1000): Promise<AssetDetail[]> {
-    await this.initPromise;
-    return this.background.nftInfo(address, limit);
-  }
-
-  async txHistory(address: string, limit: number = 100): Promise<any> {
-    await this.initPromise;
-    return this.background.txHistory(address, limit);
-  }
-
-  async aliasByAddress(address: string): Promise<string[]> {
-    await this.initPromise;
-    return this.background.aliasByAddress(address);
-  }
-
   async deleteNotifications(ids) {
     await this.initPromise;
     return this.background.deleteNotifications(ids);

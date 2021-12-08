@@ -1,13 +1,14 @@
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
-export class BalanceController {
+export class CurrentAccountController {
   constructor(options = {}) {
     const defaults = {
       balances: {},
       pollInterval: options.pollInterval || 10000,
     };
 
+    this.updateAssets = options.updateAssets;
     this.getNetworkConfig = options.getNetworkConfig;
     this.getAccounts = options.getAccounts;
     this.getNetwork = options.getNetwork;
@@ -29,17 +30,17 @@ export class BalanceController {
   }
 
   getByUrl(url) {
-    const API_BASE = this.getNode();
-    url = new URL(url, API_BASE).toString();
-
-    return fetch(url)
-      .then(resp => resp.text())
-      .then(txt =>
-        JSON.parse(txt.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"'))
-      );
+    let accept = 'application/json;';
+    if (url.match(/^(assets|transactions)/))
+      accept += 'large-significand-format=string';
+    return fetch(new URL(url, this.getNode()).toString(), {
+      headers: { accept },
+    }).then(resp => resp.json());
   }
 
   async updateBalances() {
+    const nftLimit = 1000;
+    const txLimit = 100;
     const currentNetwork = this.getNetwork();
     const accounts = this.getAccounts().filter(
       ({ network }) => network === currentNetwork
@@ -54,9 +55,40 @@ export class BalanceController {
           const address = account.address;
           const isActiveAddress = address === activeAccount.address;
 
-          const wavesBalances = await this.getByUrl(
-            `addresses/balance/details/${address}`
-          );
+          const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
+            await Promise.all(
+              [
+                `addresses/balance/details/${address}`,
+                ...(isActiveAddress
+                  ? [
+                      `assets/balance/${address}`,
+                      `assets/nft/${address}/limit/${nftLimit}`,
+                      `alias/by-address/${address}`,
+                      `transactions/address/${address}/limit/${txLimit}`,
+                    ]
+                  : []),
+              ].map(url => this.getByUrl(url))
+            );
+
+          if (isActiveAddress) {
+            await this.updateAssets(
+              address,
+              ...(myAssets.balances || [])
+                .concat(myNfts || [])
+                .map(info => info.assetId)
+                .concat(
+                  txHistory.map(
+                    tx =>
+                      tx.assetId ||
+                      (tx.order1 &&
+                        tx.order1.assetPair &&
+                        (tx.order1.assetPair.amountAsset ||
+                          tx.order1.assetPair.priceAsset))
+                  )
+                )
+                .filter(assetId => !!assetId)
+            );
+          }
 
           const available = new BigNumber(wavesBalances.available);
           const regular = new BigNumber(wavesBalances.regular);
@@ -70,10 +102,10 @@ export class BalanceController {
               network: currentNetwork,
               ...(isActiveAddress
                 ? {
+                    aliases: aliases || [],
+                    txHistory: txHistory[0],
                     assets: Object.fromEntries(
-                      (
-                        await this.getByUrl(`assets/balance/${address}`)
-                      ).balances.map(info => [
+                      myAssets.balances.map(info => [
                         info.assetId,
                         {
                           minSponsoredAssetFee:
@@ -88,6 +120,24 @@ export class BalanceController {
                         },
                       ])
                     ),
+                    nfts: myNfts.map(nft => ({
+                      id: nft.assetId,
+                      name: nft.name,
+                      precision: nft.decimals,
+                      description: nft.description,
+                      height: nft.issueHeight,
+                      timestamp: new Date(
+                        parseInt(nft.issueTimestamp)
+                      ).toJSON(),
+                      sender: nft.issuer,
+                      quantity: nft.quantity,
+                      reissuable: nft.reissuable,
+                      hasScript: nft.scripted,
+                      displayName: nft.ticker || nft.name,
+                      minSponsoredFee: nft.minSponsoredAssetFee,
+                      originTransactionId: nft.originTransactionId,
+                      issuer: nft.issuer,
+                    })),
                   }
                 : undefined),
             },

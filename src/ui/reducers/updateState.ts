@@ -18,7 +18,7 @@ function createSimpleReducer<
   return (
     state = initialState,
     action: { type: TActionType; payload: TState }
-  ) => (actionType === action.type ? action.payload : state);
+  ) => (actionType === action.type && action.payload) || state;
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
@@ -82,6 +82,9 @@ export const balances = createSimpleReducer<
           minSponsoredAssetFee: string;
         };
       };
+      aliases: string[];
+      nfts: AssetDetail[];
+      txHistory: Array<ITransaction & WithId>;
     }
   >
 >({}, ACTION.UPDATE_BALANCES);
@@ -107,25 +110,10 @@ export const messages = (
   return state;
 };
 
-export const assets = (
-  state: Record<string, AssetDetail> = {},
-  action: { type: string; payload: Record<string, AssetDetail> }
-) => {
-  if (action.type === ACTION.UPDATE_ASSET) {
-    return { ...state, ...action.payload };
-  }
-
-  return state;
-};
-
-export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
-
-export const txHistory = createSimpleReducer<Array<ITransaction & WithId>>(
-  [],
-  ACTION.UPDATE_TX_HISTORY
+export const assets = createSimpleReducer<Record<string, AssetDetail>>(
+  {},
+  ACTION.UPDATE_ASSETS
 );
-
-export const aliases = createSimpleReducer<string[]>([], ACTION.UPDATE_ALIASES);
 
 export const backTabs = (
   state: unknown[] = [],

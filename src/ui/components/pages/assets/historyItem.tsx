@@ -27,7 +27,8 @@ export function HistoryItem({ tx, className, onClick }: Props) {
     state => state.selectedAccount.networkCode
   );
   const assets = useAppSelector(state => state.assets);
-  const aliases = useAppSelector(state => state.aliases);
+  const aliases = useAppSelector(state => state.balances[address]?.aliases);
+  const addressAlias = [address, ...(aliases || [])];
 
   let tooltip, label, info, messageType, addSign;
   const isTxFailed = tx.applicationStatus === 'failed';
@@ -80,7 +81,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       addSign = '-';
       messageType = 'transfer';
 
-      if (tx.recipient === address) {
+      if (addressAlias.includes(tx.recipient)) {
         tooltip =
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferReceive')
@@ -90,7 +91,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         messageType = 'receive';
       }
 
-      if (tx.sender === tx.recipient) {
+      if (tx.sender === address && addressAlias.includes(tx.recipient)) {
         tooltip =
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferSelf')
@@ -192,7 +193,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       label = <Address base58={tx.recipient} />;
       addSign = '-';
 
-      if (tx.recipient === address) {
+      if (addressAlias.includes(tx.recipient)) {
         tooltip = t('historyCard.leaseIncoming');
         label = <Address base58={tx.sender} />;
         addSign = '+';
@@ -214,7 +215,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       label = <Address base58={tx.lease.recipient} />;
       addSign = '+';
 
-      if (tx.lease.recipient === address) {
+      if (addressAlias.includes(tx.lease.recipient)) {
         label = <Address base58={tx.lease.sender} />;
         addSign = '-';
       }
@@ -249,9 +250,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
               transfer: { amount: number; recipient: string }
             ) =>
               result.add(
-                [address, ...aliases].includes(transfer.recipient)
-                  ? transfer.amount
-                  : 0
+                addressAlias.includes(transfer.recipient) ? transfer.amount : 0
               ),
             new BigNumber(0)
           ),

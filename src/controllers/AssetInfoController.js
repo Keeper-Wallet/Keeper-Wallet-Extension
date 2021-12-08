@@ -17,6 +17,12 @@ const WAVES = {
 export class AssetInfoController {
   constructor(options = {}) {
     const defaults = {
+      lastUpdated: {
+        mainnet: {},
+        stagenet: {},
+        testnet: {},
+        custom: {},
+      },
       assets: {
         mainnet: {
           WAVES,
@@ -117,6 +123,8 @@ export class AssetInfoController {
   async assetFavorite(assetId) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
+    assets[network] = assets[network] || {};
+
     const asset = assets[network][assetId] || {};
 
     if (Object.keys(asset).length !== 0) {
@@ -127,35 +135,72 @@ export class AssetInfoController {
     return asset;
   }
 
-  async nftInfo(address, limit = 1000) {
-    let resp = await fetch(
-      new URL(`assets/nft/${address}/limit/${limit}`, this.getNode()).toString()
-    );
+  /**
+   * Force-updates storage asset info by assetId list
+   * @param {string} forAddress
+   * @param {Array<string>} assetIds
+   * @returns {Promise<void>}
+   */
+  async updateAssets(forAddress, ...assetIds) {
+    const { assets, lastUpdated } = this.store.getState();
+    const network = this.getNetwork();
+    const hour = 60 * 60 * 1000;
+
+    if (
+      assetIds.length === 0 ||
+      new Date() - new Date(lastUpdated[network][forAddress]) < hour
+    ) {
+      return;
+    }
+
+    const assetDetailsUrl = new URL(`assets/details`, this.getNode());
+    let resp = await fetch(assetDetailsUrl.toString(), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids: assetIds }),
+    });
+
     switch (resp.status) {
       case 200:
-        let nfts = await resp
+        let assetInfos = await resp
           .text()
           .then(text =>
             JSON.parse(
               text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
             )
           );
-        return nfts.map(nft => ({
-          id: nft.assetId,
-          name: nft.name,
-          precision: nft.decimals,
-          description: nft.description,
-          height: nft.issueHeight,
-          timestamp: new Date(parseInt(nft.issueTimestamp)).toJSON(),
-          sender: nft.issuer,
-          quantity: nft.quantity,
-          reissuable: nft.reissuable,
-          hasScript: nft.scripted,
-          displayName: nft.ticker || nft.name,
-          minSponsoredFee: nft.minSponsoredAssetFee,
-          originTransactionId: nft.originTransactionId,
-          issuer: nft.issuer,
-        }));
+
+        assetInfos.forEach(assetInfo => {
+          if (!assetInfo.error) {
+            assets[network][assetInfo.assetId] = {
+              ...assets[network][assetInfo.assetId],
+              ...{
+                id: assetInfo.assetId,
+                name: assetInfo.name,
+                precision: assetInfo.decimals,
+                description: assetInfo.description,
+                height: assetInfo.issueHeight,
+                timestamp: new Date(
+                  parseInt(assetInfo.issueTimestamp)
+                ).toJSON(),
+                sender: assetInfo.issuer,
+                quantity: assetInfo.quantity,
+                reissuable: assetInfo.reissuable,
+                hasScript: assetInfo.scripted,
+                displayName: assetInfo.ticker || assetInfo.name,
+                minSponsoredFee: assetInfo.minSponsoredAssetFee,
+                originTransactionId: assetInfo.originTransactionId,
+                issuer: assetInfo.issuer,
+              },
+            };
+          }
+        });
+        lastUpdated[network][forAddress] = new Date().getTime();
+        this.store.updateState({ assets, lastUpdated });
+        break;
       default:
         throw new Error(await resp.text());
     }
