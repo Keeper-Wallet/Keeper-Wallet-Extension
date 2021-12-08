@@ -10,8 +10,5 @@ export const getAsset = (
   payload,
   meta: { compareFields },
 });
-export const updateNfts = createAction(ACTION.UPDATE_NFTS);
-export const updateTxHistory = createAction(ACTION.UPDATE_TX_HISTORY);
-export const updateAliases = createAction(ACTION.UPDATE_ALIASES);
 export const favoriteAsset = createAction(ACTION.FAVORITE_ASSET);
 export const setActiveAccount = createAction(ACTION.SET_ACTIVE_ACCOUNT);
