@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import {
   getAsset,
   getBalances,
@@ -17,10 +17,8 @@ import {
   BUTTON_TYPE,
   Input,
   Modal,
-  Select,
   Tab,
   TabList,
-  TabPanel,
   TabPanels,
   Tabs,
 } from '../ui';
@@ -28,30 +26,9 @@ import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetInfo } from './assets/assetInfo';
-import { HistoryItem } from './assets/historyItem';
-import {
-  ITransaction,
-  WithId,
-} from '@waves/waves-transactions/dist/transactions';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { applyHistoryFilters, colors } from './assets/helpers';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
-
-const MONTH = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+import { TabTxHistory } from './assets/tabs/tabTxHistory';
 
 export function SearchInput({ value, onInput, onClear }) {
   const input = React.createRef<Input>();
@@ -104,7 +81,6 @@ interface Props {
 
 export function Assets({ setTab }: Props) {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
 
   const activeAccount = useAppSelector(state =>
     state.accounts.find(
@@ -129,8 +105,6 @@ export function Assets({ setTab }: Props) {
   }, [assets, dispatch]);
 
   const address = activeAccount && activeAccount.address;
-  const txHistory = balances[address]?.txHistory;
-  const addressAlias = [address, ...(balances[address]?.aliases || [])];
 
   React.useEffect(() => {
     dispatch(getBalances());
@@ -152,36 +126,6 @@ export function Assets({ setTab }: Props) {
     const asset = new Asset(assetInfo);
     wavesBalance = new Money(balances[address]?.available || 0, asset);
   }
-
-  const [txHistoryTerm, setTxHistoryTerm] = useState('');
-  const [txHistoryType, setTxHistoryType] = useState(null);
-  const [txHistoryIncoming, setTxHistoryIncoming] = useState(false);
-  const [txHistoryOutgoing, setTxHistoryOutgoing] = useState(false);
-  const thisYear = new Date().getFullYear();
-  const historyEntries = Object.entries<Array<ITransaction & WithId>>(
-    (txHistory || [])
-      .filter(
-        applyHistoryFilters({
-          term: txHistoryTerm,
-          type: txHistoryType,
-          isIncoming: txHistoryIncoming,
-          isOutgoing: txHistoryOutgoing,
-          addressOrAlias: addressAlias,
-          assets: assets,
-        })
-      )
-      .reduce((result, tx) => {
-        const d = new Date(tx.timestamp);
-        const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
-        const date = `${(year !== thisYear && year) || ''} ${t(
-          `date.${MONTH[month]}`
-        )} ${day}`;
-        return {
-          ...result,
-          [date]: [...(result[date] || []), tx],
-        };
-      }, {})
-  );
 
   return (
     <div className={styles.assets}>
@@ -231,170 +175,7 @@ export function Assets({ setTab }: Props) {
               setShowAsset(true);
             }}
           />
-          <TabPanel>
-            <div className="flex grow margin1">
-              <SearchInput
-                value={txHistoryTerm}
-                onInput={e => setTxHistoryTerm(e.target.value)}
-                onClear={() => setTxHistoryTerm('')}
-              />
-              <Select
-                className={cn('showTooltip', styles.filterTxSelect)}
-                selected={txHistoryType}
-                onSelectItem={(id, value) => setTxHistoryType(value)}
-                selectList={[
-                  {
-                    id: null,
-                    value: null,
-                    text: t('historyFilters.all'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.ISSUE,
-                    value: TRANSACTION_TYPE.ISSUE,
-                    text: t('historyFilters.issue'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.TRANSFER,
-                    value: TRANSACTION_TYPE.TRANSFER,
-                    text: t('historyFilters.transfer'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.REISSUE,
-                    value: TRANSACTION_TYPE.REISSUE,
-                    text: t('historyFilters.reissue'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.BURN,
-                    value: TRANSACTION_TYPE.BURN,
-                    text: t('historyFilters.burn'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.EXCHANGE,
-                    value: TRANSACTION_TYPE.EXCHANGE,
-                    text: t('historyFilters.exchange'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.LEASE,
-                    value: TRANSACTION_TYPE.LEASE,
-                    text: t('historyFilters.lease'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.CANCEL_LEASE,
-                    value: TRANSACTION_TYPE.CANCEL_LEASE,
-                    text: t('historyFilters.cancelLease'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.ALIAS,
-                    value: TRANSACTION_TYPE.ALIAS,
-                    text: t('historyFilters.alias'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.MASS_TRANSFER,
-                    value: TRANSACTION_TYPE.MASS_TRANSFER,
-                    text: t('historyFilters.massTransfer'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.DATA,
-                    value: TRANSACTION_TYPE.DATA,
-                    text: t('historyFilters.data'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.SET_SCRIPT,
-                    value: TRANSACTION_TYPE.SET_SCRIPT,
-                    text: t('historyFilters.setScript'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.SPONSORSHIP,
-                    value: TRANSACTION_TYPE.SPONSORSHIP,
-                    text: t('historyFilters.sponsorship'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.SET_ASSET_SCRIPT,
-                    value: TRANSACTION_TYPE.SET_ASSET_SCRIPT,
-                    text: t('historyFilters.setAssetScript'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.INVOKE_SCRIPT,
-                    value: TRANSACTION_TYPE.INVOKE_SCRIPT,
-                    text: t('historyFilters.invokeScript'),
-                  },
-                  {
-                    id: TRANSACTION_TYPE.UPDATE_ASSET_INFO,
-                    value: TRANSACTION_TYPE.UPDATE_ASSET_INFO,
-                    text: t('historyFilters.updateAssetInfo'),
-                  },
-                ]}
-              />
-              <div className={cn(styles.filterTxTooltip, 'tooltip')}>
-                <Trans i18nKey="historyFilters.type" />
-              </div>
-
-              <div
-                className={cn('showTooltip', styles.filterBtn)}
-                onClick={() => setTxHistoryIncoming(!txHistoryIncoming)}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.5 8.75L7 12.25M7 12.25L10.5 8.75M7 12.25V1.75"
-                    stroke={txHistoryIncoming ? colors.in : colors.basic500}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={cn(styles.filterIncomingTooltip, 'tooltip')}>
-                <Trans i18nKey="historyFilters.incoming" />
-              </div>
-
-              <div
-                className={cn('showTooltip', styles.filterBtn)}
-                onClick={() => setTxHistoryOutgoing(!txHistoryOutgoing)}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.5 5.25L7 1.75M7 1.75L10.5 5.25M7 1.75V12.25"
-                    stroke={txHistoryOutgoing ? colors.out : colors.basic500}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className={cn(styles.filterTooltip, 'tooltip')}>
-                <Trans i18nKey="historyFilters.outgoing" />
-              </div>
-            </div>
-            {!historyEntries.length ? (
-              <div className="basic500 center margin-min-top">
-                <Trans i18nKey="assets.emptyHistory" />
-              </div>
-            ) : (
-              historyEntries.map(([date, txArr], index) => (
-                <div
-                  key={date}
-                  className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
-                >
-                  <div className="basic500 margin-min">{date}</div>
-                  {txArr.map(tx => (
-                    <HistoryItem key={tx.id} tx={tx} />
-                  ))}
-                </div>
-              ))
-            )}
-          </TabPanel>
+          <TabTxHistory />
         </TabPanels>
       </Tabs>
 

@@ -22,17 +22,27 @@ function createSimpleReducer<
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
+
+export type AssetFilters = {
+  term: string;
+  onlyMy: boolean;
+  onlyFavorites: boolean;
+};
+export type NftFilters = {
+  term: string;
+  onlyMy: boolean;
+};
+export type TxHistoryFilters = {
+  term: string;
+  type: number;
+  onlyIncoming: boolean;
+  onlyOutgoing: boolean;
+};
 export const uiState = createSimpleReducer<{
   isFeatureUpdateShown?: boolean;
-  assetFilters?: {
-    term: string;
-    onlyMy: boolean;
-    onlyFavorites: boolean;
-  };
-  nftFilters?: {
-    term: string;
-    onlyMy: boolean;
-  };
+  assetFilters?: AssetFilters;
+  nftFilters?: NftFilters;
+  txHistoryFilters?: TxHistoryFilters;
 }>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<
   Array<{

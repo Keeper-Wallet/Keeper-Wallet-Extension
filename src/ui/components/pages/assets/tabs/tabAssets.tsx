@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as styles from '../../styles/assets.styl';
-import { colors } from '../helpers';
+import { colors, icontains } from '../helpers';
 import { Trans } from 'react-i18next';
 import { AssetItem } from '../assetItem';
 import { Asset, Money } from '@waves/data-entities';
@@ -14,22 +14,22 @@ import { useAssetFilter } from './helpers';
 export function TabAssets({ onItemClick }) {
   const assets = useAppSelector(state => state.assets);
   const address = useAppSelector(state => state.selectedAccount.address);
-  const myAssets = useAppSelector(state => state.balances[address].assets);
+  const myAssets = useAppSelector(
+    state => state.balances[address]?.assets || {}
+  );
 
   const [assetTerm, setAssetTerm] = useAssetFilter('term');
   const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
   const [onlyFavorites, setOnlyFavorites] = useAssetFilter('onlyFavorites');
 
-  const assetEntries = Object.entries<{ balance: string }>(myAssets || {})
+  const assetEntries = Object.entries<{ balance: string }>(myAssets)
     .filter(
       ([assetId]) =>
         (!onlyFavorites || assets[assetId]?.isFavorite === onlyFavorites) &&
         (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
         (!assetTerm ||
           assetId === assetTerm ||
-          (
-            assets && (assets[assetId]?.displayName ?? '').toLowerCase()
-          ).indexOf(assetTerm.toLowerCase()) !== -1)
+          icontains(assets[assetId]?.displayName, assetTerm))
     )
 
     .sort(

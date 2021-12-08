@@ -12,13 +12,13 @@ import { Asset } from '@waves/data-entities';
 
 export function TabNfts({ onItemClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
-  const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  const myNfts = useAppSelector(state => state.balances[address]?.nfts || []);
 
   const [nftTerm, setNftTerm] = useNftFilter('term');
   const [onlyMyNfts, setOnlyMyNfts] = useNftFilter('onlyMy');
 
   const nftEntries = Object.entries<Asset[]>(
-    (myNfts || [])
+    myNfts
       .filter(
         nft =>
           (!onlyMyNfts || nft.issuer === address) &&
