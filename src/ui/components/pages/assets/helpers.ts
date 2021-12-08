@@ -39,7 +39,7 @@ const flat = (stateChanges: any): any[] =>
       )
     );
 
-export const contains = (source, target) =>
+export const icontains = (source, target) =>
   source.toLowerCase().includes(target.toLowerCase());
 
 type AssetFilterCtx = {
@@ -55,7 +55,7 @@ export const prepareAssetFilter =
     (!onlyMy || assets[assetId]?.issuer === address) &&
     (!term ||
       assetId === term ||
-      contains(assets[assetId]?.displayName ?? '', term));
+      icontains(assets[assetId]?.displayName ?? '', term));
 
 type HistoryFilterCtx = {
   term: string;
@@ -88,7 +88,7 @@ export const applyHistoryFilters =
       (hasPayments, el) =>
         hasPayments ||
         el.assetId === term ||
-        contains(assets[el.assetId]?.displayName ?? '', term),
+        icontains(assets[el.assetId]?.displayName ?? '', term),
       false
     );
 
@@ -96,13 +96,13 @@ export const applyHistoryFilters =
       (!term ||
         tx.id === term ||
         tx.assetId === term ||
-        contains(assets[tx.assetId]?.displayName ?? '', term) ||
+        icontains(assets[tx.assetId]?.displayName ?? '', term) ||
         tx.sender === term ||
         tx.recipient === term ||
-        contains(tx.alias ?? '', term) ||
+        icontains(tx.alias ?? '', term) ||
         tx.dApp === term ||
         hasInvokePaymentsAsset ||
-        contains(tx.call?.function ?? '', term) ||
+        icontains(tx.call?.function ?? '', term) ||
         hasInvokeStateChanges(tx.stateChanges, term, assets)) &&
       (!type || tx.type === type) &&
       (!isIncoming ||
@@ -131,7 +131,7 @@ const hasInvokeStateChanges = (
         el.name,
         assets[el.assetId]?.displayName,
         el.call?.function,
-      ].reduce((result, name) => result || contains(name, term), false),
+      ].reduce((result, name) => result || icontains(name, term), false),
     false
   );
 

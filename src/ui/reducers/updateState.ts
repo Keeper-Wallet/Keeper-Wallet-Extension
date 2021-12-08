@@ -29,6 +29,10 @@ export const uiState = createSimpleReducer<{
     onlyMy: boolean;
     onlyFavorites: boolean;
   };
+  nftFilters?: {
+    term: string;
+    onlyMy: boolean;
+  };
 }>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<
   Array<{

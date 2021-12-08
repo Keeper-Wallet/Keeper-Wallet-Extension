@@ -7,40 +7,18 @@ import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
-import { useAppDispatch, useAppSelector } from '../../../../store';
-import { setUiState } from '../../../../actions';
+import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
+import { useAssetFilter } from './helpers';
 
-function useFilter(name: string, field: string) {
-  const dispatch = useAppDispatch();
-  const filters = useAppSelector(state => state.uiState[name]);
-
-  function setFilter(value: any) {
-    dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
-  }
-
-  return [filters[field], setFilter];
-}
-
-function useAssetFilter(field: string) {
-  return useFilter('assetFilters', field);
-}
-
-export function TabAssets({ onAssetClick }) {
-  const activeAccount = useAppSelector(state =>
-    state.accounts.find(
-      ({ address }) => address === state.selectedAccount.address
-    )
-  );
+export function TabAssets({ onItemClick }) {
   const assets = useAppSelector(state => state.assets);
-  const balances = useAppSelector(state => state.balances);
+  const address = useAppSelector(state => state.selectedAccount.address);
+  const myAssets = useAppSelector(state => state.balances[address].assets);
 
   const [assetTerm, setAssetTerm] = useAssetFilter('term');
   const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
   const [onlyFavorites, setOnlyFavorites] = useAssetFilter('onlyFavorites');
-
-  const address = activeAccount && activeAccount.address;
-  const myAssets = balances[address]?.assets;
 
   const assetEntries = Object.entries<{ balance: string }>(myAssets || {})
     .filter(
@@ -133,7 +111,7 @@ export function TabAssets({ onAssetClick }) {
               new Money(new BigNumber(balance), new Asset(assets[assetId]))
             }
             assetId={assetId}
-            onClick={onAssetClick}
+            onClick={onItemClick}
           />
         ))
       )}
