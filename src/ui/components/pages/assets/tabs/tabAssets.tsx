@@ -17,6 +17,9 @@ export function TabAssets({ onItemClick }) {
   const myAssets = useAppSelector(
     state => state.balances[address]?.assets || {}
   );
+  const showSuspiciousAssets = useAppSelector(
+    state => !!state.uiState?.showSuspiciousAssets
+  );
 
   const [assetTerm, setAssetTerm] = useAssetFilter('term');
   const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
@@ -25,8 +28,9 @@ export function TabAssets({ onItemClick }) {
   const assetEntries = Object.entries<{ balance: string }>(myAssets)
     .filter(
       ([assetId]) =>
+        (showSuspiciousAssets || !assets[assetId]?.isSuspicious) &&
         (!onlyFavorites || assets[assetId]?.isFavorite === onlyFavorites) &&
-        (!onlyMyAssets || (assets && assets[assetId]?.issuer === address)) &&
+        (!onlyMyAssets || assets[assetId]?.issuer === address) &&
         (!assetTerm ||
           assetId === assetTerm ||
           icontains(assets[assetId]?.displayName, assetTerm))

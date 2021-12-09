@@ -151,6 +151,33 @@ class SettingsComponent extends React.Component {
           </div>
         </div>
 
+        <div className={`${styles.showSuspiciousAssets} tag1`}>
+          <PowerButton
+            onClick={() =>
+              this.props.setUiState({
+                showSuspiciousAssets: !this.props.showSuspiciousAssets,
+              })
+            }
+            enabled={this.props.showSuspiciousAssets}
+          />
+          <div className={`${styles.powerBtnState} left`}>
+            <div>
+              <Trans i18nKey="Show suspicious assets" />
+            </div>
+            <div>
+              {!this.props.showSuspiciousAssets ? (
+                <span className="basic500">
+                  <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
+                </span>
+              ) : (
+                <span className="submit400">
+                  <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className={`${styles.settingsFooter} tag1`}>
           <div className={styles.buttonsWrapper}>
             <div>
@@ -184,6 +211,7 @@ class SettingsComponent extends React.Component {
 const mapStateToProps = function (store) {
   return {
     autoClickProtection: store.uiState && store.uiState.autoClickProtection,
+    showSuspiciousAssets: store.uiState?.showSuspiciousAssets ?? true,
   };
 };
 

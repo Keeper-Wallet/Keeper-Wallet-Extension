@@ -43,6 +43,8 @@ export const uiState = createSimpleReducer<{
   assetFilters?: AssetFilters;
   nftFilters?: NftFilters;
   txHistoryFilters?: TxHistoryFilters;
+  showSuspiciousAssets?: boolean;
+  autoClickProtection?: boolean;
 }>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<
   Array<{
