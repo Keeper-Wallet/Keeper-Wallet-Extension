@@ -13,6 +13,9 @@ const WAVES = {
   reissuable: false,
   displayName: 'WAVES',
 };
+const HOUR = 60 * 60 * 1000;
+const SUSPICIOUS_LIST_URL =
+  'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 
 export class AssetInfoController {
   constructor(options = {}) {
@@ -22,8 +25,8 @@ export class AssetInfoController {
         stagenet: {},
         testnet: {},
         custom: {},
+        suspicious: null,
       },
-
       assets: {
         mainnet: {
           WAVES,
@@ -37,6 +40,7 @@ export class AssetInfoController {
         custom: {
           WAVES,
         },
+        suspicious: [],
       },
     };
     this.getNode = options.getNode;
@@ -51,6 +55,8 @@ export class AssetInfoController {
   }
 
   async assetInfo(assetId, compareFields = {}) {
+    await this.updateSuspiciousAssets();
+
     const { assets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return WAVES;
@@ -103,6 +109,9 @@ export class AssetInfoController {
             minSponsoredFee: assetInfo.minSponsoredAssetFee,
             originTransactionId: assetInfo.originTransactionId,
             issuer: assetInfo.issuer,
+            isSuspicious:
+              network === 'mainnet' &&
+              assets.suspicious.includes(assetInfo.assetId),
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -143,12 +152,13 @@ export class AssetInfoController {
    * @returns {Promise<void>}
    */
   async updateAssets(forAddress, ...assetIds) {
+    await this.updateSuspiciousAssets();
+
     const { assets, lastUpdated } = this.store.getState();
     const network = this.getNetwork();
-    const hour = 60 * 60 * 1000;
 
     let fetchIds =
-      new Date() - new Date(lastUpdated[network][forAddress]) < hour
+      new Date() - new Date(lastUpdated[network][forAddress]) < HOUR
         ? assetIds.filter(id => !Object.keys(assets[network]).includes(id))
         : assetIds;
 
@@ -156,25 +166,21 @@ export class AssetInfoController {
       return;
     }
 
-    const assetDetailsUrl = new URL(`assets/details`, this.getNode());
-    let resp = await fetch(assetDetailsUrl.toString(), {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ids: fetchIds }),
-    });
+    let resp = await fetch(
+      new URL(`assets/details`, this.getNode()).toString(),
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json;large-significand-format=string',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: fetchIds }),
+      }
+    );
 
     switch (resp.status) {
       case 200:
-        let assetInfos = await resp
-          .text()
-          .then(text =>
-            JSON.parse(
-              text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
-            )
-          );
+        let assetInfos = await resp.json();
 
         assetInfos.forEach(assetInfo => {
           if (!assetInfo.error) {
@@ -197,6 +203,9 @@ export class AssetInfoController {
                 minSponsoredFee: assetInfo.minSponsoredAssetFee,
                 originTransactionId: assetInfo.originTransactionId,
                 issuer: assetInfo.issuer,
+                isSuspicious:
+                  network === 'mainnet' &&
+                  assets.suspicious.includes(assetInfo.assetId),
               },
             };
           }
@@ -207,5 +216,33 @@ export class AssetInfoController {
       default:
         throw new Error(await resp.text());
     }
+  }
+
+  async updateSuspiciousAssets() {
+    let { assets, lastUpdated } = this.store.getState();
+    const network = this.getNetwork();
+
+    if (
+      network === 'mainnet' &&
+      new Date() - new Date(lastUpdated.suspicious) > HOUR
+    ) {
+      const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
+      switch (resp.status) {
+        case 200:
+          const suspicious = (await resp.text()).split('\n');
+          assets.suspicious = suspicious;
+          lastUpdated.suspicious = new Date().getTime();
+          break;
+        default:
+          throw new Error(await resp.text());
+      }
+    }
+
+    Object.keys(assets[network]).forEach(
+      assetId =>
+        (assets[network][assetId].isSuspicious =
+          assets.suspicious.includes(assetId))
+    );
+    this.store.updateState({ assets, lastUpdated });
   }
 }

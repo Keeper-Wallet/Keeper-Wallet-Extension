@@ -31,19 +31,15 @@ export function TabAssets({ onItemClick }) {
           assetId === assetTerm ||
           icontains(assets[assetId]?.displayName, assetTerm))
     )
-
     .sort(
       ([a], [b]) =>
-        assets[a] &&
-        assets[b] &&
-        (!!assets[a].isFavorite < !!assets[b].isFavorite
-          ? 1
-          : !!assets[a].isFavorite > !!assets[b].isFavorite
-          ? -1
-          : (assets[a].displayName ?? '').localeCompare(
-              assets[b].displayName ?? ''
-            ))
+        (assets[a] &&
+          assets[b] &&
+          +!!assets[b].isFavorite - +!!assets[a].isFavorite) ||
+        +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
+        (assets[a].displayName ?? '').localeCompare(assets[b].displayName ?? '')
     );
+
   return (
     <TabPanel>
       <div className="flex relative margin1">
