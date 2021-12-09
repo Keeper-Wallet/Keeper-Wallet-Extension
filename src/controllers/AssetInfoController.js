@@ -23,6 +23,7 @@ export class AssetInfoController {
         testnet: {},
         custom: {},
       },
+
       assets: {
         mainnet: {
           WAVES,
@@ -146,10 +147,12 @@ export class AssetInfoController {
     const network = this.getNetwork();
     const hour = 60 * 60 * 1000;
 
-    if (
-      assetIds.length === 0 ||
+    let fetchIds =
       new Date() - new Date(lastUpdated[network][forAddress]) < hour
-    ) {
+        ? assetIds.filter(id => !Object.keys(assets[network]).includes(id))
+        : assetIds;
+
+    if (fetchIds.length === 0) {
       return;
     }
 
@@ -160,7 +163,7 @@ export class AssetInfoController {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ids: assetIds }),
+      body: JSON.stringify({ ids: fetchIds }),
     });
 
     switch (resp.status) {

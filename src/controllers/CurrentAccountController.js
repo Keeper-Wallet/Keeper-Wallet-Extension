@@ -77,13 +77,18 @@ export class CurrentAccountController {
                 .concat(myNfts || [])
                 .map(info => info.assetId)
                 .concat(
-                  txHistory.map(
-                    tx =>
-                      tx.assetId ||
-                      (tx.order1 &&
-                        tx.order1.assetPair &&
-                        (tx.order1.assetPair.amountAsset ||
-                          tx.order1.assetPair.priceAsset))
+                  txHistory[0].reduce(
+                    (ids, tx) => [
+                      ...ids,
+                      tx.assetId,
+                      ...(tx.order1
+                        ? [
+                            tx.order1.assetPair.amountAsset,
+                            tx.order1.assetPair.priceAsset,
+                          ]
+                        : []),
+                    ],
+                    []
                   )
                 )
                 .filter(assetId => !!assetId)

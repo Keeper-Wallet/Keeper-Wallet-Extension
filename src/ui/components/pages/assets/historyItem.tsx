@@ -41,7 +41,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -63,7 +62,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
@@ -105,7 +103,6 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign={addSign}
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -117,7 +114,6 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign="+"
-          assetId={assetId}
           balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
@@ -130,7 +126,6 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign="-"
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -168,23 +163,9 @@ export function HistoryItem({ tx, className }: Props) {
 
       tooltip = t('historyCard.exchange');
       label = (
-        <Balance
-          split
-          showAsset
-          assetId={priceAssetId}
-          addSign="-"
-          balance={totalPriceAmount}
-        />
+        <Balance split showAsset addSign="-" balance={totalPriceAmount} />
       );
-      info = (
-        <Balance
-          split
-          showAsset
-          assetId={assetId}
-          addSign="+"
-          balance={assetAmount}
-        />
-      );
+      info = <Balance split showAsset addSign="+" balance={assetAmount} />;
       messageType = 'create-order';
       break;
     case TRANSACTION_TYPE.LEASE:
@@ -202,7 +183,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           addSign={addSign}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
@@ -223,7 +203,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           addSign={addSign}
           balance={asset && new Money(tx.lease.amount, new Asset(asset))}
         />
@@ -267,15 +246,7 @@ export function HistoryItem({ tx, className }: Props) {
         messageType = 'mass_transfer';
       }
 
-      info = (
-        <Balance
-          split
-          showAsset
-          assetId={assetId}
-          addSign={addSign}
-          balance={balance}
-        />
-      );
+      info = <Balance split showAsset addSign={addSign} balance={balance} />;
       break;
     case TRANSACTION_TYPE.DATA:
       tooltip = t('historyCard.dataTransaction');
@@ -299,7 +270,6 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={
             asset && new Money(tx.minSponsoredAssetFee, new Asset(asset))
           }
