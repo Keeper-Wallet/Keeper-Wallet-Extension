@@ -133,16 +133,14 @@ export class AssetInfoController {
   async assetFavorite(assetId) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
-    assets[network] = assets[network] || {};
+    const asset = assets[network] && assets[network][assetId];
 
-    const asset = assets[network][assetId] || {};
-
-    if (Object.keys(asset).length !== 0) {
-      assets[network][assetId].isFavorite = !asset.isFavorite;
-      this.store.updateState({ assets });
+    if (!asset) {
+      return;
     }
 
-    return asset;
+    assets[network][assetId].isFavorite = !asset.isFavorite;
+    this.store.updateState({ assets });
   }
 
   /**
@@ -151,7 +149,7 @@ export class AssetInfoController {
    * @param {Array<string>} assetIds
    * @returns {Promise<void>}
    */
-  async updateAssets(forAddress, ...assetIds) {
+  async updateAssets(forAddress, assetIds) {
     await this.updateSuspiciousAssets();
 
     const { assets, lastUpdated } = this.store.getState();
@@ -159,7 +157,7 @@ export class AssetInfoController {
 
     let fetchIds =
       new Date() - new Date(lastUpdated[network][forAddress]) < HOUR
-        ? assetIds.filter(id => !Object.keys(assets[network]).includes(id))
+        ? assetIds.filter(id => assets[network][id] == null)
         : assetIds;
 
     if (fetchIds.length === 0) {
@@ -186,27 +184,23 @@ export class AssetInfoController {
           if (!assetInfo.error) {
             assets[network][assetInfo.assetId] = {
               ...assets[network][assetInfo.assetId],
-              ...{
-                id: assetInfo.assetId,
-                name: assetInfo.name,
-                precision: assetInfo.decimals,
-                description: assetInfo.description,
-                height: assetInfo.issueHeight,
-                timestamp: new Date(
-                  parseInt(assetInfo.issueTimestamp)
-                ).toJSON(),
-                sender: assetInfo.issuer,
-                quantity: assetInfo.quantity,
-                reissuable: assetInfo.reissuable,
-                hasScript: assetInfo.scripted,
-                displayName: assetInfo.ticker || assetInfo.name,
-                minSponsoredFee: assetInfo.minSponsoredAssetFee,
-                originTransactionId: assetInfo.originTransactionId,
-                issuer: assetInfo.issuer,
-                isSuspicious:
-                  network === 'mainnet' &&
-                  assets.suspicious.includes(assetInfo.assetId),
-              },
+              id: assetInfo.assetId,
+              name: assetInfo.name,
+              precision: assetInfo.decimals,
+              description: assetInfo.description,
+              height: assetInfo.issueHeight,
+              timestamp: new Date(parseInt(assetInfo.issueTimestamp)).toJSON(),
+              sender: assetInfo.issuer,
+              quantity: assetInfo.quantity,
+              reissuable: assetInfo.reissuable,
+              hasScript: assetInfo.scripted,
+              displayName: assetInfo.ticker || assetInfo.name,
+              minSponsoredFee: assetInfo.minSponsoredAssetFee,
+              originTransactionId: assetInfo.originTransactionId,
+              issuer: assetInfo.issuer,
+              isSuspicious:
+                network === 'mainnet' &&
+                assets.suspicious.includes(assetInfo.assetId),
             };
           }
         });

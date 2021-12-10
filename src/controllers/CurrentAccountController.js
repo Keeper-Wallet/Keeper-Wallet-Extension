@@ -73,7 +73,7 @@ export class CurrentAccountController {
           if (isActiveAddress) {
             await this.updateAssets(
               address,
-              ...(myAssets.balances || [])
+              (myAssets.balances || [])
                 .concat(myNfts || [])
                 .map(info => info.assetId)
                 .concat(
