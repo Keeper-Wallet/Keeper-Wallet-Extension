@@ -10,11 +10,11 @@ import {
 function useFilter<T, K extends keyof T>(
   name: string,
   field: K
-): [T[K], (value: any) => void] {
+): [T[K], (value: T[K]) => void] {
   const dispatch = useAppDispatch();
   const filters: T = useAppSelector(state => state.uiState[name] || {});
 
-  function setFilter(value: any): void {
+  function setFilter(value: T[K]): void {
     dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
   }
 
