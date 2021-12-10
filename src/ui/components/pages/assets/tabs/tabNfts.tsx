@@ -10,7 +10,7 @@ import { useAppSelector } from '../../../../store';
 import { useNftFilter } from './helpers';
 import { Asset } from '@waves/data-entities';
 
-export function TabNfts({ onItemClick }) {
+export function TabNfts({ onInfoClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts || []);
 
@@ -86,7 +86,7 @@ export function TabNfts({ onItemClick }) {
               <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
             </div>
             {issuerNfts.map(nft => (
-              <NftItem key={nft.id} asset={nft} onClick={onItemClick} />
+              <NftItem key={nft.id} asset={nft} onInfoClick={onInfoClick} />
             ))}
           </div>
         ))

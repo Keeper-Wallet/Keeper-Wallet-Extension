@@ -164,13 +164,13 @@ export function Assets({ setTab }: Props) {
         </TabList>
         <TabPanels className={styles.tabPanels}>
           <TabAssets
-            onItemClick={assetId => {
+            onInfoClick={assetId => {
               setAsset(assets[assetId]);
               setShowAsset(true);
             }}
           />
           <TabNfts
-            onItemClick={assetId => {
+            onInfoClick={assetId => {
               setAsset(assets[assetId]);
               setShowAsset(true);
             }}

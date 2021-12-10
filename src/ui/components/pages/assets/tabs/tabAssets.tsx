@@ -11,7 +11,7 @@ import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
 import { useAssetFilter, useSortedAssetEntries } from './helpers';
 
-export function TabAssets({ onItemClick }) {
+export function TabAssets({ onInfoClick }) {
   const assets = useAppSelector(state => state.assets);
   const address = useAppSelector(state => state.selectedAccount.address);
   const myAssets = useAppSelector(
@@ -101,7 +101,7 @@ export function TabAssets({ onItemClick }) {
               new Money(new BigNumber(balance), new Asset(assets[assetId]))
             }
             assetId={assetId}
-            onClick={onItemClick}
+            onInfoClick={onInfoClick}
           />
         ))
       )}

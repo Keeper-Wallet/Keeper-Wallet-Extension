@@ -13,10 +13,10 @@ interface Props {
   balance: Money;
   assetId: string;
   className?: string;
-  onClick?: (assetId: string) => void;
+  onInfoClick?: (assetId: string) => void;
 }
 
-export function AssetItem({ balance, assetId, className, onClick }: Props) {
+export function AssetItem({ balance, assetId, className, onInfoClick }: Props) {
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
   const asset = assets[assetId];
@@ -114,7 +114,7 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
           <button
             className={cn(styles.infoButton, 'showTooltip')}
             type="button"
-            onClick={() => onClick(assetId)}
+            onClick={() => onInfoClick(assetId)}
           >
             <svg className={styles.infoIcon} viewBox="0 0 28 26">
               <path d="M25 13c0 6.075-4.925 11-11 11S3 19.075 3 13 7.925 2 14 2s11 4.925 11 11ZM4 13c0 5.523 4.477 10 10 10s10-4.477 10-10S19.523 3 14 3 4 7.477 4 13Z" />
