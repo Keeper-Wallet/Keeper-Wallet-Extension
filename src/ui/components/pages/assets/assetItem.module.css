@@ -1,8 +1,6 @@
-@import '../../../styles/colors.styl';
-
-.assetCard
+.assetCard {
   width: 100%;
-  background: $white;
+  background: #fff;
   display: flex;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
   border-radius: 4px;
@@ -13,25 +11,30 @@
   margin-bottom: 8px;
   cursor: default;
   height: 64px;
+}
 
-.assetData
+.assetData {
   flex-grow: 1;
   text-align: left;
+}
 
-.assetTitle
+.assetTitle {
   display: flex;
   justify-content: flex-start;
   height: 24px;
-  max-width: 180px;
+  max-width: 210px;
+}
 
-.assetName
+.assetName {
   padding-right: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
 
-.assetStatusIcon
+.assetStatusIcon {
   min-width: 18px;
   min-height: 18px;
+}
 
 .favBtn {
   position: absolute;
@@ -69,7 +72,6 @@
   cursor: pointer;
 }
 
-
 .infoIcon {
   width: 28px;
   vertical-align: middle;
@@ -84,4 +86,56 @@
   top: -15px;
   right: 16px;
   white-space: nowrap;
+}
+
+.moreBtn {
+  display: block;
+  opacity: 1;
+  position: absolute;
+  right: 14px;
+  bottom: 19px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.moreBtn:hover > .moreIcon {
+  opacity: 0;
+}
+
+.moreBtn:hover > .actions {
+  display: block;
+  opacity: 1;
+}
+
+.moreIcon {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.actions {
+  background-color: #fff;
+  position: absolute;
+  right: -14px;
+  top: -17px;
+  display: none;
+  opacity: 0;
+  height: 64px;
+  width: 86px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.actions::before {
+  opacity: 0.25;
+  position: absolute;
+  top: 0;
+  right: 86px;
+  width: 40px;
+  height: 64px;
+  content: '';
+  background: linear-gradient(to right, #fff 0%, #dae1e9 100%);
 }
