@@ -56,7 +56,6 @@ export function AssetItem({ balance, assetId, className, onClick }: Props) {
               viewBox="0 0 18 18"
               fill="none"
             >
-              <rect width="18" height="18" fill="#D8D8D8" fillOpacity="0.01" />
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
