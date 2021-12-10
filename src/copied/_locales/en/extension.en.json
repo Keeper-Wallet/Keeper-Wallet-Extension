@@ -2,6 +2,9 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
+  "activeAccountCard": {
+    "swapButton": "Swap"
+  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -502,6 +505,18 @@
     "understand": "I understand",
     "viewTransaction": "View transaction",
     "wavesAuthConfirmed": "Sign a waves auth request!"
+  },
+  "swap": {
+    "fromInputLabel": "From",
+    "minimumReceived": "Minimum Received",
+    "pairInputLabel": "Pair",
+    "priceImpact": "Price Impact",
+    "fee": "Fee",
+    "priceLabel": "Price",
+    "submitButtonText": "Swap",
+    "title": "Swap assets",
+    "toInputLabel": "To (est.)",
+    "transactionFee": "Transaction Fee"
   },
   "transactions": {
     "allowAccess": "Allow access",

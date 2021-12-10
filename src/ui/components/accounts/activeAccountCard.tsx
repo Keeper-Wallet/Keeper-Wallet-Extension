@@ -3,6 +3,7 @@ import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
+import { useAppSelector } from 'ui/store';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
@@ -22,6 +23,7 @@ interface Props {
   onCopy: () => void;
   onOtherAccountsClick: () => void;
   onShowQr: () => void;
+  onSwapClick: () => void;
 }
 
 export function ActiveAccountCard({
@@ -31,7 +33,10 @@ export function ActiveAccountCard({
   onCopy,
   onOtherAccountsClick,
   onShowQr,
+  onSwapClick,
 }: Props) {
+  const currentNetwork = useAppSelector(state => state.currentNetwork);
+
   return (
     <div className={styles.root} data-testid="activeAccountCard">
       <div className={styles.accountInfo}>
@@ -70,6 +75,15 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
+        {['mainnet', 'testnet'].includes(currentNetwork) && (
+          <button
+            className={cn('swapIconBlack', styles.buttonWallet)}
+            onClick={onSwapClick}
+          >
+            <Trans i18nKey="activeAccountCard.swapButton" />
+          </button>
+        )}
+
         <span className={styles.controlsExpand} />
 
         <Tooltip content={<Trans i18nKey="copyAddress" />}>

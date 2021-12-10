@@ -91,6 +91,7 @@ export const currentNetwork = createSimpleReducer(
   '',
   ACTION.UPDATE_CURRENT_NETWORK
 );
+
 export type BalanceAssets = {
   [assetId: string]: {
     balance: string;
@@ -98,19 +99,20 @@ export type BalanceAssets = {
     minSponsoredAssetFee: string;
   };
 };
-export const balances = createSimpleReducer<
-  Record<
-    string,
-    {
-      available: string;
-      leasedOut: string;
-      assets?: BalanceAssets;
-      aliases: string[];
-      nfts: AssetDetail[];
-      txHistory: Array<ITransaction & WithId>;
-    }
-  >
->({}, ACTION.UPDATE_BALANCES);
+
+export interface AccountBalance {
+  available: string;
+  leasedOut: string;
+  assets?: BalanceAssets;
+  aliases: string[];
+  nfts: AssetDetail[];
+  txHistory: Array<ITransaction & WithId>;
+}
+
+export const balances = createSimpleReducer<{
+  [address: string]: AccountBalance;
+}>({}, ACTION.UPDATE_BALANCES);
+
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);
 export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);
