@@ -9,7 +9,7 @@ import * as React from 'react';
 import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
-import { useAssetFilter } from './helpers';
+import { useAssetFilter, useSortedAssetEntries } from './helpers';
 
 export function TabAssets({ onItemClick }) {
   const assets = useAppSelector(state => state.assets);
@@ -17,32 +17,21 @@ export function TabAssets({ onItemClick }) {
   const myAssets = useAppSelector(
     state => state.balances[address]?.assets || {}
   );
-  const showSuspiciousAssets = useAppSelector(
-    state => !!state.uiState?.showSuspiciousAssets
-  );
 
   const [assetTerm, setAssetTerm] = useAssetFilter('term');
   const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
   const [onlyFavorites, setOnlyFavorites] = useAssetFilter('onlyFavorites');
 
-  const assetEntries = Object.entries<{ balance: string }>(myAssets)
-    .filter(
+  const assetEntries = useSortedAssetEntries(
+    Object.entries(myAssets).filter(
       ([assetId]) =>
-        (showSuspiciousAssets || !assets[assetId]?.isSuspicious) &&
         (!onlyFavorites || assets[assetId]?.isFavorite === onlyFavorites) &&
         (!onlyMyAssets || assets[assetId]?.issuer === address) &&
         (!assetTerm ||
           assetId === assetTerm ||
           icontains(assets[assetId]?.displayName, assetTerm))
     )
-    .sort(
-      ([a], [b]) =>
-        (assets[a] &&
-          assets[b] &&
-          +!!assets[b].isFavorite - +!!assets[a].isFavorite) ||
-        +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
-        (assets[a].displayName ?? '').localeCompare(assets[b].displayName ?? '')
-    );
+  );
 
   return (
     <TabPanel>

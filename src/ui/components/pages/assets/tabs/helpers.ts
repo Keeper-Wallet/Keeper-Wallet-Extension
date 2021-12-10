@@ -33,6 +33,30 @@ export function useTxHistoryFilter(field: keyof TxHistoryFilters) {
   return useFilter<TxHistoryFilters, typeof field>('txHistoryFilters', field);
 }
 
+export function useSortedAssetEntries<T>(
+  assetEntries: Array<[string, T]>
+): Array<[string, T]> {
+  const assets = useAppSelector(state => state.assets);
+  const showSuspiciousAssets = useAppSelector(
+    state => !!state.uiState?.showSuspiciousAssets
+  );
+
+  return assetEntries
+    .filter(
+      ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious
+    )
+    .sort(
+      ([a], [b]) =>
+        assets[a] &&
+        assets[b] &&
+        (+!!assets[b].isFavorite - +!!assets[a].isFavorite ||
+          +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
+          (assets[a].displayName ?? '').localeCompare(
+            assets[b].displayName ?? ''
+          ))
+    );
+}
+
 export const MONTH = [
   'Jan',
   'Feb',

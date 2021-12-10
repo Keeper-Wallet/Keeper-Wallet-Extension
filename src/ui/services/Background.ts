@@ -271,5 +271,5 @@ export interface AssetDetail extends IAssetInfo {
   originTransactionId: string;
   issuer?: string;
   isFavorite?: boolean;
-  isSuspicious: boolean;
+  isSuspicious?: boolean;
 }

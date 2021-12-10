@@ -1,18 +1,19 @@
 import { BigNumber } from '@waves/bignumber';
-import { Money, Asset } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useIMask } from 'react-imask';
-import { useAppSelector, useAppDispatch } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { Select } from '../ui/select/Select';
 import { difference } from 'ramda';
-import { getAsset, getBalances } from 'ui/actions';
-import { Loader, Error } from '../ui';
+import { getBalances } from 'ui/actions';
+import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
+import { useSortedAssetEntries } from './assets/tabs/helpers';
 
 export function Send() {
   const { t } = useTranslation();
@@ -32,7 +33,7 @@ export function Send() {
 
   const assetBalances = accountBalance?.assets;
 
-  const assetIdsToRequest = React.useMemo(() => {
+  const pendingAssets = React.useMemo(() => {
     if (!assetBalances) {
       return [];
     }
@@ -48,12 +49,6 @@ export function Send() {
       dispatch(getBalances());
     }
   }, [assetBalances, dispatch]);
-
-  React.useEffect(() => {
-    assetIdsToRequest.forEach(assetId => {
-      dispatch(getAsset(assetId));
-    });
-  }, [assetIdsToRequest, dispatch]);
 
   const [recipientValue, setRecipientValue] = React.useState('');
   const [recipientTouched, setRecipientTouched] = React.useState(false);
@@ -108,6 +103,8 @@ export function Send() {
   }, []);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const assetEntries = useSortedAssetEntries(Object.entries(assetBalances));
 
   return (
     <form
@@ -173,9 +170,7 @@ export function Send() {
           </div>
 
           <div className="margin-main-big">
-            {!wavesBalance ||
-            !assetBalances ||
-            assetIdsToRequest.length !== 0 ? (
+            {!wavesBalance || !assetBalances || pendingAssets.length !== 0 ? (
               <Loader />
             ) : Object.keys(assetBalances).length === 0 ? (
               'WAVES'
@@ -189,22 +184,20 @@ export function Send() {
                     value: 'WAVES',
                   },
                 ].concat(
-                  Object.entries(assetBalances).map(
-                    ([assetId, { balance }]) => {
-                      const asset = assets[assetId];
+                  assetEntries.map(([assetId, { balance }]) => {
+                    const asset = assets[assetId];
 
-                      const balanceMoney = new Money(
-                        new BigNumber(balance),
-                        new Asset(asset)
-                      );
+                    const balanceMoney = new Money(
+                      new BigNumber(balance),
+                      new Asset(asset)
+                    );
 
-                      return {
-                        id: asset.id,
-                        text: `${asset.name} (${balanceMoney.toTokens()})`,
-                        value: asset.id,
-                      };
-                    }
-                  )
+                    return {
+                      id: asset.id,
+                      text: `${asset.name} (${balanceMoney.toTokens()})`,
+                      value: asset.id,
+                    };
+                  })
                 )}
                 selected={assetValue}
                 onSelectItem={(id, value) => {
