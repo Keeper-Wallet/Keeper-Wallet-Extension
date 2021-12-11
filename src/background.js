@@ -456,8 +456,9 @@ class BackgroundService extends EventEmitter {
         await ExternalDeviceController.getUserList(type, from, to),
 
       // asset information
-      assetInfo: async (assetId, compareFields) =>
-        await this.assetInfoController.assetInfo(assetId, compareFields),
+      assetInfo: this.assetInfoController.assetInfo.bind(
+        this.assetInfoController
+      ),
       assetFavorite: this.assetInfoController.assetFavorite.bind(
         this.assetInfoController
       ),

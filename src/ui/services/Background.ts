@@ -185,10 +185,7 @@ class Background {
     return this.background.setCustomMatcher(url, network);
   }
 
-  async assetInfo(
-    assetId: string,
-    compareFields: { [assetField: string]: any } = {}
-  ): Promise<AssetDetail> {
+  async assetInfo(assetId: string): Promise<AssetDetail> {
     assetId = assetId || 'WAVES';
 
     if (this._assetsStore[assetId]) {
@@ -196,10 +193,7 @@ class Background {
     }
 
     await this.initPromise;
-    this._assetsStore[assetId] = this.background.assetInfo(
-      assetId,
-      compareFields
-    );
+    this._assetsStore[assetId] = this.background.assetInfo(assetId);
 
     try {
       return await this._assetsStore[assetId];

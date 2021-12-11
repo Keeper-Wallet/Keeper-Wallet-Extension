@@ -187,7 +187,7 @@ export const changeNetwork = store => next => action => {
 
 export const getAsset = store => next => action => {
   if (action.type === ACTION.GET_ASSETS) {
-    background.assetInfo(action.payload, action.meta.compareFields);
+    background.assetInfo(action.payload);
   }
 
   return next(action);
