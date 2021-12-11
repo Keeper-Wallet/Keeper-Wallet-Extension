@@ -6,6 +6,7 @@ import {
   NftFilters,
   TxHistoryFilters,
 } from '../../../../reducers/updateState';
+import * as React from 'react';
 
 function useFilter<T, K extends keyof T>(
   name: string,
@@ -13,12 +14,13 @@ function useFilter<T, K extends keyof T>(
 ): [T[K], (value: T[K]) => void] {
   const dispatch = useAppDispatch();
   const filters: T = useAppSelector(state => state.uiState[name] || {});
+  const [value, setValue] = React.useState(filters[field]);
 
-  function setFilter(value: T[K]): void {
+  React.useEffect(() => {
     dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
-  }
+  }, [value, dispatch]);
 
-  return [filters[field], setFilter];
+  return [value, setValue];
 }
 
 export function useAssetFilter(field: keyof AssetFilters) {
