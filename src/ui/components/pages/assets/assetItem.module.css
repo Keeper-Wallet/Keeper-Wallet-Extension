@@ -9,7 +9,6 @@
   position: relative;
   z-index: 1;
   margin-bottom: 8px;
-  cursor: default;
   height: 64px;
 }
 
@@ -25,7 +24,6 @@
 }
 
 .assetName {
-  padding-right: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
