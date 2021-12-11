@@ -275,9 +275,7 @@ class BackgroundService extends EventEmitter {
         this.preferencesController
       ),
       isLocked: this.walletController.isLocked.bind(this.walletController),
-      updateAssets: this.assetInfoController.updateAssets.bind(
-        this.assetInfoController
-      ),
+      assetInfoController: this.assetInfoController,
     });
 
     this.txinfoController = new TxInfoController({

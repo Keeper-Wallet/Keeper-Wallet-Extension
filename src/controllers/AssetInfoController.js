@@ -13,18 +13,14 @@ const WAVES = {
   reissuable: false,
   displayName: 'WAVES',
 };
-const HOUR = 60 * 60 * 1000;
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
+const MAX_AGE = 60 * 60 * 1000;
 
 export class AssetInfoController {
   constructor(options = {}) {
     const defaults = {
       lastUpdated: {
-        mainnet: {},
-        stagenet: {},
-        testnet: {},
-        custom: {},
         suspicious: null,
       },
       assets: {
@@ -54,7 +50,15 @@ export class AssetInfoController {
     return WAVES;
   }
 
-  async assetInfo(assetId, compareFields = {}) {
+  getAssets() {
+    return this.store.getState().assets[this.getNetwork()];
+  }
+
+  isMaxAgeExceed(lastUpdated) {
+    return new Date() - new Date(lastUpdated || 0) > MAX_AGE;
+  }
+
+  async assetInfo(assetId) {
     await this.updateSuspiciousAssets();
 
     const { assets } = this.store.getState();
@@ -66,23 +70,7 @@ export class AssetInfoController {
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
     const asset = assets[network] && assets[network][assetId];
-    // fetch information about the asset if one of the compared fields
-    // is not equal to the value from the storage
-    const force =
-      Object.keys(compareFields).length !== 0 &&
-      Object.keys(asset || {}).reduce((prev, field) => {
-        // != because sometimes compare field value mismatches asset field type
-        return prev && compareFields[field] != asset[field];
-      }, false);
-
-    if (
-      force ||
-      !asset ||
-      asset.minSponsoredFee === undefined ||
-      assets[network][assetId].hasScript === undefined ||
-      assets[network][assetId].originTransactionId === undefined ||
-      assets[network][assetId].issuer === undefined
-    ) {
+    if (!asset || this.isMaxAgeExceed(asset.lastUpdated)) {
       let resp = await fetch(url);
       switch (resp.status) {
         case 200:
@@ -112,6 +100,7 @@ export class AssetInfoController {
             isSuspicious:
               network === 'mainnet' &&
               assets.suspicious.includes(assetInfo.assetId),
+            lastUpdated: new Date().getTime(),
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -152,15 +141,10 @@ export class AssetInfoController {
   async updateAssets(forAddress, assetIds) {
     await this.updateSuspiciousAssets();
 
-    const { assets, lastUpdated } = this.store.getState();
+    const { assets } = this.store.getState();
     const network = this.getNetwork();
 
-    let fetchIds =
-      new Date() - new Date(lastUpdated[network][forAddress]) < HOUR
-        ? assetIds.filter(id => assets[network][id] == null)
-        : assetIds;
-
-    if (fetchIds.length === 0) {
+    if (assetIds.length === 0) {
       return;
     }
 
@@ -172,13 +156,14 @@ export class AssetInfoController {
           Accept: 'application/json;large-significand-format=string',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids: fetchIds }),
+        body: JSON.stringify({ ids: assetIds }),
       }
     );
 
     switch (resp.status) {
       case 200:
         let assetInfos = await resp.json();
+        const lastUpdated = new Date().getTime();
 
         assetInfos.forEach(assetInfo => {
           if (!assetInfo.error) {
@@ -201,11 +186,11 @@ export class AssetInfoController {
               isSuspicious:
                 network === 'mainnet' &&
                 assets.suspicious.includes(assetInfo.assetId),
+              lastUpdated,
             };
           }
         });
-        lastUpdated[network][forAddress] = new Date().getTime();
-        this.store.updateState({ assets, lastUpdated });
+        this.store.updateState({ assets });
         break;
       default:
         throw new Error(await resp.text());
@@ -218,7 +203,7 @@ export class AssetInfoController {
 
     if (
       network === 'mainnet' &&
-      new Date() - new Date(lastUpdated.suspicious) > HOUR
+      new Date() - new Date(lastUpdated.suspicious) > MAX_AGE
     ) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
       switch (resp.status) {

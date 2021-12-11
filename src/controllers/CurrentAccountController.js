@@ -8,7 +8,7 @@ export class CurrentAccountController {
       pollInterval: options.pollInterval || 10000,
     };
 
-    this.updateAssets = options.updateAssets;
+    this.assetInfoController = options.assetInfoController;
     this.getNetworkConfig = options.getNetworkConfig;
     this.getAccounts = options.getAccounts;
     this.getNetwork = options.getNetwork;
@@ -71,13 +71,34 @@ export class CurrentAccountController {
             );
 
           if (isActiveAddress) {
-            await this.updateAssets(
-              address,
-              (myAssets.balances || [])
-                .concat(myNfts || [])
-                .map(info => info.assetId)
-                .concat(
-                  txHistory[0].reduce(
+            const assets = this.assetInfoController.getAssets();
+            const isAssetExists = assetId => !!assets[assetId];
+            const isMaxAgeExceed = assetId =>
+              this.assetInfoController.isMaxAgeExceed(
+                assets[assetId] && assets[assetId].lastUpdated
+              );
+
+            const isSponsorshipUpdated = balanceAsset =>
+              balanceAsset.minSponsoredAssetFee !==
+              assets[balanceAsset.assetId].minSponsoredFee;
+
+            const fetchAssetIds = (myAssets.balances || [])
+              .filter(
+                info =>
+                  !isAssetExists(info.assetId) ||
+                  isSponsorshipUpdated(info) ||
+                  isMaxAgeExceed(info.assetId)
+              )
+              .concat(
+                (myNfts || []).filter(
+                  info =>
+                    !isAssetExists(info.assetId) || isMaxAgeExceed(info.assetId)
+                )
+              )
+              .map(info => info.assetId)
+              .concat(
+                txHistory[0]
+                  .reduce(
                     (ids, tx) => [
                       ...ids,
                       tx.assetId,
@@ -90,9 +111,15 @@ export class CurrentAccountController {
                     ],
                     []
                   )
-                )
-                .filter(assetId => !!assetId)
-            );
+                  .filter(
+                    assetId =>
+                      !!assetId &&
+                      !isAssetExists(assetId) &&
+                      isMaxAgeExceed(assetId)
+                  )
+              );
+
+            await this.assetInfoController.updateAssets(address, fetchAssetIds);
           }
 
           const available = new BigNumber(wavesBalances.available);
@@ -113,15 +140,9 @@ export class CurrentAccountController {
                       myAssets.balances.map(info => [
                         info.assetId,
                         {
-                          minSponsoredAssetFee:
-                            info.minSponsoredAssetFee &&
-                            new BigNumber(info.minSponsoredAssetFee).toString(),
-                          sponsorBalance:
-                            info.sponsorBalance &&
-                            new BigNumber(info.sponsorBalance).toString(),
-                          balance:
-                            info.balance &&
-                            new BigNumber(info.balance).toString(),
+                          minSponsoredAssetFee: info.minSponsoredAssetFee,
+                          sponsorBalance: info.sponsorBalance,
+                          balance: info.balance,
                         },
                       ])
                     ),
