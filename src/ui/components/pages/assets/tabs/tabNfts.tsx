@@ -14,17 +14,15 @@ export function TabNfts({ onInfoClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts || []);
 
-  const [nftTerm, setNftTerm] = useNftFilter('term');
-  const [onlyMyNfts, setOnlyMyNfts] = useNftFilter('onlyMy');
+  const [term, setTerm] = useNftFilter('term');
+  const [onlyMy, setOnlyMy] = useNftFilter('onlyMy');
 
   const nftEntries = Object.entries<Asset[]>(
     myNfts
       .filter(
         nft =>
-          (!onlyMyNfts || nft.issuer === address) &&
-          (!nftTerm ||
-            nft.id === nftTerm ||
-            icontains(nft.displayName, nftTerm))
+          (!onlyMy || nft.issuer === address) &&
+          (!term || nft.id === term || icontains(nft.displayName, term))
       )
       .sort((a, b) => (a.displayName ?? '').localeCompare(b.displayName ?? ''))
       .reduce(
@@ -40,13 +38,13 @@ export function TabNfts({ onInfoClick }) {
     <TabPanel>
       <div className="flex relative grow margin1">
         <SearchInput
-          value={nftTerm}
-          onInput={e => setNftTerm(e.target.value)}
-          onClear={() => setNftTerm('')}
+          value={term ?? ''}
+          onInput={e => setTerm(e.target.value)}
+          onClear={() => setTerm('')}
         />
         <div
           className={cn('showTooltip', styles.filterBtn)}
-          onClick={() => setOnlyMyNfts(!onlyMyNfts)}
+          onClick={() => setOnlyMy(!onlyMy)}
         >
           <svg
             className={styles.filterBtnIcon}
@@ -56,7 +54,7 @@ export function TabNfts({ onInfoClick }) {
             fill="none"
           >
             <path
-              fill={onlyMyNfts ? colors.submit400 : colors.basic500}
+              fill={onlyMy ? colors.submit400 : colors.basic500}
               fillOpacity=".01"
               d="M0 0h14v14H0z"
             />
@@ -64,7 +62,7 @@ export function TabNfts({ onInfoClick }) {
               fillRule="evenodd"
               clipRule="evenodd"
               d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-              fill={onlyMyNfts ? colors.submit400 : colors.basic500}
+              fill={onlyMy ? colors.submit400 : colors.basic500}
             />
           </svg>
         </div>

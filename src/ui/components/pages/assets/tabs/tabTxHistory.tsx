@@ -128,7 +128,7 @@ export function TabTxHistory() {
     <TabPanel>
       <div className="flex relative grow margin1">
         <SearchInput
-          value={term}
+          value={term ?? ''}
           onInput={e => setTerm(e.target.value)}
           onClear={() => setTerm('')}
         />

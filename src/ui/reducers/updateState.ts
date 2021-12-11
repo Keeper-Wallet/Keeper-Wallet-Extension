@@ -18,7 +18,7 @@ function createSimpleReducer<
   return (
     state = initialState,
     action: { type: TActionType; payload: TState }
-  ) => (actionType === action.type && action.payload) || state;
+  ) => (actionType === action.type ? action.payload : state);
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);

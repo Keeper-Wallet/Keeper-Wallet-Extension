@@ -18,18 +18,18 @@ export function TabAssets({ onInfoClick }) {
     state => state.balances[address]?.assets || {}
   );
 
-  const [assetTerm, setAssetTerm] = useAssetFilter('term');
-  const [onlyMyAssets, setOnlyMyAssets] = useAssetFilter('onlyMy');
-  const [onlyFavorites, setOnlyFavorites] = useAssetFilter('onlyFavorites');
+  const [term, setTerm] = useAssetFilter('term');
+  const [onlyMy, setOnlyMy] = useAssetFilter('onlyMy');
+  const [onlyFav, setOnlyFav] = useAssetFilter('onlyFavorites');
 
   const assetEntries = useSortedAssetEntries(
     Object.entries(myAssets).filter(
       ([assetId]) =>
-        (!onlyFavorites || assets[assetId]?.isFavorite === onlyFavorites) &&
-        (!onlyMyAssets || assets[assetId]?.issuer === address) &&
-        (!assetTerm ||
-          assetId === assetTerm ||
-          icontains(assets[assetId]?.displayName, assetTerm))
+        (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
+        (!onlyMy || assets[assetId]?.issuer === address) &&
+        (!term ||
+          assetId === term ||
+          icontains(assets[assetId]?.displayName, term))
     )
   );
 
@@ -37,18 +37,18 @@ export function TabAssets({ onInfoClick }) {
     <TabPanel>
       <div className="flex relative margin1">
         <SearchInput
-          value={assetTerm}
-          onInput={e => setAssetTerm(e.target.value)}
-          onClear={() => setAssetTerm('')}
+          value={term ?? ''}
+          onInput={e => setTerm(e.target.value)}
+          onClear={() => setTerm('')}
         />
         <div
           className={cn('showTooltip', styles.filterBtn)}
-          onClick={() => setOnlyFavorites(!onlyFavorites)}
+          onClick={() => setOnlyFav(!onlyFav)}
         >
           <svg
             className={styles.filterBtnIcon}
-            fill={onlyFavorites ? colors.submit400 : 'none'}
-            stroke={onlyFavorites ? colors.submit400 : colors.basic500}
+            fill={onlyFav ? colors.submit400 : 'none'}
+            stroke={onlyFav ? colors.submit400 : colors.basic500}
             width="18"
             height="18"
             viewBox="0 0 18 18"
@@ -61,7 +61,7 @@ export function TabAssets({ onInfoClick }) {
         </div>
         <div
           className={cn('showTooltip', styles.filterBtn)}
-          onClick={() => setOnlyMyAssets(!onlyMyAssets)}
+          onClick={() => setOnlyMy(!onlyMy)}
         >
           <svg
             className={styles.filterBtnIcon}
@@ -71,7 +71,7 @@ export function TabAssets({ onInfoClick }) {
             fill="none"
           >
             <path
-              fill={onlyMyAssets ? colors.submit400 : colors.basic500}
+              fill={onlyMy ? colors.submit400 : colors.basic500}
               fillOpacity=".01"
               d="M0 0h14v14H0z"
             />
@@ -79,7 +79,7 @@ export function TabAssets({ onInfoClick }) {
               fillRule="evenodd"
               clipRule="evenodd"
               d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-              fill={onlyMyAssets ? colors.submit400 : colors.basic500}
+              fill={onlyMy ? colors.submit400 : colors.basic500}
             />
           </svg>
         </div>
