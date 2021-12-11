@@ -15,8 +15,13 @@ function useFilter<T, K extends keyof T>(
   const dispatch = useAppDispatch();
   const filters: T = useAppSelector(state => state.uiState[name] || {});
   const [value, setValue] = React.useState(filters[field]);
+  const firstRender = React.useRef(true);
 
   React.useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
     dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
   }, [value, dispatch]);
 
