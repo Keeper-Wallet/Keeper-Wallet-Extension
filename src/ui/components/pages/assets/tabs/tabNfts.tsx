@@ -35,8 +35,8 @@ export function TabNfts({ onInfoClick }) {
   );
 
   return (
-    <TabPanel>
-      <div className="flex relative grow margin1">
+    <TabPanel className={styles.assetsPanel}>
+      <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
           onInput={e => setTerm(e.target.value)}
@@ -75,19 +75,21 @@ export function TabNfts({ onInfoClick }) {
           <Trans i18nKey="assets.emptyNFTs" />
         </div>
       ) : (
-        nftEntries.map(([issuer, issuerNfts], index) => (
-          <div
-            key={issuer}
-            className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
-          >
-            <div className="basic500 margin-min">
-              <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
+        <div className={styles.nftList}>
+          {nftEntries.map(([issuer, issuerNfts], index) => (
+            <div
+              key={issuer}
+              className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+            >
+              <div className="basic500 margin-min">
+                <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
+              </div>
+              {issuerNfts.map(nft => (
+                <NftItem key={nft.id} asset={nft} onInfoClick={onInfoClick} />
+              ))}
             </div>
-            {issuerNfts.map(nft => (
-              <NftItem key={nft.id} asset={nft} onInfoClick={onInfoClick} />
-            ))}
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </TabPanel>
   );

@@ -10,6 +10,8 @@ import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
 import { useAssetFilter, useSortedAssetEntries } from './helpers';
+import { VariableSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export function TabAssets({ onInfoClick }) {
   const assets = useAppSelector(state => state.assets);
@@ -33,9 +35,29 @@ export function TabAssets({ onInfoClick }) {
     )
   );
 
+  const Row = React.useCallback(
+    ({ index, style }) => {
+      const [assetId, { balance }] = assetEntries[index];
+      return (
+        <div style={style}>
+          <AssetItem
+            key={assetId}
+            balance={
+              assets[assetId] &&
+              new Money(new BigNumber(balance), new Asset(assets[assetId]))
+            }
+            assetId={assetId}
+            onInfoClick={onInfoClick}
+          />
+        </div>
+      );
+    },
+    [assets, assetEntries]
+  );
+
   return (
-    <TabPanel>
-      <div className="flex relative margin1">
+    <TabPanel className={styles.assetsPanel}>
+      <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
           onInput={e => setTerm(e.target.value)}
@@ -93,17 +115,20 @@ export function TabAssets({ onInfoClick }) {
           <Trans i18nKey="assets.emptyAssets" />
         </div>
       ) : (
-        assetEntries.map(([assetId, { balance }]) => (
-          <AssetItem
-            key={assetId}
-            balance={
-              assets[assetId] &&
-              new Money(new BigNumber(balance), new Asset(assets[assetId]))
-            }
-            assetId={assetId}
-            onInfoClick={onInfoClick}
-          />
-        ))
+        <div className={styles.assetList}>
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                height={height}
+                width={width}
+                itemCount={assetEntries.length}
+                itemSize={() => 64 + 8}
+              >
+                {Row}
+              </List>
+            )}
+          </AutoSizer>
+        </div>
       )}
     </TabPanel>
   );

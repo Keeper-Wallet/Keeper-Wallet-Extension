@@ -125,8 +125,8 @@ export function TabTxHistory() {
   );
 
   return (
-    <TabPanel>
-      <div className="flex relative grow margin1">
+    <TabPanel className={styles.assetsPanel}>
+      <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
           onInput={e => setTerm(e.target.value)}
@@ -189,17 +189,19 @@ export function TabTxHistory() {
           <Trans i18nKey="assets.emptyHistory" />
         </div>
       ) : (
-        historyEntries.map(([date, txArr], index) => (
-          <div
-            key={date}
-            className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
-          >
-            <div className="basic500 margin-min">{date}</div>
-            {txArr.map(tx => (
-              <HistoryItem key={tx.id} tx={tx} />
-            ))}
-          </div>
-        ))
+        <div className={styles.historyList}>
+          {historyEntries.map(([date, txArr], index) => (
+            <div
+              key={date}
+              className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
+            >
+              <div className="basic500 margin-min">{date}</div>
+              {txArr.map(tx => (
+                <HistoryItem key={tx.id} tx={tx} />
+              ))}
+            </div>
+          ))}
+        </div>
       )}
     </TabPanel>
   );
