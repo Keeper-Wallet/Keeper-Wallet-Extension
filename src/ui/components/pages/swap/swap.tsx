@@ -1,5 +1,4 @@
 import { Asset } from '@waves/data-entities';
-import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
