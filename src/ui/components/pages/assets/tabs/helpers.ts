@@ -8,10 +8,10 @@ import {
 } from '../../../../reducers/updateState';
 import * as React from 'react';
 
-function useFilter<T, K extends keyof T>(
+function useFilter<T, F extends keyof T>(
   name: string,
-  field: K
-): [T[K], (value: T[K]) => void] {
+  field: F
+): [Pick<T, F>[F], (value: Pick<T, F>[F]) => void] {
   const dispatch = useAppDispatch();
   const filters: T = useAppSelector(state => state.uiState[name] || {});
   const [value, setValue] = React.useState(filters[field]);
@@ -23,20 +23,20 @@ function useFilter<T, K extends keyof T>(
       return;
     }
     dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
-  }, [value, dispatch]);
+  }, [value, dispatch, setUiState]);
 
   return [value, setValue];
 }
 
-export function useAssetFilter(field: keyof AssetFilters) {
+export function useAssetFilter<F extends keyof AssetFilters>(field: F) {
   return useFilter<AssetFilters, typeof field>('assetFilters', field);
 }
 
-export function useNftFilter(field: keyof NftFilters) {
+export function useNftFilter<F extends keyof NftFilters>(field: F) {
   return useFilter<NftFilters, typeof field>('nftFilters', field);
 }
 
-export function useTxHistoryFilter(field: keyof TxHistoryFilters) {
+export function useTxHistoryFilter<F extends keyof TxHistoryFilters>(field: F) {
   return useFilter<TxHistoryFilters, typeof field>('txHistoryFilters', field);
 }
 
