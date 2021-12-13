@@ -72,7 +72,11 @@ export function TabNfts({ onInfoClick }) {
       </div>
       {nftEntries.length === 0 ? (
         <div className="basic500 center margin-min-top">
-          <Trans i18nKey="assets.emptyNFTs" />
+          {term || onlyMy ? (
+            <Trans i18nKey="assets.notFoundNFTs" />
+          ) : (
+            <Trans i18nKey="assets.emptyNFTs" />
+          )}
         </div>
       ) : (
         <div className={styles.nftList}>

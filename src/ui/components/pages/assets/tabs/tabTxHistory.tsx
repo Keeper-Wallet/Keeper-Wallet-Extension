@@ -2,7 +2,7 @@ import * as styles from '../../styles/assets.styl';
 import { Select, TabPanel } from '../../../ui';
 import cn from 'classnames';
 import { Trans, useTranslation } from 'react-i18next';
-import { colors, icontains } from '../helpers';
+import { colors, getTxHistoryLink, icontains } from '../helpers';
 import { HistoryItem } from '../historyItem';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
@@ -13,9 +13,13 @@ import {
 import { useAppSelector } from '../../../../store';
 import { buildTxTypeOptions, MONTH, useTxHistoryFilter } from './helpers';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { MAX_TX_HISTORY_ITEMS } from '../../../../../controllers/CurrentAccountController';
 
 export function TabTxHistory() {
   const { t } = useTranslation();
+  const networkCode = useAppSelector(
+    state => state.selectedAccount.networkCode
+  );
   const assets = useAppSelector(state => state.assets);
   const address = useAppSelector(state => state.selectedAccount.address);
   const aliases = useAppSelector(
@@ -122,7 +126,7 @@ export function TabTxHistory() {
           [date]: [...(result[date] || []), tx],
         };
       }, {})
-  );
+  ).slice(0, MAX_TX_HISTORY_ITEMS - 1);
 
   return (
     <TabPanel className={styles.assetsPanel}>
@@ -186,7 +190,11 @@ export function TabTxHistory() {
       </div>
       {!historyEntries.length ? (
         <div className="basic500 center margin-min-top">
-          <Trans i18nKey="assets.emptyHistory" />
+          {term || type || onlyIn || onlyOut ? (
+            <Trans i18nKey="assets.notFoundHistory" />
+          ) : (
+            <Trans i18nKey="assets.emptyHistory" />
+          )}
         </div>
       ) : (
         <div className={styles.historyList}>
@@ -201,6 +209,32 @@ export function TabTxHistory() {
               ))}
             </div>
           ))}
+
+          {historyEntries.length < MAX_TX_HISTORY_ITEMS && (
+            <div className="basic500 center margin-main-top margin-main">
+              <div className="margin-min">
+                {term || type || onlyIn || onlyOut ? (
+                  <Trans
+                    i18nKey="assets.maxFiltersHistory"
+                    values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                  />
+                ) : (
+                  <Trans
+                    i18nKey="assets.maxHistory"
+                    values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                  />
+                )}
+              </div>
+              <a
+                className="blue link"
+                href={getTxHistoryLink(networkCode, address)}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Trans i18nKey="assets.showExplorerHistory" />
+              </a>
+            </div>
+          )}
         </div>
       )}
     </TabPanel>

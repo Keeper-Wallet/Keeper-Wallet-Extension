@@ -1,6 +1,9 @@
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
+export const MAX_TX_HISTORY_ITEMS = 101;
+const MAX_NFT_ITEMS = 1000;
+
 export class CurrentAccountController {
   constructor(options = {}) {
     const defaults = {
@@ -39,8 +42,6 @@ export class CurrentAccountController {
   }
 
   async updateBalances() {
-    const nftLimit = 1000;
-    const txLimit = 100;
     const currentNetwork = this.getNetwork();
     const accounts = this.getAccounts().filter(
       ({ network }) => network === currentNetwork
@@ -62,9 +63,9 @@ export class CurrentAccountController {
                 ...(isActiveAddress
                   ? [
                       `assets/balance/${address}`,
-                      `assets/nft/${address}/limit/${nftLimit}`,
+                      `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
                       `alias/by-address/${address}`,
-                      `transactions/address/${address}/limit/${txLimit}`,
+                      `transactions/address/${address}/limit/${MAX_TX_HISTORY_ITEMS}`,
                     ]
                   : []),
               ].map(url => this.getByUrl(url))

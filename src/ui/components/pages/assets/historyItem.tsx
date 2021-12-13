@@ -6,7 +6,7 @@ import { TxIcon } from '../../transactions/BaseTransaction';
 import { useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
-import { getTxLink } from './helpers';
+import { getTxDetailLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 
@@ -346,7 +346,11 @@ export function HistoryItem({ tx, className }: Props) {
         className={cn(styles.infoButton, 'showTooltip')}
         type="button"
         onClick={() => {
-          window.open(getTxLink(tx.id, networkCode), '_blank', 'noopener');
+          window.open(
+            getTxDetailLink(networkCode, tx.id),
+            '_blank',
+            'noopener'
+          );
         }}
       >
         <svg className={styles.infoIcon} viewBox="0 0 28 26">

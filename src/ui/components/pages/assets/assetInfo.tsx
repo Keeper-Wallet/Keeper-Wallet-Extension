@@ -3,7 +3,7 @@ import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
-import { getTxLink } from './helpers';
+import { getTxDetailLink } from './helpers';
 
 interface AssetDetail extends Asset {
   originTransactionId: string;
@@ -20,7 +20,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
     state => state.selectedAccount.networkCode
   );
 
-  const txLink = getTxLink(asset.originTransactionId, networkCode);
+  const txLink = getTxDetailLink(networkCode, asset.originTransactionId);
 
   return (
     <div className="modal cover">

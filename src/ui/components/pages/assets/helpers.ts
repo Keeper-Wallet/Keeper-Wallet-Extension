@@ -5,7 +5,14 @@ const explorerUrls = new Map([
   ['custom', 'wavesexplorer.com/custom'],
 ]);
 
-export function getTxLink(txId: string, networkCode: string): string {
+export function getTxHistoryLink(networkCode: string, address: string): string {
+  const explorer = explorerUrls.get(
+    explorerUrls.has(networkCode) ? networkCode : 'custom'
+  );
+  return `https://${explorer}/address/${address}/tx/`;
+}
+
+export function getTxDetailLink(networkCode: string, txId: string): string {
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom'
   );

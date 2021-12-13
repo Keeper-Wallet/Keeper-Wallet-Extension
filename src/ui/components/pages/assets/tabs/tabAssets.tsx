@@ -10,8 +10,29 @@ import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
 import { useAssetFilter, useSortedAssetEntries } from './helpers';
-import { VariableSizeList as List } from 'react-window';
+import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+
+const CARD_HEIGHT = 64;
+const CARD_MARGIN_BOTTOM = 8;
+const CARD_FULL_HEIGHT = CARD_HEIGHT + CARD_MARGIN_BOTTOM;
+
+const Row = ({ data, index, style }) => {
+  const { assetEntries, assets, onInfoClick } = data;
+  const [assetId, { balance }] = assetEntries[index];
+  return (
+    <div style={style}>
+      <AssetItem
+        balance={
+          assets[assetId] &&
+          new Money(new BigNumber(balance), new Asset(assets[assetId]))
+        }
+        assetId={assetId}
+        onInfoClick={onInfoClick}
+      />
+    </div>
+  );
+};
 
 export function TabAssets({ onInfoClick }) {
   const assets = useAppSelector(state => state.assets);
@@ -33,26 +54,6 @@ export function TabAssets({ onInfoClick }) {
           assetId === term ||
           icontains(assets[assetId]?.displayName, term))
     )
-  );
-
-  const Row = React.useCallback(
-    ({ index, style }) => {
-      const [assetId, { balance }] = assetEntries[index];
-      return (
-        <div style={style}>
-          <AssetItem
-            key={assetId}
-            balance={
-              assets[assetId] &&
-              new Money(new BigNumber(balance), new Asset(assets[assetId]))
-            }
-            assetId={assetId}
-            onInfoClick={onInfoClick}
-          />
-        </div>
-      );
-    },
-    [assets, assetEntries]
   );
 
   return (
@@ -112,21 +113,29 @@ export function TabAssets({ onInfoClick }) {
 
       {assetEntries.length === 0 ? (
         <div className="basic500 center margin-min-top">
-          <Trans i18nKey="assets.emptyAssets" />
+          {term || onlyMy || onlyFav ? (
+            <Trans i18nKey="assets.notFoundAssets" />
+          ) : (
+            <Trans i18nKey="assets.emptyAssets" />
+          )}
         </div>
       ) : (
         <div className={styles.assetList}>
           <AutoSizer>
-            {({ height, width }) => (
-              <List
-                height={height}
-                width={width}
-                itemCount={assetEntries.length}
-                itemSize={() => 64 + 8}
-              >
-                {Row}
-              </List>
-            )}
+            {({ height, width }) => {
+              return (
+                <List
+                  height={height}
+                  width={width}
+                  itemCount={assetEntries.length}
+                  itemSize={CARD_FULL_HEIGHT}
+                  itemData={{ assetEntries, assets, onInfoClick }}
+                  itemKey={(index, itemData) => itemData.assetEntries[index][0]}
+                >
+                  {Row}
+                </List>
+              );
+            }}
           </AutoSizer>
         </div>
       )}
