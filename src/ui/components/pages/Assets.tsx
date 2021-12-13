@@ -4,12 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans } from 'react-i18next';
-import {
-  getAsset,
-  getBalances,
-  setActiveAccount,
-  setUiState,
-} from '../../actions';
+import { getBalances, setActiveAccount, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import {
@@ -93,12 +88,6 @@ export function Assets({ setTab }: Props) {
       []
     ),
   ];
-
-  React.useEffect(() => {
-    if (!assets['WAVES']) {
-      dispatch(getAsset('WAVES'));
-    }
-  }, [assets, dispatch]);
 
   const address = activeAccount && activeAccount.address;
 
@@ -232,7 +221,7 @@ export function Assets({ setTab }: Props) {
 
       <Modal
         animation={Modal.ANIMATION.FLASH}
-        showModal={showAsset}
+        showModal={currentAsset && showAsset}
         onExited={() => setCurrentAsset(null)}
       >
         <AssetInfo

@@ -54,13 +54,15 @@ export function useSortedAssetEntries<T>(
     )
     .sort(
       ([a], [b]) =>
-        assets[a] &&
-        assets[b] &&
-        (+!!assets[b].isFavorite - +!!assets[a].isFavorite ||
-          +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
-          (assets[a].displayName ?? '').localeCompare(
-            assets[b].displayName ?? ''
-          ))
+        (a === 'WAVES' && -1) ||
+        (b === 'WAVES' && 1) ||
+        (assets[a] &&
+          assets[b] &&
+          (+!!assets[b].isFavorite - +!!assets[a].isFavorite ||
+            +!!assets[a].isSuspicious - +!!assets[b].isSuspicious ||
+            (assets[a].displayName ?? '').localeCompare(
+              assets[b].displayName ?? ''
+            )))
     );
 }
 

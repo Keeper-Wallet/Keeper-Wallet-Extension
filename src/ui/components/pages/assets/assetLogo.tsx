@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as styles from './assetLogo.styl';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
+import { colors } from './helpers';
 
 interface Props {
   assetId: string;
@@ -21,12 +22,28 @@ export function AssetLogo({
   hasScript,
 }: Props) {
   const style = {
-    backgroundColor: new ColorHash().hex(assetId),
+    backgroundColor:
+      assetId === 'WAVES' ? colors.white : new ColorHash().hex(assetId),
   };
   if (!logo) {
     return (
       <div className={cn(styles.assetLogo, className)} style={style}>
-        <div>{name && name[0].toUpperCase()}</div>
+        <div>
+          {assetId === 'WAVES' ? (
+            <svg width="40" height="40" viewBox="0 0 12 12" fill="none">
+              <rect
+                x="5.9053"
+                y="0.954468"
+                width="7.43786"
+                height="7.47036"
+                transform="rotate(45 5.9053 0.954468)"
+                fill={colors.submit400}
+              />
+            </svg>
+          ) : (
+            name && name[0].toUpperCase()
+          )}
+        </div>
         {(hasSponsorship || hasScript) && (
           <div className={styles.assetSubIconContainer}>
             <div className={styles.assetSubIcon}>

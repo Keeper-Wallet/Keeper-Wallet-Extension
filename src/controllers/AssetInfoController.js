@@ -190,6 +190,7 @@ export class AssetInfoController {
             };
           }
         });
+        assets[network]['WAVES'] = this.getWavesAsset();
         this.store.updateState({ assets });
         break;
       default:

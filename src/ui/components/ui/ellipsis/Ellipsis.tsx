@@ -9,7 +9,9 @@ interface IProps {
 export const Ellipsis = ({ text, className, size = 8 }: IProps) => {
   return (
     <div className={className} title={text}>
-      {text.slice(0, size)}...{text.slice(-size)}
+      {text.length > 2 * size
+        ? `${text.slice(0, size)}...${text.slice(-size)}`
+        : text}
     </div>
   );
 };

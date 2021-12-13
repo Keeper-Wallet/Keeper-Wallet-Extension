@@ -17,8 +17,6 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
     state => state.selectedAccount.networkCode
   );
 
-  const txLink = getTxDetailLink(networkCode, asset.originTransactionId);
-
   return (
     <div className="modal cover">
       <div className="modal-form">
@@ -98,17 +96,19 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           </div>
         )}
 
-        <div className="margin-main">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.sender" />
+        {asset.sender && (
+          <div className="margin-main">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="assetInfo.sender" />
+            </div>
+            <div className="flex tag1">
+              <Ellipsis text={asset.sender} size={14} />
+              <Copy text={asset.sender}>
+                <div className="copy-icon" onClick={onCopy} />
+              </Copy>
+            </div>
           </div>
-          <div className="flex tag1">
-            <Ellipsis text={asset.sender} size={14} />
-            <Copy text={asset.sender}>
-              <div className="copy-icon" onClick={onCopy} />
-            </Copy>
-          </div>
-        </div>
+        )}
 
         <div className="margin-main">
           <div className="input-title basic500 tag1">
@@ -119,16 +119,18 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           </div>
         </div>
 
-        <div className="center margin-main">
-          <a
-            rel="noopener noreferrer"
-            className="link black"
-            href={txLink}
-            target="_blank"
-          >
-            <Trans i18nKey="sign.viewTransaction" />
-          </a>
-        </div>
+        {asset.originTransactionId && (
+          <div className="center margin-main">
+            <a
+              rel="noopener noreferrer"
+              className="link black"
+              href={getTxDetailLink(networkCode, asset.originTransactionId)}
+              target="_blank"
+            >
+              <Trans i18nKey="sign.viewTransaction" />
+            </a>
+          </div>
+        )}
 
         <Button onClick={onClose} type="button">
           <Trans i18nKey="assetInfo.closeBtn" />

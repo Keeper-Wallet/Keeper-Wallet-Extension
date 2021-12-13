@@ -20,6 +20,7 @@ export function getTxDetailLink(networkCode: string, txId: string): string {
 }
 
 export const colors = {
+  white: '#FFFFFF',
   basic200: '#DAE1E9',
   basic500: '#9BA6B2',
   submit200: '#BACAF4',
