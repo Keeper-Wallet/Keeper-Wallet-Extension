@@ -235,6 +235,11 @@ class Background {
     return this.background.signAndPublishTransaction(data);
   }
 
+  async updateExchangers(network: string) {
+    await this.initPromise;
+    return this.background.updateExchangers(network);
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);

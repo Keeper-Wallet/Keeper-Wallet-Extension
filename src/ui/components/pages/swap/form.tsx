@@ -3,7 +3,9 @@ import { Asset, Money } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useIMask } from 'react-imask';
+import { SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
+import { useDebouncedValue } from 'ui/utils/useDebouncedValue';
 import {
   calcExchangeDetails,
   getAssetBalance,
@@ -12,16 +14,14 @@ import {
 import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
-import { SwopFiExchangerData } from './api';
 import * as styles from './form.module.css';
 import { SwapAssetLogo } from './assetLogo';
-import { useDebouncedValue } from 'ui/utils/useDebouncedValue';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
 interface Props {
-  assetsMap: { [assetId: string]: Asset };
-  exchangersMap: { [exchangerId: string]: SwopFiExchangerData };
+  assets: { [assetId: string]: Asset };
+  exchangers: { [exchangerId: string]: SwopFiExchangerData };
 }
 
 interface State {
@@ -82,7 +82,7 @@ const ASSETS_FORMAT = {
   suffix: '',
 };
 
-export function SwapForm({ assetsMap, exchangersMap }: Props) {
+export function SwapForm({ assets, exchangers }: Props) {
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
@@ -133,10 +133,7 @@ export function SwapForm({ assetsMap, exchangersMap }: Props) {
     },
     undefined,
     (): State => {
-      const defaultExchanger = getDefaultExchanger(
-        currentNetwork,
-        exchangersMap
-      );
+      const defaultExchanger = getDefaultExchanger(currentNetwork, exchangers);
 
       return {
         directionSwapped: false,
@@ -149,7 +146,7 @@ export function SwapForm({ assetsMap, exchangersMap }: Props) {
     }
   );
 
-  const exchanger = exchangersMap[state.exchangerId];
+  const exchanger = exchangers[state.exchangerId];
   const exchangerVersion = Number(exchanger.version.split('.')[0]);
 
   const commission = React.useMemo(
@@ -168,8 +165,8 @@ export function SwapForm({ assetsMap, exchangersMap }: Props) {
     ? [exchanger.B_asset_balance, exchanger.A_asset_balance]
     : [exchanger.A_asset_balance, exchanger.B_asset_balance];
 
-  const fromAsset = assetsMap[fromAssetId];
-  const toAsset = assetsMap[toAssetId];
+  const fromAsset = assets[fromAssetId];
+  const toAsset = assets[toAssetId];
 
   const debouncedFromAmount = useDebouncedValue(state.fromAmount, 500);
 
@@ -264,7 +261,7 @@ export function SwapForm({ assetsMap, exchangersMap }: Props) {
         <Select
           className="fullwidth"
           selected={state.exchangerId}
-          selectList={Object.values(exchangersMap)
+          selectList={Object.values(exchangers)
             .sort((exchangerA, exchangerB) => {
               const a = new BigNumber(exchangerA.totalLiquidity);
               const b = new BigNumber(exchangerB.totalLiquidity);
@@ -275,8 +272,8 @@ export function SwapForm({ assetsMap, exchangersMap }: Props) {
             })
             .map(exchanger => ({
               id: exchanger.id,
-              text: `${assetsMap[exchanger.A_asset_id].displayName}/${
-                assetsMap[exchanger.B_asset_id].displayName
+              text: `${assets[exchanger.A_asset_id].displayName}/${
+                assets[exchanger.B_asset_id].displayName
               }`,
               value: exchanger.id,
             }))}

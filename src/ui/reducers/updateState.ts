@@ -113,6 +113,40 @@ export const balances = createSimpleReducer<{
   [address: string]: AccountBalance;
 }>({}, ACTION.UPDATE_BALANCES);
 
+export interface SwopFiExchangerData {
+  A_asset_balance: string;
+  A_asset_id: string;
+  A_asset_init: string;
+  B_asset_balance: string;
+  B_asset_id: string;
+  B_asset_init: string;
+  active: boolean;
+  commission: number;
+  commission_scale_delimiter: number;
+  first_harvest_height: number;
+  govFees24: string;
+  govFees7d: string;
+  id: string;
+  lpFees24: string;
+  lpFees7d: string;
+  share_asset_id: string;
+  share_asset_supply: string;
+  share_limit_on_first_harvest: string;
+  stakingIncome24: string;
+  stakingIncome7d: string;
+  totalLiquidity: string;
+  txCount24: string;
+  txCount7d: string;
+  version: string;
+  volume24: string;
+  volume7d: string;
+  volume_current_period: string;
+}
+
+export const exchangers = createSimpleReducer<{
+  [exchangerId: string]: SwopFiExchangerData;
+}>({}, ACTION.UPDATE_EXCHANGERS);
+
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);
 export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);

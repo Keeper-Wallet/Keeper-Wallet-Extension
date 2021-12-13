@@ -1,7 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { AccountBalance } from 'ui/reducers/updateState';
-import { SwopFiExchangerData, fetchGetMoney } from './api';
+import { AccountBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
+import { fetchGetMoney } from './api';
 
 const assetIds = {
   mainnet: {

@@ -2,21 +2,20 @@ import { Asset } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
-import * as styles from './swap.module.css';
-import { fetchAssets, fetchExchangers, SwopFiExchangerData } from './api';
+import background from 'ui/services/Background';
+import { fetchAssets } from './api';
 import { SwapForm } from './form';
+import * as styles from './swap.module.css';
 
 const REFRESH_INTERVAL_MS = 10000;
 
 export function Swap() {
+  const exchangers = useAppSelector(state => state.exchangers);
+
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 
-  const [assetsMap, setAssetsMap] = React.useState<{
+  const [assets, setAssetsMap] = React.useState<{
     [assetId: string]: Asset;
-  } | null>(null);
-
-  const [exchangersMap, setExchangersMap] = React.useState<{
-    [exchangerId: string]: SwopFiExchangerData;
   } | null>(null);
 
   React.useEffect(() => {
@@ -24,13 +23,11 @@ export function Swap() {
     let timeout: number;
 
     function updateData() {
-      Promise.all([
-        fetchAssets(currentNetwork),
-        fetchExchangers(currentNetwork),
-      ]).then(([fetchAssetsResponse, fetchExchangersResponse]) => {
+      background.updateExchangers(currentNetwork);
+
+      fetchAssets(currentNetwork).then(fetchAssetsResponse => {
         if (!cancelled) {
           setAssetsMap(fetchAssetsResponse);
-          setExchangersMap(fetchExchangersResponse);
         }
       });
 
@@ -57,11 +54,11 @@ export function Swap() {
           </h1>
         </header>
 
-        {!assetsMap || !exchangersMap ? (
+        {!assets || !exchangers ? (
           <div className={styles.loader} />
         ) : (
           <div className={styles.content}>
-            <SwapForm assetsMap={assetsMap} exchangersMap={exchangersMap} />
+            <SwapForm assets={assets} exchangers={exchangers} />
           </div>
         )}
       </div>

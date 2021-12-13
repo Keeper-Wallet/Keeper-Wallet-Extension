@@ -27,6 +27,7 @@ import {
   PreferencesController,
   RemoteConfigController,
   StatisticsController,
+  SwapController,
   TrashController,
   TxInfoController,
   UiStateController,
@@ -332,6 +333,10 @@ class BackgroundService extends EventEmitter {
       }
     );
 
+    this.swapController = new SwapController({
+      initState: initState.SwapController,
+    });
+
     // Single state composed from states of all controllers
     this.store.updateStructure({
       StatisticsController: this.statisticsController.store,
@@ -345,6 +350,7 @@ class BackgroundService extends EventEmitter {
       AssetInfoController: this.assetInfoController.store,
       RemoteConfigController: this.remoteConfigController.store,
       NotificationsController: this.notificationsController.store,
+      SwapController: this.swapController.store,
       TrashController: this.trash.store,
     });
 
@@ -506,6 +512,9 @@ class BackgroundService extends EventEmitter {
       ),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
+      updateExchangers: this.swapController.updateExchangers.bind(
+        this.swapController
+      ),
     };
   }
 

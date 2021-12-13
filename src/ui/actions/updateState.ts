@@ -1,6 +1,7 @@
 import { UiStore } from '../store';
 import { ACTION } from './constants';
 import { equals } from 'ramda';
+import { SwopFiExchangerData } from 'ui/reducers/updateState';
 import { AssetDetail } from '../services/Background';
 
 interface Account {
@@ -25,6 +26,11 @@ interface UpdateStateInput {
   customCodes?: unknown;
   customMatchers?: unknown;
   customNodes?: unknown;
+  exchangers: {
+    [network: string]: {
+      [exchangerId: string]: SwopFiExchangerData;
+    };
+  };
   idleOptions?: unknown;
   initialized: boolean;
   locked: boolean;
@@ -44,6 +50,7 @@ export function createUpdateState(store: UiStore) {
       accounts = [],
       currentLocale,
       currentNetworkAccounts = [],
+      exchangers,
       selectedAccount = {},
       initialized,
       locked,
@@ -221,6 +228,13 @@ export function createUpdateState(store: UiStore) {
       actions.push({
         type: ACTION.UPDATE_ASSETS,
         payload: assets[currentNetwork],
+      });
+    }
+
+    if (!equals(exchangers[currentNetwork], currentState.exchangers)) {
+      actions.push({
+        type: ACTION.UPDATE_EXCHANGERS,
+        payload: exchangers[currentNetwork],
       });
     }
 
