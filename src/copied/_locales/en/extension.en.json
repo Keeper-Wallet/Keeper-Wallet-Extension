@@ -38,7 +38,8 @@
     "closeBtn": "Close",
     "infoTooltip": "Asset Info",
     "favAddTooltip": "Add to Favorites",
-    "favRemoveTooltip": "Remove from Favorites"
+    "favRemoveTooltip": "Remove from Favorites",
+    "sendAssetTooltip": "Send"
   },
   "assets": {
     "account": "Account",

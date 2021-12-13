@@ -14,9 +14,16 @@ interface Props {
   assetId: string;
   className?: string;
   onInfoClick?: (assetId: string) => void;
+  onSendClick?: (assetId: string) => void;
 }
 
-export function AssetItem({ balance, assetId, className, onInfoClick }: Props) {
+export function AssetItem({
+  balance,
+  assetId,
+  className,
+  onInfoClick,
+  onSendClick,
+}: Props) {
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
   const asset = assets[assetId];
@@ -109,6 +116,24 @@ export function AssetItem({ balance, assetId, className, onInfoClick }: Props) {
                   : 'assetInfo.favAddTooltip'
               }
             />
+          </div>
+
+          <button
+            className={cn(styles.sendBtn, 'showTooltip')}
+            type="button"
+            onClick={() => onSendClick(assetId)}
+          >
+            <svg
+              className={styles.sendIcon}
+              width="26"
+              height="26"
+              viewBox="0 0 18 18"
+            >
+              <path d="M11.5 4.5L10.6125 5.3875L9.61875 4.39375V11.375H8.38125V4.39375L7.3875 5.3875L6.5 4.5L9 2L11.5 4.5ZM14 7.625V14.5C14 15.1875 13.4375 15.75 12.75 15.75H5.25C4.55625 15.75 4 15.1875 4 14.5V7.625C4 6.93125 4.55625 6.375 5.25 6.375H7.125V7.625H5.25V14.5H12.75V7.625H10.875V6.375H12.75C13.4375 6.375 14 6.93125 14 7.625Z" />
+            </svg>
+          </button>
+          <div className={cn(styles.sendTooltip, 'tooltip')}>
+            <Trans i18nKey={'assetInfo.sendAssetTooltip'} />
           </div>
 
           <button

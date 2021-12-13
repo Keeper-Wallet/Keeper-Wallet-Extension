@@ -4,10 +4,7 @@ import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
 import { getTxDetailLink } from './helpers';
-
-interface AssetDetail extends Asset {
-  originTransactionId: string;
-}
+import { AssetDetail } from '../../../services/Background';
 
 interface Props {
   asset: AssetDetail;
@@ -67,7 +64,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             <Trans i18nKey="assetInfo.quantity" />
           </div>
           <div className="tag1">
-            <Balance balance={new Money(asset.quantity, asset)} />
+            <Balance balance={new Money(asset.quantity, new Asset(asset))} />
           </div>
         </div>
 

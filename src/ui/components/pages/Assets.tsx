@@ -29,6 +29,7 @@ import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
+import { AssetDetail } from '../../services/Background';
 
 export function SearchInput({ value, onInput, onClear }) {
   const input = React.createRef<Input>();
@@ -82,9 +83,16 @@ export function Assets({ setTab }: Props) {
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
   );
 
-  const [asset, setAsset] = useState(null);
   const [showAsset, setShowAsset] = useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
+
+  const [currentAsset, setCurrentAsset] = [
+    useAppSelector(state => state.uiState?.currentAsset),
+    React.useCallback(
+      (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
+      []
+    ),
+  ];
 
   React.useEffect(() => {
     if (!assets['WAVES']) {
@@ -95,6 +103,7 @@ export function Assets({ setTab }: Props) {
   const address = activeAccount && activeAccount.address;
 
   React.useEffect(() => {
+    setCurrentAsset(null);
     dispatch(getBalances());
   }, []);
 
@@ -153,13 +162,17 @@ export function Assets({ setTab }: Props) {
         <TabPanels className={styles.tabPanels}>
           <TabAssets
             onInfoClick={assetId => {
-              setAsset(assets[assetId]);
+              setCurrentAsset(assets[assetId]);
               setShowAsset(true);
+            }}
+            onSendClick={assetId => {
+              setCurrentAsset(assets[assetId]);
+              setTab(PAGES.SEND);
             }}
           />
           <TabNfts
             onInfoClick={assetId => {
-              setAsset(assets[assetId]);
+              setCurrentAsset(assets[assetId]);
               setShowAsset(true);
             }}
           />
@@ -220,10 +233,10 @@ export function Assets({ setTab }: Props) {
       <Modal
         animation={Modal.ANIMATION.FLASH}
         showModal={showAsset}
-        onExited={() => setAsset(null)}
+        onExited={() => setCurrentAsset(null)}
       >
         <AssetInfo
-          asset={asset}
+          asset={currentAsset}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

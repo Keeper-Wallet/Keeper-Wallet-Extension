@@ -18,7 +18,7 @@ const CARD_MARGIN_BOTTOM = 8;
 const CARD_FULL_HEIGHT = CARD_HEIGHT + CARD_MARGIN_BOTTOM;
 
 const Row = ({ data, index, style }) => {
-  const { assetEntries, assets, onInfoClick } = data;
+  const { assetEntries, assets, onInfoClick, onSendClick } = data;
   const [assetId, { balance }] = assetEntries[index];
   return (
     <div style={style}>
@@ -29,12 +29,18 @@ const Row = ({ data, index, style }) => {
         }
         assetId={assetId}
         onInfoClick={onInfoClick}
+        onSendClick={onSendClick}
       />
     </div>
   );
 };
 
-export function TabAssets({ onInfoClick }) {
+interface Props {
+  onInfoClick: (assetId: string) => void;
+  onSendClick: (assetId: string) => void;
+}
+
+export function TabAssets({ onInfoClick, onSendClick }: Props) {
   const assets = useAppSelector(state => state.assets);
   const address = useAppSelector(state => state.selectedAccount.address);
   const myAssets = useAppSelector(
@@ -129,7 +135,7 @@ export function TabAssets({ onInfoClick }) {
                   width={width}
                   itemCount={assetEntries.length}
                   itemSize={CARD_FULL_HEIGHT}
-                  itemData={{ assetEntries, assets, onInfoClick }}
+                  itemData={{ assetEntries, assets, onInfoClick, onSendClick }}
                   itemKey={(index, itemData) => itemData.assetEntries[index][0]}
                 >
                   {Row}
