@@ -20,12 +20,23 @@ export function Send() {
   );
   const assetBalances = accountBalance?.assets;
   const currentAsset = useAppSelector(state => state.uiState?.currentAsset);
+  const isNft =
+    currentAsset &&
+    currentAsset.precision === 0 &&
+    currentAsset.quantity == 1 &&
+    !currentAsset.reissuable;
 
   React.useEffect(() => {
     if (!assetBalances) {
       dispatch(getBalances());
     }
   }, [assetBalances, dispatch]);
+
+  React.useEffect(() => {
+    if (isNft) {
+      setAmountValue('1');
+    }
+  }, [currentAsset]);
 
   const [recipientValue, setRecipientValue] = React.useState('');
   const [recipientTouched, setRecipientTouched] = React.useState(false);
@@ -99,7 +110,10 @@ export function Send() {
           signAndPublishTransaction({
             type: 4,
             data: {
-              amount: { assetId: currentAsset.id, tokens: amountValue },
+              amount: {
+                assetId: currentAsset.id,
+                tokens: amountValue,
+              },
               recipient: recipientValue,
               attachment: attachmentValue,
             },
@@ -110,7 +124,10 @@ export function Send() {
       <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            <Trans i18nKey="send.title" />
+            <Trans
+              i18nKey="send.title"
+              values={{ name: currentAsset?.displayName }}
+            />
           </h1>
         </header>
 
@@ -142,40 +159,44 @@ export function Send() {
             <Trans i18nKey="send.assetInputLabel" />
           </div>
 
-          <div className="margin-main-big">
-            {!currentAsset || !assetBalances[currentAsset.id] ? (
-              <Loader />
-            ) : (
-              <Balance
-                showAsset
-                isShortFormat={false}
-                balance={
-                  new Money(
-                    new BigNumber(assetBalances[currentAsset.id].balance),
-                    new Asset(currentAsset)
-                  )
-                }
-              />
-            )}
-          </div>
+          {!isNft && (
+            <>
+              <div className="margin-main-big">
+                {!currentAsset || !assetBalances[currentAsset.id] ? (
+                  <Loader />
+                ) : (
+                  <Balance
+                    showAsset
+                    isShortFormat={false}
+                    balance={
+                      new Money(
+                        new BigNumber(assetBalances[currentAsset.id].balance),
+                        new Asset(currentAsset)
+                      )
+                    }
+                  />
+                )}
+              </div>
 
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="send.amountInputLabel" />
-          </div>
+              <div className="input-title basic500 tag1">
+                <Trans i18nKey="send.amountInputLabel" />
+              </div>
 
-          <div className="margin-main-big">
-            <Input
-              autoComplete="off"
-              data-testid="amountInput"
-              error={showAmountError}
-              inputRef={amountMask.ref}
-              onBlur={() => {
-                setAmountTouched(true);
-              }}
-            />
+              <div className="margin-main-big">
+                <Input
+                  autoComplete="off"
+                  data-testid="amountInput"
+                  error={showAmountError}
+                  inputRef={amountMask.ref}
+                  onBlur={() => {
+                    setAmountTouched(true);
+                  }}
+                />
 
-            <Error show={showAmountError}>{amountError}</Error>
-          </div>
+                <Error show={showAmountError}>{amountError}</Error>
+              </div>
+            </>
+          )}
 
           <div className="input-title basic500 tag1">
             <Trans

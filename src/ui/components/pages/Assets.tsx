@@ -164,6 +164,10 @@ export function Assets({ setTab }: Props) {
               setCurrentAsset(assets[assetId]);
               setShowAsset(true);
             }}
+            onSendClick={assetId => {
+              setCurrentAsset(assets[assetId]);
+              setTab(PAGES.SEND);
+            }}
           />
           <TabTxHistory />
         </TabPanels>

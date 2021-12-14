@@ -404,7 +404,7 @@
     "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",
     "submitButtonText": "Send",
-    "title": "Send assets"
+    "title": "Send {{ name }}"
   },
   "settings": {
     "autoClick": "Auto-click protection",
