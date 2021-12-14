@@ -77,6 +77,7 @@ export function Assets({ setTab }: Props) {
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
   );
+  const activeTab = useAppSelector(state => state.uiState?.assetsTab);
 
   const [showAsset, setShowAsset] = useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
@@ -136,7 +137,12 @@ export function Assets({ setTab }: Props) {
         />
       </div>
 
-      <Tabs>
+      <Tabs
+        activeTab={activeTab}
+        onTabChange={activeIndex =>
+          dispatch(setUiState({ assetsTab: activeIndex }))
+        }
+      >
         <TabList className="flex body3 margin-main-top">
           <Tab className="fullwidth center">
             <Trans i18nKey="assets.assets" />

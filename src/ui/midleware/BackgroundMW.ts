@@ -154,9 +154,8 @@ export const uiState = store => next => action => {
   if (action.type === ACTION.SET_UI_STATE) {
     const ui = store.getState().uiState;
     const newState = { ...ui, ...action.payload };
-    background.setUiState(newState).then(uiState => {
-      store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: uiState });
-    });
+    store.dispatch({ type: ACTION.UPDATE_UI_STATE, payload: newState });
+    background.setUiState(newState);
     return null;
   }
 

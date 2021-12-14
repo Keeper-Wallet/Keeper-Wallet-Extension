@@ -41,6 +41,7 @@ export type TxHistoryFilters = {
 export const uiState = createSimpleReducer<{
   isFeatureUpdateShown?: boolean;
   currentAsset?: AssetDetail;
+  assetsTab?: number;
   assetFilters?: AssetFilters;
   nftFilters?: NftFilters;
   txHistoryFilters?: TxHistoryFilters;

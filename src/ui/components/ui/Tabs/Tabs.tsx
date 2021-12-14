@@ -75,11 +75,13 @@ export function TabPanel({ children, className }: TabPanelProps) {
 }
 
 interface TabsProps {
+  activeTab?: number;
   children: [React.ReactElement, React.ReactElement];
+  onTabChange?: (activeIndex) => void;
 }
 
-export function Tabs({ children }: TabsProps) {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+export function Tabs({ children, activeTab, onTabChange }: TabsProps) {
+  const [activeIndex, setActiveIndex] = React.useState(activeTab || 0);
 
   return (
     <>
@@ -91,6 +93,9 @@ export function Tabs({ children }: TabsProps) {
             return React.cloneElement(child, {
               activeIndex: activeIndex,
               onActiveTab: activeIndex => {
+                if (onTabChange) {
+                  onTabChange(activeIndex);
+                }
                 setActiveIndex(activeIndex);
               },
             });
