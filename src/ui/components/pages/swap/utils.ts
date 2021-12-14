@@ -246,12 +246,62 @@ function applyCommission(commission: BigNumber, amountCoins: BigNumber) {
     .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
 }
 
+function calcMinReceived(
+  toAmountCoins: BigNumber,
+  slippageTolerancePercents: BigNumber
+) {
+  return toAmountCoins.mul(
+    new BigNumber(100).sub(slippageTolerancePercents).div(100)
+  );
+}
+
+function calcPriceImpact({
+  fromAmountCoins,
+  fromAsset,
+  fromBalanceCoins,
+  toAsset,
+  toBalanceCoins,
+}: {
+  fromAmountCoins: BigNumber;
+  fromAsset: Asset;
+  fromBalanceCoins: BigNumber;
+  toAsset: Asset;
+  toBalanceCoins: BigNumber;
+}) {
+  const fromBalanceTokens = Money.fromCoins(
+    fromBalanceCoins,
+    fromAsset
+  ).getTokens();
+  const toBalanceTokens = Money.fromCoins(toBalanceCoins, toAsset).getTokens();
+
+  const fromAmountTokens = Money.fromCoins(
+    fromAmountCoins,
+    fromAsset
+  ).getTokens();
+  const newFromBalance = fromBalanceTokens.add(fromAmountTokens);
+
+  const newToBalance = fromBalanceTokens
+    .mul(toBalanceTokens)
+    .div(newFromBalance);
+
+  const ratioBalance = toBalanceTokens.div(fromBalanceTokens);
+  const newRatioBalance = newToBalance.div(newFromBalance);
+
+  return new BigNumber(1)
+    .sub(newRatioBalance.div(ratioBalance))
+    .mul(100)
+    .abs()
+    .roundTo(3)
+    .toNumber();
+}
+
 export async function calcExchangeDetails({
   commission,
   exchangerVersion,
   fromAmountCoins,
   fromAsset,
   fromBalanceCoins,
+  slippageTolerancePercents,
   toAsset,
   toBalanceCoins,
 }: {
@@ -260,10 +310,13 @@ export async function calcExchangeDetails({
   fromAmountCoins: BigNumber;
   fromAsset: Asset;
   fromBalanceCoins: BigNumber;
+  slippageTolerancePercents: BigNumber;
   toAsset: Asset;
   toBalanceCoins: BigNumber;
 }): Promise<{
   feeCoins: BigNumber;
+  minReceivedCoins: BigNumber;
+  priceImpact: number;
   swapRate: BigNumber;
   toAmountCoins: BigNumber;
 }> {
@@ -317,6 +370,14 @@ export async function calcExchangeDetails({
 
   return {
     feeCoins,
+    minReceivedCoins: calcMinReceived(toAmountCoins, slippageTolerancePercents),
+    priceImpact: calcPriceImpact({
+      fromAmountCoins,
+      fromAsset,
+      fromBalanceCoins,
+      toAsset,
+      toBalanceCoins,
+    }),
     swapRate,
     toAmountCoins,
   };

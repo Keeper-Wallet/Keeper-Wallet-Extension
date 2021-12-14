@@ -28,6 +28,8 @@ interface State {
   exchangerId: string;
   feeCoins: BigNumber;
   fromAmount: string;
+  minReceivedCoins: BigNumber;
+  priceImpact: number;
   swapRate: BigNumber | undefined;
   toAmountTokens: BigNumber;
 }
@@ -100,6 +102,8 @@ export function SwapForm({ exchangers }: Props) {
         | {
             type: 'SET_EXCHANGE_DETAILS';
             feeCoins: BigNumber;
+            minReceivedCoins: BigNumber;
+            priceImpact: number;
             swapRate: BigNumber;
             toAmountTokens: BigNumber;
           }
@@ -127,6 +131,8 @@ export function SwapForm({ exchangers }: Props) {
           return {
             ...prevState,
             feeCoins: action.feeCoins,
+            minReceivedCoins: action.minReceivedCoins,
+            priceImpact: action.priceImpact,
             swapRate: action.swapRate,
             toAmountTokens: action.toAmountTokens,
           };
@@ -141,6 +147,8 @@ export function SwapForm({ exchangers }: Props) {
         exchangerId: defaultExchanger.id,
         feeCoins: new BigNumber(0),
         fromAmount: '',
+        priceImpact: 0,
+        minReceivedCoins: new BigNumber(0),
         swapRate: undefined,
         toAmountTokens: new BigNumber(0),
       };
@@ -192,18 +200,29 @@ export function SwapForm({ exchangers }: Props) {
       ).getCoins(),
       fromAsset,
       fromBalanceCoins: new BigNumber(fromBalance),
+      slippageTolerancePercents: SLIPPAGE_TOLERANCE_PERCENTS,
       toAsset,
       toBalanceCoins: new BigNumber(toBalance),
-    }).then(({ feeCoins, swapRate, toAmountCoins }) => {
-      if (!cancelled) {
-        dispatch({
-          type: 'SET_EXCHANGE_DETAILS',
-          feeCoins,
-          swapRate,
-          toAmountTokens: Money.fromCoins(toAmountCoins, toAsset).getTokens(),
-        });
+    }).then(
+      ({
+        feeCoins,
+        minReceivedCoins,
+        priceImpact,
+        swapRate,
+        toAmountCoins,
+      }) => {
+        if (!cancelled) {
+          dispatch({
+            type: 'SET_EXCHANGE_DETAILS',
+            feeCoins,
+            minReceivedCoins,
+            priceImpact,
+            swapRate,
+            toAmountTokens: Money.fromCoins(toAmountCoins, toAsset).getTokens(),
+          });
+        }
       }
-    });
+    );
 
     return () => {
       cancelled = true;
@@ -228,33 +247,6 @@ export function SwapForm({ exchangers }: Props) {
 
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
-
-  const minReceived = state.toAmountTokens.mul(
-    new BigNumber(100).sub(SLIPPAGE_TOLERANCE_PERCENTS).div(100)
-  );
-
-  const fromBalanceTokens = Money.fromCoins(fromBalance, fromAsset).getTokens();
-  const toBalanceTokens = Money.fromCoins(toBalance, toAsset).getTokens();
-
-  const newFromBalance = fromBalanceTokens.add(
-    new BigNumber(state.fromAmount || 0)
-  );
-
-  const newToBalance = fromBalanceTokens
-    .mul(toBalanceTokens)
-    .div(newFromBalance);
-
-  const ratioBalance = toBalanceTokens.div(fromBalanceTokens);
-  const newRatioBalance = newToBalance.div(newFromBalance);
-
-  const priceImpact = new BigNumber(1)
-    .sub(newRatioBalance.div(ratioBalance))
-    .mul(100)
-    .abs()
-    .roundTo(3)
-    .toNumber();
-
-  const feeTokens = Money.fromCoins(state.feeCoins, toAsset).getTokens();
 
   return (
     <form
@@ -395,11 +387,13 @@ export function SwapForm({ exchangers }: Props) {
             </th>
 
             <td>
-              {minReceived.toFormat(
-                toAsset.precision,
-                BigNumber.ROUND_MODE.ROUND_FLOOR,
-                ASSETS_FORMAT
-              )}{' '}
+              {Money.fromCoins(state.minReceivedCoins, toAsset)
+                .getTokens()
+                .toFormat(
+                  toAsset.precision,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR,
+                  ASSETS_FORMAT
+                )}{' '}
               {toAsset.displayName}
             </td>
           </tr>
@@ -409,7 +403,7 @@ export function SwapForm({ exchangers }: Props) {
               <Trans i18nKey="swap.priceImpact" />
             </th>
 
-            <td>{priceImpact}%</td>
+            <td>{state.priceImpact}%</td>
           </tr>
 
           <tr>
@@ -418,11 +412,13 @@ export function SwapForm({ exchangers }: Props) {
             </th>
 
             <td>
-              {feeTokens.toFormat(
-                toAsset.precision,
-                BigNumber.ROUND_MODE.ROUND_FLOOR,
-                ASSETS_FORMAT
-              )}{' '}
+              {Money.fromCoins(state.feeCoins, toAsset)
+                .getTokens()
+                .toFormat(
+                  toAsset.precision,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR,
+                  ASSETS_FORMAT
+                )}{' '}
               {toAsset.displayName} ({commission.mul(100).toFormat()}
               %)
             </td>
