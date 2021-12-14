@@ -120,7 +120,7 @@ export class CurrentAccountController {
                   )
               );
 
-            await this.assetInfoController.updateAssets(address, fetchAssetIds);
+            await this.assetInfoController.updateAssets(fetchAssetIds);
           }
 
           const available = new BigNumber(wavesBalances.available);

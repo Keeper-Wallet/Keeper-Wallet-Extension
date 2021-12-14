@@ -134,11 +134,10 @@ export class AssetInfoController {
 
   /**
    * Force-updates storage asset info by assetId list
-   * @param {string} forAddress
    * @param {Array<string>} assetIds
    * @returns {Promise<void>}
    */
-  async updateAssets(forAddress, assetIds) {
+  async updateAssets(assetIds) {
     await this.updateSuspiciousAssets();
 
     const { assets } = this.store.getState();
