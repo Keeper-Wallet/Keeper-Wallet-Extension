@@ -335,6 +335,12 @@ class BackgroundService extends EventEmitter {
 
     this.swapController = new SwapController({
       initState: initState.SwapController,
+      getAssets: this.assetInfoController.getAssets.bind(
+        this.assetInfoController
+      ),
+      updateAssets: this.assetInfoController.updateAssets.bind(
+        this.assetInfoController
+      ),
     });
 
     // Single state composed from states of all controllers

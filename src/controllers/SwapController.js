@@ -21,6 +21,9 @@ export class SwapController {
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
+
+    this.getAssets = options.getAssets;
+    this.updateAssets = options.updateAssets;
   }
 
   async updateExchangers(network) {
@@ -45,6 +48,25 @@ export class SwapController {
     const { exchangers } = this.store.getState();
 
     exchangers[network] = activeExchangers;
+
+    const assetIdsFromExchangers = Array.from(
+      new Set(
+        Object.values(activeExchangers).flatMap(exchanger => [
+          exchanger.A_asset_id,
+          exchanger.B_asset_id,
+        ])
+      )
+    );
+
+    const assets = this.getAssets();
+
+    const assetIdsToFetch = assetIdsFromExchangers.filter(
+      assetId => !assets[assetId]
+    );
+
+    if (assetIdsToFetch.length !== 0) {
+      await this.updateAssets(assetIdsToFetch);
+    }
 
     this.store.updateState({ exchangers });
   }

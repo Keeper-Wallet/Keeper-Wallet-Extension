@@ -20,7 +20,6 @@ import { SwapAssetLogo } from './assetLogo';
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
 interface Props {
-  assets: { [assetId: string]: Asset };
   exchangers: { [exchangerId: string]: SwopFiExchangerData };
 }
 
@@ -82,7 +81,9 @@ const ASSETS_FORMAT = {
   suffix: '',
 };
 
-export function SwapForm({ assets, exchangers }: Props) {
+export function SwapForm({ exchangers }: Props) {
+  const assets = useAppSelector(state => state.assets);
+
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
@@ -165,8 +166,17 @@ export function SwapForm({ assets, exchangers }: Props) {
     ? [exchanger.B_asset_balance, exchanger.A_asset_balance]
     : [exchanger.A_asset_balance, exchanger.B_asset_balance];
 
-  const fromAsset = assets[fromAssetId];
-  const toAsset = assets[toAssetId];
+  const fromAssetDetail = assets[fromAssetId];
+  const toAssetDetail = assets[toAssetId];
+
+  const fromAsset = React.useMemo(
+    () => new Asset(fromAssetDetail),
+    [fromAssetDetail]
+  );
+  const toAsset = React.useMemo(
+    () => new Asset(toAssetDetail),
+    [toAssetDetail]
+  );
 
   const debouncedFromAmount = useDebouncedValue(state.fromAmount, 500);
 
