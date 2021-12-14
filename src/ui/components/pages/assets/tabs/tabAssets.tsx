@@ -12,6 +12,7 @@ import { TabPanel } from '../../../ui';
 import { useAssetFilter, useSortedAssetEntries } from './helpers';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { BalanceAssets } from '../../../../reducers/updateState';
 
 const CARD_HEIGHT = 64;
 const CARD_MARGIN_BOTTOM = 8;
@@ -44,7 +45,19 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
   const assets = useAppSelector(state => state.assets);
   const address = useAppSelector(state => state.selectedAccount.address);
   const myAssets = useAppSelector(
-    state => state.balances[address]?.assets || {}
+    state =>
+      state.balances[address]?.assets ||
+      ([...Array(4).keys()].reduce(
+        (placeholder, key) => ({
+          ...placeholder,
+          [key]: {
+            balance: '0',
+            sponsorBalance: '0',
+            minSponsoredAssetFee: '0',
+          },
+        }),
+        {}
+      ) as BalanceAssets)
   );
 
   const [term, setTerm] = useAssetFilter('term');

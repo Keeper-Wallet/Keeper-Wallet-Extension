@@ -137,26 +137,22 @@ export class CurrentAccountController {
                 ? {
                     aliases: aliases || [],
                     txHistory: txHistory[0],
-                    assets: Object.fromEntries(
-                      [
-                        [
-                          'WAVES',
-                          {
-                            minSponsoredAssetFee: '100000',
-                            sponsorBalance: wavesBalances.available,
-                            balance: wavesBalances.available,
-                          },
-                        ],
-                      ].concat(
-                        myAssets.balances.map(info => [
-                          info.assetId,
-                          {
-                            minSponsoredAssetFee: info.minSponsoredAssetFee,
-                            sponsorBalance: info.sponsorBalance,
-                            balance: info.balance,
-                          },
-                        ])
-                      )
+                    assets: myAssets.balances.reduce(
+                      (assets, info) => {
+                        assets[info.assetId] = {
+                          minSponsoredAssetFee: info.minSponsoredAssetFee,
+                          sponsorBalance: info.sponsorBalance,
+                          balance: info.balance,
+                        };
+                        return assets;
+                      },
+                      {
+                        WAVES: {
+                          minSponsoredAssetFee: '100000',
+                          sponsorBalance: wavesBalances.available,
+                          balance: wavesBalances.available,
+                        },
+                      }
                     ),
                     nfts: myNfts.map(nft => ({
                       id: nft.assetId,

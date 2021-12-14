@@ -502,3 +502,24 @@ $layout-44 = 44px;
   &.error
     background-color: $error400;
     z-index: 2;
+
+:global .skeleton-glow
+  animation: skeleton-glow 1s linear infinite alternate;
+  background: rgba(206,217,224,.2);
+  background-clip: padding-box!important;
+  border-color: rgba(206,217,224,.2)!important;
+  border-radius: 4px;
+  box-shadow: none!important;
+  color: transparent!important;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+
+@keyframes :global(skeleton-glow)
+  0%
+    background: rgba(206,217,224,.2);
+    border-color: rgba(206,217,224,.2);
+
+  100%
+    background: rgba(92,112,128,.2);
+    border-color: rgba(92,112,128,.2);

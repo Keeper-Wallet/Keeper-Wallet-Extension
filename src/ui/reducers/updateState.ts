@@ -90,19 +90,20 @@ export const currentNetwork = createSimpleReducer(
   '',
   ACTION.UPDATE_CURRENT_NETWORK
 );
+export type BalanceAssets = {
+  [assetId: string]: {
+    balance: string;
+    sponsorBalance: string;
+    minSponsoredAssetFee: string;
+  };
+};
 export const balances = createSimpleReducer<
   Record<
     string,
     {
       available: string;
       leasedOut: string;
-      assets?: {
-        [assetId: string]: {
-          balance: string;
-          sponsorBalance: string;
-          minSponsoredAssetFee: string;
-        };
-      };
+      assets?: BalanceAssets;
       aliases: string[];
       nfts: AssetDetail[];
       txHistory: Array<ITransaction & WithId>;
