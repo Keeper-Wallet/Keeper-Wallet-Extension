@@ -81,7 +81,7 @@ export function AssetItem({
       </div>
 
       {asset && (
-        <div className={styles.moreBtn}>
+        <div className={styles.moreBtn} data-testid={`${assetId}-moreBtn`}>
           <svg
             className={styles.moreIcon}
             width="14"
@@ -129,6 +129,7 @@ export function AssetItem({
                 className={styles.sendBtn}
                 type="button"
                 onClick={() => onSendClick(assetId)}
+                data-testid={`${assetId}-sendBtn`}
               >
                 <svg
                   className={styles.sendIcon}

@@ -2,9 +2,6 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
-  "activeAccountCard": {
-    "sendButton": "Send"
-  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",

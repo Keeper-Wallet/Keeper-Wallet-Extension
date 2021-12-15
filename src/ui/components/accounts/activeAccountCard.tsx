@@ -21,7 +21,6 @@ interface Props {
   onClick: (account: Account) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
-  onSendClick: () => void;
   onShowQr: () => void;
 }
 
@@ -31,7 +30,6 @@ export function ActiveAccountCard({
   onClick,
   onCopy,
   onOtherAccountsClick,
-  onSendClick,
   onShowQr,
 }: Props) {
   return (
@@ -70,14 +68,6 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        <button
-          className="sendIconBlack button button-wallet"
-          data-testid="sendAssetsButton"
-          onClick={onSendClick}
-        >
-          <Trans i18nKey="activeAccountCard.sendButton" />
-        </button>
-
         <span className={styles.controlsExpand} />
 
         <Copy text={account.address} onCopy={onCopy}>

@@ -128,9 +128,6 @@ export function Assets({ setTab }: Props) {
             setTab(PAGES.OTHER_ACCOUNTS);
           }}
           onClick={onSelectHandler}
-          onSendClick={() => {
-            setTab(PAGES.SEND);
-          }}
           onShowQr={() => {
             setTab(PAGES.QR_CODE_SELECTED);
           }}
