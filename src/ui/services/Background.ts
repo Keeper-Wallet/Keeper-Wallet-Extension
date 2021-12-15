@@ -203,7 +203,7 @@ class Background {
     }
   }
 
-  async assetFavorite(assetId: string): Promise<AssetDetail> {
+  async assetFavorite(assetId: string): Promise<void> {
     await this.initPromise;
     return this.background.assetFavorite(assetId);
   }
