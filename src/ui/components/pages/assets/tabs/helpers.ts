@@ -160,3 +160,7 @@ export const buildTxTypeOptions = t => [
     text: t('historyFilters.updateAssetInfo'),
   },
 ];
+
+const CARD_HEIGHT = 64;
+const CARD_MARGIN_BOTTOM = 8;
+export const CARD_FULL_HEIGHT = CARD_HEIGHT + CARD_MARGIN_BOTTOM;

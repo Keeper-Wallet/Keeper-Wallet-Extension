@@ -8,15 +8,15 @@ import * as React from 'react';
 import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
-import { useAssetFilter, useSortedAssetEntries } from './helpers';
+import {
+  CARD_FULL_HEIGHT,
+  useAssetFilter,
+  useSortedAssetEntries,
+} from './helpers';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from '../../../../reducers/updateState';
 import { Tooltip } from '../../../ui/tooltip';
-
-const CARD_HEIGHT = 64;
-const CARD_MARGIN_BOTTOM = 8;
-const CARD_FULL_HEIGHT = CARD_HEIGHT + CARD_MARGIN_BOTTOM;
 
 const Row = ({ data, index, style }) => {
   const { assetEntries, assets, onInfoClick, onSendClick } = data;

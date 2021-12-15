@@ -6,9 +6,40 @@ import { TabPanel } from '../../../ui';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
-import { useNftFilter } from './helpers';
-import { Asset } from '@waves/data-entities';
+import { CARD_FULL_HEIGHT, useNftFilter } from './helpers';
 import { Tooltip } from '../../../ui/tooltip';
+import { VariableSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import cn from 'classnames';
+
+const MARGIN_MIN = 4;
+const MARGIN_MIN_TOP = MARGIN_MIN;
+const GROUP_HEIGHT = 14;
+const FULL_GROUP_HEIGHT = MARGIN_MIN_TOP + GROUP_HEIGHT + MARGIN_MIN;
+
+const Row = ({ data, index, style }) => {
+  const { nftWithGroups, onInfoClick, onSendClick } = data;
+  const nftOrGroup = nftWithGroups[index];
+
+  return (
+    <div style={style}>
+      {'groupName' in nftOrGroup ? (
+        <div className={cn('basic500 margin-min', 'margin-min-top')}>
+          <Trans
+            i18nKey="assets.issuedBy"
+            values={{ issuer: nftOrGroup.groupName }}
+          />
+        </div>
+      ) : (
+        <NftItem
+          asset={nftOrGroup}
+          onInfoClick={onInfoClick}
+          onSendClick={onSendClick}
+        />
+      )}
+    </div>
+  );
+};
 
 export function TabNfts({ onInfoClick, onSendClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
@@ -16,34 +47,51 @@ export function TabNfts({ onInfoClick, onSendClick }) {
 
   const [term, setTerm] = useNftFilter('term');
   const [onlyMy, setOnlyMy] = useNftFilter('onlyMy');
+  const listRef = React.useRef<VariableSizeList>();
 
-  const nftEntries = Object.entries<Asset[]>(
-    myNfts
-      .filter(
-        nft =>
-          (!onlyMy || nft.issuer === address) &&
-          (!term || nft.id === term || icontains(nft.displayName, term))
-      )
-      .sort((a, b) => (a.displayName ?? '').localeCompare(b.displayName ?? ''))
-      .reduce(
-        (result, item) => ({
-          ...result,
-          [item.issuer]: [...(result[item.issuer] || []), item],
-        }),
-        {}
-      )
-  );
-
+  const nftWithGroups = myNfts
+    .filter(
+      nft =>
+        (!onlyMy || nft.issuer === address) &&
+        (!term || nft.id === term || icontains(nft.displayName, term))
+    )
+    .sort(
+      (a, b) =>
+        (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
+        (a.displayName ?? '').localeCompare(b.displayName ?? '')
+    )
+    .reduce((result, item, index, prevItems) => {
+      if (
+        !prevItems[index - 1] ||
+        prevItems[index - 1].issuer !== item.issuer
+      ) {
+        result.push({ groupName: item.issuer });
+      }
+      result.push(item);
+      return result;
+    }, []);
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => setTerm(e.target.value)}
-          onClear={() => setTerm('')}
+          onInput={e => {
+            listRef.current.resetAfterIndex(0);
+            setTerm(e.target.value);
+          }}
+          onClear={() => {
+            listRef.current.resetAfterIndex(0);
+            setTerm('');
+          }}
         />
         <Tooltip content={<Trans i18nKey="assets.onlyMyNfts" />}>
-          <div className={styles.filterBtn} onClick={() => setOnlyMy(!onlyMy)}>
+          <div
+            className={styles.filterBtn}
+            onClick={() => {
+              listRef.current.resetAfterIndex(0);
+              setOnlyMy(!onlyMy);
+            }}
+          >
             <svg
               className={styles.filterBtnIcon}
               width="14"
@@ -66,7 +114,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
           </div>
         </Tooltip>
       </div>
-      {nftEntries.length === 0 ? (
+      {nftWithGroups.length === 0 ? (
         <div className="basic500 center margin-min-top">
           {term || onlyMy ? (
             <Trans i18nKey="assets.notFoundNFTs" />
@@ -76,24 +124,31 @@ export function TabNfts({ onInfoClick, onSendClick }) {
         </div>
       ) : (
         <div className={styles.nftList}>
-          {nftEntries.map(([issuer, issuerNfts], index) => (
-            <div
-              key={issuer}
-              className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
-            >
-              <div className="basic500 margin-min">
-                <Trans i18nKey="assets.issuedBy" values={{ issuer }} />
-              </div>
-              {issuerNfts.map(nft => (
-                <NftItem
-                  key={nft.id}
-                  asset={nft}
-                  onInfoClick={onInfoClick}
-                  onSendClick={onSendClick}
-                />
-              ))}
-            </div>
-          ))}
+          <AutoSizer>
+            {({ height, width }) => {
+              return (
+                <VariableSizeList
+                  ref={listRef}
+                  height={height}
+                  width={width}
+                  itemCount={nftWithGroups.length}
+                  itemSize={index =>
+                    'groupName' in nftWithGroups[index]
+                      ? FULL_GROUP_HEIGHT
+                      : CARD_FULL_HEIGHT
+                  }
+                  itemData={{ nftWithGroups, onInfoClick, onSendClick }}
+                  itemKey={(index, { nftWithGroups }) =>
+                    'groupName' in nftWithGroups[index]
+                      ? `g:${nftWithGroups[index].groupName}`
+                      : `a:${nftWithGroups[index].id}`
+                  }
+                >
+                  {Row}
+                </VariableSizeList>
+              );
+            }}
+          </AutoSizer>
         </div>
       )}
     </TabPanel>
