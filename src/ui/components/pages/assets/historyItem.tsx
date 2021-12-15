@@ -9,6 +9,7 @@ import { Asset, Money } from '@waves/data-entities';
 import { getTxDetailLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { Tooltip } from '../../ui/tooltip';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
@@ -307,27 +308,26 @@ export function HistoryItem({ tx, className }: Props) {
 
   return (
     <div className={cn(styles.historyCard, className, 'flex')}>
-      <div className={cn(styles.historyIconWrapper, 'showTooltip')}>
-        <TxIcon txType={messageType} className={styles.historyIcon} />
-        {isTxFailed && (
-          <div className={styles.txSubIconContainer}>
-            <div className={styles.txSubIcon}>
-              <svg viewBox="0 0 10 10" className={styles.txSubIconSvg}>
-                <path
-                  d="M5.64011 5.00002L8.20071 2.43942C8.37749 2.26264 8.37749 1.97604 8.20071 1.79927C8.02394 1.62249 7.73733 1.62249 7.56056 1.79927L4.99996 4.35987L2.43936 1.79927C2.26258 1.62249 1.97598 1.62249 1.79921 1.79927C1.62243 1.97604 1.62243 2.26264 1.79921 2.43942L4.35981 5.00002L1.79921 7.56062C1.62243 7.7374 1.62243 8.024 1.79921 8.20077C1.97598 8.37755 2.26258 8.37755 2.43936 8.20077L4.99996 5.64017L7.56056 8.20077C7.73733 8.37755 8.02394 8.37755 8.20071 8.20077C8.37749 8.024 8.37749 7.7374 8.20071 7.56062L5.64011 5.00002Z"
-                  fill="#E5494D"
-                />
-              </svg>
+      <Tooltip
+        content={`${(isTxFailed && t('historyCard.failed')) || ''} ${tooltip}`}
+        placement="right"
+      >
+        <div className={styles.historyIconWrapper}>
+          <TxIcon txType={messageType} className={styles.historyIcon} />
+          {isTxFailed && (
+            <div className={styles.txSubIconContainer}>
+              <div className={styles.txSubIcon}>
+                <svg viewBox="0 0 10 10" className={styles.txSubIconSvg}>
+                  <path
+                    d="M5.64011 5.00002L8.20071 2.43942C8.37749 2.26264 8.37749 1.97604 8.20071 1.79927C8.02394 1.62249 7.73733 1.62249 7.56056 1.79927L4.99996 4.35987L2.43936 1.79927C2.26258 1.62249 1.97598 1.62249 1.79921 1.79927C1.62243 1.97604 1.62243 2.26264 1.79921 2.43942L4.35981 5.00002L1.79921 7.56062C1.62243 7.7374 1.62243 8.024 1.79921 8.20077C1.97598 8.37755 2.26258 8.37755 2.43936 8.20077L4.99996 5.64017L7.56056 8.20077C7.73733 8.37755 8.02394 8.37755 8.20071 8.20077C8.37749 8.024 8.37749 7.7374 8.20071 7.56062L5.64011 5.00002Z"
+                    fill="#E5494D"
+                  />
+                </svg>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {tooltip && (
-        <div className={cn(styles.txIconTooltip, 'tooltip', 'tooltip-right')}>
-          {isTxFailed && t('historyCard.failed')} {tooltip}
+          )}
         </div>
-      )}
+      </Tooltip>
 
       <div className={cn('body1', styles.historyData)}>
         <div
@@ -342,26 +342,24 @@ export function HistoryItem({ tx, className }: Props) {
         {!!info && <div className={styles.historyInfo}>{info}</div>}
       </div>
 
-      <button
-        className={cn(styles.infoButton, 'showTooltip')}
-        type="button"
-        onClick={() => {
-          window.open(
-            getTxDetailLink(networkCode, tx.id),
-            '_blank',
-            'noopener'
-          );
-        }}
-      >
-        <svg className={styles.infoIcon} viewBox="0 0 28 26">
-          <path d="M25 13c0 6.075-4.925 11-11 11S3 19.075 3 13 7.925 2 14 2s11 4.925 11 11ZM4 13c0 5.523 4.477 10 10 10s10-4.477 10-10S19.523 3 14 3 4 7.477 4 13Z" />
-          <path d="M14 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0 1a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0v-5.5A.75.75 0 0 0 14 11Z" />
-        </svg>
-      </button>
-
-      <div className={cn(styles.infoTooltip, 'tooltip')}>
-        <Trans i18nKey="historyCard.infoTooltip" />
-      </div>
+      <Tooltip content={<Trans i18nKey="historyCard.infoTooltip" />}>
+        <button
+          className={styles.infoButton}
+          type="button"
+          onClick={() => {
+            window.open(
+              getTxDetailLink(networkCode, tx.id),
+              '_blank',
+              'noopener'
+            );
+          }}
+        >
+          <svg className={styles.infoIcon} viewBox="0 0 28 26">
+            <path d="M25 13c0 6.075-4.925 11-11 11S3 19.075 3 13 7.925 2 14 2s11 4.925 11 11ZM4 13c0 5.523 4.477 10 10 10s10-4.477 10-10S19.523 3 14 3 4 7.477 4 13Z" />
+            <path d="M14 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0 1a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0v-5.5A.75.75 0 0 0 14 11Z" />
+          </svg>
+        </button>
+      </Tooltip>
     </div>
   );
 }

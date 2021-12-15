@@ -54,12 +54,6 @@
   stroke: #9ba6b2;
 }
 
-.favTooltip {
-  top: -15px;
-  right: 76px;
-  white-space: nowrap;
-}
-
 .sendBtn {
   position: absolute;
   right: 40px;
@@ -81,12 +75,6 @@
   fill: #9ba6b2;
 }
 
-.sendTooltip {
-  top: -15px;
-  right: 46px;
-  white-space: nowrap;
-}
-
 .infoButton {
   position: absolute;
   right: 14px;
@@ -105,12 +93,6 @@
 
 .infoIcon:hover {
   fill: #9ba6b2;
-}
-
-.infoTooltip {
-  top: -15px;
-  right: 16px;
-  white-space: nowrap;
 }
 
 .moreBtn {

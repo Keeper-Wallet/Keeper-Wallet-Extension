@@ -46,12 +46,6 @@
   fill: #9ba6b2;
 }
 
-.sendTooltip {
-  top: -15px;
-  right: 46px;
-  white-space: nowrap;
-}
-
 .infoButton {
   position: absolute;
   right: 14px;
@@ -70,12 +64,6 @@
 
 .infoIcon:hover {
   fill: #9ba6b2;
-}
-
-.infoTooltip {
-  top: -15px;
-  right: 16px;
-  white-space: nowrap;
 }
 
 .moreBtn {
@@ -114,7 +102,7 @@
   display: none;
   opacity: 0;
   height: 64px;
-  width: 110px;
+  width: 86px;
   border-radius: 4px;
   z-index: 10;
 }
@@ -123,7 +111,7 @@
   opacity: 0.25;
   position: absolute;
   top: 0;
-  right: 110px;
+  right: 86px;
   width: 40px;
   height: 64px;
   content: '';

@@ -35,18 +35,6 @@
     center;
 }
 
-.otherAccountsTooltip {
-  top: 3px;
-  right: 34px;
-  white-space: nowrap;
-}
-
-.otherAccountsTooltip::after {
-  top: 12px;
-  right: -3px;
-  bottom: auto;
-}
-
 .selectableOverlay {
   position: absolute;
   top: 0;
@@ -67,21 +55,4 @@
 
 .controlsExpand {
   flex-grow: 1;
-}
-
-.copyTooltip {
-  top: -38px;
-  right: 35px;
-  white-space: nowrap;
-}
-
-.showQrTooltip {
-  right: 0;
-  bottom: -40px;
-  white-space: nowrap;
-}
-
-.showQrTooltip::after {
-  top: -2px;
-  bottom: auto;
 }

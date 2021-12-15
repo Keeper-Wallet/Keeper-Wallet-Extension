@@ -7,6 +7,7 @@ import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
+import { Tooltip } from '../ui/tooltip';
 
 interface Account {
   address: string;
@@ -46,22 +47,19 @@ export function ActiveAccountCard({
           <Balance balance={balance} isShortFormat={false} showAsset split />
         </div>
 
-        <button
-          className={cn(
-            'button',
-            'button-wallet',
-            'button-wallet-iconOnly',
-            'showTooltip',
-            styles.otherAccountsButton
-          )}
-          data-testid="otherAccountsButton"
-          type="button"
-          onClick={onOtherAccountsClick}
-        />
-
-        <div className={cn(styles.otherAccountsTooltip, 'tooltip')}>
-          <Trans i18nKey="assets.inStorage" />
-        </div>
+        <Tooltip content={<Trans i18nKey="assets.inStorage" />}>
+          <button
+            className={cn(
+              'button',
+              'button-wallet',
+              'button-wallet-iconOnly',
+              styles.otherAccountsButton
+            )}
+            data-testid="otherAccountsButton"
+            type="button"
+            onClick={onOtherAccountsClick}
+          />
+        </Tooltip>
       </div>
 
       <div
@@ -83,21 +81,17 @@ export function ActiveAccountCard({
         <span className={styles.controlsExpand} />
 
         <Copy text={account.address} onCopy={onCopy}>
-          <div className="button button-wallet button-wallet-iconOnly copyIconBlack showTooltip" />
+          <Tooltip content={<Trans i18nKey="copyAddress" />}>
+            <div className="button button-wallet button-wallet-iconOnly copyIconBlack" />
+          </Tooltip>
         </Copy>
 
-        <div className={cn(styles.copyTooltip, 'tooltip')}>
-          <Trans i18nKey="copyAddress" />
-        </div>
-
-        <div
-          className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
-          onClick={onShowQr}
-        />
-
-        <div className={cn(styles.showQrTooltip, 'tooltip')}>
-          <Trans i18nKey="showQR" />
-        </div>
+        <Tooltip content={<Trans i18nKey="showQR" />} placement="bottom-end">
+          <div
+            className="button button-wallet button-wallet-iconOnly showQrIcon"
+            onClick={onShowQr}
+          />
+        </Tooltip>
       </div>
     </div>
   );

@@ -394,32 +394,6 @@ $layout-44 = 44px;
   flex-grow: 1;
 
 // modals, errors, notifications
-
-:global .tooltip
-  background: $black;
-  color: $white;
-  font-size: 14px;
-  height: 32px;
-  position: absolute;
-  display: none;
-  transition: .3s;
-  border-radius: 2px;
-  padding: 8px 14px !important; //todo @uisk
-
-  &::after
-    background: $black;
-    width: 10px;
-    height: 10px;
-    content: '';
-    transform: rotate(45deg);
-    right: 7px;
-    bottom: -2px;
-    position: absolute;
-
-  &.tooltip-right::after
-    left: -2px;
-    bottom: 7px;
-
 :global #app-modal
   position: absolute;
   width: 100%;
@@ -462,15 +436,6 @@ $layout-44 = 44px;
     line-height: 1rem;
     font-size: 1rem;
     color: $basic500;
-
-:global .tooltip
-  display: none;
-  opacity: 0;
-  z-index: 10;
-
-:global .showTooltip:hover + .tooltip
-  display: block;
-  opacity: 1;
 
 :global .notification
   display: block;

@@ -1,6 +1,5 @@
 import * as styles from '../../styles/assets.styl';
 import { Select, TabPanel } from '../../../ui';
-import cn from 'classnames';
 import { Trans, useTranslation } from 'react-i18next';
 import { colors, getTxHistoryLink, icontains } from '../helpers';
 import { HistoryItem } from '../historyItem';
@@ -14,6 +13,7 @@ import { useAppSelector } from '../../../../store';
 import { buildTxTypeOptions, MONTH, useTxHistoryFilter } from './helpers';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from '../../../../../controllers/CurrentAccountController';
+import { Tooltip } from '../../../ui/tooltip';
 
 export function TabTxHistory() {
   const { t } = useTranslation();
@@ -136,58 +136,54 @@ export function TabTxHistory() {
           onInput={e => setTerm(e.target.value)}
           onClear={() => setTerm('')}
         />
-        <Select
-          className={cn('showTooltip', styles.filterTxSelect)}
-          selected={type as string}
-          onSelectItem={(id, value) => setType(value)}
-          selectList={buildTxTypeOptions(t)}
-        />
-        <div className={cn(styles.filterTxTooltip, 'tooltip')}>
-          <Trans i18nKey="historyFilters.type" />
-        </div>
 
-        <div
-          className={cn('showTooltip', styles.filterBtn)}
-          onClick={() => setOnlyIn(!onlyIn)}
-        >
-          <svg
-            className={styles.filterBtnIcon}
-            width="12"
-            height="12"
-            viewBox="0 0 14 14"
-            fill="none"
-          >
-            <path
-              d="M12.7653 4.78956C12.7556 4.16098 12.2574 3.65792 11.6454 3.6589C11.0335 3.65988 10.5337 4.16454 10.5221 4.79315L11.0013 9.65964L2.12261 0.53773C1.68523 0.0883596 0.974976 0.0894951 0.536225 0.540267C0.0974734 0.991038 0.0963682 1.72075 0.533755 2.17012L9.41241 11.292L4.67569 10.7998C4.06385 10.8117 3.57265 11.3252 3.5717 11.9538C3.57074 12.5825 4.06039 13.0944 4.6722 13.1044L12.1169 13.5923C12.7363 13.5912 13.2392 13.0746 13.2402 12.4382L12.7653 4.78956Z"
-              fill={onlyIn ? colors.in : colors.basic500}
-            />
-          </svg>
-        </div>
-        <div className={cn(styles.filterSecondBtnTooltip, 'tooltip')}>
-          <Trans i18nKey="historyFilters.incoming" />
-        </div>
+        <Tooltip content={<Trans i18nKey="historyFilters.type" />}>
+          <Select
+            className={styles.filterTxSelect}
+            selected={type}
+            onSelectItem={(id, value) => setType(value)}
+            selectList={buildTxTypeOptions(t)}
+          />
+        </Tooltip>
 
-        <div
-          className={cn('showTooltip', styles.filterBtn)}
-          onClick={() => setOnlyOut(!onlyOut)}
-        >
-          <svg
-            className={styles.filterBtnIcon}
-            width="12"
-            height="12"
-            viewBox="0 0 14 14"
-            fill="none"
+        <Tooltip content={<Trans i18nKey="historyFilters.incoming" />}>
+          <div className={styles.filterBtn} onClick={() => setOnlyIn(!onlyIn)}>
+            <svg
+              className={styles.filterBtnIcon}
+              width="12"
+              height="12"
+              viewBox="0 0 14 14"
+              fill="none"
+            >
+              <path
+                d="M12.7653 4.78956C12.7556 4.16098 12.2574 3.65792 11.6454 3.6589C11.0335 3.65988 10.5337 4.16454 10.5221 4.79315L11.0013 9.65964L2.12261 0.53773C1.68523 0.0883596 0.974976 0.0894951 0.536225 0.540267C0.0974734 0.991038 0.0963682 1.72075 0.533755 2.17012L9.41241 11.292L4.67569 10.7998C4.06385 10.8117 3.57265 11.3252 3.5717 11.9538C3.57074 12.5825 4.06039 13.0944 4.6722 13.1044L12.1169 13.5923C12.7363 13.5912 13.2392 13.0746 13.2402 12.4382L12.7653 4.78956Z"
+                fill={onlyIn ? colors.in : colors.basic500}
+              />
+            </svg>
+          </div>
+        </Tooltip>
+
+        <Tooltip content={<Trans i18nKey="historyFilters.outgoing" />}>
+          <div
+            className={styles.filterBtn}
+            onClick={() => setOnlyOut(!onlyOut)}
           >
-            <path
-              d="M12.7653 9.21044C12.7556 9.83902 12.2574 10.3421 11.6454 10.3411C11.0335 10.3401 10.5337 9.83546 10.5221 9.20685L11.0013 4.34036L2.12261 13.4623C1.68523 13.9116 0.974976 13.9105 0.536225 13.4597C0.0974734 13.009 0.0963682 12.2793 0.533755 11.8299L9.41241 2.70797L4.67569 3.20022C4.06385 3.18832 3.57265 2.67485 3.5717 2.04616C3.57074 1.41747 4.06039 0.905561 4.6722 0.895614L12.1169 0.407693C12.7363 0.40878 13.2392 0.925431 13.2402 1.56179L12.7653 9.21044Z"
-              fill={onlyOut ? colors.out : colors.basic500}
-            />
-          </svg>
-        </div>
-        <div className={cn(styles.filterFirstBtnTooltip, 'tooltip')}>
-          <Trans i18nKey="historyFilters.outgoing" />
-        </div>
+            <svg
+              className={styles.filterBtnIcon}
+              width="12"
+              height="12"
+              viewBox="0 0 14 14"
+              fill="none"
+            >
+              <path
+                d="M12.7653 9.21044C12.7556 9.83902 12.2574 10.3421 11.6454 10.3411C11.0335 10.3401 10.5337 9.83546 10.5221 9.20685L11.0013 4.34036L2.12261 13.4623C1.68523 13.9116 0.974976 13.9105 0.536225 13.4597C0.0974734 13.009 0.0963682 12.2793 0.533755 11.8299L9.41241 2.70797L4.67569 3.20022C4.06385 3.18832 3.57265 2.67485 3.5717 2.04616C3.57074 1.41747 4.06039 0.905561 4.6722 0.895614L12.1169 0.407693C12.7363 0.40878 13.2392 0.925431 13.2402 1.56179L12.7653 9.21044Z"
+                fill={onlyOut ? colors.out : colors.basic500}
+              />
+            </svg>
+          </div>
+        </Tooltip>
       </div>
+
       {!historyEntries.length ? (
         <div className="basic500 center margin-min-top">
           {term || type || onlyIn || onlyOut ? (
