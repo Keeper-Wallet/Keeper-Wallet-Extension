@@ -511,6 +511,7 @@
     "minimumReceived": "Minimum Received",
     "pairInputLabel": "Pair",
     "priceImpact": "Price Impact",
+    "failMessage": "Swap did not succeed, please try again",
     "fee": "Fee",
     "priceLabel": "Price",
     "submitButtonText": "Swap",

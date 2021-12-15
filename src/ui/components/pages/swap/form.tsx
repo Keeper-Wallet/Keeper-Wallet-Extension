@@ -16,11 +16,21 @@ import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
 import { SwapAssetLogo } from './assetLogo';
+import { Error } from 'ui/components/ui';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
 interface Props {
   exchangers: { [exchangerId: string]: SwopFiExchangerData };
+  isSwapFailed: boolean;
+  isSwapInProgress: boolean;
+  onSwap: (data: {
+    exchangerId: string;
+    fromAssetId: string;
+    fromCoins: string;
+    minReceivedCoins: string;
+    toCoins: string;
+  }) => void;
 }
 
 interface State {
@@ -83,7 +93,12 @@ const ASSETS_FORMAT = {
   suffix: '',
 };
 
-export function SwapForm({ exchangers }: Props) {
+export function SwapForm({
+  exchangers,
+  isSwapFailed,
+  isSwapInProgress,
+  onSwap,
+}: Props) {
   const assets = useAppSelector(state => state.assets);
 
   const accountBalance = useAppSelector(
@@ -253,6 +268,21 @@ export function SwapForm({ exchangers }: Props) {
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
+
+        onSwap({
+          exchangerId: state.exchangerId,
+          fromAssetId: fromAsset.id,
+          fromCoins: Money.fromTokens(
+            new BigNumber(state.fromAmount),
+            fromAsset
+          )
+            .getCoins()
+            .toFixed(),
+          minReceivedCoins: state.minReceivedCoins.toFixed(),
+          toCoins: Money.fromTokens(state.toAmountTokens, toAsset)
+            .getCoins()
+            .toFixed(),
+        });
       }}
     >
       <div className={styles.pairSelect}>
@@ -375,9 +405,15 @@ export function SwapForm({ exchangers }: Props) {
         </div>
       </div>
 
-      <Button className="fullwidth" type="submit">
+      <Button className="fullwidth" disabled={isSwapInProgress} type="submit">
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
+
+      {isSwapFailed && (
+        <Error show>
+          <Trans i18nKey="swap.failMessage" />
+        </Error>
+      )}
 
       <table className={styles.summaryTable}>
         <tbody>

@@ -240,6 +240,30 @@ class Background {
     return this.background.updateExchangers(network);
   }
 
+  async performSwap({
+    exchangerId,
+    fromAssetId,
+    fromCoins,
+    minReceivedCoins,
+    toCoins,
+  }: {
+    exchangerId: string;
+    fromAssetId: string;
+    fromCoins: string;
+    minReceivedCoins: string;
+    toCoins: string;
+  }) {
+    await this.initPromise;
+
+    return this.background.performSwap({
+      exchangerId,
+      fromAssetId,
+      fromCoins,
+      minReceivedCoins,
+      toCoins,
+    });
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);

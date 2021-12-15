@@ -1,6 +1,6 @@
-import { Asset } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
+import { PAGES } from 'ui/pageConfig';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 import { SwapForm } from './form';
@@ -8,9 +8,16 @@ import * as styles from './swap.module.css';
 
 const REFRESH_INTERVAL_MS = 10000;
 
-export function Swap() {
+interface Props {
+  setTab: (newTab: string) => void;
+}
+
+export function Swap({ setTab }: Props) {
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const exchangers = useAppSelector(state => state.exchangers);
+
+  const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
+  const [isSwapFailed, setIsSwapFailed] = React.useState(false);
 
   React.useEffect(() => {
     let timeout: number;
@@ -42,7 +49,37 @@ export function Swap() {
           <div className={styles.loader} />
         ) : (
           <div className={styles.content}>
-            <SwapForm exchangers={exchangers} />
+            <SwapForm
+              exchangers={exchangers}
+              isSwapFailed={isSwapFailed}
+              isSwapInProgress={isSwapInProgress}
+              onSwap={async ({
+                exchangerId,
+                fromAssetId,
+                fromCoins,
+                minReceivedCoins,
+                toCoins,
+              }) => {
+                setIsSwapFailed(false);
+                setIsSwapInProgress(true);
+
+                try {
+                  await background.performSwap({
+                    exchangerId,
+                    fromAssetId,
+                    fromCoins,
+                    minReceivedCoins,
+                    toCoins,
+                  });
+
+                  setTab(PAGES.ROOT);
+                } catch {
+                  setIsSwapFailed(true);
+
+                  setIsSwapInProgress(false);
+                }
+              }}
+            />
           </div>
         )}
       </div>

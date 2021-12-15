@@ -335,9 +335,20 @@ class BackgroundService extends EventEmitter {
 
     this.swapController = new SwapController({
       initState: initState.SwapController,
+      assetInfo: this.assetInfoController.assetInfo.bind(
+        this.assetInfoController
+      ),
+      broadcast: this.networkController.broadcast.bind(this.networkController),
       getAssets: this.assetInfoController.getAssets.bind(
         this.assetInfoController
       ),
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
+        this.preferencesController
+      ),
+      signTx: this.walletController.signTx.bind(this.walletController),
       updateAssets: this.assetInfoController.updateAssets.bind(
         this.assetInfoController
       ),
@@ -521,6 +532,7 @@ class BackgroundService extends EventEmitter {
       updateExchangers: this.swapController.updateExchangers.bind(
         this.swapController
       ),
+      performSwap: this.swapController.performSwap.bind(this.swapController),
     };
   }
 
