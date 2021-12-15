@@ -96,6 +96,8 @@ export class SwapController {
       this.assetInfo(fromAssetId),
     ]);
 
+    const exchangerVersion = Number(exchanger.version.split('.')[0]);
+
     const tx = {
       type: SIGN_TYPE.SCRIPT_INVOCATION,
       data: {
@@ -105,7 +107,7 @@ export class SwapController {
         call: {
           function: 'exchange',
           args: [{ type: 'integer', value: toCoins }].concat(
-            exchanger.version === 2
+            exchangerVersion === 2
               ? [{ type: 'integer', value: minReceivedCoins }]
               : []
           ),
