@@ -47,6 +47,7 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
   const myAssets = useAppSelector(
     state =>
       state.balances[address]?.assets ||
+      // placeholder
       ([...Array(4).keys()].reduce(
         (placeholder, key) => ({
           ...placeholder,

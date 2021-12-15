@@ -164,3 +164,8 @@ export const buildTxTypeOptions = t => [
 const CARD_HEIGHT = 64;
 const CARD_MARGIN_BOTTOM = 8;
 export const CARD_FULL_HEIGHT = CARD_HEIGHT + CARD_MARGIN_BOTTOM;
+
+const MARGIN_MIN = 4;
+const MARGIN_MIN_TOP = MARGIN_MIN;
+const GROUP_HEIGHT = 14;
+export const FULL_GROUP_HEIGHT = MARGIN_MIN_TOP + GROUP_HEIGHT + MARGIN_MIN;

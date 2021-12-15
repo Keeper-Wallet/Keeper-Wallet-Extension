@@ -10,10 +10,62 @@ import {
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
 import { useAppSelector } from '../../../../store';
-import { buildTxTypeOptions, MONTH, useTxHistoryFilter } from './helpers';
+import {
+  buildTxTypeOptions,
+  CARD_FULL_HEIGHT,
+  FULL_GROUP_HEIGHT,
+  MONTH,
+  useTxHistoryFilter,
+} from './helpers';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from '../../../../../controllers/CurrentAccountController';
 import { Tooltip } from '../../../ui/tooltip';
+import { VariableSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import cn from 'classnames';
+
+const Row = ({ data, index, style }) => {
+  const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
+  const historyOrGroup = historyWithGroups[index];
+
+  return (
+    <div style={style}>
+      {'groupName' in historyOrGroup ? (
+        <div className={cn('basic500 margin-min', 'margin-min-top')}>
+          {historyOrGroup.groupName}
+        </div>
+      ) : (
+        <HistoryItem tx={historyOrGroup} />
+      )}
+
+      {index === historyWithGroups.length - 1 && hasMore && (
+        <div className="basic500 center margin-main-top margin-main">
+          <div className="margin-min">
+            {hasFilters ? (
+              <Trans
+                i18nKey="assets.maxFiltersHistory"
+                values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+              />
+            ) : (
+              <Trans
+                i18nKey="assets.maxHistory"
+                values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+              />
+            )}
+          </div>
+          <a
+            className="blue link"
+            href={historyLink}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Trans i18nKey="assets.showExplorerHistory" />
+          </a>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export function TabTxHistory() {
   const { t } = useTranslation();
@@ -27,14 +79,28 @@ export function TabTxHistory() {
   );
   const addressOrAlias = [address, ...aliases];
   const txHistory = useAppSelector(
-    state => state.balances[address]?.txHistory || []
+    state =>
+      state.balances[address]?.txHistory ??
+      // placeholder
+      [...Array(4).keys()].map(
+        key =>
+          ({
+            id: `${key}`,
+          } as ITransaction & WithId)
+      )
   );
+
   const thisYear = new Date().getFullYear();
 
   const [term, setTerm] = useTxHistoryFilter('term');
   const [type, setType] = useTxHistoryFilter('type');
   const [onlyIn, setOnlyIn] = useTxHistoryFilter('onlyIncoming');
   const [onlyOut, setOnlyOut] = useTxHistoryFilter('onlyOutgoing');
+  const listRef = React.useRef<VariableSizeList>();
+
+  React.useEffect(() => {
+    listRef.current && listRef.current.resetAfterIndex(0);
+  }, [txHistory]);
 
   const flat = (stateChanges: any): any[] =>
     (stateChanges?.transfers ?? [])
@@ -74,80 +140,105 @@ export function TabTxHistory() {
       false
     );
 
-  const historyEntries = Object.entries<Array<ITransaction & WithId>>(
-    txHistory
-      .filter((tx: any) => {
-        const hasMassTransfers = (tx.transfers ?? []).reduce(
-          (result: boolean, transfer: { amount: number; recipient: string }) =>
-            result || addressOrAlias.includes(transfer.recipient),
-          false
-        );
-        const hasInvokePayments = (tx.payment ?? []).length !== 0;
-        const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
-          (hasPayments, el) =>
-            hasPayments ||
-            el.assetId === term ||
-            icontains(assets[el.assetId]?.displayName ?? '', term),
-          false
-        );
+  const historyWithGroups = txHistory
+    .slice(0, MAX_TX_HISTORY_ITEMS - 1)
+    .filter((tx: any) => {
+      const hasMassTransfers = (tx.transfers ?? []).reduce(
+        (result: boolean, transfer: { amount: number; recipient: string }) =>
+          result || addressOrAlias.includes(transfer.recipient),
+        false
+      );
+      const hasInvokePayments = (tx.payment ?? []).length !== 0;
+      const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
+        (hasPayments, el) =>
+          hasPayments ||
+          el.assetId === term ||
+          icontains(assets[el.assetId]?.displayName ?? '', term),
+        false
+      );
 
-        return (
-          (!term ||
-            tx.id === term ||
-            tx.assetId === term ||
-            icontains(assets[tx.assetId]?.displayName ?? '', term) ||
-            tx.sender === term ||
-            tx.recipient === term ||
-            icontains(tx.alias ?? '', term) ||
-            tx.dApp === term ||
-            hasInvokePaymentsAsset ||
-            icontains(tx.call?.function ?? '', term) ||
-            hasInvokeStateChanges(tx.stateChanges)) &&
-          (!type || tx.type === type) &&
-          (!onlyIn ||
-            (!addressOrAlias.includes(tx.sender) &&
-              (addressOrAlias.includes(tx.recipient) || hasMassTransfers)) ||
-            hasInvokeTransfers(tx.stateChanges)) &&
-          (!onlyOut ||
-            (tx.type === TRANSACTION_TYPE.TRANSFER &&
-              addressOrAlias.includes(tx.sender)) ||
-            (tx.type === TRANSACTION_TYPE.MASS_TRANSFER && !hasMassTransfers) ||
-            (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
-        );
-      })
-      .reduce((result, tx) => {
+      return (
+        (!term ||
+          tx.id === term ||
+          tx.assetId === term ||
+          icontains(assets[tx.assetId]?.displayName ?? '', term) ||
+          tx.sender === term ||
+          tx.recipient === term ||
+          icontains(tx.alias ?? '', term) ||
+          tx.dApp === term ||
+          hasInvokePaymentsAsset ||
+          icontains(tx.call?.function ?? '', term) ||
+          hasInvokeStateChanges(tx.stateChanges)) &&
+        (!type || tx.type === type) &&
+        (!onlyIn ||
+          (!addressOrAlias.includes(tx.sender) &&
+            (addressOrAlias.includes(tx.recipient) || hasMassTransfers)) ||
+          hasInvokeTransfers(tx.stateChanges)) &&
+        (!onlyOut ||
+          (tx.type === TRANSACTION_TYPE.TRANSFER &&
+            addressOrAlias.includes(tx.sender)) ||
+          (tx.type === TRANSACTION_TYPE.MASS_TRANSFER && !hasMassTransfers) ||
+          (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
+      );
+    })
+    .reduce<Array<(ITransaction & WithId) | { groupName: string }>>(
+      (result, tx, index, prevItems) => {
         const d = new Date(tx.timestamp);
-        const [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDate()];
-        const date = `${(year !== thisYear && year) || ''} ${t(
-          `date.${MONTH[month]}`
-        )} ${day}`;
-        return {
-          ...result,
-          [date]: [...(result[date] || []), tx],
-        };
-      }, {})
-  ).slice(0, MAX_TX_HISTORY_ITEMS - 1);
+        const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
+
+        if (
+          tx.timestamp &&
+          (!prevItems[index - 1] ||
+            new Date(prevItems[index - 1].timestamp).toDateString() !==
+              d.toDateString())
+        ) {
+          result.push({
+            groupName: `${(Y !== thisYear && Y) || ''} ${t(
+              `date.${MONTH[M]}`
+            )} ${D}`.trim(),
+          });
+        }
+        result.push(tx);
+        return result;
+      },
+      []
+    );
 
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => setTerm(e.target.value)}
-          onClear={() => setTerm('')}
+          onInput={e => {
+            listRef.current && listRef.current.resetAfterIndex(0);
+            setTerm(e.target.value);
+          }}
+          onClear={() => {
+            listRef.current && listRef.current.resetAfterIndex(0);
+            setTerm('');
+          }}
         />
 
         <Tooltip content={<Trans i18nKey="historyFilters.type" />}>
           <Select
             className={styles.filterTxSelect}
             selected={type}
-            onSelectItem={(id, value) => setType(value)}
+            onSelectItem={(id, value) => {
+              listRef.current && listRef.current.resetAfterIndex(0);
+              setType(value);
+            }}
             selectList={buildTxTypeOptions(t)}
           />
         </Tooltip>
 
         <Tooltip content={<Trans i18nKey="historyFilters.incoming" />}>
-          <div className={styles.filterBtn} onClick={() => setOnlyIn(!onlyIn)}>
+          <div
+            className={styles.filterBtn}
+            onClick={() => {
+              listRef.current && listRef.current.resetAfterIndex(0);
+              setOnlyIn(!onlyIn);
+            }}
+          >
             <svg
               className={styles.filterBtnIcon}
               width="12"
@@ -166,7 +257,10 @@ export function TabTxHistory() {
         <Tooltip content={<Trans i18nKey="historyFilters.outgoing" />}>
           <div
             className={styles.filterBtn}
-            onClick={() => setOnlyOut(!onlyOut)}
+            onClick={() => {
+              listRef.current && listRef.current.resetAfterIndex(0);
+              setOnlyOut(!onlyOut);
+            }}
           >
             <svg
               className={styles.filterBtnIcon}
@@ -184,7 +278,7 @@ export function TabTxHistory() {
         </Tooltip>
       </div>
 
-      {!historyEntries.length ? (
+      {!historyWithGroups.length ? (
         <div className="basic500 center margin-min-top">
           {term || type || onlyIn || onlyOut ? (
             <Trans i18nKey="assets.notFoundHistory" />
@@ -194,43 +288,43 @@ export function TabTxHistory() {
         </div>
       ) : (
         <div className={styles.historyList}>
-          {historyEntries.map(([date, txArr], index) => (
-            <div
-              key={date}
-              className={index === 0 ? 'margin-min-top' : 'margin-main-top'}
-            >
-              <div className="basic500 margin-min">{date}</div>
-              {txArr.map(tx => (
-                <HistoryItem key={tx.id} tx={tx} />
-              ))}
-            </div>
-          ))}
-
-          {historyEntries.length < MAX_TX_HISTORY_ITEMS && (
-            <div className="basic500 center margin-main-top margin-main">
-              <div className="margin-min">
-                {term || type || onlyIn || onlyOut ? (
-                  <Trans
-                    i18nKey="assets.maxFiltersHistory"
-                    values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
-                  />
-                ) : (
-                  <Trans
-                    i18nKey="assets.maxHistory"
-                    values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
-                  />
-                )}
-              </div>
-              <a
-                className="blue link"
-                href={getTxHistoryLink(networkCode, address)}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <Trans i18nKey="assets.showExplorerHistory" />
-              </a>
-            </div>
-          )}
+          <AutoSizer>
+            {({ height, width }) => {
+              const hasMore = txHistory.length === MAX_TX_HISTORY_ITEMS;
+              return (
+                <>
+                  <VariableSizeList
+                    ref={listRef}
+                    height={height}
+                    width={width}
+                    itemCount={historyWithGroups.length}
+                    itemSize={index =>
+                      'groupName' in historyWithGroups[index]
+                        ? FULL_GROUP_HEIGHT
+                        : CARD_FULL_HEIGHT *
+                          (1 +
+                            Number(
+                              index === historyWithGroups.length - 1 && hasMore
+                            ))
+                    }
+                    itemData={{
+                      historyWithGroups,
+                      hasMore,
+                      hasFilters: term || type || onlyIn || onlyOut,
+                      historyLink: getTxHistoryLink(networkCode, address),
+                    }}
+                    itemKey={(index, { historyWithGroups }) =>
+                      'groupName' in historyWithGroups[index]
+                        ? `g:${historyWithGroups[index].groupName}`
+                        : `a:${historyWithGroups[index].id}`
+                    }
+                  >
+                    {Row}
+                  </VariableSizeList>
+                </>
+              );
+            }}
+          </AutoSizer>
         </div>
       )}
     </TabPanel>

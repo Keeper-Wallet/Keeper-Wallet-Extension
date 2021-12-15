@@ -6,16 +6,12 @@ import { TabPanel } from '../../../ui';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
-import { CARD_FULL_HEIGHT, useNftFilter } from './helpers';
+import { CARD_FULL_HEIGHT, FULL_GROUP_HEIGHT, useNftFilter } from './helpers';
 import { Tooltip } from '../../../ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
-
-const MARGIN_MIN = 4;
-const MARGIN_MIN_TOP = MARGIN_MIN;
-const GROUP_HEIGHT = 14;
-const FULL_GROUP_HEIGHT = MARGIN_MIN_TOP + GROUP_HEIGHT + MARGIN_MIN;
+import { AssetDetail } from '../../../../services/Background';
 
 const Row = ({ data, index, style }) => {
   const { nftWithGroups, onInfoClick, onSendClick } = data;
@@ -43,11 +39,27 @@ const Row = ({ data, index, style }) => {
 
 export function TabNfts({ onInfoClick, onSendClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
-  const myNfts = useAppSelector(state => state.balances[address]?.nfts || []);
+  const myNfts = useAppSelector(
+    state =>
+      state.balances[address]?.nfts ||
+      // placeholder
+      [...Array(4).keys()].map(
+        key =>
+          ({
+            id: `${key}`,
+          } as AssetDetail)
+      )
+  );
 
   const [term, setTerm] = useNftFilter('term');
   const [onlyMy, setOnlyMy] = useNftFilter('onlyMy');
   const listRef = React.useRef<VariableSizeList>();
+
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [myNfts]);
 
   const nftWithGroups = myNfts
     .filter(
@@ -60,27 +72,30 @@ export function TabNfts({ onInfoClick, onSendClick }) {
         (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
         (a.displayName ?? '').localeCompare(b.displayName ?? '')
     )
-    .reduce((result, item, index, prevItems) => {
-      if (
-        !prevItems[index - 1] ||
-        prevItems[index - 1].issuer !== item.issuer
-      ) {
-        result.push({ groupName: item.issuer });
-      }
-      result.push(item);
-      return result;
-    }, []);
+    .reduce<Array<AssetDetail | { groupName: string }>>(
+      (result, item, index, prevItems) => {
+        if (
+          item.issuer &&
+          (!prevItems[index - 1] || prevItems[index - 1].issuer !== item.issuer)
+        ) {
+          result.push({ groupName: item.issuer });
+        }
+        result.push(item);
+        return result;
+      },
+      []
+    );
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
           onInput={e => {
-            listRef.current.resetAfterIndex(0);
+            listRef.current && listRef.current.resetAfterIndex(0);
             setTerm(e.target.value);
           }}
           onClear={() => {
-            listRef.current.resetAfterIndex(0);
+            listRef.current && listRef.current.resetAfterIndex(0);
             setTerm('');
           }}
         />
@@ -88,7 +103,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
           <div
             className={styles.filterBtn}
             onClick={() => {
-              listRef.current.resetAfterIndex(0);
+              listRef.current && listRef.current.resetAfterIndex(0);
               setOnlyMy(!onlyMy);
             }}
           >

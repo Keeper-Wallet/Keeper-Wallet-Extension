@@ -31,11 +31,12 @@ export function AssetItem({
 
   const displayName = asset?.displayName;
   const isFavorite = asset?.isFavorite;
+  const isLoading = !asset;
 
   return (
     <div className={cn(styles.assetCard, className, 'flex', 'relative')}>
       <AssetLogo
-        className={!asset && 'skeleton-glow'}
+        className={isLoading && 'skeleton-glow'}
         assetId={assetId}
         name={displayName}
         hasSponsorship={balance?.asset?.minSponsoredFee.isPositive()}
@@ -80,7 +81,7 @@ export function AssetItem({
         </div>
       </div>
 
-      {asset && (
+      {!isLoading && (
         <div className={styles.moreBtn} data-testid={`${assetId}-moreBtn`}>
           <svg
             className={styles.moreIcon}

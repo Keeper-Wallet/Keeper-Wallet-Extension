@@ -312,7 +312,12 @@ export function HistoryItem({ tx, className }: Props) {
         content={`${(isTxFailed && t('historyCard.failed')) || ''} ${tooltip}`}
         placement="right"
       >
-        <div className={styles.historyIconWrapper}>
+        <div
+          className={cn(
+            styles.historyIconWrapper,
+            messageType === 'unknown' && 'skeleton-glow'
+          )}
+        >
           <TxIcon txType={messageType} className={styles.historyIcon} />
           {isTxFailed && (
             <div className={styles.txSubIconContainer}>
