@@ -7,55 +7,6 @@
   margin-bottom: 24px;
 }
 
-.swapBox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: solid 1px #edf0f4;
-  padding: 14px;
-  border-radius: 4px;
-  background: #fff;
-}
-
-.swapBoxLeft {
-  flex: 0 0 30%;
-}
-
-.swapBoxLabel {
-  color: #9ba6b2;
-  font-size: 11px;
-}
-
-.swapBoxAsset {
-  font-size: 14px;
-}
-
-.swapBoxRight {
-  flex: 1 1 auto;
-  text-align: right;
-}
-
-.swapBoxBalance {
-  font-size: 11px;
-}
-
-.swapBoxInput {
-  display: block;
-  width: 100%;
-  background: none;
-  font-size: 14px;
-  text-align: inherit;
-}
-
-.swapBoxResult {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.swapBoxInput:focus {
-  outline: 0;
-}
-
 .swapDirectionBtnWrapper {
   margin: -11px 0;
   padding: 0 14px;

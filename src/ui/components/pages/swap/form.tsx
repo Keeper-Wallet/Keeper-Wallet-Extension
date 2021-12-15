@@ -1,8 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
-import { useIMask } from 'react-imask';
+import { Trans, useTranslation } from 'react-i18next';
 import { SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
 import { useDebouncedValue } from 'ui/utils/useDebouncedValue';
@@ -15,8 +14,8 @@ import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
-import { SwapAssetLogo } from './assetLogo';
 import { Error } from 'ui/components/ui';
+import { AssetAmountInput } from 'assets/amountInput';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
@@ -44,44 +43,6 @@ interface State {
   toAmountTokens: BigNumber;
 }
 
-function useAssetMask({
-  asset,
-  value,
-  onChange,
-}: {
-  asset: Asset;
-  value: string;
-  onChange: (newValue: string) => void;
-}) {
-  const mask = useIMask(
-    {
-      mapToRadix: ['.', ','],
-      mask: Number,
-      radix: '.',
-      scale: asset.precision,
-      thousandsSeparator: ' ',
-    },
-    {
-      onAccept: (_value, mask) => {
-        onChange(mask.unmaskedValue);
-      },
-    }
-  );
-
-  React.useEffect(() => {
-    const input = mask.ref.current;
-    const maskInstance = mask.maskRef.current;
-
-    if (input && maskInstance && maskInstance.unmaskedValue !== value) {
-      input.value = value;
-      maskInstance.updateValue();
-      maskInstance.updateControl();
-    }
-  }, [value]);
-
-  return mask;
-}
-
 const ASSETS_FORMAT = {
   fractionGroupSeparator: '',
   fractionGroupSize: 0,
@@ -99,6 +60,7 @@ export function SwapForm({
   swapErrorMessage,
   onSwap,
 }: Props) {
+  const { t } = useTranslation();
   const assets = useAppSelector(state => state.assets);
 
   const accountBalance = useAppSelector(
@@ -252,14 +214,6 @@ export function SwapForm({
     toBalance,
   ]);
 
-  const fromMask = useAssetMask({
-    asset: fromAsset,
-    value: state.fromAmount,
-    onChange: newValue => {
-      dispatch({ type: 'CHANGE_FROM_AMOUNT', value: newValue });
-    },
-  });
-
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
 
@@ -319,29 +273,14 @@ export function SwapForm({
       </div>
 
       <div>
-        <div className={styles.swapBox}>
-          <SwapAssetLogo asset={fromAsset} network={currentNetwork} />
-
-          <div className={styles.swapBoxLeft}>
-            <div className={styles.swapBoxLabel}>
-              <Trans i18nKey="swap.fromInputLabel" />
-            </div>
-
-            <div className={styles.swapBoxAsset}>{fromAsset.displayName}</div>
-          </div>
-
-          <div className={styles.swapBoxRight}>
-            <div className={styles.swapBoxBalance}>
-              {fromAssetBalance.toTokens()}
-            </div>
-
-            <input
-              className={styles.swapBoxInput}
-              placeholder="0.0"
-              ref={fromMask.ref as React.MutableRefObject<HTMLInputElement>}
-            />
-          </div>
-        </div>
+        <AssetAmountInput
+          balance={fromAssetBalance}
+          label={t('swap.fromInputLabel')}
+          value={state.fromAmount}
+          onChange={newValue => {
+            dispatch({ type: 'CHANGE_FROM_AMOUNT', value: newValue });
+          }}
+        />
 
         <div className={styles.swapDirectionBtnWrapper}>
           <button
@@ -362,31 +301,11 @@ export function SwapForm({
           </button>
         </div>
 
-        <div className={styles.swapBox}>
-          <SwapAssetLogo asset={toAsset} network={currentNetwork} />
-
-          <div className={styles.swapBoxLeft}>
-            <div className={styles.swapBoxLabel}>
-              <Trans i18nKey="swap.toInputLabel" />
-            </div>
-
-            <div className={styles.swapBoxAsset}>{toAsset.displayName}</div>
-          </div>
-
-          <div className={styles.swapBoxRight}>
-            <div className={styles.swapBoxBalance}>
-              {toAssetBalance.toTokens()}
-            </div>
-
-            <div className={styles.swapBoxResult}>
-              {state.toAmountTokens.toFormat(
-                toAsset.precision,
-                BigNumber.ROUND_MODE.ROUND_FLOOR,
-                ASSETS_FORMAT
-              )}
-            </div>
-          </div>
-        </div>
+        <AssetAmountInput
+          balance={toAssetBalance}
+          label={t('swap.toInputLabel')}
+          value={state.toAmountTokens.toFixed()}
+        />
       </div>
 
       <div className={styles.priceRow}>
