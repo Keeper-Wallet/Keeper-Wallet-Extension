@@ -84,9 +84,9 @@ function calcMinReceived(
   toAmountCoins: BigNumber,
   slippageTolerancePercents: BigNumber
 ) {
-  return toAmountCoins.mul(
-    new BigNumber(100).sub(slippageTolerancePercents).div(100)
-  );
+  return toAmountCoins
+    .mul(new BigNumber(100).sub(slippageTolerancePercents).div(100))
+    .roundTo(0, BigNumber.ROUND_MODE.ROUND_DOWN);
 }
 
 function calcPriceImpact({
