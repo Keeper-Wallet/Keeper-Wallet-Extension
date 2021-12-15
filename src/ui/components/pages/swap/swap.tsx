@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { PAGES } from 'ui/pageConfig';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
@@ -13,11 +13,14 @@ interface Props {
 }
 
 export function Swap({ setTab }: Props) {
+  const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const exchangers = useAppSelector(state => state.exchangers);
 
   const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
-  const [isSwapFailed, setIsSwapFailed] = React.useState(false);
+  const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
+    null
+  );
 
   React.useEffect(() => {
     let timeout: number;
@@ -51,8 +54,8 @@ export function Swap({ setTab }: Props) {
           <div className={styles.content}>
             <SwapForm
               exchangers={exchangers}
-              isSwapFailed={isSwapFailed}
               isSwapInProgress={isSwapInProgress}
+              swapErrorMessage={swapErrorMessage}
               onSwap={async ({
                 exchangerId,
                 fromAssetId,
@@ -60,7 +63,7 @@ export function Swap({ setTab }: Props) {
                 minReceivedCoins,
                 toCoins,
               }) => {
-                setIsSwapFailed(false);
+                setSwapErrorMessage(null);
                 setIsSwapInProgress(true);
 
                 try {
@@ -73,9 +76,8 @@ export function Swap({ setTab }: Props) {
                   });
 
                   setTab(PAGES.ROOT);
-                } catch {
-                  setIsSwapFailed(true);
-
+                } catch (err) {
+                  setSwapErrorMessage(err.message || t('swap.failMessage'));
                   setIsSwapInProgress(false);
                 }
               }}

@@ -22,8 +22,8 @@ const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
 interface Props {
   exchangers: { [exchangerId: string]: SwopFiExchangerData };
-  isSwapFailed: boolean;
   isSwapInProgress: boolean;
+  swapErrorMessage: string;
   onSwap: (data: {
     exchangerId: string;
     fromAssetId: string;
@@ -95,8 +95,8 @@ const ASSETS_FORMAT = {
 
 export function SwapForm({
   exchangers,
-  isSwapFailed,
   isSwapInProgress,
+  swapErrorMessage,
   onSwap,
 }: Props) {
   const assets = useAppSelector(state => state.assets);
@@ -410,11 +410,7 @@ export function SwapForm({
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
 
-      {isSwapFailed && (
-        <Error show>
-          <Trans i18nKey="swap.failMessage" />
-        </Error>
-      )}
+      {swapErrorMessage && <Error show>{swapErrorMessage}</Error>}
 
       <table className={styles.summaryTable}>
         <tbody>
