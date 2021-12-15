@@ -346,6 +346,7 @@ export function SwapForm({
         <div className={styles.swapDirectionBtnWrapper}>
           <button
             className={styles.swapDirectionBtn}
+            type="button"
             onClick={() => {
               dispatch({ type: 'SWAP_DIRECTION' });
             }}
