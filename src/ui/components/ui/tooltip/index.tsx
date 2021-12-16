@@ -8,7 +8,6 @@ import cn from 'classnames';
 
 export const Tooltip = ({
   className = '',
-  arrowClassName = '',
   children,
   content,
   placement = 'top-end' as Placement,
@@ -71,7 +70,7 @@ export const Tooltip = ({
             >
               <div
                 ref={setArrowRef}
-                className={cn(arrowClassName, styles.arrow)}
+                className={styles.arrow}
                 style={stylesP.arrow}
               />
               {content}

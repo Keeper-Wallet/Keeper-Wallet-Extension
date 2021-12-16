@@ -64,8 +64,6 @@ export const TransactionWallet = ({
               </>
             }
             placement="top-start"
-            className={styles.accountNameTooltip}
-            arrowClassName={styles.accountNameTooltipArrow}
           >
             <div className={styles.accountName}>{account.name}</div>
           </Tooltip>
