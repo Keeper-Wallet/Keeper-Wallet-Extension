@@ -9,8 +9,9 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances } from 'ui/actions';
-import { Balance, Error, Loader } from '../ui';
+import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
+import { AssetAmountInput } from '../../../assets/amountInput';
 
 export function Send() {
   const { t } = useTranslation();
@@ -155,45 +156,31 @@ export function Send() {
             <Error show={showRecipientError}>{recipientError}</Error>
           </div>
 
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="send.assetInputLabel" />
-          </div>
-
           {!isNft && (
             <>
               <div className="margin-main-big">
                 {!currentAsset || !assetBalances[currentAsset.id] ? (
                   <Loader />
                 ) : (
-                  <Balance
-                    showAsset
-                    isShortFormat={false}
-                    balance={
-                      new Money(
-                        new BigNumber(assetBalances[currentAsset.id].balance),
-                        new Asset(currentAsset)
-                      )
-                    }
-                  />
+                  <>
+                    <AssetAmountInput
+                      balance={
+                        new Money(
+                          new BigNumber(assetBalances[currentAsset.id].balance),
+                          new Asset(currentAsset)
+                        )
+                      }
+                      label={t('send.amountInputLabel')}
+                      value={amountValue}
+                      onChange={value => {
+                        setAmountTouched(true);
+                        setAmountValue(value);
+                      }}
+                      data-testid="amountInput"
+                    />
+                    <Error show={showAmountError}>{amountError}</Error>
+                  </>
                 )}
-              </div>
-
-              <div className="input-title basic500 tag1">
-                <Trans i18nKey="send.amountInputLabel" />
-              </div>
-
-              <div className="margin-main-big">
-                <Input
-                  autoComplete="off"
-                  data-testid="amountInput"
-                  error={showAmountError}
-                  inputRef={amountMask.ref}
-                  onBlur={() => {
-                    setAmountTouched(true);
-                  }}
-                />
-
-                <Error show={showAmountError}>{amountError}</Error>
               </div>
             </>
           )}
