@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Asset } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
@@ -8,21 +8,15 @@ import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
 
 interface Props {
-  asset: Asset;
-  balance: BigNumber;
+  balance: Money;
   label: string;
   value: string;
   onChange?: (newValue: string) => void;
 }
 
-export function AssetAmountInput({
-  asset,
-  balance,
-  label,
-  value,
-  onChange,
-}: Props) {
+export function AssetAmountInput({ balance, label, value, onChange }: Props) {
   const network = useAppSelector(state => state.currentNetwork);
+  const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
 
   const mask = useIMask(
@@ -76,7 +70,7 @@ export function AssetAmountInput({
       </div>
 
       <div className={styles.right}>
-        <div className={styles.balance}>{balance.toFixed()}</div>
+        <div className={styles.balance}>{balance.toTokens()}</div>
 
         {onChange ? (
           <input
