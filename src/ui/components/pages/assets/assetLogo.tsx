@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as styles from './assetLogo.module.css';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
-import { colors } from './helpers';
 import { useAppSelector } from '../../../store';
 import { getAssetLogo } from '../../../../assets/utils';
 
@@ -32,22 +31,7 @@ export function AssetLogo({
   if (!logoSrc) {
     return (
       <div className={cn(styles.assetLogo, className)} style={style}>
-        <div>
-          {assetId === 'WAVES' ? (
-            <svg width="40" height="40" viewBox="0 0 12 12" fill="none">
-              <rect
-                x="5.9053"
-                y="0.954468"
-                width="7.43786"
-                height="7.47036"
-                transform="rotate(45 5.9053 0.954468)"
-                fill={colors.submit400}
-              />
-            </svg>
-          ) : (
-            name && name[0].toUpperCase()
-          )}
-        </div>
+        <div>{name && name[0].toUpperCase()}</div>
         {(hasSponsorship || hasScript) && (
           <div className={styles.assetSubIconContainer}>
             <div className={styles.assetSubIcon}>

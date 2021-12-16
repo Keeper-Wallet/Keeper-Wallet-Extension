@@ -53,6 +53,12 @@ export const assetIds = {
     XMR: 'Eox8Cb2cfkFrsYMJSN8TmyfqzbqwjQp4sdJDE6PA9hph',
     ZEC: 'DeiUipcLutVxVVuHxpU8QUZos6KZpnrxakku5YpZSBaT',
   },
+  stagenet: {
+    WAVES: 'WAVES',
+  },
+  custom: {
+    WAVES: 'WAVES',
+  },
 };
 
 const logosByName = {
