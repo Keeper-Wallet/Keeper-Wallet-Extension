@@ -146,7 +146,11 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
                   itemCount={assetEntries.length}
                   itemSize={CARD_FULL_HEIGHT}
                   itemData={{ assetEntries, assets, onInfoClick, onSendClick }}
-                  itemKey={(index, itemData) => itemData.assetEntries[index][0]}
+                  itemKey={(index, itemData) =>
+                    `${itemData.assetEntries[index][0]}:${
+                      assets[itemData.assetEntries[index][0]]?.isFavorite
+                    }`
+                  }
                 >
                   {Row}
                 </List>
