@@ -3,6 +3,8 @@ import * as styles from './assetLogo.module.css';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
 import { colors } from './helpers';
+import { useAppSelector } from '../../../store';
+import { getAssetLogo } from '../../../../assets/utils';
 
 interface Props {
   assetId: string;
@@ -16,16 +18,18 @@ interface Props {
 export function AssetLogo({
   className,
   assetId,
-  logo,
   name,
   hasSponsorship,
   hasScript,
 }: Props) {
   const style = {
-    backgroundColor:
-      assetId === 'WAVES' ? colors.white : new ColorHash().hex(assetId),
+    backgroundColor: new ColorHash().hex(assetId),
   };
-  if (!logo) {
+
+  const network = useAppSelector(state => state.currentNetwork);
+  const logoSrc = getAssetLogo(network, assetId);
+
+  if (!logoSrc) {
     return (
       <div className={cn(styles.assetLogo, className)} style={style}>
         <div>
@@ -71,6 +75,6 @@ export function AssetLogo({
   }
 
   return (
-    <img className={cn(styles.assetLogo, className)} src={logo} style={style} />
+    <img className={cn(styles.assetLogo, className)} src={logoSrc} alt="" />
   );
 }
