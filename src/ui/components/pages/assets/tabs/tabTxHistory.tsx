@@ -220,15 +220,17 @@ export function TabTxHistory() {
         />
 
         <Tooltip content={<Trans i18nKey="historyFilters.type" />}>
-          <Select
-            className={styles.filterTxSelect}
-            selected={type}
-            onSelectItem={(id, value) => {
-              listRef.current && listRef.current.resetAfterIndex(0);
-              setType(value);
-            }}
-            selectList={buildTxTypeOptions(t)}
-          />
+          <div>
+            <Select
+              className={styles.filterTxSelect}
+              selected={type}
+              onSelectItem={(id, value) => {
+                listRef.current && listRef.current.resetAfterIndex(0);
+                setType(value);
+              }}
+              selectList={buildTxTypeOptions(t)}
+            />
+          </div>
         </Tooltip>
 
         <Tooltip content={<Trans i18nKey="historyFilters.incoming" />}>
