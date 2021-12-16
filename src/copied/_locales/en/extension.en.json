@@ -98,7 +98,7 @@
     "paymentReceive": "Incoming Payment",
     "paymentSelf": "Self-payment",
     "reissue": "Reissue Asset",
-    "scriptInvocation": "Contract Invocation",
+    "scriptInvocation": "DApp Invocation",
     "setAssetScript": "Update Asset Script",
     "setScript": "Set Account Script",
     "setScriptCancel": "Cancel Account Script",
@@ -108,7 +108,8 @@
     "transfer": "Transfer",
     "transferReceive": "Incoming Transfer",
     "transferSelf": "Self-transfer",
-    "updateAssetInfo": "Update Asset Info"
+    "updateAssetInfo": "Update Asset Info",
+    "expressionInvocation": "Script Execution"
   },
   "historyFilters": {
     "all": "All",

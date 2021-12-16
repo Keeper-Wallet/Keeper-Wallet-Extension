@@ -8,6 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { TransactionFromApi } from '../../../../transactions/types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
 import { SWAP_DAPPS } from '../../../../constants';
@@ -17,7 +18,7 @@ function Address({ base58 }) {
 }
 
 interface Props {
-  tx: any;
+  tx: TransactionFromApi;
   className?: string;
 }
 
@@ -150,9 +151,9 @@ export function HistoryItem({ tx, className }: Props) {
           new BigNumber(tx.price).div(
             new BigNumber(10).pow(
               8 +
-                (tx.version < 3
-                  ? priceAsset.precision - assetAmount.asset.precision
-                  : 0)
+              (tx.version < 3
+                ? priceAsset.precision - assetAmount.asset.precision
+                : 0)
             )
           ),
           priceAssetId
@@ -318,6 +319,10 @@ export function HistoryItem({ tx, className }: Props) {
       tooltip = label = t('history.updateAssetInfo');
       info = assets[tx.assetId]?.displayName;
       messageType = 'issue';
+      break;
+    case TRANSACTION_TYPE.INVOKE_EXPRESSION:
+      tooltip = label = t('historyCard.expressionInvocation');
+      messageType = 'script_invocation';
       break;
     default:
       label = <Loader />;
