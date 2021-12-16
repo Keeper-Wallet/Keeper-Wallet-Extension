@@ -23,6 +23,7 @@ interface Props {
   exchangers: { [exchangerId: string]: SwopFiExchangerData };
   isSwapInProgress: boolean;
   swapErrorMessage: string;
+  totalFee: number;
   onSwap: (data: {
     exchangerId: string;
     fromAssetId: string;
@@ -58,6 +59,7 @@ export function SwapForm({
   exchangers,
   isSwapInProgress,
   swapErrorMessage,
+  totalFee,
   onSwap,
 }: Props) {
   const { t } = useTranslation();
@@ -381,7 +383,12 @@ export function SwapForm({
               <Trans i18nKey="swap.transactionFee" />
             </th>
 
-            <td>0.005 WAVES</td>
+            <td>
+              {new Money(totalFee, new Asset(assets['WAVES']))
+                .getTokens()
+                .toFormat()}{' '}
+              WAVES
+            </td>
           </tr>
         </tbody>
       </table>

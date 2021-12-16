@@ -242,12 +242,14 @@ class Background {
 
   async performSwap({
     exchangerId,
+    fee,
     fromAssetId,
     fromCoins,
     minReceivedCoins,
     toCoins,
   }: {
     exchangerId: string;
+    fee: number;
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
@@ -257,11 +259,22 @@ class Background {
 
     return this.background.performSwap({
       exchangerId,
+      fee,
       fromAssetId,
       fromCoins,
       minReceivedCoins,
       toCoins,
     });
+  }
+
+  async getMinimumFee(txType: number) {
+    await this.initPromise;
+    return this.background.getMinimumFee(txType);
+  }
+
+  async getExtraFee(address: string, network: string): Promise<number> {
+    await this.initPromise;
+    return this.background.getExtraFee(address, network);
   }
 
   async _updateIdle() {

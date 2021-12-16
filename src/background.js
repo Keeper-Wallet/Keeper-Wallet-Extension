@@ -33,6 +33,10 @@ import {
   UiStateController,
   WalletController,
 } from './controllers';
+import {
+  getExtraFee,
+  getMinimumFee,
+} from './controllers/CalculateFeeController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import '@waves/waves-transactions';
@@ -533,6 +537,9 @@ class BackgroundService extends EventEmitter {
         this.swapController
       ),
       performSwap: this.swapController.performSwap.bind(this.swapController),
+      getMinimumFee: getMinimumFee,
+      getExtraFee: (address, network) =>
+        getExtraFee(address, this.networkController.getNode(network)),
     };
   }
 

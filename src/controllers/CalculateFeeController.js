@@ -52,6 +52,21 @@ const getCachingFeeConfig = promiseCache(
   DEFAULT_FEE_CONFIG
 )(getConfig);
 
+export async function getMinimumFee(txType) {
+  const feeConfig = await getCachingFeeConfig();
+  const rules = feeConfig.calculate_fee_rules;
+
+  return rules[txType] ? rules[txType].fee : rules.default.fee;
+}
+
+export async function getExtraFee(address, node) {
+  const json = await fetch(
+    new URL(`/addresses/scriptInfo/${address}`, node).toString()
+  ).then(res => res.json());
+
+  return json.extraFee;
+}
+
 export const calculateFeeFabric =
   (assetInfoController, networkController) => async (adapter, signData) => {
     const { type } = signData;

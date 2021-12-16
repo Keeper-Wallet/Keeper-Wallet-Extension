@@ -80,6 +80,7 @@ export class SwapController {
 
   async performSwap({
     exchangerId,
+    fee,
     fromAssetId,
     fromCoins,
     minReceivedCoins,
@@ -102,7 +103,7 @@ export class SwapController {
       type: SIGN_TYPE.SCRIPT_INVOCATION,
       data: {
         dApp: exchangerId,
-        fee: Money.fromCoins(500000, new Asset(feeAssetInfo)),
+        fee: Money.fromCoins(fee, new Asset(feeAssetInfo)),
         payment: [Money.fromCoins(fromCoins, new Asset(fromAssetInfo))],
         call: {
           function: 'exchange',
