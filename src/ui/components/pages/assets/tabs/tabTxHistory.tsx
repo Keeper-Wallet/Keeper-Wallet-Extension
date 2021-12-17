@@ -73,6 +73,9 @@ export function TabTxHistory() {
     state => state.selectedAccount.networkCode
   );
   const assets = useAppSelector(state => state.assets);
+  const showSuspiciousAssets = useAppSelector(
+    state => !!state.uiState?.showSuspiciousAssets
+  );
   const address = useAppSelector(state => state.selectedAccount.address);
   const aliases = useAppSelector(
     state => state.balances[address]?.aliases || []
@@ -158,6 +161,7 @@ export function TabTxHistory() {
       );
 
       return (
+        (!showSuspiciousAssets || !assets[tx.assetId]?.isSuspicious) &&
         (!term ||
           tx.id === term ||
           tx.assetId === term ||
