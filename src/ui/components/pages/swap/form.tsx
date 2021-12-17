@@ -14,7 +14,6 @@ import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
-import { Error } from 'ui/components/ui';
 import { AssetAmountInput } from 'assets/amountInput';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
@@ -331,7 +330,9 @@ export function SwapForm({
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
 
-      {swapErrorMessage && <Error show>{swapErrorMessage}</Error>}
+      {swapErrorMessage && (
+        <div className={styles.error}>{swapErrorMessage}</div>
+      )}
 
       <table className={styles.summaryTable}>
         <tbody>

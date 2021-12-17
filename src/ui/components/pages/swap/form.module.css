@@ -51,6 +51,13 @@
   text-align: right;
 }
 
+.error {
+  margin-top: 8px;
+  overflow: auto;
+  color: #e5494d;
+  font-size: 12px;
+}
+
 .summaryTable {
   margin-top: 1em;
   border-collapse: collapse;
