@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import * as R from 'ramda';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -21,7 +22,7 @@ export class AssetInfoController {
   constructor(options = {}) {
     const defaults = {
       lastUpdated: {
-        suspicious: null,
+        suspiciousAssets: null,
       },
       assets: {
         mainnet: {
@@ -36,13 +37,13 @@ export class AssetInfoController {
         custom: {
           WAVES,
         },
-        suspicious: [],
       },
+      suspiciousAssets: [],
     };
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      Object.assign({}, defaults, options.initState)
+      R.mergeDeepRight(defaults, options.initState)
     );
   }
 
@@ -61,7 +62,7 @@ export class AssetInfoController {
   async assetInfo(assetId) {
     await this.updateSuspiciousAssets();
 
-    const { assets } = this.store.getState();
+    const { assets, suspiciousAssets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return WAVES;
 
@@ -99,7 +100,7 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
             isSuspicious:
               network === 'mainnet' &&
-              assets.suspicious.includes(assetInfo.assetId),
+              suspiciousAssets.includes(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
           };
           assets[network] = assets[network] || {};
@@ -140,7 +141,7 @@ export class AssetInfoController {
   async updateAssets(assetIds) {
     await this.updateSuspiciousAssets();
 
-    const { assets } = this.store.getState();
+    const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
 
     if (assetIds.length === 0) {
@@ -184,7 +185,7 @@ export class AssetInfoController {
               issuer: assetInfo.issuer,
               isSuspicious:
                 network === 'mainnet' &&
-                assets.suspicious.includes(assetInfo.assetId),
+                suspiciousAssets.includes(assetInfo.assetId),
               lastUpdated,
             };
           }
@@ -198,19 +199,18 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    let { assets, lastUpdated } = this.store.getState();
+    let { assets, suspiciousAssets, lastUpdated } = this.store.getState();
     const network = this.getNetwork();
 
     if (
       network === 'mainnet' &&
-      new Date() - new Date(lastUpdated.suspicious) > MAX_AGE
+      new Date() - new Date(lastUpdated.suspiciousAssets) > MAX_AGE
     ) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
       switch (resp.status) {
         case 200:
-          const suspicious = (await resp.text()).split('\n');
-          assets.suspicious = suspicious;
-          lastUpdated.suspicious = new Date().getTime();
+          suspiciousAssets = (await resp.text()).split('\n');
+          lastUpdated.suspiciousAssets = new Date().getTime();
           break;
         default:
           throw new Error(await resp.text());
@@ -220,8 +220,8 @@ export class AssetInfoController {
     Object.keys(assets[network]).forEach(
       assetId =>
         (assets[network][assetId].isSuspicious =
-          assets.suspicious.includes(assetId))
+          suspiciousAssets.includes(assetId))
     );
-    this.store.updateState({ assets, lastUpdated });
+    this.store.updateState({ assets, suspiciousAssets, lastUpdated });
   }
 }
