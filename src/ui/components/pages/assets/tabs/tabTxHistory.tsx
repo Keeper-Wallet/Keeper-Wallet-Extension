@@ -283,7 +283,22 @@ export function TabTxHistory() {
       {!historyWithGroups.length ? (
         <div className="basic500 center margin-min-top">
           {term || type || onlyIn || onlyOut ? (
-            <Trans i18nKey="assets.notFoundHistory" />
+            <>
+              <div className="margin-min">
+                <Trans i18nKey="assets.notFoundHistory" />
+              </div>
+              <p
+                className="blue link"
+                onClick={() => {
+                  setTerm('');
+                  setType(0);
+                  setOnlyIn(false);
+                  setOnlyOut(false);
+                }}
+              >
+                <Trans i18nKey="assets.resetFilters" />
+              </p>
+            </>
           ) : (
             <Trans i18nKey="assets.emptyHistory" />
           )}

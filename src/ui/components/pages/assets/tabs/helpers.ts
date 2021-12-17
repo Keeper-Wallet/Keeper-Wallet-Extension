@@ -78,10 +78,11 @@ export const MONTH = [
   'Nov',
   'Dec',
 ];
+
 export const buildTxTypeOptions = t => [
   {
-    id: null,
-    value: null,
+    id: 0,
+    value: 0,
     text: t('historyFilters.all'),
   },
   {

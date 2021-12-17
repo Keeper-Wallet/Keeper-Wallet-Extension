@@ -130,7 +130,21 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
       {assetEntries.length === 0 ? (
         <div className="basic500 center margin-min-top">
           {term || onlyMy || onlyFav ? (
-            <Trans i18nKey="assets.notFoundAssets" />
+            <>
+              <div className="margin-min">
+                <Trans i18nKey="assets.notFoundAssets" />
+              </div>
+              <p
+                className="blue link"
+                onClick={() => {
+                  setTerm('');
+                  setOnlyFav(false);
+                  setOnlyMy(false);
+                }}
+              >
+                <Trans i18nKey="assets.resetFilters" />
+              </p>
+            </>
           ) : (
             <Trans i18nKey="assets.emptyAssets" />
           )}

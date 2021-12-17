@@ -132,7 +132,21 @@ export function TabNfts({ onInfoClick, onSendClick }) {
       {nftWithGroups.length === 0 ? (
         <div className="basic500 center margin-min-top">
           {term || onlyMy ? (
-            <Trans i18nKey="assets.notFoundNFTs" />
+            <>
+              <div className="margin-min">
+                <Trans i18nKey="assets.notFoundNFTs" />
+              </div>
+              <p
+                className="blue link"
+                onClick={() => {
+                  setTerm('');
+                  setOnlyMy(false);
+                  setOnlyMy(false);
+                }}
+              >
+                <Trans i18nKey="assets.resetFilters" />
+              </p>
+            </>
           ) : (
             <Trans i18nKey="assets.emptyNFTs" />
           )}

@@ -64,7 +64,8 @@
     "showExplorerHistory": "See full history in Explorer",
     "history": "History",
     "onlyMyAssets": "Only Issued by Me",
-    "onlyFavorites": "Only Favorites"
+    "onlyFavorites": "Only Favorites",
+    "resetFilters": "Reset filters"
   },
   "historyCard": {
     "burn": "Burn Asset",
