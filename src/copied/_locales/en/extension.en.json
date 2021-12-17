@@ -423,7 +423,9 @@
     "time_40m": "40 min",
     "time_5m": "5 min",
     "time_idle": "Browser timeout",
-    "tooltipContent": "Protect yourself from Clicker Trojans threats"
+    "tooltipContent": "Protect yourself from Clicker Trojans threats",
+    "suspiciousAssetsProtection": "Suspicious assets protection",
+    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets"
   },
   "showQR": "Show QR",
   "showScriptComponent": {

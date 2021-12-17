@@ -121,14 +121,6 @@ class SettingsComponent extends React.Component {
               >
                 <i className="helpIcon" />
               </Tooltip>
-
-              <div className={styles.helper}>
-                <div className={styles.tooltip}>
-                  <Trans i18nKey="settings.tooltipContent">
-                    Protect yourself from Clicker Trojans threats
-                  </Trans>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -139,14 +131,14 @@ class SettingsComponent extends React.Component {
                   showSuspiciousAssets: !this.props.showSuspiciousAssets,
                 })
               }
-              enabled={this.props.showSuspiciousAssets}
+              enabled={!this.props.showSuspiciousAssets}
             />
             <div className={`${styles.powerBtnState} left`}>
               <div>
-                <Trans i18nKey="Show suspicious assets" />
+                <Trans i18nKey="settings.suspiciousAssetsProtection" />
               </div>
               <div>
-                {!this.props.showSuspiciousAssets ? (
+                {this.props.showSuspiciousAssets ? (
                   <span className="basic500">
                     <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
                   </span>
@@ -156,6 +148,14 @@ class SettingsComponent extends React.Component {
                   </span>
                 )}
               </div>
+            </div>
+            <div>
+              <Tooltip
+                content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
+                className={styles.helpTooltip}
+              >
+                <i className="helpIcon" />
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ class SettingsComponent extends React.Component {
 const mapStateToProps = function (store) {
   return {
     autoClickProtection: store.uiState && store.uiState.autoClickProtection,
-    showSuspiciousAssets: store.uiState?.showSuspiciousAssets ?? true,
+    showSuspiciousAssets: store.uiState?.showSuspiciousAssets ?? false,
   };
 };
 
