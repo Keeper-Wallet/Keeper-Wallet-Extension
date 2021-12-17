@@ -99,7 +99,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
             setTerm('');
           }}
         />
-        <Tooltip content={<Trans i18nKey="assets.onlyMyNfts" />}>
+        <Tooltip content={<Trans i18nKey="assets.onlyMyAssets" />}>
           <div
             className={styles.filterBtn}
             onClick={() => {
