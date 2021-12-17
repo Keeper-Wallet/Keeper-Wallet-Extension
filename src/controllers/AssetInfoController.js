@@ -22,7 +22,7 @@ export class AssetInfoController {
   constructor(options = {}) {
     const defaults = {
       lastUpdated: {
-        suspiciousAssets: null,
+        suspiciousAssets: 0,
       },
       assets: {
         mainnet: {
@@ -38,12 +38,12 @@ export class AssetInfoController {
           WAVES,
         },
       },
-      suspiciousAssets: [],
     };
+    this.suspiciousAssets = undefined;
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      R.mergeDeepRight(defaults, options.initState)
+      R.mergeDeepRight(defaults, options.initState || {})
     );
   }
 
@@ -59,10 +59,20 @@ export class AssetInfoController {
     return new Date() - new Date(lastUpdated || 0) > MAX_AGE;
   }
 
+  isSuspiciousAsset(assetId) {
+    const { assets } = this.store.getState();
+    const network = this.getNetwork();
+    const asset = assets[network][assetId] || {};
+
+    return network === 'mainnet' && this.suspiciousAssets
+      ? this.suspiciousAssets.includes(assetId)
+      : asset.isSuspicious;
+  }
+
   async assetInfo(assetId) {
     await this.updateSuspiciousAssets();
 
-    const { assets, suspiciousAssets } = this.store.getState();
+    const { assets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return WAVES;
 
@@ -98,9 +108,7 @@ export class AssetInfoController {
             minSponsoredFee: assetInfo.minSponsoredAssetFee,
             originTransactionId: assetInfo.originTransactionId,
             issuer: assetInfo.issuer,
-            isSuspicious:
-              network === 'mainnet' &&
-              suspiciousAssets.includes(assetInfo.assetId),
+            isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
           };
           assets[network] = assets[network] || {};
@@ -141,7 +149,7 @@ export class AssetInfoController {
   async updateAssets(assetIds) {
     await this.updateSuspiciousAssets();
 
-    const { assets, suspiciousAssets } = this.store.getState();
+    const { assets } = this.store.getState();
     const network = this.getNetwork();
 
     if (assetIds.length === 0) {
@@ -183,9 +191,7 @@ export class AssetInfoController {
               minSponsoredFee: assetInfo.minSponsoredAssetFee,
               originTransactionId: assetInfo.originTransactionId,
               issuer: assetInfo.issuer,
-              isSuspicious:
-                network === 'mainnet' &&
-                suspiciousAssets.includes(assetInfo.assetId),
+              isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
               lastUpdated,
             };
           }
@@ -199,17 +205,18 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    let { assets, suspiciousAssets, lastUpdated } = this.store.getState();
+    let { assets, lastUpdated } = this.store.getState();
     const network = this.getNetwork();
 
     if (
-      network === 'mainnet' &&
-      new Date() - new Date(lastUpdated.suspiciousAssets) > MAX_AGE
+      !this.suspiciousAssets ||
+      (network === 'mainnet' &&
+        new Date() - new Date(lastUpdated.suspiciousAssets) > MAX_AGE)
     ) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
       switch (resp.status) {
         case 200:
-          suspiciousAssets = (await resp.text()).split('\n');
+          this.suspiciousAssets = (await resp.text()).split('\n');
           lastUpdated.suspiciousAssets = new Date().getTime();
           break;
         default:
@@ -217,11 +224,14 @@ export class AssetInfoController {
       }
     }
 
-    Object.keys(assets[network]).forEach(
-      assetId =>
-        (assets[network][assetId].isSuspicious =
-          suspiciousAssets.includes(assetId))
-    );
-    this.store.updateState({ assets, suspiciousAssets, lastUpdated });
+    if (this.suspiciousAssets) {
+      Object.keys(assets[network]).forEach(
+        assetId =>
+          (assets[network][assetId].isSuspicious =
+            this.suspiciousAssets.includes(assetId))
+      );
+    }
+
+    this.store.updateState({ assets, lastUpdated });
   }
 }
