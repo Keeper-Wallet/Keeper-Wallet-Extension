@@ -140,14 +140,14 @@ export function Assets({ setTab }: Props) {
           dispatch(setUiState({ assetsTab: activeIndex }))
         }
       >
-        <TabList className="flex body3 margin-main-top">
-          <Tab className="fullwidth center">
+        <TabList className="flex body3">
+          <Tab className={styles.tabItem}>
             <Trans i18nKey="assets.assets" />
           </Tab>
-          <Tab className="fullwidth center">
+          <Tab className={styles.tabItem}>
             <Trans i18nKey="assets.nfts" />
           </Tab>
-          <Tab className="fullwidth center">
+          <Tab className={styles.tabItem}>
             <Trans i18nKey="assets.history" />
           </Tab>
         </TabList>
