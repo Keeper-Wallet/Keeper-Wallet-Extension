@@ -115,8 +115,8 @@ export const MONTH = [
 
 export const buildTxTypeOptions = t => [
   {
-    id: undefined,
-    value: undefined,
+    id: 0,
+    value: 0,
     text: t('historyFilters.all'),
   },
   {
