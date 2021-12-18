@@ -84,10 +84,12 @@ export function Assets({ setTab }: Props) {
 
   const [currentAsset, setCurrentAsset] = [
     useAppSelector(state => state.uiState?.currentAsset),
-    React.useCallback(
-      (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
-      []
-    ),
+    (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
+  ];
+
+  const [currentTab, setCurrentTab] = [
+    useAppSelector(state => state.uiState?.assetsTab || 0),
+    (tabIndex: number) => dispatch(setUiState({ assetsTab: tabIndex })),
   ];
 
   const address = activeAccount && activeAccount.address;
@@ -137,7 +139,7 @@ export function Assets({ setTab }: Props) {
       <Tabs
         activeTab={activeTab}
         onTabChange={activeIndex =>
-          dispatch(setUiState({ assetsTab: activeIndex }))
+          activeIndex !== currentTab && setCurrentTab(activeIndex)
         }
       >
         <TabList className="flex body3">
