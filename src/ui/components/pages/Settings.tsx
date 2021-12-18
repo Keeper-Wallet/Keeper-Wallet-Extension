@@ -119,7 +119,7 @@ class SettingsComponent extends React.Component {
                 content={<Trans i18nKey="settings.tooltipContent" />}
                 className={styles.helpTooltip}
               >
-                <i className="helpIcon" />
+                {props => <i className="helpIcon" {...props} />}
               </Tooltip>
             </div>
           </div>
@@ -154,7 +154,7 @@ class SettingsComponent extends React.Component {
                 content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
                 className={styles.helpTooltip}
               >
-                <i className="helpIcon" />
+                {props => <i className="helpIcon" {...props} />}
               </Tooltip>
             </div>
           </div>

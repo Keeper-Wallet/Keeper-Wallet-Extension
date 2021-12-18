@@ -5,7 +5,10 @@ import * as styles from './index.styl';
 export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
   private element: HTMLDivElement;
 
-  getRef = element => (this.element = element);
+  getRef = element => {
+    this.props.forwardRef && (this.props.forwardRef.current = element);
+    this.element = element;
+  };
 
   selectHandler = (item: TSelectItem<T>) => {
     this.setState({ showList: false });
@@ -55,6 +58,7 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
 
   constructor(props: IProps<T>) {
     super(props);
+    console.log(props);
 
     this.state = {
       showList: false,
@@ -62,25 +66,32 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
   }
 
   render(): React.ReactNode {
-    const { selected, selectList = [] } = this.props;
+    const {
+      selected,
+      selectList = [],
+      className,
+      description,
+      onSelectItem,
+      forwardRef,
+      ...restProps
+    } = this.props;
+
     const { text } =
       selectList.find(({ id }) => id === selected) || selectList[0];
 
     return (
-      <div
-        className={cn(styles.select, this.props.className)}
-        ref={this.getRef}
-      >
-        <Title text={this.props.description} />
+      <div className={cn(styles.select, className)} ref={this.getRef}>
+        <Title text={description} />
         <div
           className={cn(styles.selectInput, 'cant-select')}
           onClick={this.clickHandler}
+          {...restProps}
         >
           <div className={styles.listItemSelected}>{text}</div>
         </div>
         <List
           isShow={this.state.showList}
-          list={this.props.selectList.filter(({ id }) => id !== selected)}
+          list={selectList.filter(({ id }) => id !== selected)}
           onSelect={this.selectHandler}
         />
       </div>
@@ -117,11 +128,15 @@ type TSelectItem<T> = {
   value: T;
 };
 
-interface IProps<T> extends React.ComponentProps<'div'> {
+interface IProps<T> {
+  className?: string;
+  forwardRef?: React.MutableRefObject<HTMLDivElement>;
   selectList: Array<TSelectItem<T>>;
   description?: TText;
   selected?: string | number;
   onSelectItem?: (id: string | number, value: T) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 interface IState<T> {

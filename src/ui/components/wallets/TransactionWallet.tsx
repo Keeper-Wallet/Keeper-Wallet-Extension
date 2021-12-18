@@ -53,21 +53,25 @@ export const TransactionWallet = ({
       </div>
 
       <div className={`body3 ${styles.accountData}`}>
-        <Copy text={account.address} onCopy={onCopy}>
-          <Tooltip
-            content={
-              <>
-                <Ellipsis text={account.address} />
-                <div>
-                  <Trans i18nKey="accountInfo.copyToClipboard" />
-                </div>
-              </>
-            }
-            placement="top-start"
-          >
-            <div className={styles.accountName}>{account.name}</div>
-          </Tooltip>
-        </Copy>
+        <Tooltip
+          content={
+            <>
+              <Ellipsis text={account.address} />
+              <div>
+                <Trans i18nKey="accountInfo.copyToClipboard" />
+              </div>
+            </>
+          }
+          placement="top-start"
+        >
+          {props => (
+            <Copy text={account.address} onCopy={onCopy}>
+              <div className={styles.accountName} {...props}>
+                {account.name}
+              </div>
+            </Copy>
+          )}
+        </Tooltip>
       </div>
 
       <div className={styles.controls} onClick={clickHandler}>

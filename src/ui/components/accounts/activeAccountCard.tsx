@@ -46,17 +46,20 @@ export function ActiveAccountCard({
         </div>
 
         <Tooltip content={<Trans i18nKey="assets.inStorage" />}>
-          <button
-            className={cn(
-              'button',
-              'button-wallet',
-              'button-wallet-iconOnly',
-              styles.otherAccountsButton
-            )}
-            data-testid="otherAccountsButton"
-            type="button"
-            onClick={onOtherAccountsClick}
-          />
+          {props => (
+            <button
+              className={cn(
+                'button',
+                'button-wallet',
+                'button-wallet-iconOnly',
+                styles.otherAccountsButton
+              )}
+              data-testid="otherAccountsButton"
+              type="button"
+              onClick={onOtherAccountsClick}
+              {...props}
+            />
+          )}
         </Tooltip>
       </div>
 
@@ -70,17 +73,25 @@ export function ActiveAccountCard({
       <div className={styles.controls}>
         <span className={styles.controlsExpand} />
 
-        <Copy text={account.address} onCopy={onCopy}>
-          <Tooltip content={<Trans i18nKey="copyAddress" />}>
-            <div className="button button-wallet button-wallet-iconOnly copyIconBlack" />
-          </Tooltip>
-        </Copy>
+        <Tooltip content={<Trans i18nKey="copyAddress" />}>
+          {props => (
+            <Copy text={account.address} onCopy={onCopy}>
+              <div
+                className="button button-wallet button-wallet-iconOnly copyIconBlack"
+                {...props}
+              />
+            </Copy>
+          )}
+        </Tooltip>
 
         <Tooltip content={<Trans i18nKey="showQR" />} placement="bottom-end">
-          <div
-            className="button button-wallet button-wallet-iconOnly showQrIcon"
-            onClick={onShowQr}
-          />
+          {props => (
+            <div
+              className="button button-wallet button-wallet-iconOnly showQrIcon"
+              onClick={onShowQr}
+              {...props}
+            />
+          )}
         </Tooltip>
       </div>
     </div>

@@ -6,13 +6,23 @@ import * as styles from './tooltip.module.css';
 import { Placement } from '@popperjs/core';
 import cn from 'classnames';
 
-export const Tooltip = ({
+interface Props {
+  className?: string;
+  children: (renderProps: {
+    ref: React.MutableRefObject<any>;
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
+  }) => React.ReactChild;
+  content: any;
+  placement?: Placement;
+}
+
+export function Tooltip({
   className = '',
   children,
   content,
-  placement = 'top-end' as Placement,
-  ...restProps
-}) => {
+  placement = 'top-end',
+}: Props) {
   const [el, setEl] = React.useState<HTMLDivElement>(null);
   const elRef = React.useRef(null);
   const popperRef = React.useRef(null);
@@ -53,12 +63,12 @@ export const Tooltip = ({
 
   return (
     <>
-      {React.cloneElement(React.Children.only(children), {
-        ...restProps,
+      {children({
         ref: elRef,
         onMouseEnter: () => setShowPopper(true),
         onMouseLeave: () => setShowPopper(false),
       })}
+
       {el &&
         ReactDOM.createPortal(
           showPopper && (
@@ -80,4 +90,4 @@ export const Tooltip = ({
         )}
     </>
   );
-};
+}
