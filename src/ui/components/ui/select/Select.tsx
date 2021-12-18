@@ -8,7 +8,7 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
   getRef = element => (this.element = element);
 
   selectHandler = (item: TSelectItem<T>) => {
-    this.setState({ showList: false, value: item.value, id: item.id });
+    this.setState({ showList: false });
     this.props.onSelectItem(item.id, item.value);
     this.removeClickOut();
   };
@@ -56,19 +56,15 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
   constructor(props: IProps<T>) {
     super(props);
 
-    const { selected, selectList = [] } = props;
-    const selectedEl =
-      selectList.find(({ id }) => id === selected) || selectList[0];
     this.state = {
-      ...selectedEl,
       showList: false,
     };
   }
 
   render(): React.ReactNode {
-    const selected =
-      this.props.selected == null ? this.state.id : this.props.selected;
-    const { text } = this.props.selectList.find(({ id }) => id === selected);
+    const { selected, selectList = [] } = this.props;
+    const { text } =
+      selectList.find(({ id }) => id === selected) || selectList[0];
 
     return (
       <div
@@ -96,18 +92,20 @@ const Title = ({ text }) =>
   text ? <div className="left input-title basic500 tag1">{text}</div> : null;
 
 const List = ({ list, onSelect, isShow }) => {
-  return !isShow ? null : (
-    <div className={cn(styles.list, 'cant-select')}>
-      {list.map(item => (
-        <div
-          key={item.id}
-          className={styles.listItem}
-          onClick={() => onSelect(item)}
-        >
-          {item.text}
-        </div>
-      ))}
-    </div>
+  return (
+    isShow && (
+      <div className={cn(styles.list, 'cant-select')}>
+        {list.map(item => (
+          <div
+            key={item.id}
+            className={styles.listItem}
+            onClick={() => onSelect(item)}
+          >
+            {item.text}
+          </div>
+        ))}
+      </div>
+    )
   );
 };
 
@@ -127,7 +125,5 @@ interface IProps<T> extends React.ComponentProps<'div'> {
 }
 
 interface IState<T> {
-  value: T;
-  id: string | number;
   showList: boolean;
 }
