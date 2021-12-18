@@ -7,35 +7,69 @@ import {
   TxHistoryFilters,
 } from '../../../../reducers/updateState';
 import * as React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
-function useFilter<T, F extends keyof T>(
-  name: string,
-  field: F
-): [Pick<T, F>[F], (value: Pick<T, F>[F]) => void] {
+function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
   const dispatch = useAppDispatch();
-  const filters: T = useAppSelector(state => state.uiState[name] || {});
-  const [value, setValue] = React.useState(filters[field]);
+  const stateFilters: T = useAppSelector(state => state.uiState[name] || {});
+
+  const manageFilters = fields.reduce<{
+    [K in keyof T]?: [Pick<T, K>[K], Dispatch<SetStateAction<Pick<T, K>[K]>>];
+  }>((manage, field) => {
+    manage[field] = React.useState<Pick<T, F>[F]>(stateFilters[field]);
+    return manage;
+  }, {});
+
+  const valueFilters = fields.reduce<{ [K in F]?: Pick<T, K>[K] }>(
+    (newFilters, field) => {
+      newFilters[field] = manageFilters[field][0];
+      return newFilters;
+    },
+    {}
+  );
 
   React.useEffect(() => {
-    if (value == filters[field]) {
+    if (
+      fields.reduce(
+        (isEqualEachFilter, field) =>
+          isEqualEachFilter && valueFilters[field] == stateFilters[field],
+        true
+      )
+    ) {
       return;
     }
-    dispatch(setUiState({ [name]: { ...filters, [field]: value } }));
-  }, [value, filters[field], dispatch, setUiState]);
 
-  return [value, setValue];
+    dispatch(setUiState({ [name]: valueFilters }));
+  }, [valueFilters, stateFilters, dispatch, setUiState]);
+
+  return {
+    ...manageFilters,
+    clearFilters: () => {
+      fields.forEach(field => manageFilters[field][1](null));
+    },
+  };
 }
 
-export function useAssetFilter<F extends keyof AssetFilters>(field: F) {
-  return useFilter<AssetFilters, typeof field>('assetFilters', field);
+export function useAssetFilter() {
+  return useFilter<AssetFilters, keyof AssetFilters>('assetFilters', [
+    'term',
+    'onlyMy',
+    'onlyFavorites',
+  ]);
 }
 
-export function useNftFilter<F extends keyof NftFilters>(field: F) {
-  return useFilter<NftFilters, typeof field>('nftFilters', field);
+export function useNftFilter() {
+  return useFilter<NftFilters, keyof NftFilters>('nftFilters', [
+    'term',
+    'onlyMy',
+  ]);
 }
 
-export function useTxHistoryFilter<F extends keyof TxHistoryFilters>(field: F) {
-  return useFilter<TxHistoryFilters, typeof field>('txHistoryFilters', field);
+export function useTxHistoryFilter() {
+  return useFilter<TxHistoryFilters, keyof TxHistoryFilters>(
+    'txHistoryFilters',
+    ['term', 'type', 'onlyIncoming', 'onlyOutgoing']
+  );
 }
 
 export function useSortedAssetEntries<T>(
@@ -81,8 +115,8 @@ export const MONTH = [
 
 export const buildTxTypeOptions = t => [
   {
-    id: 0,
-    value: 0,
+    id: undefined,
+    value: undefined,
     text: t('historyFilters.all'),
   },
   {

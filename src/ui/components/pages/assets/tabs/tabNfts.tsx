@@ -51,8 +51,12 @@ export function TabNfts({ onInfoClick, onSendClick }) {
       )
   );
 
-  const [term, setTerm] = useNftFilter('term');
-  const [onlyMy, setOnlyMy] = useNftFilter('onlyMy');
+  const {
+    term: [term, setTerm],
+    onlyMy: [onlyMy, setOnlyMy],
+    clearFilters,
+  } = useNftFilter();
+
   const listRef = React.useRef<VariableSizeList>();
 
   React.useEffect(() => {
@@ -136,14 +140,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
               <div className="margin-min">
                 <Trans i18nKey="assets.notFoundNFTs" />
               </div>
-              <p
-                className="blue link"
-                onClick={() => {
-                  setTerm('');
-                  setOnlyMy(false);
-                  setOnlyMy(false);
-                }}
-              >
+              <p className="blue link" onClick={() => clearFilters()}>
                 <Trans i18nKey="assets.resetFilters" />
               </p>
             </>

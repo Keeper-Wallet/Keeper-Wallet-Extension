@@ -61,9 +61,12 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
       ) as BalanceAssets)
   );
 
-  const [term, setTerm] = useAssetFilter('term');
-  const [onlyMy, setOnlyMy] = useAssetFilter('onlyMy');
-  const [onlyFav, setOnlyFav] = useAssetFilter('onlyFavorites');
+  const {
+    term: [term, setTerm],
+    onlyMy: [onlyMy, setOnlyMy],
+    onlyFavorites: [onlyFav, setOnlyFav],
+    clearFilters,
+  } = useAssetFilter();
 
   const assetEntries = useSortedAssetEntries(
     Object.entries(myAssets).filter(
@@ -134,14 +137,7 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
               <div className="margin-min">
                 <Trans i18nKey="assets.notFoundAssets" />
               </div>
-              <p
-                className="blue link"
-                onClick={() => {
-                  setTerm('');
-                  setOnlyFav(false);
-                  setOnlyMy(false);
-                }}
-              >
+              <p className="blue link" onClick={() => clearFilters()}>
                 <Trans i18nKey="assets.resetFilters" />
               </p>
             </>

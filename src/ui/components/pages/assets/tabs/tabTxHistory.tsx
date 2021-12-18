@@ -95,10 +95,13 @@ export function TabTxHistory() {
 
   const thisYear = new Date().getFullYear();
 
-  const [term, setTerm] = useTxHistoryFilter('term');
-  const [type, setType] = useTxHistoryFilter('type');
-  const [onlyIn, setOnlyIn] = useTxHistoryFilter('onlyIncoming');
-  const [onlyOut, setOnlyOut] = useTxHistoryFilter('onlyOutgoing');
+  const {
+    term: [term, setTerm],
+    type: [type, setType],
+    onlyIncoming: [onlyIn, setOnlyIn],
+    onlyOutgoing: [onlyOut, setOnlyOut],
+    clearFilters,
+  } = useTxHistoryFilter();
   const listRef = React.useRef<VariableSizeList>();
 
   React.useEffect(() => {
@@ -291,15 +294,7 @@ export function TabTxHistory() {
               <div className="margin-min">
                 <Trans i18nKey="assets.notFoundHistory" />
               </div>
-              <p
-                className="blue link"
-                onClick={() => {
-                  setTerm('');
-                  setType(0);
-                  setOnlyIn(false);
-                  setOnlyOut(false);
-                }}
-              >
+              <p className="blue link" onClick={() => clearFilters()}>
                 <Trans i18nKey="assets.resetFilters" />
               </p>
             </>
