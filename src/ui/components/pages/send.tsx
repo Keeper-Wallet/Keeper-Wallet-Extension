@@ -176,7 +176,6 @@ export function Send() {
                         setAmountTouched(true);
                         setAmountValue(value);
                       }}
-                      data-testid="amountInput"
                     />
                     <Error show={showAmountError}>{amountError}</Error>
                   </>

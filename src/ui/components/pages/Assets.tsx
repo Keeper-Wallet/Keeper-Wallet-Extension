@@ -96,7 +96,9 @@ export function Assets({ setTab }: Props) {
 
   React.useEffect(() => {
     setCurrentAsset(null);
-    dispatch(getBalances());
+    if (!balances[address]) {
+      dispatch(getBalances());
+    }
   }, []);
 
   const onSelectHandler = account => {

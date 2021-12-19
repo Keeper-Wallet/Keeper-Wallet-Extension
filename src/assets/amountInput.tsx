@@ -77,6 +77,7 @@ export function AssetAmountInput({ balance, label, value, onChange }: Props) {
             className={styles.input}
             placeholder="0.0"
             ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+            data-testid="amountInput"
           />
         ) : (
           <div className={styles.result}>

@@ -237,7 +237,7 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath(`//div[contains(@class, '-index-listItem')][${position}]`)
+          By.xpath(`//div[contains(@class, '-index-listItem-')][${position}]`)
         ),
         this.wait
       )

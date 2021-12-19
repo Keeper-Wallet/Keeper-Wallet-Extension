@@ -91,10 +91,15 @@ class SettingsComponent extends React.Component {
         </div>
 
         <div className={styles.quickSettingsMenu}>
-          <div className={`${styles.clickProtection} tag1`}>
+          <div
+            className={`${styles.clickProtection} tag1`}
+            data-testid="clickProtection"
+          >
             <PowerButton
               onClick={this.toggleAutoLockHandler}
               enabled={this.props.autoClickProtection}
+              data-testid="clickProtectionBtn"
+              data-teston={this.props.autoClickProtection}
             />
             <div className={`${styles.powerBtnState} left`}>
               <div>
@@ -102,7 +107,7 @@ class SettingsComponent extends React.Component {
                   Auto-click protection
                 </Trans>
               </div>
-              <div>
+              <div data-testid="clickProtectionStatus">
                 {!this.props.autoClickProtection ? (
                   <span className="basic500">
                     <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
@@ -114,14 +119,19 @@ class SettingsComponent extends React.Component {
                 )}
               </div>
             </div>
-            <div>
-              <Tooltip
-                content={<Trans i18nKey="settings.tooltipContent" />}
-                className={styles.helpTooltip}
-              >
-                {props => <i className="helpIcon" {...props} />}
-              </Tooltip>
-            </div>
+            <Tooltip
+              content={<Trans i18nKey="settings.tooltipContent" />}
+              className={styles.helpTooltip}
+              data-testid="clickProtectionTooltip"
+            >
+              {props => (
+                <i
+                  className="helpIcon"
+                  data-testid="clickProtectionIcon"
+                  {...props}
+                />
+              )}
+            </Tooltip>
           </div>
 
           <div className={`${styles.showSuspiciousAssets} tag1`}>
@@ -149,14 +159,12 @@ class SettingsComponent extends React.Component {
                 )}
               </div>
             </div>
-            <div>
-              <Tooltip
-                content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
-                className={styles.helpTooltip}
-              >
-                {props => <i className="helpIcon" {...props} />}
-              </Tooltip>
-            </div>
+            <Tooltip
+              content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
+              className={styles.helpTooltip}
+            >
+              {props => <i className="helpIcon" {...props} />}
+            </Tooltip>
           </div>
         </div>
 

@@ -22,6 +22,7 @@ export function Tooltip({
   children,
   content,
   placement = 'top-end',
+  ...props
 }: Props) {
   const [el, setEl] = React.useState<HTMLDivElement>(null);
   const elRef = React.useRef(null);
@@ -77,6 +78,7 @@ export function Tooltip({
               className={cn(className, styles.tooltip)}
               style={stylesP.popper}
               {...attributesP.popper}
+              {...props}
             >
               <div
                 ref={setArrowRef}
