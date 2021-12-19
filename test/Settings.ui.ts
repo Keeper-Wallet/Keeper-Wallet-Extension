@@ -742,7 +742,74 @@ describe('Settings', function () {
             until.elementIsVisible(
               this.driver.wait(
                 until.elementLocated(
-                  By.css('[data-testid="clickProtectionIcon"]')
+                  By.css('[data-testid="clickProtectionTooltip"]')
+                ),
+                this.wait
+              )
+            ),
+            this.wait
+          )
+        ).not.to.be.throw;
+      });
+    });
+
+    describe('Suspicious assets protection', function () {
+      let toggleBtn: WebElement, statusSpan: WebElement, helpIcon: WebElement;
+
+      before(async function () {
+        await this.driver.wait(
+          until.elementLocated(
+            By.xpath("//div[contains(@class, '-settings-content-')]")
+          ),
+          this.wait
+        );
+
+        toggleBtn = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsBtn"]')
+        );
+        statusSpan = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsStatus"] span')
+        );
+        helpIcon = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsIcon"]')
+        );
+      });
+
+      it('Can be disabled', async function () {
+        await toggleBtn.click();
+        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+        expect(
+          await this.driver.findElements(
+            By.css(
+              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+            )
+          )
+        ).length(0);
+        expect(await statusSpan.getText()).matches(/disabled/i);
+      });
+
+      it('Can be enabled', async function () {
+        await toggleBtn.click();
+        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+        expect(
+          await this.driver.findElements(
+            By.css(
+              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+            )
+          )
+        ).length(1);
+        expect(await statusSpan.getText()).matches(/enabled/i);
+      });
+
+      it('Display tooltip', async function () {
+        const actions = this.driver.actions({ async: true });
+        await actions.move({ origin: helpIcon }).perform();
+        expect(
+          this.driver.wait(
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="showSuspiciousAssetsTooltip"]')
                 ),
                 this.wait
               )

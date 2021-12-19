@@ -142,12 +142,14 @@ class SettingsComponent extends React.Component {
                 })
               }
               enabled={!this.props.showSuspiciousAssets}
+              data-testid="showSuspiciousAssetsBtn"
+              data-teston={!this.props.showSuspiciousAssets}
             />
             <div className={`${styles.powerBtnState} left`}>
               <div>
                 <Trans i18nKey="settings.suspiciousAssetsProtection" />
               </div>
-              <div>
+              <div data-testid="showSuspiciousAssetsStatus">
                 {this.props.showSuspiciousAssets ? (
                   <span className="basic500">
                     <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
@@ -162,8 +164,15 @@ class SettingsComponent extends React.Component {
             <Tooltip
               content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
               className={styles.helpTooltip}
+              data-testid="showSuspiciousAssetsTooltip"
             >
-              {props => <i className="helpIcon" {...props} />}
+              {props => (
+                <i
+                  className="helpIcon"
+                  data-testid="showSuspiciousAssetsIcon"
+                  {...props}
+                />
+              )}
             </Tooltip>
           </div>
         </div>
