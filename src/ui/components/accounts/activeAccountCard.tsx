@@ -3,12 +3,19 @@ import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
+import { WAVESKEEPER_DEBUG } from 'ui/appConfig';
 import { useAppSelector } from 'ui/store';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
+
+const SHOW_SWAP_BUTTON_NETWORKS = ['mainnet'];
+
+if (WAVESKEEPER_DEBUG) {
+  SHOW_SWAP_BUTTON_NETWORKS.push('testnet');
+}
 
 interface Account {
   address: string;
@@ -75,7 +82,7 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        {['mainnet', 'testnet'].includes(currentNetwork) && (
+        {SHOW_SWAP_BUTTON_NETWORKS.includes(currentNetwork) && (
           <button
             className={cn('swapIconBlack', styles.buttonWallet)}
             onClick={onSwapClick}
