@@ -118,9 +118,15 @@ export class SwapController {
 
     const signedTx = await this.signTx(selectedAccount.address, tx, network);
 
-    await this.broadcast({
+    const text = await this.broadcast({
       type: 'transaction',
       result: signedTx,
     });
+
+    const json = JSON.parse(text);
+
+    return {
+      transactionId: json.id,
+    };
   }
 }

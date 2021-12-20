@@ -70,6 +70,7 @@ export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 interface SelectedAccountState {
   address?: string;
+  name?: string;
   networkCode?: string;
 }
 
@@ -86,7 +87,15 @@ export function selectedAccount(
   }
 }
 
-export const networks = createSimpleReducer([], ACTION.UPDATE_NETWORKS);
+export const networks = createSimpleReducer<
+  Array<{
+    code: string;
+    matcher: string;
+    name: string;
+    server: string;
+  }>
+>([], ACTION.UPDATE_NETWORKS);
+
 export const currentNetwork = createSimpleReducer(
   '',
   ACTION.UPDATE_CURRENT_NETWORK

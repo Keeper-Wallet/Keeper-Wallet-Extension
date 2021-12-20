@@ -254,7 +254,7 @@ class Background {
     fromCoins: string;
     minReceivedCoins: string;
     toCoins: string;
-  }) {
+  }): Promise<{ transactionId: string }> {
     await this.initPromise;
 
     return this.background.performSwap({

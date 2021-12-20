@@ -32,8 +32,31 @@
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
   flex: 1 0 auto;
   position: relative;
   padding: 14px;
   background: #f8f9fb;
+}
+
+.accountInfoHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.accountName {
+  flex-grow: 1;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.currentNetwork {
+  overflow: hidden;
+  color: #9ba6b2;
+  font-size: 12px;
+  text-overflow: ellipsis;
 }
