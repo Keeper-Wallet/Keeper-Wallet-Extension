@@ -9,6 +9,7 @@ import { Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { favoriteAsset } from '../../../actions';
 import { Tooltip } from '../../ui/tooltip';
+import { MoreActions } from './moreActions';
 
 interface Props {
   balance: Money;
@@ -36,7 +37,7 @@ export function AssetItem({
   return (
     <div className={cn(styles.assetCard, className, 'flex', 'relative')}>
       <AssetLogo
-        className={isLoading && 'skeleton-glow'}
+        className={cn(styles.assetIcon, isLoading && 'skeleton-glow')}
         assetId={assetId}
         name={displayName}
         hasSponsorship={balance?.asset?.minSponsoredFee.isPositive()}
@@ -82,77 +83,12 @@ export function AssetItem({
       </div>
 
       {!isLoading && (
-        <div className={styles.moreBtn} data-testid={`${assetId}-moreBtn`}>
-          <svg
-            className={styles.moreIcon}
-            width="14"
-            height="14"
-            viewBox="-3 -3 20 20"
-            fill="none"
-          >
-            <path d="M7.00004 4.66665C7.64171 4.66665 8.16671 4.14165 8.16671 3.49998C8.16671 2.85831 7.64171 2.33331 7.00004 2.33331C6.35837 2.33331 5.83337 2.85831 5.83337 3.49998C5.83337 4.14165 6.35837 4.66665 7.00004 4.66665ZM7.00004 5.83331C6.35837 5.83331 5.83337 6.35831 5.83337 6.99998C5.83337 7.64165 6.35837 8.16665 7.00004 8.16665C7.64171 8.16665 8.16671 7.64165 8.16671 6.99998C8.16671 6.35831 7.64171 5.83331 7.00004 5.83331ZM7.00004 9.33331C6.35837 9.33331 5.83337 9.85831 5.83337 10.5C5.83337 11.1416 6.35837 11.6666 7.00004 11.6666C7.64171 11.6666 8.16671 11.1416 8.16671 10.5C8.16671 9.85831 7.64171 9.33331 7.00004 9.33331Z" />
-          </svg>
-
-          <div className={styles.actions}>
-            <div className={styles.actionsOverlay} />
-
-            <Tooltip
-              content={
-                <Trans
-                  i18nKey={
-                    isFavorite
-                      ? 'assetInfo.favRemoveTooltip'
-                      : 'assetInfo.favAddTooltip'
-                  }
-                />
-              }
-            >
-              {props => (
-                <button
-                  className={styles.favBtn}
-                  type="button"
-                  onClick={() => dispatch(favoriteAsset(assetId))}
-                  {...props}
-                >
-                  <svg
-                    className={styles.favIcon}
-                    fill={isFavorite ? colors.submit400 : 'none'}
-                    stroke={isFavorite ? colors.submit400 : colors.basic200}
-                    width="26"
-                    height="26"
-                    viewBox="0 0 18 18"
-                  >
-                    <path d="M10.6472 6.66036L10.7648 6.9373L11.0645 6.96315L15.2801 7.32666L12.0848 10.0999L11.8574 10.2972L11.9254 10.5904L12.8808 14.7108L9.25837 12.5244L9 12.3685L8.74163 12.5244L5.12113 14.7096L6.08193 10.5911L6.15049 10.2972L5.92239 10.0996L2.72308 7.32803L6.93477 6.97071L7.2352 6.94522L7.35286 6.66761L9.00035 2.78048L10.6472 6.66036Z" />
-                  </svg>
-                </button>
-              )}
-            </Tooltip>
-
-            <Tooltip content={<Trans i18nKey={'assetInfo.sendAssetTooltip'} />}>
-              {props => (
-                <button
-                  className={styles.sendBtn}
-                  type="button"
-                  onClick={() => onSendClick(assetId)}
-                  {...props}
-                  data-testid={`${assetId}-sendBtn`}
-                >
-                  <svg
-                    className={styles.sendIcon}
-                    width="26"
-                    height="26"
-                    viewBox="0 0 18 18"
-                  >
-                    <path d="M11.5 4.5L10.6125 5.3875L9.61875 4.39375V11.375H8.38125V4.39375L7.3875 5.3875L6.5 4.5L9 2L11.5 4.5ZM14 7.625V14.5C14 15.1875 13.4375 15.75 12.75 15.75H5.25C4.55625 15.75 4 15.1875 4 14.5V7.625C4 6.93125 4.55625 6.375 5.25 6.375H7.125V7.625H5.25V14.5H12.75V7.625H10.875V6.375H12.75C13.4375 6.375 14 6.93125 14 7.625Z" />
-                  </svg>
-                </button>
-              )}
-            </Tooltip>
-
+        <MoreActions>
+          {assetId !== 'WAVES' && (
             <Tooltip content={<Trans i18nKey="assetInfo.infoTooltip" />}>
               {props => (
                 <button
-                  className={styles.infoButton}
+                  className={styles.infoBtn}
                   type="button"
                   onClick={() => onInfoClick(assetId)}
                   {...props}
@@ -164,8 +100,60 @@ export function AssetItem({
                 </button>
               )}
             </Tooltip>
-          </div>
-        </div>
+          )}
+          <Tooltip
+            content={
+              <Trans
+                i18nKey={
+                  isFavorite
+                    ? 'assetInfo.favRemoveTooltip'
+                    : 'assetInfo.favAddTooltip'
+                }
+              />
+            }
+          >
+            {props => (
+              <button
+                className={styles.favBtn}
+                type="button"
+                onClick={() => dispatch(favoriteAsset(assetId))}
+                {...props}
+              >
+                <svg
+                  className={styles.favIcon}
+                  fill={isFavorite ? colors.submit400 : 'none'}
+                  stroke={isFavorite ? colors.submit400 : colors.basic200}
+                  width="26"
+                  height="26"
+                  viewBox="0 0 18 18"
+                >
+                  <path d="M10.6472 6.66036L10.7648 6.9373L11.0645 6.96315L15.2801 7.32666L12.0848 10.0999L11.8574 10.2972L11.9254 10.5904L12.8808 14.7108L9.25837 12.5244L9 12.3685L8.74163 12.5244L5.12113 14.7096L6.08193 10.5911L6.15049 10.2972L5.92239 10.0996L2.72308 7.32803L6.93477 6.97071L7.2352 6.94522L7.35286 6.66761L9.00035 2.78048L10.6472 6.66036Z" />
+                </svg>
+              </button>
+            )}
+          </Tooltip>
+
+          <Tooltip content={<Trans i18nKey={'assetInfo.sendAssetTooltip'} />}>
+            {props => (
+              <button
+                className={styles.sendBtn}
+                type="button"
+                onClick={() => onSendClick(assetId)}
+                {...props}
+                data-testid={`${assetId}-sendBtn`}
+              >
+                <svg
+                  className={styles.sendIcon}
+                  width="26"
+                  height="26"
+                  viewBox="0 0 18 18"
+                >
+                  <path d="M11.5 4.5L10.6125 5.3875L9.61875 4.39375V11.375H8.38125V4.39375L7.3875 5.3875L6.5 4.5L9 2L11.5 4.5ZM14 7.625V14.5C14 15.1875 13.4375 15.75 12.75 15.75H5.25C4.55625 15.75 4 15.1875 4 14.5V7.625C4 6.93125 4.55625 6.375 5.25 6.375H7.125V7.625H5.25V14.5H12.75V7.625H10.875V6.375H12.75C13.4375 6.375 14 6.93125 14 7.625Z" />
+                </svg>
+              </button>
+            )}
+          </Tooltip>
+        </MoreActions>
       )}
     </div>
   );
