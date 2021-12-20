@@ -26,7 +26,6 @@
   display: flex;
   gap: 4px;
   height: 24px;
-  max-width: 210px;
 }
 
 .assetName {
