@@ -49,9 +49,8 @@ export function ActiveAccountCard({
           {props => (
             <button
               className={cn(
-                'button',
-                'button-wallet',
-                'button-wallet-iconOnly',
+                styles.buttonWallet,
+                styles.buttonWallet_iconOnly,
                 styles.otherAccountsButton
               )}
               data-testid="otherAccountsButton"
@@ -76,8 +75,12 @@ export function ActiveAccountCard({
         <Tooltip content={<Trans i18nKey="copyAddress" />}>
           {props => (
             <Copy text={account.address} onCopy={onCopy}>
-              <div
-                className="button button-wallet button-wallet-iconOnly copyIconBlack"
+              <button
+                className={cn(
+                  styles.buttonWallet,
+                  styles.buttonWallet_iconOnly,
+                  'copyIconBlack'
+                )}
                 {...props}
               />
             </Copy>
@@ -86,8 +89,12 @@ export function ActiveAccountCard({
 
         <Tooltip content={<Trans i18nKey="showQR" />} placement="bottom-end">
           {props => (
-            <div
-              className="button button-wallet button-wallet-iconOnly showQrIcon"
+            <button
+              className={cn(
+                styles.buttonWallet,
+                styles.buttonWallet_iconOnly,
+                'showQrIcon'
+              )}
               onClick={onShowQr}
               {...props}
             />
