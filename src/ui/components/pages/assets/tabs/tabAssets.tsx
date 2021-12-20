@@ -17,6 +17,7 @@ import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from '../../../../reducers/updateState';
 import { Tooltip } from '../../../ui/tooltip';
+import cn from 'classnames';
 
 const Row = ({ data, index, style }) => {
   const { assetEntries, assets, onInfoClick, onSendClick } = data;
@@ -140,7 +141,7 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
       </div>
 
       {assetEntries.length === 0 ? (
-        <div className="basic500 center margin-min-top">
+        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy || onlyFav ? (
             <>
               <div className="margin-min">

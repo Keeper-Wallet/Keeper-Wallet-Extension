@@ -200,9 +200,9 @@ export function TabTxHistory() {
               d.toDateString())
         ) {
           result.push({
-            groupName: `${(Y !== thisYear && Y) || ''} ${t(
-              `date.${MONTH[M]}`
-            )} ${D}`.trim(),
+            groupName: `${t(`date.${MONTH[M]}`)} ${D}${
+              Y !== thisYear ? ', ' + Y : ''
+            } `.trim(),
           });
         }
         result.push(tx);
@@ -296,11 +296,14 @@ export function TabTxHistory() {
       </div>
 
       {!historyWithGroups.length ? (
-        <div className="basic500 center margin-min-top">
+        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || type || onlyIn || onlyOut ? (
             <>
               <div className="margin-min">
-                <Trans i18nKey="assets.notFoundHistory" />
+                <Trans
+                  i18nKey="assets.notFoundHistory"
+                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                />
               </div>
               <p className="blue link" onClick={() => clearFilters()}>
                 <Trans i18nKey="assets.resetFilters" />

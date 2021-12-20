@@ -36,7 +36,8 @@
     "infoTooltip": "Asset Info",
     "favAddTooltip": "Add to Favorites",
     "favRemoveTooltip": "Remove from Favorites",
-    "sendAssetTooltip": "Send"
+    "sendAssetTooltip": "Send",
+    "viewDetailsInExplorer": "View details in Explorer"
   },
   "assets": {
     "account": "Account",
@@ -58,7 +59,7 @@
     "emptyNFTs": "You don't have any NFT yet",
     "notFoundNFTs": "No NFTs were found for the specified filters",
     "emptyHistory": "There's nothing to show yet",
-    "notFoundHistory": "No transactions were found for specified filters",
+    "notFoundHistory": "Nothing was found among the last {{ count }} transactions by the specified filters",
     "maxHistory": "Only the last {{ count }} transactions are displayed",
     "maxFiltersHistory": "Filters are applied only to the last {{ count }} transactions",
     "showExplorerHistory": "See full history in Explorer",

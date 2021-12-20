@@ -3,7 +3,7 @@ import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
-import { getTxDetailLink } from './helpers';
+import { getAssetDetailLink } from './helpers';
 import { AssetDetail } from '../../../services/Background';
 
 interface Props {
@@ -124,10 +124,10 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             <a
               rel="noopener noreferrer"
               className="link black"
-              href={getTxDetailLink(networkCode, asset.originTransactionId)}
+              href={getAssetDetailLink(networkCode, asset.originTransactionId)}
               target="_blank"
             >
-              <Trans i18nKey="sign.viewTransaction" />
+              <Trans i18nKey="assetInfo.viewDetailsInExplorer" />
             </a>
           </div>
         )}

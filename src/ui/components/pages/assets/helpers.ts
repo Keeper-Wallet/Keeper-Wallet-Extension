@@ -19,6 +19,16 @@ export function getTxDetailLink(networkCode: string, txId: string): string {
   return `https://${explorer}/tx/${txId}`;
 }
 
+export function getAssetDetailLink(
+  networkCode: string,
+  assetId: string
+): string {
+  const explorer = explorerUrls.get(
+    explorerUrls.has(networkCode) ? networkCode : 'custom'
+  );
+  return `https://${explorer}/assets/${assetId}`;
+}
+
 export const colors = {
   white: '#FFFFFF',
   basic200: '#DAE1E9',

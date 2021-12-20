@@ -137,7 +137,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
         </Tooltip>
       </div>
       {nftWithGroups.length === 0 ? (
-        <div className="basic500 center margin-min-top">
+        <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy ? (
             <>
               <div className="margin-min">
