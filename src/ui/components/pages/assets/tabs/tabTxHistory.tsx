@@ -5,10 +5,7 @@ import { icontains } from '../helpers';
 import { HistoryItem } from '../historyItem';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
-import {
-  ITransaction,
-  WithId,
-} from '@waves/waves-transactions/dist/transactions';
+import { TransactionFromApi } from '../../../../../transactions/types';
 import { useAppSelector } from '../../../../store';
 import {
   buildTxTypeOptions,
@@ -68,11 +65,11 @@ const Row = ({ data, index, style }) => {
   );
 };
 
-const PLACEHOLDERS = [...Array(4).keys()].map<ITransaction & WithId>(
+const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromApi>(
   key =>
     ({
       id: `${key}`,
-    } as ITransaction & WithId)
+    } as TransactionFromApi)
 );
 
 export function TabTxHistory() {
@@ -192,7 +189,7 @@ export function TabTxHistory() {
               (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
           );
         })
-        .reduce<Array<(ITransaction & WithId) | { groupName: string }>>(
+    .reduce<Array<TransactionFromApi | { groupName: string }>>(
           (result, tx, index, prevItems) => {
             const d = new Date(tx.timestamp);
             const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
