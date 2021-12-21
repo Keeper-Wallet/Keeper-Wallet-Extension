@@ -5,17 +5,17 @@
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
   border-radius: 4px;
   padding: 8px;
-  flex-wrap: wrap;
   position: relative;
   z-index: 1;
   margin-bottom: 8px;
-  cursor: default;
   height: 64px;
+  overflow: hidden;
 }
 
 .historyData {
   flex-grow: 1;
   text-align: left;
+  overflow: hidden;
 }
 
 .historyInfo,
@@ -44,15 +44,13 @@
   height: 48px;
 }
 
-.infoButton {
-  position: absolute;
-  right: 14px;
-  bottom: 19px;
-  border: 0;
-  padding: 0;
-  border-radius: 2px;
+.infoBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: none;
-  cursor: pointer;
+  height: 64px;
+  padding: 0 8px;
 }
 
 .infoIcon {

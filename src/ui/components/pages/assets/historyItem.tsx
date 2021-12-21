@@ -324,6 +324,34 @@ export function HistoryItem({ tx, className }: Props) {
       tooltip = label = t('historyCard.expressionInvocation');
       messageType = 'script_invocation';
       break;
+    case TRANSACTION_TYPE.ETHEREUM:
+      const payload = tx.payload;
+
+      switch (payload.type) {
+        case 'transfer':
+          tooltip = t('historyCard.transferReceive');
+          label = <Address base58={tx.sender} />; // todo to eth
+          addSign = '+';
+          messageType = 'receive';
+          info = (
+            <Balance
+              split
+              showAsset
+              addSign={addSign}
+              balance={getMoney(payload.amount, payload.assetId || 'WAVES')}
+            />
+          );
+          break;
+        case 'invocation':
+          tooltip = t('historyCard.scriptInvocation');
+          label = <Address base58={payload.dApp} />;
+          info = payload.call?.function || 'default';
+          messageType = 'script_invocation';
+          break;
+        default:
+          tooltip = label = null;
+      }
+      break;
     default:
       label = <Loader />;
       info = <Loader />;
@@ -378,7 +406,7 @@ export function HistoryItem({ tx, className }: Props) {
       <Tooltip content={<Trans i18nKey="historyCard.infoTooltip" />}>
         {props => (
           <button
-            className={styles.infoButton}
+            className={styles.infoBtn}
             type="button"
             onClick={() => {
               window.open(
