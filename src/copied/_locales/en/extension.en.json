@@ -521,7 +521,8 @@
     "submitButtonText": "Swap",
     "title": "Swap assets",
     "toInputLabel": "To (est.)",
-    "transactionFee": "Transaction Fee"
+    "transactionFee": "Transaction Fee",
+    "viewTransaction": "View transaction"
   },
   "transactions": {
     "allowAccess": "Allow access",

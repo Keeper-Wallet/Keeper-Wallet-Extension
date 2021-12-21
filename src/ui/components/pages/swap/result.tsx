@@ -31,8 +31,15 @@ type TxStatus =
       id: string;
     };
 
+const explorerBaseUrlsByNetwork = {
+  mainnet: 'wavesexplorer.com',
+  testnet: 'testnet.wavesexplorer.com',
+  stagenet: 'stagenet.wavesexplorer.com',
+};
+
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const assets = useAppSelector(state => state.assets);
+  const currentNetwork = useAppSelector(state => state.currentNetwork);
   const selectedAccount = useAppSelector(state => state.selectedAccount);
 
   const server = useAppSelector(
@@ -116,6 +123,8 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
     };
   }, [selectedAccount.address, server, transactionId]);
 
+  const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
+
   return (
     <div className={styles.root}>
       <div className={styles.statusBox}>
@@ -162,6 +171,19 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             )}
           </div>
         </div>
+
+        {explorerBaseUrl && (
+          <div className="center margin-main-big-top">
+            <a
+              className="link black"
+              href={`https://${explorerBaseUrl}/tx/${transactionId}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Trans i18nKey="swap.viewTransaction" />
+            </a>
+          </div>
+        )}
       </div>
 
       <Button onClick={onClose}>
