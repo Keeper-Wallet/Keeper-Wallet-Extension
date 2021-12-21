@@ -6,7 +6,6 @@ import { AssetAmountInput } from 'assets/amountInput';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
-import { useDebouncedValue } from 'ui/utils/useDebouncedValue';
 import {
   calcExchangeDetails,
   getAssetBalance,
@@ -179,16 +178,24 @@ export function SwapForm({
     [toAssetDetail]
   );
 
-  const debouncedFromAmount = useDebouncedValue(state.fromAmount, 500);
+  const latestFromAmountRef = React.useRef(state.fromAmount);
 
   React.useEffect(() => {
-    let cancelled = false;
+    latestFromAmountRef.current = state.fromAmount;
+  });
 
-    calcExchangeDetails({
+  const updateExchangeDetailsTimeoutRef = React.useRef<number | null>(null);
+
+  const updateExchangeDetailsPromiseRef = React.useRef<Promise<void> | null>(
+    null
+  );
+
+  const updateExchangeDetails = React.useCallback(async () => {
+    const currentPromise = calcExchangeDetails({
       commission,
       exchangerVersion,
       fromAmountCoins: Money.fromTokens(
-        new BigNumber(debouncedFromAmount || '0'),
+        new BigNumber(latestFromAmountRef.current || '0'),
         fromAsset
       ).getCoins(),
       fromAsset,
@@ -204,7 +211,7 @@ export function SwapForm({
         swapRate,
         toAmountCoins,
       }) => {
-        if (!cancelled) {
+        if (updateExchangeDetailsPromiseRef.current === currentPromise) {
           dispatch({
             type: 'SET_EXCHANGE_DETAILS',
             feeCoins,
@@ -217,18 +224,26 @@ export function SwapForm({
       }
     );
 
-    return () => {
-      cancelled = true;
-    };
+    updateExchangeDetailsPromiseRef.current = currentPromise;
   }, [
     commission,
-    debouncedFromAmount,
     exchangerVersion,
     fromAsset,
     fromBalance,
     toAsset,
     toBalance,
   ]);
+
+  const updateExchangeDetailsRef = React.useRef(updateExchangeDetails);
+
+  React.useEffect(() => {
+    updateExchangeDetails();
+    updateExchangeDetailsRef.current = updateExchangeDetails;
+
+    return () => {
+      updateExchangeDetailsPromiseRef.current = null;
+    };
+  }, [updateExchangeDetails]);
 
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
@@ -296,6 +311,14 @@ export function SwapForm({
           value={state.fromAmount}
           onChange={newValue => {
             dispatch({ type: 'SET_FROM_AMOUNT', value: newValue });
+
+            if (updateExchangeDetailsTimeoutRef.current != null) {
+              window.clearTimeout(updateExchangeDetailsTimeoutRef.current);
+            }
+
+            updateExchangeDetailsTimeoutRef.current = window.setTimeout(() => {
+              updateExchangeDetailsRef.current();
+            }, 500);
           }}
         />
 
