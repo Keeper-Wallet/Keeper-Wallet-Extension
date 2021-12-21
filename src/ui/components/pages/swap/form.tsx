@@ -35,6 +35,7 @@ interface Props {
 }
 
 interface State {
+  detailsUpdateIsPending: boolean;
   directionSwapped: boolean;
   exchangerId: string;
   feeCoins: BigNumber;
@@ -79,7 +80,7 @@ export function SwapForm({
       action:
         | { type: 'SET_EXCHANGER'; exchangerId: string }
         | { type: 'SWAP_DIRECTION' }
-        | { type: 'CHANGE_FROM_AMOUNT'; value: string }
+        | { type: 'SET_FROM_AMOUNT'; value: string }
         | { type: 'SET_TX_FEE_ASSET_ID'; value: string }
         | {
             type: 'SET_EXCHANGE_DETAILS';
@@ -100,13 +101,15 @@ export function SwapForm({
         case 'SWAP_DIRECTION':
           return {
             ...prevState,
+            detailsUpdateIsPending: true,
             directionSwapped: !prevState.directionSwapped,
             fromAmount: prevState.toAmountTokens.toFixed(),
             toAmountTokens: new BigNumber(prevState.fromAmount),
           };
-        case 'CHANGE_FROM_AMOUNT':
+        case 'SET_FROM_AMOUNT':
           return {
             ...prevState,
+            detailsUpdateIsPending: true,
             fromAmount: action.value,
           };
         case 'SET_TX_FEE_ASSET_ID':
@@ -117,6 +120,7 @@ export function SwapForm({
         case 'SET_EXCHANGE_DETAILS':
           return {
             ...prevState,
+            detailsUpdateIsPending: false,
             feeCoins: action.feeCoins,
             minReceivedCoins: action.minReceivedCoins,
             priceImpact: action.priceImpact,
@@ -130,6 +134,7 @@ export function SwapForm({
       const defaultExchanger = getDefaultExchanger(currentNetwork, exchangers);
 
       return {
+        detailsUpdateIsPending: false,
         directionSwapped: false,
         exchangerId: defaultExchanger.id,
         feeCoins: new BigNumber(0),
@@ -290,13 +295,14 @@ export function SwapForm({
           label={t('swap.fromInputLabel')}
           value={state.fromAmount}
           onChange={newValue => {
-            dispatch({ type: 'CHANGE_FROM_AMOUNT', value: newValue });
+            dispatch({ type: 'SET_FROM_AMOUNT', value: newValue });
           }}
         />
 
         <div className={styles.swapDirectionBtnWrapper}>
           <button
             className={styles.swapDirectionBtn}
+            disabled={state.detailsUpdateIsPending}
             type="button"
             onClick={() => {
               dispatch({ type: 'SWAP_DIRECTION' });
@@ -316,6 +322,7 @@ export function SwapForm({
         <AssetAmountInput
           balance={toAssetBalance}
           label={t('swap.toInputLabel')}
+          loading={state.detailsUpdateIsPending}
           value={state.toAmountTokens.toFixed()}
         />
       </div>
@@ -326,7 +333,7 @@ export function SwapForm({
         </div>
 
         <div className={styles.priceRowValue}>
-          {state.swapRate ? (
+          {state.swapRate && !state.detailsUpdateIsPending ? (
             <div>
               1 {fromAsset.displayName} ~ {state.swapRate.toFixed()}{' '}
               {toAsset.displayName}
@@ -337,7 +344,11 @@ export function SwapForm({
         </div>
       </div>
 
-      <Button className="fullwidth" disabled={isSwapInProgress} type="submit">
+      <Button
+        className="fullwidth"
+        disabled={state.detailsUpdateIsPending || isSwapInProgress}
+        type="submit"
+      >
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
 
@@ -353,14 +364,20 @@ export function SwapForm({
             </th>
 
             <td>
-              {Money.fromCoins(state.minReceivedCoins, toAsset)
-                .getTokens()
-                .toFormat(
-                  toAsset.precision,
-                  BigNumber.ROUND_MODE.ROUND_FLOOR,
-                  ASSETS_FORMAT
-                )}{' '}
-              {toAsset.displayName}
+              {state.detailsUpdateIsPending ? (
+                <Loader />
+              ) : (
+                <>
+                  {Money.fromCoins(state.minReceivedCoins, toAsset)
+                    .getTokens()
+                    .toFormat(
+                      toAsset.precision,
+                      BigNumber.ROUND_MODE.ROUND_FLOOR,
+                      ASSETS_FORMAT
+                    )}{' '}
+                  {toAsset.displayName}
+                </>
+              )}
             </td>
           </tr>
 
@@ -369,7 +386,13 @@ export function SwapForm({
               <Trans i18nKey="swap.priceImpact" />
             </th>
 
-            <td>{state.priceImpact}%</td>
+            <td>
+              {state.detailsUpdateIsPending ? (
+                <Loader />
+              ) : (
+                <>{state.priceImpact}%</>
+              )}
+            </td>
           </tr>
 
           <tr>
@@ -378,15 +401,21 @@ export function SwapForm({
             </th>
 
             <td>
-              {Money.fromCoins(state.feeCoins, toAsset)
-                .getTokens()
-                .toFormat(
-                  toAsset.precision,
-                  BigNumber.ROUND_MODE.ROUND_FLOOR,
-                  ASSETS_FORMAT
-                )}{' '}
-              {toAsset.displayName} ({commission.mul(100).toFormat()}
-              %)
+              {state.detailsUpdateIsPending ? (
+                <Loader />
+              ) : (
+                <>
+                  {Money.fromCoins(state.feeCoins, toAsset)
+                    .getTokens()
+                    .toFormat(
+                      toAsset.precision,
+                      BigNumber.ROUND_MODE.ROUND_FLOOR,
+                      ASSETS_FORMAT
+                    )}{' '}
+                  {toAsset.displayName} ({commission.mul(100).toFormat()}
+                  %)
+                </>
+              )}
             </td>
           </tr>
 

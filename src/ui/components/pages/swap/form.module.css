@@ -26,8 +26,13 @@
   cursor: pointer;
 }
 
-.swapDirectionBtn:hover {
+.swapDirectionBtn:not(:disabled):hover {
   background: #edf0f4;
+}
+
+.swapDirectionBtn:disabled {
+  background: #f8f9fb;
+  cursor: not-allowed;
 }
 
 .swapDirectionBtnIcon {
@@ -60,6 +65,7 @@
 
 .summaryTable {
   margin-top: 1em;
+  table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
   font-size: 12px;
