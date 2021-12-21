@@ -27,22 +27,42 @@ export function AssetAmountInput({
   const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
 
-  const mask = useIMask(
-    {
-      mapToRadix: ['.', ','],
-      mask: Number,
-      radix: '.',
-      scale: asset.precision,
-      thousandsSeparator: ' ',
-    },
-    {
-      onAccept: (_value, mask) => {
-        if (onChange) {
-          onChange(mask.unmaskedValue);
-        }
-      },
+  const mask = useIMask({
+    mapToRadix: ['.', ','],
+    mask: Number,
+    radix: '.',
+    scale: asset.precision,
+    thousandsSeparator: ' ',
+  });
+
+  const valueRef = React.useRef(value);
+  const onChangeRef = React.useRef(onChange);
+
+  React.useEffect(() => {
+    valueRef.current = value;
+    onChangeRef.current = onChange;
+  }, [value, onChange]);
+
+  React.useEffect(() => {
+    const input = mask.ref.current;
+    const maskInstance = mask.maskRef.current;
+
+    if (!input || !maskInstance) {
+      return;
     }
-  );
+
+    function inputListener() {
+      if (valueRef.current !== maskInstance.unmaskedValue) {
+        onChangeRef.current(maskInstance.unmaskedValue);
+      }
+    }
+
+    input.addEventListener('input', inputListener, false);
+
+    return () => {
+      input.removeEventListener('input', inputListener, false);
+    };
+  }, []);
 
   React.useEffect(() => {
     const input = mask.ref.current;
