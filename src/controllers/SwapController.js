@@ -81,6 +81,7 @@ export class SwapController {
   async performSwap({
     exchangerId,
     fee,
+    feeAssetId,
     fromAssetId,
     fromCoins,
     minReceivedCoins,
@@ -93,7 +94,7 @@ export class SwapController {
     const exchanger = exchangers[network][exchangerId];
 
     const [feeAssetInfo, fromAssetInfo] = await Promise.all([
-      this.assetInfo('WAVES'),
+      this.assetInfo(feeAssetId),
       this.assetInfo(fromAssetId),
     ]);
 

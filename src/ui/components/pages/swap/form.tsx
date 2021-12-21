@@ -2,6 +2,8 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { AssetAmountInput } from 'assets/amountInput';
+import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
 import { useDebouncedValue } from 'ui/utils/useDebouncedValue';
@@ -14,7 +16,6 @@ import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
-import { AssetAmountInput } from 'assets/amountInput';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
@@ -22,9 +23,10 @@ interface Props {
   exchangers: { [exchangerId: string]: SwopFiExchangerData };
   isSwapInProgress: boolean;
   swapErrorMessage: string;
-  totalFee: number;
+  wavesFeeCoins: number;
   onSwap: (data: {
     exchangerId: string;
+    feeAssetId: string;
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
@@ -41,6 +43,7 @@ interface State {
   priceImpact: number;
   swapRate: BigNumber | undefined;
   toAmountTokens: BigNumber;
+  txFeeAssetId: string;
 }
 
 const ASSETS_FORMAT = {
@@ -58,7 +61,7 @@ export function SwapForm({
   exchangers,
   isSwapInProgress,
   swapErrorMessage,
-  totalFee,
+  wavesFeeCoins,
   onSwap,
 }: Props) {
   const { t } = useTranslation();
@@ -77,6 +80,7 @@ export function SwapForm({
         | { type: 'SET_EXCHANGER'; exchangerId: string }
         | { type: 'SWAP_DIRECTION' }
         | { type: 'CHANGE_FROM_AMOUNT'; value: string }
+        | { type: 'SET_TX_FEE_ASSET_ID'; value: string }
         | {
             type: 'SET_EXCHANGE_DETAILS';
             feeCoins: BigNumber;
@@ -105,6 +109,11 @@ export function SwapForm({
             ...prevState,
             fromAmount: action.value,
           };
+        case 'SET_TX_FEE_ASSET_ID':
+          return {
+            ...prevState,
+            txFeeAssetId: action.value,
+          };
         case 'SET_EXCHANGE_DETAILS':
           return {
             ...prevState,
@@ -129,6 +138,7 @@ export function SwapForm({
         minReceivedCoins: new BigNumber(0),
         swapRate: undefined,
         toAmountTokens: new BigNumber(0),
+        txFeeAssetId: 'WAVES',
       };
     }
   );
@@ -226,6 +236,7 @@ export function SwapForm({
 
         onSwap({
           exchangerId: state.exchangerId,
+          feeAssetId: state.txFeeAssetId,
           fromAssetId: fromAsset.id,
           fromCoins: Money.fromTokens(
             new BigNumber(state.fromAmount),
@@ -385,10 +396,32 @@ export function SwapForm({
             </th>
 
             <td>
-              {new Money(totalFee, new Asset(assets['WAVES']))
-                .getTokens()
-                .toFormat()}{' '}
-              WAVES
+              <Select
+                selected={state.txFeeAssetId}
+                selectList={Object.entries(accountBalance.assets)
+                  .filter(
+                    ([, assetBalance]) =>
+                      assetBalance.minSponsoredAssetFee != null
+                  )
+                  .map(([assetId, assetBalance]) => {
+                    const fee = convertToSponsoredAssetFee(
+                      new BigNumber(wavesFeeCoins),
+                      new Asset(assets[assetId]),
+                      assetBalance
+                    );
+
+                    return {
+                      id: assetId,
+                      text: `${fee.getTokens().toFormat()} ${
+                        fee.asset.displayName
+                      }`,
+                      value: assetId,
+                    };
+                  })}
+                onSelectItem={(_id, value) => {
+                  dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
+                }}
+              />
             </td>
           </tr>
         </tbody>

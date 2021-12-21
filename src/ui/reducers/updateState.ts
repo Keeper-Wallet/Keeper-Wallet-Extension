@@ -101,12 +101,14 @@ export const currentNetwork = createSimpleReducer(
   ACTION.UPDATE_CURRENT_NETWORK
 );
 
+export interface AssetBalance {
+  balance: string;
+  sponsorBalance: string;
+  minSponsoredAssetFee: string;
+}
+
 export type BalanceAssets = {
-  [assetId: string]: {
-    balance: string;
-    sponsorBalance: string;
-    minSponsoredAssetFee: string;
-  };
+  [assetId: string]: AssetBalance;
 };
 
 export interface AccountBalance {

@@ -243,13 +243,15 @@ class Background {
   async performSwap({
     exchangerId,
     fee,
+    feeAssetId,
     fromAssetId,
     fromCoins,
     minReceivedCoins,
     toCoins,
   }: {
     exchangerId: string;
-    fee: number;
+    fee: string;
+    feeAssetId: string;
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
@@ -260,6 +262,7 @@ class Background {
     return this.background.performSwap({
       exchangerId,
       fee,
+      feeAssetId,
       fromAssetId,
       fromCoins,
       minReceivedCoins,

@@ -67,8 +67,6 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         return;
       }
 
-      console.log(txStatus);
-
       if (txStatus.status === 'confirmed') {
         if (txStatus.applicationStatus === 'succeeded') {
           const txInfoUrl = new URL(
@@ -82,20 +80,21 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             stateChanges: {
               transfers: Array<{
                 address: string;
-                asset: string;
+                asset: string | null;
                 amount: number;
               }>;
             };
           };
-
-          console.log(txInfo);
 
           const transfer = txInfo.stateChanges.transfers.find(
             t => t.address === selectedAccount.address
           );
 
           setReceivedMoney(
-            new Money(transfer.amount, new Asset(assets[transfer.asset]))
+            new Money(
+              transfer.amount,
+              new Asset(assets[transfer.asset || 'WAVES'])
+            )
           );
           setSwapStatus(SwapStatus.Succeeded);
         } else {

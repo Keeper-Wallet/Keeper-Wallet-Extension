@@ -1,6 +1,7 @@
 import BigNumber from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
+import { convertToSponsoredAssetFee } from 'assets/utils';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
@@ -27,7 +28,7 @@ export function Swap({ setTab }: Props) {
   const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
     null
   );
-  const [totalFee, setTotalFee] = React.useState<number | null>(null);
+  const [wavesFeeCoins, setWavesFeeCoins] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -45,7 +46,7 @@ export function Swap({ setTab }: Props) {
       background.getExtraFee(selectedAccount.address, currentNetwork),
     ]).then(([feeMinimum, feeExtra]) => {
       if (!cancelled) {
-        setTotalFee(feeMinimum + feeExtra);
+        setWavesFeeCoins(feeMinimum + feeExtra);
       }
     });
 
@@ -59,6 +60,10 @@ export function Swap({ setTab }: Props) {
   }, [currentNetwork, selectedAccount.address]);
 
   const assets = useAppSelector(state => state.assets);
+
+  const accountBalance = useAppSelector(
+    state => state.balances[state.selectedAccount.address]
+  );
 
   const [performedSwapData, setPerformedSwapData] = React.useState<{
     fromMoney: Money;
@@ -74,7 +79,7 @@ export function Swap({ setTab }: Props) {
           </h1>
         </header>
 
-        {!exchangers || totalFee == null ? (
+        {!exchangers || wavesFeeCoins == null ? (
           <div className={styles.loader} />
         ) : (
           <div className={styles.content}>
@@ -91,11 +96,12 @@ export function Swap({ setTab }: Props) {
             {performedSwapData == null ? (
               <SwapForm
                 exchangers={exchangers}
-                totalFee={totalFee}
                 isSwapInProgress={isSwapInProgress}
                 swapErrorMessage={swapErrorMessage}
+                wavesFeeCoins={wavesFeeCoins}
                 onSwap={async ({
                   exchangerId,
+                  feeAssetId,
                   fromAssetId,
                   fromCoins,
                   minReceivedCoins,
@@ -107,7 +113,12 @@ export function Swap({ setTab }: Props) {
                   try {
                     const result = await background.performSwap({
                       exchangerId,
-                      fee: totalFee,
+                      fee: convertToSponsoredAssetFee(
+                        new BigNumber(wavesFeeCoins),
+                        new Asset(assets[feeAssetId]),
+                        accountBalance.assets[feeAssetId]
+                      ).toCoins(),
+                      feeAssetId,
                       fromAssetId,
                       fromCoins,
                       minReceivedCoins,
