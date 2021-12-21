@@ -43,18 +43,22 @@ async function calcToAmount({
   fromBalanceCoins: BigNumber;
   toBalanceCoins: BigNumber;
 }) {
-  return exchangerVersion === 2
-    ? new BigNumber(
-        await fetchGetMoney({
-          fromAmount: fromAmountCoins.toFixed(),
-          fromBalance: fromBalanceCoins.toFixed(),
-          toBalance: toBalanceCoins.toFixed(),
-        })
-      )
-    : fromAmountCoins
-        .mul(toBalanceCoins)
-        .div(fromBalanceCoins.add(fromAmountCoins))
-        .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
+  if (exchangerVersion === 2) {
+    const toAmount = new BigNumber(
+      await fetchGetMoney({
+        fromAmount: fromAmountCoins.toFixed(),
+        fromBalance: fromBalanceCoins.toFixed(),
+        toBalance: toBalanceCoins.toFixed(),
+      })
+    );
+
+    return toAmount.gte(0) ? toAmount : toBalanceCoins;
+  }
+
+  return fromAmountCoins
+    .mul(toBalanceCoins)
+    .div(fromBalanceCoins.add(fromAmountCoins))
+    .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
 }
 
 function calcSwapRate({
