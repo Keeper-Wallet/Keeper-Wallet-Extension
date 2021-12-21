@@ -1,0 +1,15 @@
+@import '../../pages/styles/transactions.styl';
+
+.invokeExpressionTransactionCard
+  @extends .transaction-card
+
+.invokeExpressionCard_collapsed
+  .origin
+    display: none;
+
+.invokeExpressionTxIcon
+  @extends .txIcon
+
+.invokeExpressionTxScrollBox
+  @extends .txScrollBox
+  flex-grow: 0;

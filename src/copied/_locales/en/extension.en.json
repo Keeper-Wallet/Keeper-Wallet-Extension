@@ -596,9 +596,9 @@
     "reissuable": "Reissuable",
     "script": "Script",
     "scriptAddress": "Script address",
-    "scriptInvocation": "Script invocation",
+    "scriptInvocation": "DApp Invocation",
     "scriptInvocationFunction": "Function",
-    "scriptInvocationName": "Script Invocation",
+    "scriptInvocationName": "DApp Invocation",
     "scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
     "scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
     "setAssetScriptHeader": "Set Asset Script transaction",
@@ -628,7 +628,8 @@
     "txTime": "TX Time",
     "unknown": "Unknown",
     "waves": "WAVES",
-    "wavesAuthTimeStamp": "Time Stamp"
+    "wavesAuthTimeStamp": "Time Stamp",
+    "invokeExpression": "Script Execution"
   },
   "ui": {
     "logoTitle": "Keep your Waves keys safe online"

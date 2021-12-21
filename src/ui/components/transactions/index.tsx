@@ -24,6 +24,7 @@ import customData from './CustomData';
 import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 import { Money } from '@waves/data-entities';
+import invokeExpression from './InvokeExpression';
 
 interface Message {
   card: ComponentType<{
@@ -65,6 +66,7 @@ const MESSAGES: Message[] = [
   customData,
   updateAssetInfo,
   wavesAuth,
+  invokeExpression,
 ];
 
 export { FinalTransaction } from './FinalTransaction';
