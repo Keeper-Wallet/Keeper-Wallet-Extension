@@ -369,7 +369,9 @@ export function SwapForm({
 
       <Button
         className="fullwidth"
-        disabled={state.detailsUpdateIsPending || isSwapInProgress}
+        disabled={
+          !state.fromAmount || state.detailsUpdateIsPending || isSwapInProgress
+        }
         type="submit"
       >
         <Trans i18nKey="swap.submitButtonText" />
