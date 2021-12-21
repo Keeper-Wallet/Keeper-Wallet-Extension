@@ -35,7 +35,10 @@ export function AssetItem({
   const isLoading = !asset;
 
   return (
-    <div className={cn(styles.assetCard, className, 'flex', 'relative')}>
+    <div
+      className={cn(styles.assetCard, className, 'flex', 'relative')}
+      data-testid={assetId}
+    >
       <AssetLogo
         className={cn(styles.assetIcon, isLoading && 'skeleton-glow')}
         assetId={assetId}
@@ -140,7 +143,7 @@ export function AssetItem({
                 type="button"
                 onClick={() => onSendClick(assetId)}
                 {...props}
-                data-testid={`${assetId}-sendBtn`}
+                data-testid="sendBtn"
               >
                 <svg
                   className={styles.sendIcon}

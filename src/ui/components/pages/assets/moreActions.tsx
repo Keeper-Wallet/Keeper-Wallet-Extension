@@ -20,6 +20,7 @@ export function MoreActions({ children }) {
         className={styles.moreBtn}
         type="button"
         onMouseEnter={() => setIsExpanded(true)}
+        data-testid="moreBtn"
       >
         <svg
           className={styles.moreIcon}

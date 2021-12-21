@@ -56,7 +56,9 @@ describe('Others', function () {
       await actions
         .move({
           origin: await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="WAVES-moreBtn"]')),
+            until.elementLocated(
+              By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
+            ),
             this.wait
           ),
         })
@@ -64,7 +66,9 @@ describe('Others', function () {
 
       await this.driver
         .wait(
-          until.elementLocated(By.css('[data-testid="WAVES-sendBtn"]')),
+          until.elementLocated(
+            By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
+          ),
           this.wait
         )
         .click();
