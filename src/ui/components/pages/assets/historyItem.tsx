@@ -12,9 +12,22 @@ import { TransactionFromApi } from '../../../../transactions/types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
 import { SWAP_DAPPS } from '../../../../constants';
+import { base16Encode, base58Decode } from '@waves/ts-lib-crypto';
 
-function Address({ base58 }) {
-  return <Ellipsis text={base58} size={12} className="basic500" />;
+const wavesToEth = (address: string) => {
+  const decoded = base58Decode(address);
+  const slice = decoded.slice(2, decoded.length - 4);
+  return base16Encode(slice);
+};
+
+function Address({ base58, toEthereum = false }) {
+  return (
+    <Ellipsis
+      text={toEthereum ? `0x${wavesToEth(base58)}` : base58}
+      size={12}
+      className="basic500"
+    />
+  );
 }
 
 interface Props {
@@ -330,7 +343,7 @@ export function HistoryItem({ tx, className }: Props) {
       switch (payload.type) {
         case 'transfer':
           tooltip = t('historyCard.transferReceive');
-          label = <Address base58={tx.sender} />; // todo to eth
+          label = <Address base58={tx.sender} toEthereum />;
           addSign = '+';
           messageType = 'receive';
           info = (
@@ -338,7 +351,7 @@ export function HistoryItem({ tx, className }: Props) {
               split
               showAsset
               addSign={addSign}
-              balance={getMoney(payload.amount, payload.assetId || 'WAVES')}
+              balance={fromCoins(payload.amount, payload.assetId)}
             />
           );
           break;

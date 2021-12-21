@@ -40,6 +40,7 @@
     "@waves/data-entities": "^2.0.4",
     "@waves/signature-adapter": "6.2.1",
     "@waves/ts-types": "^1.0.7",
+    "@waves/ts-lib-crypto": "^1.4.3",
     "@waves/waves-transactions": "^4.2.5-beta.1",
     "circle-progress-bar": "^1.0.0",
     "classnames": "^2.3.1",
