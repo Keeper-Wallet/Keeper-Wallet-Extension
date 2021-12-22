@@ -23,8 +23,6 @@ const { stringify } = create({ BigNumber });
 // msg statuses: unapproved, signed, published, rejected, failed
 
 class AccountAdapterApi {
-  address;
-
   type = AdapterType.Custom;
   isAvailable() {
     return true;
