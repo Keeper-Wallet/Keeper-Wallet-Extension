@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { convertToSponsoredAssetFee } from 'assets/utils';
-import { SwopFiExchangerData } from 'ui/reducers/updateState';
+import { AssetBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
 import {
   calcExchangeDetails,
@@ -248,6 +248,23 @@ export function SwapForm({
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
 
+  const sponsoredAssetBalanceEntries = Object.entries(
+    accountBalance.assets
+  ).filter(([, assetBalance]) => assetBalance.minSponsoredAssetFee != null);
+
+  function formatSponsoredAssetBalanceEntry([assetId, assetBalance]: [
+    string,
+    AssetBalance
+  ]) {
+    const fee = convertToSponsoredAssetFee(
+      new BigNumber(wavesFeeCoins),
+      new Asset(assets[assetId]),
+      assetBalance
+    );
+
+    return `${fee.getTokens().toFormat()} ${fee.asset.displayName}`;
+  }
+
   return (
     <form
       className={styles.root}
@@ -450,32 +467,28 @@ export function SwapForm({
             </th>
 
             <td>
-              <Select
-                selected={state.txFeeAssetId}
-                selectList={Object.entries(accountBalance.assets)
-                  .filter(
-                    ([, assetBalance]) =>
-                      assetBalance.minSponsoredAssetFee != null
-                  )
-                  .map(([assetId, assetBalance]) => {
-                    const fee = convertToSponsoredAssetFee(
-                      new BigNumber(wavesFeeCoins),
-                      new Asset(assets[assetId]),
-                      assetBalance
-                    );
-
-                    return {
+              {sponsoredAssetBalanceEntries.length > 1 ? (
+                <Select
+                  selected={state.txFeeAssetId}
+                  selectList={sponsoredAssetBalanceEntries.map(
+                    ([assetId, assetBalance]) => ({
                       id: assetId,
-                      text: `${fee.getTokens().toFormat()} ${
-                        fee.asset.displayName
-                      }`,
+                      text: formatSponsoredAssetBalanceEntry([
+                        assetId,
+                        assetBalance,
+                      ]),
                       value: assetId,
-                    };
-                  })}
-                onSelectItem={(_id, value) => {
-                  dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
-                }}
-              />
+                    })
+                  )}
+                  onSelectItem={(_id, value) => {
+                    dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
+                  }}
+                />
+              ) : (
+                formatSponsoredAssetBalanceEntry(
+                  sponsoredAssetBalanceEntries[0]
+                )
+              )}
             </td>
           </tr>
         </tbody>
