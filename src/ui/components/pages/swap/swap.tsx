@@ -79,7 +79,7 @@ export function Swap({ setTab }: Props) {
           </h1>
         </header>
 
-        {!exchangers || wavesFeeCoins == null ? (
+        {!exchangers || wavesFeeCoins == null || !accountBalance.assets ? (
           <div className={styles.loader} />
         ) : (
           <div className={styles.content}>
