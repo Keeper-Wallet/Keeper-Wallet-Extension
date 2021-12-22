@@ -78,12 +78,18 @@ function calcSwapRate({
     .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR);
 }
 
-export const KEEPER_COMMISSION = new BigNumber(0.001);
+export function getKeeperCommission(exchangerVersion: number) {
+  return exchangerVersion === 2 ? new BigNumber(0.0001) : new BigNumber(0.001);
+}
 
-function applyCommission(commission: BigNumber, amountCoins: BigNumber) {
+function applyCommission(
+  commission: BigNumber,
+  amountCoins: BigNumber,
+  exchangerVersion: number
+) {
   return amountCoins
     .mul(new BigNumber(1).sub(commission))
-    .mul(new BigNumber(1).sub(KEEPER_COMMISSION))
+    .mul(new BigNumber(1).sub(getKeeperCommission(exchangerVersion)))
     .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
 }
 
@@ -184,7 +190,11 @@ export async function calcExchangeDetails({
     swapRate = calcSwapRate({
       fromAmountCoins: fakeFromAmountCoins,
       fromAsset,
-      toAmountCoins: applyCommission(commission, fakeToAmountCoins),
+      toAmountCoins: applyCommission(
+        commission,
+        fakeToAmountCoins,
+        exchangerVersion
+      ),
       toAsset,
     });
   } else {
@@ -199,7 +209,11 @@ export async function calcExchangeDetails({
       .mul(commission)
       .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
 
-    toAmountCoins = applyCommission(commission, toAmountCoins);
+    toAmountCoins = applyCommission(
+      commission,
+      toAmountCoins,
+      exchangerVersion
+    );
 
     swapRate = calcSwapRate({
       fromAmountCoins,

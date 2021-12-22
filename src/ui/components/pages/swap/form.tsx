@@ -10,7 +10,7 @@ import {
   calcExchangeDetails,
   getAssetBalance,
   getDefaultExchanger,
-  KEEPER_COMMISSION,
+  getKeeperCommission,
 } from './utils';
 import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
@@ -460,7 +460,10 @@ export function SwapForm({
                       ASSETS_FORMAT
                     )}{' '}
                   {toAsset.displayName} (
-                  {commission.add(KEEPER_COMMISSION).mul(100).toFormat()}
+                  {commission
+                    .add(getKeeperCommission(exchangerVersion))
+                    .mul(100)
+                    .toFormat()}
                   %)
                 </div>
               )}
