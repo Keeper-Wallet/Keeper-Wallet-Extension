@@ -12,18 +12,12 @@ import { TransactionFromApi } from '../../../../transactions/types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
 import { SWAP_DAPPS } from '../../../../constants';
-import { base16Encode, base58Decode } from '@waves/ts-lib-crypto';
-
-const wavesToEth = (address: string) => {
-  const decoded = base58Decode(address);
-  const slice = decoded.slice(2, decoded.length - 4);
-  return base16Encode(slice);
-};
+import { fromWavesToEthereumAddress } from '../../../utils/ethereum';
 
 function Address({ base58, toEthereum = false }) {
   return (
     <Ellipsis
-      text={toEthereum ? `0x${wavesToEth(base58)}` : base58}
+      text={!toEthereum ? base58 : fromWavesToEthereumAddress(base58)}
       size={12}
       className="basic500"
     />
@@ -164,9 +158,9 @@ export function HistoryItem({ tx, className }: Props) {
           new BigNumber(tx.price).div(
             new BigNumber(10).pow(
               8 +
-              (tx.version < 3
-                ? priceAsset.precision - assetAmount.asset.precision
-                : 0)
+                (tx.version < 3
+                  ? priceAsset.precision - assetAmount.asset.precision
+                  : 0)
             )
           ),
           priceAssetId

@@ -40,3 +40,11 @@
   padding: 14px;
   background: #fff;
 }
+
+.recipientHelper {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  color: #9ba6b2;
+  margin-top: 4px;
+}
