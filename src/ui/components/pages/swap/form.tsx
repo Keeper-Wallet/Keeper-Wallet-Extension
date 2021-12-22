@@ -409,7 +409,7 @@ export function SwapForm({
               {state.detailsUpdateIsPending ? (
                 <Loader />
               ) : (
-                <>
+                <div className={styles.summaryTableValue}>
                   {Money.fromCoins(state.minReceivedCoins, toAsset)
                     .getTokens()
                     .toFormat(
@@ -418,7 +418,7 @@ export function SwapForm({
                       ASSETS_FORMAT
                     )}{' '}
                   {toAsset.displayName}
-                </>
+                </div>
               )}
             </td>
           </tr>
@@ -432,7 +432,9 @@ export function SwapForm({
               {state.detailsUpdateIsPending ? (
                 <Loader />
               ) : (
-                <>{state.priceImpact}%</>
+                <div className={styles.summaryTableValue}>
+                  {state.priceImpact}%
+                </div>
               )}
             </td>
           </tr>
@@ -446,7 +448,7 @@ export function SwapForm({
               {state.detailsUpdateIsPending ? (
                 <Loader />
               ) : (
-                <>
+                <div className={styles.summaryTableValue}>
                   {Money.fromCoins(state.feeCoins, toAsset)
                     .getTokens()
                     .toFormat(
@@ -456,7 +458,7 @@ export function SwapForm({
                     )}{' '}
                   {toAsset.displayName} ({commission.mul(100).toFormat()}
                   %)
-                </>
+                </div>
               )}
             </td>
           </tr>
@@ -486,9 +488,11 @@ export function SwapForm({
                   }}
                 />
               ) : (
-                formatSponsoredAssetBalanceEntry(
-                  sponsoredAssetBalanceEntries[0]
-                )
+                <div className={styles.summaryTableValue}>
+                  {formatSponsoredAssetBalanceEntry(
+                    sponsoredAssetBalanceEntries[0]
+                  )}
+                </div>
               )}
             </td>
           </tr>

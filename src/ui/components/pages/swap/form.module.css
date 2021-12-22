@@ -75,18 +75,12 @@
 .summaryTable td {
   padding: 0.5em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.summaryTable th:first-child,
-.summaryTable td:first-child {
-  width: min-content;
 }
 
 .summaryTable th:first-child,
 .summaryTable td:first-child {
   padding-left: 0;
+  width: min-content;
 }
 
 .summaryTable th:last-child,
@@ -102,4 +96,9 @@
 
 .summaryTable td {
   text-align: right;
+}
+
+.summaryTableValue {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
