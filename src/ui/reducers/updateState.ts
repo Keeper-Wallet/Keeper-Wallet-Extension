@@ -22,10 +22,32 @@ function createSimpleReducer<
 }
 
 export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
-export const uiState = createSimpleReducer<{ isFeatureUpdateShown?: boolean }>(
-  {},
-  ACTION.UPDATE_UI_STATE
-);
+
+export type AssetFilters = {
+  term?: string;
+  onlyMy?: boolean;
+  onlyFavorites?: boolean;
+};
+export type NftFilters = {
+  term?: string;
+  onlyMy?: boolean;
+};
+export type TxHistoryFilters = {
+  term?: string;
+  type?: number;
+  onlyIncoming?: boolean;
+  onlyOutgoing?: boolean;
+};
+export const uiState = createSimpleReducer<{
+  isFeatureUpdateShown?: boolean;
+  currentAsset?: AssetDetail;
+  assetsTab?: number;
+  assetFilters?: AssetFilters;
+  nftFilters?: NftFilters;
+  txHistoryFilters?: TxHistoryFilters;
+  showSuspiciousAssets?: boolean;
+  autoClickProtection?: boolean;
+}>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<
   Array<{
     address: string;
@@ -69,19 +91,23 @@ export const currentNetwork = createSimpleReducer(
   '',
   ACTION.UPDATE_CURRENT_NETWORK
 );
+export type BalanceAssets = {
+  [assetId: string]: {
+    balance: string;
+    sponsorBalance: string;
+    minSponsoredAssetFee: string;
+  };
+};
 export const balances = createSimpleReducer<
   Record<
     string,
     {
       available: string;
       leasedOut: string;
-      assets?: {
-        [assetId: string]: {
-          balance: string;
-          sponsorBalance: string;
-          minSponsoredAssetFee: string;
-        };
-      };
+      assets?: BalanceAssets;
+      aliases: string[];
+      nfts: AssetDetail[];
+      txHistory: Array<ITransaction & WithId>;
     }
   >
 >({}, ACTION.UPDATE_BALANCES);
@@ -107,25 +133,10 @@ export const messages = (
   return state;
 };
 
-export const assets = (
-  state: Record<string, AssetDetail> = {},
-  action: { type: string; payload: Record<string, AssetDetail> }
-) => {
-  if (action.type === ACTION.UPDATE_ASSET) {
-    return { ...state, ...action.payload };
-  }
-
-  return state;
-};
-
-export const nfts = createSimpleReducer<AssetDetail[]>([], ACTION.UPDATE_NFTS);
-
-export const txHistory = createSimpleReducer<Array<ITransaction & WithId>>(
-  [],
-  ACTION.UPDATE_TX_HISTORY
+export const assets = createSimpleReducer<Record<string, AssetDetail>>(
+  {},
+  ACTION.UPDATE_ASSETS
 );
-
-export const aliases = createSimpleReducer<string[]>([], ACTION.UPDATE_ALIASES);
 
 export const backTabs = (
   state: unknown[] = [],

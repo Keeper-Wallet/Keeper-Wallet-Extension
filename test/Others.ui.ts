@@ -42,7 +42,7 @@ describe('Others', function () {
 
   it('Send more transactions for signature when different screens are open');
 
-  describe('Send assets', function () {
+  describe('Send WAVES', function () {
     before(async function () {
       await CreateNewAccount.importAccount.call(
         this,
@@ -52,9 +52,23 @@ describe('Others', function () {
     });
 
     beforeEach(async function () {
+      const actions = this.driver.actions({ async: true });
+      await actions
+        .move({
+          origin: await this.driver.wait(
+            until.elementLocated(
+              By.css('[data-testid="WAVES"] [data-testid="moreBtn"]')
+            ),
+            this.wait
+          ),
+        })
+        .perform();
+
       await this.driver
         .wait(
-          until.elementLocated(By.css('[data-testid="sendAssetsButton"]')),
+          until.elementLocated(
+            By.css('[data-testid="WAVES"] [data-testid="sendBtn"]')
+          ),
           this.wait
         )
         .click();
@@ -76,7 +90,7 @@ describe('Others', function () {
         .click();
     });
 
-    it('Send assets to an address', async function () {
+    it('Send WAVES to an address', async function () {
       expect(
         await this.driver.switchTo().activeElement().getAttribute('data-testid')
       ).to.equal('recipientInput');

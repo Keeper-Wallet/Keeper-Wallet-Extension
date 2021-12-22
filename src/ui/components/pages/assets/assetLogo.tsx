@@ -1,7 +1,9 @@
 import * as React from 'react';
-import * as styles from './assetLogo.styl';
+import * as styles from './assetLogo.module.css';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
+import { useAppSelector } from '../../../store';
+import { getAssetLogo } from '../../../../assets/utils';
 
 interface Props {
   assetId: string;
@@ -15,7 +17,6 @@ interface Props {
 export function AssetLogo({
   className,
   assetId,
-  logo,
   name,
   hasSponsorship,
   hasScript,
@@ -23,7 +24,11 @@ export function AssetLogo({
   const style = {
     backgroundColor: new ColorHash().hex(assetId),
   };
-  if (!logo) {
+
+  const network = useAppSelector(state => state.currentNetwork);
+  const logoSrc = getAssetLogo(network, assetId);
+
+  if (!logoSrc) {
     return (
       <div className={cn(styles.assetLogo, className)} style={style}>
         <div>{name && name[0].toUpperCase()}</div>
@@ -54,6 +59,6 @@ export function AssetLogo({
   }
 
   return (
-    <img className={cn(styles.assetLogo, className)} src={logo} style={style} />
+    <img className={cn(styles.assetLogo, className)} src={logoSrc} alt="" />
   );
 }

@@ -1,0 +1,43 @@
+.tooltip {
+  border-radius: 2px;
+  color: #fff;
+  background-color: #000;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.tooltip[data-popper-reference-hidden='true'],
+.tooltip[data-popper-reference-escaped='true'] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.arrow {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+.arrow:after {
+  position: absolute;
+  content: ' ';
+  background-color: black;
+  transform: rotate(45deg);
+  width: 10px;
+  height: 10px;
+}
+
+.tooltip[data-popper-placement^='top'] > .arrow {
+  top: calc(100% - 7px);
+}
+
+.tooltip[data-popper-placement^='bottom'] > .arrow {
+  bottom: calc(100% - 7px);
+}
+
+.tooltip[data-popper-placement^='right'] > .arrow {
+  right: calc(100% - 7px);
+}
+
+.tooltip[data-popper-placement^='left'] > .arrow {
+  left: calc(100% - 7px);
+}

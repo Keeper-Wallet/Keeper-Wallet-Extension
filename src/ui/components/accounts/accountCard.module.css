@@ -54,9 +54,3 @@
 .infoIcon:hover {
   fill: #9ba6b2;
 }
-
-.infoTooltip {
-  top: -13px;
-  right: 15px;
-  white-space: nowrap;
-}

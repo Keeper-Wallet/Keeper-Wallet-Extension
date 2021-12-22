@@ -27,44 +27,4 @@ export class TxInfoController {
         throw new Error(await resp.text());
     }
   }
-
-  async txHistory(address, limit = 100) {
-    const url = new URL(
-      `transactions/address/${address}/limit/${limit}`,
-      this.getNode()
-    ).toString();
-
-    let resp = await fetch(url, {
-      headers: { accept: 'application/json; large-significand-format=string' },
-    });
-
-    switch (resp.status) {
-      case 200:
-        return resp.json().then(arr => arr[0]);
-      case 400:
-        const error = await resp.json();
-        throw new Error(error.message);
-      default:
-        throw new Error(await resp.text());
-    }
-  }
-
-  async aliasByAddress(address) {
-    const url = new URL(
-      `alias/by-address/${address}`,
-      this.getNode()
-    ).toString();
-
-    let resp = await fetch(url);
-
-    switch (resp.status) {
-      case 200:
-        return resp.json();
-      case 400:
-        const error = await resp.json();
-        throw new Error(error.message);
-      default:
-        throw new Error(await resp.text());
-    }
-  }
 }

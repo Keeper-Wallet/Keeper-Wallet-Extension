@@ -5,6 +5,7 @@ import { Trans } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
+import { Tooltip } from '../ui/tooltip';
 
 class SettingsComponent extends React.Component {
   readonly props;
@@ -32,122 +33,147 @@ class SettingsComponent extends React.Component {
         <div className={`${styles.title1} title1`}>
           <Trans i18nKey="settings.settings">Settings</Trans>
         </div>
-
-        <div className={`${styles.settingsMenuItem} ${styles.general}`}>
-          <Button
-            id="settingsGeneral"
-            type="transparent"
-            className={styles.settingsBtn}
-            onClick={this.settingsGeneral}
-          >
-            <div className="body1 left">
-              <Trans i18nKey="settings.settingsGeneral">General</Trans>
-            </div>
-          </Button>
-        </div>
-
-        <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
-          <Button
-            id="settingsPermission"
-            type="transparent"
-            className={styles.settingsBtn}
-            onClick={this.permissionsHandler}
-          >
-            <div className="body1 left">
-              <Trans i18nKey="settings.permissionsControl">
-                Permissions control
-              </Trans>
-            </div>
-          </Button>
-        </div>
-
-        <div className={`${styles.settingsMenuItem} ${styles.network}`}>
-          <Button
-            id="settingsNetwork"
-            type="transparent"
-            className={styles.settingsBtn}
-            onClick={this.networkHandler}
-          >
-            <div className="body1 left">
-              <Trans i18nKey="settings.network">Network</Trans>
-            </div>
-          </Button>
-        </div>
-
-        <div className={`${styles.settingsMenuItem} ${styles.export}`}>
-          <Button
-            data-testid="exportMenuItem"
-            id="settingsExport"
-            type="transparent"
-            className={styles.settingsBtn}
-            onClick={this.exportHandler}
-          >
-            <div className="body1 left">
-              <Trans i18nKey="settings.export" />
-            </div>
-          </Button>
-        </div>
-
-        {/*<div className={`${styles.settingsMenuItem} ${styles.pairing}`}>
-                <Button type='transparent'
-                        className={styles.settingsBtn}
-                        onClick={this.pairingHandler}>
-                    <div className='body1 left'>
-                        <Trans i18nKey='settings.pairing'>Device Pairing</Trans>
-                    </div>
-                </Button>
-            </div>
-            
-            <div className={`${styles.settingsMenuItem} ${styles.language}`}>
-                <Button type='transparent'
-                        className={styles.settingsBtn}
-                        onClick={this.langsHandler}>
-                    <div className='body1 left'>
-                        <Trans i18nKey='settings.langs'>Change language</Trans>
-                    </div>
-                </Button>
-            </div>
-
-            <div className={`${styles.settingsMenuItem} ${styles.password}`}>
-                <Button type='transparent'
-                        className={styles.settingsBtn}
-                        onClick={this.passwordHandler}>
-                    <div className='body1 left'>
-                        <Trans i18nKey='settings.password'>Change password</Trans>
-                    </div>
-                </Button>
-            </div>*/}
-
-        <div className={`${styles.clickProtection} tag1`}>
-          <PowerButton
-            onClick={this.toggleAutoLockHandler}
-            enabled={this.props.autoClickProtection}
-          />
-          <div className={`${styles.powerBtnState} left`}>
-            <div>
-              <Trans i18nKey="settings.autoClick">Auto-click protection</Trans>
-            </div>
-            <div>
-              {!this.props.autoClickProtection ? (
-                <span className="basic500">
-                  <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
-                </span>
-              ) : (
-                <span className="submit400">
-                  <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
-                </span>
-              )}
-            </div>
+        <div className={styles.settingsMenu}>
+          <div className={`${styles.settingsMenuItem} ${styles.general}`}>
+            <Button
+              id="settingsGeneral"
+              type="transparent"
+              className={styles.settingsBtn}
+              onClick={this.settingsGeneral}
+            >
+              <div className="body1 left">
+                <Trans i18nKey="settings.settingsGeneral">General</Trans>
+              </div>
+            </Button>
           </div>
-          <div>
-            <div className={styles.helper}>
-              <i className={`helpIcon ${styles.helpIcon}`}> </i>
-              <div className={styles.tooltip}>
-                <Trans i18nKey="settings.toolitpContent">
-                  Protect yourself from Clicker Trojans threats
+
+          <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
+            <Button
+              id="settingsPermission"
+              type="transparent"
+              className={styles.settingsBtn}
+              onClick={this.permissionsHandler}
+            >
+              <div className="body1 left">
+                <Trans i18nKey="settings.permissionsControl">
+                  Permissions control
                 </Trans>
               </div>
+            </Button>
+          </div>
+
+          <div className={`${styles.settingsMenuItem} ${styles.network}`}>
+            <Button
+              id="settingsNetwork"
+              type="transparent"
+              className={styles.settingsBtn}
+              onClick={this.networkHandler}
+            >
+              <div className="body1 left">
+                <Trans i18nKey="settings.network">Network</Trans>
+              </div>
+            </Button>
+          </div>
+
+          <div className={`${styles.settingsMenuItem} ${styles.export}`}>
+            <Button
+              data-testid="exportMenuItem"
+              id="settingsExport"
+              type="transparent"
+              className={styles.settingsBtn}
+              onClick={this.exportHandler}
+            >
+              <div className="body1 left">
+                <Trans i18nKey="settings.export" />
+              </div>
+            </Button>
+          </div>
+        </div>
+
+        <div className={styles.quickSettingsMenu}>
+          <div
+            className={`${styles.clickProtection} tag1`}
+            data-testid="clickProtection"
+          >
+            <PowerButton
+              onClick={this.toggleAutoLockHandler}
+              enabled={this.props.autoClickProtection}
+              data-testid="clickProtectionBtn"
+              data-teston={this.props.autoClickProtection}
+            />
+            <div className={`${styles.powerBtnState} left`}>
+              <div>
+                <Trans i18nKey="settings.autoClick">
+                  Auto-click protection
+                </Trans>
+              </div>
+              <div data-testid="clickProtectionStatus">
+                {!this.props.autoClickProtection ? (
+                  <span className="basic500">
+                    <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
+                  </span>
+                ) : (
+                  <span className="submit400">
+                    <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
+                  </span>
+                )}
+              </div>
             </div>
+            <Tooltip
+              content={<Trans i18nKey="settings.tooltipContent" />}
+              className={styles.helpTooltip}
+              data-testid="clickProtectionTooltip"
+            >
+              {props => (
+                <i
+                  className="helpIcon"
+                  data-testid="clickProtectionIcon"
+                  {...props}
+                />
+              )}
+            </Tooltip>
+          </div>
+
+          <div className={`${styles.showSuspiciousAssets} tag1`}>
+            <PowerButton
+              onClick={() =>
+                this.props.setUiState({
+                  showSuspiciousAssets: !this.props.showSuspiciousAssets,
+                })
+              }
+              enabled={!this.props.showSuspiciousAssets}
+              data-testid="showSuspiciousAssetsBtn"
+              data-teston={!this.props.showSuspiciousAssets}
+            />
+            <div className={`${styles.powerBtnState} left`}>
+              <div>
+                <Trans i18nKey="settings.suspiciousAssetsProtection" />
+              </div>
+              <div data-testid="showSuspiciousAssetsStatus">
+                {this.props.showSuspiciousAssets ? (
+                  <span className="basic500">
+                    <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
+                  </span>
+                ) : (
+                  <span className="submit400">
+                    <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
+                  </span>
+                )}
+              </div>
+            </div>
+            <Tooltip
+              content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
+              className={styles.helpTooltip}
+              data-testid="showSuspiciousAssetsTooltip"
+            >
+              {props => (
+                <i
+                  className="helpIcon"
+                  data-testid="showSuspiciousAssetsIcon"
+                  {...props}
+                />
+              )}
+            </Tooltip>
           </div>
         </div>
 
@@ -184,6 +210,7 @@ class SettingsComponent extends React.Component {
 const mapStateToProps = function (store) {
   return {
     autoClickProtection: store.uiState && store.uiState.autoClickProtection,
+    showSuspiciousAssets: store.uiState?.showSuspiciousAssets ?? false,
   };
 };
 

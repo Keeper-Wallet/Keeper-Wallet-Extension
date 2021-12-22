@@ -3,15 +3,20 @@ import * as React from 'react';
 import cn from 'classnames';
 
 interface TabProps {
+  className?: string;
   children: React.ReactNode;
   isActive?: boolean;
   onActivate?: () => void;
 }
 
-export function Tab({ children, isActive, onActivate }: TabProps) {
+export function Tab({ className, children, isActive, onActivate }: TabProps) {
   return (
     <li
-      className={cn(styles.tabListItem, { [styles.tabListActive]: isActive })}
+      className={cn(
+        styles.tabListItem,
+        { [styles.tabListActive]: isActive },
+        className
+      )}
       onClick={onActivate}
     >
       {children}
@@ -70,11 +75,13 @@ export function TabPanel({ children, className }: TabPanelProps) {
 }
 
 interface TabsProps {
+  activeTab?: number;
   children: [React.ReactElement, React.ReactElement];
+  onTabChange?: (activeIndex) => void;
 }
 
-export function Tabs({ children }: TabsProps) {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+export function Tabs({ children, activeTab, onTabChange }: TabsProps) {
+  const [activeIndex, setActiveIndex] = React.useState(activeTab || 0);
 
   return (
     <>
@@ -86,6 +93,9 @@ export function Tabs({ children }: TabsProps) {
             return React.cloneElement(child, {
               activeIndex: activeIndex,
               onActiveTab: activeIndex => {
+                if (onTabChange) {
+                  onTabChange(activeIndex);
+                }
                 setActiveIndex(activeIndex);
               },
             });

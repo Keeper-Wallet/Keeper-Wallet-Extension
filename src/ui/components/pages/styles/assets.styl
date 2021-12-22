@@ -49,12 +49,18 @@
   margin-top: 100px;
   margin-bottom: 44px;
 
+.tabItem
+  flex-grow: 1;
+  padding: 1rem 0.7rem 0.7rem;
+  margin: 0;
+  text-align: center;
+  user-select: none;
+
+
 .tabPanels
   flex: 1 1 0;
-  overflow: auto;
-  padding-top: 8px;
-  margin-right: -14px;
-  padding-right: 14px;
+  overflow: hidden;
+  margin: 0 -14px;
 
 .notifier
   width: 48px;
@@ -89,3 +95,93 @@
     justify-content: center;
     padding: 0 5px;
     font-size: 10px;
+
+.searchInputWrapper {
+  position: relative;
+}
+
+.searchInput
+  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll 8px;
+  height: 32px;
+  padding: 0 32px 0 32px;
+  border: none;
+  border-radius: unset;
+  border-bottom: solid 1px #9BA6B2;
+
+  &:hover
+    border: none;
+    border-bottom: solid 1px #9BA6B2;
+
+  &:focus
+    outline: none;
+    border: none;
+    border-bottom: 1px solid $submit400;
+
+.searchClose
+  background: none;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: 0;
+  color: var(--color-basic200);
+
+  &:hover
+    color: var(--color-basic500);
+
+.filterContainer
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width 325px;
+  margin: 8px 14px;
+
+.filterBtn
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  cursor: pointer;
+
+  &:hover
+    background-color: #edf0f4;
+
+.filterBtnIcon
+  width: 26px;
+
+.filterTxSelect
+  min-width: 96px;
+  width: 96px;
+  height: 32px;
+  margin: 0 3px 0 6px;
+  border-bottom: solid 1px var(--color-basic500);
+  & > div:first-child
+    background: none;
+    height: 32px;
+    padding: 0 14px 0 8px;
+    border: none;
+    border-radius: unset;
+    &:nth-child(2)
+      width: fit-content;
+    &:before
+      position: absolute;
+      right: 0;
+      top: 50%;
+
+.assetsPanel
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+.assetList
+  flex-grow: 1;
+
+.historyList,
+.nftList
+  flex-grow: 1;
+  margin-left: 14px;
+
+.tabInfo
+  margin: 8px 14px

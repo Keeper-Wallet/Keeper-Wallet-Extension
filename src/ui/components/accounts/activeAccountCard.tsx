@@ -7,6 +7,7 @@ import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
+import { Tooltip } from '../ui/tooltip';
 
 interface Account {
   address: string;
@@ -20,7 +21,6 @@ interface Props {
   onClick: (account: Account) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
-  onSendClick: () => void;
   onShowQr: () => void;
 }
 
@@ -30,7 +30,6 @@ export function ActiveAccountCard({
   onClick,
   onCopy,
   onOtherAccountsClick,
-  onSendClick,
   onShowQr,
 }: Props) {
   return (
@@ -46,22 +45,22 @@ export function ActiveAccountCard({
           <Balance balance={balance} isShortFormat={false} showAsset split />
         </div>
 
-        <button
-          className={cn(
-            'button',
-            'button-wallet',
-            'button-wallet-iconOnly',
-            'showTooltip',
-            styles.otherAccountsButton
+        <Tooltip content={<Trans i18nKey="assets.inStorage" />}>
+          {props => (
+            <button
+              className={cn(
+                'button',
+                'button-wallet',
+                'button-wallet-iconOnly',
+                styles.otherAccountsButton
+              )}
+              data-testid="otherAccountsButton"
+              type="button"
+              onClick={onOtherAccountsClick}
+              {...props}
+            />
           )}
-          data-testid="otherAccountsButton"
-          type="button"
-          onClick={onOtherAccountsClick}
-        />
-
-        <div className={cn(styles.otherAccountsTooltip, 'tooltip')}>
-          <Trans i18nKey="assets.inStorage" />
-        </div>
+        </Tooltip>
       </div>
 
       <div
@@ -72,32 +71,28 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        <button
-          className="sendIconBlack button button-wallet"
-          data-testid="sendAssetsButton"
-          onClick={onSendClick}
-        >
-          <Trans i18nKey="activeAccountCard.sendButton" />
-        </button>
-
         <span className={styles.controlsExpand} />
 
-        <Copy text={account.address} onCopy={onCopy}>
-          <div className="button button-wallet button-wallet-iconOnly copyIconBlack showTooltip" />
-        </Copy>
+        <Tooltip content={<Trans i18nKey="copyAddress" />}>
+          {props => (
+            <Copy text={account.address} onCopy={onCopy}>
+              <div
+                className="button button-wallet button-wallet-iconOnly copyIconBlack"
+                {...props}
+              />
+            </Copy>
+          )}
+        </Tooltip>
 
-        <div className={cn(styles.copyTooltip, 'tooltip')}>
-          <Trans i18nKey="copyAddress" />
-        </div>
-
-        <div
-          className="button button-wallet button-wallet-iconOnly showQrIcon showTooltip"
-          onClick={onShowQr}
-        />
-
-        <div className={cn(styles.showQrTooltip, 'tooltip')}>
-          <Trans i18nKey="showQR" />
-        </div>
+        <Tooltip content={<Trans i18nKey="showQR" />} placement="bottom-end">
+          {props => (
+            <div
+              className="button button-wallet button-wallet-iconOnly showQrIcon"
+              onClick={onShowQr}
+              {...props}
+            />
+          )}
+        </Tooltip>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { UiStore } from '../store';
 import { ACTION } from './constants';
 import { equals } from 'ramda';
+import { AssetDetail } from '../services/Background';
 
 interface Account {
   address: string;
@@ -8,6 +9,7 @@ interface Account {
 }
 
 interface UpdateStateInput {
+  assets: Record<string, Record<string, AssetDetail>>;
   accounts?: Account[];
   balances?: Record<
     string,
@@ -38,6 +40,7 @@ export function createUpdateState(store: UiStore) {
   return (state: UpdateStateInput) => {
     const actions = [];
     const {
+      assets = {},
       accounts = [],
       currentLocale,
       currentNetworkAccounts = [],
@@ -211,6 +214,13 @@ export function createUpdateState(store: UiStore) {
       actions.push({
         type: ACTION.UPDATE_BALANCES,
         payload: balances,
+      });
+    }
+
+    if (!equals(assets[currentNetwork], currentState.assets)) {
+      actions.push({
+        type: ACTION.UPDATE_ASSETS,
+        payload: assets[currentNetwork],
       });
     }
 

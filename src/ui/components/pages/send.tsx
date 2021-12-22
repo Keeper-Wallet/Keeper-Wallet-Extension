@@ -1,47 +1,31 @@
 import { BigNumber } from '@waves/bignumber';
-import { Money, Asset } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useIMask } from 'react-imask';
-import { useAppSelector, useAppDispatch } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
-import { Select } from '../ui/select/Select';
-import { difference } from 'ramda';
-import { getAsset, getBalances } from 'ui/actions';
-import { Loader, Error } from '../ui';
+import { getBalances } from 'ui/actions';
+import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
+import { AssetAmountInput } from '../../../assets/amountInput';
 
 export function Send() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const assets = useAppSelector(state => state.assets);
-
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
-
-  const wavesBalance =
-    accountBalance &&
-    new Money(
-      new BigNumber(accountBalance.available),
-      new Asset(assets['WAVES'])
-    );
-
   const assetBalances = accountBalance?.assets;
-
-  const assetIdsToRequest = React.useMemo(() => {
-    if (!assetBalances) {
-      return [];
-    }
-
-    const assetBalanceIds = Object.keys(assetBalances);
-    const assetInfoIds = Object.keys(assets);
-
-    return difference(assetBalanceIds, assetInfoIds);
-  }, [assetBalances, assets]);
+  const currentAsset = useAppSelector(state => state.uiState?.currentAsset);
+  const isNft =
+    currentAsset &&
+    currentAsset.precision === 0 &&
+    currentAsset.quantity == 1 &&
+    !currentAsset.reissuable;
 
   React.useEffect(() => {
     if (!assetBalances) {
@@ -50,10 +34,10 @@ export function Send() {
   }, [assetBalances, dispatch]);
 
   React.useEffect(() => {
-    assetIdsToRequest.forEach(assetId => {
-      dispatch(getAsset(assetId));
-    });
-  }, [assetIdsToRequest, dispatch]);
+    if (isNft) {
+      setAmountValue('1');
+    }
+  }, [currentAsset]);
 
   const [recipientValue, setRecipientValue] = React.useState('');
   const [recipientTouched, setRecipientTouched] = React.useState(false);
@@ -66,8 +50,6 @@ export function Send() {
     ? t('send.recipientInvalidError')
     : null;
   const showRecipientError = recipientError != null && recipientTouched;
-
-  const [assetValue, setAssetValue] = React.useState('WAVES');
 
   const [amountValue, setAmountValue] = React.useState('');
   const [amountTouched, setAmountTouched] = React.useState(false);
@@ -85,7 +67,7 @@ export function Send() {
     mapToRadix: ['.', ','],
     mask: Number,
     radix: '.',
-    scale: assets[assetValue].precision,
+    scale: currentAsset?.precision,
     thousandsSeparator: ' ',
   });
 
@@ -129,7 +111,10 @@ export function Send() {
           signAndPublishTransaction({
             type: 4,
             data: {
-              amount: { assetId: assetValue, tokens: amountValue },
+              amount: {
+                assetId: currentAsset.id,
+                tokens: amountValue,
+              },
               recipient: recipientValue,
               attachment: attachmentValue,
             },
@@ -140,7 +125,10 @@ export function Send() {
       <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            <Trans i18nKey="send.title" />
+            <Trans
+              i18nKey="send.title"
+              values={{ name: currentAsset?.displayName }}
+            />
           </h1>
         </header>
 
@@ -168,69 +156,33 @@ export function Send() {
             <Error show={showRecipientError}>{recipientError}</Error>
           </div>
 
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="send.assetInputLabel" />
-          </div>
-
-          <div className="margin-main-big">
-            {!wavesBalance ||
-            !assetBalances ||
-            assetIdsToRequest.length !== 0 ? (
-              <Loader />
-            ) : Object.keys(assetBalances).length === 0 ? (
-              'WAVES'
-            ) : (
-              <Select
-                className="fullwidth"
-                selectList={[
-                  {
-                    id: 'WAVES',
-                    text: `WAVES (${wavesBalance.toTokens()})`,
-                    value: 'WAVES',
-                  },
-                ].concat(
-                  Object.entries(assetBalances).map(
-                    ([assetId, { balance }]) => {
-                      const asset = assets[assetId];
-
-                      const balanceMoney = new Money(
-                        new BigNumber(balance),
-                        new Asset(asset)
-                      );
-
-                      return {
-                        id: asset.id,
-                        text: `${asset.name} (${balanceMoney.toTokens()})`,
-                        value: asset.id,
-                      };
-                    }
-                  )
+          {!isNft && (
+            <>
+              <div className="margin-main-big">
+                {!currentAsset || !assetBalances[currentAsset.id] ? (
+                  <Loader />
+                ) : (
+                  <>
+                    <AssetAmountInput
+                      balance={
+                        new Money(
+                          new BigNumber(assetBalances[currentAsset.id].balance),
+                          new Asset(currentAsset)
+                        )
+                      }
+                      label={t('send.amountInputLabel')}
+                      value={amountValue}
+                      onChange={value => {
+                        setAmountTouched(true);
+                        setAmountValue(value);
+                      }}
+                    />
+                    <Error show={showAmountError}>{amountError}</Error>
+                  </>
                 )}
-                selected={assetValue}
-                onSelectItem={(id, value) => {
-                  setAssetValue(value);
-                }}
-              />
-            )}
-          </div>
-
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="send.amountInputLabel" />
-          </div>
-
-          <div className="margin-main-big">
-            <Input
-              autoComplete="off"
-              data-testid="amountInput"
-              error={showAmountError}
-              inputRef={amountMask.ref}
-              onBlur={() => {
-                setAmountTouched(true);
-              }}
-            />
-
-            <Error show={showAmountError}>{amountError}</Error>
-          </div>
+              </div>
+            </>
+          )}
 
           <div className="input-title basic500 tag1">
             <Trans
