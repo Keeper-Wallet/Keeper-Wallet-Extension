@@ -24,6 +24,11 @@ const { stringify } = create({ BigNumber });
 
 class AccountAdapterApi {
   type = AdapterType.Custom;
+
+  constructor(account) {
+    this.account = account;
+  }
+
   isAvailable() {
     return true;
   }
@@ -32,10 +37,6 @@ class AccountAdapterApi {
   }
   getPublicKey() {
     return this.account.publicKey;
-  }
-
-  constructor(account) {
-    this.account = account;
   }
 }
 
