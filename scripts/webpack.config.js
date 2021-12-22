@@ -110,6 +110,12 @@ module.exports = ({
         }),
       ],
       extensions: ['.ts', '.tsx', '.js'],
+      alias: {
+        '@waves/waves-transactions': path.resolve(
+          __dirname,
+          '../node_modules/@waves/waves-transactions'
+        ),
+      },
     },
 
     plugins,
