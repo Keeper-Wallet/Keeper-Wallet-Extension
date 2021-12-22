@@ -54,19 +54,19 @@
 }
 
 .favIcon {
-  stroke: #dae1e9;
+  stroke: var(--color-basic200);
 }
 
 .sendIcon,
 .infoIcon {
-  fill: #dae1e9;
+  fill: var(--color-basic200);
 }
 
 .sendIcon:hover,
 .infoIcon:hover {
-  fill: #9ba6b2;
+  fill: var(--color-basic500);
 }
 
 .favIcon:hover {
-  stroke: #9ba6b2;
+  stroke: var(--color-basic500);
 }

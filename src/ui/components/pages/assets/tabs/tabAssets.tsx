@@ -1,5 +1,5 @@
 import * as styles from '../../styles/assets.styl';
-import { colors, icontains } from '../helpers';
+import { icontains } from '../helpers';
 import { Trans } from 'react-i18next';
 import { AssetItem } from '../assetItem';
 import { Asset, Money } from '@waves/data-entities';
@@ -97,8 +97,10 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
             >
               <svg
                 className={styles.filterBtnIcon}
-                fill={onlyFav ? colors.submit400 : 'none'}
-                stroke={onlyFav ? colors.submit400 : colors.basic500}
+                fill={onlyFav ? 'var(--color-submit400)' : 'none'}
+                stroke={
+                  onlyFav ? 'var(--color-submit400)' : 'var(--color-basic500)'
+                }
                 width="18"
                 height="18"
                 viewBox="0 0 18 18"
@@ -124,7 +126,8 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
                 fill="none"
               >
                 <path
-                  fill={onlyMy ? colors.submit400 : colors.basic500}
+                  fill="var(--color-submit-400)"
+                  // fill={onlyMy ? 'var(--color-submit400)' : 'var(--color-basic500)'}
                   fillOpacity=".01"
                   d="M0 0h14v14H0z"
                 />
@@ -132,7 +135,9 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-                  fill={onlyMy ? colors.submit400 : colors.basic500}
+                  fill={
+                    onlyMy ? 'var(--color-submit400)' : 'var(--color-basic500)'
+                  }
                 />
               </svg>
             </div>

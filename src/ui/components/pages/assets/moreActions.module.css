@@ -22,5 +22,5 @@
 .moreIcon {
   height: 28px;
   vertical-align: middle;
-  fill: #dae1e9;
+  fill: var(--color-basic200);
 }

@@ -29,15 +29,5 @@ export function getAssetDetailLink(
   return `https://${explorer}/assets/${assetId}`;
 }
 
-export const colors = {
-  white: '#FFFFFF',
-  basic200: '#DAE1E9',
-  basic500: '#9BA6B2',
-  submit200: '#BACAF4',
-  submit400: '#1F5AF6',
-  out: '#FFAF00',
-  in: '#81C926',
-};
-
 export const icontains = (source, target) =>
   (source ?? '').toLowerCase().includes((target ?? '').toLowerCase());

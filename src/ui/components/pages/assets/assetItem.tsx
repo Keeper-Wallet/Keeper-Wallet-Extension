@@ -4,7 +4,6 @@ import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';
 import { AssetLogo } from './assetLogo';
-import { colors } from './helpers';
 import { Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { favoriteAsset } from '../../../actions';
@@ -53,8 +52,10 @@ export function AssetItem({
           {asset?.isFavorite && (
             <svg
               className={styles.assetStatusIcon}
-              fill={isFavorite ? colors.submit400 : 'none'}
-              stroke={isFavorite ? colors.submit400 : colors.submit200}
+              fill={isFavorite ? 'var(--color-submit400)' : 'none'}
+              stroke={
+                isFavorite ? 'var(--color-submit400)' : 'var(--color-submit200)'
+              }
               width="18"
               height="18"
               viewBox="0 0 18 18"
@@ -124,8 +125,12 @@ export function AssetItem({
               >
                 <svg
                   className={styles.favIcon}
-                  fill={isFavorite ? colors.submit400 : 'none'}
-                  stroke={isFavorite ? colors.submit400 : colors.basic200}
+                  fill={isFavorite ? 'var(--color-submit400)' : 'none'}
+                  stroke={
+                    isFavorite
+                      ? 'var(--color-submit400)'
+                      : 'var(--color-basic200)'
+                  }
                   width="26"
                   height="26"
                   viewBox="0 0 18 18"

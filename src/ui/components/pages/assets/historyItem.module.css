@@ -58,11 +58,11 @@
 .infoIcon {
   width: 28px;
   vertical-align: middle;
-  fill: #dae1e9;
+  fill: var(--color-basic200);
 }
 
 .infoIcon:hover {
-  fill: #9ba6b2;
+  fill: var(--color-basic500);
 }
 
 .txSubIconContainer {
