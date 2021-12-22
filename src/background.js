@@ -459,7 +459,7 @@ class BackgroundService extends EventEmitter {
       assetInfo: this.assetInfoController.assetInfo.bind(
         this.assetInfoController
       ),
-      assetFavorite: this.assetInfoController.assetFavorite.bind(
+      toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
         this.assetInfoController
       ),
       // window control

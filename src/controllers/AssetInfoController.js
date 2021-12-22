@@ -126,7 +126,7 @@ export class AssetInfoController {
     return assets[network][assetId];
   }
 
-  async assetFavorite(assetId) {
+  async toggleAssetFavorite(assetId) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
     const asset = assets[network] && assets[network][assetId];

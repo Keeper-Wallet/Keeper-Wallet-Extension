@@ -194,7 +194,7 @@ export const getAsset = store => next => action => {
 
 export const favoriteAsset = store => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
-    background.assetFavorite(action.payload);
+    background.toggleAssetFavorite(action.payload);
   }
   return next(action);
 };

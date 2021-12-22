@@ -203,9 +203,9 @@ class Background {
     }
   }
 
-  async assetFavorite(assetId: string): Promise<void> {
+  async toggleAssetFavorite(assetId: string): Promise<void> {
     await this.initPromise;
-    return this.background.assetFavorite(assetId);
+    return this.background.toggleAssetFavorite(assetId);
   }
 
   async deleteNotifications(ids) {
