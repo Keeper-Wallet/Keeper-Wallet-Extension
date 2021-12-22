@@ -74,6 +74,14 @@
 .summaryTable th,
 .summaryTable td {
   padding: 0.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summaryTable th:first-child,
+.summaryTable td:first-child {
+  width: min-content;
 }
 
 .summaryTable th:first-child,
