@@ -469,6 +469,7 @@ export function SwapForm({
             <td>
               {sponsoredAssetBalanceEntries.length > 1 ? (
                 <Select
+                  listPlacement="top"
                   selected={state.txFeeAssetId}
                   selectList={sponsoredAssetBalanceEntries.map(
                     ([assetId, assetBalance]) => ({

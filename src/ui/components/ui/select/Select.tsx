@@ -72,6 +72,7 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
       description,
       onSelectItem,
       forwardRef,
+      listPlacement = 'bottom',
       ...restProps
     } = this.props;
 
@@ -91,6 +92,7 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
         <List
           isShow={this.state.showList}
           list={selectList.filter(({ id }) => id !== selected)}
+          placement={listPlacement}
           onSelect={this.selectHandler}
         />
       </div>
@@ -101,10 +103,29 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
 const Title = ({ text }) =>
   text ? <div className="left input-title basic500 tag1">{text}</div> : null;
 
-const List = ({ list, onSelect, isShow }) => {
+function List<T>({
+  isShow,
+  list,
+  placement,
+  onSelect,
+}: {
+  isShow: boolean;
+  list: TSelectItem<T>[];
+  placement: ListPlacement;
+  onSelect: (item: TSelectItem<T>) => void;
+}) {
   return (
     isShow && (
-      <div className={cn(styles.list, 'cant-select')}>
+      <div
+        className={cn(
+          styles.list,
+          'cant-select',
+          {
+            bottom: styles.list_placement_bottom,
+            top: styles.list_placement_top,
+          }[placement]
+        )}
+      >
         {list.map(item => (
           <div
             key={item.id}
@@ -117,7 +138,7 @@ const List = ({ list, onSelect, isShow }) => {
       </div>
     )
   );
-};
+}
 
 type TText = string | React.ReactNode;
 
@@ -127,11 +148,14 @@ type TSelectItem<T> = {
   value: T;
 };
 
+type ListPlacement = 'top' | 'bottom';
+
 interface IProps<T> {
   className?: string;
   forwardRef?: React.MutableRefObject<HTMLDivElement>;
   selectList: Array<TSelectItem<T>>;
   description?: TText;
+  listPlacement?: ListPlacement;
   selected?: string | number;
   onSelectItem?: (id: string | number, value: T) => void;
   onMouseEnter?: () => void;
