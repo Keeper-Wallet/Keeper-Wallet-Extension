@@ -10,6 +10,7 @@ import {
   calcExchangeDetails,
   getAssetBalance,
   getDefaultExchanger,
+  KEEPER_COMMISSION,
 } from './utils';
 import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
@@ -29,6 +30,7 @@ interface Props {
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
+    toAssetId: string;
     toCoins: string;
   }) => void;
 }
@@ -282,6 +284,7 @@ export function SwapForm({
             .getCoins()
             .toFixed(),
           minReceivedCoins: state.minReceivedCoins.toFixed(),
+          toAssetId: toAsset.id,
           toCoins: Money.fromTokens(state.toAmountTokens, toAsset)
             .getCoins()
             .toFixed(),
@@ -456,7 +459,8 @@ export function SwapForm({
                       BigNumber.ROUND_MODE.ROUND_FLOOR,
                       ASSETS_FORMAT
                     )}{' '}
-                  {toAsset.displayName} ({commission.mul(100).toFormat()}
+                  {toAsset.displayName} (
+                  {commission.add(KEEPER_COMMISSION).mul(100).toFormat()}
                   %)
                 </div>
               )}

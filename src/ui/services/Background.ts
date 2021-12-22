@@ -247,6 +247,7 @@ class Background {
     fromAssetId,
     fromCoins,
     minReceivedCoins,
+    toAssetId,
     toCoins,
   }: {
     exchangerId: string;
@@ -255,6 +256,7 @@ class Background {
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
+    toAssetId: string;
     toCoins: string;
   }): Promise<{ transactionId: string }> {
     await this.initPromise;
@@ -266,6 +268,7 @@ class Background {
       fromAssetId,
       fromCoins,
       minReceivedCoins,
+      toAssetId,
       toCoins,
     });
   }

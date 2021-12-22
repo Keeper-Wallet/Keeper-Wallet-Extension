@@ -98,6 +98,7 @@ export class SwapController {
     fromAssetId,
     fromCoins,
     minReceivedCoins,
+    toAssetId,
     toCoins,
   }) {
     const selectedAccount = this.getSelectedAccount();
@@ -116,16 +117,17 @@ export class SwapController {
     const tx = {
       type: SIGN_TYPE.SCRIPT_INVOCATION,
       data: {
-        dApp: exchangerId,
+        dApp: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
         fee: Money.fromCoins(fee, new Asset(feeAssetInfo)),
         payment: [Money.fromCoins(fromCoins, new Asset(fromAssetInfo))],
         call: {
-          function: 'exchange',
-          args: [{ type: 'integer', value: toCoins }].concat(
-            exchangerVersion === 2
-              ? [{ type: 'integer', value: minReceivedCoins }]
-              : []
-          ),
+          function: 'swap',
+          args: [
+            { type: 'string', value: exchangerId },
+            { type: 'string', value: toAssetId },
+            { type: 'integer', value: minReceivedCoins },
+            { type: 'integer', value: exchangerVersion === 2 ? toCoins : 0 },
+          ],
         },
       },
     };
