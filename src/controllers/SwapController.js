@@ -40,16 +40,29 @@ export class SwapController {
       throw new Error(`exchangers are not available for network "${network}"`);
     }
 
-    const json = await fetch(
-      new URL('/exchangers/', swopFiConfig.backend).toString()
-    ).then(res => res.json());
+    const [exchangersJson, exchangersDataJson] = await Promise.all([
+      fetch(new URL('/exchangers/', swopFiConfig.backend).toString()).then(
+        res => res.json()
+      ),
+      fetch(new URL('/exchangers/data/', swopFiConfig.backend).toString()).then(
+        res => res.json()
+      ),
+    ]);
 
-    if (!json.success) {
+    if (!exchangersJson.success || !exchangersDataJson.success) {
       throw new Error('Could not fetch exchangers from SwopFi backend');
     }
 
     const activeExchangers = Object.fromEntries(
-      Object.entries(json.data).filter(([_id, exchanger]) => exchanger.active)
+      Object.entries(exchangersJson.data)
+        .filter(([_id, exchanger]) => exchanger.active)
+        .map(([id, exchanger]) => [
+          id,
+          {
+            ...exchanger,
+            ...exchangersDataJson.data[id],
+          },
+        ])
     );
 
     const { exchangers } = this.store.getState();
