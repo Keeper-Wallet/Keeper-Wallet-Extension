@@ -1,4 +1,4 @@
-import { App, CreateNewAccount, Settings, Assets } from './utils/actions';
+import { App, Assets, CreateNewAccount, Settings } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import {
@@ -230,7 +230,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem')][last()]")
+                By.xpath("//div[contains(@class, '-index-listItem-')][last()]")
               ),
               this.wait
             )
@@ -263,7 +263,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem')]")
+                By.xpath("//div[contains(@class, '-index-listItem-')]")
               ),
               this.wait
             )
@@ -442,7 +442,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem')][last()]")
+                By.xpath("//div[contains(@class, '-index-listItem-')][last()]")
               ),
               this.wait
             )
@@ -691,32 +691,24 @@ describe('Settings', function () {
 
   describe('Root', function () {
     describe('Auto-click protection', function () {
-      let clickProtectionDiv: WebElement,
-        toggleBtn: WebElement,
-        statusSpan: WebElement,
-        helpIcon: WebElement,
-        helpTooltip: WebElement;
+      let toggleBtn: WebElement, statusSpan: WebElement, helpIcon: WebElement;
 
       before(async function () {
-        clickProtectionDiv = this.driver.wait(
+        await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-settings-clickProtection')]")
+            By.xpath("//div[contains(@class, '-settings-content-')]")
           ),
           this.wait
         );
-        toggleBtn = clickProtectionDiv.findElement(
-          By.xpath("//button[contains(@class, '-powerBtn-powerBtn')]")
+
+        toggleBtn = this.driver.findElement(
+          By.css('[data-testid="clickProtectionBtn"]')
         );
-        statusSpan = clickProtectionDiv.findElement(
-          By.xpath(
-            "//div[contains(@class, '-settings-powerBtnState')]//div//span"
-          )
+        statusSpan = this.driver.findElement(
+          By.css('[data-testid="clickProtectionStatus"] span')
         );
-        helpIcon = clickProtectionDiv.findElement(
-          By.xpath("//i[contains(@class, '-settings-helpIcon')]")
-        );
-        helpTooltip = clickProtectionDiv.findElement(
-          By.xpath("//div[contains(@class, '-settings-tooltip')]")
+        helpIcon = this.driver.findElement(
+          By.css('[data-testid="clickProtectionIcon"]')
         );
       });
 
@@ -724,8 +716,8 @@ describe('Settings', function () {
         await toggleBtn.click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
         expect(
-          await clickProtectionDiv.findElements(
-            By.xpath("//button[contains(@class, '-powerBtn-powerBtnOn')]")
+          await this.driver.findElements(
+            By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
           )
         ).length(1);
         expect(await statusSpan.getText()).matches(/enabled/i);
@@ -735,8 +727,8 @@ describe('Settings', function () {
         await toggleBtn.click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
         expect(
-          await clickProtectionDiv.findElements(
-            By.xpath("//button[contains(@class, '-powerBtn-powerBtnOn')]")
+          await this.driver.findElements(
+            By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
           )
         ).length(0);
         expect(await statusSpan.getText()).matches(/disabled/i);
@@ -745,7 +737,86 @@ describe('Settings', function () {
       it('Display tooltip', async function () {
         const actions = this.driver.actions({ async: true });
         await actions.move({ origin: helpIcon }).perform();
-        expect(await helpTooltip.isDisplayed()).to.be.true;
+        expect(
+          this.driver.wait(
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="clickProtectionTooltip"]')
+                ),
+                this.wait
+              )
+            ),
+            this.wait
+          )
+        ).not.to.be.throw;
+      });
+    });
+
+    describe('Suspicious assets protection', function () {
+      let toggleBtn: WebElement, statusSpan: WebElement, helpIcon: WebElement;
+
+      before(async function () {
+        await this.driver.wait(
+          until.elementLocated(
+            By.xpath("//div[contains(@class, '-settings-content-')]")
+          ),
+          this.wait
+        );
+
+        toggleBtn = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsBtn"]')
+        );
+        statusSpan = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsStatus"] span')
+        );
+        helpIcon = this.driver.findElement(
+          By.css('[data-testid="showSuspiciousAssetsIcon"]')
+        );
+      });
+
+      it('Can be disabled', async function () {
+        await toggleBtn.click();
+        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+        expect(
+          await this.driver.findElements(
+            By.css(
+              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+            )
+          )
+        ).length(0);
+        expect(await statusSpan.getText()).matches(/disabled/i);
+      });
+
+      it('Can be enabled', async function () {
+        await toggleBtn.click();
+        await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+        expect(
+          await this.driver.findElements(
+            By.css(
+              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+            )
+          )
+        ).length(1);
+        expect(await statusSpan.getText()).matches(/enabled/i);
+      });
+
+      it('Display tooltip', async function () {
+        const actions = this.driver.actions({ async: true });
+        await actions.move({ origin: helpIcon }).perform();
+        expect(
+          this.driver.wait(
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="showSuspiciousAssetsTooltip"]')
+                ),
+                this.wait
+              )
+            ),
+            this.wait
+          )
+        ).not.to.be.throw;
       });
     });
 

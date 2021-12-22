@@ -3,6 +3,7 @@ import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
 import cn from 'classnames';
 import * as styles from './wallet.styl';
 import { Trans } from 'react-i18next';
+import { Tooltip } from '../ui/tooltip';
 
 export const TransactionWallet = ({
   className = '',
@@ -52,18 +53,25 @@ export const TransactionWallet = ({
       </div>
 
       <div className={`body3 ${styles.accountData}`}>
-        <Copy text={account.address} onCopy={onCopy}>
-          <div className={styles.accountName}>
-            {account.name}
-
-            <div className={styles.tooltip}>
+        <Tooltip
+          content={
+            <>
               <Ellipsis text={account.address} />
               <div>
                 <Trans i18nKey="accountInfo.copyToClipboard" />
               </div>
-            </div>
-          </div>
-        </Copy>
+            </>
+          }
+          placement="top-start"
+        >
+          {props => (
+            <Copy text={account.address} onCopy={onCopy}>
+              <div className={styles.accountName} {...props}>
+                {account.name}
+              </div>
+            </Copy>
+          )}
+        </Tooltip>
       </div>
 
       <div className={styles.controls} onClick={clickHandler}>

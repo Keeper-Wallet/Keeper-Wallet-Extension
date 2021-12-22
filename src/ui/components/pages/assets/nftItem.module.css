@@ -1,0 +1,52 @@
+.nftCard {
+  width: 325px;
+  background: #fff;
+  display: flex;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  border-radius: 4px;
+  padding: 14px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  height: 64px;
+  overflow: hidden;
+}
+
+.nftIcon {
+  flex-shrink: 0;
+}
+
+.nftData {
+  flex-grow: 1;
+  text-align: left;
+  overflow: hidden;
+}
+
+.nftName {
+  line-height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sendBtn,
+.infoBtn {
+  background: none;
+  cursor: pointer;
+}
+
+.sendIcon,
+.infoIcon {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.sendIcon,
+.infoIcon {
+  fill: var(--color-basic200);
+}
+
+.sendIcon:hover,
+.infoIcon:hover {
+  fill: var(--color-basic500);
+}

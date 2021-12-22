@@ -1,6 +1,14 @@
 @import "./colors.styl";
 @import "./fonts.styl";
 
+:root {
+  --color-white: #fff;
+  --color-basic200: #dae1e9;
+  --color-basic500: #9ba6b2;
+  --color-submit200: #bacaf4;
+  --color-submit400: #1f5af6;
+}
+
 :global .black
   color: $black;
 
@@ -77,6 +85,7 @@
   line-height: normal;
   font-family: Roboto;
   font-weight: 300;
+  font-size: 12px;
   overflow: hidden;
   margin: 0 auto;
   min-width: 357px;
@@ -171,7 +180,7 @@ ul
   font-weight: 400;
   cursor: pointer;
 
-  &:blue
+  &.blue
     color: $submit400;
   &:hover
     text-decoration: none;
@@ -394,32 +403,6 @@ $layout-44 = 44px;
   flex-grow: 1;
 
 // modals, errors, notifications
-
-:global .tooltip
-  background: $black;
-  color: $white;
-  font-size: 14px;
-  height: 32px;
-  position: absolute;
-  display: none;
-  transition: .3s;
-  border-radius: 2px;
-  padding: 8px 14px !important; //todo @uisk
-
-  &::after
-    background: $black;
-    width: 10px;
-    height: 10px;
-    content: '';
-    transform: rotate(45deg);
-    right: 7px;
-    bottom: -2px;
-    position: absolute;
-
-  &.tooltip-right::after
-    left: -2px;
-    bottom: 7px;
-
 :global #app-modal
   position: absolute;
   width: 100%;
@@ -463,15 +446,6 @@ $layout-44 = 44px;
     font-size: 1rem;
     color: $basic500;
 
-:global .tooltip
-  display: none;
-  opacity: 0;
-  z-index: 10;
-
-:global .showTooltip:hover + .tooltip
-  display: block;
-  opacity: 1;
-
 :global .notification
   display: block;
   width: auto;
@@ -502,3 +476,24 @@ $layout-44 = 44px;
   &.error
     background-color: $error400;
     z-index: 2;
+
+:global .skeleton-glow
+  animation: skeleton-glow 1s linear infinite alternate;
+  background: rgba(206,217,224,.2);
+  background-clip: padding-box!important;
+  border-color: rgba(206,217,224,.2)!important;
+  border-radius: 4px;
+  box-shadow: none!important;
+  color: transparent!important;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+
+@keyframes :global(skeleton-glow)
+  0%
+    background: rgba(206,217,224,.2);
+    border-color: rgba(206,217,224,.2);
+
+  100%
+    background: rgba(92,112,128,.2);
+    border-color: rgba(92,112,128,.2);

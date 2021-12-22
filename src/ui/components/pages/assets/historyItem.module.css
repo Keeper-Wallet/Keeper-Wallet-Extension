@@ -1,5 +1,5 @@
 .historyCard {
-  width: 100%;
+  width: 325px;
   background: #fff;
   display: flex;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
@@ -58,23 +58,11 @@
 .infoIcon {
   width: 28px;
   vertical-align: middle;
-  fill: #dae1e9;
+  fill: var(--color-basic200);
 }
 
 .infoIcon:hover {
-  fill: #9ba6b2;
-}
-
-.txIconTooltip {
-  top: 12px;
-  left: 60px;
-  white-space: nowrap;
-}
-
-.infoTooltip {
-  top: -13px;
-  right: 15px;
-  white-space: nowrap;
+  fill: var(--color-basic500);
 }
 
 .txSubIconContainer {

@@ -2,9 +2,6 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
-  "activeAccountCard": {
-    "sendButton": "Send"
-  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -35,7 +32,12 @@
     "minSponsoredFee": "Sponsored Asset Fee",
     "sender": "Issuer",
     "timestamp": "Issue date",
-    "closeBtn": "Close"
+    "closeBtn": "Close",
+    "infoTooltip": "Asset Info",
+    "favAddTooltip": "Add to Favorites",
+    "favRemoveTooltip": "Remove from Favorites",
+    "sendAssetTooltip": "Send",
+    "viewDetailsInExplorer": "View details in Explorer"
   },
   "assets": {
     "account": "Account",
@@ -53,9 +55,18 @@
     "assets": "Assets",
     "nfts": "NFTs",
     "emptyAssets": "You don't have any asset yet",
+    "notFoundAssets": "No assets were found for the specified filters",
     "emptyNFTs": "You don't have any NFT yet",
+    "notFoundNFTs": "No NFTs were found for the specified filters",
     "emptyHistory": "There's nothing to show yet",
-    "history": "History"
+    "notFoundHistory": "Nothing was found among the last {{ count }} transactions by the specified filters",
+    "maxHistory": "Only the last {{ count }} transactions are displayed",
+    "maxFiltersHistory": "Filters are applied only to the last {{ count }} transactions",
+    "showExplorerHistory": "See full history in Explorer",
+    "history": "History",
+    "onlyMyAssets": "Only Issued by Me",
+    "onlyFavorites": "Only Favorites",
+    "resetFilters": "Reset filters"
   },
   "historyCard": {
     "burn": "Burn Asset",
@@ -93,6 +104,27 @@
     "transferReceive": "Incoming Transfer",
     "transferSelf": "Self-transfer",
     "updateAssetInfo": "Update Asset Info"
+  },
+  "historyFilters": {
+    "all": "All",
+    "incoming": "Only Incoming",
+    "outgoing": "Only Outgoing",
+    "issue": "Issue",
+    "transfer": "Transfer",
+    "reissue": "Reissue",
+    "burn": "Burn",
+    "exchange": "Exchange",
+    "lease": "Lease",
+    "cancelLease": "Cancel Lease",
+    "alias": "Alias",
+    "massTransfer": "Mass Transfer",
+    "data": "Data",
+    "setScript": "Set Script",
+    "sponsorship": "Sponsorship",
+    "setAssetScript": "Set Asset Script",
+    "invokeScript": "Invoke Script",
+    "updateAssetInfo": "Update Asset Info",
+    "type": "Transaction Type"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
@@ -370,7 +402,7 @@
     "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",
     "submitButtonText": "Send",
-    "title": "Send assets"
+    "title": "Send {{ name }}"
   },
   "settings": {
     "autoClick": "Auto-click protection",
@@ -392,7 +424,9 @@
     "time_40m": "40 min",
     "time_5m": "5 min",
     "time_idle": "Browser timeout",
-    "toolitpContent": "Protect yourself from Clicker Trojans threats"
+    "tooltipContent": "Protect yourself from Clicker Trojans threats",
+    "suspiciousAssetsProtection": "Suspicious assets protection",
+    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets"
   },
   "showQR": "Show QR",
   "showScriptComponent": {

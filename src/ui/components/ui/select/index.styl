@@ -15,7 +15,12 @@
   margin-top: 2px;
   position: absolute;
   z-index: 50;
-  width: 100%;
+  right: 0;
+  min-width: 100%;
+  max-width: 300px;
+  width: fit-content;
+  max-height: 240px;
+  overflow-y: auto;
 
 .listItem
   height: 40px;
@@ -23,9 +28,15 @@
   line-height: 40px;
   padding: 0 14px;
   font-size: 14px;
+  white-space: nowrap;
 
   &:hover
     background: $basic50;
+
+.listItemSelected
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
 .selectInput
   position: relative;

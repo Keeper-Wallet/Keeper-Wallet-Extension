@@ -5,10 +5,13 @@ import * as styles from './index.styl';
 export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
   private element: HTMLDivElement;
 
-  getRef = element => (this.element = element);
+  getRef = element => {
+    this.props.forwardRef && (this.props.forwardRef.current = element);
+    this.element = element;
+  };
 
   selectHandler = (item: TSelectItem<T>) => {
-    this.setState({ showList: false, value: item.value, id: item.id });
+    this.setState({ showList: false });
     this.props.onSelectItem(item.id, item.value);
     this.removeClickOut();
   };
@@ -55,33 +58,40 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
 
   constructor(props: IProps<T>) {
     super(props);
+    console.log(props);
 
-    const { selected, selectList = [] } = props;
-    const selectedEl =
-      selectList.find(({ id }) => id === selected) || selectList[0];
     this.state = {
-      ...selectedEl,
       showList: false,
     };
   }
 
   render(): React.ReactNode {
-    const selected =
-      this.props.selected == null ? this.state.id : this.props.selected;
-    const { text } = this.props.selectList.find(({ id }) => id === selected);
+    const {
+      selected,
+      selectList = [],
+      className,
+      description,
+      onSelectItem,
+      forwardRef,
+      ...restProps
+    } = this.props;
+
+    const { text } =
+      selectList.find(({ id }) => id === selected) || selectList[0];
 
     return (
-      <div
-        className={cn(styles.select, this.props.className)}
-        ref={this.getRef}
-      >
-        <Title text={this.props.description} />
-        <div className={styles.selectInput} onClick={this.clickHandler}>
-          {text}
+      <div className={cn(styles.select, className)} ref={this.getRef}>
+        <Title text={description} />
+        <div
+          className={cn(styles.selectInput, 'cant-select')}
+          onClick={this.clickHandler}
+          {...restProps}
+        >
+          <div className={styles.listItemSelected}>{text}</div>
         </div>
         <List
           isShow={this.state.showList}
-          list={this.props.selectList.filter(({ id }) => id !== selected)}
+          list={selectList.filter(({ id }) => id !== selected)}
           onSelect={this.selectHandler}
         />
       </div>
@@ -93,18 +103,20 @@ const Title = ({ text }) =>
   text ? <div className="left input-title basic500 tag1">{text}</div> : null;
 
 const List = ({ list, onSelect, isShow }) => {
-  return !isShow ? null : (
-    <div className={styles.list}>
-      {list.map(item => (
-        <div
-          key={item.id}
-          className={styles.listItem}
-          onClick={() => onSelect(item)}
-        >
-          {item.text}
-        </div>
-      ))}
-    </div>
+  return (
+    isShow && (
+      <div className={cn(styles.list, 'cant-select')}>
+        {list.map(item => (
+          <div
+            key={item.id}
+            className={styles.listItem}
+            onClick={() => onSelect(item)}
+          >
+            {item.text}
+          </div>
+        ))}
+      </div>
+    )
   );
 };
 
@@ -116,15 +128,17 @@ type TSelectItem<T> = {
   value: T;
 };
 
-interface IProps<T> extends React.ComponentProps<'div'> {
+interface IProps<T> {
+  className?: string;
+  forwardRef?: React.MutableRefObject<HTMLDivElement>;
   selectList: Array<TSelectItem<T>>;
   description?: TText;
   selected?: string | number;
   onSelectItem?: (id: string | number, value: T) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 interface IState<T> {
-  value: T;
-  id: string | number;
   showList: boolean;
 }

@@ -185,10 +185,7 @@ class Background {
     return this.background.setCustomMatcher(url, network);
   }
 
-  async assetInfo(
-    assetId: string,
-    compareFields: { [assetField: string]: any } = {}
-  ): Promise<AssetDetail> {
+  async assetInfo(assetId: string): Promise<AssetDetail> {
     assetId = assetId || 'WAVES';
 
     if (this._assetsStore[assetId]) {
@@ -196,10 +193,7 @@ class Background {
     }
 
     await this.initPromise;
-    this._assetsStore[assetId] = this.background.assetInfo(
-      assetId,
-      compareFields
-    );
+    this._assetsStore[assetId] = this.background.assetInfo(assetId);
 
     try {
       return await this._assetsStore[assetId];
@@ -209,19 +203,9 @@ class Background {
     }
   }
 
-  async nftInfo(address: string, limit: number = 1000): Promise<AssetDetail[]> {
+  async toggleAssetFavorite(assetId: string): Promise<void> {
     await this.initPromise;
-    return this.background.nftInfo(address, limit);
-  }
-
-  async txHistory(address: string, limit: number = 100): Promise<any> {
-    await this.initPromise;
-    return this.background.txHistory(address, limit);
-  }
-
-  async aliasByAddress(address: string): Promise<string[]> {
-    await this.initPromise;
-    return this.background.aliasByAddress(address);
+    return this.background.toggleAssetFavorite(assetId);
   }
 
   async deleteNotifications(ids) {
@@ -280,4 +264,6 @@ export interface AssetDetail extends IAssetInfo {
   displayName: string;
   originTransactionId: string;
   issuer?: string;
+  isFavorite?: boolean;
+  isSuspicious?: boolean;
 }

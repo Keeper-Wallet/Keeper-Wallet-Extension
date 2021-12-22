@@ -2,7 +2,7 @@ export { PreferencesController } from './PreferencesController';
 export { WalletController } from './WalletController';
 export { NetworkController } from './NetworkController';
 export { MessageController } from './MessageController';
-export { BalanceController } from './BalanceController';
+export { CurrentAccountController } from './CurrentAccountController';
 export { UiStateController } from './UiStateController';
 export { AssetInfoController } from './AssetInfoController';
 export { TxInfoController } from './TxInfoController';

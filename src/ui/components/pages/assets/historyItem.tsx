@@ -6,9 +6,10 @@ import { TxIcon } from '../../transactions/BaseTransaction';
 import { useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
-import { getTxLink } from './helpers';
+import { getTxDetailLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { Tooltip } from '../../ui/tooltip';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
@@ -17,17 +18,17 @@ function Address({ base58 }) {
 interface Props {
   tx: any;
   className?: string;
-  onClick?: (assetId: string) => void;
 }
 
-export function HistoryItem({ tx, className, onClick }: Props) {
+export function HistoryItem({ tx, className }: Props) {
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
   const assets = useAppSelector(state => state.assets);
-  const aliases = useAppSelector(state => state.aliases);
+  const aliases = useAppSelector(state => state.balances[address]?.aliases);
+  const addressAlias = [address, ...(aliases || [])];
 
   let tooltip, label, info, messageType, addSign;
   const isTxFailed = tx.applicationStatus === 'failed';
@@ -41,7 +42,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -63,7 +63,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
@@ -80,7 +79,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       addSign = '-';
       messageType = 'transfer';
 
-      if (tx.recipient === address) {
+      if (addressAlias.includes(tx.recipient)) {
         tooltip =
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferReceive')
@@ -90,7 +89,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         messageType = 'receive';
       }
 
-      if (tx.sender === tx.recipient) {
+      if (tx.sender === address && addressAlias.includes(tx.recipient)) {
         tooltip =
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferSelf')
@@ -105,7 +104,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
           split
           showAsset
           addSign={addSign}
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -117,7 +115,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
           split
           showAsset
           addSign="+"
-          assetId={assetId}
           balance={asset && new Money(tx.quantity, new Asset(asset))}
         />
       );
@@ -130,7 +127,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
           split
           showAsset
           addSign="-"
-          assetId={assetId}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
       );
@@ -168,23 +164,9 @@ export function HistoryItem({ tx, className, onClick }: Props) {
 
       tooltip = t('historyCard.exchange');
       label = (
-        <Balance
-          split
-          showAsset
-          assetId={priceAssetId}
-          addSign="-"
-          balance={totalPriceAmount}
-        />
+        <Balance split showAsset addSign="-" balance={totalPriceAmount} />
       );
-      info = (
-        <Balance
-          split
-          showAsset
-          assetId={assetId}
-          addSign="+"
-          balance={assetAmount}
-        />
-      );
+      info = <Balance split showAsset addSign="+" balance={assetAmount} />;
       messageType = 'create-order';
       break;
     case TRANSACTION_TYPE.LEASE:
@@ -192,7 +174,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       label = <Address base58={tx.recipient} />;
       addSign = '-';
 
-      if (tx.recipient === address) {
+      if (addressAlias.includes(tx.recipient)) {
         tooltip = t('historyCard.leaseIncoming');
         label = <Address base58={tx.sender} />;
         addSign = '+';
@@ -202,7 +184,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           addSign={addSign}
           balance={asset && new Money(tx.amount, new Asset(asset))}
         />
@@ -214,7 +195,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
       label = <Address base58={tx.lease.recipient} />;
       addSign = '+';
 
-      if (tx.lease.recipient === address) {
+      if (addressAlias.includes(tx.lease.recipient)) {
         label = <Address base58={tx.lease.sender} />;
         addSign = '-';
       }
@@ -223,7 +204,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           addSign={addSign}
           balance={asset && new Money(tx.lease.amount, new Asset(asset))}
         />
@@ -249,9 +229,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
               transfer: { amount: number; recipient: string }
             ) =>
               result.add(
-                [address, ...aliases].includes(transfer.recipient)
-                  ? transfer.amount
-                  : 0
+                addressAlias.includes(transfer.recipient) ? transfer.amount : 0
               ),
             new BigNumber(0)
           ),
@@ -269,15 +247,7 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         messageType = 'mass_transfer';
       }
 
-      info = (
-        <Balance
-          split
-          showAsset
-          assetId={assetId}
-          addSign={addSign}
-          balance={balance}
-        />
-      );
+      info = <Balance split showAsset addSign={addSign} balance={balance} />;
       break;
     case TRANSACTION_TYPE.DATA:
       tooltip = t('historyCard.dataTransaction');
@@ -301,7 +271,6 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         <Balance
           split
           showAsset
-          assetId={assetId}
           balance={
             asset && new Money(tx.minSponsoredAssetFee, new Asset(asset))
           }
@@ -338,37 +307,35 @@ export function HistoryItem({ tx, className, onClick }: Props) {
   }
 
   return (
-    <div
-      className={cn(styles.historyCard, className, 'flex')}
-      onClick={() => onClick(assetId)}
-    >
-      <div className={cn(styles.historyIconWrapper, 'showTooltip')}>
-        <TxIcon txType={messageType} className={styles.historyIcon} />
-        {isTxFailed && (
-          <div className={styles.txSubIconContainer}>
-            <div className={styles.txSubIcon}>
-              <svg viewBox="0 0 10 10" className={styles.txSubIconSvg}>
-                <rect
-                  width="10"
-                  height="10"
-                  fill="#D8D8D8"
-                  fillOpacity="0.01"
-                />
-                <path
-                  d="M5.64011 5.00002L8.20071 2.43942C8.37749 2.26264 8.37749 1.97604 8.20071 1.79927C8.02394 1.62249 7.73733 1.62249 7.56056 1.79927L4.99996 4.35987L2.43936 1.79927C2.26258 1.62249 1.97598 1.62249 1.79921 1.79927C1.62243 1.97604 1.62243 2.26264 1.79921 2.43942L4.35981 5.00002L1.79921 7.56062C1.62243 7.7374 1.62243 8.024 1.79921 8.20077C1.97598 8.37755 2.26258 8.37755 2.43936 8.20077L4.99996 5.64017L7.56056 8.20077C7.73733 8.37755 8.02394 8.37755 8.20071 8.20077C8.37749 8.024 8.37749 7.7374 8.20071 7.56062L5.64011 5.00002Z"
-                  fill="#E5494D"
-                />
-              </svg>
-            </div>
+    <div className={cn(styles.historyCard, className, 'flex')}>
+      <Tooltip
+        content={`${(isTxFailed && t('historyCard.failed')) || ''} ${tooltip}`}
+        placement="right"
+      >
+        {props => (
+          <div
+            className={cn(
+              styles.historyIconWrapper,
+              messageType === 'unknown' && 'skeleton-glow'
+            )}
+            {...props}
+          >
+            <TxIcon txType={messageType} className={styles.historyIcon} />
+            {isTxFailed && (
+              <div className={styles.txSubIconContainer}>
+                <div className={styles.txSubIcon}>
+                  <svg viewBox="0 0 10 10" className={styles.txSubIconSvg}>
+                    <path
+                      d="M5.64011 5.00002L8.20071 2.43942C8.37749 2.26264 8.37749 1.97604 8.20071 1.79927C8.02394 1.62249 7.73733 1.62249 7.56056 1.79927L4.99996 4.35987L2.43936 1.79927C2.26258 1.62249 1.97598 1.62249 1.79921 1.79927C1.62243 1.97604 1.62243 2.26264 1.79921 2.43942L4.35981 5.00002L1.79921 7.56062C1.62243 7.7374 1.62243 8.024 1.79921 8.20077C1.97598 8.37755 2.26258 8.37755 2.43936 8.20077L4.99996 5.64017L7.56056 8.20077C7.73733 8.37755 8.02394 8.37755 8.20071 8.20077C8.37749 8.024 8.37749 7.7374 8.20071 7.56062L5.64011 5.00002Z"
+                      fill="#E5494D"
+                    />
+                  </svg>
+                </div>
+              </div>
+            )}
           </div>
         )}
-      </div>
-
-      {tooltip && (
-        <div className={cn(styles.txIconTooltip, 'tooltip', 'tooltip-right')}>
-          {isTxFailed && t('historyCard.failed')} {tooltip}
-        </div>
-      )}
+      </Tooltip>
 
       <div className={cn('body1', styles.historyData)}>
         <div
@@ -383,22 +350,27 @@ export function HistoryItem({ tx, className, onClick }: Props) {
         {!!info && <div className={styles.historyInfo}>{info}</div>}
       </div>
 
-      <button
-        className={cn(styles.infoButton, 'showTooltip')}
-        type="button"
-        onClick={() => {
-          window.open(getTxLink(tx.id, networkCode), '_blank', 'noopener');
-        }}
-      >
-        <svg className={styles.infoIcon} viewBox="0 0 28 26">
-          <path d="M25 13c0 6.075-4.925 11-11 11S3 19.075 3 13 7.925 2 14 2s11 4.925 11 11ZM4 13c0 5.523 4.477 10 10 10s10-4.477 10-10S19.523 3 14 3 4 7.477 4 13Z" />
-          <path d="M14 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0 1a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0v-5.5A.75.75 0 0 0 14 11Z" />
-        </svg>
-      </button>
-
-      <div className={cn(styles.infoTooltip, 'tooltip')}>
-        <Trans i18nKey="historyCard.infoTooltip" />
-      </div>
+      <Tooltip content={<Trans i18nKey="historyCard.infoTooltip" />}>
+        {props => (
+          <button
+            className={styles.infoButton}
+            type="button"
+            onClick={() => {
+              window.open(
+                getTxDetailLink(networkCode, tx.id),
+                '_blank',
+                'noopener'
+              );
+            }}
+            {...props}
+          >
+            <svg className={styles.infoIcon} viewBox="0 0 28 26">
+              <path d="M25 13c0 6.075-4.925 11-11 11S3 19.075 3 13 7.925 2 14 2s11 4.925 11 11ZM4 13c0 5.523 4.477 10 10 10s10-4.477 10-10S19.523 3 14 3 4 7.477 4 13Z" />
+              <path d="M14 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0 1a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0v-5.5A.75.75 0 0 0 14 11Z" />
+            </svg>
+          </button>
+        )}
+      </Tooltip>
     </div>
   );
 }

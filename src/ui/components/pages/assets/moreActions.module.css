@@ -1,0 +1,26 @@
+.moreActions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  height: 64px;
+  padding: 0 8px;
+  margin-right: -14px;
+  gap: 4px;
+  border-radius: 4px;
+}
+
+.expanded {
+  box-shadow: -8px 0 24px 14px rgb(155 166 178 / 0.1);
+}
+
+.moreBtn {
+  background: none;
+  cursor: pointer;
+}
+
+.moreIcon {
+  height: 28px;
+  vertical-align: middle;
+  fill: var(--color-basic200);
+}

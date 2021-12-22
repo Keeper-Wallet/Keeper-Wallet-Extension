@@ -1,16 +1,17 @@
 @import './../../../styles/colors.styl';
 
 .content
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-height: calc(100% - 196px);
-  height: 100%;
-  position: relative;
-  padding: 60px 58px;
+  height: calc(100% - 48px);
 
-  .title1
-    margin: 0 auto 24px auto;
-    max-width: 236px;
-    width: 100%;
+.title1
+  padding: 60px 60px 24px
+
+.settingsMenu
+  flex-grow: 1;
+  padding: 0 60px;
 
 .settingsMenuItem
   border-bottom: 1px solid $accent50;
@@ -19,8 +20,6 @@
   display: block;
   background-position: center right;
   background-repeat: no-repeat;
-  max-width: 236px;
-  width: 100%;
   margin: 0 auto;
 
   button.settingsBtn
@@ -47,6 +46,9 @@
   &.permissions
     background-image: url(../../../assets/img/permission-14-basic-200.svg);
 
+.quickSettingsMenu
+  padding: 0 60px
+
 .networkTab
   margin: 64px 60px 0 60px;
 
@@ -55,17 +57,13 @@
     right: 0;
     top: 0;
 
-.clickProtection,
 .settingsFooter
   display: flex;
-  position: fixed;
-  width: 100%;
+  padding: 0 60px
 
+.showSuspiciousAssets,
 .clickProtection
-  max-width: 236px;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 84px;
+  display: flex;
   line-height: 1.5em;
   padding-top: 10px;
   height: 64px;
@@ -73,15 +71,12 @@
 .settingsFooter
   background: $basic50;
   justify-content: center;
-  bottom: 0;
-  left: 0;
 
 .buttonsWrapper
   display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   height: 86px;
-  width: 100%;
-  max-width: 236px;
 
   & > div
     display: flex;
@@ -116,17 +111,8 @@
   .icon
     background: url(../../../assets/img/logout-18-submit-400.svg) center no-repeat;
 
-.helper
-  margin-top: 7px;
-  position: relative;
-  overflow: visible;
-
-  &:hover
-    .tooltip
-      display: block;
-
-.helpIcon
-  transform: translateX(-2px);
+.helpTooltip
+  max-width: calc(357px - 120px);
 
 .powerBtnState
   flex-grow: 1;

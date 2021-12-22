@@ -3,7 +3,11 @@ import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events';
-import { getAdapterByType } from '@waves/signature-adapter';
+import {
+  AdapterType,
+  CustomAdapter,
+  SeedAdapter,
+} from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
@@ -17,6 +21,24 @@ import create from 'parse-json-bignumber';
 const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
+
+class AccountAdapterApi {
+  type = AdapterType.Custom;
+
+  constructor(account) {
+    this.account = account;
+  }
+
+  isAvailable() {
+    return true;
+  }
+  getAddress() {
+    return this.account.address;
+  }
+  getPublicKey() {
+    return this.account.publicKey;
+  }
+}
 
 export class MessageController extends EventEmitter {
   constructor(options = {}) {
@@ -559,9 +581,7 @@ export class MessageController extends EventEmitter {
     }
     let signableData = await this._transformData({ ...data.data });
 
-    const Adapter = getAdapterByType('seed');
-
-    const adapter = new Adapter(
+    const adapter = new SeedAdapter(
       'validation seed',
       networkByteFromAddress(account.address).charCodeAt(0)
     );
@@ -764,11 +784,12 @@ export class MessageController extends EventEmitter {
 
   async _getFee(message, signData) {
     let signableData = await this._transformData({ ...signData });
-    const Adapter = getAdapterByType('seed');
-    const adapter = new Adapter(
-      'validation seed',
-      networkByteFromAddress(message.account.address).charCodeAt(0)
-    );
+
+    CustomAdapter.initOptions({
+      networkCode: message.account.networkCode.charCodeAt(0),
+    });
+    const adapter = new CustomAdapter(new AccountAdapterApi(message.account));
+
     const fee = {
       coins: (await this.getFee(adapter, signableData)).toString(),
       assetId: 'WAVES',
@@ -813,11 +834,12 @@ export class MessageController extends EventEmitter {
 
   async _prepareMessageJson(message) {
     const filledMessage = await this._fillSignableData(clone(message));
-    const Adapter = getAdapterByType('seed');
-    const adapter = new Adapter(
-      'validation seed',
-      networkByteFromAddress(filledMessage.account.address).charCodeAt(0)
-    );
+
+    CustomAdapter.initOptions({
+      networkCode: message.account.networkCode.charCodeAt(0),
+    });
+    const adapter = new CustomAdapter(new AccountAdapterApi(message.account));
+
     const signable = adapter.makeSignable(filledMessage.data);
     return stringify({
       ...(await signable.getSignData()),
