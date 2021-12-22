@@ -53,7 +53,7 @@ export class AssetInfoController {
     return this.store.getState().assets[this.getNetwork()];
   }
 
-  isMaxAgeExceed(lastUpdated) {
+  isMaxAgeExceeded(lastUpdated) {
     return new Date() - new Date(lastUpdated || 0) > MAX_AGE;
   }
 
@@ -79,7 +79,7 @@ export class AssetInfoController {
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
     const asset = assets[network] && assets[network][assetId];
-    if (!asset || this.isMaxAgeExceed(asset.lastUpdated)) {
+    if (!asset || this.isMaxAgeExceeded(asset.lastUpdated)) {
       let resp = await fetch(url);
       switch (resp.status) {
         case 200:
