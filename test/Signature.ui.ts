@@ -11,6 +11,7 @@ import {
   BURN,
   CANCEL_LEASE,
   DATA,
+  INVOKE_EXPRESSION,
   INVOKE_SCRIPT,
   ISSUE,
   LEASE,
@@ -162,7 +163,6 @@ describe('Signature', function () {
         await this.driver.get(`http://${origin}`);
       }
       await this.driver.executeScript(() => {
-        // @ts-ignore
         WavesKeeper.initialPromise.then(api => {
           api.publicState();
         });
@@ -213,7 +213,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(() => {
-        // @ts-ignore
         WavesKeeper.initialPromise.then(api => {
           api.auth({ data: 'generated auth data' });
         });
@@ -232,7 +231,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(tx => {
-        // @ts-ignore
         WavesKeeper.initialPromise.then(api => {
           api.signTransaction(tx);
         });
@@ -416,17 +414,25 @@ describe('Signature', function () {
     describe('UpdateAssetInfo', function () {
       it('Not supported yet');
     });
+
+    describe('InvokeExpression', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, INVOKE_EXPRESSION);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-invokeExpression-transaction-')]")
+      );
+    });
   });
 
   describe('Order', function () {
     const createOrder = tx => {
-      // @ts-ignore
       WavesKeeper.initialPromise.then(api => {
         api.signOrder(tx);
       });
     };
     const cancelOrder = tx => {
-      // @ts-ignore
       WavesKeeper.initialPromise.then(api => {
         api.signCancelOrder(tx);
       });
@@ -474,7 +480,6 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (tx, name) => {
-          // @ts-ignore
           WavesKeeper.initialPromise.then(api => {
             api.signTransactionPackage(tx, name);
           });
@@ -506,7 +511,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(data => {
-        // @ts-ignore
         WavesKeeper.initialPromise.then(api => {
           api.signCustomData(data);
         });
