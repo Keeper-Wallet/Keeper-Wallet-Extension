@@ -76,9 +76,7 @@ class MessagesComponent extends React.Component {
     const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
 
     const needGetAssets = new Set(
-      Object.keys(parsedData.assets).filter(
-        id => !Object.keys(assets).includes(id)
-      )
+      Object.keys(parsedData.assets).filter(id => !assets[id])
     );
 
     const nextAssetId = needGetAssets.values().next().value;
