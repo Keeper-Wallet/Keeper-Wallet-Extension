@@ -3,12 +3,12 @@ import { BigNumber } from '@waves/bignumber';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 const MAX_NFT_ITEMS = 1000;
+const POLL_INTERVAL = 10000;
 
 export class CurrentAccountController {
   constructor(options = {}) {
     const defaults = {
       balances: {},
-      pollInterval: options.pollInterval || 10000,
     };
 
     this.assetInfoController = options.assetInfoController;
@@ -28,8 +28,7 @@ export class CurrentAccountController {
 
   restartPolling() {
     clearInterval(this.poller);
-    const pollInterval = this.store.getState().pollInterval;
-    this.poller = setInterval(this.updateBalances.bind(this), pollInterval);
+    this.poller = setInterval(this.updateBalances.bind(this), POLL_INTERVAL);
   }
 
   getByUrl(url) {
