@@ -20,9 +20,6 @@ const MAX_AGE = 60 * 60 * 1000;
 export class AssetInfoController {
   constructor(options = {}) {
     const defaults = {
-      lastUpdated: {
-        suspiciousAssets: 0,
-      },
       assets: {
         mainnet: {
           WAVES,
@@ -39,6 +36,8 @@ export class AssetInfoController {
       },
     };
     this.suspiciousAssets = undefined;
+    this.suspiciousLastUpdated = 0;
+
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
@@ -204,19 +203,19 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    let { assets, lastUpdated } = this.store.getState();
+    let { assets } = this.store.getState();
     const network = this.getNetwork();
 
     if (
       !this.suspiciousAssets ||
       (network === 'mainnet' &&
-        new Date() - new Date(lastUpdated.suspiciousAssets) > MAX_AGE)
+        new Date() - new Date(this.suspiciousLastUpdated) > MAX_AGE)
     ) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
       switch (resp.status) {
         case 200:
           this.suspiciousAssets = (await resp.text()).split('\n');
-          lastUpdated.suspiciousAssets = new Date().getTime();
+          this.suspiciousLastUpdated = new Date().getTime();
           break;
         default:
           throw new Error(await resp.text());
@@ -231,6 +230,6 @@ export class AssetInfoController {
       );
     }
 
-    this.store.updateState({ assets, lastUpdated });
+    this.store.updateState({ assets });
   }
 }
