@@ -82,7 +82,7 @@ export class CurrentAccountController {
               balanceAsset.minSponsoredAssetFee !==
               assets[balanceAsset.assetId].minSponsoredFee;
 
-            const fetchAssetIds = (myAssets.balances || [])
+            const fetchAssetIds = myAssets.balances
               .filter(
                 info =>
                   !assetExists(info.assetId) ||
@@ -90,7 +90,7 @@ export class CurrentAccountController {
                   isMaxAgeExceeded(info.assetId)
               )
               .concat(
-                (myNfts || []).filter(
+                myNfts.filter(
                   info =>
                     !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId)
                 )
@@ -134,7 +134,7 @@ export class CurrentAccountController {
               network: currentNetwork,
               ...(isActiveAddress
                 ? {
-                    aliases: aliases || [],
+                    aliases: aliases,
                     txHistory: txHistory[0],
                     assets: myAssets.balances.reduce(
                       (assets, info) => {
