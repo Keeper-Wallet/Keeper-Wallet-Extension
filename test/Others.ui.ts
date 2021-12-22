@@ -103,8 +103,9 @@ describe('Others', function () {
         )
         .sendKeys('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
 
-      const amountInput = await this.driver.findElement(
-        By.css('[data-testid="amountInput"]')
+      const amountInput = await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="amountInput"]')),
+        this.wait
       );
 
       await amountInput.sendKeys('123123123.123');
@@ -161,7 +162,10 @@ describe('Others', function () {
         .sendKeys('an_alias');
 
       await this.driver
-        .findElement(By.css('[data-testid="amountInput"]'))
+        .wait(
+          until.elementLocated(By.css('[data-testid="amountInput"]')),
+          this.wait
+        )
         .sendKeys('0.87654321');
 
       await this.driver
