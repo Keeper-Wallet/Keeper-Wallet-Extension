@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import * as R from 'ramda';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -43,7 +42,7 @@ export class AssetInfoController {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      R.mergeDeepRight(defaults, options.initState || {})
+      Object.assign({}, defaults, options.initState)
     );
   }
 
