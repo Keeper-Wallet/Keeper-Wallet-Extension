@@ -82,7 +82,8 @@ export const KEEPER_COMMISSION = new BigNumber(0.001);
 
 function applyCommission(commission: BigNumber, amountCoins: BigNumber) {
   return amountCoins
-    .mul(new BigNumber(1).sub(commission).sub(KEEPER_COMMISSION))
+    .mul(new BigNumber(1).sub(commission))
+    .mul(new BigNumber(1).sub(KEEPER_COMMISSION))
     .roundTo(0, BigNumber.ROUND_MODE.ROUND_FLOOR);
 }
 
