@@ -72,7 +72,7 @@ export class CurrentAccountController {
 
           if (isActiveAddress) {
             const assets = this.assetInfoController.getAssets();
-            const isAssetExists = assetId => !!assets[assetId];
+            const assetExists = assetId => !!assets[assetId];
             const isMaxAgeExceeded = assetId =>
               this.assetInfoController.isMaxAgeExceeded(
                 assets[assetId] && assets[assetId].lastUpdated
@@ -85,15 +85,14 @@ export class CurrentAccountController {
             const fetchAssetIds = (myAssets.balances || [])
               .filter(
                 info =>
-                  !isAssetExists(info.assetId) ||
+                  !assetExists(info.assetId) ||
                   isSponsorshipUpdated(info) ||
                   isMaxAgeExceeded(info.assetId)
               )
               .concat(
                 (myNfts || []).filter(
                   info =>
-                    !isAssetExists(info.assetId) ||
-                    isMaxAgeExceeded(info.assetId)
+                    !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId)
                 )
               )
               .map(info => info.assetId)
@@ -115,7 +114,7 @@ export class CurrentAccountController {
                   .filter(
                     assetId =>
                       !!assetId &&
-                      !isAssetExists(assetId) &&
+                      !assetExists(assetId) &&
                       isMaxAgeExceeded(assetId)
                   )
               );
