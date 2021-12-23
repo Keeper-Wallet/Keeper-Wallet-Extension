@@ -189,7 +189,7 @@ export function TabTxHistory() {
               (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
           );
         })
-    .reduce<Array<TransactionFromApi | { groupName: string }>>(
+        .reduce<Array<TransactionFromApi | { groupName: string }>>(
           (result, tx, index, prevItems) => {
             const d = new Date(tx.timestamp);
             const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
