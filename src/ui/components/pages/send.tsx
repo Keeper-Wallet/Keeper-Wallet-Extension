@@ -157,7 +157,7 @@ export function Send() {
                       width="4.26214"
                       height="4.26877"
                       transform="rotate(45 3.01849 0)"
-                      fill="var(--colors-basic500)"
+                      fill="var(--color-basic500)"
                     />
                   </svg>
                   <div className={styles.wavesAddress}>{recipientAddress}</div>
