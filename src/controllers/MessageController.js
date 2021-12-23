@@ -20,6 +20,7 @@ import create from 'parse-json-bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { invokeExpression } from '@waves/waves-transactions';
 import { txToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
+import nodeStringify from '@waves/node-api-js/cjs/tools/stringify';
 
 const { stringify } = create({ BigNumber });
 
@@ -854,15 +855,30 @@ export class MessageController extends EventEmitter {
   async _prepareMessageJson(message) {
     const filledMessage = await this._fillSignableData(clone(message));
 
-    CustomAdapter.initOptions({
-      networkCode: message.account.networkCode.charCodeAt(0),
-    });
-    const adapter = new CustomAdapter(new AccountAdapterApi(message.account));
+    switch (message.data.type) {
+      case TRANSACTION_TYPE.INVOKE_EXPRESSION:
+        const { fee, matcherFee, initialFee, ...tx } = filledMessage.data.data;
+        return nodeStringify({
+          ...invokeExpression({
+            ...tx,
+            fee: fee.toCoins(),
+            feeAssetId: fee.asset.id,
+          }),
+          sender: message.account.address,
+        });
+      default:
+        CustomAdapter.initOptions({
+          networkCode: message.account.networkCode.charCodeAt(0),
+        });
+        const adapter = new CustomAdapter(
+          new AccountAdapterApi(message.account)
+        );
 
-    const signable = adapter.makeSignable(filledMessage.data);
-    return stringify({
-      ...(await signable.getSignData()),
-      sender: message.account.address,
-    });
+        const signable = adapter.makeSignable(filledMessage.data);
+        return stringify({
+          ...(await signable.getSignData()),
+          sender: message.account.address,
+        });
+    }
   }
 }
