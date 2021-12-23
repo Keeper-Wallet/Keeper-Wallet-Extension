@@ -67,6 +67,13 @@ const Row = ({ data, index, style }) => {
   );
 };
 
+const PLACEHOLDERS = [...Array(4).keys()].map<ITransaction & WithId>(
+  key =>
+    ({
+      id: `${key}`,
+    } as ITransaction & WithId)
+);
+
 export function TabTxHistory() {
   const { t } = useTranslation();
   const networkCode = useAppSelector(
@@ -81,17 +88,7 @@ export function TabTxHistory() {
     state => state.balances[address]?.aliases || []
   );
   const addressOrAlias = [address, ...aliases];
-  const txHistory = useAppSelector(
-    state =>
-      state.balances[address]?.txHistory ??
-      // placeholder
-      [...Array(4).keys()].map(
-        key =>
-          ({
-            id: `${key}`,
-          } as ITransaction & WithId)
-      )
-  );
+  const txHistory = useAppSelector(state => state.balances[address]?.txHistory);
 
   const thisYear = new Date().getFullYear();
 
@@ -147,69 +144,74 @@ export function TabTxHistory() {
     );
 
   const historyWithGroups = txHistory
-    .slice(0, MAX_TX_HISTORY_ITEMS - 1)
-    .filter((tx: any) => {
-      const hasMassTransfers = (tx.transfers ?? []).reduce(
-        (result: boolean, transfer: { amount: number; recipient: string }) =>
-          result || addressOrAlias.includes(transfer.recipient),
-        false
-      );
-      const hasInvokePayments = (tx.payment ?? []).length !== 0;
-      const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
-        (hasPayments, el) =>
-          hasPayments ||
-          el.assetId === term ||
-          icontains(assets[el.assetId]?.displayName ?? '', term),
-        false
-      );
+    ? txHistory
+        .slice(0, MAX_TX_HISTORY_ITEMS - 1)
+        .filter((tx: any) => {
+          const hasMassTransfers = (tx.transfers ?? []).reduce(
+            (
+              result: boolean,
+              transfer: { amount: number; recipient: string }
+            ) => result || addressOrAlias.includes(transfer.recipient),
+            false
+          );
+          const hasInvokePayments = (tx.payment ?? []).length !== 0;
+          const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
+            (hasPayments, el) =>
+              hasPayments ||
+              el.assetId === term ||
+              icontains(assets[el.assetId]?.displayName ?? '', term),
+            false
+          );
 
-      return (
-        (!showSuspiciousAssets || !assets[tx.assetId]?.isSuspicious) &&
-        (!term ||
-          tx.id === term ||
-          tx.assetId === term ||
-          icontains(assets[tx.assetId]?.displayName ?? '', term) ||
-          tx.sender === term ||
-          tx.recipient === term ||
-          icontains(tx.alias ?? '', term) ||
-          tx.dApp === term ||
-          hasInvokePaymentsAsset ||
-          icontains(tx.call?.function ?? '', term) ||
-          hasInvokeStateChanges(tx.stateChanges)) &&
-        (!type || tx.type === type) &&
-        (!onlyIn ||
-          (!addressOrAlias.includes(tx.sender) &&
-            (addressOrAlias.includes(tx.recipient) || hasMassTransfers)) ||
-          hasInvokeTransfers(tx.stateChanges)) &&
-        (!onlyOut ||
-          (tx.type === TRANSACTION_TYPE.TRANSFER &&
-            addressOrAlias.includes(tx.sender)) ||
-          (tx.type === TRANSACTION_TYPE.MASS_TRANSFER && !hasMassTransfers) ||
-          (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
-      );
-    })
-    .reduce<Array<(ITransaction & WithId) | { groupName: string }>>(
-      (result, tx, index, prevItems) => {
-        const d = new Date(tx.timestamp);
-        const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
+          return (
+            (!showSuspiciousAssets || !assets[tx.assetId]?.isSuspicious) &&
+            (!term ||
+              tx.id === term ||
+              tx.assetId === term ||
+              icontains(assets[tx.assetId]?.displayName ?? '', term) ||
+              tx.sender === term ||
+              tx.recipient === term ||
+              icontains(tx.alias ?? '', term) ||
+              tx.dApp === term ||
+              hasInvokePaymentsAsset ||
+              icontains(tx.call?.function ?? '', term) ||
+              hasInvokeStateChanges(tx.stateChanges)) &&
+            (!type || tx.type === type) &&
+            (!onlyIn ||
+              (!addressOrAlias.includes(tx.sender) &&
+                (addressOrAlias.includes(tx.recipient) || hasMassTransfers)) ||
+              hasInvokeTransfers(tx.stateChanges)) &&
+            (!onlyOut ||
+              (tx.type === TRANSACTION_TYPE.TRANSFER &&
+                addressOrAlias.includes(tx.sender)) ||
+              (tx.type === TRANSACTION_TYPE.MASS_TRANSFER &&
+                !hasMassTransfers) ||
+              (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
+          );
+        })
+        .reduce<Array<(ITransaction & WithId) | { groupName: string }>>(
+          (result, tx, index, prevItems) => {
+            const d = new Date(tx.timestamp);
+            const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
 
-        if (
-          tx.timestamp &&
-          (!prevItems[index - 1] ||
-            new Date(prevItems[index - 1].timestamp).toDateString() !==
-              d.toDateString())
-        ) {
-          result.push({
-            groupName: `${t(`date.${MONTH[M]}`)} ${D}${
-              Y !== thisYear ? ', ' + Y : ''
-            } `.trim(),
-          });
-        }
-        result.push(tx);
-        return result;
-      },
-      []
-    );
+            if (
+              tx.timestamp &&
+              (!prevItems[index - 1] ||
+                new Date(prevItems[index - 1].timestamp).toDateString() !==
+                  d.toDateString())
+            ) {
+              result.push({
+                groupName: `${t(`date.${MONTH[M]}`)} ${D}${
+                  Y !== thisYear ? ', ' + Y : ''
+                } `.trim(),
+              });
+            }
+            result.push(tx);
+            return result;
+          },
+          []
+        )
+    : PLACEHOLDERS;
 
   return (
     <TabPanel className={styles.assetsPanel}>
@@ -317,7 +319,8 @@ export function TabTxHistory() {
         <div className={styles.historyList}>
           <AutoSizer>
             {({ height, width }) => {
-              const hasMore = txHistory.length === MAX_TX_HISTORY_ITEMS;
+              const hasMore =
+                txHistory && txHistory.length === MAX_TX_HISTORY_ITEMS;
               return (
                 <>
                   <VariableSizeList
