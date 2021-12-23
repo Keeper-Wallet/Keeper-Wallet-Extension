@@ -22,7 +22,6 @@
 .historyLabel {
   line-height: 24px;
   height: 24px;
-  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -44,12 +43,20 @@
   height: 48px;
 }
 
-.infoBtn {
+.actions {
   display: flex;
   justify-content: center;
   align-items: center;
   background: none;
   height: 64px;
+  padding: 0 8px;
+  margin-right: -14px;
+  gap: 4px;
+  border-radius: 4px;
+}
+
+.infoBtn {
+  background: none;
   padding: 0 8px;
 }
 
