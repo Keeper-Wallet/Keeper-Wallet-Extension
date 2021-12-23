@@ -16,6 +16,9 @@ import { AssetAmountInput } from '../../../assets/amountInput';
 export function Send() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const chainId = useAppSelector(state =>
+    state.selectedAccount.networkCode.charCodeAt(0)
+  );
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
@@ -49,7 +52,7 @@ export function Send() {
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
     : !(
-        validators.isValidAddress(recipientValue) ||
+        validators.isValidAddress(recipientValue, chainId) ||
         validators.isValidAliasName(recipientValue)
       )
     ? t('send.recipientInvalidError')
