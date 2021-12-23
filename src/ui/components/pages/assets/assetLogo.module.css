@@ -9,6 +9,7 @@
   color: #edf0f4;
   margin-right: 14px;
   cursor: default;
+  object-fit: contain;
 }
 
 .assetSubIconContainer {

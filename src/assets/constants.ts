@@ -38,6 +38,7 @@ export const assetIds = {
     WX: 'Atqv59EYzjFGuitKVnMRk6H8FukjoV3ktPorbEys25on',
     XMR: '5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3',
     ZEC: 'BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa',
+    RACE: 'D4TPjtzpsDEJFS1pUAkvh1tJJJMNWGcSrds9sveBoQka',
   },
   testnet: {
     WAVES: 'WAVES',
@@ -45,6 +46,7 @@ export const assetIds = {
     DASH: '13mWHq1h58WRTiRNBqDRD63gsV8Hq4joxYQzH3iRdHiR',
     ETH: '8Ye7AVyY8TgWbNfQdriLRCBGEPXTb5T48EeBgJTQADNs',
     EURN: 'ECBCkHS68DckpBrzLeoRgYbFg7sCVqR176mPqbXsj9pA',
+    EGG: 'Gp75gygbc1woJMheDomSY1ULyaRVGVEWS64wNWfvncyg',
     LTC: 'Ea5Y9FAfV3MRL2yQHbQXZvjjWtCJ8gvjYcBCfMTaT7TG',
     NSBT: '36mg8NZTaFRDygiVwb8uBnLR51hetJruUCZcxhaVcHj9',
     SWOP: '2HAJrwa8q4SxBx9cHYaBTQdBjdk5wwqdof7ccpAx2uhZ',
@@ -52,6 +54,7 @@ export const assetIds = {
     USDT: 'Had29UYhBkBGa7r1gu5ktr3okMz4e8vWPXzxTXNJUF6H',
     XMR: 'Eox8Cb2cfkFrsYMJSN8TmyfqzbqwjQp4sdJDE6PA9hph',
     ZEC: 'DeiUipcLutVxVVuHxpU8QUZos6KZpnrxakku5YpZSBaT',
+    RACE: 'CzfHm2WKdQoKQeGfosLsmKd6kAcuxHMsjjm9M7c1FUtg',
   },
   stagenet: {
     WAVES: 'WAVES',
@@ -81,6 +84,7 @@ const logosByName = {
   LTC: require('./logos/LTC.svg'),
   NSBT: require('./logos/NSBT.svg'),
   PUZZLE: require('./logos/PUZZLE.svg'),
+  RACE: require('./logos/RACE.svg'),
   SCONEX: require('./logos/SCONEX.svg'),
   SIGN: require('./logos/SIGN.svg'),
   SWOP: require('./logos/SWOP.svg'),
