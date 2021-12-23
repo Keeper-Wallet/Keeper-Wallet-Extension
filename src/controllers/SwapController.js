@@ -11,6 +11,11 @@ const swopFiConfigsByNetwork = {
   },
 };
 
+const swapDApps = {
+  mainnet: '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u',
+  testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
+};
+
 export class SwapController {
   constructor(options) {
     const defaults = {
@@ -101,9 +106,17 @@ export class SwapController {
     toAssetId,
     toCoins,
   }) {
+    const network = this.getNetwork();
+    const dApp = swapDApps[network];
+
+    if (!dApp) {
+      throw new Error(
+        `swapping is not supported in current network (${network})`
+      );
+    }
+
     const selectedAccount = this.getSelectedAccount();
 
-    const network = this.getNetwork();
     const { exchangers } = this.store.getState();
     const exchanger = exchangers[network][exchangerId];
 
@@ -117,7 +130,7 @@ export class SwapController {
     const tx = {
       type: SIGN_TYPE.SCRIPT_INVOCATION,
       data: {
-        dApp: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
+        dApp,
         fee: Money.fromCoins(fee, new Asset(feeAssetInfo)),
         payment: [Money.fromCoins(fromCoins, new Asset(fromAssetInfo))],
         call: {
