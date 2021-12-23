@@ -443,6 +443,7 @@ WavesKeeper.signAndPublishTransaction(txData)
 - `14` - устанавливает или отменяет спонсирование
 - `15` - изменяет скрипт ассета
 - `16` - вызывает функцию из dApp-скрипта
+- `18` - выполняет приложенный скрипт вызова
 
 Пример:
 
@@ -996,7 +997,7 @@ WavesKeeper.signAndPublishTransaction({
   },
 })
   .then(tx => {
-    console.log('Ура! Я выполнил скрипт!!!');
+    console.log('Ура! Я выполнил функцию dApp!!!');
   })
   .catch(error => {
     console.error('Что-то пошло не так', error);
@@ -1004,6 +1005,36 @@ WavesKeeper.signAndPublishTransaction({
 ```
 
 В случае успеха будет запущен скрипт
+
+###### [Type 18 EXPRESSION INVOCATION - execute attached call script](https://docs.waves.tech/ru/blockchain/transaction-type/invoke-expression-transaction)\*\*
+
+- `expression` string - скомпилированный [скрипт вызова](https://docs.waves.tech/ru/ride/v6/script/script-types/call-script)
+- `fee` MoneyLike - комиссия 
+- `*senderPublicKey` string - публичный ключ отправителя в base58
+- `*timestamp` number/string - время в мс
+
+Example:
+
+```js
+WavesKeeper.signAndPublishTransaction({
+  type: 18,
+  data: {
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+    expression: 'base64:/wYFAAAAA25pbBYQh30='
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я выполнил скрипт!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
+```
+
+В случае успеха будет запущен `expression`
 
 ##### [Как рассчитать комиссию](https://docs.waves.tech/ru/blockchain/transaction/transaction-fee)
 

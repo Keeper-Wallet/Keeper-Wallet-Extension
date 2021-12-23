@@ -429,6 +429,7 @@ A package transaction signature. Sometimes several transactions need to be simul
 - `14` - configures sponsorship
 - `15` - modifies the asset script
 - `16` - calls the function from a dApp script
+- `18` - executes the attached call script without assigning the script to an account.
 
 Example:
 
@@ -955,7 +956,7 @@ In case of a success, the asset's script will be reset.
   - `args` array
     - `type` "binary"/string/"integer"/"boolean" - type,
     - `value` /string/string/number/boolean - value for type
-- `*fee` MoneyLike – fee
+- `fee` MoneyLike – fee
 - `*payment` array MoneyLike
 - `*senderPublicKey` string - public key in base58
 - `*timestamp` number/string - number/string – time in ms
@@ -984,14 +985,44 @@ WavesKeeper.signAndPublishTransaction({
   },
 })
   .then(tx => {
-    console.log('Ура! Я выполнил скрипт!!!');
+    console.log('Hurray! I called the dApp function!!!');
   })
   .catch(error => {
-    console.error('Что-то пошло не так', error);
+    console.error('Something went wrong', error);
   });
 ```
 
 In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU`
+
+###### [Type 18 EXPRESSION INVOCATION - execute attached call script](https://docs.waves.tech/en/blockchain/transaction-type/invoke-expression-transaction)\*\*
+
+- `expression` string - compiled [call script](https://docs.waves.tech/en/ride/v6/script/script-types/call-script)
+- `fee` MoneyLike - fee
+- `*senderPublicKey` string - public key in base58
+- `*timestamp` number/string - time in ms
+
+Example:
+
+```js
+WavesKeeper.signAndPublishTransaction({
+  type: 18,
+  data: {
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+    expression: 'base64:/wYFAAAAA25pbBYQh30='
+  },
+})
+  .then(tx => {
+    console.log('Hurray! I called the expression!!!');
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
+```
+
+In case of success, script `expression` will be executed
 
 ##### [Calculating transaction fees](https://docs.waves.tech/en/blockchain/transaction/transaction-fee)\*\*
 
