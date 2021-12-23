@@ -3,7 +3,6 @@ import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useIMask } from 'react-imask';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
@@ -75,32 +74,6 @@ export function Send() {
   const attachmentError =
     attachmentByteCount > 140 ? t('send.attachmentMaxLengthError') : null;
   const showAttachmentError = attachmentError != null && attachmentTouched;
-
-  const amountMask = useIMask({
-    mapToRadix: ['.', ','],
-    mask: Number,
-    radix: '.',
-    scale: currentAsset?.precision,
-    thousandsSeparator: ' ',
-  });
-
-  React.useEffect(() => {
-    const mask = amountMask.maskRef.current;
-
-    if (!mask) {
-      return;
-    }
-
-    function handleAccept() {
-      setAmountValue(mask.unmaskedValue);
-    }
-
-    mask.on('accept', handleAccept);
-
-    return () => {
-      mask.off('accept', handleAccept);
-    };
-  }, []);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
