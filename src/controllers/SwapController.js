@@ -1,6 +1,7 @@
 import { Asset, Money } from '@waves/data-entities';
 import { SIGN_TYPE } from '@waves/signature-adapter';
 import ObservableStore from 'obs-store';
+import { SWAP_DAPPS } from '../constants';
 
 const swopFiConfigsByNetwork = {
   mainnet: {
@@ -9,11 +10,6 @@ const swopFiConfigsByNetwork = {
   testnet: {
     backend: 'https://backend-dev.swop.fi',
   },
-};
-
-const swapDApps = {
-  mainnet: '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u',
-  testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
 };
 
 export class SwapController {
@@ -107,7 +103,7 @@ export class SwapController {
     toCoins,
   }) {
     const network = this.getNetwork();
-    const dApp = swapDApps[network];
+    const dApp = SWAP_DAPPS[network];
 
     if (!dApp) {
       throw new Error(
