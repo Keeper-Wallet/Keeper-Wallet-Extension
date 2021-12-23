@@ -54,9 +54,11 @@ export const TxFee = connect(
 
     const isEditable =
       !!sponsoredBalance.length &&
-      [TRANSACTION_TYPE.TRANSFER, TRANSACTION_TYPE.INVOKE_SCRIPT].includes(
-        message.data.type
-      ) &&
+      [
+        TRANSACTION_TYPE.TRANSFER,
+        TRANSACTION_TYPE.INVOKE_SCRIPT,
+        TRANSACTION_TYPE.INVOKE_EXPRESSION,
+      ].includes(message.data.type) &&
       (fee.asset.displayName === 'WAVES' || !!fee.asset.minSponsoredFee);
 
     return {
