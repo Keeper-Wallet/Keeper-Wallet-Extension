@@ -37,19 +37,16 @@ const Row = ({ data, index, style }) => {
   );
 };
 
+const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
+  key =>
+    ({
+      id: `${key}`,
+    } as AssetDetail)
+);
+
 export function TabNfts({ onInfoClick, onSendClick }) {
   const address = useAppSelector(state => state.selectedAccount.address);
-  const myNfts = useAppSelector(
-    state =>
-      state.balances[address]?.nfts ||
-      // placeholder
-      [...Array(4).keys()].map(
-        key =>
-          ({
-            id: `${key}`,
-          } as AssetDetail)
-      )
-  );
+  const myNfts = useAppSelector(state => state.balances[address]?.nfts);
 
   const {
     term: [term, setTerm],
@@ -66,29 +63,32 @@ export function TabNfts({ onInfoClick, onSendClick }) {
   }, [myNfts]);
 
   const nftWithGroups = myNfts
-    .filter(
-      nft =>
-        (!onlyMy || nft.issuer === address) &&
-        (!term || nft.id === term || icontains(nft.displayName, term))
-    )
-    .sort(
-      (a, b) =>
-        (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
-        (a.displayName ?? '').localeCompare(b.displayName ?? '')
-    )
-    .reduce<Array<AssetDetail | { groupName: string }>>(
-      (result, item, index, prevItems) => {
-        if (
-          item.issuer &&
-          (!prevItems[index - 1] || prevItems[index - 1].issuer !== item.issuer)
-        ) {
-          result.push({ groupName: item.issuer });
-        }
-        result.push(item);
-        return result;
-      },
-      []
-    );
+    ? myNfts
+        .filter(
+          nft =>
+            (!onlyMy || nft.issuer === address) &&
+            (!term || nft.id === term || icontains(nft.displayName, term))
+        )
+        .sort(
+          (a, b) =>
+            (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
+            (a.displayName ?? '').localeCompare(b.displayName ?? '')
+        )
+        .reduce<Array<AssetDetail | { groupName: string }>>(
+          (result, item, index, prevItems) => {
+            if (
+              item.issuer &&
+              (!prevItems[index - 1] ||
+                prevItems[index - 1].issuer !== item.issuer)
+            ) {
+              result.push({ groupName: item.issuer });
+            }
+            result.push(item);
+            return result;
+          },
+          []
+        )
+    : PLACEHOLDERS;
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
