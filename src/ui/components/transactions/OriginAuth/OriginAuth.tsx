@@ -73,7 +73,7 @@ class OriginAuthComponent extends SignClass {
         </div>
 
         <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-          <DropdownButton>
+          <DropdownButton placement="top">
             <Button
               id="reject"
               key={'reject'}
