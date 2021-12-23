@@ -267,6 +267,8 @@ export function SwapForm({
     return `${fee.getTokens().toFormat()} ${fee.asset.displayName}`;
   }
 
+  const fromAmountTokens = new BigNumber(state.fromAmount || '0');
+
   return (
     <form
       className={styles.root}
@@ -277,10 +279,7 @@ export function SwapForm({
           exchangerId: state.exchangerId,
           feeAssetId: state.txFeeAssetId,
           fromAssetId: fromAsset.id,
-          fromCoins: Money.fromTokens(
-            new BigNumber(state.fromAmount),
-            fromAsset
-          )
+          fromCoins: Money.fromTokens(fromAmountTokens, fromAsset)
             .getCoins()
             .toFixed(),
           minReceivedCoins: state.minReceivedCoins.toFixed(),
@@ -390,7 +389,9 @@ export function SwapForm({
       <Button
         className="fullwidth"
         disabled={
-          !state.fromAmount || state.detailsUpdateIsPending || isSwapInProgress
+          fromAmountTokens.eq(0) ||
+          state.detailsUpdateIsPending ||
+          isSwapInProgress
         }
         type="submit"
       >
