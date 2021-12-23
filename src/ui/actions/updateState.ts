@@ -231,7 +231,10 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    if (!equals(exchangers[currentNetwork], currentState.exchangers)) {
+    if (
+      !equals(exchangers[currentNetwork], currentState.exchangers) &&
+      exchangers[currentNetwork] !== undefined
+    ) {
       actions.push({
         type: ACTION.UPDATE_EXCHANGERS,
         payload: exchangers[currentNetwork],
