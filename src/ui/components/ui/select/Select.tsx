@@ -58,7 +58,6 @@ export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
 
   constructor(props: IProps<T>) {
     super(props);
-    console.log(props);
 
     this.state = {
       showList: false,
