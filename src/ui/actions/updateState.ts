@@ -185,7 +185,7 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    if (selectedAccount.address !== currentState.selectedAccount.address) {
+    if (!equals(selectedAccount, currentState.selectedAccount)) {
       actions.push({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
         payload: selectedAccount,
