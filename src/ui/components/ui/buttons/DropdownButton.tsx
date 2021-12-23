@@ -3,7 +3,16 @@ import cn from 'classnames';
 import * as styles from './dropdownButton.styl';
 import { Button } from './Button';
 
-export class DropdownButton extends React.PureComponent<IProps, IState> {
+interface Props extends React.ComponentProps<'div'> {
+  children?: any;
+  placement?: 'top' | 'bottom';
+}
+
+interface State {
+  showList: boolean;
+}
+
+export class DropdownButton extends React.PureComponent<Props, State> {
   private element: HTMLDivElement;
 
   getRef = element => (this.element = element);
@@ -48,7 +57,7 @@ export class DropdownButton extends React.PureComponent<IProps, IState> {
     });
   };
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -57,15 +66,12 @@ export class DropdownButton extends React.PureComponent<IProps, IState> {
   }
 
   render(): React.ReactNode {
-    const [defaultItem, ...otherItems] = this.props.children;
+    const { children, placement = 'bottom', className } = this.props;
+    const [defaultItem, ...otherItems] = children;
 
     return (
       <div
-        className={cn(
-          styles.splitButton,
-          this.props.className,
-          'buttons-group'
-        )}
+        className={cn(styles.splitButton, className, 'buttons-group')}
         ref={this.getRef}
       >
         <div className={'relative flex'}>
@@ -80,22 +86,21 @@ export class DropdownButton extends React.PureComponent<IProps, IState> {
           </div>
         </div>
 
-        {this.state.showList ? (
-          <div className={styles.list}>
-            {otherItems.map(item => (
-              <div className={styles.listItem}>{item}</div>
+        {this.state.showList && (
+          <div
+            className={cn(
+              styles.list,
+              placement === 'top' && styles.listPlacementTop
+            )}
+          >
+            {otherItems.map((item, index) => (
+              <div key={index} className={styles.listItem}>
+                {item}
+              </div>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
     );
   }
-}
-
-interface IProps extends React.ComponentProps<'div'> {
-  children?: any;
-}
-
-interface IState {
-  showList: boolean;
 }
