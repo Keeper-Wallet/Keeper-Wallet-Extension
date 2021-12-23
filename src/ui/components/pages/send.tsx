@@ -35,12 +35,6 @@ export function Send() {
     }
   }, [assetBalances, dispatch]);
 
-  React.useEffect(() => {
-    if (isNft) {
-      setAmountValue('1');
-    }
-  }, [currentAsset]);
-
   const currentBalance = Money.fromCoins(
     !isNft ? assetBalances[currentAsset.id || 'WAVES']?.balance : 1,
     new Asset(currentAsset)
@@ -58,7 +52,7 @@ export function Send() {
     : null;
   const showRecipientError = recipientError != null && recipientTouched;
 
-  const [amountValue, setAmountValue] = React.useState('');
+  const [amountValue, setAmountValue] = React.useState(isNft ? '1' : '');
   const [amountTouched, setAmountTouched] = React.useState(false);
   const amountError =
     !amountValue || Number(amountValue) == 0
