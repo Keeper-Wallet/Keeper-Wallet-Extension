@@ -1009,7 +1009,7 @@ WavesKeeper.signAndPublishTransaction({
 ###### [Type 18 EXPRESSION INVOCATION - execute attached call script](https://docs.waves.tech/ru/blockchain/transaction-type/invoke-expression-transaction)\*\*
 
 - `expression` string - скомпилированный [скрипт вызова](https://docs.waves.tech/ru/ride/v6/script/script-types/call-script)
-- `fee` MoneyLike - комиссия 
+- `fee` MoneyLike - комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
 
@@ -1023,7 +1023,7 @@ WavesKeeper.signAndPublishTransaction({
       tokens: '0.001',
       assetId: 'WAVES',
     },
-    expression: 'base64:/wYFAAAAA25pbBYQh30='
+    expression: 'base64:/wYFAAAAA25pbBYQh30=',
   },
 })
   .then(tx => {

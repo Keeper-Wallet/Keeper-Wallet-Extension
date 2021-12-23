@@ -1011,7 +1011,7 @@ WavesKeeper.signAndPublishTransaction({
       tokens: '0.001',
       assetId: 'WAVES',
     },
-    expression: 'base64:/wYFAAAAA25pbBYQh30='
+    expression: 'base64:/wYFAAAAA25pbBYQh30=',
   },
 })
   .then(tx => {
