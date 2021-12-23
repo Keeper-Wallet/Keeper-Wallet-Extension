@@ -108,21 +108,6 @@ export function Swap({ setTab }: Props) {
                   toAssetId,
                   toCoins,
                 }) => {
-                  const exchanger = exchangers[exchangerId];
-                  const exchangerVersion = Number(
-                    exchanger.version.split('.')[0]
-                  );
-
-                  const toMoney = new Money(
-                    fromCoins,
-                    new Asset(assets[fromAssetId])
-                  );
-
-                  if (exchangerVersion === 2 && toMoney.getTokens().lt(10)) {
-                    setSwapErrorMessage(t('swap.lessThan10TokensError'));
-                    return;
-                  }
-
                   setSwapErrorMessage(null);
                   setIsSwapInProgress(true);
 
@@ -150,6 +135,22 @@ export function Swap({ setTab }: Props) {
                       transactionId: result.transactionId,
                     });
                   } catch (err) {
+                    const errMessage = err?.message;
+
+                    if (typeof errMessage === 'string') {
+                      const match = errMessage.match(
+                        /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
+                      );
+
+                      if (match?.[1]) {
+                        const msg = match[1];
+
+                        setSwapErrorMessage(msg);
+                        setIsSwapInProgress(false);
+                        return;
+                      }
+                    }
+
                     setSwapErrorMessage(err.message || t('swap.failMessage'));
                     setIsSwapInProgress(false);
                   }
