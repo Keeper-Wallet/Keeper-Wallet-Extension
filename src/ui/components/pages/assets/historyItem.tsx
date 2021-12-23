@@ -10,6 +10,7 @@ import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
+import { SWAP_DAPPS } from '../../../../constants';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
@@ -285,10 +286,49 @@ export function HistoryItem({ tx, className }: Props) {
       messageType = 'set-asset-script';
       break;
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
-      tooltip = t('historyCard.scriptInvocation');
-      label = <Address base58={tx.dApp} />;
-      info = tx.call?.function || 'default';
-      messageType = 'script_invocation';
+      if (
+        Object.values(SWAP_DAPPS).includes(tx.dApp) &&
+        tx.call.function === 'swap'
+      ) {
+        console.log(tx);
+        tooltip = t('historyCard.swap');
+
+        let fromBalance = null;
+        const payment = tx.payment[0];
+        if (payment) {
+          const fromAmount = payment.amount;
+          const fromAsset = assets[payment.assetId || 'WAVES'];
+
+          if (fromAsset) {
+            fromBalance = new Money(
+              new BigNumber(fromAmount),
+              new Asset(fromAsset)
+            );
+          }
+        }
+
+        let toBalance = null;
+        const incomingTransfer = tx.stateChanges.transfers.find(
+          t => t.address === address
+        );
+        if (incomingTransfer) {
+          const toAmount = incomingTransfer.amount;
+          const toAsset = assets[incomingTransfer.asset || 'WAVES'];
+
+          if (toAsset) {
+            toBalance = new Money(new BigNumber(toAmount), new Asset(toAsset));
+          }
+        }
+
+        label = <Balance addSign="-" split showAsset balance={fromBalance} />;
+        info = <Balance addSign="+" split showAsset balance={toBalance} />;
+        messageType = 'create-order';
+      } else {
+        tooltip = t('historyCard.scriptInvocation');
+        label = <Address base58={tx.dApp} />;
+        info = tx.call?.function || 'default';
+        messageType = 'script_invocation';
+      }
       break;
     case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
       tooltip = label = t('history.updateAssetInfo');

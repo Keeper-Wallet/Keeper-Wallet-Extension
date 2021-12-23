@@ -104,6 +104,7 @@
     "setScriptCancel": "Cancel Account Script",
     "sponsorshipDisable": "Disable Sponsorship",
     "sponsorshipEnable": "Enable Sponsorship",
+    "swap": "Token Swap",
     "transfer": "Transfer",
     "transferReceive": "Incoming Transfer",
     "transferSelf": "Self-transfer",
