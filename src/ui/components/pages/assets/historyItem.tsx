@@ -31,24 +31,27 @@ export function HistoryItem({ tx, className }: Props) {
   const addressAlias = [address, ...(aliases || [])];
 
   let tooltip, label, info, messageType, addSign;
-  const isTxFailed = tx.applicationStatus === 'failed';
-  let assetId = tx.assetId || 'WAVES';
-  let asset = assets[assetId];
+  const isTxFailed =
+    tx.applicationStatus && tx.applicationStatus !== 'succeeded';
+
+  const fromCoins = (amount, assetId) =>
+    assets[assetId ?? 'WAVES'] &&
+    Money.fromCoins(amount, new Asset(assets[assetId ?? 'WAVES']));
+
+  const fromTokens = (amount, assetId) =>
+    assets[assetId ?? 'WAVES'] &&
+    Money.fromTokens(amount, new Asset(assets[assetId ?? 'WAVES']));
 
   switch (tx.type) {
     case TRANSACTION_TYPE.GENESIS:
       tooltip = label = t('historyCard.genesis');
       info = (
-        <Balance
-          split
-          showAsset
-          balance={asset && new Money(tx.amount, new Asset(asset))}
-        />
+        <Balance split showAsset balance={fromCoins(tx.amount, 'WAVES')} />
       );
       messageType = 'receive';
       break;
     case TRANSACTION_TYPE.ISSUE:
-      const decimals = tx.precision || tx.decimals || 0;
+      const decimals = tx.decimals || 0;
       const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
       tooltip = t('historyCard.issue');
 
@@ -60,11 +63,7 @@ export function HistoryItem({ tx, className }: Props) {
         ? t('historyCard.issueToken')
         : t('historyCard.issueSmartToken');
       info = (
-        <Balance
-          split
-          showAsset
-          balance={asset && new Money(tx.quantity, new Asset(asset))}
-        />
+        <Balance split showAsset balance={fromCoins(tx.quantity, tx.assetId)} />
       );
       messageType = 'issue';
 
@@ -104,7 +103,10 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign={addSign}
-          balance={asset && new Money(tx.amount, new Asset(asset))}
+          balance={fromCoins(
+            tx.amount,
+            tx.type === TRANSACTION_TYPE.TRANSFER ? tx.assetId : 'WAVES'
+          )}
         />
       );
       break;
@@ -115,7 +117,7 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign="+"
-          balance={asset && new Money(tx.quantity, new Asset(asset))}
+          balance={fromCoins(tx.quantity, tx.assetId)}
         />
       );
       messageType = 'reissue';
@@ -127,39 +129,37 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign="-"
-          balance={asset && new Money(tx.amount, new Asset(asset))}
+          balance={fromCoins(tx.amount, tx.assetId)}
         />
       );
       messageType = 'burn';
       break;
     case TRANSACTION_TYPE.EXCHANGE:
-      assetId = tx.order1.assetPair.amountAsset || 'WAVES';
-      asset = assets[assetId];
       const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
       const priceAsset = assets[priceAssetId];
 
-      let assetAmount = null,
-        totalPriceAmount = null;
-      if (asset) {
-        assetAmount = new Money(tx.order1.amount, new Asset(asset));
+      const assetAmount = fromCoins(
+        tx.amount,
+        tx.order1.assetPair.amountAsset || 'WAVES'
+      );
 
-        if (priceAsset) {
-          const priceAmount = new Money(
-            new BigNumber(tx.order1.price).div(
-              new BigNumber(10).pow(
-                8 +
-                  (tx.order1.version < 3
-                    ? priceAsset.precision - asset.precision
-                    : 0)
-              )
-            ),
-            new Asset(priceAsset)
-          );
-          totalPriceAmount = assetAmount.convertTo(
-            priceAmount.asset,
-            priceAmount.getTokens()
-          );
-        }
+      let priceAmount, totalPriceAmount;
+      if (assetAmount && priceAsset) {
+        priceAmount = fromTokens(
+          new BigNumber(tx.price).div(
+            new BigNumber(10).pow(
+              8 +
+                (tx.version < 3
+                  ? priceAsset.precision - assetAmount.asset.precision
+                  : 0)
+            )
+          ),
+          priceAssetId
+        );
+        totalPriceAmount = assetAmount.convertTo(
+          priceAmount.asset,
+          priceAmount.getTokens()
+        );
       }
 
       tooltip = t('historyCard.exchange');
@@ -185,7 +185,7 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign={addSign}
-          balance={asset && new Money(tx.amount, new Asset(asset))}
+          balance={fromCoins(tx.amount, 'WAVES')}
         />
       );
       messageType = 'lease';
@@ -205,7 +205,7 @@ export function HistoryItem({ tx, className }: Props) {
           split
           showAsset
           addSign={addSign}
-          balance={asset && new Money(tx.lease.amount, new Asset(asset))}
+          balance={fromCoins(tx.lease.amount, 'WAVES')}
         />
       );
       messageType = 'cancel-leasing';
@@ -220,21 +220,19 @@ export function HistoryItem({ tx, className }: Props) {
       label = <Address base58={tx.sender} />;
 
       addSign = '+';
-      let balance =
-        asset &&
-        new Money(
-          tx.transfers.reduce(
-            (
-              result: BigNumber,
-              transfer: { amount: number; recipient: string }
-            ) =>
-              result.add(
-                addressAlias.includes(transfer.recipient) ? transfer.amount : 0
-              ),
-            new BigNumber(0)
-          ),
-          new Asset(asset)
-        );
+      let balance = fromCoins(
+        tx.transfers.reduce(
+          (
+            result: BigNumber,
+            transfer: { amount: number; recipient: string }
+          ) =>
+            result.add(
+              addressAlias.includes(transfer.recipient) ? transfer.amount : 0
+            ),
+          new BigNumber(0)
+        ),
+        tx.assetId
+      );
       messageType = 'mass_transfer_receive';
 
       if (tx.sender === address) {
@@ -243,7 +241,7 @@ export function HistoryItem({ tx, className }: Props) {
           count: tx.transfers.length,
         });
         addSign = '-';
-        balance = asset && new Money(tx.totalAmount, new Asset(asset));
+        balance = fromCoins(tx.totalAmount, tx.assetId);
         messageType = 'mass_transfer';
       }
 
@@ -271,21 +269,19 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          balance={
-            asset && new Money(tx.minSponsoredAssetFee, new Asset(asset))
-          }
+          balance={fromCoins(tx.minSponsoredAssetFee, tx.assetId)}
         />
       );
 
       if (!tx.minSponsoredAssetFee) {
         tooltip = label = t('historyCard.sponsorshipDisable');
-        info = asset.displayName;
+        info = assets[tx.assetId]?.displayName;
         messageType = 'sponsor_disable';
       }
       break;
     case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
       tooltip = label = t('historyCard.setAssetScript');
-      info = asset.displayName;
+      info = assets[tx.assetId]?.displayName;
       messageType = 'set-asset-script';
       break;
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
@@ -296,7 +292,7 @@ export function HistoryItem({ tx, className }: Props) {
       break;
     case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
       tooltip = label = t('history.updateAssetInfo');
-      info = asset.displayName;
+      info = assets[tx.assetId]?.displayName;
       messageType = 'issue';
       break;
     default:
@@ -345,7 +341,7 @@ export function HistoryItem({ tx, className }: Props) {
           )}
           title={typeof label === 'string' ? label : ''}
         >
-          {!asset ? <Loader /> : label}
+          {label}
         </div>
         {!!info && <div className={styles.historyInfo}>{info}</div>}
       </div>
