@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
-import { App, CreateNewAccount } from './utils/actions';
+import { App, CreateNewAccount, Network } from './utils/actions';
 
 describe('Others', function () {
   this.timeout(60 * 1000);
@@ -44,6 +44,7 @@ describe('Others', function () {
 
   describe('Send WAVES', function () {
     before(async function () {
+      await Network.switchTo.call(this, 'Testnet');
       await CreateNewAccount.importAccount.call(
         this,
         'rich',
@@ -100,7 +101,7 @@ describe('Others', function () {
           until.elementLocated(By.css('[data-testid="recipientInput"]')),
           this.wait
         )
-        .sendKeys('3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r');
+        .sendKeys('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
 
       const amountInput = await this.driver.findElement(
         By.css('[data-testid="amountInput"]')
@@ -113,6 +114,9 @@ describe('Others', function () {
           return arguments[0].value;
         }, amountInput)
       ).to.equal('123 123 123.123');
+
+      await amountInput.clear();
+      await amountInput.sendKeys('0.123');
 
       await this.driver
         .findElement(By.css('[data-testid="attachmentInput"]'))
@@ -132,14 +136,14 @@ describe('Others', function () {
       );
 
       expect(await transferAmount.getText()).to.equal(
-        '-\n123123123\n.12300000\n Waves'
+        '-\n0\n.12300000\n Waves'
       );
 
       expect(
         await this.driver
           .findElement(By.css('[data-testid="recipient"]'))
           .getText()
-      ).to.equal('3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r');
+      ).to.equal('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
 
       expect(
         await this.driver
@@ -158,7 +162,7 @@ describe('Others', function () {
 
       await this.driver
         .findElement(By.css('[data-testid="amountInput"]'))
-        .sendKeys('12345.67');
+        .sendKeys('0.87654321');
 
       await this.driver
         .findElement(By.css('[data-testid="attachmentInput"]'))
@@ -174,7 +178,7 @@ describe('Others', function () {
       );
 
       expect(await transferAmount.getText()).to.equal(
-        '-\n12345\n.67000000\n Waves'
+        '-\n0\n.87654321\n Waves'
       );
 
       expect(
