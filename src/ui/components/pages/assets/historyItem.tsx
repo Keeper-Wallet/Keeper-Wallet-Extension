@@ -290,7 +290,6 @@ export function HistoryItem({ tx, className }: Props) {
         Object.values(SWAP_DAPPS).includes(tx.dApp) &&
         tx.call.function === 'swap'
       ) {
-        console.log(tx);
         tooltip = t('historyCard.swap');
 
         let fromBalance = null;
