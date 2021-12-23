@@ -283,6 +283,12 @@ export function SwapForm({
 
   const fromAmountTokens = new BigNumber(state.fromAmount || '0');
 
+  const amountError = fromAmountTokens.gt(
+    new BigNumber(fromAssetBalance.getTokens())
+  )
+    ? t('swap.insufficientFundsError')
+    : null;
+
   return (
     <form
       className={styles.root}
@@ -404,6 +410,7 @@ export function SwapForm({
         className="fullwidth"
         disabled={
           fromAmountTokens.eq(0) ||
+          amountError != null ||
           state.detailsUpdateIsPending ||
           isSwapInProgress
         }
@@ -412,8 +419,8 @@ export function SwapForm({
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
 
-      {swapErrorMessage && (
-        <div className={styles.error}>{swapErrorMessage}</div>
+      {(amountError || swapErrorMessage) && (
+        <div className={styles.error}>{amountError || swapErrorMessage}</div>
       )}
 
       <table className={styles.summaryTable}>
