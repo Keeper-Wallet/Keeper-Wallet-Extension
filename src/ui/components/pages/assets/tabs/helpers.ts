@@ -8,6 +8,7 @@ import {
 } from '../../../../reducers/updateState';
 import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
+import { AssetDetail } from '../../../../services/Background';
 
 function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
   const dispatch = useAppDispatch();
@@ -72,14 +73,11 @@ export function useTxHistoryFilter() {
   );
 }
 
-export function useSortedAssetEntries<T>(
-  assetEntries: Array<[string, T]>
+export function sortAssetEntries<T>(
+  assetEntries: Array<[string, T]>,
+  assets: Record<string, AssetDetail>,
+  showSuspiciousAssets: boolean
 ): Array<[string, T]> {
-  const assets = useAppSelector(state => state.assets);
-  const showSuspiciousAssets = useAppSelector(
-    state => !!state.uiState?.showSuspiciousAssets
-  );
-
   return assetEntries
     .filter(
       ([assetId]) => showSuspiciousAssets || !assets[assetId]?.isSuspicious

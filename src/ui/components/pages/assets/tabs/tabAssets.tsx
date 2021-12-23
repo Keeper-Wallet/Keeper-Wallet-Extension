@@ -8,11 +8,7 @@ import * as React from 'react';
 import { SearchInput } from '../../Assets';
 import { useAppSelector } from '../../../../store';
 import { TabPanel } from '../../../ui';
-import {
-  CARD_FULL_HEIGHT,
-  useAssetFilter,
-  useSortedAssetEntries,
-} from './helpers';
+import { CARD_FULL_HEIGHT, sortAssetEntries, useAssetFilter } from './helpers';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from '../../../../reducers/updateState';
@@ -37,6 +33,17 @@ const Row = ({ data, index, style }) => {
   );
 };
 
+const PLACEHOLDERS = [...Array(4).keys()].map<[number, BalanceAssets[string]]>(
+  key => [
+    key,
+    {
+      balance: '0',
+      sponsorBalance: '0',
+      minSponsoredAssetFee: '0',
+    },
+  ]
+);
+
 interface Props {
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
@@ -44,23 +51,11 @@ interface Props {
 
 export function TabAssets({ onInfoClick, onSendClick }: Props) {
   const assets = useAppSelector(state => state.assets);
-  const address = useAppSelector(state => state.selectedAccount.address);
-  const myAssets = useAppSelector(
-    state =>
-      state.balances[address]?.assets ||
-      // placeholder
-      ([...Array(4).keys()].reduce(
-        (placeholder, key) => ({
-          ...placeholder,
-          [key]: {
-            balance: '0',
-            sponsorBalance: '0',
-            minSponsoredAssetFee: '0',
-          },
-        }),
-        {}
-      ) as BalanceAssets)
+  const showSuspiciousAssets = useAppSelector(
+    state => state.uiState?.showSuspiciousAssets
   );
+  const address = useAppSelector(state => state.selectedAccount.address);
+  const myAssets = useAppSelector(state => state.balances[address]?.assets);
 
   const {
     term: [term, setTerm],
@@ -69,16 +64,20 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
     clearFilters,
   } = useAssetFilter();
 
-  const assetEntries = useSortedAssetEntries(
-    Object.entries(myAssets).filter(
-      ([assetId]) =>
-        (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
-        (!onlyMy || assets[assetId]?.issuer === address) &&
-        (!term ||
-          assetId === term ||
-          icontains(assets[assetId]?.displayName, term))
-    )
-  );
+  const assetEntries = myAssets
+    ? sortAssetEntries(
+        Object.entries(myAssets).filter(
+          ([assetId]) =>
+            (!onlyFav || assets[assetId]?.isFavorite === onlyFav) &&
+            (!onlyMy || assets[assetId]?.issuer === address) &&
+            (!term ||
+              assetId === term ||
+              icontains(assets[assetId]?.displayName, term))
+        ),
+        assets,
+        showSuspiciousAssets
+      )
+    : PLACEHOLDERS;
 
   return (
     <TabPanel className={styles.assetsPanel}>
