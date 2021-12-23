@@ -252,7 +252,21 @@ export function SwapForm({
 
   const sponsoredAssetBalanceEntries = Object.entries(
     accountBalance.assets
-  ).filter(([, assetBalance]) => assetBalance.minSponsoredAssetFee != null);
+  ).filter(([assetId, assetBalance]) => {
+    const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
+
+    const sponsoredAssetFee = convertToSponsoredAssetFee(
+      wavesFeeCoinsBN,
+      new Asset(assets[assetId]),
+      assetBalance
+    ).getCoins();
+
+    return (
+      assetBalance.minSponsoredAssetFee != null &&
+      new BigNumber(assetBalance.sponsorBalance).gte(wavesFeeCoinsBN) &&
+      new BigNumber(assetBalance.balance).gte(sponsoredAssetFee)
+    );
+  });
 
   function formatSponsoredAssetBalanceEntry([assetId, assetBalance]: [
     string,
