@@ -514,6 +514,7 @@
     "priceImpact": "Price Impact",
     "failMessage": "Swap did not succeed, please try again",
     "fee": "Fee",
+    "lessThan10TokensError": "Swapping less than 10 tokens is not allowed for this pair",
     "priceLabel": "Price",
     "statusFailed": "Swap failed",
     "statusInProgress": "Waiting for swap completion...",

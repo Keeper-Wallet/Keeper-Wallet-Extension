@@ -108,6 +108,21 @@ export function Swap({ setTab }: Props) {
                   toAssetId,
                   toCoins,
                 }) => {
+                  const exchanger = exchangers[exchangerId];
+                  const exchangerVersion = Number(
+                    exchanger.version.split('.')[0]
+                  );
+
+                  const toMoney = new Money(
+                    fromCoins,
+                    new Asset(assets[fromAssetId])
+                  );
+
+                  if (exchangerVersion === 2 && toMoney.getTokens().lt(10)) {
+                    setSwapErrorMessage(t('swap.lessThan10TokensError'));
+                    return;
+                  }
+
                   setSwapErrorMessage(null);
                   setIsSwapInProgress(true);
 
