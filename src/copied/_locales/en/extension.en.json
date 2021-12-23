@@ -398,6 +398,7 @@
     "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
     "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
     "assetInputLabel": "Asset",
+    "insufficientFundsError": "Insufficient funds",
     "recipientInputLabel": "Recipient",
     "recipientInvalidError": "Recipient value is invalid",
     "recipientRequiredError": "Recipient is required",

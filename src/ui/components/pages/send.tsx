@@ -39,6 +39,11 @@ export function Send() {
     }
   }, [currentAsset]);
 
+  const currentBalance = Money.fromCoins(
+    assetBalances[currentAsset.id || 'WAVES']?.balance,
+    new Asset(currentAsset)
+  );
+
   const [recipientValue, setRecipientValue] = React.useState('');
   const [recipientTouched, setRecipientTouched] = React.useState(false);
   const recipientError = !recipientValue
@@ -53,7 +58,12 @@ export function Send() {
 
   const [amountValue, setAmountValue] = React.useState('');
   const [amountTouched, setAmountTouched] = React.useState(false);
-  const amountError = !amountValue ? t('send.amountRequiredError') : null;
+  const amountError =
+    !amountValue || Number(amountValue) == 0
+      ? t('send.amountRequiredError')
+      : !currentBalance.getTokens().gte(amountValue)
+      ? t('send.insufficientFundsError')
+      : null;
   const showAmountError = amountError != null && amountTouched;
 
   const [attachmentTouched, setAttachmentTouched] = React.useState(false);
