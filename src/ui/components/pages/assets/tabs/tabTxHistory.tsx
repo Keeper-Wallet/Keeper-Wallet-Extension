@@ -92,6 +92,8 @@ export function TabTxHistory() {
   const txHistory = useAppSelector(state => state.balances[address]?.txHistory);
 
   const thisYear = new Date().getFullYear();
+  const thisMonth = new Date().getMonth();
+  const thisDate = new Date().getDate();
 
   const {
     term: [term, setTerm],
@@ -203,7 +205,11 @@ export function TabTxHistory() {
             ) {
               result.push({
                 groupName: `${t(`date.${MONTH[M]}`)} ${D}${
-                  Y !== thisYear ? ', ' + Y : ''
+                  Y !== thisYear
+                    ? ', ' + Y
+                    : M === thisMonth && D === thisDate
+                    ? ', Today'
+                    : ''
                 } `.trim(),
               });
             }
