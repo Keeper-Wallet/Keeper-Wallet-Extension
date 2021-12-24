@@ -43,7 +43,7 @@ export function Send() {
   }, [currentAsset]);
 
   const currentBalance = Money.fromCoins(
-    assetBalances[currentAsset.id || 'WAVES']?.balance,
+    !isNft ? assetBalances[currentAsset.id || 'WAVES']?.balance : 1,
     new Asset(currentAsset)
   );
 
