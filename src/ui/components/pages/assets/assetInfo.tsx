@@ -3,8 +3,8 @@ import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
-import { getAssetDetailLink } from './helpers';
 import { AssetDetail } from '../../../services/Background';
+import { getAssetDetailLink } from '../../../urls';
 
 interface Props {
   asset: AssetDetail;
