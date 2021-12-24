@@ -209,12 +209,6 @@ class AccountInfoComponent extends React.Component {
               className="modal-form"
               onSubmit={this.confirmPassword}
             >
-              <Button
-                className="modal-close"
-                onClick={this.rejectPassword}
-                type="transparent"
-              />
-
               <i className={`lock-icon ${styles.lockIcon}`} />
 
               <div className="margin1 relative">
@@ -246,9 +240,16 @@ class AccountInfoComponent extends React.Component {
               >
                 <Trans i18nKey="accountInfo.enter">Enter</Trans>
               </Button>
+
               <Button id="passwordCancel" onClick={this.rejectPassword}>
                 <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
               </Button>
+
+              <Button
+                className="modal-close"
+                onClick={this.rejectPassword}
+                type="transparent"
+              />
             </form>
           </div>
         </Modal>
