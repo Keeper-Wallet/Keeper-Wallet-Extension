@@ -82,8 +82,11 @@ describe('Settings', function () {
         )
         .click();
       await this.driver
-        .findElement(
-          By.css('input[value="3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1"]')
+        .wait(
+          until.elementLocated(
+            By.css('input[value="3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1"]')
+          ),
+          this.wait
         )
         .click();
       await this.driver
