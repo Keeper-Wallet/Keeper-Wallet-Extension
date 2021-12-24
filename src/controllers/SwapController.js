@@ -1,14 +1,17 @@
 import { Asset, Money } from '@waves/data-entities';
 import { SIGN_TYPE } from '@waves/signature-adapter';
+import { getAssetIdByName } from 'assets/utils';
 import ObservableStore from 'obs-store';
 import { SWAP_DAPPS } from '../constants';
 
 const swopFiConfigsByNetwork = {
   mainnet: {
     backend: 'https://backend.swop.fi',
+    stakingBackend: 'https://staking.swop.fi',
   },
   testnet: {
     backend: 'https://backend-dev.swop.fi',
+    stakingBackend: 'https://staking-dev.swop.fi',
   },
 };
 
@@ -143,15 +146,48 @@ export class SwapController {
 
     const signedTx = await this.signTx(selectedAccount.address, tx, network);
 
-    const text = await this.broadcast({
-      type: 'transaction',
-      result: signedTx,
-    });
+    let transactionId;
 
-    const json = JSON.parse(text);
+    const stakingAssetIds = ['USD', 'EURN', 'NSBT'].map(assetId =>
+      getAssetIdByName(network, assetId)
+    );
+
+    if (stakingAssetIds.includes(toAssetId)) {
+      const swopFiConfig = swopFiConfigsByNetwork[network];
+
+      const response = await fetch(
+        new URL('/transaction/send', swopFiConfig.stakingBackend).toString(),
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: signedTx,
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 400) {
+          const errorJson = await response.json();
+          throw new Error(errorJson.message);
+        } else {
+          throw new Error('Failed to send transaction');
+        }
+      }
+
+      const json = await response.json();
+      transactionId = json.id;
+    } else {
+      const text = await this.broadcast({
+        type: 'transaction',
+        result: signedTx,
+      });
+
+      transactionId = JSON.parse(text).id;
+    }
 
     return {
-      transactionId: json.id,
+      transactionId,
     };
   }
 }
