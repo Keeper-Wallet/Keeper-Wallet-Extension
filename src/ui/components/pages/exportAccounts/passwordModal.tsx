@@ -37,12 +37,6 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
             }
           }}
         >
-          <Button
-            className="modal-close"
-            onClick={onClose}
-            type="transparent"
-          />
-
           <i className={cn(styles.lockIcon, 'lock-icon')} />
 
           <p className={cn('margin1', 'body1', 'disabled500')}>
@@ -92,6 +86,12 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
           <Button onClick={onClose}>
             <Trans i18nKey="exportKeystore.cancelBtn" />
           </Button>
+
+          <Button
+            className="modal-close"
+            onClick={onClose}
+            type="transparent"
+          />
         </form>
       </div>
     </Modal>
