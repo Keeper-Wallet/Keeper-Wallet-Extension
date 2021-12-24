@@ -152,7 +152,7 @@ export class SwapController {
       getAssetIdByName(network, assetId)
     );
 
-    if (stakingAssetIds.includes(toAssetId)) {
+    async function sendTxThroughSwopFi() {
       const swopFiConfig = swopFiConfigsByNetwork[network];
 
       const response = await fetch(
@@ -176,14 +176,29 @@ export class SwapController {
       }
 
       const json = await response.json();
-      transactionId = json.id;
-    } else {
+
+      return json.id;
+    }
+
+    async function sendTx() {
       const text = await this.broadcast({
         type: 'transaction',
         result: signedTx,
       });
 
-      transactionId = JSON.parse(text).id;
+      const json = JSON.parse(text);
+
+      return json.id;
+    }
+
+    if (stakingAssetIds.includes(toAssetId)) {
+      try {
+        transactionId = await sendTxThroughSwopFi();
+      } catch (err) {
+        transactionId = await sendTx();
+      }
+    } else {
+      transactionId = await sendTx();
     }
 
     return {
