@@ -207,7 +207,6 @@ class MessagesComponent extends React.Component {
       txHash,
       sponsoredBalance,
       selectedAccount,
-      autoClickProtection,
     } = this.state;
     const conf = getConfigByTransaction(activeMessage);
     const { message: Component, type } = conf;
@@ -215,7 +214,7 @@ class MessagesComponent extends React.Component {
     return (
       <Component
         txType={type}
-        autoClickProtection={autoClickProtection}
+        autoClickProtection={this.props.autoClickProtection}
         pending={approvePending}
         txHash={txHash}
         assets={assets}
