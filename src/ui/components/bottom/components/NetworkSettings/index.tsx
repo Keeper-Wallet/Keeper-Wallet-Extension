@@ -35,12 +35,6 @@ export class NetworkSettings extends React.PureComponent<
     return (
       <div className="modal cover">
         <div id="customNetwork" className="modal-form">
-          <Button
-            className="modal-close"
-            onClick={this.state.onClose}
-            type="transparent"
-          />
-
           <div>
             <i className="networkIconActive"> </i>
             <h2 className="headline2 margin-main-big">
@@ -112,11 +106,18 @@ export class NetworkSettings extends React.PureComponent<
                 Save and apply
               </Trans>
             </Button>
+
             <div className="center">
               <Button onClick={this.state.onClose} type="transparent">
                 <Trans i18nKey="networkSettings.cancel">Cancel</Trans>
               </Button>
             </div>
+
+            <Button
+              className="modal-close"
+              onClick={this.state.onClose}
+              type="transparent"
+            />
           </div>
         </div>
       </div>

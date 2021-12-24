@@ -20,8 +20,6 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
   return (
     <div className="modal cover">
       <div className="modal-form">
-        <Button className="modal-close" onClick={onClose} type="transparent" />
-
         <div className="margin-main">
           <div className="input-title basic500 tag1">
             <Trans i18nKey="assetInfo.id" />
@@ -135,6 +133,8 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
         <Button onClick={onClose} type="button">
           <Trans i18nKey="assetInfo.closeBtn" />
         </Button>
+
+        <Button className="modal-close" onClick={onClose} type="transparent" />
       </div>
     </div>
   );

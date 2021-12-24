@@ -15,17 +15,6 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
   return (
     <div className="modal cover">
       <form className="modal-form" onSubmit={preventDefault(onSubmit)}>
-        <Button
-          className="modal-close"
-          onClick={preventDefault(function close() {
-            background.sendEvent('click', {
-              id: 'featureUpdateInfo.closeBtn',
-            });
-            onClose();
-          })}
-          type="transparent"
-        />
-
         <i className={`lock-icon ${styles.lockIcon}`} />
 
         <p className={cn('margin1', 'body1')}>
@@ -52,6 +41,17 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
         >
           <Trans i18nKey="featureUpdateInfo.backupBtn" />
         </Button>
+
+        <Button
+          className="modal-close"
+          onClick={preventDefault(function close() {
+            background.sendEvent('click', {
+              id: 'featureUpdateInfo.closeBtn',
+            });
+            onClose();
+          })}
+          type="transparent"
+        />
       </form>
     </div>
   );
