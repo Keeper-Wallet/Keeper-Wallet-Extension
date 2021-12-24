@@ -253,6 +253,10 @@ export function SwapForm({
   const sponsoredAssetBalanceEntries = Object.entries(
     accountBalance.assets
   ).filter(([assetId, assetBalance]) => {
+    if (assetId === 'WAVES') {
+      return true;
+    }
+
     const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
 
     const sponsoredAssetFee = convertToSponsoredAssetFee(
