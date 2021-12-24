@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import * as R from 'ramda';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -43,6 +44,7 @@ export class AssetInfoController {
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
+    this.updateSuspiciousAssets();
   }
 
   getWavesAsset() {
@@ -63,7 +65,7 @@ export class AssetInfoController {
     const asset = assets[network][assetId] || {};
 
     return network === 'mainnet' && this.suspiciousAssets
-      ? this.suspiciousAssets.includes(assetId)
+      ? R.includes(this.suspiciousAssets, assetId)
       : asset.isSuspicious;
   }
 
@@ -223,10 +225,13 @@ export class AssetInfoController {
     }
 
     if (this.suspiciousAssets) {
-      Object.keys(assets[network]).forEach(
+      R.forEach(
         assetId =>
-          (assets[network][assetId].isSuspicious =
-            this.suspiciousAssets.includes(assetId))
+          (assets[network][assetId].isSuspicious = R.includes(
+            this.suspiciousAssets,
+            assetId
+          )),
+        R.keys(assets[network])
       );
     }
 

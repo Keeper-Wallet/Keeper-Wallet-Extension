@@ -65,7 +65,9 @@ export class MessageController extends EventEmitter {
     this.getPackConfig = options.getPackConfig;
 
     // Get assetInfo method from AssetInfoController
-    this.assetInfo = id => options.assetInfoController.assetInfo(id);
+    this.assetInfo = options.assetInfoController.assetInfo.bind(
+      options.assetInfoController
+    );
     this.assetInfoController = options.assetInfoController;
     //tx by txId
     this.txInfo = options.txInfo;
@@ -588,10 +590,11 @@ export class MessageController extends EventEmitter {
 
     const signable = adapter.makeSignable({ ...data, data: signableData });
 
-    const id = await signable.getId();
-
-    const bytes = Array.from(await signable.getBytes());
-    return { id, bytes };
+    const [id, bytes] = await Promise.all([
+      signable.getId(),
+      signable.getBytes(),
+    ]);
+    return { id, bytes: Array.from(bytes) };
   }
 
   async _generateMessage(messageData) {
@@ -729,17 +732,17 @@ export class MessageController extends EventEmitter {
         result.data.data.initialFee = result.data.data.initialFee || {
           ...result.data.data.fee,
         };
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
-        );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
 
-        if (result.data.type === 9) {
-          result.lease = await this.txInfo(result.data.data.leaseId);
-        }
-        result.json = await this._prepareMessageJson(clone(result));
+        const [meta, lease, json] = await Promise.all([
+          this._getMessageDataHash(result.data, message.account),
+          result.data.type === 9 && this.txInfo(result.data.data.leaseId),
+          this._prepareMessageJson(clone(result)),
+        ]);
+
+        result.messageHash = meta.id;
+        result.bytes = Array.from(meta.bytes);
+        result.lease = lease;
+        result.json = json;
         break;
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
