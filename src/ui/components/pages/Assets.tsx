@@ -128,6 +128,9 @@ export function Assets({ setTab }: Props) {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);
           }}
+          onSwapClick={() => {
+            setTab(PAGES.SWAP);
+          }}
           onOtherAccountsClick={() => {
             setTab(PAGES.OTHER_ACCOUNTS);
           }}

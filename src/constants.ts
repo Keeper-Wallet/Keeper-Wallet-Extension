@@ -114,3 +114,8 @@ export const DEFAULT_FEE_CONFIG = {
     },
   },
 };
+
+export const SWAP_DAPPS = {
+  mainnet: '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u',
+  testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
+};

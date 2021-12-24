@@ -33,24 +33,34 @@
 
 .left {
   flex: 0 0 30%;
+  overflow: hidden;
 }
 
 .label {
   color: #9ba6b2;
   font-size: 11px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .assetName {
   font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .right {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  overflow: hidden;
   text-align: right;
 }
 
 .balance {
   font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .input {
@@ -68,4 +78,7 @@
 .result {
   font-size: 14px;
   font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

@@ -4,13 +4,12 @@ import * as mocha from 'mocha';
 import { clear } from './utils';
 import {
   App,
-  Settings,
-  Network,
-  CreateNewAccount,
   Assets,
+  CreateNewAccount,
+  Network,
+  Settings,
 } from './utils/actions';
-import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
-import { seedUtils } from '@waves/waves-transactions';
+import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
 describe('Account creation', function () {
   this.timeout(60 * 1000);
@@ -885,19 +884,7 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault: string = await this.driver.executeAsyncScript(
-            function () {
-              const cb = arguments[arguments.length - 1];
-              // @ts-ignore
-              chrome.storage.local.get('WalletController', storage =>
-                cb(storage.WalletController.vault)
-              );
-            }
-          );
-
-          expect(
-            JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.deep.equal([
+          expect(await App.decryptVault.call(this)).to.deep.equal([
             {
               seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
               publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
@@ -988,19 +975,7 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault: string = await this.driver.executeAsyncScript(
-            function () {
-              const cb = arguments[arguments.length - 1];
-              // @ts-ignore
-              chrome.storage.local.get('WalletController', storage =>
-                cb(storage.WalletController.vault)
-              );
-            }
-          );
-
-          expect(
-            JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.deep.equal([
+          expect(await App.decryptVault.call(this)).to.deep.equal([
             {
               seed: 'once green grace barrel tray ethics stock wedding visit puzzle multiply pulp donor organ cluster',
               publicKey: '7cdJyEuasmgDvWUcPSfq6JG9yJYLEHy1XQ1xeUoPJefz',
@@ -1146,19 +1121,7 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault: string = await this.driver.executeAsyncScript(
-            function () {
-              const cb = arguments[arguments.length - 1];
-              // @ts-ignore
-              chrome.storage.local.get('WalletController', storage =>
-                cb(storage.WalletController.vault)
-              );
-            }
-          );
-
-          expect(
-            JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.include.deep.members([
+          expect(await App.decryptVault.call(this)).to.include.deep.members([
             {
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
               name: 'test2 (1)',
@@ -1225,19 +1188,7 @@ describe('Account creation', function () {
 
           await new Promise(resolve => setTimeout(resolve, 1500)); // waiting for save after debounce
 
-          const vault: string = await this.driver.executeAsyncScript(
-            function () {
-              const cb = arguments[arguments.length - 1];
-              // @ts-ignore
-              chrome.storage.local.get('WalletController', storage =>
-                cb(storage.WalletController.vault)
-              );
-            }
-          );
-
-          expect(
-            JSON.parse(seedUtils.decryptSeed(vault, DEFAULT_PASSWORD))
-          ).to.include.deep.members([
+          expect(await App.decryptVault.call(this)).to.include.deep.members([
             {
               address: '3PCj4z3TZ1jqZ7A9zYBoSbHnvRqFq2uy89r',
               name: 'test2 (2)',

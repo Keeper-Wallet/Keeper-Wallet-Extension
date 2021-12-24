@@ -108,6 +108,10 @@ export class CurrentAccountController {
                             tx.order1.assetPair.priceAsset,
                           ]
                         : []),
+                      ...(tx.payment ? tx.payment.map(x => x.assetId) : []),
+                      ...(tx.stateChanges
+                        ? tx.stateChanges.transfers.map(x => x.asset)
+                        : []),
                     ],
                     []
                   )

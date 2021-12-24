@@ -2,6 +2,9 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
+  "activeAccountCard": {
+    "swapButton": "Swap"
+  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -101,6 +104,7 @@
     "setScriptCancel": "Cancel Account Script",
     "sponsorshipDisable": "Disable Sponsorship",
     "sponsorshipEnable": "Enable Sponsorship",
+    "swap": "Token Swap",
     "transfer": "Transfer",
     "transferReceive": "Incoming Transfer",
     "transferSelf": "Self-transfer",
@@ -502,6 +506,25 @@
     "understand": "I understand",
     "viewTransaction": "View transaction",
     "wavesAuthConfirmed": "Sign a waves auth request!"
+  },
+  "swap": {
+    "closeBtnText": "Close",
+    "fromInputLabel": "From",
+    "minimumReceived": "Minimum Received",
+    "pairInputLabel": "Pair",
+    "priceImpact": "Price Impact",
+    "failMessage": "Swap did not succeed, please try again",
+    "fee": "Fee",
+    "insufficientFundsError": "Insufficient funds",
+    "priceLabel": "Price",
+    "statusFailed": "Swap failed",
+    "statusInProgress": "Waiting for swap completion...",
+    "statusSucceeded": "Swap succeeded",
+    "submitButtonText": "Swap",
+    "title": "Swap assets",
+    "toInputLabel": "To (est.)",
+    "transactionFee": "Transaction Fee",
+    "viewTransaction": "View transaction"
   },
   "transactions": {
     "allowAccess": "Allow access",

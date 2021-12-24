@@ -29,6 +29,7 @@ import {
   SettingsGeneral,
   Welcome,
 } from './components/pages';
+import { Swap } from './components/pages/swap/swap';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
@@ -76,6 +77,7 @@ export const PAGES = {
   FORGOT: 'forgot_password',
   CHANGE_TX_ACCOUNT: 'change_tx_account',
   SEND: 'send',
+  SWAP: 'swap',
   ROOT: '',
 };
 
@@ -507,6 +509,16 @@ export const PAGES_CONF = {
   },
   [PAGES.SEND]: {
     component: Send,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      back: true,
+      hasLogo: true,
+    },
+  },
+  [PAGES.SWAP]: {
+    component: Swap,
     bottom: {
       hide: true,
     },

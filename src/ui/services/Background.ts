@@ -235,6 +235,54 @@ class Background {
     return this.background.signAndPublishTransaction(data);
   }
 
+  async updateExchangers(network: string) {
+    await this.initPromise;
+    return this.background.updateExchangers(network);
+  }
+
+  async performSwap({
+    exchangerId,
+    fee,
+    feeAssetId,
+    fromAssetId,
+    fromCoins,
+    minReceivedCoins,
+    toAssetId,
+    toCoins,
+  }: {
+    exchangerId: string;
+    fee: string;
+    feeAssetId: string;
+    fromAssetId: string;
+    fromCoins: string;
+    minReceivedCoins: string;
+    toAssetId: string;
+    toCoins: string;
+  }): Promise<{ transactionId: string }> {
+    await this.initPromise;
+
+    return this.background.performSwap({
+      exchangerId,
+      fee,
+      feeAssetId,
+      fromAssetId,
+      fromCoins,
+      minReceivedCoins,
+      toAssetId,
+      toCoins,
+    });
+  }
+
+  async getMinimumFee(txType: number) {
+    await this.initPromise;
+    return this.background.getMinimumFee(txType);
+  }
+
+  async getExtraFee(address: string, network: string): Promise<number> {
+    await this.initPromise;
+    return this.background.getExtraFee(address, network);
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);

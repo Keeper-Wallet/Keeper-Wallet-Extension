@@ -56,3 +56,32 @@
 .controlsExpand {
   flex-grow: 1;
 }
+
+.buttonWallet {
+  cursor: pointer;
+  text-decoration: none;
+  background-color: #f8f9fb;
+  border: 1px solid #edf0f4;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: normal;
+  padding: 6px 8px;
+  padding-left: 28px;
+  font-size: 12px;
+  color: #000;
+}
+
+.buttonWallet:hover {
+  background-color: #edf0f4;
+}
+
+.buttonWallet_iconOnly {
+  width: 26px;
+  height: 26px;
+  background-position: center;
+  background-color: transparent;
+  border: 0 none;
+  padding: 0;
+}

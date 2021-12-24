@@ -3,9 +3,20 @@
  *
  * NOTE: Each of them needs to bind `this` from test.
  */
+import { seedUtils } from '@waves/waves-transactions';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './constants';
+
+interface VaultEntry {
+  seed: string;
+  publicKey: string;
+  address: string;
+  networkCode: string;
+  network: string;
+  type: string;
+  name: string;
+}
 
 export const App = {
   initVault: async function (
@@ -75,6 +86,29 @@ export const App = {
       .wait(until.elementLocated(By.css('button#deleteAccount')), this.wait)
       .click();
   },
+
+  decryptVault: async function (
+    this: mocha.Context,
+    password = DEFAULT_PASSWORD
+  ) {
+    const encryptedVault = await this.driver.executeAsyncScript<string>(
+      function () {
+        const cb = arguments[arguments.length - 1];
+
+        // @ts-ignore
+        chrome.storage.local.get('WalletController', storage =>
+          cb(storage.WalletController.vault)
+        );
+      }
+    );
+
+    const vault: VaultEntry[] = JSON.parse(
+      seedUtils.decryptSeed(encryptedVault, password)
+    );
+
+    return vault;
+  },
+
   open: async function (this: mocha.Context) {
     await this.driver.get(this.extensionUrl);
     await this.driver.wait(
