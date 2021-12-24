@@ -5,12 +5,11 @@ import { BalanceAssets } from './TxInfo';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { DEFAULT_FEE_CONFIG } from '../../../../constants';
-import { getBalances, updateTransactionFee } from '../../../actions';
+import { updateTransactionFee } from '../../../actions';
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getFee } from './parseTx';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { omit } from 'ramda';
-import { useAppDispatch } from '../../../store';
 
 const WAVES_MIN_FEE = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
 
@@ -79,12 +78,6 @@ export const TxFee = connect(
   updateTransactionFee,
   message,
 }: Props) {
-  const dispatch = useAppDispatch();
-
-  React.useEffect(() => {
-    dispatch(getBalances());
-  }, []);
-
   function getOption(assetId: string): FeeOption {
     const tokens = convertFee(initialFee, assets[assetId]).getTokens();
     return {
