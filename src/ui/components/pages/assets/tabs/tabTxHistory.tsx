@@ -1,7 +1,7 @@
 import * as styles from '../../styles/assets.styl';
 import { Select, TabPanel } from '../../../ui';
 import { Trans, useTranslation } from 'react-i18next';
-import { getTxHistoryLink, icontains } from '../helpers';
+import { icontains } from '../helpers';
 import { HistoryItem } from '../historyItem';
 import * as React from 'react';
 import { SearchInput } from '../../Assets';
@@ -23,6 +23,7 @@ import { Tooltip } from '../../../ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
+import { getTxHistoryLink } from '../../../../urls';
 
 const Row = ({ data, index, style }) => {
   const { historyWithGroups, hasMore, hasFilters, historyLink } = data;

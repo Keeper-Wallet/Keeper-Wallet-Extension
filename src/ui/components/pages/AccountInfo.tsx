@@ -2,21 +2,13 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
-import {
-  Avatar,
-  Balance,
-  Button,
-  BUTTON_TYPE,
-  CopyText,
-  Error,
-  Input,
-  Modal,
-} from '../ui';
+import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { seedUtils } from '@waves/waves-transactions';
+import { getAccountLink } from '../../urls';
 
 const { Seed } = seedUtils;
 
@@ -91,7 +83,7 @@ class AccountInfoComponent extends React.Component {
     const { leaseBalance } = this.state;
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
-    const { address, name, publicKey } = selectedAccount;
+    const { address, name, publicKey, networkCode } = selectedAccount;
 
     return (
       <div className={styles.content}>
@@ -116,7 +108,7 @@ class AccountInfoComponent extends React.Component {
                   balance={this.state.balance}
                 />
 
-                {showLease ? (
+                {showLease && (
                   <div
                     className={`${styles.reservedBalance} margin-main-big-top`}
                   >
@@ -125,9 +117,20 @@ class AccountInfoComponent extends React.Component {
                       <Trans i18nKey="wallet.lease">Leased</Trans>
                     </span>
                   </div>
-                ) : null}
+                )}
               </div>
             </div>
+          </div>
+
+          <div className="margin-main-top center">
+            <a
+              className="link black"
+              href={getAccountLink(networkCode, address)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Trans i18nKey="accountInfo.viewInExplorer" />
+            </a>
           </div>
         </div>
 

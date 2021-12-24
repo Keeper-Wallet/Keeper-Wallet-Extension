@@ -6,10 +6,10 @@ import { TxIcon } from '../../transactions/BaseTransaction';
 import { useAppSelector } from '../../../store';
 import { Trans, useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
-import { getTxDetailLink } from './helpers';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
+import { getTxDetailLink } from '../../../urls';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
