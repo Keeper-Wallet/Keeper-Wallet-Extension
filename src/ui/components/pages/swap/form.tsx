@@ -418,6 +418,7 @@ export function SwapForm({
           state.detailsUpdateIsPending ||
           isSwapInProgress
         }
+        loading={isSwapInProgress}
         type="submit"
       >
         <Trans i18nKey="swap.submitButtonText" />
