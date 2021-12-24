@@ -12,7 +12,6 @@
   box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
   background: $white;
   border-radius: 4px;
-  margin-top: 2px;
   position: absolute;
   z-index: 50;
   right: 0;
@@ -21,6 +20,13 @@
   width: fit-content;
   max-height: 240px;
   overflow-y: auto;
+
+.list_placement_bottom
+  margin-top: 2px;
+
+.list_placement_top
+  bottom: 100%;
+  margin-bottom: 2px;
 
 .listItem
   height: 40px;
@@ -49,15 +55,11 @@
   height: 40px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   font-size: 14px;
 
-  &:before
+  &:after
     content: '';
-    position: absolute;
     width: 14px;
     height: 14px;
     background: url(../../../assets/img/select-14-black.svg) center no-repeat;
-    right: 14px;
-    top: 50%;
-    display: block;
-    transform: translateY(-50%);

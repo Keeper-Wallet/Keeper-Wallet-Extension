@@ -6,35 +6,63 @@ import { useIMask } from 'react-imask';
 import { useAppSelector } from 'ui/store';
 import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
+import { Loader } from 'ui/components/ui';
 
 interface Props {
   balance: Money;
   label: string;
+  loading?: boolean;
   value: string;
   onChange?: (newValue: string) => void;
 }
 
-export function AssetAmountInput({ balance, label, value, onChange }: Props) {
+export function AssetAmountInput({
+  balance,
+  label,
+  loading,
+  value,
+  onChange,
+}: Props) {
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
 
-  const mask = useIMask(
-    {
-      mapToRadix: ['.', ','],
-      mask: Number,
-      radix: '.',
-      scale: asset.precision,
-      thousandsSeparator: ' ',
-    },
-    {
-      onAccept: (_value, mask) => {
-        if (onChange) {
-          onChange(mask.unmaskedValue);
-        }
-      },
+  const mask = useIMask({
+    mapToRadix: ['.', ','],
+    mask: Number,
+    radix: '.',
+    scale: asset.precision,
+    thousandsSeparator: ' ',
+  });
+
+  const valueRef = React.useRef(value);
+  const onChangeRef = React.useRef(onChange);
+
+  React.useEffect(() => {
+    valueRef.current = value;
+    onChangeRef.current = onChange;
+  }, [value, onChange]);
+
+  React.useEffect(() => {
+    const input = mask.ref.current;
+    const maskInstance = mask.maskRef.current;
+
+    if (!input || !maskInstance) {
+      return;
     }
-  );
+
+    function inputListener() {
+      if (valueRef.current !== maskInstance.unmaskedValue) {
+        onChangeRef.current(maskInstance.unmaskedValue);
+      }
+    }
+
+    input.addEventListener('input', inputListener, false);
+
+    return () => {
+      input.removeEventListener('input', inputListener, false);
+    };
+  }, []);
 
   React.useEffect(() => {
     const input = mask.ref.current;
@@ -46,6 +74,21 @@ export function AssetAmountInput({ balance, label, value, onChange }: Props) {
       maskInstance.updateControl();
     }
   }, [value]);
+
+  const formattedValue = new BigNumber(value || '0').toFormat(
+    asset.precision,
+    BigNumber.ROUND_MODE.ROUND_FLOOR,
+    {
+      fractionGroupSeparator: '',
+      fractionGroupSize: 0,
+      decimalSeparator: '.',
+      groupSeparator: ' ',
+      groupSize: 3,
+      prefix: '',
+      secondaryGroupSize: 0,
+      suffix: '',
+    }
+  );
 
   return (
     <div className={styles.root}>
@@ -66,13 +109,18 @@ export function AssetAmountInput({ balance, label, value, onChange }: Props) {
 
       <div className={styles.left}>
         <div className={styles.label}>{label}</div>
-        <div className={styles.assetName}>{asset.displayName}</div>
+
+        <div className={styles.assetName} title={asset.displayName}>
+          {asset.displayName}
+        </div>
       </div>
 
       <div className={styles.right}>
         <div className={styles.balance}>{balance.toTokens()}</div>
 
-        {onChange ? (
+        {loading ? (
+          <Loader />
+        ) : onChange ? (
           <input
             className={styles.input}
             placeholder="0.0"
@@ -80,21 +128,8 @@ export function AssetAmountInput({ balance, label, value, onChange }: Props) {
             data-testid="amountInput"
           />
         ) : (
-          <div className={styles.result}>
-            {new BigNumber(value).toFormat(
-              asset.precision,
-              BigNumber.ROUND_MODE.ROUND_FLOOR,
-              {
-                fractionGroupSeparator: '',
-                fractionGroupSize: 0,
-                decimalSeparator: '.',
-                groupSeparator: ' ',
-                groupSize: 3,
-                prefix: '',
-                secondaryGroupSize: 0,
-                suffix: '',
-              }
-            )}
+          <div className={styles.result} title={formattedValue}>
+            {formattedValue}
           </div>
         )}
       </div>

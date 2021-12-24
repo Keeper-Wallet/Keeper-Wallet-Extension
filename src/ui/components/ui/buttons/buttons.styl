@@ -19,32 +19,6 @@
     &:last-child
       border-radius: 0 4px 4px 0;
 
-:global .button
-  &-wallet
-    cursor: pointer;
-    text-decoration: none;
-    background-color: $basic50;
-    border: 1px solid $basic100;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: normal;
-    padding: 6px 8px 6px 28px;
-    font-size: 12px;
-    color: $black;
-
-    &:hover
-      background-color: $basic100;
-
-    &-iconOnly
-      width: 26px;
-      height: 26px;
-      background-position: center;
-      background-color: transparent;
-      border: 0 none;
-      padding: 0;
-
 .button
   cursor: pointer;
   font-size: 14px;
@@ -167,3 +141,29 @@
       background-color: transparent;
       border: 0.5px solid $basic200;
       box-shadow: none;
+
+.button.button_loading
+  position: relative;
+  color: transparent;
+
+  &::after
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
+    border: 2px solid $basic100;
+    border-right-color: $submit400;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    animation: rotate-spinner 0.6s linear infinite;
+
+@keyframes rotate-spinner
+  0%
+    transform: rotate(0deg);
+  50%
+    transform: rotate(180deg);
+  100%
+    transform: rotate(359deg);

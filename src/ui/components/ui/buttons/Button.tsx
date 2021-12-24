@@ -17,12 +17,14 @@ export const BUTTON_TYPE = {
 export function Button({
   id,
   className,
+  loading,
   type,
   withIcon,
   children,
   ...props
 }: IProps) {
   const btnClassName = cn(className, styles.button, {
+    [styles.button_loading]: loading,
     [styles.submit]: type === BUTTON_TYPE.SUBMIT,
     [styles.submitTiny]: type === BUTTON_TYPE.SUBMIT_TINY,
     [styles.submit]: type === BUTTON_TYPE.GENERAL,
@@ -46,6 +48,7 @@ interface IProps {
   id?: any;
   children?: any;
   className?: string;
+  loading?: boolean;
   onClick?: any;
   type?: any;
   withIcon?: boolean;

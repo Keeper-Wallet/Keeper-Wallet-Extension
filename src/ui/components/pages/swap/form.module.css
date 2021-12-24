@@ -1,0 +1,104 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.pairSelect {
+  margin-bottom: 24px;
+}
+
+.swapDirectionBtnWrapper {
+  margin: -11px 0;
+  padding: 0 14px;
+}
+
+.swapDirectionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  color: #edf0f4;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.swapDirectionBtn:not(:disabled):hover {
+  background: #edf0f4;
+}
+
+.swapDirectionBtn:disabled {
+  background: #f8f9fb;
+  cursor: not-allowed;
+}
+
+.swapDirectionBtnIcon {
+  color: #9ba6b2;
+}
+
+.priceRow {
+  margin: 1em 0;
+  display: flex;
+  gap: 1em;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.priceRowLabel {
+  color: #9ba6b2;
+}
+
+.priceRowValue {
+  flex: 1 1 auto;
+  text-align: right;
+}
+
+.error {
+  margin-top: 8px;
+  overflow: auto;
+  color: #e5494d;
+  font-size: 12px;
+}
+
+.summaryTable {
+  margin-top: 1em;
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.summaryTable th,
+.summaryTable td {
+  padding: 0.5em;
+  white-space: nowrap;
+}
+
+.summaryTable th:first-child,
+.summaryTable td:first-child {
+  padding-left: 0;
+  width: min-content;
+}
+
+.summaryTable th:last-child,
+.summaryTable td:last-child {
+  padding-right: 0;
+}
+
+.summaryTable th {
+  color: #9ba6b2;
+  font-weight: 300;
+  text-align: left;
+}
+
+.summaryTable td {
+  text-align: right;
+}
+
+.summaryTableValue {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

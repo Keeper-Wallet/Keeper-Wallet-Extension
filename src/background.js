@@ -27,11 +27,16 @@ import {
   PreferencesController,
   RemoteConfigController,
   StatisticsController,
+  SwapController,
   TrashController,
   TxInfoController,
   UiStateController,
   WalletController,
 } from './controllers';
+import {
+  getExtraFee,
+  getMinimumFee,
+} from './controllers/CalculateFeeController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import '@waves/waves-transactions';
@@ -332,6 +337,27 @@ class BackgroundService extends EventEmitter {
       }
     );
 
+    this.swapController = new SwapController({
+      initState: initState.SwapController,
+      assetInfo: this.assetInfoController.assetInfo.bind(
+        this.assetInfoController
+      ),
+      broadcast: this.networkController.broadcast.bind(this.networkController),
+      getAssets: this.assetInfoController.getAssets.bind(
+        this.assetInfoController
+      ),
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
+        this.preferencesController
+      ),
+      signTx: this.walletController.signTx.bind(this.walletController),
+      updateAssets: this.assetInfoController.updateAssets.bind(
+        this.assetInfoController
+      ),
+    });
+
     // Single state composed from states of all controllers
     this.store.updateStructure({
       StatisticsController: this.statisticsController.store,
@@ -345,6 +371,7 @@ class BackgroundService extends EventEmitter {
       AssetInfoController: this.assetInfoController.store,
       RemoteConfigController: this.remoteConfigController.store,
       NotificationsController: this.notificationsController.store,
+      SwapController: this.swapController.store,
       TrashController: this.trash.store,
     });
 
@@ -506,6 +533,13 @@ class BackgroundService extends EventEmitter {
       ),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
+      updateExchangers: this.swapController.updateExchangers.bind(
+        this.swapController
+      ),
+      performSwap: this.swapController.performSwap.bind(this.swapController),
+      getMinimumFee: getMinimumFee,
+      getExtraFee: (address, network) =>
+        getExtraFee(address, this.networkController.getNode(network)),
     };
   }
 
