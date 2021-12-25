@@ -1,5 +1,4 @@
 import ObservableStore from 'obs-store';
-import * as R from 'ramda';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -17,6 +16,25 @@ const WAVES = {
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const MAX_AGE = 60 * 60 * 1000;
+
+function binarySearch(sortedArray, key) {
+  let start = 0;
+  let end = sortedArray.length - 1;
+
+  while (start <= end) {
+    let middle = Math.floor((start + end) / 2);
+
+    if (sortedArray[middle] === key) {
+      return middle;
+    } else if (sortedArray[middle] < key) {
+      start = middle + 1;
+    } else {
+      end = middle - 1;
+    }
+  }
+
+  return -1;
+}
 
 export class AssetInfoController {
   constructor(options = {}) {
@@ -65,7 +83,7 @@ export class AssetInfoController {
     const asset = assets[network][assetId] || {};
 
     return network === 'mainnet' && this.suspiciousAssets
-      ? R.includes(this.suspiciousAssets, assetId)
+      ? binarySearch(this.suspiciousAssets, assetId) > -1
       : asset.isSuspicious;
   }
 
@@ -216,7 +234,7 @@ export class AssetInfoController {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
       switch (resp.status) {
         case 200:
-          this.suspiciousAssets = (await resp.text()).split('\n');
+          this.suspiciousAssets = (await resp.text()).split('\n').sort();
           this.suspiciousLastUpdated = new Date().getTime();
           break;
         default:
@@ -225,13 +243,10 @@ export class AssetInfoController {
     }
 
     if (this.suspiciousAssets) {
-      R.forEach(
+      Object.keys(assets[network]).forEach(
         assetId =>
-          (assets[network][assetId].isSuspicious = R.includes(
-            this.suspiciousAssets,
-            assetId
-          )),
-        R.keys(assets[network])
+          (assets[network][assetId].isSuspicious =
+            binarySearch(this.suspiciousAssets, assetId) > -1)
       );
     }
 
