@@ -292,32 +292,17 @@ export function HistoryItem({ tx, className }: Props) {
       ) {
         tooltip = t('historyCard.swap');
 
-        let fromBalance = null;
         const payment = tx.payment[0];
-        if (payment) {
-          const fromAmount = payment.amount;
-          const fromAsset = assets[payment.assetId || 'WAVES'];
+        const fromBalance =
+          payment && fromCoins(payment.amount, payment.assetId);
 
-          if (fromAsset) {
-            fromBalance = new Money(
-              new BigNumber(fromAmount),
-              new Asset(fromAsset)
-            );
-          }
-        }
-
-        let toBalance = null;
         const incomingTransfer = tx.stateChanges.transfers.find(
-          t => t.address === address
+          t => t.address === tx.sender
         );
-        if (incomingTransfer) {
-          const toAmount = incomingTransfer.amount;
-          const toAsset = assets[incomingTransfer.asset || 'WAVES'];
 
-          if (toAsset) {
-            toBalance = new Money(new BigNumber(toAmount), new Asset(toAsset));
-          }
-        }
+        const toBalance =
+          incomingTransfer &&
+          fromCoins(incomingTransfer.amount, incomingTransfer.asset);
 
         label = <Balance addSign="-" split showAsset balance={fromBalance} />;
         info = <Balance addSign="+" split showAsset balance={toBalance} />;
