@@ -52,6 +52,10 @@ describe('Others', function () {
       );
     });
 
+    after(async function () {
+      await Network.switchTo.call(this, 'Mainnet');
+    });
+
     beforeEach(async function () {
       const actions = this.driver.actions({ async: true });
       await actions
