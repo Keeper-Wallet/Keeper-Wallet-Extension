@@ -1,6 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
-import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
