@@ -102,3 +102,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.summaryTableTooltip {
+  display: inline-block;
+  border-bottom: 1px dotted;
+}

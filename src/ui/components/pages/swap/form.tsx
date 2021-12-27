@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { convertToSponsoredAssetFee } from 'assets/utils';
+import { Tooltip } from 'ui/components/ui/tooltip';
 import { AssetBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
 import {
@@ -432,7 +433,15 @@ export function SwapForm({
         <tbody>
           <tr>
             <th>
-              <Trans i18nKey="swap.minimumReceived" />
+              <Tooltip
+                content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
+              >
+                {props => (
+                  <span className={styles.summaryTableTooltip} {...props}>
+                    <Trans i18nKey="swap.minimumReceived" />
+                  </span>
+                )}
+              </Tooltip>
             </th>
 
             <td>
@@ -455,7 +464,13 @@ export function SwapForm({
 
           <tr>
             <th>
-              <Trans i18nKey="swap.priceImpact" />
+              <Tooltip content={<Trans i18nKey="swap.priceImpactTooltip" />}>
+                {props => (
+                  <span className={styles.summaryTableTooltip} {...props}>
+                    <Trans i18nKey="swap.priceImpact" />
+                  </span>
+                )}
+              </Tooltip>
             </th>
 
             <td>
@@ -471,7 +486,25 @@ export function SwapForm({
 
           <tr>
             <th>
-              <Trans i18nKey="swap.fee" />
+              <Tooltip
+                content={
+                  <Trans
+                    i18nKey="swap.feeTooltip"
+                    values={{
+                      commission: commission.mul(100).toFormat(),
+                      keeperCommission: getKeeperCommission(exchangerVersion)
+                        .mul(100)
+                        .toFormat(),
+                    }}
+                  />
+                }
+              >
+                {props => (
+                  <span className={styles.summaryTableTooltip} {...props}>
+                    <Trans i18nKey="swap.fee" />
+                  </span>
+                )}
+              </Tooltip>
             </th>
 
             <td>
@@ -499,7 +532,13 @@ export function SwapForm({
 
           <tr>
             <th>
-              <Trans i18nKey="swap.transactionFee" />
+              <Tooltip content={<Trans i18nKey="swap.transactionFeeTooltip" />}>
+                {props => (
+                  <span className={styles.summaryTableTooltip} {...props}>
+                    <Trans i18nKey="swap.transactionFee" />
+                  </span>
+                )}
+              </Tooltip>
             </th>
 
             <td>

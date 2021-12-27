@@ -511,10 +511,13 @@
     "closeBtnText": "Close",
     "fromInputLabel": "From",
     "minimumReceived": "Minimum Received",
+    "minimumReceivedTooltip": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed",
     "pairInputLabel": "Pair",
     "priceImpact": "Price Impact",
+    "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "failMessage": "Swap did not succeed, please try again",
     "fee": "Fee",
+    "feeTooltip": "SwopFi exchanger fee ({{commission}}%) + Keeper fee ({{keeperCommission}}%)",
     "insufficientFundsError": "Insufficient funds",
     "priceLabel": "Price",
     "statusFailed": "Swap failed",
@@ -524,6 +527,7 @@
     "title": "Swap assets",
     "toInputLabel": "To (est.)",
     "transactionFee": "Transaction Fee",
+    "transactionFeeTooltip": "Network fee for the smart contract invocation",
     "viewTransaction": "View transaction"
   },
   "transactions": {
