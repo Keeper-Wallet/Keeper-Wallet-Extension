@@ -517,7 +517,7 @@
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "failMessage": "Swap did not succeed, please try again",
     "fee": "Fee",
-    "feeTooltip": "SwopFi exchanger fee ({{commission}}%) + Keeper fee ({{keeperCommission}}%)",
+    "feeTooltip": "SwopFi fee ({{commission}}%) + Keeper fee ({{keeperCommission}}%)",
     "insufficientFundsError": "Insufficient funds",
     "priceLabel": "Price",
     "statusFailed": "Swap failed",
