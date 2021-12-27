@@ -19,6 +19,7 @@ const devConf = conf => ({
           '@waves/money-like-to-node',
           '@waves/node-api-js',
           '@waves/ts-lib-crypto',
+          '@waves/waves-transactions',
         ].map(
           moduleName =>
             new RegExp(path.join(__dirname, 'node_modules', moduleName))
