@@ -39,7 +39,7 @@
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
     "@waves/signature-adapter": "6.2.1",
-    "@waves/ts-types": "^1.0.6-beta.7",
+    "@waves/ts-types": "^1.0.7",
     "@waves/waves-transactions": "^4.2.5-beta.1",
     "circle-progress-bar": "^1.0.0",
     "classnames": "^2.3.1",

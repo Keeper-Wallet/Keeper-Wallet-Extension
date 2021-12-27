@@ -1,8 +1,13 @@
 import { getAdapterByType } from '@waves/signature-adapter';
-import { libs as transactionsLibs } from '@waves/waves-transactions';
+import {
+  invokeExpression,
+  libs as transactionsLibs,
+} from '@waves/waves-transactions';
 import { waves } from '../controllers/wavesTransactionsController';
 import { BigNumber } from '@waves/bignumber';
 import create from 'parse-json-bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import nodeStringify from '@waves/node-api-js/cjs/tools/stringify';
 
 const { messageEncrypt, messageDecrypt, sharedKey, base58Encode } =
   transactionsLibs.crypto;
@@ -90,8 +95,23 @@ export class Wallet {
   }
 
   async signTx(tx) {
-    const signable = this._adapter.makeSignable(tx);
-    return stringify(await signable.getDataForApi());
+    switch (tx.type) {
+      case TRANSACTION_TYPE.INVOKE_EXPRESSION:
+        const { fee, matcherFee, initialFee, ...restData } = tx.data;
+        const signedTx = invokeExpression(
+          {
+            ...restData,
+            fee: fee.toCoins(),
+            feeAssetId: fee.asset.id,
+          },
+          this.user.seed
+        );
+        return nodeStringify(signedTx);
+
+      default:
+        const signable = this._adapter.makeSignable(tx);
+        return stringify(await signable.getDataForApi());
+    }
   }
 
   async signBytes(bytes) {

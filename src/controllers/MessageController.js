@@ -17,6 +17,9 @@ import { calculateFeeFabric } from './CalculateFeeController';
 import { waves } from './wavesTransactionsController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { invokeExpression } from '@waves/waves-transactions';
+import { txToProtoBytes } from '@waves/waves-transactions/dist/proto-serialize';
 
 const { stringify } = create({ BigNumber });
 
@@ -583,18 +586,31 @@ export class MessageController extends EventEmitter {
     }
     let signableData = await this._transformData({ ...data.data });
 
-    const adapter = new SeedAdapter(
-      'validation seed',
-      networkByteFromAddress(account.address).charCodeAt(0)
-    );
+    switch (data.type) {
+      case TRANSACTION_TYPE.INVOKE_EXPRESSION:
+        const { fee, matcherFee, initialFee, ...tx } = signableData;
+        const txToSign = invokeExpression({
+          ...tx,
+          fee: fee.toCoins(),
+          feeAssetId: fee.asset.id,
+        });
+        const proto = txToProtoBytes(txToSign);
+        return { id: txToSign.id, bytes: proto };
 
-    const signable = adapter.makeSignable({ ...data, data: signableData });
+      default:
+        const adapter = new SeedAdapter(
+          'validation seed',
+          networkByteFromAddress(account.address).charCodeAt(0)
+        );
 
-    const [id, bytes] = await Promise.all([
-      signable.getId(),
-      signable.getBytes(),
-    ]);
-    return { id, bytes: Array.from(bytes) };
+        const signable = adapter.makeSignable({ ...data, data: signableData });
+
+        const [id, bytes] = await Promise.all([
+          signable.getId(),
+          signable.getBytes(),
+        ]);
+        return { id, bytes: Array.from(bytes) };
+    }
   }
 
   async _generateMessage(messageData) {
