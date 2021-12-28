@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
 
@@ -101,6 +102,13 @@ export class PreferencesController extends EventEmitter {
         .accounts.find(
           account => account.address === address && account.network === network
         );
+
+      Sentry.addBreadcrumb({
+        type: 'user',
+        category: 'account-change',
+        level: Sentry.Severity.Info,
+        message: 'Change active account',
+      });
 
       this.store.updateState({ selectedAccount });
       this.emit('accountChange');

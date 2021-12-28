@@ -2,12 +2,15 @@ import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 import './ui/i18n';
 
+import * as Sentry from '@sentry/react';
 import * as extension from 'extensionizer';
 import log from 'loglevel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
+import { sentryDsn } from '../config.json';
+import { WAVESKEEPER_DEBUG } from './constants';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
@@ -17,10 +20,22 @@ import { LANGS } from './ui/i18n';
 import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
 
-const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
+Sentry.init({
+  dsn: sentryDsn,
+  release: extension.runtime.getManifest().version,
+  debug: WAVESKEEPER_DEBUG,
+  autoSessionTracking: false,
+  initialScope: {
+    tags: {
+      source: 'popup',
+    },
+  },
+  integrations: [new Sentry.Integrations.Breadcrumbs({ dom: false })],
+});
+
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
-startUi().catch(log.error);
+startUi();
 
 async function startUi() {
   const store = createUiStore();
@@ -76,6 +91,9 @@ async function startUi() {
   ]);
 
   updateState({ ...state, networks });
+
+  Sentry.setUser({ id: state.userId });
+  Sentry.setTag('network', state.currentNetwork);
 
   backgroundService.init(background);
   document.addEventListener('mousemove', () => backgroundService.updateIdle());

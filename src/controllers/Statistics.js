@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config.json';
@@ -13,6 +14,7 @@ export class StatisticsController {
   constructor(store = {}, controllers) {
     this.controllers = controllers;
     const userId = store.userId || StatisticsController.createUserId();
+    Sentry.setUser({ id: userId });
     this.store = new ObservableStore({ ...store, userId });
     this.version = extension.runtime.getManifest().version;
     this.id = extension.runtime.id;

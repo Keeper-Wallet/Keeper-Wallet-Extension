@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import pump from 'pump';
 import url from 'url';
@@ -6,6 +7,7 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
+import { sentryDsn } from '../config.json';
 import { ERRORS } from './lib/KeeperError';
 import { MSG_STATUSES, WAVESKEEPER_DEBUG } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
@@ -44,10 +46,23 @@ import { getAdapterByType } from '@waves/signature-adapter';
 import { waves } from './controllers/wavesTransactionsController';
 
 const version = extension.runtime.getManifest().version;
+
+Sentry.init({
+  dsn: sentryDsn,
+  release: version,
+  debug: WAVESKEEPER_DEBUG,
+  autoSessionTracking: false,
+  initialScope: {
+    tags: {
+      source: 'background',
+    },
+  },
+});
+
 const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
-const bgPromise = setupBackgroundService().catch(e => log.error(e));
+const bgPromise = setupBackgroundService();
 
 extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
