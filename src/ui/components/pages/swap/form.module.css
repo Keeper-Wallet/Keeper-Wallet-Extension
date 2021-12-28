@@ -102,3 +102,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.summaryTableTooltip {
+  display: inline-block;
+  border-bottom: 1px dotted;
+}
+
+.summaryTableTooltipContent {
+  max-width: calc(100vw - 14px * 2);
+}

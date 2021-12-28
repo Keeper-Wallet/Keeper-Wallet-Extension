@@ -52,6 +52,10 @@ describe('Others', function () {
       );
     });
 
+    after(async function () {
+      await Network.switchTo.call(this, 'Mainnet');
+    });
+
     beforeEach(async function () {
       const actions = this.driver.actions({ async: true });
       await actions
@@ -92,16 +96,16 @@ describe('Others', function () {
     });
 
     it('Send WAVES to an address', async function () {
+      const recipientInput = await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="recipientInput"]')),
+        this.wait
+      );
+
       expect(
         await this.driver.switchTo().activeElement().getAttribute('data-testid')
       ).to.equal('recipientInput');
 
-      await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="recipientInput"]')),
-          this.wait
-        )
-        .sendKeys('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
+      await recipientInput.sendKeys('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
 
       const amountInput = await this.driver.wait(
         until.elementLocated(By.css('[data-testid="amountInput"]')),
