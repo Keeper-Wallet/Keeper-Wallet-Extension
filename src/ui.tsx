@@ -9,7 +9,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import { sentryDsn } from '../config.json';
 import { WAVESKEEPER_DEBUG } from './constants';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
@@ -21,7 +20,7 @@ import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
 
 Sentry.init({
-  dsn: sentryDsn,
+  dsn: __SENTRY_DSN__,
   release: extension.runtime.getManifest().version,
   debug: WAVESKEEPER_DEBUG,
   autoSessionTracking: false,

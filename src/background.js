@@ -7,7 +7,6 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
-import { sentryDsn } from '../config.json';
 import { ERRORS } from './lib/KeeperError';
 import { MSG_STATUSES, WAVESKEEPER_DEBUG } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
@@ -48,7 +47,7 @@ import { waves } from './controllers/wavesTransactionsController';
 const version = extension.runtime.getManifest().version;
 
 Sentry.init({
-  dsn: sentryDsn,
+  dsn: __SENTRY_DSN__,
   release: version,
   debug: WAVESKEEPER_DEBUG,
   autoSessionTracking: false,

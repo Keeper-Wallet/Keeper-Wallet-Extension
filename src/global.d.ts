@@ -1,3 +1,6 @@
+// from webpack.DefinePlugin
+declare const __SENTRY_DSN__: string | undefined;
+
 declare module '*.module.css' {
   const styles: Record<string, string>;
   export = styles;
