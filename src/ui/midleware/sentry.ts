@@ -3,7 +3,7 @@ import { ACTION } from '../actions/constants';
 import { Middleware } from 'redux';
 import { AppState } from 'ui/store';
 
-export const sentryChangeTabBreadcrumb: Middleware<{}, AppState> =
+export const sentryBreadcrumbs: Middleware<{}, AppState> =
   store => next => action => {
     switch (action.type) {
       case ACTION.CHANGE_TAB:
