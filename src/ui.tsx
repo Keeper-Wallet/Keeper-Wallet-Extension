@@ -21,7 +21,8 @@ import { createUiStore } from './ui/store';
 
 Sentry.init({
   dsn: __SENTRY_DSN__,
-  release: extension.runtime.getManifest().version,
+  environment: __SENTRY_ENVIRONMENT__,
+  release: __SENTRY_RELEASE__,
   debug: WAVESKEEPER_DEBUG,
   autoSessionTracking: false,
   initialScope: {

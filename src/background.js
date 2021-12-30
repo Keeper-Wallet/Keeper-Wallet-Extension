@@ -48,7 +48,8 @@ const version = extension.runtime.getManifest().version;
 
 Sentry.init({
   dsn: __SENTRY_DSN__,
-  release: version,
+  environment: __SENTRY_ENVIRONMENT__,
+  release: __SENTRY_RELEASE__,
   debug: WAVESKEEPER_DEBUG,
   autoSessionTracking: false,
   initialScope: {
