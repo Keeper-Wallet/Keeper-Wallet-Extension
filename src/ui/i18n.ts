@@ -1,12 +1,12 @@
-import i18next, { i18n as i18nInstance } from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import { I18N_NAME_SPACE, WAVESKEEPER_DEBUG } from './appConfig';
 
-const createI18n = (): i18nInstance => {
-  const i18n = i18next.createInstance().use(initReactI18next);
-
-  i18n.use(Backend).init({
+i18n
+  .use(Backend)
+  .use(initReactI18next)
+  .init({
     debug: WAVESKEEPER_DEBUG,
     lng: 'en',
     fallbackLng: 'en',
@@ -15,13 +15,10 @@ const createI18n = (): i18nInstance => {
     backend: {
       loadPath: '/_locales/{{lng}}/{{ns}}.{{lng}}.json',
     },
-    react: {
-      wait: true,
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
     },
   });
-
-  return i18n;
-};
 
 export const LANGS = [
   {
@@ -62,4 +59,4 @@ export const LANGS = [
   },
 ];
 
-export const i18n = createI18n();
+export default i18n;
