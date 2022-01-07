@@ -11,7 +11,7 @@ import {
   updateActiveState,
 } from '../actions';
 import background from '../services/Background';
-import { i18n } from '../i18n';
+import i18n from '../i18n';
 import { PAGES } from '../pageConfig';
 
 export const pairingData = store => next => action => {
