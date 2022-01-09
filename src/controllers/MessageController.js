@@ -6,7 +6,7 @@ import EventEmitter from 'events';
 import {
   AdapterType,
   CustomAdapter,
-  SeedAdapter,
+  WavesKeeperAdapter,
 } from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
@@ -37,6 +37,17 @@ class AccountAdapterApi {
   }
   getPublicKey() {
     return this.account.publicKey;
+  }
+}
+
+class InfoAdapter extends CustomAdapter {
+  constructor(account) {
+    super(new AccountAdapterApi(account));
+    this._code = account.networkCode.charCodeAt(0);
+  }
+
+  getSignVersions() {
+    return WavesKeeperAdapter._txVersion;
   }
 }
 
@@ -583,11 +594,7 @@ export class MessageController extends EventEmitter {
     }
     let signableData = await this._transformData({ ...data.data });
 
-    const adapter = new SeedAdapter(
-      'validation seed',
-      networkByteFromAddress(account.address).charCodeAt(0)
-    );
-
+    const adapter = new InfoAdapter(account);
     const signable = adapter.makeSignable({ ...data, data: signableData });
 
     const [id, bytes] = await Promise.all([
@@ -788,10 +795,7 @@ export class MessageController extends EventEmitter {
   async _getFee(message, signData) {
     let signableData = await this._transformData({ ...signData });
 
-    CustomAdapter.initOptions({
-      networkCode: message.account.networkCode.charCodeAt(0),
-    });
-    const adapter = new CustomAdapter(new AccountAdapterApi(message.account));
+    const adapter = new InfoAdapter(message.account);
 
     const fee = {
       coins: (await this.getFee(adapter, signableData)).toString(),
@@ -838,12 +842,9 @@ export class MessageController extends EventEmitter {
   async _prepareMessageJson(message) {
     const filledMessage = await this._fillSignableData(clone(message));
 
-    CustomAdapter.initOptions({
-      networkCode: message.account.networkCode.charCodeAt(0),
-    });
-    const adapter = new CustomAdapter(new AccountAdapterApi(message.account));
-
+    const adapter = new InfoAdapter(message.account);
     const signable = adapter.makeSignable(filledMessage.data);
+
     return stringify({
       ...(await signable.getSignData()),
       sender: message.account.address,
