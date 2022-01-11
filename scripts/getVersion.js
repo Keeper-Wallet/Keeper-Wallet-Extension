@@ -25,7 +25,7 @@ module.exports = () => {
 
   if (!isUpdatedVersion(currentVersion, newVersion)) {
     console.error(
-      `\x1b[31mInvalid new version \x1b[32m${newVersion}\x1b[31m, version can be more than \x1b[32m${currentVersion}\x1b[0m`
+      `\x1b[31mInvalid new version \x1b[32m${newVersion}\x1b[31m, version must be greater than \x1b[32m${currentVersion}\x1b[0m`
     );
     return null;
   }
@@ -48,5 +48,16 @@ const isValidVersion = version => {
 const isUpdatedVersion = (currentVersion, newVersion) => {
   const versionAsArrNew = newVersion.split('.').map(Number);
   const versionAsArrCur = currentVersion.split('.').map(Number);
+
+  for (let i = 0; i < 4; i++) {
+    if (versionAsArrNew[i] == null) {
+      versionAsArrNew[i] = 0;
+    }
+
+    if (versionAsArrCur[i] == null) {
+      versionAsArrCur[i] = 0;
+    }
+  }
+
   return versionAsArrCur.some((num, index) => num < versionAsArrNew[index]);
 };

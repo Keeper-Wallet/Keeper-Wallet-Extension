@@ -33,6 +33,7 @@ const devConf = conf => ({
 const prodConf = conf => ({
   ...conf,
   mode: 'production',
+  devtool: 'source-map',
   plugins: [
     ...conf.plugins,
     new WebpackCustomActions({ onBuildStart: [clearDist] }),

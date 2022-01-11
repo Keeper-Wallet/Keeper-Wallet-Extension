@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 
 export class NetworkController {
@@ -27,6 +28,7 @@ export class NetworkController {
     const { initState, getNetworkConfig, getNetworks } = options;
     this.store = new ObservableStore({ ...defaults, ...initState });
     this.configApi = { getNetworkConfig, getNetworks };
+    Sentry.setTag('network', this.store.getState().currentNetwork);
   }
 
   getNetworks() {
@@ -37,6 +39,15 @@ export class NetworkController {
   }
 
   setNetwork(network) {
+    Sentry.setTag('network', network);
+
+    Sentry.addBreadcrumb({
+      type: 'user',
+      category: 'network-change',
+      level: Sentry.Severity.Info,
+      message: `Change network to ${network}`,
+    });
+
     this.store.updateState({ currentNetwork: network });
   }
 

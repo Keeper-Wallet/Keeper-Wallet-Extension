@@ -98,7 +98,9 @@ module.exports = ({
   plugins.push(
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+      __SENTRY_DSN__: JSON.stringify(process.env.SENTRY_DSN),
+      __SENTRY_ENVIRONMENT__: JSON.stringify(process.env.SENTRY_ENVIRONMENT),
+      __SENTRY_RELEASE__: JSON.stringify(process.env.SENTRY_RELEASE),
     })
   );
 
