@@ -45,7 +45,7 @@ jobs:
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
       - name: Upload sourcemaps to Sentry
-        run: sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/build
+        run: npm run upload-sourcemaps
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
