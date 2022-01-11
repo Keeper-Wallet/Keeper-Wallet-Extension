@@ -45,10 +45,16 @@ jobs:
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
       - name: Upload sourcemaps to Sentry
-        run: npm run upload-sourcemaps
+        uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
+          SENTRY_ORG: waves-keeper
+          SENTRY_PROJECT: extension
+        with:
+          environment: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
+          finalize: false
+          sourcemaps: dist/build
+          version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

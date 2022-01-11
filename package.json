@@ -18,8 +18,7 @@
     "typecheck": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha",
-    "dist": "NODE_ENV=production webpack",
-    "upload-sourcemaps": "sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/build"
+    "dist": "NODE_ENV=production webpack"
   },
   "mocha": {
     "extension": [
@@ -78,7 +77,6 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
-    "@sentry/cli": "^1.71.0",
     "@sentry/react": "^6.16.1",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.0",
