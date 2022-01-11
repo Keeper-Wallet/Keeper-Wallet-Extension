@@ -44,7 +44,7 @@ jobs:
           SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
-      - name: Upload sourcemaps to Sentry
+      - name: Create Sentry Release
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -56,7 +56,7 @@ jobs:
           sourcemaps: dist/build
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
