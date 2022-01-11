@@ -25,10 +25,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Extract info from tag
+        run: |
+          VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/^v//')
+          echo ::set-output name=VERSION::$VERSION
+          echo ::set-output name=SENTRY_ENVIRONMENT::$(
+            echo $VERSION
+              | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'
+              && echo "production"
+              || echo "staging"
+          )
+          echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
+        id: tagInfo
+
       - name: Build
         run: |
           echo '{}' > config.json
-          NODE_ENV_VER=`echo $GITHUB_REF_NAME | sed -e 's/^v//'` npm run dist
+          npm run dist
+        env:
+          NODE_ENV_VER: ${{ steps.tagInfo.outputs.VERSION }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
+          SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
+
+      - name: Upload sourcemaps to Sentry
+        run: sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist/build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_RELEASE: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
