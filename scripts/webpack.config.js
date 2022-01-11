@@ -1,13 +1,40 @@
+const FolderZip = require('folder-zip');
+const ncp = require('ncp').ncp;
 const path = require('path');
 const webpack = require('webpack');
 const metaConf = require('./meta.conf');
 const WebpackCustomActions = require('./WebpackCustomActionsPlugin');
 const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const copyFiles = require('./copyFiles');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const getLocales = require('./lokalise');
+const updateManifest = require('./updateManifest');
+
+function ncpAsync(from, to) {
+  return new Promise((resolve, reject) => {
+    ncp(from, to, err => (err ? reject(err) : resolve()));
+  });
+}
+
+function zipFolder(from, to) {
+  return new Promise((resolve, reject) => {
+    const zip = new FolderZip();
+
+    zip.zipFolder(from, { excludeParentFolder: true }, err => {
+      if (err) {
+        return reject(err);
+      }
+
+      try {
+        zip.writeToFileSync(to);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
 
 module.exports = ({
   version,
@@ -29,18 +56,37 @@ module.exports = ({
   ];
 
   const getPlatforms = () => {
-    const platformsConfig = metaConf(BUILD_FOLDER, DIST_FOLDER, version);
-    let counter = PLATFORMS.length;
-    PLATFORMS.forEach(platform => {
-      copyFiles(platform, platformsConfig[platform], isProduction, () => {
-        counter--;
-        if (isProduction && counter === 0) {
+    const platformsConfig = metaConf(version);
+
+    PLATFORMS.reduce(async (prevPromise, platformName) => {
+      await prevPromise;
+
+      const platformFolder = path.join(DIST_FOLDER, platformName);
+      await ncpAsync(BUILD_FOLDER, platformFolder);
+
+      updateManifest(
+        path.join(BUILD_FOLDER, 'manifest.json'),
+        platformsConfig[platformName].manifest,
+        path.join(platformFolder, 'manifest.json')
+      );
+
+      console.log(`Copying to ${platformName} is done`);
+
+      if (isProduction) {
+        await zipFolder(
+          platformFolder,
+          path.join(DIST_FOLDER, `waves-keeper-${version}-${platformName}.zip`)
+        );
+
+        console.log(`Zipping ${platformName} is done`);
+
+        if (platformName === 'edge') {
           console.log('-= Build AppX for Edge =-');
           require('./edgeExt');
           console.log('-= Build AppX for Edge ended =-');
         }
-      });
-    });
+      }
+    }, Promise.resolve());
   };
 
   const plugins = [];

@@ -1,14 +1,6 @@
-const path = require('path');
-
-module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
+module.exports = version => {
   const conf = {
     chrome: {
-      copyFiles: [
-        {
-          from: path.join(BUILD_FOLDER),
-          to: path.join(DIST_FOLDER, 'chrome'),
-        },
-      ],
       manifest: {
         add: {
           'background.scripts': ['background.js'],
@@ -23,12 +15,6 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
       },
     },
     edge: {
-      copyFiles: [
-        {
-          from: path.join(BUILD_FOLDER),
-          to: path.join(DIST_FOLDER, 'edge'),
-        },
-      ],
       manifest: {
         add: {
           'background.scripts': ['background.js'],
@@ -43,12 +29,6 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
       },
     },
     firefox: {
-      copyFiles: [
-        {
-          from: path.join(BUILD_FOLDER),
-          to: path.join(DIST_FOLDER, 'firefox'),
-        },
-      ],
       manifest: {
         add: {
           background: { scripts: ['background.js'] },
@@ -63,12 +43,6 @@ module.exports = (BUILD_FOLDER, DIST_FOLDER, version) => {
       },
     },
     opera: {
-      copyFiles: [
-        {
-          from: path.join(BUILD_FOLDER),
-          to: path.join(DIST_FOLDER, 'opera'),
-        },
-      ],
       manifest: {
         add: {
           permissions: [

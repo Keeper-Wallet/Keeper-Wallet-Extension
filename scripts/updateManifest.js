@@ -32,6 +32,4 @@ module.exports = (path, options = {}, to) => {
   }
 
   fs.writeFileSync(to, JSON.stringify(data, null, 4));
-
-  return data.version;
 };
