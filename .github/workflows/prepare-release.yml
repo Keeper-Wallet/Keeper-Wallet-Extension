@@ -30,11 +30,7 @@ jobs:
         run: |
           VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/^v//')
           echo ::set-output name=VERSION::$VERSION
-          echo ::set-output name=SENTRY_ENVIRONMENT::$(
-          echo $VERSION | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'
-          && echo "production"
-          || echo "staging"
-          )
+          echo ::set-output name=SENTRY_ENVIRONMENT::$(echo $VERSION | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$' && echo "production" || echo "staging")
           echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
         id: tagInfo
 
