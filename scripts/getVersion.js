@@ -49,7 +49,15 @@ const isUpdatedVersion = (currentVersion, newVersion) => {
   const versionAsArrNew = newVersion.split('.').map(Number);
   const versionAsArrCur = currentVersion.split('.').map(Number);
 
-  return versionAsArrCur.some(
-    (num, index) => num < (versionAsArrNew[index] || 0)
-  );
+  for (let i = 0; i < 4; i++) {
+    if (versionAsArrNew[i] == null) {
+      versionAsArrNew[i] = 0;
+    }
+
+    if (versionAsArrCur[i] == null) {
+      versionAsArrCur[i] = 0;
+    }
+  }
+
+  return versionAsArrCur.some((num, index) => num < versionAsArrNew[index]);
 };
