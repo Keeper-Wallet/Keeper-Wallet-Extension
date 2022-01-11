@@ -73,7 +73,11 @@ module.exports = ({
       console.log(`Copying to ${platformName} is done`);
 
       if (isProduction) {
-        await zipFolder(platformFolder, `${platformFolder}.zip`);
+        await zipFolder(
+          platformFolder,
+          path.join(DIST_FOLDER, `waves-keeper-${version}-${platformName}.zip`)
+        );
+
         console.log(`Zipping ${platformName} is done`);
 
         if (platformName === 'edge') {
