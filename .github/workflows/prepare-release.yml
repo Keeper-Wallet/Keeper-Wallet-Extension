@@ -54,6 +54,7 @@ jobs:
           environment: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           finalize: false
           sourcemaps: dist/build
+          url_prefix: ~/
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
 
       - name: Create GitHub Release
