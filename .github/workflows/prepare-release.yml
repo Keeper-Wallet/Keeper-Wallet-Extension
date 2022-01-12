@@ -35,17 +35,17 @@ jobs:
         id: tagInfo
 
       - name: Create config.json
-        run: echo "{\"lokaliseApiKey\":\"$LOKALISE\"}" | jq > config.json
+        run: echo "{\"lokaliseApiKey\":\"$LOKALISE_TOKEN\"}" | jq > config.json
         env:
-          LOKALISE: ${{ secrets.LOKALISE_TOKEN }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
 
       - name: Add statisticsApiKey to config.json
         run: |
-          config=$(jq "setpath([\"statisticsApiKey\"]; \"$METRICS\")" config.json)
+          config=$(jq "setpath([\"statisticsApiKey\"]; \"$STATISTICS_TOKEN\")" config.json)
           echo $config > config.json
         if: ${{ steps.tagInfo.outputs.ENVIRONMENT == "production" }}
         env:
-          METRICS: ${{ secrets.STATISTICS_TOKEN }}
+          STATISTICS_TOKEN: ${{ secrets.STATISTICS_TOKEN }}
 
       - name: Build
         run: npm run dist
