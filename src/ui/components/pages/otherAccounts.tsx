@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
+import { compareAccountsByLastUsed } from 'accounts/utils';
 import { setActiveAccount } from 'ui/actions/assets';
 import { PAGES } from 'ui/pageConfig';
 import { selectAccount } from 'ui/actions/localState';
@@ -25,9 +26,9 @@ export function OtherAccountsPage({ setTab }: Props) {
   const assets = useAppSelector(state => state.assets);
   const balances = useAppSelector(state => state.balances);
 
-  const otherAccounts = accounts.filter(
-    account => account.address !== activeAccount.address
-  );
+  const otherAccounts = accounts
+    .filter(account => account.address !== activeAccount.address)
+    .sort(compareAccountsByLastUsed);
 
   const balancesMoney: Record<string, Money> = {};
 

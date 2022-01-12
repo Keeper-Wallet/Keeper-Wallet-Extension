@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react';
+import { compareAccountsByLastUsed } from 'accounts/utils';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
 
@@ -52,26 +53,31 @@ export class PreferencesController extends EventEmitter {
 
   syncCurrentNetworkAccounts() {
     const network = this.getNetwork();
-    const accounts = this.store.getState().accounts;
+    const { accounts, selectedAccount } = this.store.getState();
     const currentNetworkAccounts = accounts.filter(
       account => account.network === network
     );
     this.store.updateState({ currentNetworkAccounts });
 
     // Ensure we have selected account from current network
-    let selectedAccount = this.store.getState().selectedAccount;
     if (
       !selectedAccount ||
-      !currentNetworkAccounts.find(
+      !currentNetworkAccounts.some(
         account =>
           account.address === selectedAccount.address &&
           account.network === selectedAccount.network
       )
     ) {
-      const addressToSelect =
-        currentNetworkAccounts.length > 0
-          ? currentNetworkAccounts[0].address
-          : undefined;
+      let addressToSelect;
+
+      if (currentNetworkAccounts.length > 0) {
+        const sortedAccounts = currentNetworkAccounts.sort(
+          compareAccountsByLastUsed
+        );
+
+        addressToSelect = sortedAccounts[0].address;
+      }
+
       this.selectAccount(addressToSelect, network);
     }
   }
@@ -91,18 +97,13 @@ export class PreferencesController extends EventEmitter {
   }
 
   selectAccount(address, network) {
-    let selectedAccount = this.store.getState().selectedAccount;
+    const { accounts, selectedAccount } = this.store.getState();
+
     if (
       !selectedAccount ||
       selectedAccount.address !== address ||
       selectedAccount.network !== network
     ) {
-      selectedAccount = this.store
-        .getState()
-        .accounts.find(
-          account => account.address === address && account.network === network
-        );
-
       Sentry.addBreadcrumb({
         type: 'user',
         category: 'account-change',
@@ -110,7 +111,21 @@ export class PreferencesController extends EventEmitter {
         message: 'Change active account',
       });
 
-      this.store.updateState({ selectedAccount });
+      if (selectedAccount) {
+        accounts.forEach(acc => {
+          if (acc.address === selectedAccount.address) {
+            acc.lastUsed = Date.now();
+          }
+        });
+      }
+
+      this.store.updateState({
+        accounts,
+        selectedAccount: accounts.find(
+          account => account.address === address && account.network === network
+        ),
+      });
+
       this.emit('accountChange');
     }
   }
