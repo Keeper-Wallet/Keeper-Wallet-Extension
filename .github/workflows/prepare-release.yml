@@ -45,7 +45,7 @@ jobs:
             "statisticsApiKey": "$STATISTICS_TOKEN"
           }
           EOF
-        if: ${{ steps.tagInfo.outputs.ENVIRONMENT == "production" }}
+        if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           STATISTICS_TOKEN: ${{ secrets.STATISTICS_TOKEN }}
