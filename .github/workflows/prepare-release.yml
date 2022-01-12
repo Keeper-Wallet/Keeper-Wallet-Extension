@@ -34,10 +34,10 @@ jobs:
           echo ::set-output name=SENTRY_RELEASE::extension@$VERSION
         id: tagInfo
 
-      - name: Create config.json
+      - name: Create empty config.json
         run: echo '{}' > config.json
 
-      - name: Add statisticsApiKey to config.json
+      - name: Create config.json for production
         run: |
           cat > config.json << EOF
           {
