@@ -53,6 +53,7 @@ jobs:
         with:
           environment: ${{ steps.tagInfo.outputs.SENTRY_ENVIRONMENT }}
           finalize: false
+          set_commits: skip
           sourcemaps: dist/build
           url_prefix: ~/
           version: ${{ steps.tagInfo.outputs.SENTRY_RELEASE }}
