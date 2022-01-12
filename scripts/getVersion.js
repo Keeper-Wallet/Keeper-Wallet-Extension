@@ -23,9 +23,9 @@ module.exports = () => {
     return null;
   }
 
-  if (!isUpdatedVersion(currentVersion, newVersion)) {
+  if (!isUpdatedOrSameVersion(currentVersion, newVersion)) {
     console.error(
-      `\x1b[31mInvalid new version \x1b[32m${newVersion}\x1b[31m, version must be greater than \x1b[32m${currentVersion}\x1b[0m`
+      `\x1b[31mInvalid new version \x1b[32m${newVersion}\x1b[31m, version must be greater than or equal to \x1b[32m${currentVersion}\x1b[0m`
     );
     return null;
   }
@@ -45,7 +45,7 @@ const isValidVersion = version => {
     .some(number => isNaN(number));
 };
 
-const isUpdatedVersion = (currentVersion, newVersion) => {
+const isUpdatedOrSameVersion = (currentVersion, newVersion) => {
   const versionAsArrNew = newVersion.split('.').map(Number);
   const versionAsArrCur = currentVersion.split('.').map(Number);
 
@@ -59,5 +59,5 @@ const isUpdatedVersion = (currentVersion, newVersion) => {
     }
   }
 
-  return versionAsArrCur.some((num, index) => num < versionAsArrNew[index]);
+  return versionAsArrCur.some((num, index) => num <= versionAsArrNew[index]);
 };
