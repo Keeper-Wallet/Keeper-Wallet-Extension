@@ -6,12 +6,10 @@ class Background {
   initPromise: Promise<void>;
   updatedByUser = false;
   _defer;
-  _assetsStore;
   _lastUpdateIdle = 0;
   _tmr;
 
   constructor() {
-    this._assetsStore = {};
     this._defer = {};
     this.initPromise = new Promise((res, rej) => {
       this._defer.resolve = res;
@@ -31,213 +29,348 @@ class Background {
   }
 
   async setIdleOptions(options: { type: string }) {
-    await this.initPromise;
-    return this.background.setIdleOptions(options);
+    try {
+      await this.initPromise;
+      return await this.background.setIdleOptions(options);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async allowOrigin(origin: string) {
-    await this.initPromise;
-    return this.background.allowOrigin(origin);
+    try {
+      await this.initPromise;
+      return await this.background.allowOrigin(origin);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async disableOrigin(origin: string) {
-    await this.initPromise;
-    return this.background.disableOrigin(origin);
+    try {
+      await this.initPromise;
+      return await this.background.disableOrigin(origin);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async deleteOrigin(origin: string) {
-    await this.initPromise;
-    return this.background.deleteOrigin(origin);
+    try {
+      await this.initPromise;
+      return await this.background.deleteOrigin(origin);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setAutoSign(
     origin: string,
     options: { interval: number; totalAmount: number }
   ) {
-    await this.initPromise;
-    return this.background.setAutoSign(origin, options);
+    try {
+      await this.initPromise;
+      return await this.background.setAutoSign(origin, options);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setNotificationPermissions(options: {
     origin: string;
     canUse: boolean;
   }) {
-    await this.initPromise;
-    return this.background.setNotificationPermissions(options);
+    try {
+      await this.initPromise;
+      return await this.background.setNotificationPermissions(options);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setCurrentLocale(lng): Promise<void> {
-    await this.initPromise;
-    return this.background.setCurrentLocale(lng);
+    try {
+      await this.initPromise;
+      return await this.background.setCurrentLocale(lng);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setUiState(newUiState) {
-    await this.initPromise;
-    return this.background.setUiState(newUiState);
+    try {
+      await this.initPromise;
+      return await this.background.setUiState(newUiState);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async selectAccount(address, network): Promise<void> {
-    await this.initPromise;
-    return this.background.selectAccount(address, network);
+    try {
+      await this.initPromise;
+      return await this.background.selectAccount(address, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async addWallet(data): Promise<void> {
-    await this.initPromise;
-    return this.background.addWallet(data);
+    try {
+      await this.initPromise;
+      return await this.background.addWallet(data);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async removeWallet(address, network): Promise<void> {
-    await this.initPromise;
-    if (address) {
-      return this.background.removeWallet(address, network);
-    }
+    try {
+      await this.initPromise;
+      if (address) {
+        return await this.background.removeWallet(address, network);
+      }
 
-    return this.deleteVault();
+      return await this.deleteVault();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async deleteVault() {
-    await this.initPromise;
-    return this.background.deleteVault();
+    try {
+      await this.initPromise;
+      return await this.background.deleteVault();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async closeNotificationWindow(): Promise<void> {
-    await this.initPromise;
-    return this.background.closeNotificationWindow();
+    try {
+      await this.initPromise;
+      return await this.background.closeNotificationWindow();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async lock(): Promise<void> {
-    await this.initPromise;
-    return this.background.lock();
+    try {
+      await this.initPromise;
+      return await this.background.lock();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async unlock(password): Promise<void> {
-    await this.initPromise;
-    return this.background.unlock(password);
+    try {
+      await this.initPromise;
+      return await this.background.unlock(password);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async initVault(password?): Promise<void> {
-    await this.initPromise;
-    return this.background.initVault(password);
+    try {
+      await this.initPromise;
+      return await this.background.initVault(password);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async exportAccount(address, password, network): Promise<string> {
-    await this.initPromise;
-    return this.background.exportAccount(address, password, network);
+    try {
+      await this.initPromise;
+      return await this.background.exportAccount(address, password, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async exportSeed(address, network): Promise<void> {
-    await this.initPromise;
-    return this.background.encryptedSeed(address, network);
+    try {
+      await this.initPromise;
+      return await this.background.encryptedSeed(address, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async editWalletName(address, name, network) {
-    await this.initPromise;
-    return this.background.editWalletName(address, name, network);
+    try {
+      await this.initPromise;
+      return await this.background.editWalletName(address, name, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async newPassword(oldPassword, newPassword): Promise<void> {
-    await this.initPromise;
-    return this.background.newPassword(oldPassword, newPassword);
+    try {
+      await this.initPromise;
+      return await this.background.newPassword(oldPassword, newPassword);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async clearMessages(): Promise<void> {
-    await this.initPromise;
-    return this.background.clearMessages();
+    try {
+      await this.initPromise;
+      return await this.background.clearMessages();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async deleteMessage(id): Promise<void> {
-    await this.initPromise;
-    return this.background.deleteMessage(id);
+    try {
+      await this.initPromise;
+      return await this.background.deleteMessage(id);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async approve(messageId, address, network): Promise<any> {
-    await this.initPromise;
-    return this.background.approve(messageId, address, network);
+    try {
+      await this.initPromise;
+      return await this.background.approve(messageId, address, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async reject(messageId, forever = false): Promise<void> {
-    await this.initPromise;
-    return this.background.reject(messageId, forever);
+    try {
+      await this.initPromise;
+      return await this.background.reject(messageId, forever);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async updateTransactionFee(messageId, fee): Promise<void> {
-    await this.initPromise;
-    return this.background.updateTransactionFee(messageId, fee);
+    try {
+      await this.initPromise;
+      return await this.background.updateTransactionFee(messageId, fee);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setNetwork(network): Promise<void> {
-    await this.initPromise;
-    return this.background.setNetwork(network);
+    try {
+      await this.initPromise;
+      return await this.background.setNetwork(network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setCustomNode(url, network): Promise<void> {
-    await this.initPromise;
-    return this.background.setCustomNode(url, network);
+    try {
+      await this.initPromise;
+      return await this.background.setCustomNode(url, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setCustomCode(code, network): Promise<void> {
-    await this.initPromise;
-    return this.background.setCustomCode(code, network);
+    try {
+      await this.initPromise;
+      return await this.background.setCustomCode(code, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async setCustomMatcher(url, network): Promise<void> {
-    await this.initPromise;
-    return this.background.setCustomMatcher(url, network);
+    try {
+      await this.initPromise;
+      return await this.background.setCustomMatcher(url, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async assetInfo(assetId: string): Promise<AssetDetail> {
-    assetId = assetId || 'WAVES';
-
-    if (this._assetsStore[assetId]) {
-      return await this._assetsStore[assetId];
-    }
-
-    await this.initPromise;
-    this._assetsStore[assetId] = this.background.assetInfo(assetId);
-
     try {
-      return await this._assetsStore[assetId];
-    } catch (e) {
-      delete this._assetsStore[assetId];
-      throw e;
+      await this.initPromise;
+      return await this.background.assetInfo(assetId || 'WAVES');
+    } catch (err) {
+      throw new Error(err.message);
     }
   }
 
   async toggleAssetFavorite(assetId: string): Promise<void> {
-    await this.initPromise;
-    return this.background.toggleAssetFavorite(assetId);
+    try {
+      await this.initPromise;
+      return await this.background.toggleAssetFavorite(assetId);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async deleteNotifications(ids) {
-    await this.initPromise;
-    return this.background.deleteNotifications(ids);
+    try {
+      await this.initPromise;
+      return await this.background.deleteNotifications(ids);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async getUserList(type: string, from: number, to: number): Promise<any> {
-    await this.initPromise;
-    return this.background.getUserList(type, from, to);
+    try {
+      await this.initPromise;
+      return await this.background.getUserList(type, from, to);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async sendEvent(event: 'addWallet', properties: { type: string });
   async sendEvent(event: 'click', properties: { id: string });
   async sendEvent(event: string, properties: any = {}) {
-    await this.initPromise;
-    return this.background.sendEvent(event, properties);
+    try {
+      await this.initPromise;
+      return await this.background.sendEvent(event, properties);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async updateBalances() {
-    await this.initPromise;
-    return this.background.updateBalances();
+    try {
+      await this.initPromise;
+      return await this.background.updateBalances();
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async signAndPublishTransaction(data: WavesKeeper.TSignTransactionData) {
-    await this.initPromise;
-    return this.background.signAndPublishTransaction(data);
+    try {
+      await this.initPromise;
+      return await this.background.signAndPublishTransaction(data);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async updateExchangers(network: string) {
-    await this.initPromise;
-    return this.background.updateExchangers(network);
+    try {
+      await this.initPromise;
+      return await this.background.updateExchangers(network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async performSwap({
@@ -259,28 +392,40 @@ class Background {
     toAssetId: string;
     toCoins: string;
   }): Promise<{ transactionId: string }> {
-    await this.initPromise;
+    try {
+      await this.initPromise;
 
-    return this.background.performSwap({
-      exchangerId,
-      fee,
-      feeAssetId,
-      fromAssetId,
-      fromCoins,
-      minReceivedCoins,
-      toAssetId,
-      toCoins,
-    });
+      return await this.background.performSwap({
+        exchangerId,
+        fee,
+        feeAssetId,
+        fromAssetId,
+        fromCoins,
+        minReceivedCoins,
+        toAssetId,
+        toCoins,
+      });
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async getMinimumFee(txType: number) {
-    await this.initPromise;
-    return this.background.getMinimumFee(txType);
+    try {
+      await this.initPromise;
+      return await this.background.getMinimumFee(txType);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async getExtraFee(address: string, network: string): Promise<number> {
-    await this.initPromise;
-    return this.background.getExtraFee(address, network);
+    try {
+      await this.initPromise;
+      return await this.background.getExtraFee(address, network);
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 
   async _updateIdle() {
