@@ -1,5 +1,9 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 
+function prepareErrorMessage(err: any) {
+  return err && err.message ? err.message : String(err);
+}
+
 class Background {
   static instance: Background;
   background: any;
@@ -33,7 +37,7 @@ class Background {
       await this.initPromise;
       return await this.background.setIdleOptions(options);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -42,7 +46,7 @@ class Background {
       await this.initPromise;
       return await this.background.allowOrigin(origin);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -51,7 +55,7 @@ class Background {
       await this.initPromise;
       return await this.background.disableOrigin(origin);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -60,7 +64,7 @@ class Background {
       await this.initPromise;
       return await this.background.deleteOrigin(origin);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -72,7 +76,7 @@ class Background {
       await this.initPromise;
       return await this.background.setAutoSign(origin, options);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -84,7 +88,7 @@ class Background {
       await this.initPromise;
       return await this.background.setNotificationPermissions(options);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -93,7 +97,7 @@ class Background {
       await this.initPromise;
       return await this.background.setCurrentLocale(lng);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -102,7 +106,7 @@ class Background {
       await this.initPromise;
       return await this.background.setUiState(newUiState);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -111,7 +115,7 @@ class Background {
       await this.initPromise;
       return await this.background.selectAccount(address, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -120,7 +124,7 @@ class Background {
       await this.initPromise;
       return await this.background.addWallet(data);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -133,7 +137,7 @@ class Background {
 
       return await this.deleteVault();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -142,7 +146,7 @@ class Background {
       await this.initPromise;
       return await this.background.deleteVault();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -151,7 +155,7 @@ class Background {
       await this.initPromise;
       return await this.background.closeNotificationWindow();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -160,7 +164,7 @@ class Background {
       await this.initPromise;
       return await this.background.lock();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -169,7 +173,7 @@ class Background {
       await this.initPromise;
       return await this.background.unlock(password);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -178,7 +182,7 @@ class Background {
       await this.initPromise;
       return await this.background.initVault(password);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -187,7 +191,7 @@ class Background {
       await this.initPromise;
       return await this.background.exportAccount(address, password, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -196,7 +200,7 @@ class Background {
       await this.initPromise;
       return await this.background.encryptedSeed(address, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -205,7 +209,7 @@ class Background {
       await this.initPromise;
       return await this.background.editWalletName(address, name, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -214,7 +218,7 @@ class Background {
       await this.initPromise;
       return await this.background.newPassword(oldPassword, newPassword);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -223,7 +227,7 @@ class Background {
       await this.initPromise;
       return await this.background.clearMessages();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -232,7 +236,7 @@ class Background {
       await this.initPromise;
       return await this.background.deleteMessage(id);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -241,7 +245,7 @@ class Background {
       await this.initPromise;
       return await this.background.approve(messageId, address, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -250,7 +254,7 @@ class Background {
       await this.initPromise;
       return await this.background.reject(messageId, forever);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -259,7 +263,7 @@ class Background {
       await this.initPromise;
       return await this.background.updateTransactionFee(messageId, fee);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -268,7 +272,7 @@ class Background {
       await this.initPromise;
       return await this.background.setNetwork(network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -277,7 +281,7 @@ class Background {
       await this.initPromise;
       return await this.background.setCustomNode(url, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -286,7 +290,7 @@ class Background {
       await this.initPromise;
       return await this.background.setCustomCode(code, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -295,7 +299,7 @@ class Background {
       await this.initPromise;
       return await this.background.setCustomMatcher(url, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -304,7 +308,7 @@ class Background {
       await this.initPromise;
       return await this.background.assetInfo(assetId || 'WAVES');
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -313,7 +317,7 @@ class Background {
       await this.initPromise;
       return await this.background.toggleAssetFavorite(assetId);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -322,7 +326,7 @@ class Background {
       await this.initPromise;
       return await this.background.deleteNotifications(ids);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -331,7 +335,7 @@ class Background {
       await this.initPromise;
       return await this.background.getUserList(type, from, to);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -342,7 +346,7 @@ class Background {
       await this.initPromise;
       return await this.background.sendEvent(event, properties);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -351,7 +355,7 @@ class Background {
       await this.initPromise;
       return await this.background.updateBalances();
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -360,7 +364,7 @@ class Background {
       await this.initPromise;
       return await this.background.signAndPublishTransaction(data);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -369,7 +373,7 @@ class Background {
       await this.initPromise;
       return await this.background.updateExchangers(network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -406,7 +410,7 @@ class Background {
         toCoins,
       });
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -415,7 +419,7 @@ class Background {
       await this.initPromise;
       return await this.background.getMinimumFee(txType);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -424,7 +428,7 @@ class Background {
       await this.initPromise;
       return await this.background.getExtraFee(address, network);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
