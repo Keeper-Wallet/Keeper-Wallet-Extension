@@ -31,6 +31,23 @@ Sentry.init({
     },
   },
   integrations: [new Sentry.Integrations.Breadcrumbs({ dom: false })],
+  beforeSend: async (event, hint) => {
+    const message =
+      hint.originalException instanceof Error
+        ? hint.originalException.message
+        : String(hint.originalException);
+
+    const shouldIgnore = await backgroundService.shouldIgnoreError(
+      'beforeSendPopup',
+      message
+    );
+
+    if (shouldIgnore) {
+      return null;
+    }
+
+    return event;
+  },
 });
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
