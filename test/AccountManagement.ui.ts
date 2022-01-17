@@ -1,5 +1,5 @@
 import * as mocha from 'mocha';
-import { App, Assets, CreateNewAccount } from './utils/actions';
+import { App, Assets, CreateNewAccount, Network } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
@@ -379,5 +379,84 @@ describe('Account management', function () {
     });
 
     accountPropertiesShouldBeRight.call(this);
+  });
+
+  describe('Switching networks', function () {
+    before(async function () {
+      await CreateNewAccount.importAccount.call(
+        this,
+        'first',
+        'first account for testing selected account preservation'
+      );
+
+      await Assets.addAccount.call(this);
+      await CreateNewAccount.importAccount.call(
+        this,
+        'second',
+        'second account for testing selected account preservation'
+      );
+
+      await Network.switchTo.call(this, 'Testnet');
+
+      await CreateNewAccount.importAccount.call(
+        this,
+        'third',
+        'third account for testing selected account preservation'
+      );
+
+      await Assets.addAccount.call(this);
+      await CreateNewAccount.importAccount.call(
+        this,
+        'fourth',
+        'fourth account for testing selected account preservation'
+      );
+
+      await Network.switchTo.call(this, 'Mainnet');
+    });
+
+    after(async function () {
+      await Network.switchTo.call(this, 'Mainnet');
+    });
+
+    it('should preserve previously selected account for the network', async function () {
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+          this.wait
+        )
+        .click();
+
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="accountCard"]')),
+          this.wait
+        )
+        .click();
+
+      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
+
+      await Network.switchTo.call(this, 'Testnet');
+
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+          this.wait
+        )
+        .click();
+
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="accountCard"]')),
+          this.wait
+        )
+        .click();
+
+      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
+
+      await Network.switchTo.call(this, 'Mainnet');
+      expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
+      await Network.switchTo.call(this, 'Testnet');
+      expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
+    });
   });
 });

@@ -1,3 +1,4 @@
+import { Account } from 'accounts/types';
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
 import {
@@ -48,14 +49,10 @@ export const uiState = createSimpleReducer<{
   showSuspiciousAssets?: boolean;
   autoClickProtection?: boolean;
 }>({}, ACTION.UPDATE_UI_STATE);
-export const accounts = createSimpleReducer<
-  Array<{
-    address: string;
-    name: string;
-    network: string;
-    type: string;
-  }>
->([], ACTION.UPDATE_ACCOUNTS);
+export const accounts = createSimpleReducer<Array<Account>>(
+  [],
+  ACTION.UPDATE_ACCOUNTS
+);
 export const allNetworksAccounts = createSimpleReducer<
   Array<{
     address: string;
