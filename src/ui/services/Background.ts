@@ -245,22 +245,7 @@ class Background {
       await this.initPromise;
       return await this.background.approve(messageId, address, network);
     } catch (err) {
-      const message = await this.background.getMessageById(messageId);
-      const errorMessage = prepareErrorMessage(err);
-
-      // messages from keeper itself have an empty origin
-      if (message.origin) {
-        const shouldIgnore = await this.shouldIgnoreError(
-          'contentScriptApprove',
-          errorMessage
-        );
-
-        if (shouldIgnore) {
-          return;
-        }
-      }
-
-      throw new Error(errorMessage);
+      throw new Error(prepareErrorMessage(err));
     }
   }
 
@@ -442,6 +427,15 @@ class Background {
     try {
       await this.initPromise;
       return await this.background.getExtraFee(address, network);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async getMessageById(messageId: string) {
+    try {
+      await this.initPromise;
+      return await this.background.getMessageById(messageId);
     } catch (err) {
       throw new Error(prepareErrorMessage(err));
     }
