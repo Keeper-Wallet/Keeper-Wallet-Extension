@@ -71,7 +71,7 @@ Sentry.init({
     const backgroundService = await bgPromise;
 
     const shouldIgnore =
-      await backgroundService.remoteConfigController.shouldIgnoreError(
+      backgroundService.remoteConfigController.shouldIgnoreError(
         'beforeSendBackground',
         message
       );
@@ -577,9 +577,8 @@ class BackgroundService extends EventEmitter {
       getExtraFee: (address, network) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
-      shouldIgnoreError: this.remoteConfigController.shouldIgnoreError.bind(
-        this.remoteConfigController
-      ),
+      shouldIgnoreError: async (context, message) =>
+        this.remoteConfigController.shouldIgnoreError(context, message),
     };
   }
 

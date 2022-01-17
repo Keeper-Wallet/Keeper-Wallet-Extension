@@ -194,7 +194,7 @@ export class RemoteConfigController {
     }
   }
 
-  async shouldIgnoreError(context, message) {
+  shouldIgnoreError(context, message) {
     return (
       this._ignoreErrorsConfig.ignoreAll ||
       this._ignoreErrorsConfig[context].some(str => {
