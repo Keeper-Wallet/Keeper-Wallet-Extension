@@ -51,14 +51,16 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
   }
 
   scrollToMyRef = () =>
-    window.setTimeout(
-      () =>
-        this.props.scrollElement.scrollTo({
-          top: this.myRef.current.offsetTop,
-          behavior: 'smooth',
-        }),
-      0
-    );
+    window.setTimeout(() => {
+      if (this.myRef.current == null) {
+        return;
+      }
+
+      this.props.scrollElement.scrollTo({
+        top: this.myRef.current.offsetTop,
+        behavior: 'smooth',
+      });
+    }, 0);
 }
 
 interface IProps extends React.ComponentProps<'div'> {
