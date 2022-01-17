@@ -89,6 +89,25 @@ class RootComponent extends React.Component {
           to: tab,
         },
       });
+
+      if (tab === PAGES.MESSAGES) {
+        const { msg } = activePopup;
+
+        const data: Record<string, string> = {
+          type: msg.type,
+        };
+
+        if (msg.type === 'transaction') {
+          data.transactionType = msg.data.type;
+        }
+
+        Sentry.addBreadcrumb({
+          type: 'debug',
+          category: 'message',
+          level: Sentry.Severity.Info,
+          data,
+        });
+      }
     }
 
     return { tab };
