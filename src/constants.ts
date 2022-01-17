@@ -126,6 +126,7 @@ export const IGNORE_ERRORS_CONFIG_URL =
 export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 60000;
 
 export const DEFAULT_IGNORE_ERRORS_CONFIG = {
+  ignoreAll: false,
   beforeSendBackground: [] as string[],
   beforeSendPopup: [] as string[],
   contentScriptApprove: [] as string[],

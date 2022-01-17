@@ -195,10 +195,13 @@ export class RemoteConfigController {
   }
 
   async shouldIgnoreError(context, message) {
-    return this._ignoreErrorsConfig[context].some(str => {
-      const re = new RegExp(str);
+    return (
+      this._ignoreErrorsConfig.ignoreAll ||
+      this._ignoreErrorsConfig[context].some(str => {
+        const re = new RegExp(str);
 
-      return re.test(message);
-    });
+        return re.test(message);
+      })
+    );
   }
 }
