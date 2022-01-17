@@ -1,17 +1,14 @@
 import { Asset, Money } from '@waves/data-entities';
 import { SIGN_TYPE } from '@waves/signature-adapter';
-import { getAssetIdByName } from 'assets/utils';
 import ObservableStore from 'obs-store';
 import { SWAP_DAPPS } from '../constants';
 
 const swopFiConfigsByNetwork = {
   mainnet: {
     backend: 'https://backend.swop.fi',
-    stakingBackend: 'https://staking.swop.fi',
   },
   testnet: {
     backend: 'https://backend-dev.swop.fi',
-    stakingBackend: 'https://staking-dev.swop.fi',
   },
 };
 
@@ -146,40 +143,6 @@ export class SwapController {
 
     const signedTx = await this.signTx(selectedAccount.address, tx, network);
 
-    let transactionId;
-
-    const stakingAssetIds = ['USD', 'EURN', 'NSBT'].map(assetId =>
-      getAssetIdByName(network, assetId)
-    );
-
-    const sendTxThroughSwopFi = async () => {
-      const swopFiConfig = swopFiConfigsByNetwork[network];
-
-      const response = await fetch(
-        new URL('/transaction/send', swopFiConfig.stakingBackend).toString(),
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: signedTx,
-        }
-      );
-
-      if (!response.ok) {
-        if (response.status === 400) {
-          const errorJson = await response.json();
-          throw new Error(errorJson.message);
-        } else {
-          throw new Error('Failed to send transaction');
-        }
-      }
-
-      const json = await response.json();
-
-      return json.id;
-    };
-
     const sendTx = async () => {
       const text = await this.broadcast({
         type: 'transaction',
@@ -191,15 +154,7 @@ export class SwapController {
       return json.id;
     };
 
-    if (stakingAssetIds.includes(toAssetId)) {
-      try {
-        transactionId = await sendTxThroughSwopFi();
-      } catch (err) {
-        transactionId = await sendTx();
-      }
-    } else {
-      transactionId = await sendTx();
-    }
+    const transactionId = await sendTx();
 
     return {
       transactionId,
