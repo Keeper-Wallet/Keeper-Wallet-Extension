@@ -46,6 +46,11 @@ import { waves } from './controllers/wavesTransactionsController';
 
 const version = extension.runtime.getManifest().version;
 
+const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
+log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
+
+const bgPromise = setupBackgroundService();
+
 Sentry.init({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
@@ -57,12 +62,27 @@ Sentry.init({
       source: 'background',
     },
   },
+  beforeSend: async (event, hint) => {
+    const message =
+      hint.originalException instanceof Error
+        ? hint.originalException.message
+        : String(hint.originalException);
+
+    const backgroundService = await bgPromise;
+
+    const shouldIgnore =
+      backgroundService.remoteConfigController.shouldIgnoreError(
+        'beforeSendBackground',
+        message
+      );
+
+    if (shouldIgnore) {
+      return null;
+    }
+
+    return event;
+  },
 });
-
-const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
-log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
-
-const bgPromise = setupBackgroundService();
 
 extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
@@ -455,6 +475,7 @@ class BackgroundService extends EventEmitter {
         this.walletController.encryptedSeed(address, network),
 
       // messages
+      getMessageById: async id => this.messageController.getMessageById(id),
       clearMessages: async () => this.messageController.clearMessages(),
       deleteMessage: async id => this.messageController.deleteMessage(id),
       approve: async (messageId, address) => {
@@ -555,6 +576,9 @@ class BackgroundService extends EventEmitter {
       getMinimumFee: getMinimumFee,
       getExtraFee: (address, network) =>
         getExtraFee(address, this.networkController.getNode(network)),
+
+      shouldIgnoreError: async (context, message) =>
+        this.remoteConfigController.shouldIgnoreError(context, message),
     };
   }
 

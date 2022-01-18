@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
@@ -23,7 +24,7 @@ class RootComponent extends React.Component {
     setTimeout(() => props.setLoading(false), 200);
   }
 
-  static getDerivedStateFromProps(nextProps: IProps) {
+  static getDerivedStateFromProps(nextProps: IProps, state) {
     /**
      * Loading page
      */
@@ -76,6 +77,37 @@ class RootComponent extends React.Component {
 
     if (!tab || (tab && !RootComponent.canUseTab(nextProps, tab))) {
       tab = RootComponent.getStateTab(nextProps);
+    }
+
+    if (tab !== state.tab) {
+      Sentry.addBreadcrumb({
+        type: 'navigation',
+        category: 'navigation',
+        level: Sentry.Severity.Info,
+        data: {
+          from: state.tab,
+          to: tab,
+        },
+      });
+
+      if (tab === PAGES.MESSAGES) {
+        const { msg } = activePopup;
+
+        const data: Record<string, string> = {
+          type: msg.type,
+        };
+
+        if (msg.type === 'transaction') {
+          data.transactionType = msg.data.type;
+        }
+
+        Sentry.addBreadcrumb({
+          type: 'debug',
+          category: 'message',
+          level: Sentry.Severity.Info,
+          data,
+        });
+      }
     }
 
     return { tab };

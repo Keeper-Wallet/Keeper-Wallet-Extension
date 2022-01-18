@@ -1,5 +1,12 @@
 import ObservableStore from 'obs-store';
-import { CONFIG_URL, DEFAULT_CONFIG, STATUS } from '../constants';
+import {
+  CONFIG_URL,
+  DEFAULT_CONFIG,
+  DEFAULT_IGNORE_ERRORS_CONFIG,
+  IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
+  IGNORE_ERRORS_CONFIG_URL,
+  STATUS,
+} from '../constants';
 
 const extendValues = (defaultValues, newValues) => {
   return Object.entries(defaultValues).reduce(
@@ -44,6 +51,9 @@ export class RemoteConfigController {
 
     this.store = new ObservableStore({ ...defaults, ...options.initState });
     this._getConfig();
+
+    this._ignoreErrorsConfig = DEFAULT_IGNORE_ERRORS_CONFIG;
+    this._getIgnoreErrorsConfig();
   }
 
   getPackConfig() {
@@ -163,6 +173,35 @@ export class RemoteConfigController {
     this._timer = setTimeout(
       () => this._getConfig(),
       DEFAULT_CONFIG.CONFIG.update_ms
+    );
+  }
+
+  async _getIgnoreErrorsConfig() {
+    try {
+      const ignoreErrorsConfig = await fetch(IGNORE_ERRORS_CONFIG_URL).then(
+        resp =>
+          resp.ok
+            ? resp.json()
+            : resp.text().then(text => Promise.reject(new Error(text)))
+      );
+
+      Object.assign(this._ignoreErrorsConfig, ignoreErrorsConfig);
+    } finally {
+      setTimeout(
+        () => this._getIgnoreErrorsConfig(),
+        IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL
+      );
+    }
+  }
+
+  shouldIgnoreError(context, message) {
+    return (
+      this._ignoreErrorsConfig.ignoreAll ||
+      this._ignoreErrorsConfig[context].some(str => {
+        const re = new RegExp(str);
+
+        return re.test(message);
+      })
     );
   }
 }
