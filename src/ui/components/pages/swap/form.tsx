@@ -3,6 +3,7 @@ import { Asset, Money } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
+import { AssetSelectModal } from 'assets/selectModal';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AssetBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
@@ -17,6 +18,7 @@ import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
+import { Modal } from 'ui/components/ui/modal/Modal';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
@@ -69,6 +71,9 @@ export function SwapForm({
 }: Props) {
   const { t } = useTranslation();
   const assets = useAppSelector(state => state.assets);
+  const assetBalances = useAppSelector(
+    state => state.balances[state.selectedAccount.address]?.assets || {}
+  );
 
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
@@ -308,6 +313,10 @@ export function SwapForm({
     }
   }
 
+  const [showSelectAsset, setShowSelectAsset] = React.useState<'from' | 'to'>(
+    null
+  );
+
   return (
     <form
       className={styles.root}
@@ -387,6 +396,9 @@ export function SwapForm({
 
             setFromAmount(max.getTokens().toFixed());
           }}
+          onLogoClick={() => {
+            setShowSelectAsset('from');
+          }}
         />
 
         <div className={styles.swapDirectionBtnWrapper}>
@@ -416,6 +428,9 @@ export function SwapForm({
           })}
           loading={state.detailsUpdateIsPending}
           value={state.toAmountTokens.toFixed()}
+          onLogoClick={() => {
+            setShowSelectAsset('to');
+          }}
         />
       </div>
 
@@ -604,6 +619,24 @@ export function SwapForm({
           </tr>
         </tbody>
       </table>
+
+      <Modal
+        showModal={showSelectAsset != null}
+        animation={Modal.ANIMATION.FLASH}
+      >
+        <AssetSelectModal
+          assetBalances={assetBalances}
+          assets={Object.values(assets)}
+          network={currentNetwork}
+          onClose={() => {
+            setShowSelectAsset(null);
+          }}
+          onSelect={assetId => {
+            console.log('onSelect', assetId);
+            setShowSelectAsset(null);
+          }}
+        />
+      </Modal>
     </form>
   );
 }

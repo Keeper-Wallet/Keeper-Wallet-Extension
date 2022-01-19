@@ -75,6 +75,10 @@
     "onlyFavorites": "Only Favorites",
     "resetFilters": "Reset filters"
   },
+  "assetSelectModal": {
+    "searchPlaceholder": "Search by ticker, name or enter an id",
+    "title": "Select a token"
+  },
   "historyCard": {
     "burn": "Burn Asset",
     "createAlias": "Create Alias",
