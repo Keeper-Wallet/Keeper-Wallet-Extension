@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
+import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
@@ -469,156 +470,222 @@ export function SwapForm({
         <div className={styles.error}>{amountError || swapErrorMessage}</div>
       )}
 
-      <table className={styles.summaryTable}>
-        <tbody>
-          <tr>
-            <th>
-              <Tooltip
-                className={styles.summaryTableTooltipContent}
-                content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
-              >
-                {props => (
-                  <span className={styles.summaryTableTooltip} {...props}>
-                    <Trans i18nKey="swap.minimumReceived" />
-                  </span>
-                )}
-              </Tooltip>
-            </th>
-
-            <td>
-              {state.detailsUpdateIsPending ? (
-                <Loader />
-              ) : (
-                <div className={styles.summaryTableValue}>
-                  {Money.fromCoins(state.minReceivedCoins, toAsset)
-                    .getTokens()
-                    .toFormat(
-                      toAsset.precision,
-                      BigNumber.ROUND_MODE.ROUND_FLOOR,
-                      ASSETS_FORMAT
-                    )}{' '}
-                  {toAsset.displayName}
-                </div>
+      <div className={styles.summary}>
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.youSaveTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.youSave" />
+                </span>
               )}
-            </td>
-          </tr>
+            </Tooltip>
+          </div>
 
-          <tr>
-            <th>
-              <Tooltip
-                className={styles.summaryTableTooltipContent}
-                content={<Trans i18nKey="swap.priceImpactTooltip" />}
-              >
-                {props => (
-                  <span className={styles.summaryTableTooltip} {...props}>
-                    <Trans i18nKey="swap.priceImpact" />
-                  </span>
-                )}
-              </Tooltip>
-            </th>
+          <div className={styles.summaryValue}>
+            {state.detailsUpdateIsPending ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>0.6%</span>
+            )}
+          </div>
+        </div>
 
-            <td>
-              {state.detailsUpdateIsPending ? (
-                <Loader />
-              ) : (
-                <div className={styles.summaryTableValue}>
-                  {state.priceImpact}%
-                </div>
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.routeTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.route" />
+                </span>
               )}
-            </td>
-          </tr>
+            </Tooltip>
+          </div>
 
-          <tr>
-            <th>
-              <Tooltip
-                className={styles.summaryTableTooltipContent}
-                content={
-                  <Trans
-                    i18nKey="swap.feeTooltip"
-                    values={{
-                      commission: commission.mul(100).toFormat(),
-                      keeperCommission: getKeeperCommission(exchangerVersion)
-                        .mul(100)
-                        .toFormat(),
-                    }}
-                  />
-                }
-              >
-                {props => (
-                  <span className={styles.summaryTableTooltip} {...props}>
-                    <Trans i18nKey="swap.fee" />
-                  </span>
-                )}
-              </Tooltip>
-            </th>
+          <div className={styles.summaryValue}>
+            {state.detailsUpdateIsPending ? (
+              <Loader />
+            ) : (
+              <div className={styles.route}>
+                {[
+                  'BTC',
+                  'WAVES',
+                  'USDN',
+                  'EURN',
+                  'USDT',
+                  'EGG',
+                  'RACE',
+                  'WX',
+                  'SCOneX',
+                ].map((ticker, index) => (
+                  <React.Fragment key={ticker}>
+                    {index !== 0 && (
+                      <svg className={styles.routeItemArrow} viewBox="0 0 7 12">
+                        <path d="M1.115 12L0 10.863L4.768 6L0 1.137L1.115 0L7 6L1.115 12Z" />
+                      </svg>
+                    )}
 
-            <td>
-              {state.detailsUpdateIsPending ? (
-                <Loader />
-              ) : (
-                <div className={styles.summaryTableValue}>
-                  {Money.fromCoins(state.feeCoins, toAsset)
-                    .getTokens()
-                    .toFormat(
-                      toAsset.precision,
-                      BigNumber.ROUND_MODE.ROUND_FLOOR,
-                      ASSETS_FORMAT
-                    )}{' '}
-                  {toAsset.displayName} (
-                  {commission
-                    .add(getKeeperCommission(exchangerVersion))
-                    .mul(100)
-                    .toFormat()}
-                  %)
-                </div>
+                    <div className={styles.routeItemName}>{ticker}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.minimumReceived" />
+                </span>
               )}
-            </td>
-          </tr>
+            </Tooltip>
+          </div>
 
-          <tr>
-            <th>
-              <Tooltip
-                className={styles.summaryTableTooltipContent}
-                content={<Trans i18nKey="swap.transactionFeeTooltip" />}
-              >
-                {props => (
-                  <span className={styles.summaryTableTooltip} {...props}>
-                    <Trans i18nKey="swap.transactionFee" />
-                  </span>
-                )}
-              </Tooltip>
-            </th>
+          <div className={styles.summaryValue}>
+            {state.detailsUpdateIsPending ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {Money.fromCoins(state.minReceivedCoins, toAsset)
+                  .getTokens()
+                  .toFormat(
+                    toAsset.precision,
+                    BigNumber.ROUND_MODE.ROUND_FLOOR,
+                    ASSETS_FORMAT
+                  )}{' '}
+                {toAsset.displayName}
+              </span>
+            )}
+          </div>
+        </div>
 
-            <td>
-              {sponsoredAssetBalanceEntries.length > 1 ? (
-                <Select
-                  listPlacement="top"
-                  selected={state.txFeeAssetId}
-                  selectList={sponsoredAssetBalanceEntries.map(
-                    ([assetId, assetBalance]) => ({
-                      id: assetId,
-                      text: formatSponsoredAssetBalanceEntry([
-                        assetId,
-                        assetBalance,
-                      ]),
-                      value: assetId,
-                    })
-                  )}
-                  onSelectItem={(_id, value) => {
-                    dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.priceImpactTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.priceImpact" />
+                </span>
+              )}
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {state.detailsUpdateIsPending ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {state.priceImpact}%
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={
+                <Trans
+                  i18nKey="swap.feeTooltip"
+                  values={{
+                    commission: commission.mul(100).toFormat(),
+                    keeperCommission: getKeeperCommission(exchangerVersion)
+                      .mul(100)
+                      .toFormat(),
                   }}
                 />
-              ) : (
-                <div className={styles.summaryTableValue}>
-                  {formatSponsoredAssetBalanceEntry(
-                    sponsoredAssetBalanceEntries[0]
-                  )}
-                </div>
+              }
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.fee" />
+                </span>
               )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {state.detailsUpdateIsPending ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {Money.fromCoins(state.feeCoins, toAsset)
+                  .getTokens()
+                  .toFormat(
+                    toAsset.precision,
+                    BigNumber.ROUND_MODE.ROUND_FLOOR,
+                    ASSETS_FORMAT
+                  )}{' '}
+                {toAsset.displayName} (
+                {commission
+                  .add(getKeeperCommission(exchangerVersion))
+                  .mul(100)
+                  .toFormat()}
+                %)
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className={cn(styles.summaryRow, styles.summaryRow_center)}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.transactionFeeTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.transactionFee" />
+                </span>
+              )}
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {sponsoredAssetBalanceEntries.length > 1 ? (
+              <Select
+                listPlacement="top"
+                selected={state.txFeeAssetId}
+                selectList={sponsoredAssetBalanceEntries.map(
+                  ([assetId, assetBalance]) => ({
+                    id: assetId,
+                    text: formatSponsoredAssetBalanceEntry([
+                      assetId,
+                      assetBalance,
+                    ]),
+                    value: assetId,
+                  })
+                )}
+                onSelectItem={(_id, value) => {
+                  dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
+                }}
+              />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {formatSponsoredAssetBalanceEntry(
+                  sponsoredAssetBalanceEntries[0]
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
 
       <Modal
         showModal={showSelectAsset != null}

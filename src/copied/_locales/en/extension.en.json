@@ -526,6 +526,8 @@
     "feeTooltip": "SwopFi fee ({{commission}}%) + Keeper fee ({{keeperCommission}}%)",
     "insufficientFundsError": "Insufficient funds",
     "priceLabel": "Price",
+    "route": "Route",
+    "routeTooltip": "List of assets involved in swap for target asset",
     "statusFailed": "Swap failed",
     "statusInProgress": "Waiting for swap completion...",
     "statusSucceeded": "Swap succeeded",
@@ -534,7 +536,9 @@
     "toInputLabel": "To {{asset}} (est.)",
     "transactionFee": "Transaction Fee",
     "transactionFeeTooltip": "Network fee for the smart contract invocation",
-    "viewTransaction": "View transaction"
+    "viewTransaction": "View transaction",
+    "youSave": "You save",
+    "youSaveTooltip": "How much you'll save using Waves Keeper swap routing"
   },
   "transactions": {
     "allowAccess": "Allow access",
