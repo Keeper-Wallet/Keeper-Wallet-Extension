@@ -410,7 +410,7 @@ A reply from Waves network returns as a line containing the entire past transact
 ERRORS
 
 - Same as `signTransaction`
-- `{message: "Filed request", data: "Error description", code: 15}` – a request was signed but not broadcast
+- `{message: "Failed request", data: "Error description", code: 15}` – a request was signed but not broadcast
 
 #### signTransactionPackage
 
@@ -1068,7 +1068,7 @@ REPLY: the matcher's reply line about successful creation of an order.
 ERRORS:
 
 - Same as for `signOrder`
-- `{message: "Filed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
+- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
 
 #### signCancelOrder
 
@@ -1134,7 +1134,7 @@ REPLY: Data that came from the matcher
 ERRORS:
 
 - Same as for `signCancelOrder`
-- `{message: "Filed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
+- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
 
 #### signRequest
 

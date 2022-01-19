@@ -21,7 +21,7 @@ const ERRORS_DATA = {
   12: { msg: 'Api rejected by user', name: 'API_DENIED' },
   13: { msg: 'Init Waves Keeper and add account', name: 'INIT_KEEPER' },
   14: { msg: 'Add Waves Keeper account', name: 'EMPTY_KEEPER' },
-  15: { msg: 'Filed request', name: 'FAILED_MSG' },
+  15: { msg: 'Failed request', name: 'FAILED_MSG' },
   16: { msg: 'Unknown transaction data', name: 'UNKNOWN_TX' },
   17: { msg: 'Invalid idle type', name: 'UNKNOWN_IDLE' },
   18: { msg: "Can't sent notification", name: 'NOTIFICATION_ERROR' },
