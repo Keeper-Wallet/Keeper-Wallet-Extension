@@ -72,15 +72,36 @@ export function SwapForm({
 }: Props) {
   const { t } = useTranslation();
   const assets = useAppSelector(state => state.assets);
-  const assetBalances = useAppSelector(
-    state => state.balances[state.selectedAccount.address]?.assets || {}
-  );
-
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+
+  const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
+
+  const sponsoredAssetBalanceEntries = Object.entries(
+    accountBalance.assets
+  ).filter(([assetId, assetBalance]) => {
+    const sponsoredAssetFee = convertToSponsoredAssetFee(
+      wavesFeeCoinsBN,
+      new Asset(assets[assetId]),
+      assetBalance
+    );
+
+    return (
+      assetBalance.minSponsoredAssetFee != null &&
+      new BigNumber(assetBalance.sponsorBalance).gte(wavesFeeCoinsBN) &&
+      new BigNumber(assetBalance.balance).gte(sponsoredAssetFee.getCoins())
+    );
+  });
+
+  if (sponsoredAssetBalanceEntries.length === 0) {
+    sponsoredAssetBalanceEntries.push([
+      'WAVES',
+      accountBalance.assets['WAVES'],
+    ]);
+  }
 
   const [state, dispatch] = React.useReducer(
     (
@@ -140,6 +161,7 @@ export function SwapForm({
     undefined,
     (): State => {
       const defaultExchanger = getDefaultExchanger(currentNetwork, exchangers);
+      const txFeeAssetId = sponsoredAssetBalanceEntries[0][0];
 
       return {
         detailsUpdateIsPending: false,
@@ -151,7 +173,7 @@ export function SwapForm({
         minReceivedCoins: new BigNumber(0),
         swapRate: undefined,
         toAmountTokens: new BigNumber(0),
-        txFeeAssetId: 'WAVES',
+        txFeeAssetId,
       };
     }
   );
@@ -186,6 +208,8 @@ export function SwapForm({
     () => new Asset(toAssetDetail),
     [toAssetDetail]
   );
+
+  const txFeeAsset = new Asset(assets[state.txFeeAssetId]);
 
   const latestFromAmountRef = React.useRef(state.fromAmount);
 
@@ -256,28 +280,7 @@ export function SwapForm({
 
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
-
-  const sponsoredAssetBalanceEntries = Object.entries(
-    accountBalance.assets
-  ).filter(([assetId, assetBalance]) => {
-    if (assetId === 'WAVES') {
-      return true;
-    }
-
-    const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
-
-    const sponsoredAssetFee = convertToSponsoredAssetFee(
-      wavesFeeCoinsBN,
-      new Asset(assets[assetId]),
-      assetBalance
-    ).getCoins();
-
-    return (
-      assetBalance.minSponsoredAssetFee != null &&
-      new BigNumber(assetBalance.sponsorBalance).gte(wavesFeeCoinsBN) &&
-      new BigNumber(assetBalance.balance).gte(sponsoredAssetFee)
-    );
-  });
+  const txFeeAssetBalance = getAssetBalance(txFeeAsset, accountBalance);
 
   function formatSponsoredAssetBalanceEntry([assetId, assetBalance]: [
     string,
@@ -294,11 +297,21 @@ export function SwapForm({
 
   const fromAmountTokens = new BigNumber(state.fromAmount || '0');
 
-  const amountError = fromAmountTokens.gt(
-    new BigNumber(fromAssetBalance.getTokens())
-  )
-    ? t('swap.insufficientFundsError')
-    : null;
+  const sponsoredAssetFee = convertToSponsoredAssetFee(
+    wavesFeeCoinsBN,
+    txFeeAsset,
+    accountBalance.assets[state.txFeeAssetId]
+  );
+
+  const validationErrorMessage =
+    fromAmountTokens.gt(fromAssetBalance.getTokens()) ||
+    txFeeAssetBalance.getTokens().lt(sponsoredAssetFee.getTokens()) ||
+    (fromAsset.id === txFeeAsset.id &&
+      fromAmountTokens
+        .add(sponsoredAssetFee.getTokens())
+        .gt(fromAssetBalance.getTokens()))
+      ? t('swap.insufficientFundsError')
+      : null;
 
   function setFromAmount(newFromAmount: string) {
     if (newFromAmount !== state.fromAmount) {
@@ -456,7 +469,7 @@ export function SwapForm({
         className="fullwidth"
         disabled={
           fromAmountTokens.eq(0) ||
-          amountError != null ||
+          validationErrorMessage != null ||
           state.detailsUpdateIsPending ||
           isSwapInProgress
         }
@@ -466,8 +479,10 @@ export function SwapForm({
         <Trans i18nKey="swap.submitButtonText" />
       </Button>
 
-      {(amountError || swapErrorMessage) && (
-        <div className={styles.error}>{amountError || swapErrorMessage}</div>
+      {(validationErrorMessage || swapErrorMessage) && (
+        <div className={styles.error}>
+          {validationErrorMessage || swapErrorMessage}
+        </div>
       )}
 
       <div className={styles.summary}>
@@ -692,7 +707,7 @@ export function SwapForm({
         animation={Modal.ANIMATION.FLASH}
       >
         <AssetSelectModal
-          assetBalances={assetBalances}
+          assetBalances={accountBalance.assets}
           assets={Object.values(assets)}
           network={currentNetwork}
           onClose={() => {
