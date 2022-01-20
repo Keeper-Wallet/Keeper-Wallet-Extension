@@ -1,3 +1,4 @@
+import { SwapScreenInitialState } from 'ui/reducers/localState';
 import { ACTION } from './constants';
 
 function createMVAction<TPayload>(type: string) {
@@ -53,3 +54,16 @@ export const clearMessagesStatus = createMVAction(ACTION.APPROVE_REJECT_CLEAR);
 export const closeNotificationWindow = createMVAction(ACTION.CLOSE_WINDOW);
 export const setIdle = createMVAction(ACTION.REMOTE_CONFIG.SET_IDLE);
 export const updateIdle = createMVAction(ACTION.REMOTE_CONFIG.UPDATE_IDLE);
+
+export function setSwapScreenInitialState(
+  initialState: SwapScreenInitialState
+) {
+  return {
+    type: ACTION.SET_SWAP_SCREEN_INITIAL_STATE,
+    payload: initialState,
+  };
+}
+
+export function resetSwapScreenInitialState() {
+  return { type: ACTION.RESET_SWAP_SCREEN_INITIAL_STATE };
+}

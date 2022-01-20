@@ -44,6 +44,7 @@
     "favAddTooltip": "Add to Favorites",
     "favRemoveTooltip": "Remove from Favorites",
     "sendAssetTooltip": "Send",
+    "swapAssetTooltip": "Swap",
     "viewDetailsInExplorer": "View details in Explorer"
   },
   "assets": {

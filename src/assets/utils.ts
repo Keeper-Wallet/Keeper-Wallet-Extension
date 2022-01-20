@@ -2,7 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { AssetBalance } from 'ui/reducers/updateState';
 import { DEFAULT_FEE_CONFIG } from '../constants';
-import { assetIds, assetLogosByNetwork } from './constants';
+import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
 
 export function convertToSponsoredAssetFee(
   wavesFeeCoins: BigNumber,
@@ -23,4 +23,8 @@ export function getAssetLogo(network: string, assetId: string) {
 
 export function getAssetIdByName(network: string, assetName: string) {
   return assetIds[network]?.[assetName];
+}
+
+export function isSwappableAsset(network: string, assetId: string) {
+  return swappableAssetIds[network]?.[assetId] || false;
 }

@@ -120,6 +120,12 @@ export const SWAP_DAPPS = {
   testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
 };
 
+export const SWAP_SUPPORTING_NETWORKS = ['mainnet'];
+
+if (WAVESKEEPER_DEBUG) {
+  SWAP_SUPPORTING_NETWORKS.push('testnet');
+}
+
 export const IGNORE_ERRORS_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';
 
