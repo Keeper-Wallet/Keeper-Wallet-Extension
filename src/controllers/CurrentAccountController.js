@@ -180,7 +180,6 @@ export class CurrentAccountController {
             },
           ];
         } catch (e) {
-          console.log(e);
           return null;
         }
       })
@@ -188,7 +187,11 @@ export class CurrentAccountController {
 
     const oldBalances = this.store.getState().balances;
     this.store.updateState({
-      balances: Object.assign({}, oldBalances, Object.fromEntries(data)),
+      balances: Object.assign(
+        {},
+        oldBalances,
+        Object.fromEntries(data.filter(entry => entry != null))
+      ),
     });
   }
 }
