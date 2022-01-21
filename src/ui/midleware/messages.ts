@@ -88,35 +88,36 @@ export const approve = store => next => action => {
   const messageId = action.payload;
   const { selectedAccount, currentNetwork } = store.getState();
 
-  background
-    .approve(messageId, selectedAccount, currentNetwork)
-    .catch(async err => {
-      const message = await background.getMessageById(messageId);
-      const errorMessage = err && err.message ? err.message : String(err);
+  background.getMessageById(messageId).then(message => {
+    background
+      .approve(messageId, selectedAccount, currentNetwork)
+      .catch(async err => {
+        const errorMessage = err && err.message ? err.message : String(err);
 
-      // messages from keeper itself have an empty origin
-      if (message.origin) {
-        const shouldIgnore = await background.shouldIgnoreError(
-          'contentScriptApprove',
-          errorMessage
-        );
+        // messages from keeper itself have an empty origin
+        if (message.origin) {
+          const shouldIgnore = await background.shouldIgnoreError(
+            'contentScriptApprove',
+            errorMessage
+          );
 
-        if (shouldIgnore) {
-          return;
-        }
-      }
-
-      Sentry.withScope(scope => {
-        const fingerprint = ['{{ default }}', message.type];
-
-        if (message.type === 'transaction') {
-          fingerprint.push(message.data.type);
+          if (shouldIgnore) {
+            return;
+          }
         }
 
-        scope.setFingerprint(fingerprint);
-        Sentry.captureException(err);
+        Sentry.withScope(scope => {
+          const fingerprint = ['{{ default }}', message.type];
+
+          if (message.type === 'transaction') {
+            fingerprint.push(message.data.type);
+          }
+
+          scope.setFingerprint(fingerprint);
+          Sentry.captureException(err);
+        });
       });
-    });
+  });
 
   store.dispatch(approvePending(true));
 };
