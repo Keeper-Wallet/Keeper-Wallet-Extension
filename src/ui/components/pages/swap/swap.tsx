@@ -86,11 +86,6 @@ export function Swap({ setTab }: Props) {
             <div className={styles.accountInfoHeader}>
               <Avatar address={selectedAccount.address} size={28} />
               <div className={styles.accountName}>{selectedAccount.name}</div>
-              <i className="networkIcon" />
-
-              <div className={styles.currentNetwork}>
-                <Trans i18nKey={`bottom.${currentNetwork}`} />
-              </div>
             </div>
 
             {performedSwapData == null ? (
