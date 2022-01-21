@@ -13,7 +13,6 @@ import {
   calcExchangeDetails,
   getAssetBalance,
   getDefaultExchanger,
-  getKeeperCommission,
 } from './utils';
 import { Button } from '../../ui/buttons/Button';
 import { Loader } from '../../ui/loader/Loader';
@@ -620,53 +619,6 @@ export function SwapForm({
             ) : (
               <span className={styles.summaryValueText}>
                 {state.priceImpact}%
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.summaryRow}>
-          <div className={styles.summaryLabel}>
-            <Tooltip
-              className={styles.summaryTooltipContent}
-              content={
-                <Trans
-                  i18nKey="swap.feeTooltip"
-                  values={{
-                    commission: commission.mul(100).toFormat(),
-                    keeperCommission: getKeeperCommission(exchangerVersion)
-                      .mul(100)
-                      .toFormat(),
-                  }}
-                />
-              }
-            >
-              {props => (
-                <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.fee" />
-                </span>
-              )}
-            </Tooltip>
-          </div>
-
-          <div className={styles.summaryValue}>
-            {state.detailsUpdateIsPending ? (
-              <Loader />
-            ) : (
-              <span className={styles.summaryValueText}>
-                {Money.fromCoins(state.feeCoins, toAsset)
-                  .getTokens()
-                  .toFormat(
-                    toAsset.precision,
-                    BigNumber.ROUND_MODE.ROUND_FLOOR,
-                    ASSETS_FORMAT
-                  )}{' '}
-                {toAsset.displayName} (
-                {commission
-                  .add(getKeeperCommission(exchangerVersion))
-                  .mul(100)
-                  .toFormat()}
-                %)
               </span>
             )}
           </div>
