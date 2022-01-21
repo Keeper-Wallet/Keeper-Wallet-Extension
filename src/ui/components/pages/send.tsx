@@ -40,8 +40,9 @@ export function Send() {
     new Asset(currentAsset)
   );
 
+  const [isTriedToSubmit, setIsTriedToSubmit] = React.useState(false);
+
   const [recipientValue, setRecipientValue] = React.useState('');
-  const [recipientTouched, setRecipientTouched] = React.useState(false);
   const recipientError = !recipientValue
     ? t('send.recipientRequiredError')
     : !(
@@ -50,24 +51,22 @@ export function Send() {
       )
     ? t('send.recipientInvalidError')
     : null;
-  const showRecipientError = recipientError != null && recipientTouched;
+  const showRecipientError = isTriedToSubmit && recipientError != null;
 
   const [amountValue, setAmountValue] = React.useState(isNft ? '1' : '');
-  const [amountTouched, setAmountTouched] = React.useState(false);
   const amountError =
     !amountValue || Number(amountValue) == 0
       ? t('send.amountRequiredError')
       : !currentBalance.getTokens().gte(amountValue)
       ? t('send.insufficientFundsError')
       : null;
-  const showAmountError = amountError != null && amountTouched;
+  const showAmountError = isTriedToSubmit && amountError != null;
 
-  const [attachmentTouched, setAttachmentTouched] = React.useState(false);
   const [attachmentValue, setAttachmentValue] = React.useState('');
   const attachmentByteCount = new TextEncoder().encode(attachmentValue).length;
   const attachmentError =
     attachmentByteCount > 140 ? t('send.attachmentMaxLengthError') : null;
-  const showAttachmentError = attachmentError != null && attachmentTouched;
+  const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -77,9 +76,7 @@ export function Send() {
       onSubmit={event => {
         event.preventDefault();
 
-        setRecipientTouched(true);
-        setAmountTouched(true);
-        setAttachmentTouched(true);
+        setIsTriedToSubmit(true);
 
         if (recipientError || amountError || attachmentError) {
           return;
@@ -125,9 +122,6 @@ export function Send() {
               error={showRecipientError}
               spellCheck={false}
               value={recipientValue}
-              onBlur={() => {
-                setRecipientTouched(true);
-              }}
               onChange={event => {
                 setRecipientValue(event.currentTarget.value);
               }}
@@ -142,23 +136,31 @@ export function Send() {
                 {!currentAsset || !assetBalances[currentAsset.id] ? (
                   <Loader />
                 ) : (
-                  <>
-                    <AssetAmountInput
-                      balance={
-                        new Money(
-                          new BigNumber(assetBalances[currentAsset.id].balance),
-                          new Asset(currentAsset)
-                        )
-                      }
-                      label={t('send.amountInputLabel')}
-                      value={amountValue}
-                      onChange={value => {
-                        setAmountTouched(true);
-                        setAmountValue(value);
-                      }}
-                    />
-                    <Error show={showAmountError}>{amountError}</Error>
-                  </>
+                  (() => {
+                    const balance = new Money(
+                      new BigNumber(assetBalances[currentAsset.id].balance),
+                      new Asset(currentAsset)
+                    );
+
+                    return (
+                      <>
+                        <AssetAmountInput
+                          balance={balance}
+                          label={t('send.amountInputLabel', {
+                            asset: currentAsset.displayName,
+                          })}
+                          value={amountValue}
+                          onChange={value => {
+                            setAmountValue(value);
+                          }}
+                          onMaxClick={() => {
+                            setAmountValue(balance.toTokens());
+                          }}
+                        />
+                        <Error show={showAmountError}>{amountError}</Error>
+                      </>
+                    );
+                  })()
                 )}
               </div>
             </>
@@ -182,9 +184,6 @@ export function Send() {
               multiLine
               rows={4}
               value={attachmentValue}
-              onBlur={() => {
-                setAttachmentTouched(true);
-              }}
               onChange={event => {
                 setAttachmentValue(event.currentTarget.value);
               }}
