@@ -1,15 +1,7 @@
-.root {
-  display: flex;
-  flex-direction: column;
-}
-
-.pairSelect {
-  margin-bottom: 24px;
-}
-
 .swapDirectionBtnWrapper {
-  margin: -11px 0;
-  padding: 0 14px;
+  position: relative;
+  z-index: 1;
+  margin: -11px 14px;
 }
 
 .swapDirectionBtn {

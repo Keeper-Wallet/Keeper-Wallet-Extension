@@ -519,7 +519,6 @@
     "fromInputLabel": "From {{asset}}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed",
-    "pairInputLabel": "Pair",
     "priceImpact": "Price Impact",
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "failMessage": "Swap did not succeed, please try again",

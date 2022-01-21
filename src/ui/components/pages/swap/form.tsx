@@ -120,7 +120,6 @@ export function SwapForm({
     (
       prevState: State,
       action:
-        | { type: 'SET_EXCHANGER'; exchangerId: string }
         | { type: 'SWAP_DIRECTION' }
         | { type: 'SET_FROM_AMOUNT'; value: string }
         | { type: 'SET_TX_FEE_ASSET_ID'; value: string }
@@ -134,12 +133,6 @@ export function SwapForm({
           }
     ): State => {
       switch (action.type) {
-        case 'SET_EXCHANGER':
-          return {
-            ...prevState,
-            directionSwapped: false,
-            exchangerId: action.exchangerId,
-          };
         case 'SWAP_DIRECTION':
           return {
             ...prevState,
@@ -346,7 +339,6 @@ export function SwapForm({
 
   return (
     <form
-      className={styles.root}
       onSubmit={event => {
         event.preventDefault();
 
@@ -365,101 +357,66 @@ export function SwapForm({
         });
       }}
     >
-      <div className={styles.pairSelect}>
-        <div className="input-title basic500 tag1">
-          <Trans i18nKey="swap.pairInputLabel" />
-        </div>
+      <AssetAmountInput
+        balance={fromAssetBalance}
+        label={t('swap.fromInputLabel', {
+          asset: fromAssetBalance.asset.displayName,
+        })}
+        value={state.fromAmount}
+        onChange={newValue => {
+          setFromAmount(newValue);
+        }}
+        onMaxClick={() => {
+          let max = fromAssetBalance;
 
-        <Select
-          className="fullwidth"
-          selected={state.exchangerId}
-          selectList={Object.values(exchangers)
-            .sort((exchangerA, exchangerB) => {
-              const a = new BigNumber(exchangerA.totalLiquidity);
-              const b = new BigNumber(exchangerB.totalLiquidity);
+          if (state.txFeeAssetId === fromAssetId) {
+            const fee = convertToSponsoredAssetFee(
+              new BigNumber(wavesFeeCoins),
+              new Asset(assets[state.txFeeAssetId]),
+              accountBalance.assets[state.txFeeAssetId]
+            );
 
-              const diff = b.sub(a);
+            max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
+          }
 
-              return diff.isNegative() ? -1 : diff.isPositive() ? 1 : 0;
-            })
-            .map(exchanger => ({
-              id: exchanger.id,
-              text: `${assets[exchanger.A_asset_id].displayName}/${
-                assets[exchanger.B_asset_id].displayName
-              }`,
-              value: exchanger.id,
-            }))}
-          onSelectItem={(_id, value) => {
-            dispatch({
-              type: 'SET_EXCHANGER',
-              exchangerId: value,
-            });
+          setFromAmount(max.getTokens().toFixed());
+        }}
+        onLogoClick={() => {
+          setShowSelectAsset('from');
+        }}
+      />
+
+      <div className={styles.swapDirectionBtnWrapper}>
+        <button
+          className={styles.swapDirectionBtn}
+          disabled={state.detailsUpdateIsPending}
+          type="button"
+          onClick={() => {
+            dispatch({ type: 'SWAP_DIRECTION' });
           }}
-        />
-      </div>
-
-      <div>
-        <AssetAmountInput
-          balance={fromAssetBalance}
-          label={t('swap.fromInputLabel', {
-            asset: fromAssetBalance.asset.displayName,
-          })}
-          value={state.fromAmount}
-          onChange={newValue => {
-            setFromAmount(newValue);
-          }}
-          onMaxClick={() => {
-            let max = fromAssetBalance;
-
-            if (state.txFeeAssetId === fromAssetId) {
-              const fee = convertToSponsoredAssetFee(
-                new BigNumber(wavesFeeCoins),
-                new Asset(assets[state.txFeeAssetId]),
-                accountBalance.assets[state.txFeeAssetId]
-              );
-
-              max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
-            }
-
-            setFromAmount(max.getTokens().toFixed());
-          }}
-          onLogoClick={() => {
-            setShowSelectAsset('from');
-          }}
-        />
-
-        <div className={styles.swapDirectionBtnWrapper}>
-          <button
-            className={styles.swapDirectionBtn}
-            disabled={state.detailsUpdateIsPending}
-            type="button"
-            onClick={() => {
-              dispatch({ type: 'SWAP_DIRECTION' });
-            }}
+        >
+          <svg
+            className={styles.swapDirectionBtnIcon}
+            width="14"
+            height="14"
+            fill="currentColor"
           >
-            <svg
-              className={styles.swapDirectionBtnIcon}
-              width="14"
-              height="14"
-              fill="currentColor"
-            >
-              <path d="M3.4 3.43 2.131 4.697a.6.6 0 0 1-.848-.849l2.29-2.29a.6.6 0 0 1 .85 0l2.29 2.29a.6.6 0 0 1-.848.849L4.599 3.43V12a.6.6 0 0 1-1.2 0V3.43ZM10.6 10.551l1.266-1.266a.6.6 0 1 1 .848.848l-2.29 2.291a.6.6 0 0 1-.85 0l-2.29-2.29a.6.6 0 0 1 .848-.85L9.4 10.552v-8.57a.6.6 0 0 1 1.2 0v8.57Z" />
-            </svg>
-          </button>
-        </div>
-
-        <AssetAmountInput
-          balance={toAssetBalance}
-          label={t('swap.toInputLabel', {
-            asset: toAssetBalance.asset.displayName,
-          })}
-          loading={state.detailsUpdateIsPending}
-          value={state.toAmountTokens.toFixed()}
-          onLogoClick={() => {
-            setShowSelectAsset('to');
-          }}
-        />
+            <path d="M3.4 3.43 2.131 4.697a.6.6 0 0 1-.848-.849l2.29-2.29a.6.6 0 0 1 .85 0l2.29 2.29a.6.6 0 0 1-.848.849L4.599 3.43V12a.6.6 0 0 1-1.2 0V3.43ZM10.6 10.551l1.266-1.266a.6.6 0 1 1 .848.848l-2.29 2.291a.6.6 0 0 1-.85 0l-2.29-2.29a.6.6 0 0 1 .848-.85L9.4 10.552v-8.57a.6.6 0 0 1 1.2 0v8.57Z" />
+          </svg>
+        </button>
       </div>
+
+      <AssetAmountInput
+        balance={toAssetBalance}
+        label={t('swap.toInputLabel', {
+          asset: toAssetBalance.asset.displayName,
+        })}
+        loading={state.detailsUpdateIsPending}
+        value={state.toAmountTokens.toFixed()}
+        onLogoClick={() => {
+          setShowSelectAsset('to');
+        }}
+      />
 
       <div className={styles.priceRow}>
         <div className={styles.priceRowLabel}>
