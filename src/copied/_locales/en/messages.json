@@ -4,7 +4,7 @@
     "description": "The name of the application"
   },
   "appDescription": {
-    "message": "Manage your private keys securely",
+    "message": "Waves Keeper is your entry point to the Waves blockchain and Waves-powered web services",
     "description": "The description of the application"
   }
 }
