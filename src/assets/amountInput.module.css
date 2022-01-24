@@ -33,7 +33,7 @@
 
 .main {
   flex: 1 1 0;
-  overflow: hidden;
+  min-width: 0;
 }
 
 .top {
@@ -89,8 +89,17 @@
 }
 
 .maxButton {
+  margin-right: -6px;
+  padding: 3px 6px;
+  border-radius: 4px;
   background: none;
   color: var(--color-submit400);
+  font-weight: 300;
   font-size: 14px;
   cursor: pointer;
+}
+
+.maxButton:hover {
+  background: var(--color-submit400);
+  color: var(--color-white);
 }
