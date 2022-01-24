@@ -21,7 +21,8 @@ const REPLACE_PATTERN = {
   '<!-- UPDATE PUBLISHER DISPLAY NAME -->': '',
   '<!-- UPDATE IDENTITY -->': '',
   __MSG_appName__: 'Waves Keeper',
-  __MSG_appDescription__: 'Waves Keeper is your entry point to the Waves blockchain and Waves-powered web services',
+  __MSG_appDescription__:
+    'Waves Keeper is your entry point to the Waves blockchain and Waves-powered web services',
 };
 
 const manifest = JSON.parse(fs.readFileSync(`${DIST}/manifest.json`));
