@@ -8,7 +8,7 @@ import { AssetSelectModal } from 'assets/selectModal';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AssetBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import {
   calcExchangeDetails,
   getAssetBalance,
@@ -19,7 +19,6 @@ import { Loader } from '../../ui/loader/Loader';
 import { Select } from '../../ui/select/Select';
 import * as styles from './form.module.css';
 import { Modal } from 'ui/components/ui/modal/Modal';
-import { resetSwapScreenInitialState } from 'ui/actions';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
@@ -72,22 +71,10 @@ export function SwapForm({
 }: Props) {
   const { t } = useTranslation();
 
-  const appDispatch = useAppDispatch();
-
   const assets = useAppSelector(state => state.assets);
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
-
-  const initialState = useAppSelector(
-    state => state.localState.swapScreenInitialState
-  );
-
-  React.useEffect(() => {
-    appDispatch(resetSwapScreenInitialState());
-  }, []);
-
-  console.log(initialState);
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 

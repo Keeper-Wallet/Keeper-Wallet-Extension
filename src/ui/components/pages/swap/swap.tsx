@@ -7,10 +7,11 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { PAGES } from 'ui/pageConfig';
 import background from 'ui/services/Background';
-import { useAppSelector } from 'ui/store';
+import { useAppSelector, useAppDispatch } from 'ui/store';
 import { SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
+import { resetSwapScreenInitialState } from 'ui/actions/localState';
 
 const REFRESH_INTERVAL_MS = 10000;
 
@@ -20,9 +21,23 @@ interface Props {
 
 export function Swap({ setTab }: Props) {
   const { t } = useTranslation();
+
+  const dispatch = useAppDispatch();
   const selectedAccount = useAppSelector(state => state.selectedAccount);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const exchangers = useAppSelector(state => state.exchangers);
+
+  const initialStateFromRedux = useAppSelector(
+    state => state.localState.swapScreenInitialState
+  );
+
+  const [initialState] = React.useState(initialStateFromRedux);
+
+  React.useEffect(() => {
+    dispatch(resetSwapScreenInitialState());
+  }, []);
+
+  console.log(initialState);
 
   const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
   const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
