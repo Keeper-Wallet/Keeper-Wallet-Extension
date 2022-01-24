@@ -294,6 +294,22 @@ export function SwapForm({
     ? t('swap.insufficientFundsError')
     : null;
 
+  function setFromAmount(newFromAmount: string) {
+    console.log(state.fromAmount, newFromAmount);
+
+    if (newFromAmount !== state.fromAmount) {
+      dispatch({ type: 'SET_FROM_AMOUNT', value: newFromAmount });
+
+      if (updateExchangeDetailsTimeoutRef.current != null) {
+        window.clearTimeout(updateExchangeDetailsTimeoutRef.current);
+      }
+
+      updateExchangeDetailsTimeoutRef.current = window.setTimeout(() => {
+        updateExchangeDetailsRef.current();
+      }, 500);
+    }
+  }
+
   return (
     <form
       className={styles.root}
@@ -351,18 +367,27 @@ export function SwapForm({
       <div>
         <AssetAmountInput
           balance={fromAssetBalance}
-          label={t('swap.fromInputLabel')}
+          label={t('swap.fromInputLabel', {
+            asset: fromAssetBalance.asset.displayName,
+          })}
           value={state.fromAmount}
           onChange={newValue => {
-            dispatch({ type: 'SET_FROM_AMOUNT', value: newValue });
+            setFromAmount(newValue);
+          }}
+          onMaxClick={() => {
+            let max = fromAssetBalance;
 
-            if (updateExchangeDetailsTimeoutRef.current != null) {
-              window.clearTimeout(updateExchangeDetailsTimeoutRef.current);
+            if (state.txFeeAssetId === fromAssetId) {
+              const fee = convertToSponsoredAssetFee(
+                new BigNumber(wavesFeeCoins),
+                new Asset(assets[state.txFeeAssetId]),
+                accountBalance.assets[state.txFeeAssetId]
+              );
+
+              max = max.minus(fee);
             }
 
-            updateExchangeDetailsTimeoutRef.current = window.setTimeout(() => {
-              updateExchangeDetailsRef.current();
-            }, 500);
+            setFromAmount(max.getTokens().toFixed());
           }}
         />
 
@@ -388,7 +413,9 @@ export function SwapForm({
 
         <AssetAmountInput
           balance={toAssetBalance}
-          label={t('swap.toInputLabel')}
+          label={t('swap.toInputLabel', {
+            asset: toAssetBalance.asset.displayName,
+          })}
           loading={state.detailsUpdateIsPending}
           value={state.toAmountTokens.toFixed()}
         />

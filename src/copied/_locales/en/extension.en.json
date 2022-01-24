@@ -22,6 +22,9 @@
     "seed": "Backup phrase",
     "viewInExplorer": "View in Explorer"
   },
+  "assetAmountInput": {
+    "maxButtonText": "Max"
+  },
   "assetInfo": {
     "id": "ID",
     "displayName": "Name",
@@ -397,12 +400,11 @@
     "download": "Download QR code"
   },
   "send": {
-    "amountInputLabel": "Amount",
+    "amountInputLabel": "{{asset}} amount",
     "amountRequiredError": "Amount is required",
     "attachmentInputLabel": "Attachment ({{count}}/{{max}} byte)",
     "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
     "attachmentMaxLengthError": "Attachment must not exceed 140 bytes",
-    "assetInputLabel": "Asset",
     "insufficientFundsError": "Insufficient funds",
     "recipientInputLabel": "Recipient",
     "recipientInvalidError": "Recipient value is invalid",
@@ -509,7 +511,7 @@
   },
   "swap": {
     "closeBtnText": "Close",
-    "fromInputLabel": "From",
+    "fromInputLabel": "From {{asset}}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed",
     "pairInputLabel": "Pair",
@@ -525,7 +527,7 @@
     "statusSucceeded": "Swap succeeded",
     "submitButtonText": "Swap",
     "title": "Swap assets",
-    "toInputLabel": "To (est.)",
+    "toInputLabel": "To {{asset}} (est.)",
     "transactionFee": "Transaction Fee",
     "transactionFeeTooltip": "Network fee for the smart contract invocation",
     "viewTransaction": "View transaction"

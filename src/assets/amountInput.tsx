@@ -7,6 +7,7 @@ import { useAppSelector } from 'ui/store';
 import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
 import { Loader } from 'ui/components/ui';
+import { Trans } from 'react-i18next';
 
 interface Props {
   balance: Money;
@@ -14,6 +15,7 @@ interface Props {
   loading?: boolean;
   value: string;
   onChange?: (newValue: string) => void;
+  onMaxClick?: () => void;
 }
 
 export function AssetAmountInput({
@@ -22,6 +24,7 @@ export function AssetAmountInput({
   loading,
   value,
   onChange,
+  onMaxClick,
 }: Props) {
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
@@ -107,31 +110,40 @@ export function AssetAmountInput({
         )}
       </div>
 
-      <div className={styles.left}>
-        <div className={styles.label}>{label}</div>
-
-        <div className={styles.assetName} title={asset.displayName}>
-          {asset.displayName}
+      <div className={styles.main}>
+        <div className={styles.top}>
+          <div className={styles.label}>{label}</div>
+          <div className={styles.balance}>{balance.toTokens()}</div>
         </div>
-      </div>
 
-      <div className={styles.right}>
-        <div className={styles.balance}>{balance.toTokens()}</div>
-
-        {loading ? (
-          <Loader />
-        ) : onChange ? (
-          <input
-            className={styles.input}
-            placeholder="0.0"
-            ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
-            data-testid="amountInput"
-          />
-        ) : (
-          <div className={styles.result} title={formattedValue}>
-            {formattedValue}
+        <div className={styles.bottom}>
+          <div className={styles.value}>
+            {loading ? (
+              <Loader />
+            ) : onChange ? (
+              <input
+                className={styles.input}
+                placeholder="0.0"
+                ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+                data-testid="amountInput"
+              />
+            ) : (
+              <div className={styles.result} title={formattedValue}>
+                {formattedValue}
+              </div>
+            )}
           </div>
-        )}
+
+          {onMaxClick && (
+            <button
+              className={styles.maxButton}
+              type="button"
+              onClick={onMaxClick}
+            >
+              <Trans i18nKey="assetAmountInput.maxButtonText" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

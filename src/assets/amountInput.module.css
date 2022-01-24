@@ -31,12 +31,24 @@
   text-align: center;
 }
 
-.left {
-  flex: 0 0 30%;
-  overflow: hidden;
+.main {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.top {
+  margin-bottom: 4px;
+  display: flex;
+  gap: 8px;
+}
+
+.bottom {
+  display: flex;
+  gap: 8px;
 }
 
 .label {
+  flex: 1 1 0;
   color: #9ba6b2;
   font-size: 11px;
   overflow: hidden;
@@ -44,23 +56,16 @@
   text-overflow: ellipsis;
 }
 
-.assetName {
-  font-size: 14px;
+.balance {
+  flex-shrink: 0;
+  font-size: 11px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.right {
+.value {
   flex: 1 1 0;
-  overflow: hidden;
-  text-align: right;
-}
-
-.balance {
-  font-size: 11px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .input {
@@ -81,4 +86,20 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.maxButton {
+  margin: -3px -6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: none;
+  color: var(--color-submit400);
+  font-weight: 300;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.maxButton:hover {
+  background: var(--color-submit400);
+  color: var(--color-white);
 }
