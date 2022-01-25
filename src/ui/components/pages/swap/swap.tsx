@@ -1,19 +1,19 @@
 import BigNumber from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
-import { convertToSponsoredAssetFee } from 'assets/utils';
+import { swappableAssetIds } from 'assets/constants';
+import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { updateAssets } from 'ui/actions/assets';
+import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { PAGES } from 'ui/pageConfig';
-import background from 'ui/services/Background';
+import background, { AssetDetail } from 'ui/services/Background';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
-import { resetSwapScreenInitialState } from 'ui/actions/localState';
-
-const REFRESH_INTERVAL_MS = 10000;
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -25,7 +25,6 @@ export function Swap({ setTab }: Props) {
   const dispatch = useAppDispatch();
   const selectedAccount = useAppSelector(state => state.selectedAccount);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const exchangers = useAppSelector(state => state.exchangers);
 
   const initialStateFromRedux = useAppSelector(
     state => state.localState.swapScreenInitialState
@@ -37,7 +36,10 @@ export function Swap({ setTab }: Props) {
     dispatch(resetSwapScreenInitialState());
   }, []);
 
-  console.log(initialState);
+  const initialFromAssetId =
+    initialState.fromAssetId || getAssetIdByName(currentNetwork, 'WAVES');
+
+  const initialToAssetId = getAssetIdByName(currentNetwork, 'USD');
 
   const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
   const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
@@ -48,13 +50,6 @@ export function Swap({ setTab }: Props) {
   React.useEffect(() => {
     let cancelled = false;
     let timeout: number;
-
-    async function updateData() {
-      await background.updateExchangers(currentNetwork);
-      timeout = window.setTimeout(updateData, REFRESH_INTERVAL_MS);
-    }
-
-    updateData();
 
     Promise.all([
       background.getMinimumFee(TRANSACTION_TYPE.INVOKE_SCRIPT),
@@ -76,6 +71,27 @@ export function Swap({ setTab }: Props) {
 
   const assets = useAppSelector(state => state.assets);
 
+  const swappableAssetEntries = React.useMemo(
+    () =>
+      swappableAssetIds[currentNetwork as 'mainnet' | 'testnet'].map(
+        (assetId): [string, AssetDetail | undefined] => [
+          assetId,
+          assets[assetId],
+        ]
+      ),
+    [assets, currentNetwork]
+  );
+
+  React.useEffect(() => {
+    const assetsToUpdate = swappableAssetEntries
+      .filter(([_assetId, asset]) => asset == null)
+      .map(([assetId]) => assetId);
+
+    if (assetsToUpdate.length !== 0) {
+      dispatch(updateAssets(assetsToUpdate));
+    }
+  }, [swappableAssetEntries]);
+
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
@@ -84,6 +100,10 @@ export function Swap({ setTab }: Props) {
     fromMoney: Money;
     transactionId: string;
   } | null>(null);
+
+  const swappableAssets = swappableAssetEntries.map(
+    ([_assetId, asset]) => asset
+  );
 
   return (
     <div className={styles.root}>
@@ -94,7 +114,9 @@ export function Swap({ setTab }: Props) {
           </h1>
         </header>
 
-        {!exchangers || wavesFeeCoins == null || !accountBalance.assets ? (
+        {wavesFeeCoins == null ||
+        !accountBalance.assets ||
+        swappableAssets.some(asset => asset == null) ? (
           <div className={styles.loader} />
         ) : (
           <div className={styles.content}>
@@ -105,12 +127,13 @@ export function Swap({ setTab }: Props) {
 
             {performedSwapData == null ? (
               <SwapForm
-                exchangers={exchangers}
+                initialFromAssetId={initialFromAssetId}
+                initialToAssetId={initialToAssetId}
                 isSwapInProgress={isSwapInProgress}
                 swapErrorMessage={swapErrorMessage}
+                swappableAssets={swappableAssets}
                 wavesFeeCoins={wavesFeeCoins}
                 onSwap={async ({
-                  exchangerId,
                   feeAssetId,
                   fromAssetId,
                   fromCoins,
@@ -123,7 +146,6 @@ export function Swap({ setTab }: Props) {
 
                   try {
                     const result = await background.performSwap({
-                      exchangerId,
                       fee: convertToSponsoredAssetFee(
                         new BigNumber(wavesFeeCoins),
                         new Asset(assets[feeAssetId]),

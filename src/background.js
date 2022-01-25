@@ -523,6 +523,9 @@ class BackgroundService extends EventEmitter {
       assetInfo: this.assetInfoController.assetInfo.bind(
         this.assetInfoController
       ),
+      updateAssets: this.assetInfoController.updateAssets.bind(
+        this.assetInfoController
+      ),
       toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
         this.assetInfoController
       ),
@@ -570,9 +573,6 @@ class BackgroundService extends EventEmitter {
       ),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
-      updateExchangers: this.swapController.updateExchangers.bind(
-        this.swapController
-      ),
       performSwap: this.swapController.performSwap.bind(this.swapController),
       getMinimumFee: getMinimumFee,
       getExtraFee: (address, network) =>

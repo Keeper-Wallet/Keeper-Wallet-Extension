@@ -516,6 +516,8 @@
   },
   "swap": {
     "closeBtnText": "Close",
+    "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data",
+    "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data",
     "fromInputLabel": "From {{asset}}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed",

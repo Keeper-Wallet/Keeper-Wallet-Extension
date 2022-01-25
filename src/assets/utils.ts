@@ -21,10 +21,13 @@ export function getAssetLogo(network: string, assetId: string) {
   return assetLogosByNetwork[network]?.[assetId];
 }
 
-export function getAssetIdByName(network: string, assetName: string) {
+export function getAssetIdByName(
+  network: string,
+  assetName: string
+): string | undefined {
   return assetIds[network]?.[assetName];
 }
 
 export function isSwappableAsset(network: string, assetId: string) {
-  return swappableAssetIds[network]?.[assetId] || false;
+  return swappableAssetIds[network]?.includes(assetId) ?? false;
 }

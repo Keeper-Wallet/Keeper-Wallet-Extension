@@ -312,6 +312,15 @@ class Background {
     }
   }
 
+  async updateAssets(assetIds: string[]): Promise<AssetDetail> {
+    try {
+      await this.initPromise;
+      return await this.background.updateAssets(assetIds);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async toggleAssetFavorite(assetId: string): Promise<void> {
     try {
       await this.initPromise;
@@ -368,17 +377,8 @@ class Background {
     }
   }
 
-  async updateExchangers(network: string) {
-    try {
-      await this.initPromise;
-      return await this.background.updateExchangers(network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async performSwap({
-    exchangerId,
+    // exchangerId,
     fee,
     feeAssetId,
     fromAssetId,
@@ -387,7 +387,7 @@ class Background {
     toAssetId,
     toCoins,
   }: {
-    exchangerId: string;
+    // exchangerId: string;
     fee: string;
     feeAssetId: string;
     fromAssetId: string;
@@ -400,7 +400,7 @@ class Background {
       await this.initPromise;
 
       return await this.background.performSwap({
-        exchangerId,
+        // exchangerId,
         fee,
         feeAssetId,
         fromAssetId,

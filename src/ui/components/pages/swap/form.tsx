@@ -6,29 +6,38 @@ import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelectModal } from 'assets/selectModal';
 import { convertToSponsoredAssetFee } from 'assets/utils';
-import { Tooltip } from 'ui/components/ui/tooltip';
-import { AssetBalance, SwopFiExchangerData } from 'ui/reducers/updateState';
-import { useAppSelector } from 'ui/store';
-import {
-  calcExchangeDetails,
-  getAssetBalance,
-  getDefaultExchanger,
-} from './utils';
-import { Button } from '../../ui/buttons/Button';
-import { Loader } from '../../ui/loader/Loader';
-import { Select } from '../../ui/select/Select';
-import * as styles from './form.module.css';
+import { Button } from 'ui/components/ui/buttons/Button';
+import { Loader } from 'ui/components/ui/loader/Loader';
 import { Modal } from 'ui/components/ui/modal/Modal';
+import { Select } from 'ui/components/ui/select/Select';
+import { Tooltip } from 'ui/components/ui/tooltip';
+import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
+import { AssetDetail } from 'ui/services/Background';
+import { useAppSelector } from 'ui/store';
+import { proto } from './channel.proto.compiled';
+import {
+  ExchangeChannelClient,
+  ExchangeChannelError,
+  ExchangeChannelErrorCode,
+} from './channelClient';
+import * as styles from './form.module.css';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
+function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
+  return asset.id === 'WAVES'
+    ? new Money(accountBalance.available, asset)
+    : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
+}
+
 interface Props {
-  exchangers: { [exchangerId: string]: SwopFiExchangerData };
+  initialFromAssetId: string;
+  initialToAssetId: string;
   isSwapInProgress: boolean;
   swapErrorMessage: string;
+  swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
   onSwap: (data: {
-    exchangerId: string;
     feeAssetId: string;
     fromAssetId: string;
     fromCoins: string;
@@ -38,34 +47,19 @@ interface Props {
   }) => void;
 }
 
-interface State {
-  detailsUpdateIsPending: boolean;
-  directionSwapped: boolean;
-  exchangerId: string;
-  feeCoins: BigNumber;
-  fromAmount: string;
-  minReceivedCoins: BigNumber;
+interface ExchangeInfoState {
   priceImpact: number;
-  swapRate: BigNumber | undefined;
+  priceSaved: number;
+  route: proto.Response.Exchange.Pool[];
   toAmountTokens: BigNumber;
-  txFeeAssetId: string;
 }
 
-const ASSETS_FORMAT = {
-  fractionGroupSeparator: '',
-  fractionGroupSize: 0,
-  decimalSeparator: '.',
-  groupSeparator: ' ',
-  groupSize: 3,
-  prefix: '',
-  secondaryGroupSize: 0,
-  suffix: '',
-};
-
 export function SwapForm({
-  exchangers,
+  initialFromAssetId,
+  initialToAssetId,
   isSwapInProgress,
   swapErrorMessage,
+  swappableAssets,
   wavesFeeCoins,
   onSwap,
 }: Props) {
@@ -103,177 +97,30 @@ export function SwapForm({
     ]);
   }
 
-  const [state, dispatch] = React.useReducer(
-    (
-      prevState: State,
-      action:
-        | { type: 'SWAP_DIRECTION' }
-        | { type: 'SET_FROM_AMOUNT'; value: string }
-        | { type: 'SET_TX_FEE_ASSET_ID'; value: string }
-        | {
-            type: 'SET_EXCHANGE_DETAILS';
-            feeCoins: BigNumber;
-            minReceivedCoins: BigNumber;
-            priceImpact: number;
-            swapRate: BigNumber;
-            toAmountTokens: BigNumber;
-          }
-    ): State => {
-      switch (action.type) {
-        case 'SWAP_DIRECTION':
-          return {
-            ...prevState,
-            detailsUpdateIsPending: true,
-            directionSwapped: !prevState.directionSwapped,
-            fromAmount: prevState.toAmountTokens.toFixed(),
-            toAmountTokens: new BigNumber(prevState.fromAmount),
-          };
-        case 'SET_FROM_AMOUNT':
-          return {
-            ...prevState,
-            detailsUpdateIsPending: true,
-            fromAmount: action.value,
-          };
-        case 'SET_TX_FEE_ASSET_ID':
-          return {
-            ...prevState,
-            txFeeAssetId: action.value,
-          };
-        case 'SET_EXCHANGE_DETAILS':
-          return {
-            ...prevState,
-            detailsUpdateIsPending: false,
-            feeCoins: action.feeCoins,
-            minReceivedCoins: action.minReceivedCoins,
-            priceImpact: action.priceImpact,
-            swapRate: action.swapRate,
-            toAmountTokens: action.toAmountTokens,
-          };
-      }
-    },
-    undefined,
-    (): State => {
-      const defaultExchanger = getDefaultExchanger(currentNetwork, exchangers);
-      const txFeeAssetId = sponsoredAssetBalanceEntries[0][0];
-
-      return {
-        detailsUpdateIsPending: false,
-        directionSwapped: false,
-        exchangerId: defaultExchanger.id,
-        feeCoins: new BigNumber(0),
-        fromAmount: '',
-        priceImpact: 0,
-        minReceivedCoins: new BigNumber(0),
-        swapRate: undefined,
-        toAmountTokens: new BigNumber(0),
-        txFeeAssetId,
-      };
-    }
-  );
-
-  const exchanger = exchangers[state.exchangerId];
-  const exchangerVersion = Number(exchanger.version.split('.')[0]);
-
-  const commission = React.useMemo(
-    () =>
-      new BigNumber(exchanger.commission).div(
-        new BigNumber(exchanger.commission_scale_delimiter)
-      ),
-    [exchanger.commission, exchanger.commission_scale_delimiter]
-  );
-
-  const [fromAssetId, toAssetId] = state.directionSwapped
-    ? [exchanger.B_asset_id, exchanger.A_asset_id]
-    : [exchanger.A_asset_id, exchanger.B_asset_id];
-
-  const [fromBalance, toBalance] = state.directionSwapped
-    ? [exchanger.B_asset_balance, exchanger.A_asset_balance]
-    : [exchanger.A_asset_balance, exchanger.B_asset_balance];
-
-  const fromAssetDetail = assets[fromAssetId];
-  const toAssetDetail = assets[toAssetId];
-
-  const fromAsset = React.useMemo(
-    () => new Asset(fromAssetDetail),
-    [fromAssetDetail]
-  );
-  const toAsset = React.useMemo(
-    () => new Asset(toAssetDetail),
-    [toAssetDetail]
-  );
-
-  const txFeeAsset = new Asset(assets[state.txFeeAssetId]);
-
-  const latestFromAmountRef = React.useRef(state.fromAmount);
-
-  React.useEffect(() => {
-    latestFromAmountRef.current = state.fromAmount;
+  const [{ fromAssetId, toAssetId }, setAssetIds] = React.useState({
+    fromAssetId: initialFromAssetId,
+    toAssetId: initialToAssetId,
   });
 
-  const updateExchangeDetailsTimeoutRef = React.useRef<number | null>(null);
-
-  const updateExchangeDetailsPromiseRef = React.useRef<Promise<void> | null>(
-    null
+  const [feeAssetId, setFeeAssetId] = React.useState(
+    sponsoredAssetBalanceEntries[0][0]
   );
 
-  const updateExchangeDetails = React.useCallback(async () => {
-    const currentPromise = calcExchangeDetails({
-      commission,
-      exchangerVersion,
-      fromAmountCoins: Money.fromTokens(
-        new BigNumber(latestFromAmountRef.current || '0'),
-        fromAsset
-      ).getCoins(),
-      fromAsset,
-      fromBalanceCoins: new BigNumber(fromBalance),
-      slippageTolerancePercents: SLIPPAGE_TOLERANCE_PERCENTS,
-      toAsset,
-      toBalanceCoins: new BigNumber(toBalance),
-    }).then(
-      ({
-        feeCoins,
-        minReceivedCoins,
-        priceImpact,
-        swapRate,
-        toAmountCoins,
-      }) => {
-        if (updateExchangeDetailsPromiseRef.current === currentPromise) {
-          dispatch({
-            type: 'SET_EXCHANGE_DETAILS',
-            feeCoins,
-            minReceivedCoins,
-            priceImpact,
-            swapRate,
-            toAmountTokens: Money.fromCoins(toAmountCoins, toAsset).getTokens(),
-          });
-        }
-      }
-    );
+  const fromAsset = React.useMemo(
+    () => new Asset(assets[fromAssetId]),
+    [assets, fromAssetId]
+  );
 
-    updateExchangeDetailsPromiseRef.current = currentPromise;
-  }, [
-    commission,
-    exchangerVersion,
-    fromAsset,
-    fromBalance,
-    toAsset,
-    toBalance,
-  ]);
+  const toAsset = React.useMemo(
+    () => new Asset(assets[toAssetId]),
+    [assets, toAssetId]
+  );
 
-  const updateExchangeDetailsRef = React.useRef(updateExchangeDetails);
-
-  React.useEffect(() => {
-    updateExchangeDetails();
-    updateExchangeDetailsRef.current = updateExchangeDetails;
-
-    return () => {
-      updateExchangeDetailsPromiseRef.current = null;
-    };
-  }, [updateExchangeDetails]);
+  const feeAsset = new Asset(assets[feeAssetId]);
 
   const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
-  const txFeeAssetBalance = getAssetBalance(txFeeAsset, accountBalance);
+  const feeAssetBalance = getAssetBalance(feeAsset, accountBalance);
 
   function formatSponsoredAssetBalanceEntry([assetId, assetBalance]: [
     string,
@@ -288,34 +135,111 @@ export function SwapForm({
     return `${fee.getTokens().toFormat()} ${fee.asset.displayName}`;
   }
 
-  const fromAmountTokens = new BigNumber(state.fromAmount || '0');
+  const [fromAmountValue, setFromAmountValue] = React.useState('');
+
+  const fromAmountTokens = new BigNumber(fromAmountValue || '0');
+
+  const [exchangeInfo, setExchangeInfo] =
+    React.useState<ExchangeInfoState | null>(null);
+
+  const channelClientRef = React.useRef<ExchangeChannelClient | null>(null);
+
+  React.useEffect(() => {
+    channelClientRef.current = new ExchangeChannelClient('ws://localhost:8765');
+
+    return () => {
+      channelClientRef.current.close();
+      channelClientRef.current = null;
+    };
+  }, []);
+
+  const latestFromAmountValueRef = React.useRef(fromAmountValue);
+
+  React.useEffect(() => {
+    latestFromAmountValueRef.current = fromAmountValue;
+  }, [fromAmountValue]);
+
+  const [exchangeChannelError, setExchangeChannelError] = React.useState<
+    string | null
+  >(null);
+
+  const watchExchange = React.useCallback(() => {
+    return channelClientRef.current?.exchange(
+      {
+        fromAmountCoins: Money.fromTokens(
+          latestFromAmountValueRef.current || 1,
+          fromAsset
+        ).getCoins(),
+        fromAsset,
+        toAsset,
+      },
+      (err, response) => {
+        if (err) {
+          if (err instanceof ExchangeChannelError) {
+            if (err.code === ExchangeChannelErrorCode.ConnectionError) {
+              setExchangeChannelError(t('swap.exchangeChannelConnectionError'));
+              return;
+            } else if (err.code === ExchangeChannelErrorCode.ExchangeError) {
+              setExchangeChannelError(err.message);
+              return;
+            }
+          }
+
+          setExchangeChannelError(t('swap.exchangeChannelUnknownError'));
+          return;
+        }
+
+        const { priceImpact, priceSaved, route, toAmountCoins } = response;
+
+        setExchangeChannelError(null);
+
+        setExchangeInfo({
+          priceImpact,
+          priceSaved,
+          route,
+          toAmountTokens: new Money(toAmountCoins, toAsset).getTokens(),
+        });
+      }
+    );
+  }, [fromAsset, toAsset]);
+
+  React.useEffect(watchExchange, [watchExchange]);
+
+  const watchExchangeRef = React.useRef(watchExchange);
+
+  React.useEffect(() => {
+    watchExchangeRef.current = watchExchange;
+  }, [watchExchange]);
 
   const sponsoredAssetFee = convertToSponsoredAssetFee(
     wavesFeeCoinsBN,
-    txFeeAsset,
-    accountBalance.assets[state.txFeeAssetId]
+    feeAsset,
+    accountBalance.assets[feeAssetId]
   );
 
   const validationErrorMessage =
     fromAmountTokens.gt(fromAssetBalance.getTokens()) ||
-    txFeeAssetBalance.getTokens().lt(sponsoredAssetFee.getTokens()) ||
-    (fromAsset.id === txFeeAsset.id &&
+    feeAssetBalance.getTokens().lt(sponsoredAssetFee.getTokens()) ||
+    (fromAssetId === feeAssetId &&
       fromAmountTokens
         .add(sponsoredAssetFee.getTokens())
         .gt(fromAssetBalance.getTokens()))
       ? t('swap.insufficientFundsError')
       : null;
 
-  function setFromAmount(newFromAmount: string) {
-    if (newFromAmount !== state.fromAmount) {
-      dispatch({ type: 'SET_FROM_AMOUNT', value: newFromAmount });
+  const watchExchangeTimeoutRef = React.useRef<number | null>(null);
 
-      if (updateExchangeDetailsTimeoutRef.current != null) {
-        window.clearTimeout(updateExchangeDetailsTimeoutRef.current);
+  function setFromAmount(newValue: string) {
+    if (newValue !== fromAmountValue) {
+      setFromAmountValue(newValue);
+      setExchangeInfo(null);
+
+      if (watchExchangeTimeoutRef.current != null) {
+        window.clearTimeout(watchExchangeTimeoutRef.current);
       }
 
-      updateExchangeDetailsTimeoutRef.current = window.setTimeout(() => {
-        updateExchangeDetailsRef.current();
+      watchExchangeTimeoutRef.current = window.setTimeout(() => {
+        watchExchangeRef.current();
       }, 500);
     }
   }
@@ -324,21 +248,29 @@ export function SwapForm({
     null
   );
 
+  const minReceived = exchangeInfo
+    ? Money.fromTokens(
+        exchangeInfo.toAmountTokens
+          .mul(new BigNumber(100).sub(SLIPPAGE_TOLERANCE_PERCENTS))
+          .div(100),
+        toAsset
+      )
+    : null;
+
   return (
     <form
       onSubmit={event => {
         event.preventDefault();
 
         onSwap({
-          exchangerId: state.exchangerId,
-          feeAssetId: state.txFeeAssetId,
-          fromAssetId: fromAsset.id,
+          feeAssetId,
+          fromAssetId,
           fromCoins: Money.fromTokens(fromAmountTokens, fromAsset)
             .getCoins()
             .toFixed(),
-          minReceivedCoins: state.minReceivedCoins.toFixed(),
-          toAssetId: toAsset.id,
-          toCoins: Money.fromTokens(state.toAmountTokens, toAsset)
+          minReceivedCoins: minReceived.getCoins().toFixed(),
+          toAssetId,
+          toCoins: Money.fromTokens(exchangeInfo.toAmountTokens, toAsset)
             .getCoins()
             .toFixed(),
         });
@@ -349,18 +281,18 @@ export function SwapForm({
         label={t('swap.fromInputLabel', {
           asset: fromAssetBalance.asset.displayName,
         })}
-        value={state.fromAmount}
+        value={fromAmountValue}
         onChange={newValue => {
           setFromAmount(newValue);
         }}
         onMaxClick={() => {
           let max = fromAssetBalance;
 
-          if (state.txFeeAssetId === fromAssetId) {
+          if (feeAssetId === fromAssetId) {
             const fee = convertToSponsoredAssetFee(
               new BigNumber(wavesFeeCoins),
-              new Asset(assets[state.txFeeAssetId]),
-              accountBalance.assets[state.txFeeAssetId]
+              new Asset(assets[feeAssetId]),
+              accountBalance.assets[feeAssetId]
             );
 
             max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
@@ -376,10 +308,19 @@ export function SwapForm({
       <div className={styles.swapDirectionBtnWrapper}>
         <button
           className={styles.swapDirectionBtn}
-          disabled={state.detailsUpdateIsPending}
+          disabled={exchangeInfo == null}
           type="button"
           onClick={() => {
-            dispatch({ type: 'SWAP_DIRECTION' });
+            if (!exchangeInfo) {
+              return;
+            }
+
+            setAssetIds(prevState => ({
+              fromAssetId: prevState.toAssetId,
+              toAssetId: prevState.fromAssetId,
+            }));
+
+            setFromAmount(exchangeInfo.toAmountTokens.toFixed());
           }}
         >
           <svg
@@ -398,12 +339,18 @@ export function SwapForm({
         label={t('swap.toInputLabel', {
           asset: toAssetBalance.asset.displayName,
         })}
-        loading={state.detailsUpdateIsPending}
-        value={state.toAmountTokens.toFixed()}
+        loading={exchangeInfo == null}
+        value={
+          exchangeInfo == null ? '' : exchangeInfo.toAmountTokens.toFixed()
+        }
         onLogoClick={() => {
           setShowSelectAsset('to');
         }}
       />
+
+      {exchangeChannelError && (
+        <div className={styles.error}>{exchangeChannelError}</div>
+      )}
 
       <div className={styles.priceRow}>
         <div className={styles.priceRowLabel}>
@@ -411,13 +358,19 @@ export function SwapForm({
         </div>
 
         <div className={styles.priceRowValue}>
-          {state.swapRate && !state.detailsUpdateIsPending ? (
+          {exchangeInfo == null ? (
+            <Loader />
+          ) : (
             <div>
-              1 {fromAsset.displayName} ~ {state.swapRate.toFixed()}{' '}
+              1 {fromAsset.displayName} ~{' '}
+              {exchangeInfo.toAmountTokens
+                .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
+                .toFixed(
+                  toAsset.precision,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR
+                )}{' '}
               {toAsset.displayName}
             </div>
-          ) : (
-            <Loader />
           )}
         </div>
       </div>
@@ -427,7 +380,7 @@ export function SwapForm({
         disabled={
           fromAmountTokens.eq(0) ||
           validationErrorMessage != null ||
-          state.detailsUpdateIsPending ||
+          exchangeInfo == null ||
           isSwapInProgress
         }
         loading={isSwapInProgress}
@@ -458,7 +411,7 @@ export function SwapForm({
           </div>
 
           <div className={styles.summaryValue}>
-            {state.detailsUpdateIsPending ? (
+            {exchangeInfo == null ? (
               <Loader />
             ) : (
               <span className={styles.summaryValueText}>0.6%</span>
@@ -481,7 +434,7 @@ export function SwapForm({
           </div>
 
           <div className={styles.summaryValue}>
-            {state.detailsUpdateIsPending ? (
+            {exchangeInfo == null ? (
               <Loader />
             ) : (
               <div className={styles.route}>
@@ -526,16 +479,15 @@ export function SwapForm({
           </div>
 
           <div className={styles.summaryValue}>
-            {state.detailsUpdateIsPending ? (
+            {exchangeInfo == null ? (
               <Loader />
             ) : (
               <span className={styles.summaryValueText}>
-                {Money.fromCoins(state.minReceivedCoins, toAsset)
+                {minReceived
                   .getTokens()
                   .toFormat(
                     toAsset.precision,
-                    BigNumber.ROUND_MODE.ROUND_FLOOR,
-                    ASSETS_FORMAT
+                    BigNumber.ROUND_MODE.ROUND_FLOOR
                   )}{' '}
                 {toAsset.displayName}
               </span>
@@ -558,11 +510,15 @@ export function SwapForm({
           </div>
 
           <div className={styles.summaryValue}>
-            {state.detailsUpdateIsPending ? (
+            {exchangeInfo == null ? (
               <Loader />
             ) : (
               <span className={styles.summaryValueText}>
-                {state.priceImpact}%
+                {new BigNumber(exchangeInfo.priceImpact).toFixed(
+                  3,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR
+                )}
+                %
               </span>
             )}
           </div>
@@ -586,7 +542,7 @@ export function SwapForm({
             {sponsoredAssetBalanceEntries.length > 1 ? (
               <Select
                 listPlacement="top"
-                selected={state.txFeeAssetId}
+                selected={feeAssetId}
                 selectList={sponsoredAssetBalanceEntries.map(
                   ([assetId, assetBalance]) => ({
                     id: assetId,
@@ -598,7 +554,7 @@ export function SwapForm({
                   })
                 )}
                 onSelectItem={(_id, value) => {
-                  dispatch({ type: 'SET_TX_FEE_ASSET_ID', value });
+                  setFeeAssetId(value);
                 }}
               />
             ) : (
@@ -618,14 +574,25 @@ export function SwapForm({
       >
         <AssetSelectModal
           assetBalances={accountBalance.assets}
-          assets={Object.values(assets)}
+          assets={swappableAssets}
           network={currentNetwork}
           onClose={() => {
             setShowSelectAsset(null);
           }}
           onSelect={assetId => {
-            console.log('onSelect', assetId);
             setShowSelectAsset(null);
+
+            if (showSelectAsset === 'from') {
+              setAssetIds(prevState => ({
+                ...prevState,
+                fromAssetId: assetId,
+              }));
+            } else {
+              setAssetIds(prevState => ({
+                ...prevState,
+                toAssetId: assetId,
+              }));
+            }
           }}
         />
       </Modal>

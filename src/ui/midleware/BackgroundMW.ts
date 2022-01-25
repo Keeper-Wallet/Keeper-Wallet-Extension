@@ -192,6 +192,14 @@ export const getAsset = store => next => action => {
   return next(action);
 };
 
+export const updateAssets = () => next => action => {
+  if (action.type === ACTION.UPDATE_ASSETS) {
+    background.updateAssets(action.payload);
+  }
+
+  return next(action);
+};
+
 export const favoriteAsset = store => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
     background.toggleAssetFavorite(action.payload);
