@@ -83,9 +83,13 @@ export function Swap({ setTab }: Props) {
   );
 
   React.useEffect(() => {
-    const assetsToUpdate = swappableAssetEntries
-      .filter(([_assetId, asset]) => asset == null)
-      .map(([assetId]) => assetId);
+    const assetsToUpdate = Array.from(
+      new Set(
+        swappableAssetEntries
+          .filter(([_assetId, asset]) => asset == null)
+          .map(([assetId]) => assetId)
+      )
+    );
 
     if (assetsToUpdate.length !== 0) {
       dispatch(updateAssets(assetsToUpdate));
