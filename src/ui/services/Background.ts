@@ -377,43 +377,6 @@ class Background {
     }
   }
 
-  async performSwap({
-    // exchangerId,
-    fee,
-    feeAssetId,
-    fromAssetId,
-    fromCoins,
-    minReceivedCoins,
-    toAssetId,
-    toCoins,
-  }: {
-    // exchangerId: string;
-    fee: string;
-    feeAssetId: string;
-    fromAssetId: string;
-    fromCoins: string;
-    minReceivedCoins: string;
-    toAssetId: string;
-    toCoins: string;
-  }): Promise<{ transactionId: string }> {
-    try {
-      await this.initPromise;
-
-      return await this.background.performSwap({
-        // exchangerId,
-        fee,
-        feeAssetId,
-        fromAssetId,
-        fromCoins,
-        minReceivedCoins,
-        toAssetId,
-        toCoins,
-      });
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async getMinimumFee(txType: number) {
     try {
       await this.initPromise;

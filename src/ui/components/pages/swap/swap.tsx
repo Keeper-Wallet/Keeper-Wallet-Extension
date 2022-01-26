@@ -149,27 +149,27 @@ export function Swap({ setTab }: Props) {
                   setIsSwapInProgress(true);
 
                   try {
-                    const result = await background.performSwap({
-                      fee: convertToSponsoredAssetFee(
-                        new BigNumber(wavesFeeCoins),
-                        new Asset(assets[feeAssetId]),
-                        accountBalance.assets[feeAssetId]
-                      ).toCoins(),
-                      feeAssetId,
-                      fromAssetId,
-                      fromCoins,
-                      minReceivedCoins,
-                      toAssetId,
-                      toCoins,
-                    });
-
-                    setPerformedSwapData({
-                      fromMoney: new Money(
-                        new BigNumber(fromCoins),
-                        new Asset(assets[fromAssetId])
-                      ),
-                      transactionId: result.transactionId,
-                    });
+                    // const result = await background.performSwap({
+                    //   fee: convertToSponsoredAssetFee(
+                    //     new BigNumber(wavesFeeCoins),
+                    //     new Asset(assets[feeAssetId]),
+                    //     accountBalance.assets[feeAssetId]
+                    //   ).toCoins(),
+                    //   feeAssetId,
+                    //   fromAssetId,
+                    //   fromCoins,
+                    //   minReceivedCoins,
+                    //   toAssetId,
+                    //   toCoins,
+                    // });
+                    //
+                    // setPerformedSwapData({
+                    //   fromMoney: new Money(
+                    //     new BigNumber(fromCoins),
+                    //     new Asset(assets[fromAssetId])
+                    //   ),
+                    //   transactionId: result.transactionId,
+                    // });
                   } catch (err) {
                     const errMessage = err?.message;
 

@@ -6,17 +6,6 @@ const ObservableStore = require('obs-store');
  */
 class ComposableObservableStore extends ObservableStore {
   /**
-   * Create a new store
-   *
-   * @param {Object} [initState] - The initial store state
-   * @param {Object} [config] - Map of internal state keys to child stores
-   */
-  constructor(initState, config) {
-    super(initState);
-    this.updateStructure(config);
-  }
-
-  /**
    * Composes a new internal store subscription structure
    *
    * @param {Object} [config] - Map of internal state keys to child stores
@@ -48,6 +37,10 @@ class ComposableObservableStore extends ObservableStore {
       flatState = { ...flatState, ...this.config[key].getState() };
     }
     return flatState;
+  }
+
+  getKeys() {
+    return Object.keys(this.config);
   }
 }
 

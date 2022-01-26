@@ -28,7 +28,6 @@ import {
   PreferencesController,
   RemoteConfigController,
   StatisticsController,
-  SwapController,
   TrashController,
   TxInfoController,
   UiStateController,
@@ -113,6 +112,14 @@ async function setupBackgroundService() {
     initState,
     initLangCode,
   });
+
+  const keysToRemove = new Set(Object.keys(initState));
+
+  backgroundService.store.getKeys().forEach(storeKey => {
+    keysToRemove.delete(storeKey);
+  });
+
+  localStore.remove(Array.from(keysToRemove));
 
   // global access to service on debug
   if (WAVESKEEPER_DEBUG) {
@@ -216,7 +223,7 @@ class BackgroundService extends EventEmitter {
 
     // Observable state store
     const initState = options.initState || {};
-    this.store = new ComposableObservableStore(initState);
+    this.store = new ComposableObservableStore();
 
     this.trash = new TrashController({
       initState: initState.TrashController,
@@ -373,27 +380,6 @@ class BackgroundService extends EventEmitter {
       }
     );
 
-    this.swapController = new SwapController({
-      initState: initState.SwapController,
-      assetInfo: this.assetInfoController.assetInfo.bind(
-        this.assetInfoController
-      ),
-      broadcast: this.networkController.broadcast.bind(this.networkController),
-      getAssets: this.assetInfoController.getAssets.bind(
-        this.assetInfoController
-      ),
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
-      ),
-      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
-        this.preferencesController
-      ),
-      signTx: this.walletController.signTx.bind(this.walletController),
-      updateAssets: this.assetInfoController.updateAssets.bind(
-        this.assetInfoController
-      ),
-    });
-
     // Single state composed from states of all controllers
     this.store.updateStructure({
       StatisticsController: this.statisticsController.store,
@@ -407,7 +393,6 @@ class BackgroundService extends EventEmitter {
       AssetInfoController: this.assetInfoController.store,
       RemoteConfigController: this.remoteConfigController.store,
       NotificationsController: this.notificationsController.store,
-      SwapController: this.swapController.store,
       TrashController: this.trash.store,
     });
 
@@ -573,7 +558,6 @@ class BackgroundService extends EventEmitter {
       ),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
-      performSwap: this.swapController.performSwap.bind(this.swapController),
       getMinimumFee: getMinimumFee,
       getExtraFee: (address, network) =>
         getExtraFee(address, this.networkController.getNode(network)),
