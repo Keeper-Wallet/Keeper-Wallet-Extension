@@ -117,14 +117,9 @@ export const DEFAULT_FEE_CONFIG = {
 
 export const SWAP_DAPPS = {
   mainnet: '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u',
-  testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
 };
 
 export const SWAP_SUPPORTING_NETWORKS = ['mainnet'];
-
-if (WAVESKEEPER_DEBUG) {
-  SWAP_SUPPORTING_NETWORKS.push('testnet');
-}
 
 export const IGNORE_ERRORS_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';

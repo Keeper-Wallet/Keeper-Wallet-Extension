@@ -73,7 +73,7 @@ export function Swap({ setTab }: Props) {
 
   const swappableAssetEntries = React.useMemo(
     () =>
-      swappableAssetIds[currentNetwork as 'mainnet' | 'testnet'].map(
+      swappableAssetIds[currentNetwork as 'mainnet'].map(
         (assetId): [string, AssetDetail | undefined] => [
           assetId,
           assets[assetId],

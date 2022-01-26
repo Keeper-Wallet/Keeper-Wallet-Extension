@@ -102,22 +102,6 @@ export const swappableAssetIds = {
     'WX',
     'XMR',
   ].map(assetName => assetIds.mainnet[assetName]),
-  testnet: [
-    'WAVES',
-    'BTC',
-    'DASH',
-    'ETH',
-    'EURN',
-    'EGG',
-    'LTC',
-    'NSBT',
-    'RACE',
-    'SWOP',
-    'USD',
-    'USDT',
-    'XMR',
-    'ZEC',
-  ].map(assetName => assetIds.testnet[assetName]),
 };
 
 const logosByName = {
