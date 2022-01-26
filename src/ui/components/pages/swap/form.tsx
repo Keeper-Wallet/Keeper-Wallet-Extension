@@ -590,7 +590,13 @@ export function SwapForm({
       >
         <AssetSelectModal
           assetBalances={accountBalance.assets}
-          assets={swappableAssets}
+          assets={
+            showSelectAsset === 'from'
+              ? swappableAssets.filter(asset => asset.id !== toAssetId)
+              : showSelectAsset === 'to'
+              ? swappableAssets.filter(asset => asset.id !== fromAssetId)
+              : []
+          }
           network={currentNetwork}
           onClose={() => {
             setShowSelectAsset(null);
