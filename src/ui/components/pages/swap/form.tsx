@@ -13,14 +13,15 @@ import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
-import { useAppSelector } from 'ui/store';
-import { proto } from './channel.proto.compiled';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import {
   ExchangeChannelClient,
   ExchangeChannelError,
   ExchangeChannelErrorCode,
+  ExchangePool,
 } from './channelClient';
 import * as styles from './form.module.css';
+import { updateAssets } from 'ui/actions/assets';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
 
@@ -50,7 +51,7 @@ interface Props {
 interface ExchangeInfoState {
   priceImpact: number;
   priceSaved: number;
-  route: proto.Response.Exchange.Pool[];
+  route: ExchangePool[];
   toAmountTokens: BigNumber;
 }
 
@@ -257,6 +258,28 @@ export function SwapForm({
       )
     : null;
 
+  const routeAssets = React.useMemo(
+    () =>
+      (exchangeInfo ? exchangeInfo.route : [])
+        .flatMap((pool, index) =>
+          index === 0 ? [pool.fromAssetId, pool.toAssetId] : [pool.toAssetId]
+        )
+        .map(assetId => new Asset(assets[assetId])),
+    [assets, exchangeInfo]
+  );
+
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    const assetsToUpdate = Array.from(
+      new Set(routeAssets.filter(asset => asset == null))
+    );
+
+    if (assetsToUpdate.length !== 0) {
+      dispatch(updateAssets(assetsToUpdate));
+    }
+  }, [dispatch, routeAssets]);
+
   return (
     <form
       onSubmit={event => {
@@ -434,29 +457,22 @@ export function SwapForm({
           </div>
 
           <div className={styles.summaryValue}>
-            {exchangeInfo == null ? (
+            {exchangeInfo == null ||
+            routeAssets.some(asset => asset == null) ? (
               <Loader />
             ) : (
               <div className={styles.route}>
-                {[
-                  'BTC',
-                  'WAVES',
-                  'USDN',
-                  'EURN',
-                  'USDT',
-                  'EGG',
-                  'RACE',
-                  'WX',
-                  'SCOneX',
-                ].map((ticker, index) => (
-                  <React.Fragment key={ticker}>
+                {routeAssets.map((asset, index) => (
+                  <React.Fragment key={asset.id}>
                     {index !== 0 && (
                       <svg className={styles.routeItemArrow} viewBox="0 0 7 12">
                         <path d="M1.115 12L0 10.863L4.768 6L0 1.137L1.115 0L7 6L1.115 12Z" />
                       </svg>
                     )}
 
-                    <div className={styles.routeItemName}>{ticker}</div>
+                    <div className={styles.routeItemName}>
+                      {asset.displayName}
+                    </div>
                   </React.Fragment>
                 ))}
               </div>

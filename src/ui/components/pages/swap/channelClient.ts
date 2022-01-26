@@ -3,10 +3,17 @@ import { Asset } from '@waves/data-entities';
 import Long from 'long';
 import { proto } from './channel.proto.compiled';
 
+export interface ExchangePool {
+  dApp: string;
+  service: string;
+  fromAssetId: string;
+  toAssetId: string;
+}
+
 interface ExchangeResponse {
   priceImpact: number;
   priceSaved: number;
-  route: proto.Response.Exchange.Pool[];
+  route: ExchangePool[];
   toAmountCoins: BigNumber;
 }
 
@@ -79,7 +86,12 @@ export class ExchangeChannelClient {
         this.subscriber(null, {
           priceImpact,
           priceSaved,
-          route,
+          route: route.map(({ address, key, source, target }) => ({
+            dApp: address,
+            service: key,
+            fromAssetId: source,
+            toAssetId: target,
+          })),
           toAmountCoins: new BigNumber(String(amount)),
         });
       } else {
