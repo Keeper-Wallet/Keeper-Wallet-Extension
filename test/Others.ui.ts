@@ -141,7 +141,7 @@ describe('Others', function () {
       );
 
       expect(await transferAmount.getText()).to.equal(
-        '-\n0\n.12300000\n Waves'
+        '-\n0\n.12300000\n WAVES'
       );
 
       expect(
@@ -186,7 +186,7 @@ describe('Others', function () {
       );
 
       expect(await transferAmount.getText()).to.equal(
-        '-\n0\n.87654321\n Waves'
+        '-\n0\n.87654321\n WAVES'
       );
 
       expect(
