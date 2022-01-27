@@ -34,9 +34,9 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
 
         <div className="margin-main">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.displayName" />
+            <Trans i18nKey="assetInfo.name" />
           </div>
-          <div className="tag1">{asset.displayName}</div>
+          <div className="tag1">{asset.name}</div>
         </div>
 
         {asset.ticker && (
