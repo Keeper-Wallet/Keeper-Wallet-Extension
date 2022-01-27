@@ -295,8 +295,6 @@ export function SwapForm({
     : null;
 
   function setFromAmount(newFromAmount: string) {
-    console.log(state.fromAmount, newFromAmount);
-
     if (newFromAmount !== state.fromAmount) {
       dispatch({ type: 'SET_FROM_AMOUNT', value: newFromAmount });
 
@@ -384,7 +382,7 @@ export function SwapForm({
                 accountBalance.assets[state.txFeeAssetId]
               );
 
-              max = max.minus(fee);
+              max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
             }
 
             setFromAmount(max.getTokens().toFixed());
