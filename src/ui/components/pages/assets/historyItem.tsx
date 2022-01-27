@@ -306,7 +306,7 @@ export function HistoryItem({ tx, className }: Props) {
 
         label = <Balance addSign="-" split showAsset balance={fromBalance} />;
         info = <Balance addSign="+" split showAsset balance={toBalance} />;
-        messageType = 'create-order';
+        messageType = 'swap';
       } else {
         tooltip = t('historyCard.scriptInvocation');
         label = <Address base58={tx.dApp} />;
