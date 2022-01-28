@@ -149,7 +149,6 @@ export class AssetInfoController {
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
-    this.addTickersForExistingAssets();
     this.updateSuspiciousAssets();
   }
 
