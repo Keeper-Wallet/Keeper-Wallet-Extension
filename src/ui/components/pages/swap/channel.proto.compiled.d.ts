@@ -525,11 +525,11 @@ export namespace proto {
                 /** Result amount */
                 amount?: (Long|null);
 
+                /** Result worstAmount */
+                worstAmount?: (Long|null);
+
                 /** Result priceImpact */
                 priceImpact?: (number|null);
-
-                /** Result priceSaved */
-                priceSaved?: (number|null);
 
                 /** Result route */
                 route?: (proto.Response.Exchange.Pool[]|null);
@@ -547,11 +547,11 @@ export namespace proto {
                 /** Result amount. */
                 public amount: Long;
 
+                /** Result worstAmount. */
+                public worstAmount: Long;
+
                 /** Result priceImpact. */
                 public priceImpact: number;
-
-                /** Result priceSaved. */
-                public priceSaved: number;
 
                 /** Result route. */
                 public route: proto.Response.Exchange.Pool[];

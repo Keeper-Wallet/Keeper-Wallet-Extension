@@ -12,9 +12,9 @@ export interface ExchangePool {
 
 interface ExchangeResponse {
   priceImpact: number;
-  priceSaved: number;
   route: ExchangePool[];
   toAmountCoins: BigNumber;
+  worstAmountCoins: BigNumber;
 }
 
 interface ExchangeInput {
@@ -81,11 +81,10 @@ export class ExchangeChannelClient {
       }
 
       if (res.exchange.result) {
-        const { amount, priceImpact, priceSaved, route } = res.exchange.result;
+        const { amount, priceImpact, route, worstAmount } = res.exchange.result;
 
         this.subscriber(null, {
           priceImpact,
-          priceSaved,
           route: route.map(({ address, key, source, target }) => ({
             dApp: address,
             service: key,
@@ -93,6 +92,7 @@ export class ExchangeChannelClient {
             toAssetId: target,
           })),
           toAmountCoins: new BigNumber(String(amount)),
+          worstAmountCoins: new BigNumber(String(worstAmount)),
         });
       } else {
         this.subscriber(

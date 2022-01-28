@@ -50,9 +50,9 @@ interface Props {
 
 interface ExchangeInfoState {
   priceImpact: number;
-  priceSaved: number;
   route: ExchangePool[];
   toAmountTokens: BigNumber;
+  worstAmountTokens: BigNumber;
 }
 
 export function SwapForm({
@@ -190,15 +190,16 @@ export function SwapForm({
           return;
         }
 
-        const { priceImpact, priceSaved, route, toAmountCoins } = response;
+        const { priceImpact, route, toAmountCoins, worstAmountCoins } =
+          response;
 
         setExchangeChannelError(null);
 
         setExchangeInfo({
           priceImpact,
-          priceSaved,
           route,
           toAmountTokens: new Money(toAmountCoins, toAsset).getTokens(),
+          worstAmountTokens: new Money(worstAmountCoins, toAsset).getTokens(),
         });
       }
     );

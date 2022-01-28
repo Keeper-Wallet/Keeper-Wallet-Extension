@@ -1237,8 +1237,8 @@ export const proto = $root.proto = (() => {
                  * @memberof proto.Response.Exchange
                  * @interface IResult
                  * @property {Long|null} [amount] Result amount
+                 * @property {Long|null} [worstAmount] Result worstAmount
                  * @property {number|null} [priceImpact] Result priceImpact
-                 * @property {number|null} [priceSaved] Result priceSaved
                  * @property {Array.<proto.Response.Exchange.Pool>|null} [route] Result route
                  */
 
@@ -1267,20 +1267,20 @@ export const proto = $root.proto = (() => {
                 Result.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                 /**
+                 * Result worstAmount.
+                 * @member {Long} worstAmount
+                 * @memberof proto.Response.Exchange.Result
+                 * @instance
+                 */
+                Result.prototype.worstAmount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                /**
                  * Result priceImpact.
                  * @member {number} priceImpact
                  * @memberof proto.Response.Exchange.Result
                  * @instance
                  */
                 Result.prototype.priceImpact = 0;
-
-                /**
-                 * Result priceSaved.
-                 * @member {number} priceSaved
-                 * @memberof proto.Response.Exchange.Result
-                 * @instance
-                 */
-                Result.prototype.priceSaved = 0;
 
                 /**
                  * Result route.
@@ -1316,10 +1316,10 @@ export const proto = $root.proto = (() => {
                         writer = $Writer.create();
                     if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
                         writer.uint32(/* id 1, wireType 0 =*/8).int64(message.amount);
+                    if (message.worstAmount != null && Object.hasOwnProperty.call(message, "worstAmount"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).int64(message.worstAmount);
                     if (message.priceImpact != null && Object.hasOwnProperty.call(message, "priceImpact"))
-                        writer.uint32(/* id 2, wireType 5 =*/21).float(message.priceImpact);
-                    if (message.priceSaved != null && Object.hasOwnProperty.call(message, "priceSaved"))
-                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.priceSaved);
+                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.priceImpact);
                     if (message.route != null && message.route.length)
                         for (let i = 0; i < message.route.length; ++i)
                             $root.proto.Response.Exchange.Pool.encode(message.route[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
@@ -1361,10 +1361,10 @@ export const proto = $root.proto = (() => {
                             message.amount = reader.int64();
                             break;
                         case 2:
-                            message.priceImpact = reader.float();
+                            message.worstAmount = reader.int64();
                             break;
                         case 3:
-                            message.priceSaved = reader.float();
+                            message.priceImpact = reader.float();
                             break;
                         case 4:
                             if (!(message.route && message.route.length))
@@ -1409,12 +1409,12 @@ export const proto = $root.proto = (() => {
                     if (message.amount != null && message.hasOwnProperty("amount"))
                         if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                             return "amount: integer|Long expected";
+                    if (message.worstAmount != null && message.hasOwnProperty("worstAmount"))
+                        if (!$util.isInteger(message.worstAmount) && !(message.worstAmount && $util.isInteger(message.worstAmount.low) && $util.isInteger(message.worstAmount.high)))
+                            return "worstAmount: integer|Long expected";
                     if (message.priceImpact != null && message.hasOwnProperty("priceImpact"))
                         if (typeof message.priceImpact !== "number")
                             return "priceImpact: number expected";
-                    if (message.priceSaved != null && message.hasOwnProperty("priceSaved"))
-                        if (typeof message.priceSaved !== "number")
-                            return "priceSaved: number expected";
                     if (message.route != null && message.hasOwnProperty("route")) {
                         if (!Array.isArray(message.route))
                             return "route: array expected";
@@ -1448,10 +1448,17 @@ export const proto = $root.proto = (() => {
                             message.amount = object.amount;
                         else if (typeof object.amount === "object")
                             message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
+                    if (object.worstAmount != null)
+                        if ($util.Long)
+                            (message.worstAmount = $util.Long.fromValue(object.worstAmount)).unsigned = false;
+                        else if (typeof object.worstAmount === "string")
+                            message.worstAmount = parseInt(object.worstAmount, 10);
+                        else if (typeof object.worstAmount === "number")
+                            message.worstAmount = object.worstAmount;
+                        else if (typeof object.worstAmount === "object")
+                            message.worstAmount = new $util.LongBits(object.worstAmount.low >>> 0, object.worstAmount.high >>> 0).toNumber();
                     if (object.priceImpact != null)
                         message.priceImpact = Number(object.priceImpact);
-                    if (object.priceSaved != null)
-                        message.priceSaved = Number(object.priceSaved);
                     if (object.route) {
                         if (!Array.isArray(object.route))
                             throw TypeError(".proto.Response.Exchange.Result.route: array expected");
@@ -1486,18 +1493,25 @@ export const proto = $root.proto = (() => {
                             object.amount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                         } else
                             object.amount = options.longs === String ? "0" : 0;
+                        if ($util.Long) {
+                            let long = new $util.Long(0, 0, false);
+                            object.worstAmount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                        } else
+                            object.worstAmount = options.longs === String ? "0" : 0;
                         object.priceImpact = 0;
-                        object.priceSaved = 0;
                     }
                     if (message.amount != null && message.hasOwnProperty("amount"))
                         if (typeof message.amount === "number")
                             object.amount = options.longs === String ? String(message.amount) : message.amount;
                         else
                             object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
+                    if (message.worstAmount != null && message.hasOwnProperty("worstAmount"))
+                        if (typeof message.worstAmount === "number")
+                            object.worstAmount = options.longs === String ? String(message.worstAmount) : message.worstAmount;
+                        else
+                            object.worstAmount = options.longs === String ? $util.Long.prototype.toString.call(message.worstAmount) : options.longs === Number ? new $util.LongBits(message.worstAmount.low >>> 0, message.worstAmount.high >>> 0).toNumber() : message.worstAmount;
                     if (message.priceImpact != null && message.hasOwnProperty("priceImpact"))
                         object.priceImpact = options.json && !isFinite(message.priceImpact) ? String(message.priceImpact) : message.priceImpact;
-                    if (message.priceSaved != null && message.hasOwnProperty("priceSaved"))
-                        object.priceSaved = options.json && !isFinite(message.priceSaved) ? String(message.priceSaved) : message.priceSaved;
                     if (message.route && message.route.length) {
                         object.route = [];
                         for (let j = 0; j < message.route.length; ++j)

@@ -36,10 +36,10 @@ message Response {
     message Result {
       // exchanged amount in target asset
       int64 amount = 1;
+      // exchanged amount in target asset by worst route
+      int64 worst_amount = 2;
       // percentage of result rate to default rate
-      float price_impact = 2;
-      // percentage of amount saved relatively to worst route
-      float price_saved = 3;
+      float price_impact = 3;
       // best route for exchange source->target assets pair
       repeated Pool route = 4;
     }
