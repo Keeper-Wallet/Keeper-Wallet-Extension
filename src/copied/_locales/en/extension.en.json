@@ -27,7 +27,7 @@
   },
   "assetInfo": {
     "id": "ID",
-    "displayName": "Name",
+    "name": "Name",
     "ticker": "Ticker",
     "precision": "Decimals points",
     "quantity": "Total issued",

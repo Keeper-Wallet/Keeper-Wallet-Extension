@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ASSETS_NAMES } from '../../../appConfig';
 import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
@@ -53,9 +52,7 @@ const BalanceComponent = ({
   const tokens = (
     isShortFormat ? balanceOut.toFormat() : balanceOut.toTokens()
   ).split('.');
-  const assetName = showAsset
-    ? ASSETS_NAMES[balanceOut.asset.id] || balanceOut.asset.name
-    : null;
+  const assetName = showAsset ? balanceOut.asset.displayName : null;
 
   if (!split) {
     return (

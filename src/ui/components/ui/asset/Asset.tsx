@@ -1,17 +1,9 @@
 import * as React from 'react';
-import { ASSETS_NAMES } from '../../../appConfig';
 import { connect } from 'react-redux';
+import { AssetDetail } from 'ui/services/Background';
+import { AppState } from 'ui/store';
 import { getAsset } from '../../../actions';
 import { Loader } from '../loader';
-
-const Loading = ({ children }) => {
-  return (
-    <div>
-      <Loader />
-      {children}
-    </div>
-  );
-};
 
 const AssetComponent = ({
   getAsset,
@@ -22,29 +14,31 @@ const AssetComponent = ({
 }: IProps) => {
   if (!assets[assetId]) {
     getAsset(assetId);
-    return <Loading>{children}</Loading>;
-  }
 
-  const assetName = assets[assetId]
-    ? ASSETS_NAMES[assetId] || assets[assetId].name
-    : null;
+    return (
+      <div>
+        <Loader />
+        {children}
+      </div>
+    );
+  }
 
   return (
     <span {...props}>
-      {assetName}
+      {assets[assetId].displayName}
       {children}
     </span>
   );
 };
 
-export const Asset = connect(({ assets }: any) => ({ assets }), { getAsset })(
-  AssetComponent
-);
+export const Asset = connect(({ assets }: AppState) => ({ assets }), {
+  getAsset,
+})(AssetComponent);
 
 interface IProps {
   assetId: string;
   children?: any;
   className?: string;
-  assets?: Object;
+  assets?: Record<string, AssetDetail>;
   getAsset: (id: string) => void;
 }
