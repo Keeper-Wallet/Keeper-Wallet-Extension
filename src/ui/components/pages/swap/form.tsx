@@ -424,29 +424,6 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.summaryTooltipContent}
-              content={<Trans i18nKey="swap.youSaveTooltip" />}
-            >
-              {props => (
-                <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.youSave" />
-                </span>
-              )}
-            </Tooltip>
-          </div>
-
-          <div className={styles.summaryValue}>
-            {exchangeInfo == null ? (
-              <Loader />
-            ) : (
-              <span className={styles.summaryValueText}>0.6%</span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.summaryRow}>
-          <div className={styles.summaryLabel}>
-            <Tooltip
-              className={styles.summaryTooltipContent}
               content={<Trans i18nKey="swap.routeTooltip" />}
             >
               {props => (
@@ -477,6 +454,36 @@ export function SwapForm({
                   </React.Fragment>
                 ))}
               </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.gainTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.gain" />
+                </span>
+              )}
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {exchangeInfo == null ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {exchangeInfo.toAmountTokens
+                  .div(exchangeInfo.worstAmountTokens)
+                  .sub(1)
+                  .mul(100)
+                  .toFixed(2, BigNumber.ROUND_MODE.ROUND_HALF_EVEN)}
+                %
+              </span>
             )}
           </div>
         </div>

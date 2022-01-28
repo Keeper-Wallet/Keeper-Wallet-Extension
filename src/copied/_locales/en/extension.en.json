@@ -518,13 +518,15 @@
     "closeBtnText": "Close",
     "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data",
     "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data",
+    "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From {{asset}}",
+    "gain": "Gain",
+    "gainTooltip": "How much more assets you gain with routing compared to shortest swap path",
+    "insufficientFundsError": "Insufficient funds",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Your transaction will revert if there is a large, unfavorable price movement before it is confirmed",
     "priceImpact": "Price Impact",
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
-    "failMessage": "Swap did not succeed, please try again",
-    "insufficientFundsError": "Insufficient funds",
     "priceLabel": "Price",
     "route": "Route",
     "routeTooltip": "List of assets involved in swap for target asset",
@@ -536,9 +538,7 @@
     "toInputLabel": "To {{asset}} (est.)",
     "transactionFee": "Transaction Fee",
     "transactionFeeTooltip": "Network fee for the smart contract invocation",
-    "viewTransaction": "View transaction",
-    "youSave": "You save",
-    "youSaveTooltip": "How much you'll save using Waves Keeper swap routing"
+    "viewTransaction": "View transaction"
   },
   "transactions": {
     "allowAccess": "Allow access",
