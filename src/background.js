@@ -97,6 +97,15 @@ extension.runtime.onInstalled.addListener(async details => {
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
+
+    const storageContents = await extension.storage.local.get();
+    const keysToRemove = new Set(Object.keys(storageContents));
+
+    bgService.store.getKeys().forEach(storeKey => {
+      keysToRemove.delete(storeKey);
+    });
+
+    await extension.storage.local.remove(Array.from(keysToRemove));
   }
 });
 
@@ -112,14 +121,6 @@ async function setupBackgroundService() {
     initState,
     initLangCode,
   });
-
-  const keysToRemove = new Set(Object.keys(initState));
-
-  backgroundService.store.getKeys().forEach(storeKey => {
-    keysToRemove.delete(storeKey);
-  });
-
-  localStore.remove(Array.from(keysToRemove));
 
   // global access to service on debug
   if (WAVESKEEPER_DEBUG) {

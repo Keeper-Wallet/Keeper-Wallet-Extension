@@ -41,24 +41,6 @@ module.exports = class ExtensionStore {
   }
 
   /**
-   * Removes key from storage
-   * @param {string|array} keys - single key or array of keys to remove
-   * @return {Promise<void>}
-   */
-  async remove(keys) {
-    return new Promise((resolve, reject) => {
-      extension.storage.local.remove(keys, () => {
-        const err = extension.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-
-  /**
    * Returns all of the keys currently saved
    * @private
    * @return {object} the key-value map from local storage
