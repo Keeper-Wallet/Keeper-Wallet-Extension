@@ -131,6 +131,7 @@ export function AssetAmountInput({
               <input
                 className={styles.input}
                 placeholder="0.0"
+                maxLength={23}
                 ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
                 data-testid="amountInput"
               />
