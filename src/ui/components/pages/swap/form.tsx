@@ -165,12 +165,15 @@ export function SwapForm({
   >(null);
 
   const watchExchange = React.useCallback(() => {
+    let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
+
+    if (fromTokens.eq(0)) {
+      fromTokens = new BigNumber(1);
+    }
+
     return channelClientRef.current?.exchange(
       {
-        fromAmountCoins: Money.fromTokens(
-          latestFromAmountValueRef.current || 1,
-          fromAsset
-        ).getCoins(),
+        fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
         fromAsset,
         toAsset,
       },
