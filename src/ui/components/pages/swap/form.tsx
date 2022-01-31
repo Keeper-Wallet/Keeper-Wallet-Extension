@@ -361,19 +361,39 @@ export function SwapForm({
         </button>
       </div>
 
-      <AssetAmountInput
-        balance={toAssetBalance}
-        label={t('swap.toInputLabel', {
-          asset: toAssetBalance.asset.displayName,
-        })}
-        loading={exchangeInfo == null}
-        value={
-          exchangeInfo == null ? '' : exchangeInfo.toAmountTokens.toFixed()
-        }
-        onLogoClick={() => {
-          setShowSelectAsset('to');
-        }}
-      />
+      <div className={styles.toAmountInput}>
+        <AssetAmountInput
+          balance={toAssetBalance}
+          label={t('swap.toInputLabel', {
+            asset: toAssetBalance.asset.displayName,
+          })}
+          loading={exchangeInfo == null}
+          value={
+            exchangeInfo == null ? '' : exchangeInfo.toAmountTokens.toFixed()
+          }
+          onLogoClick={() => {
+            setShowSelectAsset('to');
+          }}
+        />
+
+        {exchangeInfo == null ? (
+          <Loader />
+        ) : (
+          <div className={styles.toAmountInputGainBadge}>
+            {exchangeInfo.toAmountTokens.eq(exchangeInfo.worstAmountTokens) ? (
+              <Trans i18nKey="swap.gainBestPrice" />
+            ) : (
+              `+${exchangeInfo.toAmountTokens.sub(
+                exchangeInfo.worstAmountTokens
+              )} ${toAsset.displayName} (${exchangeInfo.toAmountTokens
+                .div(exchangeInfo.worstAmountTokens)
+                .sub(1)
+                .mul(100)
+                .toFixed(2, BigNumber.ROUND_MODE.ROUND_HALF_EVEN)}%)`
+            )}
+          </div>
+        )}
+      </div>
 
       {exchangeChannelError && (
         <div className={styles.error}>{exchangeChannelError}</div>
@@ -457,36 +477,6 @@ export function SwapForm({
                   </React.Fragment>
                 ))}
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.summaryRow}>
-          <div className={styles.summaryLabel}>
-            <Tooltip
-              className={styles.summaryTooltipContent}
-              content={<Trans i18nKey="swap.gainTooltip" />}
-            >
-              {props => (
-                <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.gain" />
-                </span>
-              )}
-            </Tooltip>
-          </div>
-
-          <div className={styles.summaryValue}>
-            {exchangeInfo == null ? (
-              <Loader />
-            ) : (
-              <span className={styles.summaryValueText}>
-                {exchangeInfo.toAmountTokens
-                  .div(exchangeInfo.worstAmountTokens)
-                  .sub(1)
-                  .mul(100)
-                  .toFixed(2, BigNumber.ROUND_MODE.ROUND_HALF_EVEN)}
-                %
-              </span>
             )}
           </div>
         </div>

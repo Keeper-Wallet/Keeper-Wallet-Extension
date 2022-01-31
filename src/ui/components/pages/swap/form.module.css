@@ -31,6 +31,22 @@
   color: #9ba6b2;
 }
 
+.toAmountInput {
+  position: relative;
+}
+
+.toAmountInputGainBadge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 1px 8px;
+  border-radius: 4px 0;
+  background: #0155ff;
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 11px;
+}
+
 .priceRow {
   margin: 1em 0;
   display: flex;
