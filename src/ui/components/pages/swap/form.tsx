@@ -383,9 +383,12 @@ export function SwapForm({
             {exchangeInfo.toAmountTokens.eq(exchangeInfo.worstAmountTokens) ? (
               <Trans i18nKey="swap.gainBestPrice" />
             ) : (
-              `+${exchangeInfo.toAmountTokens.sub(
-                exchangeInfo.worstAmountTokens
-              )} ${toAsset.displayName} (${exchangeInfo.toAmountTokens
+              `+${exchangeInfo.toAmountTokens
+                .sub(exchangeInfo.worstAmountTokens)
+                .toFixed(
+                  toAsset.precision,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR
+                )} ${toAsset.displayName} (${exchangeInfo.toAmountTokens
                 .div(exchangeInfo.worstAmountTokens)
                 .sub(1)
                 .mul(100)
