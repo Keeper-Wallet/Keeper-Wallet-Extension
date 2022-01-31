@@ -1,3 +1,4 @@
+import './initProtobuf';
 import './ui/styles/app.styl';
 import './ui/styles/icons.styl';
 import './ui/i18n';
