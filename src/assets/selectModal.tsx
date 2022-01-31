@@ -28,6 +28,68 @@ export function AssetSelectModal({
 }: Props) {
   const { t } = useTranslation();
   const [query, setQuery] = React.useState('');
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const filteredAndSortedItems = assets
+    .filter(
+      asset =>
+        asset.id === query ||
+        asset.name.toLowerCase().includes(query.toLowerCase()) ||
+        (!!asset.ticker &&
+          asset.ticker.toLowerCase().includes(query.toLowerCase()))
+    )
+    .map(asset => {
+      const balance = new Money(
+        new BigNumber(assetBalances[asset.id]?.balance ?? 0),
+        new Asset(asset)
+      );
+
+      return {
+        asset,
+        balance,
+      };
+    })
+    .sort((a, b) => {
+      const aIsZero = a.balance.getCoins().eq(0);
+      const bIsZero = b.balance.getCoins().eq(0);
+
+      if (aIsZero === bIsZero) {
+        return 0;
+      }
+
+      if (aIsZero) {
+        return 1;
+      }
+
+      return -1;
+    });
+
+  const listRef = React.useRef<HTMLUListElement | null>(null);
+  const listViewportRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const list = listRef.current;
+    const listViewport = listViewportRef.current;
+
+    if (!list || !listViewport) {
+      return;
+    }
+
+    const viewportBcr = listViewport.getBoundingClientRect();
+
+    const listItem = list.children[selectedIndex];
+    const listItemBcr = listItem.getBoundingClientRect();
+
+    if (
+      listItemBcr.top < viewportBcr.top ||
+      listItemBcr.bottom > viewportBcr.bottom
+    ) {
+      listItem.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [selectedIndex]);
 
   return (
     <div className={cn('modal', 'cover', styles.root)}>
@@ -43,84 +105,80 @@ export function AssetSelectModal({
             value={query}
             onChange={event => {
               setQuery(event.currentTarget.value);
+              setSelectedIndex(0);
+            }}
+            onKeyDown={event => {
+              switch (event.key) {
+                case 'ArrowDown':
+                  setSelectedIndex(
+                    prevState => (prevState + 1) % filteredAndSortedItems.length
+                  );
+                  event.preventDefault();
+                  break;
+                case 'ArrowUp':
+                  setSelectedIndex(prevState => {
+                    let newIndex = prevState - 1;
+
+                    if (newIndex < 0) {
+                      newIndex += filteredAndSortedItems.length;
+                    }
+
+                    return newIndex;
+                  });
+                  event.preventDefault();
+                  break;
+                case 'Enter':
+                  onSelect(filteredAndSortedItems[selectedIndex].asset.id);
+                  event.preventDefault();
+                  break;
+              }
             }}
           />
         </div>
 
-        <div className={styles.list}>
-          <ul>
-            {assets
-              .filter(
-                asset =>
-                  asset.id === query ||
-                  asset.name.toLowerCase().includes(query.toLowerCase()) ||
-                  (!!asset.ticker &&
-                    asset.ticker.toLowerCase().includes(query.toLowerCase()))
-              )
-              .map(asset => {
-                const balance = new Money(
-                  new BigNumber(assetBalances[asset.id]?.balance ?? 0),
-                  new Asset(asset)
-                );
+        <div className={styles.listViewport} ref={listViewportRef}>
+          <ul ref={listRef}>
+            {filteredAndSortedItems.map(({ asset, balance }, index) => {
+              const logoSrc = getAssetLogo(network, asset.id);
 
-                return {
-                  asset,
-                  balance,
-                };
-              })
-              .sort((a, b) => {
-                const aIsZero = a.balance.getCoins().eq(0);
-                const bIsZero = b.balance.getCoins().eq(0);
+              return (
+                <li
+                  key={asset.id}
+                  className={cn(styles.listItem, {
+                    [styles.listItem_selected]: index === selectedIndex,
+                  })}
+                  onClick={() => {
+                    onSelect(asset.id);
+                  }}
+                >
+                  <div className={styles.logo}>
+                    {logoSrc ? (
+                      <img className={styles.logoImg} src={logoSrc} alt="" />
+                    ) : (
+                      <div
+                        className={styles.logoPlaceholder}
+                        style={{
+                          backgroundColor: new ColorHash().hex(asset.id),
+                        }}
+                      >
+                        {asset.displayName[0].toUpperCase()}
+                      </div>
+                    )}
+                  </div>
 
-                if (aIsZero === bIsZero) {
-                  return 0;
-                }
-
-                if (aIsZero) {
-                  return 1;
-                }
-
-                return -1;
-              })
-              .map(({ asset, balance }) => {
-                const logoSrc = getAssetLogo(network, asset.id);
-
-                return (
-                  <li
-                    key={asset.id}
-                    className={styles.listItem}
-                    onClick={() => {
-                      onSelect(asset.id);
-                    }}
+                  <div
+                    className={styles.listItemName}
+                    title={asset.displayName}
                   >
-                    <div className={styles.logo}>
-                      {logoSrc ? (
-                        <img className={styles.logoImg} src={logoSrc} alt="" />
-                      ) : (
-                        <div
-                          className={styles.logoPlaceholder}
-                          style={{
-                            backgroundColor: new ColorHash().hex(asset.id),
-                          }}
-                        >
-                          {asset.displayName[0].toUpperCase()}
-                        </div>
-                      )}
-                    </div>
+                    {asset.displayName}
+                  </div>
 
-                    <div
-                      className={styles.listItemName}
-                      title={asset.displayName}
-                    >
-                      {asset.displayName}
-                    </div>
-
-                    <div className={styles.listItemBalance}>
-                      {balance.toFormat()}
-                    </div>
-                  </li>
-                );
-              })}
+                  <div className={styles.listItemBalance}>
+                    {balance.toFormat()}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
 

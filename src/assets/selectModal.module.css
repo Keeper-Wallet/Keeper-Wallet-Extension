@@ -24,7 +24,7 @@
   font-size: 18px;
 }
 
-.list {
+.listViewport {
   margin-top: 14px;
   flex: 1 1 0;
   overflow-y: auto;
@@ -39,6 +39,7 @@
   cursor: pointer;
 }
 
+.listItem_selected,
 .listItem:hover {
   background: var(--color-basic100);
 }
