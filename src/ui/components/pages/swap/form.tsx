@@ -23,7 +23,7 @@ import {
 import * as styles from './form.module.css';
 import { updateAssets } from 'ui/actions/assets';
 
-const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(0.1);
+const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(1);
 
 function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
   return asset.id === 'WAVES'
