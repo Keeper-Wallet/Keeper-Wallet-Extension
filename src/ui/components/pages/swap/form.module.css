@@ -64,6 +64,21 @@
   text-align: right;
 }
 
+.swapPriceDirectionBtn {
+  margin-right: 8px;
+  background: none;
+  color: var(--color-basic500);
+  cursor: pointer;
+}
+
+.swapPriceDirectionBtn:hover {
+  color: #000;
+}
+
+.swapPriceDirectionBtnIcon {
+  vertical-align: middle;
+}
+
 .error {
   margin-top: 8px;
   overflow: auto;
