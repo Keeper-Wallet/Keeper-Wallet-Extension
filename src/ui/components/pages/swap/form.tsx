@@ -256,11 +256,15 @@ export function SwapForm({
 
   const minReceived = exchangeInfo
     ? Money.fromTokens(
-        exchangeInfo.toAmountTokens
-          .mul(
-            new BigNumber(100).sub(SLIPPAGE_TOLERANCE_PERCENTS).sub(KEEPER_FEE)
-          )
-          .div(100),
+        fromAmountTokens.eq(0)
+          ? new BigNumber(0)
+          : exchangeInfo.toAmountTokens
+              .mul(
+                new BigNumber(100)
+                  .sub(SLIPPAGE_TOLERANCE_PERCENTS)
+                  .sub(KEEPER_FEE)
+              )
+              .div(100),
         toAsset
       )
     : null;
@@ -372,16 +376,19 @@ export function SwapForm({
           })}
           loading={exchangeInfo == null}
           value={
-            exchangeInfo == null ? '' : exchangeInfo.toAmountTokens.toFixed()
+            exchangeInfo == null
+              ? ''
+              : (fromAmountTokens.eq(0)
+                  ? new BigNumber(0)
+                  : exchangeInfo.toAmountTokens
+                ).toFixed()
           }
           onLogoClick={() => {
             setShowSelectAsset('to');
           }}
         />
 
-        {exchangeInfo == null ? (
-          <Loader />
-        ) : (
+        {exchangeInfo == null || fromAmountTokens.eq(0) ? null : (
           <div className={styles.toAmountInputGainBadge}>
             {exchangeInfo.toAmountTokens.eq(exchangeInfo.worstAmountTokens) ? (
               <Trans i18nKey="swap.gainBestPrice" />
@@ -537,10 +544,10 @@ export function SwapForm({
               <Loader />
             ) : (
               <span className={styles.summaryValueText}>
-                {new BigNumber(exchangeInfo.priceImpact).toFixed(
-                  3,
-                  BigNumber.ROUND_MODE.ROUND_FLOOR
-                )}
+                {(fromAmountTokens.eq(0)
+                  ? new BigNumber(0)
+                  : new BigNumber(exchangeInfo.priceImpact)
+                ).toFixed(3, BigNumber.ROUND_MODE.ROUND_FLOOR)}
                 %
               </span>
             )}
