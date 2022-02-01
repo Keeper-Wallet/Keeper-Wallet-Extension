@@ -264,7 +264,8 @@ export function SwapForm({
                   .sub(SLIPPAGE_TOLERANCE_PERCENTS)
                   .sub(KEEPER_FEE)
               )
-              .div(100),
+              .div(100)
+              .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR),
         toAsset
       )
     : null;
