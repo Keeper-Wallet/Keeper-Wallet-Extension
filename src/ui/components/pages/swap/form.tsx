@@ -24,6 +24,7 @@ import * as styles from './form.module.css';
 import { updateAssets } from 'ui/actions/assets';
 
 const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(1);
+const KEEPER_FEE = new BigNumber(0.1);
 
 function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
   return asset.id === 'WAVES'
@@ -256,7 +257,9 @@ export function SwapForm({
   const minReceived = exchangeInfo
     ? Money.fromTokens(
         exchangeInfo.toAmountTokens
-          .mul(new BigNumber(100).sub(SLIPPAGE_TOLERANCE_PERCENTS))
+          .mul(
+            new BigNumber(100).sub(SLIPPAGE_TOLERANCE_PERCENTS).sub(KEEPER_FEE)
+          )
           .div(100),
         toAsset
       )
