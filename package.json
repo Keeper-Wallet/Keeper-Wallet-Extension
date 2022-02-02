@@ -13,9 +13,6 @@
   },
   "scripts": {
     "dev": "webpack --watch",
-    "swap:genjs": "pbjs -t static-module -w es6 --force-long --force-message -o src/ui/components/pages/swap/channel.proto.compiled.js src/ui/components/pages/swap/channel.proto",
-    "swap:gents": "pbts -o src/ui/components/pages/swap/channel.proto.compiled.d.ts src/ui/components/pages/swap/channel.proto.compiled.js",
-    "swap:gen": "npm run swap:genjs && npm run swap:gents",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --list-different .",
     "typecheck": "tsc --noEmit",

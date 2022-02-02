@@ -5,9 +5,9 @@ import { proto } from './channel.proto.compiled';
 
 export interface ExchangePool {
   dApp: string;
-  service: string;
   fromAssetId: string;
   toAssetId: string;
+  vendor: string;
 }
 
 interface ExchangeResponse {
@@ -85,11 +85,11 @@ export class ExchangeChannelClient {
 
         this.subscriber(null, {
           priceImpact,
-          route: route.map(({ address, key, source, target }) => ({
+          route: route.map(({ address, vendor, source, target }) => ({
             dApp: address,
-            service: key,
             fromAssetId: source,
             toAssetId: target,
+            vendor,
           })),
           toAmountCoins: new BigNumber(String(amount)),
           worstAmountCoins: new BigNumber(String(worstAmount)),

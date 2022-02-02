@@ -960,11 +960,12 @@ export const proto = $root.proto = (() => {
                  * Properties of a Pool.
                  * @memberof proto.Response.Exchange
                  * @interface IPool
-                 * @property {string|null} [key] Pool key
+                 * @property {string|null} [vendor] Pool vendor
+                 * @property {string|null} [type] Pool type
                  * @property {string|null} [address] Pool address
-                 * @property {number|null} [version] Pool version
                  * @property {string|null} [source] Pool source
                  * @property {string|null} [target] Pool target
+                 * @property {Long|null} [estimatedAmount] Pool estimatedAmount
                  */
 
                 /**
@@ -983,12 +984,20 @@ export const proto = $root.proto = (() => {
                 }
 
                 /**
-                 * Pool key.
-                 * @member {string} key
+                 * Pool vendor.
+                 * @member {string} vendor
                  * @memberof proto.Response.Exchange.Pool
                  * @instance
                  */
-                Pool.prototype.key = "";
+                Pool.prototype.vendor = "";
+
+                /**
+                 * Pool type.
+                 * @member {string} type
+                 * @memberof proto.Response.Exchange.Pool
+                 * @instance
+                 */
+                Pool.prototype.type = "";
 
                 /**
                  * Pool address.
@@ -997,14 +1006,6 @@ export const proto = $root.proto = (() => {
                  * @instance
                  */
                 Pool.prototype.address = "";
-
-                /**
-                 * Pool version.
-                 * @member {number} version
-                 * @memberof proto.Response.Exchange.Pool
-                 * @instance
-                 */
-                Pool.prototype.version = 0;
 
                 /**
                  * Pool source.
@@ -1021,6 +1022,14 @@ export const proto = $root.proto = (() => {
                  * @instance
                  */
                 Pool.prototype.target = "";
+
+                /**
+                 * Pool estimatedAmount.
+                 * @member {Long} estimatedAmount
+                 * @memberof proto.Response.Exchange.Pool
+                 * @instance
+                 */
+                Pool.prototype.estimatedAmount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                 /**
                  * Creates a new Pool instance using the specified properties.
@@ -1046,16 +1055,18 @@ export const proto = $root.proto = (() => {
                 Pool.encode = function encode(message, writer) {
                     if (!writer)
                         writer = $Writer.create();
-                    if (message.key != null && Object.hasOwnProperty.call(message, "key"))
-                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.key);
+                    if (message.vendor != null && Object.hasOwnProperty.call(message, "vendor"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.vendor);
+                    if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.type);
                     if (message.address != null && Object.hasOwnProperty.call(message, "address"))
-                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.address);
-                    if (message.version != null && Object.hasOwnProperty.call(message, "version"))
-                        writer.uint32(/* id 3, wireType 0 =*/24).int32(message.version);
+                        writer.uint32(/* id 3, wireType 2 =*/26).string(message.address);
                     if (message.source != null && Object.hasOwnProperty.call(message, "source"))
                         writer.uint32(/* id 4, wireType 2 =*/34).string(message.source);
                     if (message.target != null && Object.hasOwnProperty.call(message, "target"))
                         writer.uint32(/* id 5, wireType 2 =*/42).string(message.target);
+                    if (message.estimatedAmount != null && Object.hasOwnProperty.call(message, "estimatedAmount"))
+                        writer.uint32(/* id 6, wireType 0 =*/48).int64(message.estimatedAmount);
                     return writer;
                 };
 
@@ -1091,19 +1102,22 @@ export const proto = $root.proto = (() => {
                         let tag = reader.uint32();
                         switch (tag >>> 3) {
                         case 1:
-                            message.key = reader.string();
+                            message.vendor = reader.string();
                             break;
                         case 2:
-                            message.address = reader.string();
+                            message.type = reader.string();
                             break;
                         case 3:
-                            message.version = reader.int32();
+                            message.address = reader.string();
                             break;
                         case 4:
                             message.source = reader.string();
                             break;
                         case 5:
                             message.target = reader.string();
+                            break;
+                        case 6:
+                            message.estimatedAmount = reader.int64();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -1140,21 +1154,24 @@ export const proto = $root.proto = (() => {
                 Pool.verify = function verify(message) {
                     if (typeof message !== "object" || message === null)
                         return "object expected";
-                    if (message.key != null && message.hasOwnProperty("key"))
-                        if (!$util.isString(message.key))
-                            return "key: string expected";
+                    if (message.vendor != null && message.hasOwnProperty("vendor"))
+                        if (!$util.isString(message.vendor))
+                            return "vendor: string expected";
+                    if (message.type != null && message.hasOwnProperty("type"))
+                        if (!$util.isString(message.type))
+                            return "type: string expected";
                     if (message.address != null && message.hasOwnProperty("address"))
                         if (!$util.isString(message.address))
                             return "address: string expected";
-                    if (message.version != null && message.hasOwnProperty("version"))
-                        if (!$util.isInteger(message.version))
-                            return "version: integer expected";
                     if (message.source != null && message.hasOwnProperty("source"))
                         if (!$util.isString(message.source))
                             return "source: string expected";
                     if (message.target != null && message.hasOwnProperty("target"))
                         if (!$util.isString(message.target))
                             return "target: string expected";
+                    if (message.estimatedAmount != null && message.hasOwnProperty("estimatedAmount"))
+                        if (!$util.isInteger(message.estimatedAmount) && !(message.estimatedAmount && $util.isInteger(message.estimatedAmount.low) && $util.isInteger(message.estimatedAmount.high)))
+                            return "estimatedAmount: integer|Long expected";
                     return null;
                 };
 
@@ -1170,16 +1187,25 @@ export const proto = $root.proto = (() => {
                     if (object instanceof $root.proto.Response.Exchange.Pool)
                         return object;
                     let message = new $root.proto.Response.Exchange.Pool();
-                    if (object.key != null)
-                        message.key = String(object.key);
+                    if (object.vendor != null)
+                        message.vendor = String(object.vendor);
+                    if (object.type != null)
+                        message.type = String(object.type);
                     if (object.address != null)
                         message.address = String(object.address);
-                    if (object.version != null)
-                        message.version = object.version | 0;
                     if (object.source != null)
                         message.source = String(object.source);
                     if (object.target != null)
                         message.target = String(object.target);
+                    if (object.estimatedAmount != null)
+                        if ($util.Long)
+                            (message.estimatedAmount = $util.Long.fromValue(object.estimatedAmount)).unsigned = false;
+                        else if (typeof object.estimatedAmount === "string")
+                            message.estimatedAmount = parseInt(object.estimatedAmount, 10);
+                        else if (typeof object.estimatedAmount === "number")
+                            message.estimatedAmount = object.estimatedAmount;
+                        else if (typeof object.estimatedAmount === "object")
+                            message.estimatedAmount = new $util.LongBits(object.estimatedAmount.low >>> 0, object.estimatedAmount.high >>> 0).toNumber();
                     return message;
                 };
 
@@ -1197,22 +1223,32 @@ export const proto = $root.proto = (() => {
                         options = {};
                     let object = {};
                     if (options.defaults) {
-                        object.key = "";
+                        object.vendor = "";
+                        object.type = "";
                         object.address = "";
-                        object.version = 0;
                         object.source = "";
                         object.target = "";
+                        if ($util.Long) {
+                            let long = new $util.Long(0, 0, false);
+                            object.estimatedAmount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                        } else
+                            object.estimatedAmount = options.longs === String ? "0" : 0;
                     }
-                    if (message.key != null && message.hasOwnProperty("key"))
-                        object.key = message.key;
+                    if (message.vendor != null && message.hasOwnProperty("vendor"))
+                        object.vendor = message.vendor;
+                    if (message.type != null && message.hasOwnProperty("type"))
+                        object.type = message.type;
                     if (message.address != null && message.hasOwnProperty("address"))
                         object.address = message.address;
-                    if (message.version != null && message.hasOwnProperty("version"))
-                        object.version = message.version;
                     if (message.source != null && message.hasOwnProperty("source"))
                         object.source = message.source;
                     if (message.target != null && message.hasOwnProperty("target"))
                         object.target = message.target;
+                    if (message.estimatedAmount != null && message.hasOwnProperty("estimatedAmount"))
+                        if (typeof message.estimatedAmount === "number")
+                            object.estimatedAmount = options.longs === String ? String(message.estimatedAmount) : message.estimatedAmount;
+                        else
+                            object.estimatedAmount = options.longs === String ? $util.Long.prototype.toString.call(message.estimatedAmount) : options.longs === Number ? new $util.LongBits(message.estimatedAmount.low >>> 0, message.estimatedAmount.high >>> 0).toNumber() : message.estimatedAmount;
                     return object;
                 };
 

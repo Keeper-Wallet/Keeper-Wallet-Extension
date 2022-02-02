@@ -408,20 +408,23 @@ export namespace proto {
             /** Properties of a Pool. */
             interface IPool {
 
-                /** Pool key */
-                key?: (string|null);
+                /** Pool vendor */
+                vendor?: (string|null);
+
+                /** Pool type */
+                type?: (string|null);
 
                 /** Pool address */
                 address?: (string|null);
-
-                /** Pool version */
-                version?: (number|null);
 
                 /** Pool source */
                 source?: (string|null);
 
                 /** Pool target */
                 target?: (string|null);
+
+                /** Pool estimatedAmount */
+                estimatedAmount?: (Long|null);
             }
 
             /** Represents a Pool. */
@@ -433,20 +436,23 @@ export namespace proto {
                  */
                 constructor(properties?: proto.Response.Exchange.IPool);
 
-                /** Pool key. */
-                public key: string;
+                /** Pool vendor. */
+                public vendor: string;
+
+                /** Pool type. */
+                public type: string;
 
                 /** Pool address. */
                 public address: string;
-
-                /** Pool version. */
-                public version: number;
 
                 /** Pool source. */
                 public source: string;
 
                 /** Pool target. */
                 public target: string;
+
+                /** Pool estimatedAmount. */
+                public estimatedAmount: Long;
 
                 /**
                  * Creates a new Pool instance using the specified properties.
