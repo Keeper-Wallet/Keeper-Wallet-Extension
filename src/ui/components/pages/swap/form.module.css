@@ -161,6 +161,12 @@
   color: #000;
 }
 
+.slippageToleranceInput:checked
+  + .slippageToleranceLabel
+  > .slippageToleranceLabelInner {
+  border-bottom: 1px solid;
+}
+
 .route {
   display: flex;
   flex-wrap: wrap;

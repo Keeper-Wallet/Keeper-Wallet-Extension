@@ -459,7 +459,9 @@ export function SwapForm({
                   />
 
                   <label className={styles.slippageToleranceLabel} htmlFor={id}>
-                    {slippageTolerance.toFixed()}%
+                    <span className={styles.slippageToleranceLabelInner}>
+                      {slippageTolerance.toFixed()}%
+                    </span>
                   </label>
                 </React.Fragment>
               );
