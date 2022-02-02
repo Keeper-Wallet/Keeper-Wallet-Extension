@@ -87,8 +87,15 @@
 }
 
 .summary {
-  margin-top: 1em;
   font-size: 12px;
+}
+
+.summary:not(:first-child) {
+  margin-top: 1em;
+}
+
+.summary:not(:last-child) {
+  margin-bottom: 1em;
 }
 
 .summaryRow {
@@ -131,6 +138,27 @@
 
 .summaryTooltipContent {
   max-width: calc(100vw - 14px * 2);
+}
+
+.slippageToleranceInput {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.slippageToleranceLabel {
+  padding: 4px 6px;
+  margin: -4px 0;
+  color: var(--color-basic500);
+  cursor: pointer;
+}
+
+.slippageToleranceInput:hover + .slippageToleranceLabel {
+  color: #596573;
+}
+
+.slippageToleranceInput:checked + .slippageToleranceLabel {
+  color: #000;
 }
 
 .route {
