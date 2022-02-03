@@ -1,5 +1,6 @@
 import BigNumber from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
+import { SIGN_TYPE, TSignData } from '@waves/signature-adapter';
 import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
 import { swappableAssetIds } from 'assets/constants';
 import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
@@ -142,34 +143,36 @@ export function Swap({ setTab }: Props) {
                   fromAssetId,
                   fromCoins,
                   minReceivedCoins,
-                  toAssetId,
-                  toCoins,
+                  route,
+                  slippageTolerance,
                 }) => {
                   setSwapErrorMessage(null);
                   setIsSwapInProgress(true);
 
+                  const fee = convertToSponsoredAssetFee(
+                    new BigNumber(wavesFeeCoins),
+                    new Asset(assets[feeAssetId]),
+                    accountBalance.assets[feeAssetId]
+                  );
+
                   try {
-                    // const result = await background.performSwap({
-                    //   fee: convertToSponsoredAssetFee(
-                    //     new BigNumber(wavesFeeCoins),
-                    //     new Asset(assets[feeAssetId]),
-                    //     accountBalance.assets[feeAssetId]
-                    //   ).toCoins(),
-                    //   feeAssetId,
-                    //   fromAssetId,
-                    //   fromCoins,
-                    //   minReceivedCoins,
-                    //   toAssetId,
-                    //   toCoins,
-                    // });
-                    //
-                    // setPerformedSwapData({
-                    //   fromMoney: new Money(
-                    //     new BigNumber(fromCoins),
-                    //     new Asset(assets[fromAssetId])
-                    //   ),
-                    //   transactionId: result.transactionId,
-                    // });
+                    const swapResult = await background.swapAssets({
+                      feeAssetId,
+                      feeCoins: fee.toCoins(),
+                      fromAssetId,
+                      fromCoins: fromCoins.toFixed(),
+                      minReceivedCoins: minReceivedCoins.toFixed(),
+                      route,
+                      slippageTolerance,
+                    });
+
+                    setPerformedSwapData({
+                      fromMoney: new Money(
+                        fromCoins,
+                        new Asset(assets[fromAssetId])
+                      ),
+                      transactionId: swapResult.transactionId,
+                    });
                   } catch (err) {
                     const errMessage = err?.message;
 

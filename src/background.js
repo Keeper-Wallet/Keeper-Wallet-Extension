@@ -33,6 +33,7 @@ import {
   UiStateController,
   WalletController,
 } from './controllers';
+import { SwapController } from './controllers/SwapController';
 import {
   getExtraFee,
   getMinimumFee,
@@ -381,6 +382,13 @@ class BackgroundService extends EventEmitter {
       }
     );
 
+    this.swapController = new SwapController({
+      assetInfoController: this.assetInfoController,
+      networkController: this.networkController,
+      preferencesController: this.preferencesController,
+      walletController: this.walletController,
+    });
+
     // Single state composed from states of all controllers
     this.store.updateStructure({
       StatisticsController: this.statisticsController.store,
@@ -557,6 +565,7 @@ class BackgroundService extends EventEmitter {
       updateBalances: this.currentAccountController.updateBalances.bind(
         this.currentAccountController
       ),
+      swapAssets: this.swapController.swapAssets.bind(this.swapController),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
       getMinimumFee: getMinimumFee,

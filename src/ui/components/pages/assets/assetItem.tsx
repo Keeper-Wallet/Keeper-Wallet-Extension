@@ -5,7 +5,6 @@ import { Money } from '@waves/data-entities';
 import cn from 'classnames';
 import { AssetLogo } from './assetLogo';
 import { Trans } from 'react-i18next';
-import { SWAP_SUPPORTING_NETWORKS } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { favoriteAsset } from '../../../actions';
 import { Tooltip } from '../../ui/tooltip';
@@ -167,7 +166,7 @@ export function AssetItem({
             )}
           </Tooltip>
 
-          {SWAP_SUPPORTING_NETWORKS.includes(currentNetwork) &&
+          {currentNetwork === 'mainnet' &&
             isSwappableAsset(currentNetwork, assetId) && (
               <Tooltip content={<Trans i18nKey="assetInfo.swapAssetTooltip" />}>
                 {props => (

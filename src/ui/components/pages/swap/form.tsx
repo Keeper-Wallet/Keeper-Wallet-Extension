@@ -42,10 +42,10 @@ interface Props {
   onSwap: (data: {
     feeAssetId: string;
     fromAssetId: string;
-    fromCoins: string;
-    minReceivedCoins: string;
-    toAssetId: string;
-    toCoins: string;
+    fromCoins: BigNumber;
+    minReceivedCoins: BigNumber;
+    route: ExchangePool[];
+    slippageTolerance: number;
   }) => void;
 }
 
@@ -300,14 +300,10 @@ export function SwapForm({
         onSwap({
           feeAssetId,
           fromAssetId,
-          fromCoins: Money.fromTokens(fromAmountTokens, fromAsset)
-            .getCoins()
-            .toFixed(),
-          minReceivedCoins: minReceived.getCoins().toFixed(),
-          toAssetId,
-          toCoins: Money.fromTokens(exchangeInfo.toAmountTokens, toAsset)
-            .getCoins()
-            .toFixed(),
+          fromCoins: Money.fromTokens(fromAmountTokens, fromAsset).getCoins(),
+          minReceivedCoins: minReceived.getCoins(),
+          route: exchangeInfo.route,
+          slippageTolerance: SLIPPAGE_TOLERANCE_PERCENTS.toNumber() * 10,
         });
       }}
     >
