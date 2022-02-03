@@ -182,7 +182,15 @@ export function Swap({ setTab }: Props) {
                       );
 
                       if (match?.[1]) {
-                        const msg = match[1];
+                        let msg = match[1];
+
+                        if (
+                          /something\s*went\s*wrong\s*while\s*working\s*with\s*amountToSend/i.test(
+                            msg
+                          )
+                        ) {
+                          msg = t('swap.amountToSendError');
+                        }
 
                         setSwapErrorMessage(msg);
                         setIsSwapInProgress(false);

@@ -515,6 +515,7 @@
     "wavesAuthConfirmed": "Sign a waves auth request!"
   },
   "swap": {
+    "amountToSendError": "Could not perform swap due to SwopFi dApp state. Please try again or slightly increase slippage tolerance if possible",
     "closeBtnText": "Close",
     "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data",
     "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data",
