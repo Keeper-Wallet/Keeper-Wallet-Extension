@@ -262,7 +262,7 @@ export function SwapForm({
     null
   );
 
-  const [slippageToleranceIndex, setSlippageToleranceIndex] = React.useState(0);
+  const [slippageToleranceIndex, setSlippageToleranceIndex] = React.useState(2);
 
   const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
