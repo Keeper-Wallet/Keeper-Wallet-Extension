@@ -351,7 +351,14 @@ export function SwapForm({
               toAssetId: prevState.fromAssetId,
             }));
 
-            setFromAmount(exchangeInfo.toAmountTokens.toFixed());
+            const newFromAmount =
+              fromAmountValue === ''
+                ? ''
+                : fromAmountTokens.eq(0)
+                ? '0'
+                : exchangeInfo.toAmountTokens.toFixed();
+
+            setFromAmount(newFromAmount);
           }}
         >
           <svg
