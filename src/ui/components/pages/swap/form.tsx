@@ -22,6 +22,7 @@ import {
 } from './channelClient';
 import * as styles from './form.module.css';
 import { updateAssets } from 'ui/actions/assets';
+import { setUiState } from 'ui/actions/uiState';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),
@@ -262,7 +263,9 @@ export function SwapForm({
     null
   );
 
-  const [slippageToleranceIndex, setSlippageToleranceIndex] = React.useState(2);
+  const slippageToleranceIndex = useAppSelector(
+    state => state.uiState.slippageToleranceIndex ?? 2
+  );
 
   const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
@@ -454,7 +457,7 @@ export function SwapForm({
                     type="radio"
                     value={index}
                     onChange={() => {
-                      setSlippageToleranceIndex(index);
+                      dispatch(setUiState({ slippageToleranceIndex: index }));
                     }}
                   />
 
