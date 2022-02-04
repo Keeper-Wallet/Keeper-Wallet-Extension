@@ -94,10 +94,18 @@ export const approve = store => next => action => {
       .catch(async err => {
         const errorMessage = err && err.message ? err.message : String(err);
 
-        // messages from keeper itself have an empty origin
         if (message.origin) {
           const shouldIgnore = await background.shouldIgnoreError(
             'contentScriptApprove',
+            errorMessage
+          );
+
+          if (shouldIgnore) {
+            return;
+          }
+        } else {
+          const shouldIgnore = await background.shouldIgnoreError(
+            'popupApprove',
             errorMessage
           );
 

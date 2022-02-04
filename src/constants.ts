@@ -127,4 +127,5 @@ export const DEFAULT_IGNORE_ERRORS_CONFIG = {
   beforeSendBackground: ['Failed to fetch'],
   beforeSendPopup: ['Failed to fetch'],
   contentScriptApprove: [] as string[],
+  popupApprove: [] as string[],
 };
