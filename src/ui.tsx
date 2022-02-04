@@ -34,7 +34,11 @@ Sentry.init({
   integrations: [new Sentry.Integrations.Breadcrumbs({ dom: false })],
   beforeSend: async (event, hint) => {
     const message =
-      hint.originalException instanceof Error
+      hint.originalException &&
+      typeof hint.originalException === 'object' &&
+      'message' in hint.originalException &&
+      typeof hint.originalException.message === 'string' &&
+      hint.originalException.message
         ? hint.originalException.message
         : String(hint.originalException);
 
