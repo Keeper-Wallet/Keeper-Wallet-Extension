@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/react';
 import BigNumber from '@waves/bignumber';
 import { Money, Asset } from '@waves/data-entities';
-import { SIGN_TYPE, TSignData } from '@waves/signature-adapter';
 import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
 import { swappableAssetIds } from 'assets/constants';
 import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
@@ -177,11 +177,12 @@ export function Swap({ setTab }: Props) {
                     const errMessage = err?.message;
 
                     if (typeof errMessage === 'string') {
-                      const match = errMessage.match(
+                      // errors from nested invokes
+                      let match = errMessage.match(
                         /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
                       );
 
-                      if (match?.[1]) {
+                      if (match) {
                         let msg = match[1];
 
                         if (
@@ -194,12 +195,28 @@ export function Swap({ setTab }: Props) {
 
                         setSwapErrorMessage(msg);
                         setIsSwapInProgress(false);
+                        Sentry.captureException(new Error(msg));
+                        return;
+                      }
+
+                      // errors from contract itself
+                      match = errMessage.match(
+                        /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
+                      );
+
+                      if (match) {
+                        const msg = match[1];
+
+                        setSwapErrorMessage(msg);
+                        setIsSwapInProgress(false);
+                        Sentry.captureException(new Error(msg));
                         return;
                       }
                     }
 
-                    setSwapErrorMessage(err.message || t('swap.failMessage'));
+                    setSwapErrorMessage(errMessage || t('swap.failMessage'));
                     setIsSwapInProgress(false);
+                    Sentry.captureException(new Error(errMessage));
                   }
                 }}
               />
