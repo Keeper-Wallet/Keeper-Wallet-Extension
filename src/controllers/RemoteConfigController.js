@@ -186,6 +186,8 @@ export class RemoteConfigController {
       );
 
       Object.assign(this._ignoreErrorsConfig, ignoreErrorsConfig);
+    } catch (err) {
+      // ignore
     } finally {
       setTimeout(
         () => this._getIgnoreErrorsConfig(),
