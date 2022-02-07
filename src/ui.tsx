@@ -102,6 +102,13 @@ async function startUi() {
     await background.closeNotificationWindow();
   }
 
+  if (window.location.href.split('/').reverse()[0] === 'notification.html') {
+    background.resizeNotificationWindow(
+      357 + window.outerWidth - window.innerWidth,
+      600 + window.outerHeight - window.innerHeight
+    );
+  }
+
   const [state, networks] = await Promise.all([
     background.getState(),
     background.getNetworks(),
