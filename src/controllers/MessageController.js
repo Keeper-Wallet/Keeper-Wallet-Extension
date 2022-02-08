@@ -694,6 +694,7 @@ export class MessageController extends EventEmitter {
 
         const dataPromises = message.data.map(async txParams => {
           const hasFee = !!txParams.data.fee;
+          this._validateTx(txParams);
           const data = this._prepareTx(txParams.data, message.account);
           let readyData = { ...txParams, data };
           const feeData = !hasFee ? await this._getFee(message, readyData) : {};
@@ -733,6 +734,7 @@ export class MessageController extends EventEmitter {
           throw ERRORS.REQUEST_ERROR(result.data);
         }
 
+        this._validateTx(result.data);
         result.data.data = this._prepareTx(result.data.data, message.account);
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
         result.data.data = { ...result.data.data, ...feeData };
@@ -805,6 +807,96 @@ export class MessageController extends EventEmitter {
       fee,
       matcherFee: fee,
     };
+  }
+
+  _validateTx(tx) {
+    function isPositive(numberLike) {
+      const bn = new BigNumber(numberLike);
+
+      return bn.isFinite() && bn.gt(0);
+    }
+
+    function getMoneyLikeValue(moneyLike) {
+      for (let key of ['tokens', 'coins', 'amount']) {
+        if (key in moneyLike) {
+          return moneyLike[key];
+        }
+      }
+
+      return null;
+    }
+
+    function isMoneyLikeValuePositive(moneyLike) {
+      if (typeof moneyLike !== 'object' || moneyLike === null) {
+        return false;
+      }
+
+      const value = getMoneyLikeValue(moneyLike);
+
+      if (value == null) {
+        return false;
+      }
+
+      return isPositive(value);
+    }
+
+    if ('fee' in tx.data && !isMoneyLikeValuePositive(tx.data.fee)) {
+      throw new Error('fee is not valid');
+    }
+
+    switch (tx.type) {
+      case 3:
+        if (!isPositive(tx.data.quantity)) {
+          throw new Error('quantity is not valid');
+        }
+
+        if (tx.data.precision <= 0) {
+          throw new Error('precision is not valid');
+        }
+        break;
+      case 4:
+        if (!isMoneyLikeValuePositive(tx.data.amount)) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 5:
+        if (!isPositive(tx.data.quantity)) {
+          throw new Error('quantity is not valid');
+        }
+        break;
+      case 6:
+        if (
+          !isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
+          !isPositive(tx.data.quantity || tx.data.amount)
+        ) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 8:
+        if (
+          !isMoneyLikeValuePositive(tx.data.amount) &&
+          !isPositive(tx.data.amount)
+        ) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 11:
+        tx.data.transfers.forEach(({ amount }) => {
+          if (!isMoneyLikeValuePositive(amount) && !isPositive(amount)) {
+            throw new Error('amount is not valid');
+          }
+        });
+        break;
+      case 14: {
+        const value = getMoneyLikeValue(tx.data.minSponsoredAssetFee);
+        const bn = value === null ? null : new BigNumber(value);
+
+        if (!bn || !bn.isFinite() || bn.lt(0)) {
+          throw new Error('minSponsoredAssetFee is not valid');
+        }
+        break;
+      }
+    }
   }
 
   _prepareTx(txParams, account) {
