@@ -938,11 +938,11 @@ export class MessageController extends EventEmitter {
     }
 
     if (!this._isMoneyLikeValuePositive(order.data.price)) {
-      throw new Error('amount is not valid');
+      throw new Error('price is not valid');
     }
 
     if (!this._isMoneyLikeValuePositive(order.data.matcherFee)) {
-      throw new Error('amount is not valid');
+      throw new Error('matcherFee is not valid');
     }
   }
 
