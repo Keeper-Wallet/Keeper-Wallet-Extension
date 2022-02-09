@@ -1,4 +1,9 @@
-export const assetIds = {
+export const assetIds: {
+  custom: Record<string, string>;
+  mainnet: Record<string, string>;
+  stagenet: Record<string, string>;
+  testnet: Record<string, string>;
+} = {
   mainnet: {
     WAVES: 'WAVES',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
@@ -20,6 +25,7 @@ export const assetIds = {
     LTC: 'HZk1mbfuJpmxU1Fs4AX5MWLVYtctsNcg6e2C6VKqK8zk',
     NSBT: '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g',
     PUZZLE: 'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS',
+    RACE: 'D4TPjtzpsDEJFS1pUAkvh1tJJJMNWGcSrds9sveBoQka',
     SCONEX: 'EnBAWjayxUrwL7KMTBvRzcS5RqGYwFfLPD4tFVu4Mpj3',
     SIGN: '9sQutD5HnRvjM1uui5cVC4w9xkMPAfYEV8ymug3Mon2Y',
     SWOP: 'Ehie5xYpeN8op1Cctc6aGUrqx8jq3jtf1DSjXDbfm7aT',
@@ -38,7 +44,6 @@ export const assetIds = {
     WX: 'Atqv59EYzjFGuitKVnMRk6H8FukjoV3ktPorbEys25on',
     XMR: '5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3',
     ZEC: 'BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa',
-    RACE: 'D4TPjtzpsDEJFS1pUAkvh1tJJJMNWGcSrds9sveBoQka',
   },
   testnet: {
     WAVES: 'WAVES',
@@ -49,12 +54,12 @@ export const assetIds = {
     EGG: 'Gp75gygbc1woJMheDomSY1ULyaRVGVEWS64wNWfvncyg',
     LTC: 'Ea5Y9FAfV3MRL2yQHbQXZvjjWtCJ8gvjYcBCfMTaT7TG',
     NSBT: '36mg8NZTaFRDygiVwb8uBnLR51hetJruUCZcxhaVcHj9',
+    RACE: 'CzfHm2WKdQoKQeGfosLsmKd6kAcuxHMsjjm9M7c1FUtg',
     SWOP: '2HAJrwa8q4SxBx9cHYaBTQdBjdk5wwqdof7ccpAx2uhZ',
     USD: '8UrfDVd5GreeUwm7uPk7eYz1eMv376kzR52C6sANPkwS',
     USDT: 'Had29UYhBkBGa7r1gu5ktr3okMz4e8vWPXzxTXNJUF6H',
     XMR: 'Eox8Cb2cfkFrsYMJSN8TmyfqzbqwjQp4sdJDE6PA9hph',
     ZEC: 'DeiUipcLutVxVVuHxpU8QUZos6KZpnrxakku5YpZSBaT',
-    RACE: 'CzfHm2WKdQoKQeGfosLsmKd6kAcuxHMsjjm9M7c1FUtg',
   },
   stagenet: {
     WAVES: 'WAVES',
@@ -62,6 +67,41 @@ export const assetIds = {
   custom: {
     WAVES: 'WAVES',
   },
+};
+
+export const swappableAssetIds = {
+  mainnet: [
+    'WAVES',
+    'BAG',
+    'BTC',
+    'CRV',
+    'EAST',
+    'EGG',
+    'ENNO',
+    'ERGO',
+    'ETH',
+    'EURN',
+    'FL',
+    'LTC',
+    'NSBT',
+    'PUZZLE',
+    'RACE',
+    'SCONEX',
+    'SIGN',
+    'SWOP',
+    'TN',
+    'USD',
+    'USDAP',
+    'USDC',
+    'USDCLP',
+    'USDLP',
+    'USDT',
+    'VIRES',
+    'WCT',
+    'WEST',
+    'WX',
+    'XMR',
+  ].map(assetName => assetIds.mainnet[assetName]),
 };
 
 const logosByName = {

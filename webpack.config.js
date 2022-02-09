@@ -15,6 +15,7 @@ const devConf = conf => ({
         enforce: 'pre',
         test: /\.js$/,
         exclude: [
+          'long',
           '@waves/data-entities',
           '@waves/money-like-to-node',
           '@waves/node-api-js',

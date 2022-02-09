@@ -16,7 +16,7 @@ import { Tooltip } from '../../../ui/tooltip';
 import cn from 'classnames';
 
 const Row = ({ data, index, style }) => {
-  const { assetEntries, assets, onInfoClick, onSendClick } = data;
+  const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
   const [assetId, { balance }] = assetEntries[index];
   return (
     <div style={style}>
@@ -28,6 +28,7 @@ const Row = ({ data, index, style }) => {
         assetId={assetId}
         onInfoClick={onInfoClick}
         onSendClick={onSendClick}
+        onSwapClick={onSwapClick}
       />
     </div>
   );
@@ -47,9 +48,10 @@ const PLACEHOLDERS = [...Array(4).keys()].map<[number, BalanceAssets[string]]>(
 interface Props {
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
+  onSwapClick: (assetId: string) => void;
 }
 
-export function TabAssets({ onInfoClick, onSendClick }: Props) {
+export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const assets = useAppSelector(state => state.assets);
   const showSuspiciousAssets = useAppSelector(
     state => state.uiState?.showSuspiciousAssets
@@ -169,7 +171,13 @@ export function TabAssets({ onInfoClick, onSendClick }: Props) {
                   width={width}
                   itemCount={assetEntries.length}
                   itemSize={CARD_FULL_HEIGHT}
-                  itemData={{ assetEntries, assets, onInfoClick, onSendClick }}
+                  itemData={{
+                    assetEntries,
+                    assets,
+                    onInfoClick,
+                    onSendClick,
+                    onSwapClick,
+                  }}
                   itemKey={(index, itemData) =>
                     `${itemData.assetEntries[index][0]}:${
                       assets[itemData.assetEntries[index][0]]?.isFavorite

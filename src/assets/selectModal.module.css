@@ -1,0 +1,82 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 14px 0;
+  width: 329px;
+  height: 572px;
+  border-radius: 4px;
+  background: var(--color-white);
+}
+
+.header {
+  padding: 0 14px;
+}
+
+.title {
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+.listViewport {
+  margin-top: 14px;
+  flex: 1 1 0;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.listItem_selected,
+.listItem:hover {
+  background: var(--color-basic100);
+}
+
+.logo {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logoPlaceholder {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 24px;
+  text-align: center;
+}
+
+.listItemName {
+  flex: 1 1 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.listItemBalance {
+  flex: 0 0 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

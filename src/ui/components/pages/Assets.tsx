@@ -4,7 +4,12 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
 import { Trans } from 'react-i18next';
-import { getBalances, setActiveAccount, setUiState } from '../../actions';
+import {
+  getBalances,
+  setActiveAccount,
+  setSwapScreenInitialState,
+  setUiState,
+} from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import {
@@ -167,6 +172,10 @@ export function Assets({ setTab }: Props) {
             onSendClick={assetId => {
               setCurrentAsset(assets[assetId]);
               setTab(PAGES.SEND);
+            }}
+            onSwapClick={assetId => {
+              dispatch(setSwapScreenInitialState({ fromAssetId: assetId }));
+              setTab(PAGES.SWAP);
             }}
           />
           <TabNfts

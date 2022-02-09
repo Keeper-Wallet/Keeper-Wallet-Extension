@@ -152,6 +152,9 @@ module.exports = ({
     },
 
     resolve: {
+      alias: {
+        long: 'long/index.js', // needed because webpack@^4 does not support package.json#exports yet
+      },
       plugins: [
         new TsConfigPathsPlugin({
           /*configFile: "./path/to/tsconfig.json" */

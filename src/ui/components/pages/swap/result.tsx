@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import * as React from 'react';
@@ -99,6 +100,11 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
           setSwapStatus(SwapStatus.Succeeded);
         } else {
           setSwapStatus(SwapStatus.Failed);
+
+          Sentry.withScope(scope => {
+            scope.setExtra('transactionId', transactionId);
+            Sentry.captureException(new Error('Swap transaction failed'));
+          });
         }
       } else if (
         txStatus.status === 'not_found' &&
@@ -106,6 +112,11 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         prevTxStatus.status === 'unconfirmed'
       ) {
         setSwapStatus(SwapStatus.Failed);
+
+        Sentry.withScope(scope => {
+          scope.setExtra('transactionId', transactionId);
+          Sentry.captureException(new Error('Swap transaction failed'));
+        });
       } else {
         timeout = window.setTimeout(() => updateStatus(txStatus), 5000);
       }

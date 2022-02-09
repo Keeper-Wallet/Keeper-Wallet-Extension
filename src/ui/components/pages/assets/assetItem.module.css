@@ -38,6 +38,7 @@
   min-height: 18px;
 }
 
+.swapBtn,
 .favBtn,
 .sendBtn,
 .infoBtn {
@@ -45,6 +46,7 @@
   cursor: pointer;
 }
 
+.swapIcon,
 .favIcon,
 .sendIcon,
 .infoIcon {
@@ -57,11 +59,13 @@
   stroke: var(--color-basic200);
 }
 
+.swapIcon,
 .sendIcon,
 .infoIcon {
   fill: var(--color-basic200);
 }
 
+.swapIcon:hover,
 .sendIcon:hover,
 .infoIcon:hover {
   fill: var(--color-basic500);

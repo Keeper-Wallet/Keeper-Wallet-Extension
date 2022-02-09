@@ -1,4 +1,5 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
@@ -312,6 +313,15 @@ class Background {
     }
   }
 
+  async updateAssets(assetIds: string[]): Promise<AssetDetail> {
+    try {
+      await this.initPromise;
+      return await this.background.updateAssets(assetIds);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async toggleAssetFavorite(assetId: string): Promise<void> {
     try {
       await this.initPromise;
@@ -359,6 +369,23 @@ class Background {
     }
   }
 
+  async swapAssets(params: {
+    feeCoins: string;
+    feeAssetId: string;
+    fromAssetId: string;
+    fromCoins: string;
+    minReceivedCoins: string;
+    route: ExchangePool[];
+    slippageTolerance: number;
+  }): Promise<{ transactionId: string }> {
+    try {
+      await this.initPromise;
+      return await this.background.swapAssets(params);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async signAndPublishTransaction(data: WavesKeeper.TSignTransactionData) {
     try {
       await this.initPromise;
@@ -368,53 +395,7 @@ class Background {
     }
   }
 
-  async updateExchangers(network: string) {
-    try {
-      await this.initPromise;
-      return await this.background.updateExchangers(network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
-  async performSwap({
-    exchangerId,
-    fee,
-    feeAssetId,
-    fromAssetId,
-    fromCoins,
-    minReceivedCoins,
-    toAssetId,
-    toCoins,
-  }: {
-    exchangerId: string;
-    fee: string;
-    feeAssetId: string;
-    fromAssetId: string;
-    fromCoins: string;
-    minReceivedCoins: string;
-    toAssetId: string;
-    toCoins: string;
-  }): Promise<{ transactionId: string }> {
-    try {
-      await this.initPromise;
-
-      return await this.background.performSwap({
-        exchangerId,
-        fee,
-        feeAssetId,
-        fromAssetId,
-        fromCoins,
-        minReceivedCoins,
-        toAssetId,
-        toCoins,
-      });
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
-  async getMinimumFee(txType: number) {
+  async getMinimumFee(txType: number): Promise<number> {
     try {
       await this.initPromise;
       return await this.background.getMinimumFee(txType);

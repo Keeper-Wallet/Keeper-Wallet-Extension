@@ -115,10 +115,7 @@ export const DEFAULT_FEE_CONFIG = {
   },
 };
 
-export const SWAP_DAPPS = {
-  mainnet: '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u',
-  testnet: '3MvdzbvEZLHEE3EXHXxaRQjgpNqq28733ao',
-};
+export const SWAP_DAPP_ADDRESS = '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw';
 
 export const IGNORE_ERRORS_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';
@@ -127,7 +124,8 @@ export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 60000;
 
 export const DEFAULT_IGNORE_ERRORS_CONFIG = {
   ignoreAll: false,
-  beforeSendBackground: [] as string[],
-  beforeSendPopup: [] as string[],
+  beforeSendBackground: ['Failed to fetch'],
+  beforeSendPopup: ['Failed to fetch'],
   contentScriptApprove: [] as string[],
+  popupApprove: [] as string[],
 };

@@ -57,31 +57,32 @@
   flex-grow: 1;
 }
 
-.buttonWallet {
-  cursor: pointer;
-  text-decoration: none;
-  background-color: #f8f9fb;
-  border: 1px solid #edf0f4;
-  border-radius: 2px;
-  display: flex;
+.button {
+  display: inline-flex;
+  gap: 6px;
   align-items: center;
-  justify-content: center;
-  font-weight: normal;
+  border: 1px solid;
   padding: 6px 8px;
-  padding-left: 28px;
+  border-radius: 2px;
+  background: none;
+  color: var(--color-submit400);
   font-size: 12px;
-  color: #000;
+  cursor: pointer;
 }
 
-.buttonWallet:hover {
-  background-color: #edf0f4;
+.button:hover {
+  background-color: var(--color-basic100);
 }
 
-.buttonWallet_iconOnly {
+.iconButton {
   width: 26px;
   height: 26px;
+  border-radius: 2px;
   background-position: center;
-  background-color: transparent;
-  border: 0 none;
-  padding: 0;
+  color: #000;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background-color: var(--color-basic100);
 }

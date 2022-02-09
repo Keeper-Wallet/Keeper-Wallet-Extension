@@ -48,15 +48,7 @@
 }
 
 .accountName {
-  flex-grow: 1;
   font-size: 14px;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.currentNetwork {
-  overflow: hidden;
-  color: #9ba6b2;
-  font-size: 12px;
   text-overflow: ellipsis;
 }

@@ -1,15 +1,7 @@
-.root {
-  display: flex;
-  flex-direction: column;
-}
-
-.pairSelect {
-  margin-bottom: 24px;
-}
-
 .swapDirectionBtnWrapper {
-  margin: -11px 0;
-  padding: 0 14px;
+  position: relative;
+  z-index: 1;
+  margin: -11px 14px;
 }
 
 .swapDirectionBtn {
@@ -39,6 +31,22 @@
   color: #9ba6b2;
 }
 
+.toAmountInput {
+  position: relative;
+}
+
+.toAmountInputGainBadge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 1px 8px;
+  border-radius: 4px 0;
+  background: #0155ff;
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 11px;
+}
+
 .priceRow {
   margin: 1em 0;
   display: flex;
@@ -63,51 +71,68 @@
   font-size: 12px;
 }
 
-.summaryTable {
+.summary {
   margin-top: 1em;
-  table-layout: fixed;
-  border-collapse: collapse;
-  width: 100%;
   font-size: 12px;
 }
 
-.summaryTable th,
-.summaryTable td {
-  padding: 0.5em;
+.summaryRow {
+  display: flex;
+  gap: 1em;
   white-space: nowrap;
 }
 
-.summaryTable th:first-child,
-.summaryTable td:first-child {
+.summaryRow + .summaryRow {
+  margin-top: 1em;
+}
+
+.summaryRow_center {
+  align-items: center;
+}
+
+.summaryLabel {
+  flex: 0 0 auto;
   padding-left: 0;
-  width: min-content;
-}
-
-.summaryTable th:last-child,
-.summaryTable td:last-child {
-  padding-right: 0;
-}
-
-.summaryTable th {
   color: #9ba6b2;
   font-weight: 300;
-  text-align: left;
 }
 
-.summaryTable td {
+.summaryValue {
+  flex: 1 1 0;
+  min-width: 0;
   text-align: right;
 }
 
-.summaryTableValue {
+.summaryValueText {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.summaryTableTooltip {
+.summaryLabelTooltip {
   display: inline-block;
   border-bottom: 1px dotted;
 }
 
-.summaryTableTooltipContent {
+.summaryTooltipContent {
   max-width: calc(100vw - 14px * 2);
+}
+
+.route {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.routeItemArrow,
+.routeItemName {
+  flex: 0 0 auto;
+}
+
+.routeItemArrow {
+  width: 7px;
+  height: 12px;
+  fill: currentColor;
 }
