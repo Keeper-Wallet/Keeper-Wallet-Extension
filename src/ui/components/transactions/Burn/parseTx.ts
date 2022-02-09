@@ -24,9 +24,9 @@ export function getAmount(tx = null) {
   }
 
   if (typeof tx.amount === 'object') {
-    const { coins, tokens, assetId } = tx.amount;
+    const { amount, coins, tokens, assetId } = tx.amount;
 
-    return { coins, tokens, assetId: tx.assetId || assetId };
+    return { coins: coins ?? amount, tokens, assetId: tx.assetId || assetId };
   }
 
   return { coins: tx.amount, assetId: tx.assetId || 'WAVES' };
