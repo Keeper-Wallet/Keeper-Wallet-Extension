@@ -19,6 +19,8 @@ import { LANGS } from './ui/i18n';
 import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
 
+const isNotificationWindow = window.location.pathname === '/notification.html';
+
 Sentry.init({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
@@ -77,9 +79,7 @@ async function startUi() {
     sendUpdate: async state => updateState(state),
     // This method is used in Microsoft Edge browser
     closeEdgeNotificationWindow: async () => {
-      if (
-        window.location.href.split('/').reverse()[0] === 'notification.html'
-      ) {
+      if (isNotificationWindow) {
         window.close();
       }
     },
@@ -102,7 +102,7 @@ async function startUi() {
     await background.closeNotificationWindow();
   }
 
-  if (window.location.href.split('/').reverse()[0] === 'notification.html') {
+  if (isNotificationWindow) {
     background.resizeNotificationWindow(
       357 + window.outerWidth - window.innerWidth,
       600 + window.outerHeight - window.innerHeight
