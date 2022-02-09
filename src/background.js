@@ -187,6 +187,9 @@ async function setupBackgroundService() {
       windowManager.closeWindow();
     }
   });
+  backgroundService.on('Resize notification', (width, height) => {
+    windowManager.resizeWindow(width, height);
+  });
 
   backgroundService.idleController = new IdleController({ backgroundService });
 
@@ -528,6 +531,8 @@ class BackgroundService extends EventEmitter {
       ),
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
+      resizeNotificationWindow: async (width, height) =>
+        this.emit('Resize notification', width, height),
 
       // origin settings
       allowOrigin: async origin => {

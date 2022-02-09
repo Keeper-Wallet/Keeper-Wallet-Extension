@@ -35,6 +35,13 @@ export class WindowManager {
     this._inShowMode = false;
   }
 
+  async resizeWindow(width, height) {
+    const notificationWindow = await this._getNotificationWindow();
+    if (notificationWindow) {
+      await extension.windows.update(notificationWindow.id, { width, height });
+    }
+  }
+
   async closeWindow() {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow)
