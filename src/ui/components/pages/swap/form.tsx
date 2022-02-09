@@ -138,6 +138,8 @@ export function SwapForm({
   }
 
   const [fromAmountValue, setFromAmountValue] = React.useState('');
+  const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] =
+    React.useState(false);
 
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
@@ -359,6 +361,7 @@ export function SwapForm({
                 : exchangeInfo.toAmountTokens.toFixed();
 
             setFromAmount(newFromAmount);
+            setIsPriceDirectionSwapped(prevState => !prevState);
           }}
         >
           <svg
@@ -426,14 +429,50 @@ export function SwapForm({
             <Loader />
           ) : (
             <div>
-              1 {fromAsset.displayName} ~{' '}
-              {exchangeInfo.toAmountTokens
-                .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
-                .toFixed(
-                  toAsset.precision,
-                  BigNumber.ROUND_MODE.ROUND_FLOOR
-                )}{' '}
-              {toAsset.displayName}
+              <button
+                className={styles.swapPriceDirectionBtn}
+                type="button"
+                onClick={() => {
+                  setIsPriceDirectionSwapped(prevState => !prevState);
+                }}
+              >
+                <svg
+                  className={styles.swapPriceDirectionBtnIcon}
+                  width="14"
+                  height="14"
+                  fill="currentColor"
+                  viewBox="0 0 14 14"
+                >
+                  <path d="m9.293 2.124 1.267 1.267H1.99a.6.6 0 0 0 0 1.2h8.57L9.293 5.858a.6.6 0 1 0 .849.848l2.29-2.29a.6.6 0 0 0 0-.85l-2.29-2.29a.6.6 0 0 0-.849.848Zm-4.588 9.733L3.44 10.591h8.57a.6.6 0 1 0 0-1.2h-8.57l1.266-1.267a.6.6 0 0 0-.848-.848l-2.291 2.29a.6.6 0 0 0 0 .85l2.29 2.29a.6.6 0 0 0 .85-.848Z" />
+                </svg>
+              </button>
+
+              {isPriceDirectionSwapped ? (
+                <span>
+                  1 {toAsset.displayName} ~{' '}
+                  {(fromAmountTokens.eq(0)
+                    ? new BigNumber(1)
+                    : fromAmountTokens
+                  )
+                    .div(exchangeInfo.toAmountTokens)
+                    .toFixed(
+                      fromAsset.precision,
+                      BigNumber.ROUND_MODE.ROUND_FLOOR
+                    )}{' '}
+                  {fromAsset.displayName}
+                </span>
+              ) : (
+                <span>
+                  1 {fromAsset.displayName} ~{' '}
+                  {exchangeInfo.toAmountTokens
+                    .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
+                    .toFixed(
+                      toAsset.precision,
+                      BigNumber.ROUND_MODE.ROUND_FLOOR
+                    )}{' '}
+                  {toAsset.displayName}
+                </span>
+              )}
             </div>
           )}
         </div>
