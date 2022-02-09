@@ -896,6 +896,15 @@ export class MessageController extends EventEmitter {
         }
         break;
       }
+      case 16:
+        if (tx.data.payment) {
+          tx.data.payment.forEach(payment => {
+            if (!isMoneyLikeValuePositive(payment)) {
+              throw new Error('payment is not valid');
+            }
+          });
+        }
+        break;
     }
   }
 
