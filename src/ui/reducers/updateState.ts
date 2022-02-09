@@ -39,16 +39,21 @@ export type TxHistoryFilters = {
   onlyIncoming?: boolean;
   onlyOutgoing?: boolean;
 };
-export const uiState = createSimpleReducer<{
-  isFeatureUpdateShown?: boolean;
-  currentAsset?: AssetDetail;
-  assetsTab?: number;
+
+export interface UiState {
+  account?: unknown;
   assetFilters?: AssetFilters;
-  nftFilters?: NftFilters;
-  txHistoryFilters?: TxHistoryFilters;
-  showSuspiciousAssets?: boolean;
+  assetsTab?: number;
   autoClickProtection?: boolean;
-}>({}, ACTION.UPDATE_UI_STATE);
+  currentAsset?: AssetDetail;
+  isFeatureUpdateShown?: boolean;
+  nftFilters?: NftFilters;
+  showSuspiciousAssets?: boolean;
+  slippageToleranceIndex?: number;
+  txHistoryFilters?: TxHistoryFilters;
+}
+
+export const uiState = createSimpleReducer<UiState>({}, ACTION.UPDATE_UI_STATE);
 export const accounts = createSimpleReducer<Array<Account>>(
   [],
   ACTION.UPDATE_ACCOUNTS

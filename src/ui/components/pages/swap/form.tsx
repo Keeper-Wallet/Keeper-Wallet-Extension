@@ -22,8 +22,15 @@ import {
 } from './channelClient';
 import * as styles from './form.module.css';
 import { updateAssets } from 'ui/actions/assets';
+import { setUiState } from 'ui/actions/uiState';
 
-const SLIPPAGE_TOLERANCE_PERCENTS = new BigNumber(1);
+const SLIPPAGE_TOLERANCE_OPTIONS = [
+  new BigNumber(0.1),
+  new BigNumber(0.5),
+  new BigNumber(1),
+  new BigNumber(3),
+];
+
 const KEEPER_FEE = new BigNumber(0.1);
 
 function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
@@ -256,16 +263,18 @@ export function SwapForm({
     null
   );
 
+  const slippageToleranceIndex = useAppSelector(
+    state => state.uiState.slippageToleranceIndex ?? 2
+  );
+
+  const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
+
   const minReceived = exchangeInfo
     ? Money.fromTokens(
         fromAmountTokens.eq(0)
           ? new BigNumber(0)
           : exchangeInfo.toAmountTokens
-              .mul(
-                new BigNumber(100)
-                  .sub(SLIPPAGE_TOLERANCE_PERCENTS)
-                  .sub(KEEPER_FEE)
-              )
+              .mul(new BigNumber(100).sub(slippageTolerance).sub(KEEPER_FEE))
               .div(100)
               .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR),
         toAsset
@@ -305,7 +314,7 @@ export function SwapForm({
           fromCoins: Money.fromTokens(fromAmountTokens, fromAsset).getCoins(),
           minReceivedCoins: minReceived.getCoins(),
           route: exchangeInfo.route,
-          slippageTolerance: SLIPPAGE_TOLERANCE_PERCENTS.toNumber() * 10,
+          slippageTolerance: slippageTolerance.toNumber() * 10,
         });
       }}
     >
@@ -419,62 +428,138 @@ export function SwapForm({
         <div className={styles.error}>{exchangeChannelError}</div>
       )}
 
-      <div className={styles.priceRow}>
-        <div className={styles.priceRowLabel}>
-          <Trans i18nKey="swap.priceLabel" />
-        </div>
-
-        <div className={styles.priceRowValue}>
-          {exchangeInfo == null ? (
-            <Loader />
-          ) : (
-            <div>
-              <button
-                className={styles.swapPriceDirectionBtn}
-                type="button"
-                onClick={() => {
-                  setIsPriceDirectionSwapped(prevState => !prevState);
-                }}
-              >
-                <svg
-                  className={styles.swapPriceDirectionBtnIcon}
-                  width="14"
-                  height="14"
-                  fill="currentColor"
-                  viewBox="0 0 14 14"
-                >
-                  <path d="m9.293 2.124 1.267 1.267H1.99a.6.6 0 0 0 0 1.2h8.57L9.293 5.858a.6.6 0 1 0 .849.848l2.29-2.29a.6.6 0 0 0 0-.85l-2.29-2.29a.6.6 0 0 0-.849.848Zm-4.588 9.733L3.44 10.591h8.57a.6.6 0 1 0 0-1.2h-8.57l1.266-1.267a.6.6 0 0 0-.848-.848l-2.291 2.29a.6.6 0 0 0 0 .85l2.29 2.29a.6.6 0 0 0 .85-.848Z" />
-                </svg>
-              </button>
-
-              {isPriceDirectionSwapped ? (
-                <span>
-                  1 {toAsset.displayName} ~{' '}
-                  {(fromAmountTokens.eq(0)
-                    ? new BigNumber(1)
-                    : fromAmountTokens
-                  )
-                    .div(exchangeInfo.toAmountTokens)
-                    .toFixed(
-                      fromAsset.precision,
-                      BigNumber.ROUND_MODE.ROUND_FLOOR
-                    )}{' '}
-                  {fromAsset.displayName}
-                </span>
-              ) : (
-                <span>
-                  1 {fromAsset.displayName} ~{' '}
-                  {exchangeInfo.toAmountTokens
-                    .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
-                    .toFixed(
-                      toAsset.precision,
-                      BigNumber.ROUND_MODE.ROUND_FLOOR
-                    )}{' '}
-                  {toAsset.displayName}
+      <div className={styles.summary}>
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.slippageToleranceTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.slippageTolerance" />
                 </span>
               )}
-            </div>
-          )}
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {SLIPPAGE_TOLERANCE_OPTIONS.map((slippageTolerance, index) => {
+              const id = `slippageTolerance-${index}`;
+
+              return (
+                <React.Fragment key={index}>
+                  <input
+                    checked={index === slippageToleranceIndex}
+                    className={styles.slippageToleranceInput}
+                    id={id}
+                    name="slippageTolerance"
+                    type="radio"
+                    value={index}
+                    onChange={() => {
+                      dispatch(setUiState({ slippageToleranceIndex: index }));
+                    }}
+                  />
+
+                  <label className={styles.slippageToleranceLabel} htmlFor={id}>
+                    <span className={styles.slippageToleranceLabelInner}>
+                      {slippageTolerance.toFixed()}%
+                    </span>
+                  </label>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Tooltip
+              className={styles.summaryTooltipContent}
+              content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
+            >
+              {props => (
+                <span className={styles.summaryLabelTooltip} {...props}>
+                  <Trans i18nKey="swap.minimumReceived" />
+                </span>
+              )}
+            </Tooltip>
+          </div>
+
+          <div className={styles.summaryValue}>
+            {exchangeInfo == null ? (
+              <Loader />
+            ) : (
+              <span className={styles.summaryValueText}>
+                {minReceived
+                  .getTokens()
+                  .toFormat(
+                    toAsset.precision,
+                    BigNumber.ROUND_MODE.ROUND_FLOOR
+                  )}{' '}
+                {toAsset.displayName}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryLabel}>
+            <Trans i18nKey="swap.priceLabel" />
+          </div>
+
+          <div className={styles.summaryValue}>
+            {exchangeInfo == null ? (
+              <Loader />
+            ) : (
+              <div>
+                <button
+                  className={styles.swapPriceDirectionBtn}
+                  type="button"
+                  onClick={() => {
+                    setIsPriceDirectionSwapped(prevState => !prevState);
+                  }}
+                >
+                  <svg
+                    className={styles.swapPriceDirectionBtnIcon}
+                    width="14"
+                    height="14"
+                    fill="currentColor"
+                    viewBox="0 0 14 14"
+                  >
+                    <path d="m9.293 2.124 1.267 1.267H1.99a.6.6 0 0 0 0 1.2h8.57L9.293 5.858a.6.6 0 1 0 .849.848l2.29-2.29a.6.6 0 0 0 0-.85l-2.29-2.29a.6.6 0 0 0-.849.848Zm-4.588 9.733L3.44 10.591h8.57a.6.6 0 1 0 0-1.2h-8.57l1.266-1.267a.6.6 0 0 0-.848-.848l-2.291 2.29a.6.6 0 0 0 0 .85l2.29 2.29a.6.6 0 0 0 .85-.848Z" />
+                  </svg>
+                </button>
+
+                {isPriceDirectionSwapped ? (
+                  <span>
+                    1 {toAsset.displayName} ~{' '}
+                    {(fromAmountTokens.eq(0)
+                      ? new BigNumber(1)
+                      : fromAmountTokens
+                    )
+                      .div(exchangeInfo.toAmountTokens)
+                      .toFixed(
+                        fromAsset.precision,
+                        BigNumber.ROUND_MODE.ROUND_FLOOR
+                      )}{' '}
+                    {fromAsset.displayName}
+                  </span>
+                ) : (
+                  <span>
+                    1 {fromAsset.displayName} ~{' '}
+                    {exchangeInfo.toAmountTokens
+                      .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
+                      .toFixed(
+                        toAsset.precision,
+                        BigNumber.ROUND_MODE.ROUND_FLOOR
+                      )}{' '}
+                    {toAsset.displayName}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -533,37 +618,6 @@ export function SwapForm({
                   </React.Fragment>
                 ))}
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.summaryRow}>
-          <div className={styles.summaryLabel}>
-            <Tooltip
-              className={styles.summaryTooltipContent}
-              content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
-            >
-              {props => (
-                <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.minimumReceived" />
-                </span>
-              )}
-            </Tooltip>
-          </div>
-
-          <div className={styles.summaryValue}>
-            {exchangeInfo == null ? (
-              <Loader />
-            ) : (
-              <span className={styles.summaryValueText}>
-                {minReceived
-                  .getTokens()
-                  .toFormat(
-                    toAsset.precision,
-                    BigNumber.ROUND_MODE.ROUND_FLOOR
-                  )}{' '}
-                {toAsset.displayName}
-              </span>
             )}
           </div>
         </div>
