@@ -694,6 +694,7 @@ export class MessageController extends EventEmitter {
 
         const dataPromises = message.data.map(async txParams => {
           const hasFee = !!txParams.data.fee;
+          this._validateTx(txParams);
           const data = this._prepareTx(txParams.data, message.account);
           let readyData = { ...txParams, data };
           const feeData = !hasFee ? await this._getFee(message, readyData) : {};
@@ -712,6 +713,7 @@ export class MessageController extends EventEmitter {
         result.bytes = bytes;
         break;
       case 'order':
+        this._validateOrder(result.data);
         result.data.data = await this._prepareOrder(
           result.data.data,
           message.account
@@ -733,6 +735,7 @@ export class MessageController extends EventEmitter {
           throw ERRORS.REQUEST_ERROR(result.data);
         }
 
+        this._validateTx(result.data);
         result.data.data = this._prepareTx(result.data.data, message.account);
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
         result.data.data = { ...result.data.data, ...feeData };
@@ -807,6 +810,108 @@ export class MessageController extends EventEmitter {
     };
   }
 
+  _getMoneyLikeValue(moneyLike) {
+    for (let key of ['tokens', 'coins', 'amount']) {
+      if (key in moneyLike) {
+        return moneyLike[key];
+      }
+    }
+
+    return null;
+  }
+
+  _isNumberLikePositive(numberLike) {
+    const bn = new BigNumber(numberLike);
+
+    return bn.isFinite() && bn.gt(0);
+  }
+
+  _isMoneyLikeValuePositive(moneyLike) {
+    if (typeof moneyLike !== 'object' || moneyLike === null) {
+      return false;
+    }
+
+    const value = this._getMoneyLikeValue(moneyLike);
+
+    if (value == null) {
+      return false;
+    }
+
+    return this._isNumberLikePositive(value);
+  }
+
+  _validateTx(tx) {
+    if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
+      throw new Error('fee is not valid');
+    }
+
+    switch (tx.type) {
+      case 3:
+        if (!this._isNumberLikePositive(tx.data.quantity)) {
+          throw new Error('quantity is not valid');
+        }
+
+        if (tx.data.precision <= 0) {
+          throw new Error('precision is not valid');
+        }
+        break;
+      case 4:
+        if (!this._isMoneyLikeValuePositive(tx.data.amount)) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 5:
+        if (!this._isNumberLikePositive(tx.data.quantity)) {
+          throw new Error('quantity is not valid');
+        }
+        break;
+      case 6:
+        if (
+          !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
+          !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
+        ) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 8:
+        if (
+          !this._isMoneyLikeValuePositive(tx.data.amount) &&
+          !this._isNumberLikePositive(tx.data.amount)
+        ) {
+          throw new Error('amount is not valid');
+        }
+        break;
+      case 11:
+        tx.data.transfers.forEach(({ amount }) => {
+          if (
+            !this._isMoneyLikeValuePositive(amount) &&
+            !this._isNumberLikePositive(amount)
+          ) {
+            throw new Error('amount is not valid');
+          }
+        });
+        break;
+      case 14: {
+        const value = this._getMoneyLikeValue(tx.data.minSponsoredAssetFee);
+        const bn = value === null ? null : new BigNumber(value);
+
+        if (!bn || !bn.isFinite() || bn.lt(0)) {
+          throw new Error('minSponsoredAssetFee is not valid');
+        }
+        break;
+      }
+      case 16:
+        if (tx.data.payment) {
+          tx.data.payment.forEach(payment => {
+            if (!this._isMoneyLikeValuePositive(payment)) {
+              throw new Error('payment is not valid');
+            }
+          });
+        }
+        break;
+    }
+  }
+
   _prepareTx(txParams, account) {
     const defaultFee = Money.fromCoins(
       0,
@@ -821,6 +926,24 @@ export class MessageController extends EventEmitter {
       matcherFee: defaultFee,
     };
     return { ...txDefaults, ...txParams };
+  }
+
+  _validateOrder(order) {
+    if (order.type !== 1002) {
+      throw new Error('Unexpected type');
+    }
+
+    if (!this._isMoneyLikeValuePositive(order.data.amount)) {
+      throw new Error('amount is not valid');
+    }
+
+    if (!this._isMoneyLikeValuePositive(order.data.price)) {
+      throw new Error('price is not valid');
+    }
+
+    if (!this._isMoneyLikeValuePositive(order.data.matcherFee)) {
+      throw new Error('matcherFee is not valid');
+    }
   }
 
   async _prepareOrder(orderParams, account) {
