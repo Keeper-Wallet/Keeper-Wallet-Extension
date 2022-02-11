@@ -178,6 +178,9 @@ export class ExchangeChannelClient {
 
   close() {
     this.closedByUser = true;
-    this.ws.close();
+
+    if (this.ws) {
+      this.ws.close();
+    }
   }
 }
