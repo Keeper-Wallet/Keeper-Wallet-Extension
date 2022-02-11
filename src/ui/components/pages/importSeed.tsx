@@ -1,4 +1,3 @@
-import * as styles from './styles/importSeed.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans, WithTranslation, withTranslation } from 'react-i18next';
@@ -6,6 +5,7 @@ import { seedUtils } from '@waves/waves-transactions';
 import { clearSeedErrors, newAccountSelect } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { PAGES } from '../../pageConfig';
+import * as styles from './importSeed.module.css';
 
 const { Seed } = seedUtils;
 
@@ -63,8 +63,7 @@ class ImportSeedComponent extends React.Component {
 
         <form onSubmit={this.onSubmit}>
           <div className={'tag1 basic500 input-title'}>
-            {/*{t('importSeed.newSeed')}*/}
-            <Trans i18nKey="importSeed.newSeed">Wallet Seed</Trans>
+            <Trans i18nKey="importSeed.newSeed" />
           </div>
 
           <Input
@@ -77,26 +76,24 @@ class ImportSeedComponent extends React.Component {
             onBlur={this.inputBlurHandler}
             onFocus={this.inputFocusHandler}
             multiLine={true}
+            rows={3}
             value={this.state.value}
             className="margin5"
             placeholder={t('importSeed.inputSeed')}
           />
 
           <Error show={!!this.state.showExistError} className={styles.error}>
-            {/*{t('importSeed.existError')}*/}
-            <Trans i18nKey="importSeed.existError">Account already exist</Trans>
+            <Trans i18nKey="importSeed.existError" />
           </Error>
 
           <div className={'tag1 basic500 input-title'}>
-            {/*{t('importSeed.address')}*/}
-            <Trans i18nKey="importSeed.address">Account address</Trans>
+            <Trans i18nKey="importSeed.address" />
           </div>
 
           <div className={`${styles.greyLine} grey-line`}>{address}</div>
 
           <Button id="importAccount" type="submit" disabled={this.state.error}>
-            {/*{t('importSeed.importAccount')}*/}
-            <Trans i18nKey="importSeed.importAccount">Import Account</Trans>
+            <Trans i18nKey="importSeed.importAccount" />
           </Button>
         </form>
       </div>
