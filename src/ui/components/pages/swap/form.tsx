@@ -18,6 +18,7 @@ import {
   ExchangeChannelClient,
   ExchangeChannelError,
   ExchangeChannelErrorCode,
+  ExchangeChannelErrorType,
   ExchangePool,
 } from './channelClient';
 import * as styles from './form.module.css';
@@ -190,12 +191,16 @@ export function SwapForm({
       (err, response) => {
         if (err) {
           if (err instanceof ExchangeChannelError) {
-            if (err.code === ExchangeChannelErrorCode.ConnectionError) {
+            if (err.type === ExchangeChannelErrorType.ConnectionError) {
               setExchangeChannelError(t('swap.exchangeChannelConnectionError'));
               return;
-            } else if (err.code === ExchangeChannelErrorCode.ExchangeError) {
-              setExchangeChannelError(err.message);
-              return;
+            } else if (err.type === ExchangeChannelErrorType.ExchangeError) {
+              if (err.code === ExchangeChannelErrorCode.INVALID_ASSET_PAIR) {
+                setExchangeChannelError(
+                  t('swap.exchangeChannelInvalidAssetPairError')
+                );
+                return;
+              }
             }
           }
 

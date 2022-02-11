@@ -29,21 +29,33 @@ interface ExchangeRequest extends ExchangeInput {
   id: string;
 }
 
-type Subscriber = (err: Error | null, response?: ExchangeResponse) => void;
-
-export enum ExchangeChannelErrorCode {
+export enum ExchangeChannelErrorType {
   ConnectionError = 'CONNECTION_ERROR',
   ExchangeError = 'EXCHANGE_ERROR',
 }
 
-export class ExchangeChannelError extends Error {
-  code: ExchangeChannelErrorCode;
+export enum ExchangeChannelErrorCode {
+  INVALID_ASSET_PAIR = 'INVALID_ASSET_PAIR',
+  UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
+}
 
-  constructor(code: ExchangeChannelErrorCode, message: string) {
-    super(message);
+export class ExchangeChannelError {
+  type: ExchangeChannelErrorType;
+  code: string;
+
+  constructor(
+    type: ExchangeChannelErrorType,
+    code = ExchangeChannelErrorCode.UNEXPECTED_ERROR
+  ) {
+    this.type = type;
     this.code = code;
   }
 }
+
+type Subscriber = (
+  err: ExchangeChannelError | null,
+  response?: ExchangeResponse
+) => void;
 
 export class ExchangeChannelClient {
   private activeRequest: ExchangeRequest | null = null;
@@ -109,11 +121,16 @@ export class ExchangeChannelClient {
           worstAmountCoins: new BigNumber(String(worstAmount)),
         });
       } else {
+        const errMsg = res.exchange.errors[0];
+
+        const code = Object.values(ExchangeChannelErrorCode).includes(
+          errMsg as ExchangeChannelErrorCode
+        )
+          ? (errMsg as ExchangeChannelErrorCode)
+          : undefined;
+
         this.subscriber(
-          new ExchangeChannelError(
-            ExchangeChannelErrorCode.ExchangeError,
-            res.exchange.errors.join('\n')
-          )
+          new ExchangeChannelError(ExchangeChannelErrorType.ExchangeError, code)
         );
       }
     };
@@ -132,10 +149,7 @@ export class ExchangeChannelClient {
 
       if (this.subscriber) {
         this.subscriber(
-          new ExchangeChannelError(
-            ExchangeChannelErrorCode.ConnectionError,
-            'Could not connect to exchange channel'
-          )
+          new ExchangeChannelError(ExchangeChannelErrorType.ConnectionError)
         );
       }
 
