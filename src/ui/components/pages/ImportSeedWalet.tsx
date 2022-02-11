@@ -12,7 +12,6 @@ const { Seed } = seedUtils;
 class ImportSeedComponent extends React.Component {
   props;
   state;
-  inputEl: Input;
 
   constructor(props) {
     super(props);
@@ -41,8 +40,6 @@ class ImportSeedComponent extends React.Component {
       showExistError: false,
     };
   }
-
-  getRef = input => (this.inputEl = input);
 
   onSubmit = e => this._onSubmit(e);
 
@@ -75,7 +72,6 @@ class ImportSeedComponent extends React.Component {
               (this.state.error || this.state.existError) &&
               this.state.showError
             }
-            ref={this.getRef}
             autoFocus={true}
             onChange={this.onChange}
             onBlur={this.inputBlurHandler}
