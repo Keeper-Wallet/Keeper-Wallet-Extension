@@ -517,8 +517,8 @@
   "swap": {
     "amountToSendError": "Could not perform swap due to SwopFi dApp state. Please try again or slightly increase slippage tolerance if possible",
     "closeBtnText": "Close",
-    "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data",
-    "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data",
+    "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data. Please try again later",
+    "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data. Please try again later",
     "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From {{asset}}",
     "gainBestPrice": "Best Price",

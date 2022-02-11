@@ -49,6 +49,7 @@ export class ExchangeChannelClient {
   private activeRequest: ExchangeRequest | null = null;
   private closedByUser = false;
   private nextId = 1;
+  private reconnectTimeout: number | null = null;
   private subscriber: Subscriber | null = null;
   private url: string;
   private ws: WebSocket | null = null;
@@ -138,7 +139,7 @@ export class ExchangeChannelClient {
         );
       }
 
-      setTimeout(() => {
+      this.reconnectTimeout = window.setTimeout(() => {
         this.connect();
       }, 5000);
     };
@@ -178,6 +179,14 @@ export class ExchangeChannelClient {
 
   close() {
     this.closedByUser = true;
-    this.ws.close();
+
+    if (this.ws) {
+      this.ws.close();
+    }
+
+    if (this.reconnectTimeout != null) {
+      window.clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
   }
 }
