@@ -523,6 +523,7 @@
     "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From {{asset}}",
     "gainBestPrice": "Best Price",
+    "gainTooltip": "Profit of swapping through Keeper compared to other services",
     "insufficientFundsError": "Insufficient funds",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",

@@ -422,16 +422,29 @@ export function SwapForm({
             {exchangeInfo.toAmountTokens.eq(exchangeInfo.worstAmountTokens) ? (
               <Trans i18nKey="swap.gainBestPrice" />
             ) : (
-              `+${exchangeInfo.toAmountTokens
-                .sub(exchangeInfo.worstAmountTokens)
-                .toFixed(
-                  toAsset.precision,
-                  BigNumber.ROUND_MODE.ROUND_FLOOR
-                )} ${toAsset.displayName} (${exchangeInfo.toAmountTokens
-                .div(exchangeInfo.worstAmountTokens)
-                .sub(1)
-                .mul(100)
-                .toFixed(2, BigNumber.ROUND_MODE.ROUND_HALF_EVEN)}%)`
+              <Tooltip
+                className={styles.tooltipContent}
+                content={<Trans i18nKey="swap.gainTooltip" />}
+              >
+                {props => (
+                  <span {...props}>
+                    +
+                    {exchangeInfo.toAmountTokens
+                      .sub(exchangeInfo.worstAmountTokens)
+                      .toFixed(
+                        toAsset.precision,
+                        BigNumber.ROUND_MODE.ROUND_FLOOR
+                      )}{' '}
+                    {toAsset.displayName} (
+                    {exchangeInfo.toAmountTokens
+                      .div(exchangeInfo.worstAmountTokens)
+                      .sub(1)
+                      .mul(100)
+                      .toFixed(2, BigNumber.ROUND_MODE.ROUND_HALF_EVEN)}
+                    %)
+                  </span>
+                )}
+              </Tooltip>
             )}
           </div>
         )}
@@ -445,7 +458,7 @@ export function SwapForm({
         <div className={styles.summaryRow}>
           <div className={styles.summaryLabel}>
             <Tooltip
-              className={styles.summaryTooltipContent}
+              className={styles.tooltipContent}
               content={<Trans i18nKey="swap.slippageToleranceTooltip" />}
             >
               {props => (
@@ -488,7 +501,7 @@ export function SwapForm({
         <div className={styles.summaryRow}>
           <div className={styles.summaryLabel}>
             <Tooltip
-              className={styles.summaryTooltipContent}
+              className={styles.tooltipContent}
               content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
             >
               {props => (
@@ -600,7 +613,7 @@ export function SwapForm({
         <div className={styles.summaryRow}>
           <div className={styles.summaryLabel}>
             <Tooltip
-              className={styles.summaryTooltipContent}
+              className={styles.tooltipContent}
               content={<Trans i18nKey="swap.routeTooltip" />}
             >
               {props => (
@@ -638,7 +651,7 @@ export function SwapForm({
         <div className={styles.summaryRow}>
           <div className={styles.summaryLabel}>
             <Tooltip
-              className={styles.summaryTooltipContent}
+              className={styles.tooltipContent}
               content={<Trans i18nKey="swap.priceImpactTooltip" />}
             >
               {props => (
@@ -667,7 +680,7 @@ export function SwapForm({
         <div className={cn(styles.summaryRow, styles.summaryRow_center)}>
           <div className={styles.summaryLabel}>
             <Tooltip
-              className={styles.summaryTooltipContent}
+              className={styles.tooltipContent}
               content={<Trans i18nKey="swap.transactionFeeTooltip" />}
             >
               {props => (
