@@ -136,7 +136,7 @@
   border-bottom: 1px dotted;
 }
 
-.summaryTooltipContent {
+.tooltipContent {
   max-width: calc(100vw - 14px * 2);
 }
 
