@@ -82,6 +82,10 @@ export function SwapForm({
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 
+  const swapChannel = useAppSelector(
+    state => state.config.network_config[state.currentNetwork].swapChannel
+  );
+
   const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
 
   const sponsoredAssetBalanceEntries = Object.entries(
@@ -154,16 +158,20 @@ export function SwapForm({
   const [exchangeInfo, setExchangeInfo] =
     React.useState<ExchangeInfoState | null>(null);
 
-  const channelClientRef = React.useRef<ExchangeChannelClient | null>(null);
+  const [channelClient, setChannelClient] =
+    React.useState<ExchangeChannelClient | null>(null);
 
   React.useEffect(() => {
-    channelClientRef.current = new ExchangeChannelClient('ws://localhost:8765');
+    const client = new ExchangeChannelClient(
+      new URL('/v1', swapChannel).toString()
+    );
+
+    setChannelClient(client);
 
     return () => {
-      channelClientRef.current.close();
-      channelClientRef.current = null;
+      client.close();
     };
-  }, []);
+  }, [swapChannel]);
 
   const latestFromAmountValueRef = React.useRef(fromAmountValue);
 
@@ -182,7 +190,7 @@ export function SwapForm({
       fromTokens = new BigNumber(1);
     }
 
-    return channelClientRef.current?.exchange(
+    return channelClient?.exchange(
       {
         fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
         fromAsset,
@@ -221,7 +229,7 @@ export function SwapForm({
         });
       }
     );
-  }, [fromAsset, toAsset]);
+  }, [channelClient, fromAsset, toAsset]);
 
   React.useEffect(watchExchange, [watchExchange]);
 
