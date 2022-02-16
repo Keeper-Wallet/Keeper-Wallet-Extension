@@ -103,14 +103,19 @@ extension.runtime.onInstalled.addListener(async details => {
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
 
-    const storageContents = await extension.storage.local.get();
+    const storageContents = await new Promise(resolve =>
+      extension.storage.local.get(resolve)
+    );
+
     const keysToRemove = new Set(Object.keys(storageContents));
 
     bgService.store.getKeys().forEach(storeKey => {
       keysToRemove.delete(storeKey);
     });
 
-    await extension.storage.local.remove(Array.from(keysToRemove));
+    await new Promise(resolve =>
+      extension.storage.local.remove(Array.from(keysToRemove), resolve)
+    );
   }
 });
 
