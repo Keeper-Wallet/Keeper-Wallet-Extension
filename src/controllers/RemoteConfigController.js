@@ -46,13 +46,13 @@ export class RemoteConfigController {
         pack_config: DEFAULT_CONFIG.PACK_CONFIG,
         idle: DEFAULT_CONFIG.IDLE,
       },
+      ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
       status: STATUS.PENDING,
     };
 
     this.store = new ObservableStore({ ...defaults, ...options.initState });
     this._getConfig();
 
-    this._ignoreErrorsConfig = DEFAULT_IGNORE_ERRORS_CONFIG;
     this._getIgnoreErrorsConfig();
   }
 
@@ -177,15 +177,24 @@ export class RemoteConfigController {
   }
 
   async _getIgnoreErrorsConfig() {
+    const { ignoreErrorsConfig } = this.store.getState();
+
     try {
-      const ignoreErrorsConfig = await fetch(IGNORE_ERRORS_CONFIG_URL).then(
-        resp =>
-          resp.ok
-            ? resp.json()
-            : resp.text().then(text => Promise.reject(new Error(text)))
+      const ignoreErrorsConfigResponse = await fetch(
+        IGNORE_ERRORS_CONFIG_URL
+      ).then(resp =>
+        resp.ok
+          ? resp.json()
+          : resp.text().then(text => Promise.reject(new Error(text)))
       );
 
-      Object.assign(this._ignoreErrorsConfig, ignoreErrorsConfig);
+      this.store.updateState({
+        ignoreErrorsConfig: Object.assign(
+          {},
+          ignoreErrorsConfig,
+          ignoreErrorsConfigResponse
+        ),
+      });
     } catch (err) {
       // ignore
     } finally {
@@ -197,9 +206,11 @@ export class RemoteConfigController {
   }
 
   shouldIgnoreError(context, message) {
+    const { ignoreErrorsConfig } = this.store.getState();
+
     return (
-      this._ignoreErrorsConfig.ignoreAll ||
-      this._ignoreErrorsConfig[context].some(str => {
+      ignoreErrorsConfig.ignoreAll ||
+      ignoreErrorsConfig[context].some(str => {
         const re = new RegExp(str);
 
         return re.test(message);
