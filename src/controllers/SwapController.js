@@ -40,7 +40,7 @@ export class SwapController {
           new Money(new BigNumber(fromCoins), new Asset(fromAssetInfo)),
         ],
         call: {
-          function: 'testSeq',
+          function: 'swap',
           args: [
             {
               type: 'list',
