@@ -297,7 +297,8 @@ describe('Account creation', function () {
             const errorDiv = this.driver.wait(
               until.elementLocated(
                 By.xpath("//div[contains(@class,'-error-error')]")
-              )
+              ),
+              this.wait
             );
             expect(await errorDiv.isDisplayed()).to.be.true;
             expect(await errorDiv.getText()).is.not.empty;
