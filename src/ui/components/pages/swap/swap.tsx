@@ -177,6 +177,7 @@ export function Swap({ setTab }: Props) {
                     });
                   } catch (err) {
                     const errMessage = err?.message;
+                    let capture = true;
 
                     if (typeof errMessage === 'string') {
                       // errors from nested invokes
@@ -188,16 +189,26 @@ export function Swap({ setTab }: Props) {
                         let msg = match[1];
 
                         if (
-                          /something\s*went\s*wrong\s*while\s*working\s*with\s*amountToSend/i.test(
+                          /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
                             msg
                           )
                         ) {
                           msg = t('swap.amountToSendError');
+                          capture = false;
+                        } else if (
+                          /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
+                            msg
+                          )
+                        ) {
+                          capture = false;
                         }
 
                         setSwapErrorMessage(msg);
                         setIsSwapInProgress(false);
-                        Sentry.captureException(new Error(msg));
+
+                        if (capture) {
+                          Sentry.captureException(new Error(msg));
+                        }
                         return;
                       }
 
@@ -211,14 +222,20 @@ export function Swap({ setTab }: Props) {
 
                         setSwapErrorMessage(msg);
                         setIsSwapInProgress(false);
-                        Sentry.captureException(new Error(msg));
+
+                        if (capture) {
+                          Sentry.captureException(new Error(msg));
+                        }
                         return;
                       }
                     }
 
                     setSwapErrorMessage(errMessage || t('swap.failMessage'));
                     setIsSwapInProgress(false);
-                    Sentry.captureException(new Error(errMessage));
+
+                    if (capture) {
+                      Sentry.captureException(new Error(errMessage));
+                    }
                   }
                 }}
               />
