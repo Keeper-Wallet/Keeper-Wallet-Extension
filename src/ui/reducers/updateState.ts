@@ -54,20 +54,14 @@ export interface UiState {
 }
 
 export const uiState = createSimpleReducer<UiState>({}, ACTION.UPDATE_UI_STATE);
-export const accounts = createSimpleReducer<Array<Account>>(
+export const accounts = createSimpleReducer<Account[]>(
   [],
   ACTION.UPDATE_ACCOUNTS
 );
-export const allNetworksAccounts = createSimpleReducer<
-  Array<{
-    address: string;
-    name: string;
-    network: string;
-    networkCode: string;
-    publicKey: string;
-    type: string;
-  }>
->([], ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS);
+export const allNetworksAccounts = createSimpleReducer<Account[]>(
+  [],
+  ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS
+);
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 interface SelectedAccountState {

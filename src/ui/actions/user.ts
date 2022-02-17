@@ -12,13 +12,14 @@ export function addUser(account, type: WalletTypes) {
 }
 
 export function batchAddAccounts(
-  accounts: Array<{
-    hasBackup: boolean;
-    name: string;
-    network: string;
-    seed: string;
-    type: string;
-  }>,
+  accounts: Array<
+    | ({
+        name: string;
+        network: string;
+      } & { type: 'seed'; seed: string })
+    | { type: 'encodedSeed'; encodedSeed: string }
+    | { type: 'privateKey'; privateKey: string }
+  >,
   type: WalletTypes
 ) {
   return {

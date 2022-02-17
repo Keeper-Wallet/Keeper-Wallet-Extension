@@ -1,28 +1,22 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { Account, KeystoreProfiles } from 'accounts/types';
+import { useAppSelector } from 'ui/store';
 import background from '../../../services/Background';
-import {
-  ExportKeystoreChooseAccounts,
-  ExportKeystoreAccount,
-} from './chooseAccounts';
+import { ExportKeystoreChooseAccounts } from './chooseAccounts';
 import { ExportAccountsPasswordModal } from './passwordModal';
 import { seedUtils } from '@waves/waves-transactions';
 
 interface Props {
-  allNetworksAccounts: ExportKeystoreAccount[];
   onBack: () => void;
 }
 
-const mapStateToProps = (store: any) => ({
-  allNetworksAccounts: store.allNetworksAccounts,
-});
+export function ExportAccounts({ onBack }: Props) {
+  const allNetworksAccounts = useAppSelector(
+    state => state.allNetworksAccounts
+  );
 
-export const ExportAccounts = connect(mapStateToProps)(function ExportAccounts({
-  allNetworksAccounts,
-  onBack,
-}: Props) {
   const [accountsToExport, setAccountsToExport] = React.useState<
-    ExportKeystoreAccount[] | null
+    Account[] | null
   >(null);
 
   return (
@@ -30,6 +24,7 @@ export const ExportAccounts = connect(mapStateToProps)(function ExportAccounts({
       <ExportKeystoreChooseAccounts
         accounts={allNetworksAccounts}
         onSubmit={selectedAccounts => {
+          console.log(selectedAccounts);
           setAccountsToExport(selectedAccounts);
         }}
       />
@@ -41,39 +36,52 @@ export const ExportAccounts = connect(mapStateToProps)(function ExportAccounts({
           }}
           onSubmit={async password => {
             const accounts = await Promise.all(
-              accountsToExport.map(async acc => ({
-                address: acc.address,
-                name: acc.name,
-                network: acc.network,
-                networkCode: acc.networkCode,
-                seed: await background.getAccountSeed(
-                  acc.address,
-                  acc.network,
-                  password
-                ),
-              }))
-            );
-
-            const profiles = accounts.reduce<
-              Record<
-                'mainnet' | 'testnet' | 'stagenet' | 'custom',
-                {
-                  accounts: Array<{
-                    address: string;
-                    name: string;
-                    networkCode: string;
-                    seed: string;
-                  }>;
-                }
-              >
-            >(
-              (result, acc) => {
-                result[acc.network].accounts.push({
+              accountsToExport.map(async acc => {
+                const commonData = {
                   address: acc.address,
                   name: acc.name,
+                  network: acc.network,
                   networkCode: acc.networkCode,
-                  seed: acc.seed,
-                });
+                };
+
+                switch (acc.type) {
+                  case 'seed':
+                    return {
+                      ...commonData,
+                      type: acc.type,
+                      seed: await background.getAccountSeed(
+                        acc.address,
+                        acc.network,
+                        password
+                      ),
+                    };
+                  case 'encodedSeed':
+                    return {
+                      ...commonData,
+                      type: acc.type,
+                      encodedSeed: await background.getAccountEncodedSeed(
+                        acc.address,
+                        acc.network,
+                        password
+                      ),
+                    };
+                  case 'privateKey':
+                    return {
+                      ...commonData,
+                      type: acc.type,
+                      privateKey: await background.getAccountPrivateKey(
+                        acc.address,
+                        acc.network,
+                        password
+                      ),
+                    };
+                }
+              })
+            );
+
+            const profiles = accounts.reduce<KeystoreProfiles>(
+              (result, { network, ...acc }) => {
+                result[network].accounts.push(acc);
 
                 return result;
               },
@@ -116,4 +124,4 @@ export const ExportAccounts = connect(mapStateToProps)(function ExportAccounts({
       )}
     </>
   );
-});
+}

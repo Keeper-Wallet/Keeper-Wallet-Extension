@@ -3,14 +3,15 @@ import { TSignData, PrivateKeyAdapter } from '@waves/signature-adapter';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import * as libCrypto from '@waves/ts-lib-crypto';
 import * as create from 'parse-json-bignumber';
-import { Account, Wallet } from './wallet';
+import { Account, NetworkName } from 'accounts/types';
+import { Wallet } from './wallet';
 import { convertInvokeListWorkAround } from './utils';
 
 const { stringify } = create({ BigNumber });
 
 export interface PrivateKeyWalletInput {
   name: string;
-  network: string;
+  network: NetworkName;
   networkCode: string;
   privateKey: string;
 }

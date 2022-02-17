@@ -3,7 +3,8 @@ import { SeedAdapter, TSignData } from '@waves/signature-adapter';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import * as libCrypto from '@waves/ts-lib-crypto';
 import * as create from 'parse-json-bignumber';
-import { Account, Wallet } from './wallet';
+import { Account, NetworkName } from 'accounts/types';
+import { Wallet } from './wallet';
 import { convertInvokeListWorkAround } from './utils';
 
 const { stringify } = create({ BigNumber });
@@ -11,7 +12,7 @@ const { stringify } = create({ BigNumber });
 export interface EncodedSeedWalletInput {
   encodedSeed: string;
   name: string;
-  network: string;
+  network: NetworkName;
   networkCode: string;
 }
 

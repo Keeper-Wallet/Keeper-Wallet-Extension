@@ -4,15 +4,7 @@ import {
   messageEncrypt,
   sharedKey,
 } from '@waves/ts-lib-crypto';
-
-export interface Account {
-  address: string;
-  name: string;
-  network: string;
-  networkCode: string;
-  publicKey: string;
-  type: string;
-}
+import { Account } from 'accounts/types';
 
 export abstract class Wallet<TData extends Account> {
   readonly data: TData;
