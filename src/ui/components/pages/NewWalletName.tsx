@@ -138,12 +138,6 @@ class NewWalletNameComponent extends React.Component {
 
   _onSubmit(e) {
     e.preventDefault();
-
-    if (this.props.account.hasBackup) {
-      this.props.addUser(this.props.account, WalletTypes.Seed);
-      return null;
-    }
-
     this.props.setTab(this.props.next);
   }
 }
