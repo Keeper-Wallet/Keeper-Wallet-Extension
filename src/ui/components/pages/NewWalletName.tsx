@@ -132,7 +132,18 @@ class NewWalletNameComponent extends React.Component {
 
   _onSave = e => {
     e.preventDefault();
-    this.props.addUser(this.props.account, WalletTypes.Seed);
+
+    const accountTypeToWalletType = {
+      seed: WalletTypes.Seed,
+      encodedSeed: WalletTypes.EncodedSeed,
+      privateKey: WalletTypes.PrivateKey,
+    };
+
+    this.props.addUser(
+      this.props.account,
+      accountTypeToWalletType[this.props.account.type]
+    );
+
     this.setState({ disabled: true });
   };
 

@@ -490,6 +490,8 @@ export default new Background();
 export enum WalletTypes {
   New = 'new',
   Seed = 'seed',
+  EncodedSeed = 'encoded_seed',
+  PrivateKey = 'private_key',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
 }
