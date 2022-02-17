@@ -48,10 +48,6 @@ class AccountInfoComponent extends React.Component {
     return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
   }
 
-  getSeed = cb => this.getAccountInfo('seed', cb);
-
-  getPrivate = cb => this.getAccountInfo('privateKey', cb);
-
   confirmPassword = e => {
     e.preventDefault();
     this.deffer.resolve(this.state.password);
@@ -162,33 +158,63 @@ class AccountInfoComponent extends React.Component {
           </div>
         </div>
 
-        <div id="accountInfoPrivateKey" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.privKey">Private key</Trans>
+        {['seed', 'encodedSeed', 'privateKey'].includes(
+          selectedAccount.type
+        ) && (
+          <div id="accountInfoPrivateKey" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.privKey">Private key</Trans>
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getPrivateKey(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
           </div>
-          <div className="input-like password-input tag1">
-            <CopyText
-              type="key"
-              getText={this.getPrivate}
-              showCopy={true}
-              onCopy={onCopyHandler}
-            />
-          </div>
-        </div>
+        )}
 
-        <div id="accountInfoBackupPhrase" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
+        {selectedAccount.type === 'seed' ? (
+          <div id="accountInfoBackupPhrase" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getSeed(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
           </div>
-          <div className="input-like password-input tag1">
-            <CopyText
-              type="key"
-              getText={this.getSeed}
-              showCopy={true}
-              onCopy={onCopyHandler}
-            />
+        ) : selectedAccount.type === 'privateKey' ? (
+          <div className="margin-main-big basic500">
+            <div className="input-title tag1">
+              <Trans i18nKey="accountInfo.backUp" />
+            </div>
+
+            <div>
+              <Trans i18nKey="accountInfo.privateKeyNoBackupPhrase" />
+            </div>
           </div>
-        </div>
+        ) : selectedAccount.type === 'encodedSeed' ? (
+          <div id="accountInfoBackupPhrase" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.encodedSeed" />
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getEncodedSeed(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
+          </div>
+        ) : null}
 
         <div className={styles.accountInfoFooter}>
           <div className={styles.deleteButton} onClick={this.onDeleteHandler}>
@@ -286,13 +312,8 @@ class AccountInfoComponent extends React.Component {
     );
   }
 
-  showErrorModal() {
-    this.setState({ passwordError: true });
-  }
-
-  async getAccountInfo(field, cb) {
-    const address = this.props.selectedAccount.address;
-    this.deffer = {} as any;
+  async getSeed(cb) {
+    this.deffer = {};
     this.deffer.promise = new Promise((res, rej) => {
       this.deffer.resolve = res;
       this.deffer.reject = rej;
@@ -300,48 +321,91 @@ class AccountInfoComponent extends React.Component {
 
     this.setState({ showPassword: true });
 
-    this.waitPassword(address)
-      .then(this.onGetAccount(field, cb))
-      .catch(e => {
-        if (e) {
+    this.deffer.promise
+      .then(password =>
+        background.getAccountSeed(
+          this.props.selectedAccount.address,
+          this.props.network,
+          password
+        )
+      )
+      .then(data => {
+        this.setState({ showPassword: false, passwordError: false });
+        cb(data);
+      })
+      .catch(err => {
+        if (err) {
           this.setState({ passwordError: true });
-          this.showErrorModal();
-          this.getAccountInfo(field, cb);
-          return null;
+          this.getSeed(cb);
+          return;
         }
 
         this.setState({ showPassword: false, passwordError: false });
       });
   }
 
-  private waitPassword(address) {
+  async getEncodedSeed(cb) {
+    this.deffer = {};
     this.deffer.promise = new Promise((res, rej) => {
       this.deffer.resolve = res;
       this.deffer.reject = rej;
     });
 
-    return this.deffer.promise.then(password => {
-      return background.exportAccount(address, password, this.props.network);
-    });
+    this.setState({ showPassword: true });
+
+    this.deffer.promise
+      .then(password =>
+        background.getAccountEncodedSeed(
+          this.props.selectedAccount.address,
+          this.props.network,
+          password
+        )
+      )
+      .then(data => {
+        this.setState({ showPassword: false, passwordError: false });
+        cb(data);
+      })
+      .catch(err => {
+        if (err) {
+          this.setState({ passwordError: true });
+          this.getEncodedSeed(cb);
+          return;
+        }
+
+        this.setState({ showPassword: false, passwordError: false });
+      });
   }
 
-  private onGetAccount(field, cb) {
-    return data => {
-      this.setState({ showPassword: false, passwordError: false });
-      const networkCode =
-        this.props.customCodes[this.props.currentNetwork] ||
-        this.props.networks.find(
-          ({ name }) => this.props.currentNetwork === name
-        ).code ||
-        '';
-      const seed = new Seed(data, networkCode);
-      const info = {
-        address: seed.address,
-        privateKey: seed.keyPair.privateKey,
-        seed: seed.phrase,
-      };
-      cb(info[field]);
-    };
+  async getPrivateKey(cb) {
+    this.deffer = {};
+    this.deffer.promise = new Promise((res, rej) => {
+      this.deffer.resolve = res;
+      this.deffer.reject = rej;
+    });
+
+    this.setState({ showPassword: true });
+
+    this.deffer.promise
+      .then(password =>
+        background.getAccountPrivateKey(
+          this.props.selectedAccount.address,
+          this.props.network,
+          password
+        )
+      )
+      .then(data => {
+        this.setState({ showPassword: false, passwordError: false });
+        cb(data);
+      })
+      .catch(err => {
+        if (err) {
+          this.setState({ passwordError: true });
+          this.getPrivateKey(cb);
+          return;
+        }
+
+        this.setState({ showPassword: false, passwordError: false });
+      });
   }
 }
 

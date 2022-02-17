@@ -11,27 +11,6 @@ export function addUser(account, type: WalletTypes) {
   };
 }
 
-export function addUserSend() {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT_SEND,
-    payload: {
-      pending: true,
-      error: false,
-    },
-  };
-}
-
-export function addUserReceive(error?) {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT_RECEIVE,
-    payload: {
-      pending: false,
-      error: !!error,
-      errorData: error,
-    },
-  };
-}
-
 export function batchAddAccounts(
   accounts: Array<{
     hasBackup: boolean;

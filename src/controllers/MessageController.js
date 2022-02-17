@@ -10,11 +10,11 @@ import {
 } from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
 import { ERRORS } from '../lib/KeeperError';
 import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
-import { waves } from './wavesTransactionsController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
 
@@ -63,7 +63,8 @@ export class MessageController extends EventEmitter {
 
     // Signing methods from WalletController
     this.signTx = options.signTx;
-    this.signWaves = options.signWaves;
+    this.signWavesAuth = options.signWavesAuth;
+    this.signCustomData = options.signCustomData;
     this.auth = options.auth;
     this.signRequest = options.signRequest;
     this.signBytes = options.signBytes;
@@ -500,8 +501,7 @@ export class MessageController extends EventEmitter {
         signedData = message.data.isRequest ? signedData.signature : signedData;
         break;
       case 'wavesAuth':
-        signedData = await this.signWaves(
-          'signWavesAuth',
+        signedData = await this.signWavesAuth(
           message.data,
           message.account.address,
           message.account.network
@@ -515,8 +515,7 @@ export class MessageController extends EventEmitter {
         );
         break;
       case 'customData':
-        signedData = await this.signWaves(
-          'signCustomData',
+        signedData = await this.signCustomData(
           message.data,
           message.account.address,
           message.account.network
@@ -586,12 +585,13 @@ export class MessageController extends EventEmitter {
    */
   async _getMessageDataHash(data, account) {
     if (data && data.type === 'wavesAuth') {
-      return waves.parseWavesAuth(data);
+      return { id: wavesAuth(data.data, 'fake user').hash };
     }
 
     if (data && data.type === 'customData') {
-      return waves.parseCustomData(data);
+      return { id: customData(data.data, 'fake user').hash };
     }
+
     let signableData = await this._transformData({ ...data.data });
 
     const adapter = new InfoAdapter(account);

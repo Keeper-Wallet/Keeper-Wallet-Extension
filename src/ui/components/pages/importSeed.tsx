@@ -1,10 +1,19 @@
-import { seedUtils } from '@waves/waves-transactions';
+import * as libCrypto from '@waves/ts-lib-crypto';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { clearSeedErrors, newAccountSelect } from '../../actions';
-import { Button, Error, Input } from '../ui';
+import { newAccountSelect } from '../../actions';
+import {
+  Button,
+  Error,
+  Input,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from '../ui';
 import { PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
 
@@ -13,35 +22,107 @@ interface Props {
   setTab: (newTab: string) => void;
 }
 
+const SEED_MIN_LENGTH = 24;
+const ENCODED_SEED_MIN_LENGTH = 16;
+
+const SEED_TAB_INDEX = 0;
+const ENCODED_SEED_TAB_INDEX = 1;
+const PRIVATE_KEY_TAB_INDEX = 2;
+
+function isValidBase58(str: string) {
+  try {
+    libCrypto.base58Decode(str);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function ImportSeed({ isNew, setTab }: Props) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const account = useAppSelector(state => state.localState.newAccount);
   const accounts = useAppSelector(state => state.accounts);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const customCodes = useAppSelector(state => state.customCodes);
   const networks = useAppSelector(state => state.networks);
+  const newAccount = useAppSelector(state => state.localState.newAccount);
 
-  const [showError, setShowError] = React.useState(false);
-  const [showExistError, setShowExistError] = React.useState(false);
-  const [seedValue, setSeedValue] = React.useState(isNew ? '' : account.seed);
+  const [activeTab, setActiveTab] = React.useState(
+    isNew || newAccount.type === 'seed'
+      ? SEED_TAB_INDEX
+      : newAccount.type === 'encodedSeed'
+      ? ENCODED_SEED_TAB_INDEX
+      : PRIVATE_KEY_TAB_INDEX
+  );
 
-  const seedObj = React.useMemo(() => {
-    if (seedValue.length < 24) {
-      return null;
+  const [showValidationError, setShowValidationError] = React.useState(false);
+
+  const [seedValue, setSeedValue] = React.useState<string>(
+    isNew || newAccount.type !== 'seed' ? '' : newAccount.seed
+  );
+
+  const [encodedSeedValue, setEncodedSeedValue] = React.useState<string>(
+    isNew || newAccount.type !== 'encodedSeed' ? '' : newAccount.encodedSeed
+  );
+
+  const [privateKeyValue, setPrivateKeyValue] = React.useState<string>(
+    isNew || newAccount.type !== 'privateKey' ? '' : newAccount.privateKey
+  );
+
+  const networkCode =
+    customCodes[currentNetwork] ||
+    networks.find(n => currentNetwork === n.name).code;
+
+  let address: string | null = null;
+  let validationError: string | null = null;
+
+  if (activeTab === SEED_TAB_INDEX) {
+    if (!seedValue) {
+      validationError = t('importSeed.requiredError');
+    } else if (seedValue.length < SEED_MIN_LENGTH) {
+      validationError = t('importSeed.seedLengthError', {
+        minLength: SEED_MIN_LENGTH,
+      });
+    } else {
+      address = libCrypto.address(seedValue.trim(), networkCode);
     }
+  } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
+    if (!encodedSeedValue) {
+      validationError = t('importSeed.requiredError');
+    } else if (!isValidBase58(encodedSeedValue)) {
+      validationError = t('importSeed.base58DecodeError');
+    } else if (encodedSeedValue.length < ENCODED_SEED_MIN_LENGTH) {
+      validationError = t('importSeed.encodedSeedLengthError', {
+        minLength: ENCODED_SEED_MIN_LENGTH,
+      });
+    } else {
+      address = libCrypto.address(
+        libCrypto.base58Decode(encodedSeedValue),
+        networkCode
+      );
+    }
+  } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+    if (!privateKeyValue) {
+      validationError = t('importSeed.requiredError');
+    } else if (!isValidBase58(privateKeyValue)) {
+      validationError = t('importSeed.base58DecodeError');
+    } else {
+      const privateKey = libCrypto.base58Decode(privateKeyValue);
 
-    const networkCode =
-      customCodes[currentNetwork] ||
-      networks.find(({ name }) => currentNetwork === name).code ||
-      '';
+      if (privateKey.length !== libCrypto.PRIVATE_KEY_LENGTH) {
+        validationError = t('importSeed.invalidPrivateKeyLengthError', {
+          length: libCrypto.PRIVATE_KEY_LENGTH,
+        });
+      } else {
+        const publicKey = libCrypto.publicKey({ privateKey });
+        address = libCrypto.address({ publicKey }, networkCode);
+      }
+    }
+  }
 
-    return new seedUtils.Seed(seedValue.trim(), networkCode);
-  }, [currentNetwork, customCodes, networks, seedValue]);
-
-  const seedExists = seedObj
-    ? accounts.some(acc => acc.address === seedObj.address)
-    : false;
+  if (address && accounts.some(acc => acc.address === address)) {
+    validationError = t('importSeed.accountExistsError');
+  }
 
   return (
     <div className={styles.content}>
@@ -55,63 +136,126 @@ export function ImportSeed({ isNew, setTab }: Props) {
         onSubmit={event => {
           event.preventDefault();
 
-          if (seedExists) {
-            setShowExistError(true);
+          setShowValidationError(true);
+
+          if (validationError) {
             return;
           }
 
-          setShowExistError(false);
+          if (activeTab === SEED_TAB_INDEX) {
+            dispatch(
+              newAccountSelect({
+                type: 'seed',
+                seed: seedValue,
+                name: '',
+                hasBackup: true,
+              })
+            );
+          } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
+            dispatch(
+              newAccountSelect({
+                type: 'encodedSeed',
+                encodedSeed: encodedSeedValue,
+                name: '',
+                hasBackup: true,
+              })
+            );
+          } else {
+            dispatch(
+              newAccountSelect({
+                type: 'privateKey',
+                privateKey: privateKeyValue,
+                name: '',
+                hasBackup: true,
+              })
+            );
+          }
 
-          dispatch(
-            newAccountSelect({
-              address: seedObj ? seedObj.address : '',
-              seed: seedObj ? seedObj.phrase : '',
-              type: 'seed',
-              name: '',
-              hasBackup: true,
-            })
-          );
-
-          dispatch(clearSeedErrors());
           setTab(PAGES.ACCOUNT_NAME_SEED);
         }}
       >
-        <div className="tag1 basic500 input-title">
-          <Trans i18nKey="importSeed.newSeed" />
-        </div>
+        <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
+          <TabList>
+            <Tab>
+              <Trans i18nKey="importSeed.plainText" />
+            </Tab>
 
-        <Input
-          autoFocus
-          error={(!seedObj || seedExists) && showError}
-          multiLine
-          placeholder={t('importSeed.inputSeed')}
-          rows={3}
-          spellCheck={false}
-          value={seedValue}
-          onBlur={() => {
-            setShowError(true);
-          }}
-          onFocus={() => {
-            setShowError(false);
-          }}
-          onChange={event => {
-            setSeedValue(event.target.value);
-          }}
-        />
+            <Tab>
+              <Trans i18nKey="importSeed.encodedSeed" />
+            </Tab>
 
-        <Error show={showExistError} className={styles.error}>
-          <Trans i18nKey="importSeed.existError" />
+            <Tab>
+              <Trans i18nKey="importSeed.privateKey" />
+            </Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <Input
+                autoFocus
+                className="margin-main-top"
+                data-testid="seedInput"
+                error={validationError != null && showValidationError}
+                multiLine
+                placeholder={t('importSeed.plainTextPlaceholder')}
+                rows={3}
+                spellCheck={false}
+                value={seedValue}
+                onChange={event => {
+                  setSeedValue(event.target.value);
+                }}
+              />
+            </TabPanel>
+
+            <TabPanel>
+              <Input
+                autoFocus
+                className="margin-main-top"
+                error={validationError != null && showValidationError}
+                multiLine
+                rows={3}
+                spellCheck={false}
+                value={encodedSeedValue}
+                onChange={event => {
+                  setEncodedSeedValue(event.target.value);
+                }}
+              />
+            </TabPanel>
+
+            <TabPanel>
+              <Input
+                autoFocus
+                className="margin-main-top"
+                error={validationError != null && showValidationError}
+                multiLine
+                rows={3}
+                spellCheck={false}
+                value={privateKeyValue}
+                onChange={event => {
+                  setPrivateKeyValue(event.target.value);
+                }}
+              />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+
+        <Error
+          className={styles.error}
+          data-testid="validationError"
+          show={showValidationError}
+        >
+          {validationError}
         </Error>
 
         <div className="tag1 basic500 input-title">
           <Trans i18nKey="importSeed.address" />
         </div>
 
-        <div className={cn(styles.greyLine, 'grey-line')}>
-          {seedObj?.address}
+        <div className={cn(styles.greyLine, 'grey-line')} data-testid="address">
+          {address}
         </div>
 
-        <Button id="importAccount" type="submit" disabled={!seedObj}>
+        <Button id="importAccount" type="submit">
           <Trans i18nKey="importSeed.importAccount" />
         </Button>
       </form>

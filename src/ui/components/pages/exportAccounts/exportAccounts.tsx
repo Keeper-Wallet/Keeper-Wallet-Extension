@@ -46,10 +46,10 @@ export const ExportAccounts = connect(mapStateToProps)(function ExportAccounts({
                 name: acc.name,
                 network: acc.network,
                 networkCode: acc.networkCode,
-                seed: await background.exportAccount(
+                seed: await background.getAccountSeed(
                   acc.address,
-                  password,
-                  acc.network
+                  acc.network,
+                  password
                 ),
               }))
             );

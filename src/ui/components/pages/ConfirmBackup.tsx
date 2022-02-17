@@ -158,7 +158,6 @@ class ConfirmBackupComponent extends React.Component {
 const mapStateToProps = function (state: AppState) {
   return {
     account: state.localState.newAccount,
-    ...state.localState.addNewAccount,
   };
 };
 

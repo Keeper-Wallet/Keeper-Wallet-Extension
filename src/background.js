@@ -40,9 +40,8 @@ import {
 } from './controllers/CalculateFeeController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
-import '@waves/waves-transactions';
+import { verifyCustomData } from '@waves/waves-transactions';
 import { getAdapterByType } from '@waves/signature-adapter';
-import { waves } from './controllers/wavesTransactionsController';
 
 const version = extension.runtime.getManifest().version;
 
@@ -353,7 +352,12 @@ class BackgroundService extends EventEmitter {
     this.messageController = new MessageController({
       initState: initState.MessageController,
       signTx: this.walletController.signTx.bind(this.walletController),
-      signWaves: this.walletController.signWaves.bind(this.walletController),
+      signWavesAuth: this.walletController.signWavesAuth.bind(
+        this.walletController
+      ),
+      signCustomData: this.walletController.signCustomData.bind(
+        this.walletController
+      ),
       auth: this.walletController.auth.bind(this.walletController),
       signRequest: this.walletController.signRequest.bind(
         this.walletController
@@ -476,8 +480,12 @@ class BackgroundService extends EventEmitter {
       },
       newPassword: async (oldPassword, newPassword) =>
         this.walletController.newPassword(oldPassword, newPassword),
-      exportAccount: async (address, password, network) =>
-        this.walletController.exportAccount(address, password, network),
+      getAccountSeed: async (address, network, password) =>
+        this.walletController.getAccountSeed(address, network, password),
+      getAccountEncodedSeed: async (address, network, password) =>
+        this.walletController.getAccountEncodedSeed(address, network, password),
+      getAccountPrivateKey: async (address, network, password) =>
+        this.walletController.getAccountPrivateKey(address, network, password),
       encryptedSeed: async (address, network) =>
         this.walletController.encryptedSeed(address, network),
 
@@ -771,9 +779,7 @@ class BackgroundService extends EventEmitter {
       signCustomData: async (data, options) => {
         return await newMessage(data, 'customData', options, false);
       },
-      verifyCustomData: async data => {
-        return waves.verifyCustomData(data);
-      },
+      verifyCustomData: async data => verifyCustomData(data),
       notification: async data => {
         const state = this.getState();
         const { selectedAccount, initialized } = state;

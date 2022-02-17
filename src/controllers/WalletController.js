@@ -1,9 +1,20 @@
 import ObservableStore from 'obs-store';
 import { seedUtils } from '@waves/waves-transactions';
-import { decrypt, encrypt } from '../lib/encryprtor';
-import { Wallet } from '../lib/wallet';
+import { createWallet } from '../wallets';
 
-const { Seed } = seedUtils;
+function encrypt(object, password) {
+  const jsonObj = JSON.stringify(object);
+  return seedUtils.encryptSeed(jsonObj, password);
+}
+
+function decrypt(ciphertext, password) {
+  try {
+    const decryptedJson = seedUtils.decryptSeed(ciphertext, password);
+    return JSON.parse(decryptedJson);
+  } catch (e) {
+    throw new Error('Invalid password');
+  }
+}
 
 export class WalletController {
   constructor(options = {}) {
@@ -24,28 +35,13 @@ export class WalletController {
   // Public
   addWallet(options) {
     if (this.store.getState().locked) throw new Error('App is locked');
-    let user;
-    switch (options.type) {
-      case 'seed':
-        const networkCode = this.getNetworkCode(options.network);
-        const seed = new Seed(options.seed, networkCode);
-        user = {
-          seed: seed.phrase,
-          publicKey: seed.keyPair.publicKey,
-          address: seed.address,
-          networkCode: options.networkCode || networkCode,
-          network: options.network,
-          type: options.type,
-          name: options.name,
-        };
-        break;
-      default:
-        throw new Error(`Unsupported type: ${options.type}`);
-    }
 
-    const wallet = new Wallet(user);
+    const networkCode =
+      options.networkCode || this.getNetworkCode(options.network);
 
-    this._checkForDuplicate(wallet.getAccount().address, user.network);
+    const wallet = createWallet({ ...options, networkCode });
+
+    this._checkForDuplicate(wallet.getAccount().address, options.network);
 
     this.wallets.push(wallet);
     this._saveWallets();
@@ -122,29 +118,32 @@ export class WalletController {
     this._saveWallets();
   }
 
-  /**
-   * Returns account seed
-   * @param {string} address - wallet address
-   * @param {string} password - application password
-   * @returns {string} encrypted seed
-   */
-  exportAccount(address, password, network) {
+  getAccountSeed(address, network, password) {
     if (!password) throw new Error('Password is required');
     this._restoreWallets(password);
 
-    const wallet = this.getWalletsByNetwork(network).find(
-      wallet => wallet.getAccount().address === address
-    );
-    if (!wallet)
-      throw new Error(`Wallet not found for address: ${address} in ${network}`);
-    return wallet.getSecret();
+    return this._findWallet(address, network).getSeed();
+  }
+
+  getAccountEncodedSeed(address, network, password) {
+    if (!password) throw new Error('Password is required');
+    this._restoreWallets(password);
+
+    return this._findWallet(address, network).getEncodedSeed();
+  }
+
+  getAccountPrivateKey(address, network, password) {
+    if (!password) throw new Error('Password is required');
+    this._restoreWallets(password);
+
+    return this._findWallet(address, network).getPrivateKey();
   }
 
   exportSeed(address, network) {
     const wallet = this._findWallet(address, network);
     if (!wallet)
       throw new Error(`Wallet not found for address: ${address} in ${network}`);
-    const seed = new Seed(wallet.user.seed);
+    const seed = new seedUtils.Seed(wallet.user.seed);
     return seed.encrypt(this.password, 5000);
   }
 
@@ -155,8 +154,8 @@ export class WalletController {
    */
   encryptedSeed(address, network) {
     const wallet = this._findWallet(address, network);
-    const seed = wallet.getSecret();
-    return Seed.encryptSeedPhrase(seed, this.password);
+    const seed = wallet.getSeed();
+    return seedUtils.Seed.encryptSeedPhrase(seed, this.password);
   }
 
   updateNetworkCode(network, code) {
@@ -164,7 +163,7 @@ export class WalletController {
     const wallets = this.getWalletsByNetwork(network);
     wallets.forEach(wallet => {
       if (wallet.user.networkCode !== code) {
-        const seed = new Seed(wallet.user.seed, code);
+        const seed = new seedUtils.Seed(wallet.user.seed, code);
         wallet.user.network = network;
         wallet.user.networkCode = code;
         wallet.user.address = seed.address;
@@ -177,7 +176,9 @@ export class WalletController {
   }
 
   getWalletsByNetwork(network) {
-    return this.wallets.filter(wallet => wallet.isMyNetwork(network));
+    return this.wallets.filter(
+      wallet => wallet.getAccount().network === network
+    );
   }
 
   _walletToTrash(wallet) {
@@ -214,7 +215,7 @@ export class WalletController {
       return data;
     });
 
-    this.wallets = walletsData.map(user => new Wallet(user));
+    this.wallets = walletsData.map(user => createWallet(user));
     this._saveWallets();
   }
 
@@ -230,9 +231,14 @@ export class WalletController {
     return await wallet.signTx(tx);
   }
 
-  async signWaves(type, data, address, network) {
+  async signWavesAuth(data, address, network) {
     const wallet = this._findWallet(address, network);
-    return await wallet.signWaves(type, data);
+    return await wallet.signWavesAuth(data);
+  }
+
+  async signCustomData(data, address, network) {
+    const wallet = this._findWallet(address, network);
+    return await wallet.signCustomData(data);
   }
 
   /**
@@ -266,14 +272,13 @@ export class WalletController {
   async auth(address, authData, network) {
     const wallet = this._findWallet(address, network);
     const signature = await wallet.signRequest(authData);
-    const { publicKey } = wallet.getAccount();
     const { host, name, prefix, version } = authData.data;
     return {
       host,
       name,
       prefix,
       address,
-      publicKey,
+      publicKey: wallet.getAccount().publicKey,
       signature,
       version,
     };
@@ -312,7 +317,7 @@ export class WalletController {
 
   _restoreWallets(password) {
     const decryptedData = decrypt(this.store.getState().vault, password);
-    this.wallets = decryptedData.map(user => new Wallet(user));
+    this.wallets = decryptedData.map(user => createWallet(user));
   }
 
   _findWallet(address, network) {

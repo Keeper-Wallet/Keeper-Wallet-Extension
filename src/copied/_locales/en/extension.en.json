@@ -11,12 +11,14 @@
     "cancel": "Cancel",
     "copied": "Copied!",
     "copyToClipboard": "Click to copy to clipboard",
+    "encodedSeed": "Encoded seed",
     "enter": "Enter",
     "modal": {
       "error": "Incorrect password"
     },
     "password": "Password",
     "passwordError": "Incorrect password",
+    "privateKeyNoBackupPhrase": "This account was imported using private key, so there's no backup phrase to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
     "seed": "Backup phrase",
@@ -251,7 +253,7 @@
     "createNew": "Create a new account",
     "importVia": "Or import via",
     "viaKeystore": "Keystore File",
-    "viaSeed": "Seed Phrase"
+    "viaSeed": "Seed Phrase or Private Key"
   },
   "importKeystore": {
     "browse": "Browse...",
@@ -272,11 +274,18 @@
     "passwordPlaceholder": "Password used to create Keystore"
   },
   "importSeed": {
+    "accountExistsError": "Account already exists",
     "address": "Account address",
-    "existError": "Seed already exist",
+    "base58DecodeError": "Doesn't look like base58-encoded value",
+    "encodedSeed": "Encoded seed",
+    "encodedSeedLengthError": "Encoded seed cannot be shorter than {{minLength}} characters",
     "importAccount": "Import Account",
-    "inputSeed": "Your seed is the 15 words you saved when creating your account",
-    "newSeed": "Wallet Seed",
+    "invalidPrivateKeyLengthError": "Private key must consist of {{length}} bytes",
+    "plainText": "Seed phrase",
+    "plainTextPlaceholder": "Your seed is the 15 words you saved when creating your account",
+    "privateKey": "Private key",
+    "requiredError": "Cannot be blank",
+    "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "title": "Import using seed"
   },
   "info": {

@@ -23,7 +23,6 @@ export const loginUpdate = createCommonAction(ACTION.LOGIN_UPDATE, false);
 
 export const newAccountName = createMVAction(ACTION.NEW_ACCOUNT_NAME);
 export const newAccountSelect = createMVAction(ACTION.NEW_ACCOUNT_SELECT);
-export const clearSeedErrors = createMVAction(ACTION.NEW_ACCOUNT_CLEAR_ERRORS);
 export const selectAccount = createMVAction(ACTION.SELECT_ACCOUNT);
 export const deleteActiveAccount = createMVAction(ACTION.DELETE_ACTIVE_ACCOUNT);
 export const addBackTab = createMVAction(ACTION.ADD_BACK_TAB);

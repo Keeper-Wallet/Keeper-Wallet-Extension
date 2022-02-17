@@ -446,11 +446,11 @@ describe('Account creation', function () {
   describe('Import account using seed phrase', function () {
     const ACCOUNTS = {
       FIRST: { SEED: 'this is first account seed', NAME: 'first' },
-      MORE_25_CHARS: {
-        SEED: 'there is more than 25 characters',
-        NAME: 'more than 25 characters',
+      MORE_24_CHARS: {
+        SEED: 'there is more than 24 characters',
+        NAME: 'more than 24 characters',
       },
-      LESS_25_CHARS: { SEED: 'too short seed', NAME: 'short' },
+      LESS_24_CHARS: { SEED: 'too short seed', NAME: 'short' },
     };
 
     after(deleteAllAccounts);
@@ -465,9 +465,7 @@ describe('Account creation', function () {
 
       await this.driver
         .wait(
-          until.elementLocated(
-            By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")
-          ),
+          until.elementLocated(By.css('[data-testid="seedInput"]')),
           this.wait
         )
         .sendKeys(ACCOUNTS.FIRST.SEED);
@@ -516,18 +514,14 @@ describe('Account creation', function () {
 
           before(function () {
             seedTextarea = this.driver.wait(
-              until.elementLocated(
-                By.xpath(
-                  "//div[contains(@class, '-importSeed-content')]//textarea"
-                )
-              ),
+              until.elementLocated(By.css('[data-testid="seedInput"]')),
               this.wait
             );
             importAccountBtn = this.driver.findElement(
               By.css('button#importAccount')
             );
             currentAddressDiv = this.driver.findElement(
-              By.xpath("//div[contains(@class, '-importSeed-greyLine')]")
+              By.css('[data-testid="address"]')
             );
           });
 
@@ -535,33 +529,38 @@ describe('Account creation', function () {
             await clear(seedTextarea);
           });
 
-          it("Can't import seed with length less than 25 characters", async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.LESS_25_CHARS.SEED);
-            await seedTextarea.sendKeys('\t'); // fire blur event
-            expect(await importAccountBtn.isEnabled()).to.be.false;
+          it("Can't import seed with length less than 24 characters", async function () {
+            await seedTextarea.sendKeys(ACCOUNTS.LESS_24_CHARS.SEED);
+            await this.driver.findElement(By.css('#importAccount')).click();
+
+            const validationError = await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="validationError"]')),
+              this.wait
+            );
+            expect(await validationError.getText()).to.equal(
+              'Seed cannot be shorter than 24 characters'
+            );
           });
 
           it("Can't import seed for an already added account", async function () {
             await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
-            await seedTextarea.sendKeys('\t');
-            expect(
-              await this.driver.wait(
-                until.elementLocated(
-                  By.xpath(
-                    "//div[contains(@class, '-importSeed-content')]//textarea" +
-                      "//following-sibling::div[contains(@class, '-error-error')]"
-                  )
-                ),
-                this.wait
-              )
-            ).to.be.not.empty;
+            await this.driver.findElement(By.css('#importAccount')).click();
+
+            const validationError = await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="validationError"]')),
+              this.wait
+            );
+
+            expect(await validationError.getText()).to.equal(
+              'Account already exists'
+            );
           });
 
           it('Any change in the seed changes the address', async function () {
             let lastAddress: string = null,
               currentAddress: string;
             // input seed
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_25_CHARS.SEED);
+            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
             currentAddress = await currentAddressDiv.getText();
             expect(currentAddress).to.be.not.equal(lastAddress);
             lastAddress = currentAddress;
@@ -580,9 +579,13 @@ describe('Account creation', function () {
           it('You can paste a seed from the clipboard');
 
           it('Correct seed entered', async function () {
-            await seedTextarea.sendKeys(ACCOUNTS.MORE_25_CHARS.SEED);
-            expect(await importAccountBtn.isEnabled()).to.be.true;
+            await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);
             await importAccountBtn.click();
+
+            await this.driver.wait(
+              until.elementLocated(By.css('input#newAccountName')),
+              this.wait
+            );
           });
         });
 
@@ -617,14 +620,14 @@ describe('Account creation', function () {
           });
 
           it('Additional account successfully imported while entered correct account name', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.MORE_25_CHARS.NAME);
+            await accountNameInput.sendKeys(ACCOUNTS.MORE_24_CHARS.NAME);
             await accountNameInput.sendKeys('\t');
             expect(errorDiv.getText()).to.be.empty;
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
             expect(await Assets.getOtherAccountNames.call(this)).to.include(
-              ACCOUNTS.MORE_25_CHARS.NAME
+              ACCOUNTS.MORE_24_CHARS.NAME
             );
           });
         });

@@ -45,19 +45,15 @@ class NewWalletNameComponent extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const { account, accounts, accountSave } = props;
-    const name = (account && account.name) || '';
-    const errors = NewWalletNameComponent.validateName(name, accounts);
-    let error = state.error;
-    if (accountSave && accountSave.error) {
-      errors.push({
-        code: 3,
-        key: 'newAccountName.errorSeedExist',
-        msg: 'Account already exist',
-      });
-      error = true;
-    }
-    return { ...state, errors, error };
+    const { account, accounts } = props;
+
+    return {
+      ...state,
+      errors: NewWalletNameComponent.validateName(
+        (account && account.name) || '',
+        accounts
+      ),
+    };
   }
 
   onChange = e => this._onChange(e);
@@ -155,7 +151,6 @@ class NewWalletNameComponent extends React.Component {
 const mapStateToProps = function (state: AppState) {
   return {
     account: state.localState.newAccount,
-    accountSave: state.localState.addNewAccount,
     accounts: state.accounts,
   };
 };
