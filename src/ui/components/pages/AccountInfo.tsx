@@ -7,15 +7,11 @@ import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
-import { seedUtils } from '@waves/waves-transactions';
 import { getAccountLink } from '../../urls';
-
-const { Seed } = seedUtils;
 
 class AccountInfoComponent extends React.Component {
   readonly props;
   readonly state = {} as any;
-  passInputEl: Input;
   copiedTimer;
   deffer;
 
@@ -61,13 +57,6 @@ class AccountInfoComponent extends React.Component {
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
   onCopyHandler = () => this.setCopiedModal();
-
-  getInputPassRef = el => {
-    this.passInputEl = el;
-    if (el) {
-      this.passInputEl.focus();
-    }
-  };
 
   onDeleteHandler = () => {
     this.props.setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
@@ -242,7 +231,7 @@ class AccountInfoComponent extends React.Component {
                   <Trans i18nKey="accountInfo.password">Password</Trans>
                 </div>
                 <Input
-                  ref={this.getInputPassRef}
+                  autoFocus
                   type="password"
                   error={this.state.passwordError}
                   className="margin1"
@@ -312,100 +301,73 @@ class AccountInfoComponent extends React.Component {
     );
   }
 
-  async getSeed(cb) {
-    this.deffer = {};
-    this.deffer.promise = new Promise((res, rej) => {
-      this.deffer.resolve = res;
-      this.deffer.reject = rej;
-    });
-
+  private requestPrivateData({
+    copyCallback,
+    request,
+    retry,
+  }: {
+    copyCallback: (text: string) => void;
+    request: (password: string) => Promise<string>;
+    retry: () => void;
+  }) {
     this.setState({ showPassword: true });
 
-    this.deffer.promise
-      .then(password =>
+    new Promise<string>((resolve, reject) => {
+      this.deffer = { resolve, reject };
+    })
+      .then(password => request(password))
+      .then(data => {
+        this.setState({ showPassword: false, passwordError: false });
+        copyCallback(data);
+      })
+      .catch(err => {
+        if (err) {
+          this.setState({ passwordError: true });
+          retry();
+          return;
+        }
+
+        this.setState({ showPassword: false, passwordError: false });
+      });
+  }
+
+  getSeed(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
         background.getAccountSeed(
           this.props.selectedAccount.address,
           this.props.network,
           password
-        )
-      )
-      .then(data => {
-        this.setState({ showPassword: false, passwordError: false });
-        cb(data);
-      })
-      .catch(err => {
-        if (err) {
-          this.setState({ passwordError: true });
-          this.getSeed(cb);
-          return;
-        }
-
-        this.setState({ showPassword: false, passwordError: false });
-      });
+        ),
+      retry: () => this.getSeed(copyCallback),
+    });
   }
 
-  async getEncodedSeed(cb) {
-    this.deffer = {};
-    this.deffer.promise = new Promise((res, rej) => {
-      this.deffer.resolve = res;
-      this.deffer.reject = rej;
-    });
-
-    this.setState({ showPassword: true });
-
-    this.deffer.promise
-      .then(password =>
+  getEncodedSeed(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
         background.getAccountEncodedSeed(
           this.props.selectedAccount.address,
           this.props.network,
           password
-        )
-      )
-      .then(data => {
-        this.setState({ showPassword: false, passwordError: false });
-        cb(data);
-      })
-      .catch(err => {
-        if (err) {
-          this.setState({ passwordError: true });
-          this.getEncodedSeed(cb);
-          return;
-        }
-
-        this.setState({ showPassword: false, passwordError: false });
-      });
+        ),
+      retry: () => this.getEncodedSeed(copyCallback),
+    });
   }
 
-  async getPrivateKey(cb) {
-    this.deffer = {};
-    this.deffer.promise = new Promise((res, rej) => {
-      this.deffer.resolve = res;
-      this.deffer.reject = rej;
-    });
-
-    this.setState({ showPassword: true });
-
-    this.deffer.promise
-      .then(password =>
+  getPrivateKey(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
         background.getAccountPrivateKey(
           this.props.selectedAccount.address,
           this.props.network,
           password
-        )
-      )
-      .then(data => {
-        this.setState({ showPassword: false, passwordError: false });
-        cb(data);
-      })
-      .catch(err => {
-        if (err) {
-          this.setState({ passwordError: true });
-          this.getPrivateKey(cb);
-          return;
-        }
-
-        this.setState({ showPassword: false, passwordError: false });
-      });
+        ),
+      retry: () => this.getPrivateKey(copyCallback),
+    });
   }
 }
 
