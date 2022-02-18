@@ -24,7 +24,6 @@ export function ExportAccounts({ onBack }: Props) {
       <ExportKeystoreChooseAccounts
         accounts={allNetworksAccounts}
         onSubmit={selectedAccounts => {
-          console.log(selectedAccounts);
           setAccountsToExport(selectedAccounts);
         }}
       />
