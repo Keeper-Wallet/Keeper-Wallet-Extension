@@ -80,23 +80,32 @@ export function ImportSeed({ isNew, setTab }: Props) {
   let address: string | null = null;
   let validationError: React.ReactElement | string | null = null;
 
+  function switchToEncodedTabFromError() {
+    let newEncodedSeedValue = '';
+
+    if (activeTab === SEED_TAB_INDEX) {
+      newEncodedSeedValue = seedValue;
+    } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+      newEncodedSeedValue = privateKeyValue;
+    }
+
+    setEncodedSeedValue(newEncodedSeedValue);
+    setShowValidationError(false);
+    setActiveTab(ENCODED_SEED_TAB_INDEX);
+  }
+
   const errorSwitchTabElement = (
     <span
       className={styles.errorSwitchTab}
       role="button"
       tabIndex={0}
       onClick={() => {
-        let newEncodedSeedValue = '';
-
-        if (activeTab === SEED_TAB_INDEX) {
-          newEncodedSeedValue = seedValue;
-        } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
-          newEncodedSeedValue = privateKeyValue;
+        switchToEncodedTabFromError();
+      }}
+      onKeyUp={event => {
+        if (['Enter', ' '].includes(event.key)) {
+          switchToEncodedTabFromError();
         }
-
-        setEncodedSeedValue(newEncodedSeedValue);
-        setShowValidationError(false);
-        setActiveTab(ENCODED_SEED_TAB_INDEX);
       }}
     />
   );
