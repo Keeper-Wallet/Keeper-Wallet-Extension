@@ -29,11 +29,12 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
     network,
     networkCode,
   }: EncodedSeedWalletInput) {
-    const decodedSeed = libCrypto.base58Decode(encodedSeed);
+    const encodedSeedWithoutPrefix = encodedSeed.replace(/^base58:/, '');
+    const decodedSeed = libCrypto.base58Decode(encodedSeedWithoutPrefix);
 
     super({
       address: libCrypto.address(decodedSeed, networkCode),
-      encodedSeed,
+      encodedSeed: encodedSeedWithoutPrefix,
       name,
       network,
       networkCode,
@@ -41,7 +42,10 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
       type: 'encodedSeed',
     });
 
-    this._adapter = new SeedAdapter(`base58:${encodedSeed}`, networkCode);
+    this._adapter = new SeedAdapter(
+      `base58:${encodedSeedWithoutPrefix}`,
+      networkCode
+    );
   }
 
   getSeed(): string {

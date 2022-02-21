@@ -89,17 +89,21 @@ export function ImportSeed({ isNew, setTab }: Props) {
   } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
     if (!encodedSeedValue) {
       validationError = t('importSeed.requiredError');
-    } else if (!isValidBase58(encodedSeedValue)) {
-      validationError = t('importSeed.base58DecodeError');
-    } else if (encodedSeedValue.length < ENCODED_SEED_MIN_LENGTH) {
-      validationError = t('importSeed.encodedSeedLengthError', {
-        minLength: ENCODED_SEED_MIN_LENGTH,
-      });
     } else {
-      address = libCrypto.address(
-        libCrypto.base58Decode(encodedSeedValue),
-        networkCode
-      );
+      const unprefixed = encodedSeedValue.replace(/^base58:/, '');
+
+      if (!isValidBase58(unprefixed)) {
+        validationError = t('importSeed.base58DecodeError');
+      } else if (unprefixed.length < ENCODED_SEED_MIN_LENGTH) {
+        validationError = t('importSeed.encodedSeedLengthError', {
+          minLength: ENCODED_SEED_MIN_LENGTH,
+        });
+      } else {
+        address = libCrypto.address(
+          libCrypto.base58Decode(unprefixed),
+          networkCode
+        );
+      }
     }
   } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
     if (!privateKeyValue) {
