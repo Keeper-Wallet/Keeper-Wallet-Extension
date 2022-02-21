@@ -95,6 +95,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
         }
 
         setEncodedSeedValue(newEncodedSeedValue);
+        setShowValidationError(false);
         setActiveTab(ENCODED_SEED_TAB_INDEX);
       }}
     />
