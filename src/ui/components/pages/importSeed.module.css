@@ -14,3 +14,13 @@
   margin-bottom: 44px;
   height: 12px;
 }
+
+.errorSwitchTab {
+  background: none;
+  color: var(--color-submit400);
+  cursor: pointer;
+}
+
+.errorSwitchTab:hover {
+  color: var(--color-submit300);
+}

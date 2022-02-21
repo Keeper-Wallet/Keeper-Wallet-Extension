@@ -38,6 +38,10 @@ function isValidBase58(str: string) {
   }
 }
 
+function stripBase58Prefix(str: string) {
+  return str.replace(/^base58:/, '');
+}
+
 export function ImportSeed({ isNew, setTab }: Props) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -74,7 +78,27 @@ export function ImportSeed({ isNew, setTab }: Props) {
     networks.find(n => currentNetwork === n.name).code;
 
   let address: string | null = null;
-  let validationError: string | null = null;
+  let validationError: React.ReactElement | string | null = null;
+
+  const errorSwitchTabElement = (
+    <span
+      className={styles.errorSwitchTab}
+      role="button"
+      tabIndex={0}
+      onClick={() => {
+        let newEncodedSeedValue = '';
+
+        if (activeTab === SEED_TAB_INDEX) {
+          newEncodedSeedValue = seedValue;
+        } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+          newEncodedSeedValue = privateKeyValue;
+        }
+
+        setEncodedSeedValue(newEncodedSeedValue);
+        setActiveTab(ENCODED_SEED_TAB_INDEX);
+      }}
+    />
+  );
 
   if (activeTab === SEED_TAB_INDEX) {
     if (!seedValue) {
@@ -83,6 +107,18 @@ export function ImportSeed({ isNew, setTab }: Props) {
       validationError = t('importSeed.seedLengthError', {
         minLength: SEED_MIN_LENGTH,
       });
+    } else if (
+      seedValue.startsWith('base58:') &&
+      isValidBase58(stripBase58Prefix(seedValue))
+    ) {
+      validationError = (
+        <Trans
+          i18nKey="importSeed.base58PrefixError"
+          components={{
+            switchTab: errorSwitchTabElement,
+          }}
+        />
+      );
     } else {
       address = libCrypto.address(seedValue.trim(), networkCode);
     }
@@ -108,6 +144,18 @@ export function ImportSeed({ isNew, setTab }: Props) {
   } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
     if (!privateKeyValue) {
       validationError = t('importSeed.requiredError');
+    } else if (
+      privateKeyValue.startsWith('base58:') &&
+      isValidBase58(stripBase58Prefix(privateKeyValue))
+    ) {
+      validationError = (
+        <Trans
+          i18nKey="importSeed.base58PrefixError"
+          components={{
+            switchTab: errorSwitchTabElement,
+          }}
+        />
+      );
     } else if (!isValidBase58(privateKeyValue)) {
       validationError = t('importSeed.base58DecodeError');
     } else {

@@ -277,6 +277,7 @@
     "accountExistsError": "Account already exists",
     "address": "Account address",
     "base58DecodeError": "Doesn't look like base58-encoded value",
+    "base58PrefixError": "Looks like you're trying to import encoded seed. Please, <switchTab>switch to \"Encoded seed\" tab</switchTab> for that",
     "encodedSeed": "Encoded seed",
     "encodedSeedLengthError": "Encoded seed cannot be shorter than {{minLength}} characters",
     "importAccount": "Import Account",
