@@ -363,7 +363,7 @@ export class MessageController extends EventEmitter {
     const result = this.store
       .getState()
       .messages.find(message => message.id === id);
-    if (!result) throw new Error(`Failed to ge message with id ${id}`);
+    if (!result) throw new Error(`Failed to get message with id ${id}`);
     return result;
   }
 
