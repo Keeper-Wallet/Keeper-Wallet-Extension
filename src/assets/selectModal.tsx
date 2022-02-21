@@ -78,6 +78,11 @@ export function AssetSelectModal({
     const viewportBcr = listViewport.getBoundingClientRect();
 
     const listItem = list.children[selectedIndex];
+
+    if (!listItem) {
+      return;
+    }
+
     const listItemBcr = listItem.getBoundingClientRect();
 
     if (
@@ -110,25 +115,32 @@ export function AssetSelectModal({
             onKeyDown={event => {
               switch (event.key) {
                 case 'ArrowDown':
-                  setSelectedIndex(
-                    prevState => (prevState + 1) % filteredAndSortedItems.length
-                  );
+                  if (filteredAndSortedItems.length !== 0) {
+                    setSelectedIndex(
+                      prevState =>
+                        (prevState + 1) % filteredAndSortedItems.length
+                    );
+                  }
                   event.preventDefault();
                   break;
                 case 'ArrowUp':
-                  setSelectedIndex(prevState => {
-                    let newIndex = prevState - 1;
+                  if (filteredAndSortedItems.length !== 0) {
+                    setSelectedIndex(prevState => {
+                      let newIndex = prevState - 1;
 
-                    if (newIndex < 0) {
-                      newIndex += filteredAndSortedItems.length;
-                    }
+                      if (newIndex < 0) {
+                        newIndex += filteredAndSortedItems.length;
+                      }
 
-                    return newIndex;
-                  });
+                      return newIndex;
+                    });
+                  }
                   event.preventDefault();
                   break;
                 case 'Enter':
-                  onSelect(filteredAndSortedItems[selectedIndex].asset.id);
+                  if (filteredAndSortedItems.length !== 0) {
+                    onSelect(filteredAndSortedItems[selectedIndex].asset.id);
+                  }
                   event.preventDefault();
                   break;
               }
