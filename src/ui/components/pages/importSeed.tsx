@@ -178,7 +178,13 @@ export function ImportSeed({ isNew, setTab }: Props) {
           setTab(PAGES.ACCOUNT_NAME_SEED);
         }}
       >
-        <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
+        <Tabs
+          activeTab={activeTab}
+          onTabChange={newActiveTab => {
+            setShowValidationError(false);
+            setActiveTab(newActiveTab);
+          }}
+        >
           <TabList>
             <Tab>
               <Trans i18nKey="importSeed.plainText" />
