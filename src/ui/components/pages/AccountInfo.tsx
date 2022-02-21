@@ -348,11 +348,13 @@ class AccountInfoComponent extends React.Component {
     this.requestPrivateData({
       copyCallback,
       request: password =>
-        background.getAccountEncodedSeed(
-          this.props.selectedAccount.address,
-          this.props.network,
-          password
-        ),
+        background
+          .getAccountEncodedSeed(
+            this.props.selectedAccount.address,
+            this.props.network,
+            password
+          )
+          .then(encodedSeed => `base58:${encodedSeed}`),
       retry: () => this.getEncodedSeed(copyCallback),
     });
   }
