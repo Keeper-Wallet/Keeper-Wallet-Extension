@@ -262,7 +262,16 @@ export const lock = store => next => action => {
 
 export const signAndPublishTransaction = () => next => action => {
   if (action.type === ACTION.SIGN_AND_PUBLISH_TRANSACTION) {
-    background.signAndPublishTransaction(action.payload);
+    background.signAndPublishTransaction(action.payload).catch(err => {
+      if (
+        err instanceof Error &&
+        /user denied request|failed request/i.test(err.message)
+      ) {
+        return;
+      }
+
+      throw err;
+    });
   }
 
   return next(action);
