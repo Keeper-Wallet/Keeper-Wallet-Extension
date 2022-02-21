@@ -42,15 +42,15 @@ export class SeedWallet extends Wallet<SeedWalletData> {
   }
 
   getPrivateKey() {
-    return libCrypto.privateKey(this.data.seed);
+    return libCrypto.privateKey(this.getSeed());
   }
 
   async signWavesAuth(data) {
-    return wavesAuth(data, this.data.seed);
+    return wavesAuth(data, this.getSeed());
   }
 
   async signCustomData(data) {
-    return customData(data, this.data.seed);
+    return customData(data, this.getSeed());
   }
 
   async signTx(tx: TSignData) {
