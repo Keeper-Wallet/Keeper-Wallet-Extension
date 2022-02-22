@@ -20,9 +20,8 @@ export class ApproveBtn extends React.PureComponent {
   }
 
   render() {
-    const { disabled } = this.state;
-    const { autoClickProtection, ...props } = this.props;
-    const myProps = { ...props, disabled };
+    const { pending } = this.state;
+    const { autoClickProtection, disabled, loading, ...restProps } = this.props;
 
     const progressProps = {
       percent: this.state.percentage,
@@ -33,13 +32,16 @@ export class ApproveBtn extends React.PureComponent {
       size: 30,
       lineCap: 'round',
     };
+
     return (
       <Button
-        {...myProps}
-        className={cn(myProps.className, styles.hideText, styles.svgWrapper)}
+        {...restProps}
+        disabled={disabled || loading || pending}
+        loading={loading}
+        className={cn(restProps.className, styles.hideText, styles.svgWrapper)}
       >
-        {this.props.children}
-        {disabled ? <CircularProgressbar {...progressProps} /> : null}
+        {!loading && this.props.children}
+        {pending && <CircularProgressbar {...progressProps} />}
       </Button>
     );
   }
@@ -60,14 +62,14 @@ export class ApproveBtn extends React.PureComponent {
   static getDerivedStateFromProps(props, state) {
     const { timerEnd, currentTime } = state;
     const autoClickProtection = props.autoClickProtection;
-    const disabled =
-      (!timerEnd || timerEnd > currentTime) && autoClickProtection;
+    const pending =
+      autoClickProtection && (!timerEnd || timerEnd > currentTime);
     const percentage = !timerEnd
       ? 0
       : 100 -
         Math.floor(
           ((timerEnd - currentTime) / CONFIG.MESSAGES_CONFIRM_TIMEOUT) * 100
         );
-    return { ...props, disabled, timerEnd, percentage };
+    return { ...props, pending, timerEnd, percentage };
   }
 }

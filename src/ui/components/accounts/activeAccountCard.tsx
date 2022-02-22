@@ -9,12 +9,7 @@ import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
-
-interface Account {
-  address: string;
-  name: string;
-  network: string;
-}
+import { Account } from '../../../accounts/types';
 
 interface Props {
   account: Account;
@@ -40,7 +35,7 @@ export function ActiveAccountCard({
   return (
     <div className={styles.root} data-testid="activeAccountCard">
       <div className={styles.accountInfo}>
-        <Avatar size={40} address={account.address} />
+        <Avatar size={40} address={account.address} type={account.type} />
 
         <div className={styles.accountInfoText}>
           <div className={styles.accountName} data-testid="accountName">

@@ -1,4 +1,4 @@
-export type AccountType = 'seed' | 'encodedSeed' | 'privateKey' | 'ledger';
+export type AccountType = 'seed' | 'encodedSeed' | 'privateKey' | 'ledger' | 'wx';
 export type NetworkName = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
 
 export interface Account {
@@ -9,6 +9,8 @@ export interface Account {
   networkCode: string;
   publicKey: string;
   type: AccountType;
+  uuid?: string;
+  username?: string;
 }
 
 export type KeystoreAccount = Pick<
@@ -19,6 +21,7 @@ export type KeystoreAccount = Pick<
     | { type?: 'seed'; seed: string }
     | { type: 'encodedSeed'; encodedSeed: string }
     | { type: 'privateKey'; privateKey: string }
+    | { type: 'wx'; publicKey: string; address: string; uuid: string }
   );
 
 export type KeystoreProfiles = Record<

@@ -87,6 +87,19 @@ export const Import = connect((state: any) => ({
             </div>
           </Button>
         </div>
+
+        <div className={styles.importButtonsItem}>
+          <Button
+            className="fullwidth"
+            data-testid="importEmail"
+            type="transparent"
+            onClick={() => setTab('import_email')}
+          >
+            <div className="body1">
+              <Trans i18nKey="import.viaEmail" />
+            </div>
+          </Button>
+        </div>
       </div>
 
       <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>

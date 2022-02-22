@@ -13,12 +13,14 @@
     "copyToClipboard": "Click to copy to clipboard",
     "encodedSeed": "Encoded seed",
     "enter": "Enter",
+    "email": "Email",
     "modal": {
       "error": "Incorrect password"
     },
     "password": "Password",
     "passwordError": "Incorrect password",
     "privateKeyNoBackupPhrase": "This account was imported using private key, so there's no backup phrase to copy",
+    "emailNoBackupPhrase": "This account was imported using the Waves.Exchange account, so there is no backup phrase or private key to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
     "seed": "Backup phrase",
@@ -254,7 +256,27 @@
     "importVia": "Or import via",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
-    "viaSeed": "Seed Phrase or Private Key"
+    "viaSeed": "Seed Phrase or Private Key",
+    "viaEmail": "Email Account"
+  },
+  "importEmail": {
+    "importEmailTitle": "Import Email Account",
+    "importEmailDesc": "Connect an email account created on Waves.Exchange",
+    "passwordLabel": "Password",
+    "passwordRequired": "Enter password",
+    "loginRequired": "Confirm Email Account",
+    "limitExceeded": "Attempt limit exceeded, please try after some time",
+    "emailLabel": "Email",
+    "emailRequired": "Enter correct email",
+    "credentialsError": "Incorrect username or password",
+    "continue": "Continue",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "verifyAccountTitle": "Verify Your Account",
+    "verifyAccountDesc": "Please enter the 6-digit verification code received by {{destination}}",
+    "incorrectCode": "Wrong code. Please, try again",
+    "alreadyExists": "Account already exists"
   },
   "importKeystore": {
     "browse": "Browse...",

@@ -65,15 +65,9 @@ export const allNetworksAccounts = createSimpleReducer<Account[]>(
 );
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
-interface SelectedAccountState {
-  address?: string;
-  name?: string;
-  networkCode?: string;
-}
-
 export function selectedAccount(
-  state: SelectedAccountState = {},
-  action: { type: string; payload: SelectedAccountState }
+  state: Partial<Account> = {},
+  action: { type: string; payload: Partial<Account> }
 ) {
   switch (action.type) {
     case ACTION.SELECT_ACCOUNT:

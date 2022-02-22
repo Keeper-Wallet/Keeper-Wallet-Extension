@@ -134,4 +134,5 @@ async function startUi() {
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
+  window.addEventListener('beforeunload', () => background.identityClear());
 }

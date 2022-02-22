@@ -1,13 +1,15 @@
-import { SeedWalletInput, SeedWallet } from './seed';
-import { EncodedSeedWalletInput, EncodedSeedWallet } from './encodedSeed';
-import { PrivateKeyWalletInput, PrivateKeyWallet } from './privateKey';
+import { SeedWallet, SeedWalletInput } from './seed';
+import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
+import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
 import { LedgerWallet, LedgerWalletInput, LedgerApi } from './ledger';
+import { WxWallet, WxWalletInput } from './wx';
 
 export function createWallet(
   input:
     | ({ type: 'seed' } & SeedWalletInput)
     | ({ type: 'encodedSeed' } & EncodedSeedWalletInput)
     | ({ type: 'privateKey' } & PrivateKeyWalletInput)
+    | ({ type: 'wx' } & WxWalletInput)
     | ({ type: 'ledger' } & LedgerWalletInput),
   {
     ledger,
@@ -37,6 +39,19 @@ export function createWallet(
         networkCode: input.networkCode,
         privateKey: input.privateKey,
       });
+    case 'wx':
+      return new WxWallet(
+        {
+          name: input.name,
+          network: input.network,
+          networkCode: input.networkCode,
+          publicKey: input.publicKey,
+          address: input.address,
+          uuid: input.uuid,
+          username: input.username,
+        },
+        this.identity
+      );
     case 'ledger':
       return new LedgerWallet(
         {

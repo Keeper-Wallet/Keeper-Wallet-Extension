@@ -72,5 +72,6 @@
     }
   ],
   "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "idle"],
-  "web_accessible_resources": ["inpage.js"]
+  "web_accessible_resources": ["inpage.js"],
+  "content_security_policy": "script-src 'self' https://*.geetest.com; object-src 'self'"
 }

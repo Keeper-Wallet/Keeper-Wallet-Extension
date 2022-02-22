@@ -116,7 +116,7 @@ module.exports = ({
       filename: 'popup.html',
       template: path.resolve(SOURCE_FOLDER, 'popup.html'),
       hash: true,
-      excludeChunks: ['background', 'contentscript', 'inpage'],
+      excludeChunks: ['background', 'contentscript', 'inpage', 'geeTestCode'],
     })
   );
 
@@ -126,7 +126,7 @@ module.exports = ({
       filename: 'notification.html',
       template: path.resolve(SOURCE_FOLDER, 'notification.html'),
       hash: true,
-      excludeChunks: ['background', 'contentscript', 'inpage'],
+      excludeChunks: ['background', 'contentscript', 'inpage', 'geeTestCode'],
     })
   );
   plugins.push(
@@ -144,6 +144,7 @@ module.exports = ({
       background: path.resolve(SOURCE_FOLDER, 'background'),
       contentscript: path.resolve(SOURCE_FOLDER, 'contentscript'),
       inpage: path.resolve(SOURCE_FOLDER, 'inpage'),
+      geeTestCode: path.resolve(SOURCE_FOLDER, 'geeTestCode'),
     },
     output: {
       filename: '[name].js',
@@ -192,7 +193,7 @@ module.exports = ({
         },
         {
           test: /\.styl/,
-          exclude: [/node_modules/],
+          exclude: /node_modules/,
           loader: ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [

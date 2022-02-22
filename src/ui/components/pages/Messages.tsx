@@ -233,7 +233,7 @@ class MessagesComponent extends React.Component {
   }
 
   approve(e, params?) {
-    e.preventDefault();
+    e?.preventDefault();
 
     if (this.hasApproved) {
       return;

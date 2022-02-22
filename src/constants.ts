@@ -130,3 +130,30 @@ export const DEFAULT_IGNORE_ERRORS_CONFIG = {
   contentScriptApprove: [] as string[],
   popupApprove: [] as string[],
 };
+
+export const DEFAULT_IDENTITY_CONFIG = {
+  testnet: {
+    apiUrl: 'https://id-testnet.waves.exchange/api',
+    cognito: {
+      userPoolId: 'eu-central-1_6Bo3FEwt5',
+      clientId: '7l8bv0kmvrb4s4n1topofh9d80',
+      endpoint: 'https://testnet.waves.exchange/cognito',
+    },
+    geetest: {
+      url: 'https://testnet.waves.exchange/geetest/register',
+    },
+  },
+  mainnet: {
+    apiUrl: 'https://id.waves.exchange/api',
+    cognito: {
+      userPoolId: 'eu-central-1_AXIpDLJQx',
+      clientId: 'k63vrrmuav01s6p2d344ppnf4',
+      endpoint: 'https://waves.exchange/cognito',
+    },
+    geetest: {
+      url: 'https://waves.exchange/geetest/register',
+    },
+  },
+};
+
+export const IDENTITY_CONFIG_UPDATE_INTERVAL = 60000;

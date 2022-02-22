@@ -1,6 +1,7 @@
 import ObservableStore from 'obs-store';
 import { seedUtils } from '@waves/waves-transactions';
-import { createWallet } from '../wallets';
+import { createWallet } from 'wallets';
+import { EventEmitter } from 'events';
 
 function encrypt(object, password) {
   const jsonObj = JSON.stringify(object);
@@ -16,14 +17,10 @@ function decrypt(ciphertext, password) {
   }
 }
 
-export class WalletController {
+export class WalletController extends EventEmitter {
   constructor(options = {}) {
-    const defaults = {
-      initialized: false,
-    };
-    const initState = Object.assign({}, defaults, options.initState);
-    this.store = new ObservableStore(initState);
-    this.store.updateState({ locked: true });
+    super();
+    this.store = new ObservableStore(options.initState);
     this.password = null;
     this.wallets = [];
     this.getNetwork = options.getNetwork;
@@ -31,12 +28,11 @@ export class WalletController {
     this.getNetworkCode = options.getNetworkCode;
     this.ledger = options.ledger;
     this.trashControl = options.trash;
+    this.identity = options.identity;
   }
 
   // Public
   addWallet(options) {
-    if (this.store.getState().locked) throw new Error('App is locked');
-
     const networkCode =
       options.networkCode || this.getNetworkCode(options.network);
 
@@ -46,10 +42,10 @@ export class WalletController {
 
     this.wallets.push(wallet);
     this._saveWallets();
+    this.emit('addWallet', wallet);
   }
 
   removeWallet(address, network) {
-    if (this.store.getState().locked) throw new Error('App is locked');
     const wallet = this.getWalletsByNetwork(network).find(
       wallet => wallet.getAccount().address === address
     );
@@ -58,6 +54,7 @@ export class WalletController {
       return w !== wallet;
     });
     this._saveWallets();
+    this.emit('removeWallet', wallet);
   }
 
   getAccounts() {
@@ -67,20 +64,12 @@ export class WalletController {
   lock() {
     this.password = null;
     this.wallets = [];
-    if (!this.store.getState().locked) {
-      this.store.updateState({ locked: true });
-    }
   }
 
   unlock(password) {
     this._restoreWallets(password);
     this.password = password;
     this._migrateWalletsNetwork();
-    this.store.updateState({ locked: false });
-  }
-
-  isLocked() {
-    return this.store.getState().locked;
   }
 
   initVault(password) {
@@ -91,18 +80,13 @@ export class WalletController {
     this.password = password;
     this.wallets = [];
     this._saveWallets();
-    this.store.updateState({ locked: false, initialized: true });
   }
 
   deleteVault() {
     (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
     this.password = null;
     this.wallets = [];
-    this.store.updateState({
-      locked: true,
-      initialized: false,
-      vault: undefined,
-    });
+    this.store.updateState({ vault: undefined });
   }
 
   newPassword(oldPassword, newPassword) {
@@ -151,6 +135,7 @@ export class WalletController {
   /**
    * Returns encrypted with current password account seed
    * @param {string} address - wallet address
+   * @param network
    * @returns {string} encrypted seed
    */
   encryptedSeed(address, network) {
@@ -246,6 +231,7 @@ export class WalletController {
    * Signs transaction
    * @param {string} address - wallet address
    * @param {array} bytes - array of bytes
+   * @param network
    * @returns {Promise<string>} signed transaction as json string
    */
   async signBytes(address, bytes, network) {
@@ -257,6 +243,7 @@ export class WalletController {
    * Signs request
    * @param {string} address - wallet address
    * @param {object} request - transaction to sign
+   * @param network
    * @returns {Promise<string>} signature
    */
   async signRequest(address, request, network) {
@@ -268,6 +255,7 @@ export class WalletController {
    * Signs request
    * @param {string} address - wallet address
    * @param {object} authData - object, representing auth request
+   * @param network
    * @returns {Promise<object>} object, representing auth response
    */
   async auth(address, authData, network) {
@@ -322,13 +310,12 @@ export class WalletController {
   }
 
   _createWallet(user) {
-    return createWallet(user, {
+    return createWallet.call(this, user, {
       ledger: this.ledger,
     });
   }
 
   _findWallet(address, network) {
-    if (this.store.getState().locked) throw new Error('App is locked');
     const wallet = this.getWalletsByNetwork(network).find(
       wallet => wallet.getAccount().address === address
     );
