@@ -5,6 +5,7 @@ import {
   ITransaction,
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
+import { ISignTxData } from '@waves/ledger/lib/Waves';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -126,6 +127,34 @@ export const idleOptions = createSimpleReducer(
   {},
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
+
+export type LedgerSignRequest = { id: string } & {
+  type: 'transaction';
+  data: ISignTxData;
+};
+
+export interface LedgerSignRequestsAddAction {
+  type: typeof ACTION.LEDGER_SIGN_REQUESTS_ADD;
+  payload: LedgerSignRequest;
+}
+
+export interface LedgerSignRequestsClearAction {
+  type: typeof ACTION.LEDGER_SIGN_REQUESTS_CLEAR;
+}
+
+export function ledgerSignRequests(
+  state: LedgerSignRequest[] = [],
+  action: LedgerSignRequestsAddAction | LedgerSignRequestsClearAction
+) {
+  switch (action.type) {
+    case ACTION.LEDGER_SIGN_REQUESTS_ADD:
+      return state.concat(action.payload);
+    case ACTION.LEDGER_SIGN_REQUESTS_CLEAR:
+      return [];
+    default:
+      return state;
+  }
+}
 
 export const messages = (
   state: unknown[] = [],

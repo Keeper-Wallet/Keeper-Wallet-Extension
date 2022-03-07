@@ -14,9 +14,11 @@ import { WAVESKEEPER_DEBUG } from './constants';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
+import { ledgerSignRequestsAddAction } from './ui/actions/ledger';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from './ui/components/Root';
 import { LANGS } from './ui/i18n';
+import { LedgerSignRequest } from './ui/reducers/updateState';
 import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
 
@@ -87,6 +89,9 @@ async function startUi() {
       if (isNotificationWindow) {
         window.close();
       }
+    },
+    ledgerSignRequest: async (request: LedgerSignRequest) => {
+      store.dispatch(ledgerSignRequestsAddAction(request));
     },
   };
 

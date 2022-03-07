@@ -2,6 +2,7 @@ import { SeedWallet, SeedWalletInput } from './seed';
 import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
 import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
 import { WxWallet, WxWalletInput } from './wx';
+import { LedgerWallet, LedgerWalletInput, LedgerApi } from './ledger';
 import { IdentityApi } from '../controllers/IdentityController';
 
 export function createWallet(
@@ -9,11 +10,14 @@ export function createWallet(
     | ({ type: 'seed' } & SeedWalletInput)
     | ({ type: 'encodedSeed' } & EncodedSeedWalletInput)
     | ({ type: 'privateKey' } & PrivateKeyWalletInput)
-    | ({ type: 'wx' } & WxWalletInput),
+    | ({ type: 'wx' } & WxWalletInput)
+    | ({ type: 'ledger' } & LedgerWalletInput),
   {
     identity,
+    ledger,
   }: {
     identity: IdentityApi;
+    ledger: LedgerApi;
   }
 ) {
   switch (input.type) {
@@ -50,6 +54,18 @@ export function createWallet(
           username: input.username,
         },
         identity
+      );
+    case 'ledger':
+      return new LedgerWallet(
+        {
+          address: input.address,
+          id: input.id,
+          name: input.name,
+          network: input.network,
+          networkCode: input.networkCode,
+          publicKey: input.publicKey,
+        },
+        ledger
       );
     default:
       throw new Error(`Unsupported wallet type: "${(input as any).type}"`);

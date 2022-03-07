@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { LedgerSignRequestModal } from 'ledger/signRequestModal';
 import {
   addBackTab,
   loading,
@@ -187,6 +188,7 @@ class RootComponent extends React.Component {
         />
         <Component {...pageProps} key={tab} />
         <Bottom {...pageConf.bottom} />
+        <LedgerSignRequestModal />
       </div>
     );
   }

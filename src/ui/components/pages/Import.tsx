@@ -1,3 +1,4 @@
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
@@ -77,6 +78,20 @@ export const Import = connect((state: any) => ({
             <Trans i18nKey="import.viaSeed" />
           </Button>
         </div>
+
+        {TransportWebUSB.isSupported && (
+          <div className={styles.importButtonsItem}>
+            <Button
+              className="fullwidth"
+              type="transparent"
+              onClick={() => setTab(PAGES.IMPORT_LEDGER)}
+            >
+              <div className="body1">
+                <Trans i18nKey="import.viaLedger" />
+              </div>
+            </Button>
+          </div>
+        )}
 
         <div className={styles.importButtonsItem}>
           <Button

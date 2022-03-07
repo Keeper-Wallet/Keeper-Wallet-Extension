@@ -1,0 +1,20 @@
+.title {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.instructions {
+  font-size: 14px;
+  color: #999;
+}
+
+.error {
+  margin-bottom: 10px;
+}
+
+.loader {
+  height: 200px;
+  background: url(../ui/assets/img/loader.gif) center no-repeat;
+  background-size: 100px;
+}
