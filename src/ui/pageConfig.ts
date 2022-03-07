@@ -29,6 +29,7 @@ import {
   SettingsGeneral,
   Welcome,
 } from './components/pages';
+import { ImportLedger } from './components/pages/importLedger/importLedger';
 import { ImportSeed } from './components/pages/importSeed';
 import { Swap } from './components/pages/swap/swap';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
@@ -50,6 +51,7 @@ export const PAGES = {
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',
   IMPORT_KEYSTORE: 'import_keystore',
+  IMPORT_LEDGER: 'import_ledger',
   IMPORT_SEED: 'import_seed',
   IMPORT_SEED_BACK: 'import_seed_back',
   EXPORT_ACCOUNTS: 'export_accounts',
@@ -228,6 +230,17 @@ export const PAGES_CONF = {
   },
   [PAGES.IMPORT_KEYSTORE]: {
     component: ImportKeystore,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
+    },
+  },
+  [PAGES.IMPORT_LEDGER]: {
+    component: ImportLedger,
     bottom: {
       hide: true,
     },

@@ -253,6 +253,7 @@
     "createNew": "Create a new account",
     "importVia": "Or import via",
     "viaKeystore": "Keystore File",
+    "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key"
   },
   "importKeystore": {
@@ -272,6 +273,12 @@
     "noFileSelected": "No file selected",
     "passwordLabel": "Password",
     "passwordPlaceholder": "Password used to create Keystore"
+  },
+  "importLedger": {
+    "accountExistsError": "Account already exists",
+    "connectButton": "Connect",
+    "instructions": "Connect Ledger device, open Waves app and click the button below",
+    "title": "Import Ledger"
   },
   "importSeed": {
     "accountExistsError": "Account already exists",
@@ -296,6 +303,15 @@
   "langsSettings": {
     "confirm": "Confirm",
     "title": "Change the language"
+  },
+  "ledgerErrors": {
+    "unknown": "Could not connect to ledger. Please try again",
+    "usedBySomeOtherApp": "Seems like ledger is already used by another application. Close all applications that may use ledger and try again."
+  },
+  "ledgerSignRequestModal": {
+    "connectButton": "Connect",
+    "instructions": "Connect Ledger device and open Waves app and click the button below",
+    "title": "Connecting..."
   },
   "login": {
     "enter": "Enter",

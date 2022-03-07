@@ -1,0 +1,26 @@
+.root {
+  position: relative;
+  margin: 84px 60px 0;
+  height: calc(100% - 180px);
+}
+
+.title {
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.instructions {
+  font-size: 14px;
+  color: #999;
+}
+
+.error {
+  margin-bottom: 10px;
+}
+
+.loader {
+  height: 200px;
+  background: url(../../../assets/img/loader.gif) center no-repeat;
+  background-size: 100px;
+}

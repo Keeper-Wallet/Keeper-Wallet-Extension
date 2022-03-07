@@ -29,6 +29,7 @@ export class WalletController {
     this.getNetwork = options.getNetwork;
     this.getNetworks = options.getNetworks;
     this.getNetworkCode = options.getNetworkCode;
+    this.ledger = options.ledger;
     this.trashControl = options.trash;
   }
 
@@ -39,7 +40,7 @@ export class WalletController {
     const networkCode =
       options.networkCode || this.getNetworkCode(options.network);
 
-    const wallet = createWallet({ ...options, networkCode });
+    const wallet = this._createWallet({ ...options, networkCode });
 
     this._checkForDuplicate(wallet.getAccount().address, options.network);
 
@@ -215,7 +216,7 @@ export class WalletController {
       return data;
     });
 
-    this.wallets = walletsData.map(user => createWallet(user));
+    this.wallets = walletsData.map(user => this._createWallet(user));
     this._saveWallets();
   }
 
@@ -317,7 +318,13 @@ export class WalletController {
 
   _restoreWallets(password) {
     const decryptedData = decrypt(this.store.getState().vault, password);
-    this.wallets = decryptedData.map(user => createWallet(user));
+    this.wallets = decryptedData.map(user => this._createWallet(user));
+  }
+
+  _createWallet(user) {
+    return createWallet(user, {
+      ledger: this.ledger,
+    });
   }
 
   _findWallet(address, network) {

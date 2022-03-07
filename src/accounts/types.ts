@@ -1,4 +1,4 @@
-export type AccountType = 'seed' | 'encodedSeed' | 'privateKey';
+export type AccountType = 'seed' | 'encodedSeed' | 'privateKey' | 'ledger';
 export type NetworkName = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
 
 export interface Account {

@@ -469,6 +469,19 @@ class Background {
     }
   }
 
+  async ledgerSignResponse(requestId: string, err: unknown, signature: string) {
+    try {
+      await this.initPromise;
+      return await this.background.ledgerSignResponse(
+        requestId,
+        err,
+        signature
+      );
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);
@@ -492,6 +505,7 @@ export enum WalletTypes {
   Seed = 'seed',
   EncodedSeed = 'encoded_seed',
   PrivateKey = 'private_key',
+  Ledger = 'ledger',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
 }

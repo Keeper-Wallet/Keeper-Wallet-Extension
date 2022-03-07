@@ -40,7 +40,7 @@ class AccountAdapterApi {
   }
 }
 
-class InfoAdapter extends CustomAdapter {
+export class InfoAdapter extends CustomAdapter {
   constructor(account) {
     super(new AccountAdapterApi(account));
     this._code = account.networkCode.charCodeAt(0);

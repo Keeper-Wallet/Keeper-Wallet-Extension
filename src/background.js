@@ -7,6 +7,7 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
+import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
 import { MSG_STATUSES, WAVESKEEPER_DEBUG } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
@@ -291,6 +292,13 @@ class BackgroundService extends EventEmitter {
       getNetworks: this.networkController.getNetworks.bind(
         this.networkController
       ),
+      ledger: {
+        signTransaction: data =>
+          this.ledgerSign('transaction', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+      },
       trash: this.trash,
     });
 
@@ -596,6 +604,10 @@ class BackgroundService extends EventEmitter {
 
       shouldIgnoreError: async (context, message) =>
         this.remoteConfigController.shouldIgnoreError(context, message),
+
+      ledgerSignResponse: async (requestId, err, signature) => {
+        this.emit(`ledger:signResponse:${requestId}`, err, signature);
+      },
     };
   }
 
@@ -917,12 +929,17 @@ class BackgroundService extends EventEmitter {
         remote.closeEdgeNotificationWindow.bind(remote);
       this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
 
+      const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
+
+      this.on('ledger:signRequest', ledgerSignRequest);
+
       dnode.on('end', () => {
         this.removeListener('update', sendUpdate);
         this.removeListener(
           'closeEdgeNotificationWindow',
           closeEdgeNotificationWindow
         );
+        this.removeListener('ledger:signRequest', ledgerSignRequest);
       });
 
       this.statisticsController.sendOpenEvent();
@@ -1009,5 +1026,21 @@ class BackgroundService extends EventEmitter {
       messages,
       txVersion: adapter.getSignVersions(),
     };
+  }
+
+  ledgerSign(type, data) {
+    return new Promise((resolve, reject) => {
+      const requestId = uuidv4();
+
+      this.emit('ledger:signRequest', { id: requestId, type, data });
+
+      this.once(`ledger:signResponse:${requestId}`, (err, signature) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(signature);
+      });
+    });
   }
 }
