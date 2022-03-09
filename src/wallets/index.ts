@@ -1,8 +1,9 @@
 import { SeedWallet, SeedWalletInput } from './seed';
 import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
 import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
-import { LedgerWallet, LedgerWalletInput, LedgerApi } from './ledger';
+import { LedgerApi, LedgerWallet, LedgerWalletInput } from './ledger';
 import { WxWallet, WxWalletInput } from './wx';
+import { IdentityApi } from '../controllers/IdentityController';
 
 export function createWallet(
   input:
@@ -13,8 +14,10 @@ export function createWallet(
     | ({ type: 'ledger' } & LedgerWalletInput),
   {
     ledger,
+    identity,
   }: {
     ledger: LedgerApi;
+    identity: IdentityApi;
   }
 ) {
   switch (input.type) {
@@ -50,7 +53,7 @@ export function createWallet(
           uuid: input.uuid,
           username: input.username,
         },
-        this.identity
+        identity
       );
     case 'ledger':
       return new LedgerWallet(

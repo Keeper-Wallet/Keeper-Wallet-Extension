@@ -1,7 +1,7 @@
-import { useAppSelector } from '../../../store';
+import { useAppSelector } from 'ui/store';
 import * as React from 'react';
-import background from '../../../services/Background';
-import { Button, Modal } from '../../ui';
+import background from 'ui/services/Background';
+import { Button, Modal } from 'ui/components/ui';
 import cn from 'classnames';
 import { Login } from './login';
 import { Trans } from 'react-i18next';

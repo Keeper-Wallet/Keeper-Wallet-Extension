@@ -6,7 +6,7 @@ import * as create from 'parse-json-bignumber';
 import { convertInvokeListWorkAround } from './utils';
 import { InfoAdapter } from 'controllers/MessageController';
 import { convert } from '@waves/money-like-to-node';
-import { IdentityController } from 'controllers';
+import { IdentityApi } from '../controllers/IdentityController';
 
 const { stringify } = create({ BigNumber });
 
@@ -29,7 +29,7 @@ interface WxWalletData extends Account {
 
 export class WxWallet extends Wallet<WxWalletData> {
   private readonly _adapter: InfoAdapter;
-  private identity: IdentityController;
+  private identity: IdentityApi;
 
   constructor(
     {
@@ -41,7 +41,7 @@ export class WxWallet extends Wallet<WxWalletData> {
       uuid,
       username,
     }: WxWalletInput,
-    identity: IdentityController
+    identity: IdentityApi
   ) {
     super({
       address,
@@ -92,21 +92,18 @@ export class WxWallet extends Wallet<WxWalletData> {
     const signable = this._adapter.makeSignable(tx);
     const bytes = await signable.getBytes();
 
-    const signature = await this.identity.signBytes(bytes);
     const signData = await signable.getSignData();
 
-    const data = convert(
-      { ...signData, proofs: [...(signData.proofs || []), signature] },
-      (item: any) => new BigNumber(item)
-    );
+    signData.proofs.push(await this.signBytes(bytes));
+
+    const data = convert(signData, (item: any) => new BigNumber(item));
     convertInvokeListWorkAround(data);
 
     return stringify(data);
   }
 
-  async signBytes(bytes: number[]): Promise<string> {
-    // todo
-    throw new Error('Not implemented yet');
+  async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
+    return this.identity.signBytes(bytes);
   }
 
   async signRequest(request: TSignData): Promise<string> {

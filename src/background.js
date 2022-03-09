@@ -319,7 +319,9 @@ class BackgroundService extends EventEmitter {
           }),
       },
       trash: this.trash,
-      identity: this.identityController,
+      identity: {
+        signBytes: bytes => this.identityController.signBytes(bytes),
+      },
     });
 
     this.vaultController = new VaultController({

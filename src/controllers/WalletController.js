@@ -310,7 +310,8 @@ export class WalletController extends EventEmitter {
   }
 
   _createWallet(user) {
-    return createWallet.call(this, user, {
+    return createWallet(user, {
+      identity: this.identity,
       ledger: this.ledger,
     });
   }

@@ -50,13 +50,6 @@ type IdentityState = {
   cognitoSessions: string;
 };
 
-interface Options {
-  getNetwork: () => AllNetworks;
-  getSelectedAccount: () => WxWalletInput | any;
-  getIdentityConfig: () => IdentityConfig;
-  initState: IdentityState;
-}
-
 class IdentityStorage extends ObservableStore implements ICognitoStorage {
   public getState: () => IdentityState;
   public putState: (newState: Partial<IdentityState>) => void;
@@ -131,7 +124,18 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   }
 }
 
-export class IdentityController {
+interface Options {
+  getNetwork: () => AllNetworks;
+  getSelectedAccount: () => WxWalletInput | any;
+  getIdentityConfig: () => IdentityConfig;
+  initState: IdentityState;
+}
+
+export interface IdentityApi {
+  signBytes: (bytes: Array<number> | Uint8Array) => Promise<string>;
+}
+
+export class IdentityController implements IdentityApi {
   protected getNetwork: () => AllNetworks;
   protected getSelectedAccount: () => WxWalletInput | any;
   protected getIdentityConfig: (network: AllNetworks) => IdentityConfig;
