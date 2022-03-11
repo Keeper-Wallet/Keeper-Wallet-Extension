@@ -110,8 +110,17 @@ async function startUi() {
               }
             );
             break;
+          case 'request':
+            signature = await ledgerService.ledger.signRequest(
+              selectedAccount.id,
+              {
+                ...request.data,
+                dataBuffer: new Uint8Array(request.data.dataBuffer),
+              }
+            );
+            break;
           default:
-            throw new Error(`Unknown request type: "${request.type}"`);
+            throw new Error(`Unknown request type: "${(request as any).type}"`);
         }
 
         await backgroundService.ledgerSignResponse(request.id, null, signature);

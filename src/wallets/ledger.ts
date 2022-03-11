@@ -1,6 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { ISignTxData } from '@waves/ledger/lib/Waves';
+import { ISignData, ISignTxData } from '@waves/ledger/lib/Waves';
 import {
   AdapterType,
   CustomAdapter,
@@ -12,6 +12,7 @@ import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
 import { AssetDetail } from 'ui/services/Background';
+import { convertInvokeListWorkAround } from './utils';
 
 class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
   constructor(account: AccountOfType<'ledger'>) {
@@ -68,6 +69,7 @@ type LedgerWalletData = AccountOfType<'ledger'> & {
 };
 
 export interface LedgerApi {
+  signRequest: (data: ISignData) => Promise<string>;
   signTransaction: (data: ISignTxData) => Promise<string>;
 }
 
@@ -117,11 +119,11 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
   }
 
   async signWavesAuth(data) {
-    throw new Error('Not implemented');
+    throw new Error('signWavesAuth: Not implemented');
   }
 
   async signCustomData(data) {
-    throw new Error('Not implemented');
+    throw new Error('signCustomData: Not implemented');
   }
 
   async signTx(tx: TSignData) {
@@ -131,6 +133,8 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       signable.getBytes(),
       signable.getSignData(),
     ]);
+
+    convertInvokeListWorkAround(data);
 
     let amountPrecision: number, amount2Precision: number;
 
@@ -161,10 +165,13 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
   }
 
   signBytes(bytes: number[]) {
-    throw new Error('Not implemented');
+    throw new Error('signBytes: Not implemented');
   }
 
-  signRequest(request: TSignData) {
-    throw new Error('Not implemented');
+  async signRequest(request: TSignData) {
+    const signable = this._adapter.makeSignable(request);
+    const dataBuffer = await signable.getBytes();
+
+    return this.ledger.signRequest({ dataBuffer });
   }
 }

@@ -323,6 +323,11 @@ class BackgroundService extends EventEmitter {
         this.networkController
       ),
       ledger: {
+        signRequest: data =>
+          this.ledgerSign('request', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
         signTransaction: data =>
           this.ledgerSign('transaction', {
             ...data,
