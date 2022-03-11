@@ -66,6 +66,7 @@ const assetTickers = {
   yDf4UTg4DS75sCNP7oC1HraTN4KHtqmd6WueTid4PF1: 'MARVIN',
   B543bkZcZNo5GrUnd5fxB6EwkiJhAVyKCkPn5nWzZC2s: 'MATH',
   '8HYDtqEuHj3RDcwR8yxEvPq1qQSB9FazC8wMHtRb2TFe': 'MTNT',
+  eCNH1aqUnocub8PbNsxLNvZWGeVE98L2Crw3cGY6Gq2: 'MUNA',
   '4kwKSf4Bx2Wq8YxKnVZBhcEHyXzEtJ2pw7ixfJgirwf2': 'MUNDO',
   '5NmV5VAhkqormdwvaQjE54yPEkNwSRtcXxhLkJbVQqkN': 'NGNN',
   '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': 'NSBT',
