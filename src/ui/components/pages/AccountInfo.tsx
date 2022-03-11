@@ -7,15 +7,11 @@ import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
-import { seedUtils } from '@waves/waves-transactions';
 import { getAccountLink } from '../../urls';
-
-const { Seed } = seedUtils;
 
 class AccountInfoComponent extends React.Component {
   readonly props;
   readonly state = {} as any;
-  passInputEl: Input;
   copiedTimer;
   deffer;
 
@@ -48,10 +44,6 @@ class AccountInfoComponent extends React.Component {
     return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
   }
 
-  getSeed = cb => this.getAccountInfo('seed', cb);
-
-  getPrivate = cb => this.getAccountInfo('privateKey', cb);
-
   confirmPassword = e => {
     e.preventDefault();
     this.deffer.resolve(this.state.password);
@@ -65,13 +57,6 @@ class AccountInfoComponent extends React.Component {
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
 
   onCopyHandler = () => this.setCopiedModal();
-
-  getInputPassRef = el => {
-    this.passInputEl = el;
-    if (el) {
-      this.passInputEl.focus();
-    }
-  };
 
   onDeleteHandler = () => {
     this.props.setTab(PAGES.DELETE_ACTIVE_ACCOUNT);
@@ -162,33 +147,63 @@ class AccountInfoComponent extends React.Component {
           </div>
         </div>
 
-        <div id="accountInfoPrivateKey" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.privKey">Private key</Trans>
+        {['seed', 'encodedSeed', 'privateKey'].includes(
+          selectedAccount.type
+        ) && (
+          <div id="accountInfoPrivateKey" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.privKey">Private key</Trans>
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getPrivateKey(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
           </div>
-          <div className="input-like password-input tag1">
-            <CopyText
-              type="key"
-              getText={this.getPrivate}
-              showCopy={true}
-              onCopy={onCopyHandler}
-            />
-          </div>
-        </div>
+        )}
 
-        <div id="accountInfoBackupPhrase" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
+        {selectedAccount.type === 'seed' ? (
+          <div id="accountInfoBackupPhrase" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getSeed(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
           </div>
-          <div className="input-like password-input tag1">
-            <CopyText
-              type="key"
-              getText={this.getSeed}
-              showCopy={true}
-              onCopy={onCopyHandler}
-            />
+        ) : selectedAccount.type === 'privateKey' ? (
+          <div className="margin-main-big basic500">
+            <div className="input-title tag1">
+              <Trans i18nKey="accountInfo.backUp" />
+            </div>
+
+            <div>
+              <Trans i18nKey="accountInfo.privateKeyNoBackupPhrase" />
+            </div>
           </div>
-        </div>
+        ) : selectedAccount.type === 'encodedSeed' ? (
+          <div id="accountInfoBackupPhrase" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              <Trans i18nKey="accountInfo.encodedSeed" />
+            </div>
+            <div className="input-like password-input tag1">
+              <CopyText
+                type="key"
+                getText={cb => this.getEncodedSeed(cb)}
+                showCopy={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
+          </div>
+        ) : null}
 
         <div className={styles.accountInfoFooter}>
           <div className={styles.deleteButton} onClick={this.onDeleteHandler}>
@@ -216,7 +231,7 @@ class AccountInfoComponent extends React.Component {
                   <Trans i18nKey="accountInfo.password">Password</Trans>
                 </div>
                 <Input
-                  ref={this.getInputPassRef}
+                  autoFocus
                   type="password"
                   error={this.state.passwordError}
                   className="margin1"
@@ -286,62 +301,75 @@ class AccountInfoComponent extends React.Component {
     );
   }
 
-  showErrorModal() {
-    this.setState({ passwordError: true });
-  }
-
-  async getAccountInfo(field, cb) {
-    const address = this.props.selectedAccount.address;
-    this.deffer = {} as any;
-    this.deffer.promise = new Promise((res, rej) => {
-      this.deffer.resolve = res;
-      this.deffer.reject = rej;
-    });
-
+  private requestPrivateData({
+    copyCallback,
+    request,
+    retry,
+  }: {
+    copyCallback: (text: string) => void;
+    request: (password: string) => Promise<string>;
+    retry: () => void;
+  }) {
     this.setState({ showPassword: true });
 
-    this.waitPassword(address)
-      .then(this.onGetAccount(field, cb))
-      .catch(e => {
-        if (e) {
+    new Promise<string>((resolve, reject) => {
+      this.deffer = { resolve, reject };
+    })
+      .then(password => request(password))
+      .then(data => {
+        this.setState({ showPassword: false, passwordError: false });
+        copyCallback(data);
+      })
+      .catch(err => {
+        if (err) {
           this.setState({ passwordError: true });
-          this.showErrorModal();
-          this.getAccountInfo(field, cb);
-          return null;
+          retry();
+          return;
         }
 
         this.setState({ showPassword: false, passwordError: false });
       });
   }
 
-  private waitPassword(address) {
-    this.deffer.promise = new Promise((res, rej) => {
-      this.deffer.resolve = res;
-      this.deffer.reject = rej;
-    });
-
-    return this.deffer.promise.then(password => {
-      return background.exportAccount(address, password, this.props.network);
+  getSeed(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
+        background.getAccountSeed(
+          this.props.selectedAccount.address,
+          this.props.network,
+          password
+        ),
+      retry: () => this.getSeed(copyCallback),
     });
   }
 
-  private onGetAccount(field, cb) {
-    return data => {
-      this.setState({ showPassword: false, passwordError: false });
-      const networkCode =
-        this.props.customCodes[this.props.currentNetwork] ||
-        this.props.networks.find(
-          ({ name }) => this.props.currentNetwork === name
-        ).code ||
-        '';
-      const seed = new Seed(data, networkCode);
-      const info = {
-        address: seed.address,
-        privateKey: seed.keyPair.privateKey,
-        seed: seed.phrase,
-      };
-      cb(info[field]);
-    };
+  getEncodedSeed(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
+        background
+          .getAccountEncodedSeed(
+            this.props.selectedAccount.address,
+            this.props.network,
+            password
+          )
+          .then(encodedSeed => `base58:${encodedSeed}`),
+      retry: () => this.getEncodedSeed(copyCallback),
+    });
+  }
+
+  getPrivateKey(copyCallback: (text: string) => void) {
+    this.requestPrivateData({
+      copyCallback,
+      request: password =>
+        background.getAccountPrivateKey(
+          this.props.selectedAccount.address,
+          this.props.network,
+          password
+        ),
+      retry: () => this.getPrivateKey(copyCallback),
+    });
   }
 }
 

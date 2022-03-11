@@ -11,35 +11,17 @@ export function addUser(account, type: WalletTypes) {
   };
 }
 
-export function addUserSend() {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT_SEND,
-    payload: {
-      pending: true,
-      error: false,
-    },
-  };
-}
-
-export function addUserReceive(error?) {
-  return {
-    type: ACTION.SAVE_NEW_ACCOUNT_RECEIVE,
-    payload: {
-      pending: false,
-      error: !!error,
-      errorData: error,
-    },
-  };
-}
-
 export function batchAddAccounts(
-  accounts: Array<{
-    hasBackup: boolean;
-    name: string;
-    network: string;
-    seed: string;
-    type: string;
-  }>,
+  accounts: Array<
+    | {
+        name: string;
+        network: string;
+      } & (
+        | { type: 'seed'; seed: string }
+        | { type: 'encodedSeed'; encodedSeed: string }
+        | { type: 'privateKey'; privateKey: string }
+      )
+  >,
   type: WalletTypes
 ) {
   return {

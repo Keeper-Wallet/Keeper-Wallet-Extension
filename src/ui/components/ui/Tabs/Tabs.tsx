@@ -80,23 +80,31 @@ interface TabsProps {
   onTabChange?: (activeIndex) => void;
 }
 
-export function Tabs({ children, activeTab, onTabChange }: TabsProps) {
-  const [activeIndex, setActiveIndex] = React.useState(activeTab || 0);
+export function Tabs({
+  children,
+  activeTab: activeTabProp,
+  onTabChange,
+}: TabsProps) {
+  const [activeTabState, setActiveTabState] = React.useState(
+    activeTabProp ?? 0
+  );
+
+  const activeTab = activeTabProp ?? activeTabState;
 
   return (
     <>
       {React.Children.map(children, child => {
         switch (child.type) {
           case TabPanels:
-            return React.cloneElement(child, { activeIndex: activeIndex });
+            return React.cloneElement(child, { activeIndex: activeTab });
           case TabList:
             return React.cloneElement(child, {
-              activeIndex: activeIndex,
+              activeIndex: activeTab,
               onActiveTab: activeIndex => {
                 if (onTabChange) {
                   onTabChange(activeIndex);
                 }
-                setActiveIndex(activeIndex);
+                setActiveTabState(activeIndex);
               },
             });
           default:

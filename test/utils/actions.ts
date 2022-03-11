@@ -197,9 +197,7 @@ export const CreateNewAccount = {
 
     await this.driver
       .wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-importSeed-content')]//textarea")
-        ),
+        until.elementLocated(By.css('[data-testid="seedInput"]')),
         this.wait
       )
       .sendKeys(seed);

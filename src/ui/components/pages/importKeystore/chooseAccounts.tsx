@@ -4,38 +4,16 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui';
+import {
+  Account,
+  KeystoreAccount,
+  KeystoreProfiles,
+  NetworkName,
+} from 'accounts/types';
 
-interface ImportKeystoreExistingAccount {
-  address: string;
-  name: string;
-  network: string;
-}
+const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
 
-export interface ImportKeystoreAccount {
-  address: string;
-  name: string;
-  networkCode: string;
-  seed: string;
-}
-
-export type ImportKeystoreNetwork =
-  | 'mainnet'
-  | 'testnet'
-  | 'stagenet'
-  | 'custom';
-export type ImportKeystoreProfiles = Record<
-  ImportKeystoreNetwork,
-  { accounts: ImportKeystoreAccount[] }
->;
-
-const allNetworks: ImportKeystoreNetwork[] = [
-  'mainnet',
-  'testnet',
-  'stagenet',
-  'custom',
-];
-
-const networkLabels: Record<ImportKeystoreNetwork, string> = {
+const networkLabels: Record<NetworkName, string> = {
   custom: 'Custom',
   mainnet: 'Mainnet',
   testnet: 'Testnet',
@@ -43,10 +21,10 @@ const networkLabels: Record<ImportKeystoreNetwork, string> = {
 };
 
 interface Props {
-  allNetworksAccounts: ImportKeystoreExistingAccount[];
-  profiles: ImportKeystoreProfiles;
+  allNetworksAccounts: Account[];
+  profiles: KeystoreProfiles;
   onSkip: () => void;
-  onSubmit: (selectedAccounts: ImportKeystoreAccount[]) => void;
+  onSubmit: (selectedAccounts: KeystoreAccount[]) => void;
 }
 
 export function ImportKeystoreChooseAccounts({
@@ -63,17 +41,14 @@ export function ImportKeystoreChooseAccounts({
         Object.values(profiles)
           .reduce(
             (accounts, profile) => accounts.concat(profile.accounts),
-            [] as ImportKeystoreAccount[]
+            [] as KeystoreAccount[]
           )
           .filter(({ address }) => !existingAccounts.has(address))
           .map(({ address }) => address)
       )
   );
 
-  function toggleSelected(
-    accounts: ImportKeystoreAccount[],
-    isSelected: boolean
-  ) {
+  function toggleSelected(accounts: KeystoreAccount[], isSelected: boolean) {
     setSelected(prevSelected => {
       const newSelected = new Set(prevSelected);
 
@@ -99,7 +74,7 @@ export function ImportKeystoreChooseAccounts({
           Object.values(profiles)
             .reduce(
               (accounts, profile) => accounts.concat(profile.accounts),
-              [] as ImportKeystoreAccount[]
+              [] as KeystoreAccount[]
             )
             .filter(({ address }) => selected.has(address))
         );

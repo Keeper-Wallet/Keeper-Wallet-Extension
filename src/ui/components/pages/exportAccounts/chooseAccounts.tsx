@@ -4,19 +4,11 @@ import * as React from 'react';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Trans } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
+import { NetworkName, Account } from 'accounts/types';
 
-type Network = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
+const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
 
-export interface ExportKeystoreAccount {
-  address: string;
-  name: string;
-  network: Network;
-  networkCode: string;
-}
-
-const allNetworks: Network[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
-
-const networkLabels: Record<Network, string> = {
+const networkLabels: Record<NetworkName, string> = {
   custom: 'Custom',
   mainnet: 'Mainnet',
   testnet: 'Testnet',
@@ -24,8 +16,8 @@ const networkLabels: Record<Network, string> = {
 };
 
 interface Props {
-  accounts: ExportKeystoreAccount[];
-  onSubmit: (selectedAccounts: ExportKeystoreAccount[]) => void;
+  accounts: Account[];
+  onSubmit: (selectedAccounts: Account[]) => void;
 }
 
 export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
@@ -33,10 +25,7 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
     () => new Set(accounts.map(({ address }) => address))
   );
 
-  function toggleSelected(
-    accounts: ExportKeystoreAccount[],
-    isSelected: boolean
-  ) {
+  function toggleSelected(accounts: Account[], isSelected: boolean) {
     setSelected(prevSelected => {
       const newSelected = new Set(prevSelected);
 

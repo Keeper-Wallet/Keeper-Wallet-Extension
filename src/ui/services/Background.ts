@@ -187,10 +187,48 @@ class Background {
     }
   }
 
-  async exportAccount(address, password, network): Promise<string> {
+  async getAccountSeed(
+    address: string,
+    network: string,
+    password: string
+  ): Promise<string> {
     try {
       await this.initPromise;
-      return await this.background.exportAccount(address, password, network);
+      return await this.background.getAccountSeed(address, network, password);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async getAccountEncodedSeed(
+    address: string,
+    network: string,
+    password: string
+  ): Promise<string> {
+    try {
+      await this.initPromise;
+      return await this.background.getAccountEncodedSeed(
+        address,
+        network,
+        password
+      );
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async getAccountPrivateKey(
+    address: string,
+    network: string,
+    password: string
+  ): Promise<string> {
+    try {
+      await this.initPromise;
+      return await this.background.getAccountPrivateKey(
+        address,
+        network,
+        password
+      );
     } catch (err) {
       throw new Error(prepareErrorMessage(err));
     }
@@ -452,6 +490,8 @@ export default new Background();
 export enum WalletTypes {
   New = 'new',
   Seed = 'seed',
+  EncodedSeed = 'encoded_seed',
+  PrivateKey = 'private_key',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
 }

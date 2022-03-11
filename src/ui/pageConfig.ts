@@ -29,13 +29,12 @@ import {
   SettingsGeneral,
   Welcome,
 } from './components/pages';
+import { ImportSeed } from './components/pages/importSeed';
 import { Swap } from './components/pages/swap/swap';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
 import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
 import { Send } from './components/pages/send';
-
-import { ImportSeed } from './components/pages/ImportSeedWalet';
 
 export const PAGES = {
   WELCOME: 'welcome',

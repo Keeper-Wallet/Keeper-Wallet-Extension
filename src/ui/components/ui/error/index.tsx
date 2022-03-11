@@ -18,11 +18,25 @@ const Errors = ({ errors, show }) => {
   });
 };
 
-export class Error extends React.PureComponent {
-  props: IProps;
-  state = { showed: false };
+interface Props {
+  type?: string;
+  show?: boolean;
+  children?: any;
+  className?: string;
+  hideByClick?: boolean;
+  onClick?: (...args) => void;
+  errors?: Array<{ code: number; key: string; msg: string }>;
+}
 
-  static getDerivedStateFromProps(props, state) {
+interface State {
+  showed: boolean;
+}
+
+export class Error extends React.PureComponent<Props> {
+  props: Props;
+  state: State = { showed: false };
+
+  static getDerivedStateFromProps(props: Props, state: State): State | null {
     const { showed } = state;
     const { show } = props;
 
@@ -38,21 +52,29 @@ export class Error extends React.PureComponent {
   render() {
     const { showed } = this.state;
 
-    const { className = '', errors, type, children } = this.props;
+    const {
+      children,
+      className = '',
+      errors,
+      hideByClick,
+      show,
+      type,
+      onClick,
+      ...otherProps
+    } = this.props;
 
     if (type === 'modal') {
       return null;
     }
 
-    const errorProps = {
-      onClick: this.onClick,
-      className: cn(styles.error, className, {
-        [styles.modalError]: type && type === 'modal',
-      }),
-    };
-
     return (
-      <div {...errorProps}>
+      <div
+        className={cn(styles.error, className, {
+          [styles.modalError]: type && type === 'modal',
+        })}
+        onClick={this.onClick}
+        {...otherProps}
+      >
         <Errors errors={errors} show={showed} />
         {showed ? children : null}
       </div>
@@ -69,15 +91,4 @@ export class Error extends React.PureComponent {
       this.setState({ hidden: true });
     }
   }
-}
-
-interface IProps {
-  t?: (key) => string;
-  type?: string;
-  show?: boolean;
-  children?: any;
-  className?: string;
-  hideByClick?: boolean;
-  onClick?: (...args) => void;
-  errors?: Array<{ code: number; key: string; msg: string }>;
 }

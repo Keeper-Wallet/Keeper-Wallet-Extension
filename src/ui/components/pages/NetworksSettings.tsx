@@ -96,7 +96,7 @@ class NetworksSettingsComponent extends React.PureComponent {
       const newCode = await getNetworkByte(node);
       this.setState({ newCode });
       if (code && code !== newCode) {
-        throw new Error('Incorrect node network byte');
+        throw new window.Error('Incorrect node network byte');
       }
     } catch (e) {
       this.setState({ nodeError: true });
@@ -111,7 +111,7 @@ class NetworksSettingsComponent extends React.PureComponent {
     }
 
     if (hasErrors) {
-      throw new Error('invalid node or matcher');
+      throw new window.Error('invalid node or matcher');
     }
   }
 

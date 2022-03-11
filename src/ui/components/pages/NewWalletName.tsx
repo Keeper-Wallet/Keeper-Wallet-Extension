@@ -45,19 +45,15 @@ class NewWalletNameComponent extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const { account, accounts, accountSave } = props;
-    const name = (account && account.name) || '';
-    const errors = NewWalletNameComponent.validateName(name, accounts);
-    let error = state.error;
-    if (accountSave && accountSave.error) {
-      errors.push({
-        code: 3,
-        key: 'newAccountName.errorSeedExist',
-        msg: 'Account already exist',
-      });
-      error = true;
-    }
-    return { ...state, errors, error };
+    const { account, accounts } = props;
+
+    return {
+      ...state,
+      errors: NewWalletNameComponent.validateName(
+        (account && account.name) || '',
+        accounts
+      ),
+    };
   }
 
   onChange = e => this._onChange(e);
@@ -136,18 +132,23 @@ class NewWalletNameComponent extends React.Component {
 
   _onSave = e => {
     e.preventDefault();
-    this.props.addUser(this.props.account, WalletTypes.Seed);
+
+    const accountTypeToWalletType = {
+      seed: WalletTypes.Seed,
+      encodedSeed: WalletTypes.EncodedSeed,
+      privateKey: WalletTypes.PrivateKey,
+    };
+
+    this.props.addUser(
+      this.props.account,
+      accountTypeToWalletType[this.props.account.type]
+    );
+
     this.setState({ disabled: true });
   };
 
   _onSubmit(e) {
     e.preventDefault();
-
-    if (this.props.account.hasBackup) {
-      this.props.addUser(this.props.account, WalletTypes.Seed);
-      return null;
-    }
-
     this.props.setTab(this.props.next);
   }
 }
@@ -155,7 +156,6 @@ class NewWalletNameComponent extends React.Component {
 const mapStateToProps = function (state: AppState) {
   return {
     account: state.localState.newAccount,
-    accountSave: state.localState.addNewAccount,
     accounts: state.accounts,
   };
 };
