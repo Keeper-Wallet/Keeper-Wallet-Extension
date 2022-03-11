@@ -91,42 +91,9 @@ async function startUi() {
       }
     },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
-      try {
-        const { selectedAccount } = store.getState();
+      const { selectedAccount } = store.getState();
 
-        if (selectedAccount.type !== 'ledger') {
-          throw new Error('Active account is not a ledger account');
-        }
-
-        let signature: string;
-
-        switch (request.type) {
-          case 'transaction':
-            signature = await ledgerService.ledger.signTransaction(
-              selectedAccount.id,
-              {
-                ...request.data,
-                dataBuffer: new Uint8Array(request.data.dataBuffer),
-              }
-            );
-            break;
-          case 'request':
-            signature = await ledgerService.ledger.signRequest(
-              selectedAccount.id,
-              {
-                ...request.data,
-                dataBuffer: new Uint8Array(request.data.dataBuffer),
-              }
-            );
-            break;
-          default:
-            throw new Error(`Unknown request type: "${(request as any).type}"`);
-        }
-
-        await backgroundService.ledgerSignResponse(request.id, null, signature);
-      } catch (err) {
-        await backgroundService.ledgerSignResponse(request.id, err);
-      }
+      return ledgerService.queueSignRequest(selectedAccount, request);
     },
   };
 
