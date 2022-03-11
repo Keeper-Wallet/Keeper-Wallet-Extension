@@ -1,5 +1,5 @@
 import { BigNumber } from '@waves/bignumber';
-import { Account, NetworkName } from 'accounts/types';
+import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
 import { TSignData } from '@waves/signature-adapter';
 import * as create from 'parse-json-bignumber';
@@ -24,12 +24,12 @@ export interface WxWalletInput {
   username: string;
 }
 
-interface WxWalletData extends Account {
+type WxWalletData = AccountOfType<'wx'> & {
   publicKey: string;
   address: string;
   uuid: string;
   username: string;
-}
+};
 
 export class WxWallet extends Wallet<WxWalletData> {
   private readonly _adapter: InfoAdapter;
@@ -64,9 +64,10 @@ export class WxWallet extends Wallet<WxWalletData> {
 
   getAccount(): WxWalletData {
     return {
+      ...super.getAccount(),
+      type: 'wx',
       uuid: this.data.uuid,
       username: this.data.username,
-      ...super.getAccount(),
     };
   }
 

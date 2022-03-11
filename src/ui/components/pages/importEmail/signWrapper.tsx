@@ -6,6 +6,8 @@ import cn from 'classnames';
 import { Login } from './login';
 import { Trans } from 'react-i18next';
 import * as styles from './signWrapper.module.css';
+import { LedgerConnectModal } from 'ledger/connectModal';
+import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 
 type Props = {
   onConfirm: (...args: any) => void;
@@ -26,31 +28,52 @@ export function SignWrapper({ onConfirm, children }: Props) {
 
   const onPrepare = React.useCallback(
     (...args: any) => {
-      if (account.type !== 'wx') {
-        onConfirm(...args);
-        return;
-      }
+      switch (account.type) {
+        case 'wx':
+          setPending(true);
 
-      setPending(true);
+          if (typeof onReadyHandler !== 'function') {
+            onReadyHandler = () =>
+              background.identityUpdate().then(() => {
+                onConfirm(...args);
+                setShowModal(false);
+                setPending(false);
+              });
+          }
 
-      if (typeof onReadyHandler !== 'function') {
-        onReadyHandler = () =>
-          background.identityUpdate().then(() => {
-            onConfirm(...args);
-            setShowModal(false);
-            setPending(false);
+          background
+            .identityRestore(account.uuid)
+            .then(() => {
+              onConfirm(...args);
+              setPending(false);
+            })
+            .catch(() => {
+              setShowModal(true);
+            });
+          break;
+        case 'ledger':
+          setPending(true);
+
+          if (typeof onReadyHandler !== 'function') {
+            onReadyHandler = () => {
+              onConfirm(...args);
+              setShowModal(false);
+              setPending(false);
+            }
+          }
+
+          ledgerService.updateStatus().then(() => {
+            if (ledgerService.status === LedgerServiceStatus.Ready) {
+              onConfirm();
+            } else {
+              setShowModal(true);
+            }
           });
-      }
-
-      background
-        .identityRestore(account.uuid)
-        .then(() => {
+          break;
+        default:
           onConfirm(...args);
-          setPending(false);
-        })
-        .catch(() => {
-          setShowModal(true);
-        });
+          break;
+      }
     },
     [onConfirm, onReadyHandler]
   );
@@ -83,6 +106,19 @@ export function SignWrapper({ onConfirm, children }: Props) {
               />
             </div>
           </div>
+        </Modal>
+      )}
+
+      {account.type === 'ledger' && (
+        <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>
+          <LedgerConnectModal
+            networkCode={account.networkCode}
+            onClose={() => {
+              setShowModal(false);
+              setPending(false);
+            }}
+            onReady={onReady}
+          />
         </Modal>
       )}
     </>

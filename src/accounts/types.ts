@@ -1,17 +1,26 @@
-export type AccountType = 'seed' | 'encodedSeed' | 'privateKey' | 'wx' | 'ledger';
 export type NetworkName = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
 
-export interface Account {
+export type Account = {
   address: string;
   lastUsed?: number;
   name: string;
   network: NetworkName;
   networkCode: string;
   publicKey: string;
-  type: AccountType;
-  uuid?: string;
-  username?: string;
-}
+} & (
+  | { type: 'seed' }
+  | { type: 'encodedSeed' }
+  | { type: 'privateKey' }
+  | { type: 'ledger'; id: number }
+  | { type: 'wx'; uuid: string; username: string }
+);
+
+export type AccountType = Account['type'];
+
+export type AccountOfType<T extends AccountType> = Extract<
+  Account,
+  { type: T }
+>;
 
 export type KeystoreAccount = Pick<
   Account,

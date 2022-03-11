@@ -3,7 +3,7 @@ import { SeedAdapter, TSignData } from '@waves/signature-adapter';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import * as libCrypto from '@waves/ts-lib-crypto';
 import * as create from 'parse-json-bignumber';
-import { Account, NetworkName } from 'accounts/types';
+import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
 import { convertInvokeListWorkAround } from './utils';
 
@@ -16,9 +16,9 @@ export interface EncodedSeedWalletInput {
   networkCode: string;
 }
 
-interface EncodedSeedWalletData extends Account {
+type EncodedSeedWalletData = AccountOfType<'encodedSeed'> & {
   encodedSeed: string;
-}
+};
 
 export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
   private readonly _adapter: SeedAdapter;

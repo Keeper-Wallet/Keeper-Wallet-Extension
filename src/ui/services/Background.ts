@@ -530,12 +530,22 @@ class Background {
     }
   }
 
-  async ledgerSignResponse(requestId: string, err: unknown, signature: string) {
+  async ledgerSignResponse(requestId: string, err: Error): Promise<void>;
+  async ledgerSignResponse(
+    requestId: string,
+    err: null,
+    signature: string
+  ): Promise<void>;
+  async ledgerSignResponse(
+    requestId: string,
+    err: Error | null,
+    signature?: string
+  ) {
     try {
       await this.initPromise;
       return await this.background.ledgerSignResponse(
         requestId,
-        err,
+        err && err.message ? err.message : null,
         signature
       );
     } catch (err) {

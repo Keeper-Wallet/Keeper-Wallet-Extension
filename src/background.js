@@ -311,6 +311,7 @@ class BackgroundService extends EventEmitter {
 
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
+      assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
       initState: initState.WalletController,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
@@ -670,7 +671,11 @@ class BackgroundService extends EventEmitter {
       identityClear: async () => this.identityController.clearSession(),
 
       ledgerSignResponse: async (requestId, err, signature) => {
-        this.emit(`ledger:signResponse:${requestId}`, err, signature);
+        this.emit(
+          `ledger:signResponse:${requestId}`,
+          err ? new Error(err) : null,
+          signature
+        );
       },
     };
   }

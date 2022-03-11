@@ -1,8 +1,9 @@
 import { SeedWallet, SeedWalletInput } from './seed';
 import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
 import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
+import { LedgerApi, LedgerWallet, LedgerWalletInput } from './ledger';
+import { AssetDetail } from 'ui/services/Background';
 import { WxWallet, WxWalletInput } from './wx';
-import { LedgerWallet, LedgerWalletInput, LedgerApi } from './ledger';
 import { IdentityApi } from '../controllers/IdentityController';
 
 export function createWallet(
@@ -13,9 +14,11 @@ export function createWallet(
     | ({ type: 'wx' } & WxWalletInput)
     | ({ type: 'ledger' } & LedgerWalletInput),
   {
+    getAssetInfo,
     identity,
     ledger,
   }: {
+    getAssetInfo: (assetId: string | null) => Promise<AssetDetail>;
     identity: IdentityApi;
     ledger: LedgerApi;
   }
@@ -65,7 +68,8 @@ export function createWallet(
           networkCode: input.networkCode,
           publicKey: input.publicKey,
         },
-        ledger
+        ledger,
+        getAssetInfo
       );
     default:
       throw new Error(`Unsupported wallet type: "${(input as any).type}"`);

@@ -330,7 +330,7 @@
     "unknown": "Could not connect to ledger. Please try again",
     "usedBySomeOtherApp": "Seems like ledger is already used by another application. Close all applications that may use ledger and try again."
   },
-  "ledgerSignRequestModal": {
+  "ledgerConnectModal": {
     "connectButton": "Connect",
     "instructions": "Connect Ledger device and open Waves app and click the button below",
     "title": "Connecting..."

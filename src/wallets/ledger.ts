@@ -1,11 +1,56 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { ISignTxData } from '@waves/ledger/lib/Waves';
-import { SIGN_TYPE, TSignData } from '@waves/signature-adapter';
+import {
+  AdapterType,
+  CustomAdapter,
+  IUserApi,
+  SIGN_TYPE,
+  TSignData,
+} from '@waves/signature-adapter';
 import * as create from 'parse-json-bignumber';
-import { Account, NetworkName } from 'accounts/types';
-import { InfoAdapter } from 'controllers/MessageController';
+import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
+import { AssetDetail } from 'ui/services/Background';
+
+class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
+  constructor(account: AccountOfType<'ledger'>) {
+    super({
+      type: AdapterType.Custom,
+      isAvailable: () => true,
+      getAddress: () => account.address,
+      getPublicKey: () => account.publicKey,
+    });
+
+    this._code = account.networkCode.charCodeAt(0);
+  }
+
+  getSignVersions() {
+    return {
+      [SIGN_TYPE.AUTH]: [1],
+      [SIGN_TYPE.MATCHER_ORDERS]: [1],
+      [SIGN_TYPE.WAVES_CONFIRMATION]: [1],
+      [SIGN_TYPE.CREATE_ORDER]: [1, 2, 3],
+      [SIGN_TYPE.CANCEL_ORDER]: [1],
+      [SIGN_TYPE.COINOMAT_CONFIRMATION]: [1],
+      [SIGN_TYPE.ISSUE]: [2],
+      [SIGN_TYPE.TRANSFER]: [2],
+      [SIGN_TYPE.REISSUE]: [2],
+      [SIGN_TYPE.BURN]: [2],
+      [SIGN_TYPE.EXCHANGE]: [0, 1, 2],
+      [SIGN_TYPE.LEASE]: [2],
+      [SIGN_TYPE.CANCEL_LEASING]: [2],
+      [SIGN_TYPE.CREATE_ALIAS]: [2],
+      [SIGN_TYPE.MASS_TRANSFER]: [1],
+      [SIGN_TYPE.DATA]: [1],
+      [SIGN_TYPE.SET_SCRIPT]: [1],
+      [SIGN_TYPE.SPONSORSHIP]: [1],
+      [SIGN_TYPE.SET_ASSET_SCRIPT]: [1],
+      [SIGN_TYPE.SCRIPT_INVOCATION]: [1],
+      [SIGN_TYPE.UPDATE_ASSET_INFO]: [1],
+    };
+  }
+}
 
 const { stringify } = create({ BigNumber });
 
@@ -18,21 +63,25 @@ export interface LedgerWalletInput {
   publicKey: string;
 }
 
-interface LedgerWalletData extends Account {
+type LedgerWalletData = AccountOfType<'ledger'> & {
   id: number;
-}
+};
 
 export interface LedgerApi {
   signTransaction: (data: ISignTxData) => Promise<string>;
 }
 
+type GetAssetInfo = (assetId: string | null) => Promise<AssetDetail>;
+
 export class LedgerWallet extends Wallet<LedgerWalletData> {
-  private readonly _adapter: InfoAdapter;
+  private readonly _adapter: LedgerInfoAdapter;
+  private getAssetInfo: GetAssetInfo;
   private readonly ledger: LedgerApi;
 
   constructor(
     { address, id, name, network, networkCode, publicKey }: LedgerWalletInput,
-    ledger: LedgerApi
+    ledger: LedgerApi,
+    getAssetInfo: GetAssetInfo
   ) {
     super({
       address,
@@ -44,8 +93,19 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       type: 'ledger',
     });
 
-    this._adapter = new InfoAdapter(this.data);
+    this._adapter = new LedgerInfoAdapter(this.data);
+    this.getAssetInfo = getAssetInfo;
     this.ledger = ledger;
+  }
+
+  getAccount(): LedgerWalletData {
+    const { id } = this.data;
+
+    return {
+      ...super.getAccount(),
+      type: 'ledger',
+      id,
+    };
   }
 
   getSeed(): string {
@@ -83,9 +143,8 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       amount2Precision = 0;
     }
 
-    let feePrecision: number = data.fee?.asset?.precision || 0;
-
-    console.log({ amountPrecision, amount2Precision, feePrecision, data });
+    const feeAsset = await this.getAssetInfo(data.feeAssetId);
+    const feePrecision: number = feeAsset.precision;
 
     data.proofs.push(
       await this.ledger.signTransaction({

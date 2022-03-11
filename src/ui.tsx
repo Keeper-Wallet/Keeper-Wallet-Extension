@@ -11,14 +11,14 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { WAVESKEEPER_DEBUG } from './constants';
+import { ledgerService } from './ledger/service';
+import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
-import { ledgerSignRequestsAddAction } from './ui/actions/ledger';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from './ui/components/Root';
 import { LANGS } from './ui/i18n';
-import { LedgerSignRequest } from './ui/reducers/updateState';
 import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
 
@@ -91,7 +91,33 @@ async function startUi() {
       }
     },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
-      store.dispatch(ledgerSignRequestsAddAction(request));
+      try {
+        const { selectedAccount } = store.getState();
+
+        if (selectedAccount.type !== 'ledger') {
+          throw new Error('Active account is not a ledger account');
+        }
+
+        let signature: string;
+
+        switch (request.type) {
+          case 'transaction':
+            signature = await ledgerService.ledger.signTransaction(
+              selectedAccount.id,
+              {
+                ...request.data,
+                dataBuffer: new Uint8Array(request.data.dataBuffer),
+              }
+            );
+            break;
+          default:
+            throw new Error(`Unknown request type: "${request.type}"`);
+        }
+
+        await backgroundService.ledgerSignResponse(request.id, null, signature);
+      } catch (err) {
+        await backgroundService.ledgerSignResponse(request.id, err);
+      }
     },
   };
 

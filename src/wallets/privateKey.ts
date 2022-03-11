@@ -3,7 +3,7 @@ import { TSignData, PrivateKeyAdapter } from '@waves/signature-adapter';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import * as libCrypto from '@waves/ts-lib-crypto';
 import * as create from 'parse-json-bignumber';
-import { Account, NetworkName } from 'accounts/types';
+import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
 import { convertInvokeListWorkAround } from './utils';
 
@@ -16,9 +16,9 @@ export interface PrivateKeyWalletInput {
   privateKey: string;
 }
 
-interface PrivateKeyWalletData extends Account {
+type PrivateKeyWalletData = AccountOfType<'privateKey'> & {
   privateKey: string;
-}
+};
 
 export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
   private readonly _adapter: PrivateKeyAdapter;

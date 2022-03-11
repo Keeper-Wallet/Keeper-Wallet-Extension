@@ -7,11 +7,12 @@ export enum LedgerServiceStatus {
   Ready = 'READY',
 }
 
-function delay(ms) {
+function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 class LedgerService {
+  private _connectionRetryIsNeeded: boolean;
   private _ledger: WavesLedger;
   private _status = LedgerServiceStatus.Disconnected;
 
@@ -36,34 +37,45 @@ class LedgerService {
     });
 
     while (this._status !== LedgerServiceStatus.Ready) {
-      if (!this._ledger) {
-        return;
-      }
+      await this.updateStatus();
 
-      try {
-        if (await this._ledger.probeDevice()) {
-          this._status = LedgerServiceStatus.Ready;
+      if (this._connectionRetryIsNeeded) {
+        await delay(1000);
+        continue;
+      }
+    }
+  }
+
+  async updateStatus() {
+    this._connectionRetryIsNeeded = false;
+
+    if (!this._ledger) {
+      return;
+    }
+
+    try {
+      if (await this._ledger.probeDevice()) {
+        this._status = LedgerServiceStatus.Ready;
+      } else {
+        this._connectionRetryIsNeeded = true;
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        if (/No device selected/i.test(err.message)) {
+          this.disconnect();
+        } else if (/Unable to claim interface/i.test(err.message)) {
+          this.disconnect(LedgerServiceStatus.UsedBySomeOtherApp);
+        } else if (
+          /An operation that changes the device state is in progress/i.test(
+            err.message
+          )
+        ) {
+          this._connectionRetryIsNeeded = true;
         } else {
-          await delay(1000);
+          console.error('NO MATCH FOR ERROR', err);
         }
-      } catch (err) {
-        if (err instanceof Error) {
-          if (/No device selected/i.test(err.message)) {
-            this.disconnect();
-          } else if (/Unable to claim interface/i.test(err.message)) {
-            this.disconnect(LedgerServiceStatus.UsedBySomeOtherApp);
-          } else if (
-            /An operation that changes the device state is in progress/i.test(
-              err.message
-            )
-          ) {
-            await delay(1000);
-          } else {
-            console.error('NO MATCH FOR ERROR', err);
-          }
-        } else {
-          console.error('NON-ERROR THROWN', err);
-        }
+      } else {
+        console.error('NON-ERROR THROWN', err);
       }
     }
   }
