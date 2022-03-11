@@ -1,6 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { ISignData, ISignTxData } from '@waves/ledger/lib/Waves';
+import { convert } from '@waves/money-like-to-node';
 import {
   AdapterType,
   CustomAdapter,
@@ -134,8 +135,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       signable.getSignData(),
     ]);
 
-    convertInvokeListWorkAround(data);
-
     let amountPrecision: number, amount2Precision: number;
 
     if (tx.type === SIGN_TYPE.SCRIPT_INVOCATION) {
@@ -161,7 +160,9 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       })
     );
 
-    return stringify(data);
+    convertInvokeListWorkAround(data);
+
+    return stringify(convert(data, (item: any) => new BigNumber(item)));
   }
 
   signBytes(bytes: number[]) {
