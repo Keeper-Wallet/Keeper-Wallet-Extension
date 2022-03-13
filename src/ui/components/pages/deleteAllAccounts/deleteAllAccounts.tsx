@@ -38,6 +38,7 @@ export function DeleteAllAccounts({ onBack }) {
         e.preventDefault();
         dispatch(deleteAccount());
       }}
+      data-testid="deleteAllAccounts"
     >
       <i className={cn('error-icon', styles.errorIcon)} />
 
@@ -56,33 +57,37 @@ export function DeleteAllAccounts({ onBack }) {
         <Trans i18nKey="forgotPassword.continueMessage" />
       </div>
 
-      <div id="defaultPhrase" className="plate center margin1 cant-select">
+      <div
+        className="plate center margin1 cant-select"
+        data-testid="defaultPhrase"
+      >
         <Trans i18nKey="forgotPassword.phrase" />
       </div>
       <div>
         <Input
           autoFocus
           autoComplete="off"
-          id="confirmPhrase"
           type="input"
           className="margin1"
           placeholder="Type here..."
           onInput={handleInput}
           onBlur={handleBlur}
+          data-testid="confirmPhrase"
         />
         <Error
           className={cn('margin1', styles.error)}
           show={hasError && (isBlur || isCorrectLength)}
+          data-testid="confirmPhraseError"
         >
           <Trans i18nKey="forgotPassword.phraseError" />
         </Error>
       </div>
 
       <div className="buttons-wrapper">
-        <Button id="resetCancel" type="button" onClick={onBack}>
+        <Button type="button" onClick={onBack} data-testid="resetCancel">
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
-        <Button id="resetConfirm" type="warning" disabled={hasError}>
+        <Button type="warning" disabled={hasError} data-testid="resetConfirm">
           <Trans i18nKey="forgotPassword.resetConfirm" />
         </Button>
       </div>

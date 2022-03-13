@@ -82,8 +82,26 @@ export const App = {
       )
       .click();
 
+    const form = this.driver.wait(
+      until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
+      this.wait
+    );
+
+    const defaultPhrase = await form
+      .findElement(By.css('[data-testid="defaultPhrase"]'))
+      .getText();
+
+    await form
+      .findElement(By.css('[data-testid="confirmPhrase"]'))
+      .sendKeys(defaultPhrase);
+
     await this.driver
-      .wait(until.elementLocated(By.css('button#deleteAccount')), this.wait)
+      .wait(
+        until.elementIsEnabled(
+          form.findElement(By.css('[data-testid="resetConfirm"]'))
+        ),
+        this.wait
+      )
       .click();
   },
 
