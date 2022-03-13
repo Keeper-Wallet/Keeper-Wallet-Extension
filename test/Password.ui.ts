@@ -345,21 +345,21 @@ describe('Password management', () => {
           .click();
         expect(
           await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-forgotAccount-content')]")
-            ),
+            until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
             this.wait
           )
         ).not.to.be.throw;
         expect(
           await this.driver
-            .findElement(By.css('button#resetConfirm'))
+            .findElement(By.css('[data-testid="resetConfirm"]'))
             .isEnabled()
         ).to.be.false;
       });
 
       it('Clicking "Cancel" button returns to login page and login is available', async function () {
-        await this.driver.findElement(By.css('button#resetCancel')).click();
+        await this.driver
+          .findElement(By.css('[data-testid="resetCancel"]'))
+          .click();
         expect(
           await this.driver.wait(
             until.elementLocated(By.css('input#loginPassword')),
@@ -399,21 +399,22 @@ describe('Password management', () => {
             .click();
 
           defaultPhrase = await this.driver
-            .wait(until.elementLocated(By.css('div#defaultPhrase')), this.wait)
+            .wait(
+              until.elementLocated(By.css('[data-testid="defaultPhrase"]')),
+              this.wait
+            )
             .getText();
 
           confirmPhraseInput = this.driver.findElement(
-            By.css('input#confirmPhrase')
+            By.css('[data-testid="confirmPhrase"]')
           );
 
           confirmPhraseErrorDiv = this.driver.findElement(
-            By.xpath(
-              "//input[@id='confirmPhrase']//following-sibling::div[contains(@class, '-error-error')]"
-            )
+            By.css('[data-testid="confirmPhraseError"]')
           );
 
           resetConfirmBtn = this.driver.findElement(
-            By.css('button#resetConfirm')
+            By.css('[data-testid="resetConfirm"]')
           );
         });
 
