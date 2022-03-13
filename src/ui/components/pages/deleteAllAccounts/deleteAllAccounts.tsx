@@ -1,13 +1,17 @@
-import * as styles from './styles/forgotAccount.styl';
+import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Error, Input } from '../ui';
-import { deleteAccount } from '../../actions';
+import { Button, Error, Input } from 'ui/components/ui';
+import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+import { PAGES_CONF } from 'ui/pageConfig';
 
-function ForgotPasswordComponent({ onBack, deleteAccount }) {
+export function DeleteAllAccounts({ onBack }) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const pageConf = useAppSelector(state => PAGES_CONF[state.tab]);
   const [phrase, setPhrase] = React.useState(null);
   const [isBlur, setBlur] = React.useState(false);
 
@@ -25,8 +29,17 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
   }
 
   return (
-    <div className={styles.content}>
-      <i className={`error-icon ${styles.errorIcon}`} />
+    <form
+      className={cn(
+        styles.content,
+        pageConf.menu.hasLogo && styles.subtractMenu
+      )}
+      onSubmit={e => {
+        e.preventDefault();
+        dispatch(deleteAccount());
+      }}
+    >
+      <i className={cn('error-icon', styles.errorIcon)} />
 
       <h2 className="title1 margin1">
         <Trans i18nKey="forgotPassword.attention" />
@@ -49,6 +62,7 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
       <div>
         <Input
           autoFocus
+          autoComplete="off"
           id="confirmPhrase"
           type="input"
           className="margin1"
@@ -65,31 +79,13 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
       </div>
 
       <div className="buttons-wrapper">
-        <Button id="resetCancel" onClick={onBack}>
+        <Button id="resetCancel" type="button" onClick={onBack}>
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
-        <Button
-          id="resetConfirm"
-          type="warning"
-          disabled={hasError}
-          onClick={deleteAccount}
-        >
+        <Button id="resetConfirm" type="warning" disabled={hasError}>
           <Trans i18nKey="forgotPassword.resetConfirm" />
         </Button>
       </div>
-    </div>
+    </form>
   );
 }
-
-const actions = {
-  deleteAccount,
-};
-
-const mapStateToProps = function () {
-  return {};
-};
-
-export const ForgotPassword = connect(
-  mapStateToProps,
-  actions
-)(ForgotPasswordComponent);
