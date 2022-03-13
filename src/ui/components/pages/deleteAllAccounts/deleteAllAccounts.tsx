@@ -29,15 +29,11 @@ export function DeleteAllAccounts({ onBack }) {
   }
 
   return (
-    <form
+    <div
       className={cn(
         styles.content,
         pageConf.menu.hasLogo && styles.subtractMenu
       )}
-      onSubmit={e => {
-        e.preventDefault();
-        dispatch(deleteAccount());
-      }}
       data-testid="deleteAllAccounts"
     >
       <i className={cn('error-icon', styles.errorIcon)} />
@@ -87,10 +83,15 @@ export function DeleteAllAccounts({ onBack }) {
         <Button type="button" onClick={onBack} data-testid="resetCancel">
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
-        <Button type="warning" disabled={hasError} data-testid="resetConfirm">
+        <Button
+          type="warning"
+          disabled={hasError}
+          onClick={() => dispatch(deleteAccount())}
+          data-testid="resetConfirm"
+        >
           <Trans i18nKey="forgotPassword.resetConfirm" />
         </Button>
       </div>
-    </form>
+    </div>
   );
 }
