@@ -40,7 +40,7 @@ class LedgerService {
       transport: TransportWebUSB,
     });
 
-    while (this._status !== LedgerServiceStatus.Ready) {
+    while (this._ledger && this._status !== LedgerServiceStatus.Ready) {
       await this.updateStatus();
 
       if (this._connectionRetryIsNeeded) {
