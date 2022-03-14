@@ -13,7 +13,10 @@ import {
   SIGN_TYPE,
   TSignData,
 } from '@waves/signature-adapter';
+import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
 import { customData, serializeCustomData } from '@waves/waves-transactions';
+import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { validate } from '@waves/waves-transactions/dist/validators';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
@@ -127,8 +130,25 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async signWavesAuth(data) {
-    throw new Error('signWavesAuth: Not implemented');
+  async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
+    const publicKey = data.publicKey || this.data.publicKey;
+    const timestamp = data.timestamp || Date.now();
+    validate.wavesAuth({ publicKey, timestamp });
+
+    const rx = {
+      hash: '',
+      signature: '',
+      timestamp,
+      publicKey,
+      address: this.data.address,
+    };
+
+    const dataBuffer = serializeWavesAuthData(rx);
+
+    rx.signature = await this.ledger.signSomeData({ dataBuffer });
+    rx.hash = base58Encode(blake2b(dataBuffer));
+
+    return rx;
   }
 
   async signCustomData(data: TCustomData) {
