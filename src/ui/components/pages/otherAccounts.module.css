@@ -23,7 +23,7 @@
   flex: 1 1 auto;
   position: relative;
   z-index: 1;
-  padding: 14px;
+  padding: 0 14px 14px;
   background: #f8f9fb;
 }
 

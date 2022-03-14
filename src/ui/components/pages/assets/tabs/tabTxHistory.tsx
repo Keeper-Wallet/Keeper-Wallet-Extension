@@ -1,15 +1,14 @@
-import * as styles from '../../styles/assets.styl';
-import { Select, TabPanel } from '../../../ui';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { SearchInput, Select, TabPanel } from 'ui/components/ui';
 import { Trans, useTranslation } from 'react-i18next';
-import { icontains } from '../helpers';
-import { HistoryItem } from '../historyItem';
+import { icontains } from 'ui/components/pages/assets/helpers';
+import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
-import { SearchInput } from '../../Assets';
 import {
   ITransaction,
   WithId,
 } from '@waves/waves-transactions/dist/transactions';
-import { useAppSelector } from '../../../../store';
+import { useAppSelector } from 'ui/store';
 import {
   buildTxTypeOptions,
   CARD_FULL_HEIGHT,
@@ -18,12 +17,12 @@ import {
   useTxHistoryFilter,
 } from './helpers';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { MAX_TX_HISTORY_ITEMS } from '../../../../../controllers/CurrentAccountController';
-import { Tooltip } from '../../../ui/tooltip';
+import { MAX_TX_HISTORY_ITEMS } from 'controllers/CurrentAccountController';
+import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
-import { getTxHistoryLink } from '../../../../urls';
+import { getTxHistoryLink } from 'ui/urls';
 
 const Row = ({ data, index, style }) => {
   const { historyWithGroups, hasMore, hasFilters, historyLink } = data;

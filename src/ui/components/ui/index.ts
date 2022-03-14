@@ -18,3 +18,4 @@ export * from './plate';
 export * from './Tabs';
 export * from './highlight';
 export * from './ellipsis';
+export * from './searchInput/searchInput';

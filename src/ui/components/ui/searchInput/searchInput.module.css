@@ -1,0 +1,40 @@
+.searchInputWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex-grow: 1;
+}
+
+.searchInput {
+  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
+    8px;
+  height: 32px;
+  padding: 0 32px 0 32px;
+  border: none;
+  border-radius: unset;
+  border-bottom: solid 1px var(--color-basic500);
+}
+
+.searchInput:hover {
+  border: none;
+  border-bottom: solid 1px var(--color-basic500);
+}
+
+.searchInput:focus {
+  outline: none;
+  border: none;
+  border-bottom: 1px solid var(--color-submit400);
+}
+
+.searchClear {
+  background: none;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: 0;
+  color: var(--color-basic200);
+}
+
+.searchClear:hover {
+  color: var(--color-basic500);
+}

@@ -367,6 +367,7 @@
   "otherAccounts": {
     "addAccount": "Add account",
     "noAccountsNote": "You have no other accounts in the current network",
+    "noAccountsFound": "No other accounts were found for the specified filters",
     "title": "Other accounts"
   },
   "pairing": {
