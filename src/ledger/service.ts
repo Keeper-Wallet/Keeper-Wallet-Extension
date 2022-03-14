@@ -96,6 +96,12 @@ class LedgerService {
       let signature: string;
 
       switch (request.type) {
+        case 'order':
+          signature = await ledgerService.ledger.signOrder(selectedAccount.id, {
+            ...request.data,
+            dataBuffer: new Uint8Array(request.data.dataBuffer),
+          });
+          break;
         case 'request':
           signature = await ledgerService.ledger.signRequest(
             selectedAccount.id,

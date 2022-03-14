@@ -1,6 +1,10 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { ISignData, ISignTxData } from '@waves/ledger/lib/Waves';
+import {
+  ISignData,
+  ISignOrderData,
+  ISignTxData,
+} from '@waves/ledger/lib/Waves';
 import { convert } from '@waves/money-like-to-node';
 import {
   AdapterType,
@@ -72,6 +76,7 @@ type LedgerWalletData = AccountOfType<'ledger'> & {
 };
 
 export interface LedgerApi {
+  signOrder: (data: ISignOrderData) => Promise<string>;
   signRequest: (data: ISignData) => Promise<string>;
   signSomeData: (data: ISignData) => Promise<string>;
   signTransaction: (data: ISignTxData) => Promise<string>;
@@ -158,16 +163,24 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     const feeAsset = await this.getAssetInfo(data.feeAssetId);
     const feePrecision: number = feeAsset.precision;
 
-    data.proofs.push(
-      await this.ledger.signTransaction({
-        amountPrecision,
-        amount2Precision,
-        feePrecision,
-        dataBuffer,
-        dataType: data.type,
-        dataVersion: data.version,
-      })
-    );
+    const signature =
+      tx.type === SIGN_TYPE.CREATE_ORDER
+        ? await this.ledger.signOrder({
+            amountPrecision,
+            feePrecision,
+            dataBuffer,
+            dataVersion: data.version,
+          })
+        : await this.ledger.signTransaction({
+            amountPrecision,
+            amount2Precision,
+            feePrecision,
+            dataBuffer,
+            dataType: data.type,
+            dataVersion: data.version,
+          });
+
+    data.proofs.push(signature);
 
     convertInvokeListWorkAround(data);
 
