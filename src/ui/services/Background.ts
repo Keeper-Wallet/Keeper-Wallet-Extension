@@ -1,5 +1,6 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ExchangePool } from 'ui/components/pages/swap/channelClient';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
@@ -469,6 +470,63 @@ class Background {
     }
   }
 
+  async identityRestore(userId: string): Promise<void> {
+    try {
+      await this.initPromise;
+      return await this.background.identityRestore(userId);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async identityUpdate(): Promise<void> {
+    try {
+      await this.initPromise;
+      return await this.background.identityUpdate();
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async identityClear(): Promise<void> {
+    try {
+      await this.initPromise;
+      return await this.background.identityClear();
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async identitySignIn(
+    username: string,
+    password: string
+  ): Promise<CognitoUser> {
+    try {
+      await this.initPromise;
+      return await this.background.identitySignIn(username, password);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async identityConfirmSignIn(code: string) {
+    try {
+      await this.initPromise;
+      return await this.background.identityConfirmSignIn(code);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async identityUser() {
+    try {
+      await this.initPromise;
+      return await this.background.identityUser();
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async _updateIdle() {
     const now = Date.now();
     clearTimeout(this._tmr);
@@ -492,6 +550,7 @@ export enum WalletTypes {
   Seed = 'seed',
   EncodedSeed = 'encoded_seed',
   PrivateKey = 'private_key',
+  Wx = 'wx',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
 }

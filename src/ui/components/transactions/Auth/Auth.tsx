@@ -6,8 +6,12 @@ import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
 import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
+import { SignWrapper } from '../../pages/importEmail/signWrapper';
+import { useAppSelector } from 'ui/store';
 
 export function Auth(props) {
+  const status = useAppSelector(state => state.localState.transactionStatus);
+
   const { message, assets } = props;
 
   return (
@@ -26,13 +30,18 @@ export function Auth(props) {
         <Button id="reject" onClick={props.reject} type={BUTTON_TYPE.WARNING}>
           <Trans i18nKey="sign.reject" />
         </Button>
-        <ApproveBtn
-          id="approve"
-          onClick={props.approve}
-          type={BUTTON_TYPE.SUBMIT}
-        >
-          <Trans i18nKey="sign.auth" />
-        </ApproveBtn>
+        <SignWrapper onConfirm={props.approve}>
+          {({ onPrepare, pending }) => (
+            <ApproveBtn
+              id="approve"
+              type={BUTTON_TYPE.SUBMIT}
+              loading={pending || status.approvePending}
+              onClick={onPrepare}
+            >
+              <Trans i18nKey="sign.auth" />
+            </ApproveBtn>
+          )}
+        </SignWrapper>
       </div>
     </div>
   );

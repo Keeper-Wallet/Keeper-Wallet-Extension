@@ -31,7 +31,7 @@ export class Avatar extends React.Component {
 
   render() {
     const { size = SIZE, type = TYPE, className, onClick } = this.props;
-    const myClassName = cn(styles[type], styles.avatar, className, {
+    const myClassName = cn(styles.avatar, className, {
       [styles.selected]: this.props.selected,
     });
     const style = {
@@ -42,6 +42,27 @@ export class Avatar extends React.Component {
     return (
       <div className={myClassName} style={style} onClick={onClick}>
         <img src={this.state.src} width={size} height={size} style={style} />
+
+        {type == 'wx' && (
+          <div className={styles.typeIconContainer}>
+            <div className={styles.typeIcon}>
+              <svg width="14" height="14" viewBox="0 0 24 18">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 12L20 20H4L12 12Z"
+                  fill="#5A81EA"
+                />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 12L20 4H4L12 12Z"
+                  fill="#E14B51"
+                />
+              </svg>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

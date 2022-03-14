@@ -73,7 +73,7 @@ export class IdleController {
 
   _lock = state => {
     if (['idle', 'locked'].indexOf(state) > -1) {
-      this.backgroundService.walletController.lock();
+      this.backgroundService.vaultController.lock();
     }
   };
 }

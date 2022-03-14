@@ -1,4 +1,4 @@
-export type AccountType = 'seed' | 'encodedSeed' | 'privateKey';
+export type AccountType = 'seed' | 'encodedSeed' | 'privateKey' | 'wx';
 export type NetworkName = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
 
 export interface Account {
@@ -9,6 +9,8 @@ export interface Account {
   networkCode: string;
   publicKey: string;
   type: AccountType;
+  uuid?: string;
+  username?: string;
 }
 
 export type KeystoreAccount = Pick<

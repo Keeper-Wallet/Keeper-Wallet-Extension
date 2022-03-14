@@ -68,13 +68,25 @@ class AccountInfoComponent extends React.Component {
     const { leaseBalance } = this.state;
     const showLease =
       leaseBalance && leaseBalance.gt(leaseBalance.cloneWithCoins(0));
-    const { address, name, publicKey, networkCode } = selectedAccount;
+    const {
+      address,
+      type: accType,
+      name,
+      username,
+      publicKey,
+      networkCode,
+    } = selectedAccount;
 
     return (
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={`flex ${styles.wallet}`}>
-            <Avatar className={styles.avatar} address={address} size={48} />
+            <Avatar
+              className={styles.avatar}
+              address={address}
+              type={accType}
+              size={48}
+            />
             <div className={styles.accountData}>
               <div>
                 <Button
@@ -203,6 +215,32 @@ class AccountInfoComponent extends React.Component {
               />
             </div>
           </div>
+        ) : selectedAccount.type === 'wx' ? (
+          <>
+            <div className="margin-main-big">
+              <div className="input-title basic500 tag1">
+                <Trans i18nKey="accountInfo.email" />
+              </div>
+              <div className={`input-like tag1 ${styles.ellipsis}`}>
+                <CopyText
+                  text={username}
+                  showCopy={true}
+                  showText={true}
+                  onCopy={onCopyHandler}
+                />
+              </div>
+            </div>
+
+            <div className="margin-main-big basic500">
+              <div className="input-title tag1">
+                <Trans i18nKey="accountInfo.backUp" />
+              </div>
+
+              <div>
+                <Trans i18nKey="accountInfo.emailNoBackupPhrase" />
+              </div>
+            </div>
+          </>
         ) : null}
 
         <div className={styles.accountInfoFooter}>

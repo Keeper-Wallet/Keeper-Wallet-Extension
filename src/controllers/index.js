@@ -13,3 +13,4 @@ export { IdleController } from './IdleController';
 export { NotificationsController } from './NotificationsController';
 export { StatisticsController } from './Statistics';
 export { TrashController } from './Trash';
+export { IdentityController } from './IdentityController';
