@@ -34,8 +34,9 @@ export function OtherAccountsPage({ setTab }: Props) {
         (!term ||
           account.name.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
           account.address === term ||
-          account.publicKey === term)
-      // todo search by email
+          account.publicKey === term ||
+          (account.type === 'wx' &&
+            account.username.toLowerCase().indexOf(term.toLowerCase()) !== -1))
     )
     .sort(compareAccountsByLastUsed);
 
