@@ -1,17 +1,16 @@
-import * as styles from '../../styles/assets.styl';
-import { icontains } from '../helpers';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { icontains } from 'ui/components/pages/assets/helpers';
 import { Trans } from 'react-i18next';
-import { NftItem } from '../nftItem';
-import { TabPanel } from '../../../ui';
+import { NftItem } from 'ui/components/pages/assets/nftItem';
+import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { SearchInput } from '../../Assets';
-import { useAppSelector } from '../../../../store';
+import { useAppSelector } from 'ui/store';
 import { CARD_FULL_HEIGHT, FULL_GROUP_HEIGHT, useNftFilter } from './helpers';
-import { Tooltip } from '../../../ui/tooltip';
+import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
-import { AssetDetail } from '../../../../services/Background';
+import { AssetDetail } from 'ui/services/Background';
 
 const Row = ({ data, index, style }) => {
   const { nftWithGroups, onInfoClick, onSendClick } = data;

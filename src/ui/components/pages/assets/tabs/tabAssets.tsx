@@ -1,18 +1,17 @@
-import * as styles from '../../styles/assets.styl';
-import { icontains } from '../helpers';
+import * as styles from 'ui/components/pages/styles/assets.styl';
+import { icontains } from 'ui/components/pages/assets/helpers';
 import { Trans } from 'react-i18next';
-import { AssetItem } from '../assetItem';
+import { AssetItem } from 'ui/components/pages/assets//assetItem';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
-import { SearchInput } from '../../Assets';
-import { useAppSelector } from '../../../../store';
-import { TabPanel } from '../../../ui';
+import { SearchInput, TabPanel } from 'ui/components/ui';
+import { useAppSelector } from 'ui/store';
 import { CARD_FULL_HEIGHT, sortAssetEntries, useAssetFilter } from './helpers';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { BalanceAssets } from '../../../../reducers/updateState';
-import { Tooltip } from '../../../ui/tooltip';
+import { BalanceAssets } from 'ui/reducers/updateState';
+import { Tooltip } from 'ui/components/ui/tooltip';
 import cn from 'classnames';
 
 const Row = ({ data, index, style }) => {
