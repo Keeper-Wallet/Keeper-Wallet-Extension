@@ -331,9 +331,9 @@
     "usedBySomeOtherApp": "Seems like ledger is already used by another application. Close all applications that may use ledger and try again."
   },
   "ledgerConnectModal": {
-    "connectButton": "Connect",
-    "instructions": "Connect Ledger device and open Waves app and click the button below",
-    "title": "Connecting..."
+    "instructions": "Connect Ledger device and open Waves app",
+    "title": "Connecting...",
+    "tryAgainButton": "Try Again"
   },
   "login": {
     "enter": "Enter",

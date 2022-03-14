@@ -17,6 +17,40 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
   const [isConnecting, setIsConnecting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  const connectToLedger = React.useCallback(async () => {
+    setError(null);
+    setIsConnecting(true);
+
+    await ledgerService.connectUsb(networkCode);
+
+    if (ledgerService.status === LedgerServiceStatus.Ready) {
+      onReady();
+    } else {
+      switch (ledgerService.status) {
+        case LedgerServiceStatus.UsedBySomeOtherApp:
+          setError(t('ledgerErrors.usedBySomeOtherApp'));
+          break;
+        default:
+          setError(t('ledgerErrors.unknown'));
+          break;
+      }
+
+      setIsConnecting(false);
+    }
+  }, [onReady]);
+
+  React.useEffect(() => {
+    return () => {
+      if (ledgerService.status !== LedgerServiceStatus.Ready) {
+        ledgerService.disconnect();
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
+    connectToLedger();
+  }, [connectToLedger]);
+
   return (
     <div className="modal cover">
       <div className="modal-form">
@@ -40,35 +74,17 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
           {error}
         </Error>
 
-        <Button
-          disabled={isConnecting}
-          type="submit"
-          onClick={async () => {
-            setError(null);
-            setIsConnecting(true);
-
-            await ledgerService.connectUsb(networkCode);
-
-            if (ledgerService.status === LedgerServiceStatus.Ready) {
-              onReady();
-            } else {
-              switch (ledgerService.status) {
-                case LedgerServiceStatus.UsedBySomeOtherApp:
-                  setError(t('ledgerErrors.usedBySomeOtherApp'));
-                  break;
-                default:
-                  setError(t('ledgerErrors.unknown'));
-                  break;
-              }
-
-              setIsConnecting(false);
-            }
-          }}
-        >
-          <Trans i18nKey="ledgerConnectModal.connectButton" />
-        </Button>
-
-        {isConnecting && <div className={styles.loader} />}
+        {isConnecting ? (
+          <div className={styles.loader} />
+        ) : (
+          <Button
+            disabled={isConnecting}
+            type="submit"
+            onClick={connectToLedger}
+          >
+            <Trans i18nKey="ledgerConnectModal.tryAgainButton" />
+          </Button>
+        )}
       </div>
     </div>
   );

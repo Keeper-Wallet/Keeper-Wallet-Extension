@@ -65,7 +65,11 @@ class LedgerService {
       }
     } catch (err) {
       if (err instanceof Error) {
-        if (/No device selected/i.test(err.message)) {
+        if (
+          /No device selected|device was disconnected|user gesture to show a permission request/i.test(
+            err.message
+          )
+        ) {
           this.disconnect();
         } else if (/Unable to claim interface/i.test(err.message)) {
           this.disconnect(LedgerServiceStatus.UsedBySomeOtherApp);
@@ -135,6 +139,16 @@ class LedgerService {
 
       await Background.ledgerSignResponse(request.id, null, signature);
     } catch (err) {
+      if (err) {
+        if (err.name === 'TransportStatusError' && err.statusCode === 37120) {
+          await Background.ledgerSignResponse(
+            request.id,
+            new Error('Request is rejected on ledger')
+          );
+          return;
+        }
+      }
+
       await Background.ledgerSignResponse(request.id, err);
     }
   }
