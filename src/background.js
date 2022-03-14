@@ -328,6 +328,11 @@ class BackgroundService extends EventEmitter {
             ...data,
             dataBuffer: Array.from(data.dataBuffer),
           }),
+        signSomeData: data =>
+          this.ledgerSign('someData', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
         signTransaction: data =>
           this.ledgerSign('transaction', {
             ...data,

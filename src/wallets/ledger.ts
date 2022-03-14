@@ -9,6 +9,8 @@ import {
   SIGN_TYPE,
   TSignData,
 } from '@waves/signature-adapter';
+import { customData, serializeCustomData } from '@waves/waves-transactions';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
@@ -71,6 +73,7 @@ type LedgerWalletData = AccountOfType<'ledger'> & {
 
 export interface LedgerApi {
   signRequest: (data: ISignData) => Promise<string>;
+  signSomeData: (data: ISignData) => Promise<string>;
   signTransaction: (data: ISignTxData) => Promise<string>;
 }
 
@@ -123,8 +126,14 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('signWavesAuth: Not implemented');
   }
 
-  async signCustomData(data) {
-    throw new Error('signCustomData: Not implemented');
+  async signCustomData(data: TCustomData) {
+    const dataBuffer = serializeCustomData(data);
+
+    return {
+      ...customData(data),
+      publicKey: data.publicKey || this.data.publicKey,
+      signature: await this.ledger.signSomeData({ dataBuffer }),
+    };
   }
 
   async signTx(tx: TSignData) {
@@ -166,7 +175,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
   }
 
   signBytes(bytes: number[]) {
-    throw new Error('signBytes: Not implemented');
+    return this.ledger.signSomeData({ dataBuffer: new Uint8Array(bytes) });
   }
 
   async signRequest(request: TSignData) {

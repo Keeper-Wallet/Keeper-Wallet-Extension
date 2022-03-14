@@ -96,8 +96,8 @@ class LedgerService {
       let signature: string;
 
       switch (request.type) {
-        case 'transaction':
-          signature = await ledgerService.ledger.signTransaction(
+        case 'request':
+          signature = await ledgerService.ledger.signRequest(
             selectedAccount.id,
             {
               ...request.data,
@@ -105,8 +105,17 @@ class LedgerService {
             }
           );
           break;
-        case 'request':
-          signature = await ledgerService.ledger.signRequest(
+        case 'someData':
+          signature = await ledgerService.ledger.signSomeData(
+            selectedAccount.id,
+            {
+              ...request.data,
+              dataBuffer: new Uint8Array(request.data.dataBuffer),
+            }
+          );
+          break;
+        case 'transaction':
+          signature = await ledgerService.ledger.signTransaction(
             selectedAccount.id,
             {
               ...request.data,
