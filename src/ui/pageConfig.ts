@@ -6,9 +6,8 @@ import {
   ChangePassword,
   Conditions,
   ConfirmBackup,
-  DeleteAccount,
   DeleteActiveAccount,
-  ForgotPassword,
+  DeleteAllAccounts,
   Import,
   Info,
   Intro,
@@ -441,7 +440,7 @@ export const PAGES_CONF = {
     },
   },
   [PAGES.DELETE_ACCOUNT]: {
-    component: DeleteAccount,
+    component: DeleteAllAccounts,
     bottom: {
       hide: true,
     },
@@ -452,7 +451,7 @@ export const PAGES_CONF = {
     },
   },
   [PAGES.FORGOT]: {
-    component: ForgotPassword,
+    component: DeleteAllAccounts,
     bottom: {
       hide: true,
     },

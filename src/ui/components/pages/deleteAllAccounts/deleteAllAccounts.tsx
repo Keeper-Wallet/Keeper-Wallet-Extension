@@ -1,13 +1,17 @@
-import * as styles from './styles/forgotAccount.styl';
+import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Error, Input } from '../ui';
-import { deleteAccount } from '../../actions';
+import { Button, Error, Input } from 'ui/components/ui';
+import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+import { PAGES_CONF } from 'ui/pageConfig';
 
-function ForgotPasswordComponent({ onBack, deleteAccount }) {
+export function DeleteAllAccounts({ onBack }) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const pageConf = useAppSelector(state => PAGES_CONF[state.tab]);
   const [phrase, setPhrase] = React.useState(null);
   const [isBlur, setBlur] = React.useState(false);
 
@@ -25,8 +29,14 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
   }
 
   return (
-    <div className={styles.content}>
-      <i className={`error-icon ${styles.errorIcon}`} />
+    <div
+      className={cn(
+        styles.content,
+        pageConf.menu.hasLogo && styles.subtractMenu
+      )}
+      data-testid="deleteAllAccounts"
+    >
+      <i className={cn('error-icon', styles.errorIcon)} />
 
       <h2 className="title1 margin1">
         <Trans i18nKey="forgotPassword.attention" />
@@ -43,36 +53,41 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
         <Trans i18nKey="forgotPassword.continueMessage" />
       </div>
 
-      <div id="defaultPhrase" className="plate center margin1 cant-select">
+      <div
+        className="plate center margin1 cant-select"
+        data-testid="defaultPhrase"
+      >
         <Trans i18nKey="forgotPassword.phrase" />
       </div>
       <div>
         <Input
           autoFocus
-          id="confirmPhrase"
+          autoComplete="off"
           type="input"
           className="margin1"
           placeholder="Type here..."
           onInput={handleInput}
           onBlur={handleBlur}
+          data-testid="confirmPhrase"
         />
         <Error
           className={cn('margin1', styles.error)}
           show={hasError && (isBlur || isCorrectLength)}
+          data-testid="confirmPhraseError"
         >
           <Trans i18nKey="forgotPassword.phraseError" />
         </Error>
       </div>
 
       <div className="buttons-wrapper">
-        <Button id="resetCancel" onClick={onBack}>
+        <Button type="button" onClick={onBack} data-testid="resetCancel">
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
         <Button
-          id="resetConfirm"
           type="warning"
           disabled={hasError}
-          onClick={deleteAccount}
+          onClick={() => dispatch(deleteAccount())}
+          data-testid="resetConfirm"
         >
           <Trans i18nKey="forgotPassword.resetConfirm" />
         </Button>
@@ -80,16 +95,3 @@ function ForgotPasswordComponent({ onBack, deleteAccount }) {
     </div>
   );
 }
-
-const actions = {
-  deleteAccount,
-};
-
-const mapStateToProps = function () {
-  return {};
-};
-
-export const ForgotPassword = connect(
-  mapStateToProps,
-  actions
-)(ForgotPasswordComponent);
