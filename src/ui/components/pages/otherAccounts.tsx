@@ -68,11 +68,12 @@ export function OtherAccountsPage({ setTab }: Props) {
             value={term ?? ''}
             onInput={e => setTerm(e.target.value)}
             onClear={() => setTerm('')}
+            data-testid="accountsSearchInput"
           />
         </div>
 
         {otherAccounts.length === 0 ? (
-          <p className={styles.noAccountsNote}>
+          <p className={styles.noAccountsNote} data-testid="accountsNote">
             <Trans
               i18nKey={
                 !term

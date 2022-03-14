@@ -29,6 +29,7 @@ export function SearchInput({ value, onInput, onClear, ...restProps }: Props) {
             inputRef.current.focus();
             onClear();
           }}
+          data-testid="searchClear"
         >
           <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
             <path

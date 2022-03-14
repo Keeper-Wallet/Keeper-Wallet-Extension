@@ -3,11 +3,7 @@ import { App, Assets, CreateNewAccount, Network } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
-import {
-  DEFAULT_ANIMATION_DELAY,
-  DEFAULT_PASSWORD,
-  DEFAULT_SWITCH_TABS_DELAY,
-} from './utils/constants';
+import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 
 describe('Account management', function () {
   this.timeout(60 * 1000);
@@ -83,6 +79,91 @@ describe('Account management', function () {
       it('Check that QR matches the displayed address');
 
       it('Download QR code'); // file downloaded, filename equals "${address}.png"
+    });
+
+    describe('Search', function () {
+      let searchInput: WebElement;
+
+      before(async function () {
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+            this.wait
+          )
+          .click();
+        searchInput = this.driver.wait(
+          until.elementLocated(By.css('[data-testid="accountsSearchInput"]')),
+          this.wait
+        );
+      });
+
+      after(async function () {
+        await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+      });
+
+      beforeEach(async function () {
+        await searchInput.clear();
+      });
+
+      it('Displays "not found" description if term is not account name, address, public key or email', async function () {
+        await searchInput.sendKeys('WRONG TERM');
+
+        expect(
+          await this.driver.findElements(By.css('[data-testid="accountCard"]'))
+        ).length(0);
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="accountsNote"]'))
+            .getText()
+        ).matches(/No other accounts were found for the specified filters/i);
+      });
+
+      it('"x" appears and clear search input', async function () {
+        await searchInput.sendKeys('WRONG TERM');
+        const searchClear = this.driver.findElement(
+          By.css('[data-testid="searchClear"]')
+        );
+        expect(await searchClear.isDisplayed()).to.be.true;
+        await searchClear.click();
+        expect(await searchInput.getText()).to.be.empty;
+      });
+
+      it('By existing account name', async function () {
+        await searchInput.sendKeys(/*r*/ 'ic' /*h*/);
+        expect(
+          await this.driver
+            .findElement(
+              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            )
+            .getText()
+        ).to.be.equal('rich');
+      });
+
+      it('By existing account address', async function () {
+        await searchInput.sendKeys('3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1');
+        expect(
+          await this.driver
+            .findElement(
+              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            )
+            .getText()
+        ).to.be.equal('rich');
+      });
+
+      it('By existing account public key', async function () {
+        await searchInput.sendKeys(
+          'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV'
+        );
+        expect(
+          await this.driver
+            .findElement(
+              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            )
+            .getText()
+        ).to.be.equal('rich');
+      });
+
+      it('By existing email account');
     });
   });
 
