@@ -9,10 +9,8 @@ const SIZE = 67;
 interface Props {
   address: string;
   className?: string;
-  selected?: boolean;
   size: number;
   type?: AccountType;
-  onClick?: () => void;
 }
 
 interface State {
@@ -40,14 +38,7 @@ export class Avatar extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      className,
-      selected,
-      size = SIZE,
-      type = 'seed',
-      onClick,
-    } = this.props;
-
+    const { className, size = SIZE, type = 'seed' } = this.props;
     const { src } = this.state;
 
     const style = {
@@ -56,13 +47,7 @@ export class Avatar extends React.Component<Props, State> {
     };
 
     return (
-      <div
-        className={cn(styles.avatar, className, {
-          [styles.selected]: selected,
-        })}
-        style={style}
-        onClick={onClick}
-      >
+      <div className={cn(styles.avatar, className)} style={style}>
         <img src={src} width={size} height={size} style={style} />
 
         {type == 'wx' && (

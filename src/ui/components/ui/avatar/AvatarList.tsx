@@ -1,6 +1,7 @@
+import cn from 'classnames';
 import * as React from 'react';
 import { Avatar } from './Avatar';
-import * as styles from './avatar.styl';
+import * as styles from './AvatarList.module.css';
 
 interface AvatarListItem {
   address: string;
@@ -22,15 +23,17 @@ export function AvatarList<T extends AvatarListItem>({
   return (
     <div className={styles.avatarList}>
       {items.map(item => (
-        <Avatar
+        <div
           key={item.address}
-          address={item.address}
-          selected={selected.address === item.address}
-          size={size}
+          className={cn(styles.avatarListItem, {
+            [styles.avatarListItem_selected]: selected.address === item.address,
+          })}
           onClick={() => {
             onSelect(item);
           }}
-        />
+        >
+          <Avatar address={item.address} size={size} />
+        </div>
       ))}
     </div>
   );
