@@ -49,8 +49,8 @@ function startsWith(source: string, target: string, flags = 'i'): boolean {
 
 const fetch = window.fetch;
 window.fetch = (
-  endpoint: RequestInfo | string,
-  { headers = {}, ...options } = {}
+  endpoint: RequestInfo,
+  { headers = {}, ...options }: RequestInit = {}
 ) => {
   if (
     typeof endpoint === 'string' &&
