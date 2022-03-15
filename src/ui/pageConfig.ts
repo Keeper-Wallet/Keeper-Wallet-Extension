@@ -177,7 +177,7 @@ export const PAGES_CONF = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: PAGES.NEW_ACCOUNT_BACK,
+      back: true,
     },
   },
   [PAGES.ACCOUNT_NAME_SEED]: {
