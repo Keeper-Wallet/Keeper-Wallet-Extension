@@ -1,12 +1,24 @@
+import cn from 'classnames';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { newAccountSelect } from 'ui/actions/localState';
+import { AvatarList } from 'ui/components/ui/avatar/AvatarList';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import * as styles from './importLedger.module.css';
+
+const USERS_PER_PAGE = 5;
+
+interface LedgerUser {
+  address: string;
+  id: number;
+  path: string;
+  publicKey: string;
+  statusCode: string;
+}
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -22,10 +34,49 @@ export function ImportLedger({ setTab }: Props) {
 
   const [isConnecting, setIsConnecting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [isReady, setIsReady] = React.useState(false);
+  const [ledgerUsers, setLedgerUsers] = React.useState<LedgerUser[]>([]);
+  const [selectedUser, setSelectedUser] = React.useState<LedgerUser | null>(
+    null
+  );
 
   const networkCode =
     customCodes[currentNetwork] ||
     networks.find(n => currentNetwork === n.name).code;
+
+  const connectToLedger = React.useCallback(async () => {
+    setError(null);
+    setIsConnecting(true);
+
+    await ledgerService.connectUsb(networkCode);
+
+    if (ledgerService.status === LedgerServiceStatus.Ready) {
+      const users = await ledgerService.ledger.getPaginationUsersData(
+        0,
+        USERS_PER_PAGE - 1
+      );
+
+      setLedgerUsers(users);
+      setSelectedUser(users[0]);
+      setIsReady(true);
+      setIsConnecting(false);
+    } else {
+      switch (ledgerService.status) {
+        case LedgerServiceStatus.UsedBySomeOtherApp:
+          setError(t('ledgerErrors.usedBySomeOtherApp'));
+          break;
+        default:
+          setError(t('ledgerErrors.unknown'));
+          break;
+      }
+
+      setIsConnecting(false);
+    }
+  }, [networkCode]);
+
+  React.useEffect(() => {
+    connectToLedger();
+  }, [connectToLedger]);
 
   React.useEffect(() => {
     return () => {
@@ -39,63 +90,80 @@ export function ImportLedger({ setTab }: Props) {
         <Trans i18nKey="importLedger.title" />
       </h2>
 
-      <p className={styles.instructions}>
-        <Trans i18nKey="importLedger.instructions" />
-      </p>
+      {isReady ? (
+        <div>
+          <p className={styles.instructions}>
+            <Trans i18nKey="importLedger.selectAccountInstructions" />
+          </p>
 
-      <Error className={styles.error} show>
-        {error}
-      </Error>
+          <div className={styles.avatarList}>
+            <AvatarList
+              items={ledgerUsers}
+              selected={selectedUser}
+              size={38}
+              onSelect={user => {
+                setError(null);
+                setSelectedUser(user);
+              }}
+            />
+          </div>
 
-      <Button
-        disabled={isConnecting}
-        type="submit"
-        onClick={async () => {
-          setError(null);
-          setIsConnecting(true);
+          <Error className={styles.error} show>
+            {error}
+          </Error>
 
-          await ledgerService.connectUsb(networkCode);
+          <div className={cn(styles.address, 'grey-line')}>
+            {selectedUser.address}
+          </div>
 
-          if (ledgerService.status !== LedgerServiceStatus.Ready) {
-            switch (ledgerService.status) {
-              case LedgerServiceStatus.UsedBySomeOtherApp:
-                setError(t('ledgerErrors.usedBySomeOtherApp'));
-                break;
-              default:
-                setError(t('ledgerErrors.unknown'));
-                break;
-            }
+          <Button
+            type="submit"
+            onClick={() => {
+              if (accounts.some(acc => acc.address === selectedUser.address)) {
+                setError(t('importLedger.accountExistsError'));
+                return;
+              }
 
-            setIsConnecting(false);
-            return;
-          }
+              dispatch(
+                newAccountSelect({
+                  type: 'ledger',
+                  address: selectedUser.address,
+                  id: selectedUser.id,
+                  publicKey: selectedUser.publicKey,
+                  name: '',
+                  hasBackup: true,
+                })
+              );
 
-          const userData = await ledgerService.ledger.getUserDataById(0);
+              setTab(PAGES.ACCOUNT_NAME);
+            }}
+          >
+            <Trans i18nKey="importLedger.continueButton" />
+          </Button>
+        </div>
+      ) : (
+        <div>
+          <p className={styles.instructions}>
+            <Trans i18nKey="importLedger.connectInstructions" />
+          </p>
 
-          if (accounts.some(acc => acc.address === userData.address)) {
-            setError(t('importLedger.accountExistsError'));
-            setIsConnecting(false);
-            return;
-          }
+          <Error className={styles.error} show>
+            {error}
+          </Error>
 
-          dispatch(
-            newAccountSelect({
-              type: 'ledger',
-              address: userData.address,
-              id: userData.id,
-              publicKey: userData.publicKey,
-              name: '',
-              hasBackup: true,
-            })
-          );
-
-          setTab(PAGES.ACCOUNT_NAME);
-        }}
-      >
-        <Trans i18nKey="importLedger.connectButton" />
-      </Button>
-
-      {isConnecting && <div className={styles.loader} />}
+          {isConnecting ? (
+            <div className={styles.loader} />
+          ) : (
+            <Button
+              disabled={isConnecting}
+              type="submit"
+              onClick={connectToLedger}
+            >
+              <Trans i18nKey="importLedger.tryAgainButton" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

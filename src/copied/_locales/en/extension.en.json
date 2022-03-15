@@ -297,10 +297,12 @@
     "passwordPlaceholder": "Password used to create Keystore"
   },
   "importLedger": {
-    "accountExistsError": "Account already exists",
-    "connectButton": "Connect",
-    "instructions": "Connect Ledger device, open Waves app and click the button below",
-    "title": "Import Ledger"
+    "accountExistsError": "This account already exists in Keeper",
+    "connectInstructions": "Connect Ledger device and open Waves app",
+    "continueButton": "Continue",
+    "selectAccountInstructions": "Choose your address",
+    "title": "Import Ledger",
+    "tryAgainButton": "Try Again"
   },
   "importSeed": {
     "accountExistsError": "Account already exists",

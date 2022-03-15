@@ -1,23 +1,33 @@
+import { AccountType } from 'accounts/types';
+import cn from 'classnames';
+import * as avatar from 'identity-img';
 import * as React from 'react';
 import * as styles from './avatar.styl';
-import * as avatar from 'identity-img';
-import cn from 'classnames';
 
 const SIZE = 67;
-const TYPE = 'seed';
 
-export class Avatar extends React.Component {
-  state: { address?: string; src?: string } = {};
-  props: {
-    size?: number;
-    address: string;
-    type?: string;
-    className?: string;
-    selected?: boolean;
-    onClick?;
-  };
+interface Props {
+  address: string;
+  className?: string;
+  selected?: boolean;
+  size: number;
+  type?: AccountType;
+  onClick?: () => void;
+}
 
-  static getDerivedStateFromProps(nextProps, prevState) {
+interface State {
+  address?: string;
+  src?: string;
+}
+
+export class Avatar extends React.Component<Props, State> {
+  state: State = {};
+  props: Props;
+
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State
+  ): State | null {
     const { address, size = SIZE } = nextProps;
 
     if (prevState.address !== address) {
@@ -30,18 +40,30 @@ export class Avatar extends React.Component {
   }
 
   render() {
-    const { size = SIZE, type = TYPE, className, onClick } = this.props;
-    const myClassName = cn(styles.avatar, className, {
-      [styles.selected]: this.props.selected,
-    });
+    const {
+      className,
+      selected,
+      size = SIZE,
+      type = 'seed',
+      onClick,
+    } = this.props;
+
+    const { src } = this.state;
+
     const style = {
-      width: `${size}px`,
-      height: `${size}px`,
+      width: size,
+      height: size,
     };
 
     return (
-      <div className={myClassName} style={style} onClick={onClick}>
-        <img src={this.state.src} width={size} height={size} style={style} />
+      <div
+        className={cn(styles.avatar, className, {
+          [styles.selected]: selected,
+        })}
+        style={style}
+        onClick={onClick}
+      >
+        <img src={src} width={size} height={size} style={style} />
 
         {type == 'wx' && (
           <div className={styles.typeIconContainer}>

@@ -5,12 +5,13 @@
 }
 
 .title {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   font-size: 24px;
   font-weight: normal;
 }
 
 .instructions {
+  margin: 20px 0;
   font-size: 14px;
   color: #999;
 }
@@ -23,4 +24,12 @@
   height: 200px;
   background: url(../../../assets/img/loader.gif) center no-repeat;
   background-size: 100px;
+}
+
+.avatarList {
+  margin: 20px 0;
+}
+
+.address {
+  margin: 0 -64px 40px;
 }
