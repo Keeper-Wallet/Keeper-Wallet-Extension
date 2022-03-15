@@ -9,6 +9,7 @@ import {
 import { libs, seedUtils } from '@waves/waves-transactions';
 import * as ObservableStore from 'obs-store';
 import { WxWalletInput } from 'wallets/wx';
+import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;
@@ -41,6 +42,38 @@ export type IdentityConfig = {
 };
 
 type AllNetworks = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
+
+function startsWith(source: string, target: string, flags = 'i'): boolean {
+  return !!source.match(new RegExp(`^${target}`, flags));
+}
+
+const fetch = window.fetch;
+window.fetch = (
+  endpoint: RequestInfo | string,
+  { headers = {}, ...options } = {}
+) => {
+  if (
+    typeof endpoint === 'string' &&
+    (startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.mainnet.cognito.endpoint) ||
+      startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.testnet.cognito.endpoint))
+  ) {
+    return fetch(endpoint, {
+      ...options,
+      headers: { ...headers, 'X-Application': 'waveskeeper' },
+    }).then(async response => {
+      if (response.status === 403) {
+        const err = await response.json();
+        if ('type' in err && 'message' in err) {
+          err.__type = err.type;
+        }
+        response.json = async () => err;
+      }
+      return response;
+    });
+  }
+
+  return fetch(endpoint, { headers, ...options });
+};
 
 type IdentityState = {
   cognitoSessions: string;

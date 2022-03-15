@@ -80,20 +80,10 @@ export function SignInForm({ className, userData, signIn }: Props) {
       try {
         await signIn(email, password);
       } catch (e) {
-        if (e) {
-          const limitExceededMessage =
-            'You have exceeded incorrect username or password limit. ' +
-            'If you have any problems, please contact support ' +
-            'https://support.waves.exchange/.';
-
-          setErrors(prev => ({
-            ...prev,
-            _form:
-              e.message === limitExceededMessage
-                ? t('importEmail.limitExceeded')
-                : e.message || JSON.stringify(e),
-          }));
-        }
+        setErrors(prev => ({
+          ...prev,
+          _form: e.message || JSON.stringify(e),
+        }));
       } finally {
         setPending(false);
       }

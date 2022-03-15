@@ -52,14 +52,6 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 const bgPromise = setupBackgroundService();
 
-const fetch = window.fetch;
-window.fetch = (endpoint, { headers = {}, ...options } = {}) => {
-  return fetch(endpoint, {
-    ...options,
-    headers: { ...headers, 'X-Application': 'waveskeeper' },
-  });
-};
-
 Sentry.init({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,

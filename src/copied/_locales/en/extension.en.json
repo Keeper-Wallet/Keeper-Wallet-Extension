@@ -265,7 +265,6 @@
     "passwordLabel": "Password",
     "passwordRequired": "Enter password",
     "loginRequired": "Confirm Email Account",
-    "limitExceeded": "Attempt limit exceeded, please try after some time",
     "emailLabel": "Email",
     "emailRequired": "Enter correct email",
     "credentialsError": "Incorrect username or password",
