@@ -12,6 +12,31 @@ import * as styles from './importLedger.module.css';
 
 const USERS_PER_PAGE = 5;
 
+interface ArrowProps {
+  direction: 'left' | 'right';
+}
+
+function Arrow({ direction }: ArrowProps) {
+  return (
+    <svg
+      className={cn(styles.avatarListArrowSvg, {
+        [styles.avatarListArrowSvg_left]: direction === 'left',
+      })}
+      width="14"
+      height="14"
+      style={{
+        transform: direction === 'right' ? undefined : 'scaleX(-1)',
+      }}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.615 13 3.5 11.863 8.268 7 3.5 2.137 4.615 1 10.5 7l-5.885 6Z"
+      />
+    </svg>
+  );
+}
+
 interface LedgerUser {
   address: string;
   id: number;
@@ -35,6 +60,7 @@ export function ImportLedger({ setTab }: Props) {
   const [isConnecting, setIsConnecting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isReady, setIsReady] = React.useState(false);
+  const [page, setPage] = React.useState(0);
   const [ledgerUsers, setLedgerUsers] = React.useState<LedgerUser[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<LedgerUser | null>(
     null
@@ -84,6 +110,20 @@ export function ImportLedger({ setTab }: Props) {
     };
   }, []);
 
+  const isCurPageLoaded = ledgerUsers.length >= (page + 1) * USERS_PER_PAGE;
+
+  React.useEffect(() => {
+    if (!isReady || isCurPageLoaded) {
+      return;
+    }
+
+    ledgerService.ledger
+      .getPaginationUsersData(page * USERS_PER_PAGE, USERS_PER_PAGE - 1)
+      .then(users => {
+        setLedgerUsers(prevState => prevState.concat(users));
+      });
+  }, [isCurPageLoaded, isReady, page]);
+
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>
@@ -97,15 +137,53 @@ export function ImportLedger({ setTab }: Props) {
           </p>
 
           <div className={styles.avatarList}>
-            <AvatarList
-              items={ledgerUsers}
-              selected={selectedUser}
-              size={38}
-              onSelect={user => {
-                setError(null);
-                setSelectedUser(user);
+            <div className={styles.avatarListItems}>
+              {isCurPageLoaded ? (
+                <AvatarList
+                  items={ledgerUsers.slice(
+                    page * USERS_PER_PAGE,
+                    (page + 1) * USERS_PER_PAGE
+                  )}
+                  selected={selectedUser}
+                  size={38}
+                  onSelect={user => {
+                    setError(null);
+                    setSelectedUser(user);
+                  }}
+                />
+              ) : (
+                <Trans i18nKey="importLedger.avatarListLoading" />
+              )}
+            </div>
+
+            {page > 0 && (
+              <button
+                className={cn(
+                  styles.avatarListArrow,
+                  styles.avatarListArrow_left
+                )}
+                type="button"
+                onClick={() => {
+                  setPage(prevState => prevState - 1);
+                }}
+              >
+                <Arrow direction="left" />
+              </button>
+            )}
+
+            <button
+              className={cn(
+                styles.avatarListArrow,
+                styles.avatarListArrow_right
+              )}
+              disabled={!isCurPageLoaded}
+              type="button"
+              onClick={() => {
+                setPage(prevState => prevState + 1);
               }}
-            />
+            >
+              <Arrow direction="right" />
+            </button>
           </div>
 
           <Error className={styles.error} show>

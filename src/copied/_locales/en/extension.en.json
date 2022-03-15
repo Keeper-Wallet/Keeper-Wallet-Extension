@@ -298,6 +298,7 @@
   },
   "importLedger": {
     "accountExistsError": "This account already exists in Keeper",
+    "avatarListLoading": "Loading accounts...",
     "connectInstructions": "Connect Ledger device and open Waves app",
     "continueButton": "Continue",
     "selectAccountInstructions": "Choose your address",

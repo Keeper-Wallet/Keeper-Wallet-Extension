@@ -1,6 +1,6 @@
 .root {
   position: relative;
-  margin: 84px 60px 0;
+  margin: 84px 58px 0;
   height: calc(100% - 180px);
 }
 
@@ -27,7 +27,44 @@
 }
 
 .avatarList {
+  position: relative;
   margin: 20px 0;
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+
+.avatarListArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  cursor: pointer;
+}
+
+.avatarListArrow:disabled {
+  cursor: not-allowed;
+}
+
+.avatarListArrow_left {
+  left: -30px;
+}
+
+.avatarListArrow_right {
+  right: -30px;
+}
+
+.avatarListArrowSvg {
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.avatarListArrow:not(:disabled):hover .avatarListArrowSvg {
+  fill: #000;
+}
+
+.avatarListArrowSvg_left {
+  transform: scaleX(-1);
 }
 
 .address {
