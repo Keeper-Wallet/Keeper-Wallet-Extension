@@ -773,6 +773,8 @@ class BackgroundService extends EventEmitter {
         await this.validatePermission(origin);
       }
 
+      const { selectedAccount } = this.getState();
+
       const { noSign, ...result } = await this.messageController.newMessage({
         data,
         type,
@@ -780,7 +782,7 @@ class BackgroundService extends EventEmitter {
         origin,
         options,
         broadcast,
-        account: this.getState().selectedAccount,
+        account: selectedAccount,
       });
 
       if (noSign) {
@@ -788,7 +790,10 @@ class BackgroundService extends EventEmitter {
       }
 
       if (origin) {
-        if (await this.permissionsController.canApprove(origin, data)) {
+        if (
+          selectedAccount.type !== 'ledger' &&
+          await this.permissionsController.canApprove(origin, data)
+        ) {
           this.messageController.approve(result.id);
         } else {
           this.emit('Show notification');
