@@ -2,7 +2,6 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import * as styles from './avatarList.module.css';
-import { Trans } from 'react-i18next';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
 interface ListItem {
