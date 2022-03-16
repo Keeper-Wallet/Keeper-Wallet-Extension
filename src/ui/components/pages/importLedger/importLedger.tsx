@@ -3,14 +3,14 @@ import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { newAccountSelect } from 'ui/actions/localState';
-import { AvatarList } from 'ui/components/ui/avatar/AvatarList';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
 
-const USERS_PER_PAGE = 5;
+const USERS_PER_PAGE = 4;
 
 interface ArrowProps {
   direction: 'left' | 'right';
@@ -139,7 +139,7 @@ export function ImportLedger({ setTab }: Props) {
           <div className={styles.avatarList}>
             <div className={styles.avatarListItems}>
               {isCurPageLoaded ? (
-                <AvatarList
+                <LedgerAvatarList
                   items={ledgerUsers.slice(
                     page * USERS_PER_PAGE,
                     (page + 1) * USERS_PER_PAGE
@@ -189,6 +189,14 @@ export function ImportLedger({ setTab }: Props) {
           <Error className={styles.error} show>
             {error}
           </Error>
+
+          <div className="margin2">
+            <div className="tag1 basic500 input-title">
+              <Trans i18nKey="importLedger.accountIdLabel" />
+            </div>
+
+            <div>{selectedUser.id}</div>
+          </div>
 
           <div className={cn(styles.address, 'grey-line')}>
             {selectedUser.address}
