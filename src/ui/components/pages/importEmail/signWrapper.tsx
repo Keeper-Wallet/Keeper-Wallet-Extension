@@ -64,7 +64,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
 
           ledgerService.updateStatus().then(() => {
             if (ledgerService.status === LedgerServiceStatus.Ready) {
-              onConfirm();
+              onConfirm(...args);
             } else {
               setShowModal(true);
             }
