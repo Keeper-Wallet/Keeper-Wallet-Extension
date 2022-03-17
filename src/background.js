@@ -792,7 +792,7 @@ class BackgroundService extends EventEmitter {
       if (origin) {
         if (
           selectedAccount.type !== 'ledger' &&
-          await this.permissionsController.canApprove(origin, data)
+          (await this.permissionsController.canApprove(origin, data))
         ) {
           this.messageController.approve(result.id);
         } else {

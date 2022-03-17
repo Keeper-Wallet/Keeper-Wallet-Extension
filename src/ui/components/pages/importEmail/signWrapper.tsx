@@ -59,7 +59,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
               onConfirm(...args);
               setShowModal(false);
               setPending(false);
-            }
+            };
           }
 
           ledgerService.updateStatus().then(() => {
