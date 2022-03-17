@@ -1,113 +1,66 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { setUiState, setUiStateAndSetTab } from '../../actions';
 import { Trans } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
+import { useAppDispatch, useAppSelector } from 'accounts/store';
 
-class BackUpSeedComponent extends React.Component {
-  readonly state = {} as any;
-  readonly props;
-  _t;
-  onClick = () => this._onClick();
-  copyHandler = () => this._onCopy();
-  cancelHandler = () => this._cancelHandler();
+export function BackUpSeed({ setTab }) {
+  const dispatch = useAppDispatch();
+  const [showCopy, setShowCopy] = React.useState<boolean>(false);
+  const newAccount = useAppSelector(state => state.localState.newAccount);
 
-  render() {
-    return (
-      <div className={styles.content}>
-        <h2 className="title1 margin2">
-          <Trans i18nKey="backupSeed.saveBackup">Save backup phrase</Trans>
-        </h2>
+  return (
+    <div className={styles.content}>
+      <h2 className="title1 margin2">
+        <Trans i18nKey="backupSeed.saveBackup">Save backup phrase</Trans>
+      </h2>
 
-        <div className="flex margin-main">
-          <div className="basic500 tag1">
-            <Trans i18nKey="backupSeed.backupCarefully">
-              Please carefully write down these 15 words or copy them
-            </Trans>
-          </div>
-          <Copy onCopy={this.copyHandler} text={this.props.account.seed}>
-            <i className={`copy-icon ${styles.copyIcon}`}> </i>
-          </Copy>
-        </div>
-
-        <div className={`plate center body3 cant-select ${styles.plateMargin}`}>
-          {this.props.account.seed}
-        </div>
-
-        <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
-          <Trans i18nKey="backupSeed.confirmBackupInfo">
-            You will confirm this phrase on the next screen
+      <div className="flex margin-main">
+        <div className="basic500 tag1">
+          <Trans i18nKey="backupSeed.backupCarefully">
+            Please carefully write down these 15 words or copy them
           </Trans>
         </div>
-
-        <Button
-          id="continue"
-          className="margin-main-big"
-          type="submit"
-          view="submit"
-          onClick={this.onClick}
-          disabled={this.state.disabled}
+        <Copy
+          text={newAccount.seed}
+          onCopy={() => {
+            setShowCopy(true);
+            setTimeout(() => setShowCopy(false), 1000);
+          }}
         >
-          <Trans i18nKey="backupSeed.continue">Continue</Trans>
-        </Button>
-
-        <Button id="cancelCreation" type="button" onClick={this.cancelHandler}>
-          <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
-        </Button>
-
-        <Modal
-          animation={Modal.ANIMATION.FLASH_SCALE}
-          showModal={this.state.showCopied}
-        >
-          <div className="modal notification">
-            <Trans i18nKey="backupSeed.copied">Copied!</Trans>
-          </div>
-        </Modal>
+          <i className={`copy-icon ${styles.copyIcon}`}> </i>
+        </Copy>
       </div>
-    );
-  }
 
-  componentDidMount() {
-    this.props.setUiState({
-      account: this.props.account,
-    });
-  }
+      <div className={`plate center body3 cant-select ${styles.plateMargin}`}>
+        {newAccount.seed}
+      </div>
 
-  _onCopy() {
-    this.setState({ showCopied: true });
-    clearTimeout(this._t);
-    this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
-  }
+      <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
+        <Trans i18nKey="backupSeed.confirmBackupInfo">
+          You will confirm this phrase on the next screen
+        </Trans>
+      </div>
 
-  _onClick() {
-    this.props.setTab(PAGES.CONFIRM_BACKUP);
-  }
+      <Button
+        id="continue"
+        className="margin-main-big"
+        type="submit"
+        onClick={() => dispatch(setTab(PAGES.CONFIRM_BACKUP))}
+      >
+        <Trans i18nKey="backupSeed.continue">Continue</Trans>
+      </Button>
 
-  _cancelHandler() {
-    this.props.setUiStateAndSetTab(
-      {
-        account: null,
-      },
-      PAGES.ROOT
-    );
-  }
+      <Button id="cancelCreation" onClick={() => dispatch(setTab(PAGES.ROOT))}>
+        <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
+      </Button>
+
+      <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
+        <div className="modal notification">
+          <Trans i18nKey="backupSeed.copied">Copied!</Trans>
+        </div>
+      </Modal>
+    </div>
+  );
 }
-
-const mapStateToProps = function (store: any) {
-  return {
-    account: store.localState.newAccount,
-    ui: store.uiState,
-  };
-};
-
-const actions = {
-  setUiState,
-  setUiStateAndSetTab,
-};
-
-export const BackUpSeed = connect(
-  mapStateToProps,
-  actions
-)(BackUpSeedComponent);

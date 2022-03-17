@@ -21,7 +21,6 @@ interface Props {
   isGenerateNew?: boolean;
   networks: Network[];
   newAccountSelect: (newAccount: Account & { hasBackup: boolean }) => void;
-  notSaveAccount: Account;
   setTab: (newTab: string) => void;
 }
 
@@ -32,7 +31,7 @@ class NewWalletComponent extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
 
-    const { account, isGenerateNew, notSaveAccount } = props;
+    const { account, isGenerateNew } = props;
 
     const networkCode =
       this.props.customCodes[this.props.currentNetwork] ||
@@ -45,15 +44,9 @@ class NewWalletComponent extends React.Component<Props> {
 
     const list = NewWalletComponent.list;
 
-    if (notSaveAccount) {
-      this._onSelect(notSaveAccount);
-      this.props.setTab(PAGES.SAVE_BACKUP);
-    } else {
-      const selected =
-        list.find(item => account && item.address === account.address) ||
-        list[0];
-      this._onSelect(selected);
-    }
+    const selected =
+      list.find(item => account && item.address === account.address) || list[0];
+    this._onSelect(selected);
 
     this.state = { list };
   }
@@ -142,7 +135,6 @@ const actions = {
 const mapStateToProps = function (store: AppState) {
   return {
     account: store.localState.newAccount,
-    notSaveAccount: store.uiState.account,
     customCodes: store.customCodes,
     networks: store.networks,
     currentNetwork: store.currentNetwork,

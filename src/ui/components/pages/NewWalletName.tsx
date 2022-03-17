@@ -2,7 +2,7 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { addUser, newAccountName, setUiState } from '../../actions';
+import { addUser, newAccountName } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
@@ -16,9 +16,6 @@ class NewWalletNameComponent extends React.Component {
 
   constructor(params) {
     super(params);
-    this.props.setUiState({
-      account: null,
-    });
   }
 
   static validateName(name: string, accounts) {
@@ -167,7 +164,6 @@ const mapStateToProps = function (state: AppState) {
 const actions = {
   newAccountName,
   addUser,
-  setUiState,
 };
 
 export const NewWalletName = connect(

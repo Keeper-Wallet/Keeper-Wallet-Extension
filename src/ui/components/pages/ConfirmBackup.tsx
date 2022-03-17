@@ -3,9 +3,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
-import { addUser, setUiState } from '../../actions';
-import { WalletTypes } from '../../services/Background';
 import { AppState } from 'ui/store';
+import { PAGES } from 'ui/pageConfig';
 
 const SHUFFLE_COUNT = 500;
 
@@ -116,11 +115,8 @@ class ConfirmBackupComponent extends React.Component {
 
   private _onSubmit(event) {
     event.preventDefault();
-    this.props.setUiState({
-      account: null,
-    });
-    this.props.addUser(this.props.account, WalletTypes.New);
     this.setState({ disabled: true });
+    this.props.setTab(PAGES.ACCOUNT_NAME);
   }
 
   private _onSelect({ text, id }) {
@@ -162,7 +158,4 @@ const mapStateToProps = function (state: AppState) {
   };
 };
 
-export const ConfirmBackup = connect(mapStateToProps, {
-  addUser,
-  setUiState,
-})(ConfirmBackupComponent);
+export const ConfirmBackup = connect(mapStateToProps)(ConfirmBackupComponent);
