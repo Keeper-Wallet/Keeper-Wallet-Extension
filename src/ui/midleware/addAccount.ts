@@ -18,7 +18,7 @@ export const addAccount = store => next => action => {
     background
       .addWallet({ ...payload, networkCode, network: currentNetwork })
       .then(() => {
-        store.dispatch(setTab('assets'));
+        store.dispatch(setTab('import')); // todo: redirect to success page
 
         if (meta.type === WalletTypes.New) {
           store.dispatch(notificationAccountCreationSuccess(true));
@@ -39,7 +39,7 @@ export const addAccount = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(setTab('assets'));
+        store.dispatch(setTab('import')); // todo: redirect to success page
         store.dispatch(notificationAccountImportSuccess(true));
         setTimeout(() => {
           store.dispatch(notificationAccountImportSuccess(false));
