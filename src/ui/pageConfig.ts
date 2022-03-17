@@ -138,7 +138,7 @@ export const PAGES_CONF = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: true,
+      back: false,
     },
   },
   [PAGES.NEW_ACCOUNT]: {
