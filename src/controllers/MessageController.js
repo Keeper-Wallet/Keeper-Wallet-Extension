@@ -851,7 +851,7 @@ export class MessageController extends EventEmitter {
           throw new Error('quantity is not valid');
         }
 
-        if (tx.data.precision <= 0) {
+        if (tx.data.precision < 0) {
           throw new Error('precision is not valid');
         }
         break;
