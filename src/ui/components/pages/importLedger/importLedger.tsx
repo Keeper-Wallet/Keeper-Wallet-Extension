@@ -24,9 +24,6 @@ function Arrow({ direction }: ArrowProps) {
       })}
       width="14"
       height="14"
-      style={{
-        transform: direction === 'right' ? undefined : 'scaleX(-1)',
-      }}
     >
       <path
         fillRule="evenodd"
@@ -58,10 +55,20 @@ export function ImportLedger({ setTab }: Props) {
   const networks = useAppSelector(state => state.networks);
 
   const [isConnecting, setIsConnecting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [connectionError, setConnectionError] = React.useState<string | null>(
+    null
+  );
   const [isReady, setIsReady] = React.useState(false);
+
+  const [getUsersError, setGetUsersError] = React.useState<
+    string | React.ReactElement | null
+  >(null);
   const [page, setPage] = React.useState(0);
   const [ledgerUsers, setLedgerUsers] = React.useState<LedgerUser[]>([]);
+
+  const [selectAccountError, setSelectAccountError] = React.useState<
+    string | null
+  >(null);
   const [selectedUser, setSelectedUser] = React.useState<LedgerUser | null>(
     null
   );
@@ -71,38 +78,45 @@ export function ImportLedger({ setTab }: Props) {
     networks.find(n => currentNetwork === n.name).code;
 
   const connectToLedger = React.useCallback(async () => {
-    setError(null);
+    setConnectionError(null);
     setIsConnecting(true);
 
     await ledgerService.connectUsb(networkCode);
 
     if (ledgerService.status === LedgerServiceStatus.Ready) {
-      const users = await ledgerService.ledger.getPaginationUsersData(
-        0,
-        USERS_PER_PAGE - 1
-      );
+      if (ledgerUsers.length === 0) {
+        const users = await ledgerService.ledger.getPaginationUsersData(
+          0,
+          USERS_PER_PAGE - 1
+        );
 
-      setLedgerUsers(users);
-      setSelectedUser(users[0]);
+        setLedgerUsers(users);
+        setSelectedUser(users[0]);
+      }
+
       setIsReady(true);
       setIsConnecting(false);
     } else {
       switch (ledgerService.status) {
         case LedgerServiceStatus.UsedBySomeOtherApp:
-          setError(t('ledgerErrors.usedBySomeOtherApp'));
+          setConnectionError(t('ledgerErrors.usedBySomeOtherApp'));
           break;
         default:
-          setError(t('ledgerErrors.unknown'));
+          setConnectionError(t('ledgerErrors.unknown'));
           break;
       }
 
       setIsConnecting(false);
     }
-  }, [networkCode]);
+  }, [ledgerUsers, networkCode]);
 
   React.useEffect(() => {
+    if (isReady) {
+      return;
+    }
+
     connectToLedger();
-  }, [connectToLedger]);
+  }, [connectToLedger, isReady]);
 
   React.useEffect(() => {
     return () => {
@@ -117,12 +131,33 @@ export function ImportLedger({ setTab }: Props) {
       return;
     }
 
+    setGetUsersError(null);
+
     ledgerService.ledger
       .getPaginationUsersData(page * USERS_PER_PAGE, USERS_PER_PAGE - 1)
-      .then(users => {
-        setLedgerUsers(prevState => prevState.concat(users));
-      });
-  }, [isCurPageLoaded, isReady, page]);
+      .then(
+        users => {
+          setLedgerUsers(prevState => prevState.concat(users));
+        },
+        () => {
+          setGetUsersError(
+            <Trans
+              i18nKey="importLedger.couldNotGetUsersError"
+              components={{
+                retryButton: (
+                  <button
+                    className={styles.errorRetryButton}
+                    type="button"
+                    onClick={connectToLedger}
+                  />
+                ),
+              }}
+            />
+          );
+          setIsReady(false);
+        }
+      );
+  }, [connectToLedger, isCurPageLoaded, isReady, page]);
 
   return (
     <div className={styles.root}>
@@ -130,7 +165,7 @@ export function ImportLedger({ setTab }: Props) {
         <Trans i18nKey="importLedger.title" />
       </h2>
 
-      {isReady ? (
+      {ledgerUsers.length !== 0 && selectedUser != null ? (
         <div>
           <p className={styles.instructions}>
             <Trans i18nKey="importLedger.selectAccountInstructions" />
@@ -147,10 +182,14 @@ export function ImportLedger({ setTab }: Props) {
                   selected={selectedUser}
                   size={38}
                   onSelect={user => {
-                    setError(null);
+                    setSelectAccountError(null);
                     setSelectedUser(user);
                   }}
                 />
+              ) : getUsersError ? (
+                <Error className={styles.error} show>
+                  {getUsersError}
+                </Error>
               ) : (
                 <Trans i18nKey="importLedger.avatarListLoading" />
               )}
@@ -186,8 +225,8 @@ export function ImportLedger({ setTab }: Props) {
             </button>
           </div>
 
-          <Error className={styles.error} show>
-            {error}
+          <Error className={styles.error} show={!!selectAccountError}>
+            {selectAccountError}
           </Error>
 
           <div className="margin2">
@@ -206,7 +245,7 @@ export function ImportLedger({ setTab }: Props) {
             type="submit"
             onClick={() => {
               if (accounts.some(acc => acc.address === selectedUser.address)) {
-                setError(t('importLedger.accountExistsError'));
+                setSelectAccountError(t('importLedger.accountExistsError'));
                 return;
               }
 
@@ -233,8 +272,8 @@ export function ImportLedger({ setTab }: Props) {
             <Trans i18nKey="importLedger.connectInstructions" />
           </p>
 
-          <Error className={styles.error} show>
-            {error}
+          <Error className={styles.error} show={!!connectionError}>
+            {connectionError}
           </Error>
 
           {isConnecting ? (

@@ -20,6 +20,13 @@
   margin: 10px 0;
 }
 
+.errorRetryButton {
+  background: none;
+  color: var(--color-submit400);
+  font: inherit;
+  cursor: pointer;
+}
+
 .loader {
   height: 200px;
   background: url(../../../assets/img/loader.gif) center no-repeat;

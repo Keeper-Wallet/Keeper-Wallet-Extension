@@ -302,6 +302,7 @@
     "avatarListLoading": "Loading accounts...",
     "connectInstructions": "Connect Ledger device and open Waves app",
     "continueButton": "Continue",
+    "couldNotGetUsersError": "Could not get more users from ledger. Please ensure that ledger is connected, unlocked and the Waves app is open, then click <retryButton>Retry</retryButton>",
     "selectAccountInstructions": "Choose your address",
     "title": "Import Ledger",
     "tryAgainButton": "Try Again"
