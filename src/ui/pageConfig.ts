@@ -168,24 +168,17 @@ export const PAGES_CONF = {
   },
   [PAGES.ACCOUNT_NAME]: {
     component: NewWalletName,
-    props: {
-      next: PAGES.SAVE_BACKUP,
-    },
     bottom: {
       hide: true,
     },
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: true,
+      back: PAGES.SAVE_BACKUP,
     },
   },
   [PAGES.ACCOUNT_NAME_SEED]: {
     component: NewWalletName,
-    props: {
-      isCreate: true,
-      next: PAGES.SAVE_BACKUP,
-    },
     bottom: {
       hide: true,
     },
@@ -215,7 +208,7 @@ export const PAGES_CONF = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: PAGES.ACCOUNT_NAME,
+      back: PAGES.NEW_ACCOUNT_BACK,
     },
   },
   [PAGES.CONFIRM_BACKUP]: {

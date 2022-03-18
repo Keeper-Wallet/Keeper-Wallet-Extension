@@ -2,7 +2,7 @@ import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { addUser, newAccountName } from '../../actions';
+import { createAccount, newAccountName } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
@@ -88,28 +88,14 @@ class NewWalletNameComponent extends React.Component {
           </div>
 
           <div className={styles.buttons}>
-            {this.props.account.hasBackup ? (
-              <Button
-                id="continue"
-                type="submit"
-                view="submit"
-                onClick={this._onSave}
-                disabled={this.state.errors.length || this.state.disabled}
-              >
-                <Trans i18nKey="newAccountName.continue">Continue</Trans>
-              </Button>
-            ) : (
-              <Button
-                id="createBackup"
-                type="submit"
-                view="submit"
-                disabled={this.state.errors.length}
-              >
-                <Trans i18nKey="newAccountName.continueBackup">
-                  Create backup
-                </Trans>
-              </Button>
-            )}
+            <Button
+              id="continue"
+              type="submit"
+              view="submit"
+              disabled={this.state.errors.length || this.state.disabled}
+            >
+              <Trans i18nKey="newAccountName.continue">Continue</Trans>
+            </Button>
           </div>
         </form>
       </div>
@@ -129,7 +115,7 @@ class NewWalletNameComponent extends React.Component {
     this.setState({ error: errors.length, errors });
   }
 
-  _onSave = e => {
+  _onSubmit = e => {
     e.preventDefault();
 
     const accountTypeToWalletType = {
@@ -140,18 +126,13 @@ class NewWalletNameComponent extends React.Component {
       ledger: WalletTypes.Ledger,
     };
 
-    this.props.addUser(
+    this.props.createAccount(
       this.props.account,
       accountTypeToWalletType[this.props.account.type]
     );
 
     this.setState({ disabled: true });
   };
-
-  _onSubmit(e) {
-    e.preventDefault();
-    this.props.setTab(this.props.next);
-  }
 }
 
 const mapStateToProps = function (state: AppState) {
@@ -163,7 +144,7 @@ const mapStateToProps = function (state: AppState) {
 
 const actions = {
   newAccountName,
-  addUser,
+  createAccount,
 };
 
 export const NewWalletName = connect(
