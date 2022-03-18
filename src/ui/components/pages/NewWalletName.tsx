@@ -7,6 +7,7 @@ import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
 import { AppState } from 'ui/store';
+import * as libCrypto from '@waves/ts-lib-crypto';
 
 class NewWalletNameComponent extends React.Component {
   readonly props;
@@ -87,7 +88,19 @@ class NewWalletNameComponent extends React.Component {
             </Trans>
           </div>
 
-          <div className={styles.buttons}>
+          <div className={styles.footer}>
+            <div className={`tag1 basic500 input-title`}>
+              <Trans i18nKey="newAccountName.accountAddress" />
+            </div>
+
+            <div className={`${styles.greyLine} grey-line`}>
+              {this.props.account.address ||
+                libCrypto.address(
+                  this.props.account.seed,
+                  this.props.networkCode
+                )}
+            </div>
+
             <Button
               id="continue"
               type="submit"
@@ -139,6 +152,9 @@ const mapStateToProps = function (state: AppState) {
   return {
     account: state.localState.newAccount,
     accounts: state.accounts,
+    networkCode:
+      state.customCodes[state.currentNetwork] ||
+      state.networks.find(n => state.currentNetwork === n.name).code,
   };
 };
 

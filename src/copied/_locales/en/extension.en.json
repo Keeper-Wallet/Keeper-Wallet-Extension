@@ -386,6 +386,7 @@
   },
   "newAccountName": {
     "accountName": "Account name",
+    "accountAddress": "Account address",
     "continue": "Continue",
     "errorInUse": "Name already exist",
     "errorNameRequired": "Name is required",
