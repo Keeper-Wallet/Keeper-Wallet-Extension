@@ -97,6 +97,16 @@ class LedgerService {
         throw new Error('Active account is not a ledger account');
       }
 
+      const userData = await ledgerService.ledger.getUserDataById(
+        selectedAccount.id
+      );
+
+      if (userData.address !== selectedAccount.address) {
+        throw new Error(
+          'Account saved in keeper does not match the one in ledger'
+        );
+      }
+
       let signature: string;
 
       switch (request.type) {
