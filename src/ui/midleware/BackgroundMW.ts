@@ -180,6 +180,11 @@ export const changeNetwork = store => next => action => {
       .then(() => store.dispatch(setTab(PAGES.ROOT)));
     return null;
   }
+  if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
+    if (store.getState().localState.tabMode === 'tab') {
+      store.dispatch(setTab(PAGES.ROOT));
+    }
+  }
 
   return next(action);
 };

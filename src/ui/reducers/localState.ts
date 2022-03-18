@@ -3,6 +3,7 @@ import {
   ACTION,
   resetSwapScreenInitialState,
   setSwapScreenInitialState,
+  setTabMode,
 } from '../actions';
 import { pairing } from './pairing';
 
@@ -142,7 +143,19 @@ function swapScreenInitialState(
   }
 }
 
+export type TabMode = 'popup' | 'tab';
+function tabMode(
+  state: TabMode = 'popup',
+  action: ReturnType<typeof setTabMode>
+): TabMode {
+  if (action.type === ACTION.SET_TAB_MODE) {
+    return action.payload;
+  }
+  return state;
+}
+
 export const localState = combineReducers({
+  tabMode,
   loading,
   newUser,
   login,

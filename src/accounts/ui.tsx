@@ -13,7 +13,7 @@ import { Provider } from 'react-redux';
 import { WAVESKEEPER_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnode-util';
 import * as PortStream from 'lib/port-stream.js';
-import { setLangs } from 'ui/actions';
+import { setLangs, setTabMode } from 'ui/actions';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
 import { LANGS } from 'ui/i18n';
@@ -62,6 +62,7 @@ startUi();
 async function startUi() {
   const store = createUiStore();
 
+  store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
 
   ReactDOM.render(
