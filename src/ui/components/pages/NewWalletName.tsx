@@ -1,169 +1,106 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { createAccount, newAccountName } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
-import { AppState } from 'ui/store';
 import * as libCrypto from '@waves/ts-lib-crypto';
+import { useAppDispatch, useAppSelector } from 'accounts/store';
 
-class NewWalletNameComponent extends React.Component {
-  readonly props;
-  readonly state = { disabled: false, errors: [] } as any;
+export function NewWalletName() {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
-  passwordError: boolean;
-
-  constructor(params) {
-    super(params);
-  }
-
-  static validateName(name: string, accounts) {
-    const errors = [];
-    const names = accounts.map(({ name }) => name);
-
-    if (name.length < CONFIG.NAME_MIN_LENGTH) {
-      errors.push({
-        code: 1,
-        key: 'newAccountName.errorRequired',
-        msg: 'Required name',
-      });
-    }
-
-    if (names.includes(name)) {
-      errors.push({
-        code: 2,
-        key: 'newAccountName.errorInUse',
-        msg: 'Name already exist',
-      });
-    }
-
-    return errors;
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const { account, accounts } = props;
-
-    return {
-      ...state,
-      errors: NewWalletNameComponent.validateName(
-        (account && account.name) || '',
-        accounts
-      ),
-    };
-  }
-
-  onChange = e => this._onChange(e);
-
-  onSubmit = e => this._onSubmit(e);
-
-  onBlur = () => this._onBlur();
-
-  render() {
-    return (
-      <div className={styles.content}>
-        <h2 className={`title1 margin1`}>
-          <Trans i18nKey="newAccountName.accountName">Account name</Trans>
-        </h2>
-
-        <form onSubmit={this.onSubmit}>
-          <div className={`margin1`}>
-            <Input
-              id="newAccountName"
-              className="margin1"
-              onChange={this.onChange}
-              value={this.props.account.name || ''}
-              maxLength="32"
-              autoFocus={true}
-              error={this.state.error}
-              onBlur={this.onBlur}
-            />
-            <Error show={this.state.error} errors={this.state.errors} />
-          </div>
-
-          <div className={`basic500 tag1 margin2`}>
-            <Trans i18nKey="newAccountName.nameInfo">
-              The account name will be known only to you
-            </Trans>
-          </div>
-
-          <div className={styles.footer}>
-            <div className={`tag1 basic500 input-title`}>
-              <Trans i18nKey="newAccountName.accountAddress" />
-            </div>
-
-            <div className={`${styles.greyLine} grey-line`}>
-              {this.props.account.address ||
-                libCrypto.address(
-                  this.props.account.seed,
-                  this.props.networkCode
-                )}
-            </div>
-
-            <Button
-              id="continue"
-              type="submit"
-              view="submit"
-              disabled={this.state.errors.length || this.state.disabled}
-            >
-              <Trans i18nKey="newAccountName.continue">Continue</Trans>
-            </Button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
-  _onChange(e) {
-    const newName = e.target.value;
-    this.props.newAccountName(newName);
-  }
-
-  _onBlur() {
-    const errors = NewWalletNameComponent.validateName(
-      this.props.account.name,
-      this.props.accounts
-    );
-    this.setState({ error: errors.length, errors });
-  }
-
-  _onSubmit = e => {
-    e.preventDefault();
-
-    const accountTypeToWalletType = {
-      seed: WalletTypes.Seed,
-      encodedSeed: WalletTypes.EncodedSeed,
-      privateKey: WalletTypes.PrivateKey,
-      wx: WalletTypes.Wx,
-      ledger: WalletTypes.Ledger,
-    };
-
-    this.props.createAccount(
-      this.props.account,
-      accountTypeToWalletType[this.props.account.type]
-    );
-
-    this.setState({ disabled: true });
-  };
-}
-
-const mapStateToProps = function (state: AppState) {
-  return {
-    account: state.localState.newAccount,
-    accounts: state.accounts,
-    networkCode:
+  const account = useAppSelector(state => state.localState.newAccount);
+  const accounts = useAppSelector(state => state.accounts);
+  const networkCode = useAppSelector(
+    state =>
       state.customCodes[state.currentNetwork] ||
-      state.networks.find(n => state.currentNetwork === n.name).code,
-  };
-};
+      state.networks.find(n => state.currentNetwork === n.name).code
+  );
+  const [accountName, setAccountName] = React.useState<string>('');
+  const [pending, setPending] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string>('');
+  const [touched, setTouched] = React.useState<boolean>(false);
 
-const actions = {
-  newAccountName,
-  createAccount,
-};
+  React.useEffect(() => {
+    dispatch(newAccountName(accountName));
 
-export const NewWalletName = connect(
-  mapStateToProps,
-  actions
-)(NewWalletNameComponent);
+    if (touched) {
+      setError(null);
+
+      if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
+        setError(t('newAccountName.errorRequired'));
+      }
+
+      if (accounts.find(({ name }) => name === accountName)) {
+        setError(t('newAccountName.errorInUse'));
+      }
+    }
+  }, [accountName]);
+
+  return (
+    <div className={styles.content}>
+      <h2 className={`title1 margin1`}>
+        <Trans i18nKey="newAccountName.accountName">Account name</Trans>
+      </h2>
+
+      <form
+        onSubmit={() => {
+          setPending(true);
+
+          const accountTypeToWalletType = {
+            seed: WalletTypes.Seed,
+            encodedSeed: WalletTypes.EncodedSeed,
+            privateKey: WalletTypes.PrivateKey,
+            wx: WalletTypes.Wx,
+          };
+
+          dispatch(
+            createAccount(account, accountTypeToWalletType[account.type])
+          );
+        }}
+      >
+        <div className={`margin1`}>
+          <Input
+            id="newAccountName"
+            className="margin1"
+            onChange={e => setAccountName(e.target.value)}
+            value={accountName}
+            maxLength="32"
+            autoFocus
+            error={error}
+            onFocus={() => setTouched(true)}
+          />
+          <Error show={!!error}>{error}</Error>
+        </div>
+
+        <div className={`basic500 tag1 margin2`}>
+          <Trans i18nKey="newAccountName.nameInfo">
+            The account name will be known only to you
+          </Trans>
+        </div>
+
+        <div className={styles.footer}>
+          <div className={`tag1 basic500 input-title`}>
+            <Trans i18nKey="newAccountName.accountAddress" />
+          </div>
+
+          <div className={`${styles.greyLine} grey-line`}>
+            {account.address || libCrypto.address(account.seed, networkCode)}
+          </div>
+
+          <Button
+            id="continue"
+            type="submit"
+            view="submit"
+            disabled={!accountName || !!error || pending}
+          >
+            <Trans i18nKey="newAccountName.continue">Continue</Trans>
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
