@@ -309,7 +309,7 @@
     "tryAgainButton": "Try Again"
   },
   "importSeed": {
-    "accountExistsError": "Account already exists",
+    "accountExistsError": "Account already known as '{{ name }}'",
     "address": "Account address",
     "base58DecodeError": "Doesn't look like base58-encoded value",
     "base58PrefixError": "Looks like you're trying to import encoded seed. Please, <switchTab>switch to \"Encoded seed\" tab</switchTab> for that",
@@ -387,11 +387,12 @@
   "newAccountName": {
     "accountName": "Account name",
     "accountAddress": "Account address",
+    "cancel": "Cancel",
     "continue": "Continue",
     "errorInUse": "Name already exist",
     "errorNameRequired": "Name is required",
     "errorRequired": "Required name",
-    "errorSeedExist": "Account already exist",
+    "errorAlreadyExists": "Account already known as '{{ name }}'",
     "nameInfo": "The account name will be known only to you"
   },
   "newWallet": {

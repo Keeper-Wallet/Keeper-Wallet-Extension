@@ -182,8 +182,12 @@ export function ImportSeed({ isNew, setTab }: Props) {
     }
   }
 
-  if (address && accounts.some(acc => acc.address === address)) {
-    validationError = t('importSeed.accountExistsError');
+  const existedAccount =
+    address && accounts.find(acc => acc.address === address);
+  if (existedAccount) {
+    validationError = t('importSeed.accountExistsError', {
+      name: existedAccount.name,
+    });
   }
 
   return (

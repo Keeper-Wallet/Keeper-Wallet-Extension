@@ -1,12 +1,13 @@
 import * as styles from './styles/newaccountname.styl';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { createAccount, newAccountName } from '../../actions';
+import { createAccount, newAccountName, setTab } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
 import * as libCrypto from '@waves/ts-lib-crypto';
 import { useAppDispatch, useAppSelector } from 'accounts/store';
+import { PAGES } from 'ui/pageConfig';
 
 export function NewWalletName() {
   const { t } = useTranslation();
@@ -23,6 +24,10 @@ export function NewWalletName() {
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>('');
   const [touched, setTouched] = React.useState<boolean>(false);
+  const [isAddressExists, setAddressExists] = React.useState<boolean>(false);
+
+  const accountAddress =
+    account.address || libCrypto.address(account.seed, networkCode);
 
   React.useEffect(() => {
     dispatch(newAccountName(accountName));
@@ -38,17 +43,34 @@ export function NewWalletName() {
         setError(t('newAccountName.errorInUse'));
       }
     }
-  }, [accountName]);
+
+    const existedAccount = accounts.find(
+      ({ address }) => address === accountAddress
+    );
+    if (existedAccount) {
+      setAddressExists(true);
+      setError(
+        t('newAccountName.errorAlreadyExists', {
+          name: existedAccount.name,
+        })
+      );
+    }
+  }, [accountName, accounts]);
 
   return (
     <div className={styles.content}>
       <h2 className={`title1 margin1`}>
-        <Trans i18nKey="newAccountName.accountName">Account name</Trans>
+        <Trans i18nKey="newAccountName.accountName" />
       </h2>
 
       <form
         onSubmit={() => {
           setPending(true);
+
+          if (isAddressExists) {
+            dispatch(setTab(PAGES.ROOT));
+            return;
+          }
 
           const accountTypeToWalletType = {
             seed: WalletTypes.Seed,
@@ -69,6 +91,7 @@ export function NewWalletName() {
             onChange={e => setAccountName(e.target.value)}
             value={accountName}
             maxLength="32"
+            disabled={isAddressExists}
             autoFocus
             error={error}
             onFocus={() => setTouched(true)}
@@ -77,9 +100,7 @@ export function NewWalletName() {
         </div>
 
         <div className={`basic500 tag1 margin2`}>
-          <Trans i18nKey="newAccountName.nameInfo">
-            The account name will be known only to you
-          </Trans>
+          <Trans i18nKey="newAccountName.nameInfo" />
         </div>
 
         <div className={styles.footer}>
@@ -87,18 +108,22 @@ export function NewWalletName() {
             <Trans i18nKey="newAccountName.accountAddress" />
           </div>
 
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address || libCrypto.address(account.seed, networkCode)}
-          </div>
+          <div className={`${styles.greyLine} grey-line`}>{accountAddress}</div>
 
-          <Button
-            id="continue"
-            type="submit"
-            view="submit"
-            disabled={!accountName || !!error || pending}
-          >
-            <Trans i18nKey="newAccountName.continue">Continue</Trans>
-          </Button>
+          {isAddressExists ? (
+            <Button>
+              <Trans i18nKey="newAccountName.cancel" />
+            </Button>
+          ) : (
+            <Button
+              id="continue"
+              type="submit"
+              view="submit"
+              disabled={!accountName || !!error || pending}
+            >
+              <Trans i18nKey="newAccountName.continue" />
+            </Button>
+          )}
         </div>
       </form>
     </div>
