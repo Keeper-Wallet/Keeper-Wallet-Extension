@@ -6,23 +6,45 @@ import { Trans } from 'react-i18next';
 import { Button, Modal } from '../ui';
 import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
-import { connect } from 'react-redux';
 import { setUiState } from '../../actions';
-import { AnyAction } from 'redux';
 import { PAGES } from '../../pageConfig';
-import { useAppSelector } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
 
 interface Props {
-  showUpdateInfo: boolean;
   setTab: (newTab: string) => void;
-  dispatch: (action: AnyAction) => void;
 }
 
-export const Import = connect((state: any) => ({
-  showUpdateInfo:
-    !state.uiState.isFeatureUpdateShown && !!state.allNetworksAccounts.length,
-}))(function Import({ showUpdateInfo, setTab, dispatch }: Props) {
+export function Import({ setTab }: Props) {
+  const dispatch = useAppDispatch();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const showUpdateInfo = useAppSelector(
+    state =>
+      !state.uiState.isFeatureUpdateShown && !!state.allNetworksAccounts.length
+  );
+
+  React.useEffect(() => {
+    const tag = window.location.hash.split('#')[1];
+    let redirect;
+
+    switch (tag) {
+      case 'create':
+        redirect = PAGES.NEW_ACCOUNT;
+        break;
+      case 'seed':
+        redirect = PAGES.IMPORT_SEED;
+        break;
+      case 'keystore':
+        redirect = PAGES.IMPORT_KEYSTORE;
+        break;
+      case 'email':
+        redirect = PAGES.IMPORT_EMAIL;
+        break;
+    }
+    if (redirect) {
+      window.location.hash = '';
+      setTab(redirect);
+    }
+  }, []);
 
   const dismissFeatureInfo = () =>
     dispatch(setUiState({ isFeatureUpdateShown: true }));
@@ -48,7 +70,7 @@ export const Import = connect((state: any) => ({
         id="createNewAccount"
         type="submit"
         view="submit"
-        onClick={() => setTab('new_account')}
+        onClick={() => setTab(PAGES.NEW_ACCOUNT)}
       >
         <Trans i18nKey="import.createNew" />
       </Button>
@@ -64,7 +86,7 @@ export const Import = connect((state: any) => ({
             data-testid="importSeed"
             type="button"
             view="transparent"
-            onClick={() => setTab('import_seed')}
+            onClick={() => setTab(PAGES.IMPORT_SEED)}
           >
             <svg
               className={styles.importButtonIcon}
@@ -122,7 +144,7 @@ export const Import = connect((state: any) => ({
             data-testid="importKeystore"
             type="button"
             view="transparent"
-            onClick={() => setTab('import_keystore')}
+            onClick={() => setTab(PAGES.IMPORT_KEYSTORE)}
           >
             <svg
               className={styles.importButtonIcon}
@@ -175,7 +197,7 @@ export const Import = connect((state: any) => ({
               data-testid="importEmail"
               type="button"
               view="transparent"
-              onClick={() => setTab('import_email')}
+              onClick={() => setTab(PAGES.IMPORT_EMAIL)}
             >
               <svg
                 className={styles.importButtonIcon}
@@ -264,4 +286,4 @@ export const Import = connect((state: any) => ({
       </Modal>
     </div>
   );
-});
+}
