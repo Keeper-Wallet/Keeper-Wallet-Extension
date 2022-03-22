@@ -1,4 +1,4 @@
-import { ACTION, setTab } from '../actions';
+import { ACTION, selectAccount, setTab } from '../actions';
 import background from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 
@@ -13,7 +13,8 @@ export const addAccount = store => next => action => {
 
     background
       .addWallet({ ...payload, networkCode, network: currentNetwork })
-      .then(() => {
+      .then(lastAccount => {
+        store.dispatch(selectAccount(lastAccount));
         store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
 
         background.sendEvent('addWallet', { type: meta.type });

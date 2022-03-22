@@ -2,6 +2,7 @@ import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
+import { Account } from 'accounts/types';
 
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
@@ -122,7 +123,7 @@ class Background {
     }
   }
 
-  async addWallet(data): Promise<void> {
+  async addWallet(data): Promise<Account> {
     try {
       await this.initPromise;
       return await this.background.addWallet(data);
