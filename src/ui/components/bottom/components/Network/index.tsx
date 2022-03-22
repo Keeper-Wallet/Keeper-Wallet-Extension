@@ -12,6 +12,7 @@ import {
 import { Modal } from 'ui/components/ui';
 import { NetworkSettings } from '../NetworkSettings';
 import * as styles from './network.styl';
+import { Tooltip } from 'ui/components/ui/tooltip';
 
 const key = key => `bottom.${key}`;
 
@@ -102,7 +103,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
 
   editClickHandler = () =>
     this.setState({
-      showSettings: true,
+      showSettings: !this.props.noChangeNetwork,
       net: this.state.networkHash[this.props.currentNetwork],
     });
 
@@ -161,9 +162,10 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
   }
 
   render(): React.ReactNode {
-    const networkClassName = cn('basic500', {
-      [styles.disabledNet]: this.props.noChangeNetwork,
-    });
+    const networkClassName = cn(
+      'basic500',
+      this.props.noChangeNetwork && styles.disabledNet
+    );
 
     const {
       networkHash,
@@ -176,44 +178,60 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     const net = selectedNet ? networkHash[selectedNet.name] : null;
 
     return (
-      <div className={`${styles.network} flex`}>
-        <div
-          className={`${networkClassName} flex`}
-          onClick={this.selectFromNetworksHandler}
-          key={currentNetwork}
-        >
-          <i className={`networkIcon ${styles.networkIcon}`}> </i>
-          <span className={styles.networkBottom}>
-            <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
-          </span>
-        </div>
-        {showEdit ? (
-          <div className={styles.editBtn} onClick={this.editClickHandler}>
-            <Trans i18nKey="bottom.network.edit">Edit</Trans>
-          </div>
-        ) : null}
-        <Networks
-          isShow={showNetworks}
-          networks={this.props.networks}
-          selectedNet={this.props.currentNetwork}
-          onSelect={this.selectHandler}
-        />
+      <Tooltip
+        className={styles.tooltipContent}
+        content={<Trans i18nKey={'bottom.network.disabled'} />}
+      >
+        {props => (
+          <div
+            className={`${styles.network} flex`}
+            {...(this.props.noChangeNetwork && props)}
+          >
+            <div
+              className={`${networkClassName} flex`}
+              onClick={this.selectFromNetworksHandler}
+              key={currentNetwork}
+            >
+              <i className={`networkIcon ${styles.networkIcon}`}> </i>
+              <span className={styles.networkBottom}>
+                <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
+              </span>
+            </div>
+            {showEdit ? (
+              <div
+                className={cn(
+                  styles.editBtn,
+                  this.props.noChangeNetwork && styles.disabledNet
+                )}
+                onClick={this.editClickHandler}
+              >
+                <Trans i18nKey="bottom.network.edit">Edit</Trans>
+              </div>
+            ) : null}
+            <Networks
+              isShow={showNetworks}
+              networks={this.props.networks}
+              selectedNet={this.props.currentNetwork}
+              onSelect={this.selectHandler}
+            />
 
-        <Modal
-          showModal={showSettings}
-          animation={Modal.ANIMATION.FLASH}
-          onExited={this.resetSettingsHandler}
-        >
-          <NetworkSettings
-            node={net && net.server}
-            name={net && net.name}
-            matcher={net && net.matcher}
-            networkCode={net && net.code}
-            onClose={this.closeSettingsHandler}
-            onSave={this.saveSettingsHandler}
-          />
-        </Modal>
-      </div>
+            <Modal
+              showModal={showSettings}
+              animation={Modal.ANIMATION.FLASH}
+              onExited={this.resetSettingsHandler}
+            >
+              <NetworkSettings
+                node={net && net.server}
+                name={net && net.name}
+                matcher={net && net.matcher}
+                networkCode={net && net.code}
+                onClose={this.closeSettingsHandler}
+                onSave={this.saveSettingsHandler}
+              />
+            </Modal>
+          </div>
+        )}
+      </Tooltip>
     );
   }
 }

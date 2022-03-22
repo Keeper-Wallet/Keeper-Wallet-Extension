@@ -155,7 +155,8 @@
     "custom": "Custom",
     "mainnet": "Mainnet",
     "network": {
-      "edit": "Edit"
+      "edit": "Edit",
+      "disabled": "You cannot change the network settings during this operation"
     },
     "testnet": "Testnet",
     "stagenet": "Stagenet"
