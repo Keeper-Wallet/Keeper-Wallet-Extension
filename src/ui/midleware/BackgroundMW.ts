@@ -7,7 +7,6 @@ import {
   pairingSetData,
   setActiveNotification,
   setTab,
-  setUiState,
   updateActiveState,
 } from '../actions';
 import background from '../services/Background';
@@ -138,11 +137,6 @@ export const deleteAccountMw = store => next => action => {
     background.deleteVault().then(() => {
       store.dispatch(updateActiveState(null));
       store.dispatch(setTab(PAGES.ROOT));
-      store.dispatch(
-        setUiState({
-          account: null,
-        })
-      );
     });
     return null;
   }
