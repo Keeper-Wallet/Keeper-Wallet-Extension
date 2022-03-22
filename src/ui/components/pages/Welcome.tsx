@@ -15,7 +15,7 @@ export function Welcome({ setTab }: Props) {
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
   React.useEffect(() => {
-    if (window.location.hash.split('#')[1] === 'new') {
+    if (window.location.hash.split('#')[1] === PAGES.NEW) {
       history.replaceState(history.state, null, window.location.pathname);
       setTab(PAGES.NEW);
     }
@@ -30,7 +30,7 @@ export function Welcome({ setTab }: Props) {
         onClick={() => {
           if (tabMode === 'popup') {
             return background.showTab(
-              window.location.origin + '/accounts.html#new',
+              `${window.location.origin}/accounts.html#${PAGES.NEW}`,
               'accounts'
             );
           }

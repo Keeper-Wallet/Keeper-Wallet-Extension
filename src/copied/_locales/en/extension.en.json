@@ -253,6 +253,8 @@
   },
   "import": {
     "beta": "beta",
+    "noAccounts": "There are no accounts in selected <strong>{{currentNetwork}}</strong> network profile",
+    "addAccount": "Add account",
     "createNew": "Create a new account",
     "importVia": "Or import via",
     "notSupportedByBrowser": "Not supported by your browser",
