@@ -1,4 +1,5 @@
 import * as libCrypto from '@waves/ts-lib-crypto';
+import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -110,16 +111,24 @@ export function ImportSeed({ isNew, setTab }: Props) {
     />
   );
 
+  function switchToPrivateKeyTabFromSeedError() {
+    setPrivateKeyValue(seedValue);
+    setShowValidationError(false);
+    setActiveTab(PRIVATE_KEY_TAB_INDEX);
+  }
+
   if (activeTab === SEED_TAB_INDEX) {
-    if (!seedValue) {
+    const trimmedSeedValue = seedValue.trim();
+
+    if (!trimmedSeedValue) {
       validationError = t('importSeed.requiredError');
-    } else if (seedValue.length < SEED_MIN_LENGTH) {
+    } else if (trimmedSeedValue.length < SEED_MIN_LENGTH) {
       validationError = t('importSeed.seedLengthError', {
         minLength: SEED_MIN_LENGTH,
       });
     } else if (
-      seedValue.startsWith('base58:') &&
-      isValidBase58(stripBase58Prefix(seedValue))
+      trimmedSeedValue.startsWith('base58:') &&
+      isValidBase58(stripBase58Prefix(trimmedSeedValue))
     ) {
       validationError = (
         <Trans
@@ -129,8 +138,33 @@ export function ImportSeed({ isNew, setTab }: Props) {
           }}
         />
       );
+    } else if (validators.isValidAddress(trimmedSeedValue)) {
+      validationError = t('importSeed.seedIsAddressError');
+    } else if (validators.isHash(trimmedSeedValue)) {
+      validationError = (
+        <Trans
+          i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
+          components={{
+            switchTab: (
+              <span
+                className={styles.errorSwitchTab}
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  switchToPrivateKeyTabFromSeedError();
+                }}
+                onKeyUp={event => {
+                  if (['Enter', ' '].includes(event.key)) {
+                    switchToPrivateKeyTabFromSeedError();
+                  }
+                }}
+              />
+            ),
+          }}
+        />
+      );
     } else {
-      address = libCrypto.address(seedValue.trim(), networkCode);
+      address = libCrypto.address(trimmedSeedValue, networkCode);
     }
   } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
     if (!encodedSeedValue) {
