@@ -5,6 +5,7 @@ import {
   setTab,
 } from '../actions';
 import background, { WalletTypes } from '../services/Background';
+import { PAGES } from 'ui/pageConfig';
 
 export const addAccount = store => next => action => {
   const { type, payload, meta } = action;
@@ -18,7 +19,7 @@ export const addAccount = store => next => action => {
     background
       .addWallet({ ...payload, networkCode, network: currentNetwork })
       .then(() => {
-        store.dispatch(setTab('import')); // todo: redirect to success page
+        store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
 
         if (meta.type === WalletTypes.New) {
           store.dispatch(notificationAccountCreationSuccess(true));
@@ -39,7 +40,7 @@ export const addAccount = store => next => action => {
   if (type === ACTION.BATCH_ADD_ACCOUNTS) {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
-        store.dispatch(setTab('import')); // todo: redirect to success page
+        store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
         store.dispatch(notificationAccountImportSuccess(true));
         setTimeout(() => {
           store.dispatch(notificationAccountImportSuccess(false));

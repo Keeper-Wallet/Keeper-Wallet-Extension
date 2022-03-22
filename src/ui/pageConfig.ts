@@ -35,6 +35,7 @@ import { ImportKeystore } from './components/pages/importKeystore/importKeystore
 import { ImportEmail } from './components/pages/importEmail/importEmail';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
 import { Send } from './components/pages/send';
+import { ImportSuccess } from 'ui/components/pages/importSuccess';
 
 export const PAGES = {
   WELCOME: 'welcome',
@@ -54,6 +55,7 @@ export const PAGES = {
   IMPORT_LEDGER: 'import_ledger',
   IMPORT_SEED: 'import_seed',
   IMPORT_SEED_BACK: 'import_seed_back',
+  IMPORT_SUCCESS: 'import_success',
   EXPORT_ACCOUNTS: 'export_accounts',
   ASSETS: 'assets',
   OTHER_ACCOUNTS: 'other_accounts',
@@ -126,7 +128,7 @@ export const PAGES_CONF = {
     menu: {
       hasLogo: true,
       hasSettings: false,
-      back: false,
+      back: null,
     },
   },
   [PAGES.NEW_ACCOUNT]: {
@@ -176,6 +178,18 @@ export const PAGES_CONF = {
       back: true,
     },
   },
+  [PAGES.IMPORT_SUCCESS]: {
+    component: ImportSuccess,
+    bottom: {
+      noChangeNetwork: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: null,
+    },
+  },
+
   [PAGES.CHANGE_ACCOUNT_NAME]: {
     component: ChangeAccountName,
     props: {},

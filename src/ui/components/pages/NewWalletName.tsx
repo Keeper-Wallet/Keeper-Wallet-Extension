@@ -64,7 +64,9 @@ export function NewWalletName() {
       </h2>
 
       <form
-        onSubmit={() => {
+        onSubmit={e => {
+          e.preventDefault();
+
           setPending(true);
 
           if (isAddressExists) {

@@ -2,9 +2,6 @@
   "accountCard": {
     "infoTooltip": "Account info"
   },
-  "activeAccountCard": {
-    "swapButton": "Swap"
-  },
   "accountInfo": {
     "address": "Your address",
     "backUp": "Backup phrase",
@@ -25,6 +22,9 @@
     "pubKey": "Public key",
     "seed": "Backup phrase",
     "viewInExplorer": "View in Explorer"
+  },
+  "activeAccountCard": {
+    "swapButton": "Swap"
   },
   "assetAmountInput": {
     "maxButtonText": "Max"
@@ -50,6 +50,10 @@
     "sendAssetTooltip": "Send",
     "swapAssetTooltip": "Swap",
     "viewDetailsInExplorer": "View details in Explorer"
+  },
+  "assetSelectModal": {
+    "searchPlaceholder": "Search by ticker, name or enter an id",
+    "title": "Select a token"
   },
   "assets": {
     "account": "Account",
@@ -79,69 +83,6 @@
     "onlyMyAssets": "Only Issued by Me",
     "onlyFavorites": "Only Favorites",
     "resetFilters": "Reset filters"
-  },
-  "assetSelectModal": {
-    "searchPlaceholder": "Search by ticker, name or enter an id",
-    "title": "Select a token"
-  },
-  "historyCard": {
-    "burn": "Burn Asset",
-    "createAlias": "Create Alias",
-    "dataTransaction": "Data Transaction",
-    "dataTransactionEntry": "{{ count }} data entry",
-    "dataTransactionEntry_plural": "{{ count }} data entries",
-    "exchange": "Exchange",
-    "failed": "Failed",
-    "genesis": "Genesis",
-    "infoTooltip": "Show in Explorer",
-    "issue": "Issue",
-    "issueNFT": "Issue NFT",
-    "issueSmartNFT": "Issue Smart NFT",
-    "issueSmartToken": "Issue Smart Asset",
-    "issueToken": "Issue Asset",
-    "lease": "Start WAVES Staking",
-    "leaseCancel": "Cancel WAVES Staking",
-    "leaseIncoming": "Incoming Leasing",
-    "massTransfer": "Mass Transfer",
-    "massTransferReceive": "Incoming Mass Transfer",
-    "massTransferRecipient": "{{ count }} recipient",
-    "massTransferRecipient_plural": "{{ count }} recipients",
-    "payment": "Payment",
-    "paymentReceive": "Incoming Payment",
-    "paymentSelf": "Self-payment",
-    "reissue": "Reissue Asset",
-    "scriptInvocation": "Contract Invocation",
-    "setAssetScript": "Update Asset Script",
-    "setScript": "Set Account Script",
-    "setScriptCancel": "Remove Account Script",
-    "sponsorshipDisable": "Disable Sponsorship",
-    "sponsorshipEnable": "Enable Sponsorship",
-    "swap": "Token Swap",
-    "transfer": "Transfer",
-    "transferReceive": "Incoming Transfer",
-    "transferSelf": "Self-transfer",
-    "updateAssetInfo": "Update Asset Info"
-  },
-  "historyFilters": {
-    "all": "All",
-    "incoming": "Only Incoming",
-    "outgoing": "Only Outgoing",
-    "issue": "Issue",
-    "transfer": "Transfer",
-    "reissue": "Reissue",
-    "burn": "Burn",
-    "exchange": "Exchange",
-    "lease": "Lease",
-    "cancelLease": "Cancel Lease",
-    "alias": "Alias",
-    "massTransfer": "Mass Transfer",
-    "data": "Data",
-    "setScript": "Set Script",
-    "sponsorship": "Sponsorship",
-    "setAssetScript": "Set Asset Script",
-    "invokeScript": "Invoke Script",
-    "updateAssetInfo": "Update Asset Info",
-    "type": "Transaction Type"
   },
   "backupSeed": {
     "backupCarefully": "Please carefully write down these 15 words or copy them",
@@ -234,6 +175,14 @@
     "passwordVerifyImportantNote": "<attention>Attention:</attention> this password will also be used to encrypt the resulting file. If you forget it, you won't be able to restore your accounts.",
     "verifyBtn": "Verify"
   },
+  "featureUpdateInfo": {
+    "intro": "Waves Keeper cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
+    "recommendation": "So we highly recommend to create a backup file with seed phrases of all your accounts.",
+    "keystoreInfo": "Keystore file is a secure place where you can store seed phrases encrypted with your password.",
+    "keystoreImport": "You can later import accounts from this file back into Waves Keeper.",
+    "backupBtn": "Back up to a keystore file",
+    "cancelBtn": "I'll do it later"
+  },
   "forgotPassword": {
     "attention": "Attention!",
     "attentionMessage": "To reset the password, you need to delete all accounts from Waves Keeper, set a new password, import each of your account again from the Seed phrase.",
@@ -244,21 +193,75 @@
     "resetConfirm": "Delete all",
     "resetCancel": "Cancel"
   },
-  "featureUpdateInfo": {
-    "intro": "Waves Keeper cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
-    "recommendation": "So we highly recommend to create a backup file with seed phrases of all your accounts.",
-    "keystoreInfo": "Keystore file is a secure place where you can store seed phrases encrypted with your password.",
-    "keystoreImport": "You can later import accounts from this file back into Waves Keeper.",
-    "backupBtn": "Back up to a keystore file",
-    "cancelBtn": "I'll do it later"
+  "historyCard": {
+    "burn": "Burn Asset",
+    "createAlias": "Create Alias",
+    "dataTransaction": "Data Transaction",
+    "dataTransactionEntry": "{{ count }} data entry",
+    "dataTransactionEntry_plural": "{{ count }} data entries",
+    "exchange": "Exchange",
+    "failed": "Failed",
+    "genesis": "Genesis",
+    "infoTooltip": "Show in Explorer",
+    "issue": "Issue",
+    "issueNFT": "Issue NFT",
+    "issueSmartNFT": "Issue Smart NFT",
+    "issueSmartToken": "Issue Smart Asset",
+    "issueToken": "Issue Asset",
+    "lease": "Start WAVES Staking",
+    "leaseCancel": "Cancel WAVES Staking",
+    "leaseIncoming": "Incoming Leasing",
+    "massTransfer": "Mass Transfer",
+    "massTransferReceive": "Incoming Mass Transfer",
+    "massTransferRecipient": "{{ count }} recipient",
+    "massTransferRecipient_plural": "{{ count }} recipients",
+    "payment": "Payment",
+    "paymentReceive": "Incoming Payment",
+    "paymentSelf": "Self-payment",
+    "reissue": "Reissue Asset",
+    "scriptInvocation": "Contract Invocation",
+    "setAssetScript": "Update Asset Script",
+    "setScript": "Set Account Script",
+    "setScriptCancel": "Cancel Account Script",
+    "sponsorshipDisable": "Disable Sponsorship",
+    "sponsorshipEnable": "Enable Sponsorship",
+    "swap": "Token Swap",
+    "transfer": "Transfer",
+    "transferReceive": "Incoming Transfer",
+    "transferSelf": "Self-transfer",
+    "updateAssetInfo": "Update Asset Info"
+  },
+  "historyFilters": {
+    "all": "All",
+    "incoming": "Only Incoming",
+    "outgoing": "Only Outgoing",
+    "issue": "Issue",
+    "transfer": "Transfer",
+    "reissue": "Reissue",
+    "burn": "Burn",
+    "exchange": "Exchange",
+    "lease": "Lease",
+    "cancelLease": "Cancel Lease",
+    "alias": "Alias",
+    "massTransfer": "Mass Transfer",
+    "data": "Data",
+    "setScript": "Set Script",
+    "sponsorship": "Sponsorship",
+    "setAssetScript": "Set Asset Script",
+    "invokeScript": "Invoke Script",
+    "updateAssetInfo": "Update Asset Info",
+    "type": "Transaction Type"
   },
   "import": {
     "beta": "beta",
     "noAccounts": "There are no accounts in selected <strong>{{currentNetwork}}</strong> network profile",
     "addAccount": "Add account",
+    "addAnotherAccount": "Add another account",
+    "close": "Close",
     "createNew": "Create a new account",
     "importVia": "Or import via",
     "notSupportedByBrowser": "Not supported by your browser",
+    "additionSuccess": "Your account '{{ name }}' has been successfully added!",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",
