@@ -126,6 +126,10 @@ async function startUi() {
     background.getNetworks(),
   ]);
 
+  if (!state.initialized) {
+    background.showTab(window.location.origin + '/accounts.html', 'accounts');
+  }
+
   updateState({ ...state, networks });
 
   Sentry.setUser({ id: state.userId });

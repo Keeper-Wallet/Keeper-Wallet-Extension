@@ -162,6 +162,15 @@ class Background {
     }
   }
 
+  async showTab(url: string, name: string): Promise<void> {
+    try {
+      await this.initPromise;
+      return await this.background.showTab(url, name);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async lock(): Promise<void> {
     try {
       await this.initPromise;
