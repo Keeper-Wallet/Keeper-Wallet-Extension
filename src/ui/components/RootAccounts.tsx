@@ -24,7 +24,7 @@ export function RootAccounts() {
       tab = PAGES.WELCOME;
     }
 
-    const canUseTab = [PAGES.NEW, PAGES.CONDITIONS, PAGES.INTRO].includes(tab)
+    const canUseTab = [PAGES.NEW, PAGES.INTRO].includes(tab)
       ? !state.state?.initialized
       : [PAGES.LOGIN, PAGES.FORGOT].includes(tab)
       ? state.state?.initialized && state.state?.locked

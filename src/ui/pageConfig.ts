@@ -4,7 +4,6 @@ import {
   BackUpSeed,
   ChangeAccountName,
   ChangePassword,
-  Conditions,
   ConfirmBackup,
   DeleteActiveAccount,
   DeleteAllAccounts,
@@ -91,17 +90,6 @@ export const PAGES_CONF = {
     },
     menu: {
       hasLogo: false,
-      hasSettings: false,
-      back: null,
-    },
-  },
-  [PAGES.CONDITIONS]: {
-    component: Conditions,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
       hasSettings: false,
       back: null,
     },
