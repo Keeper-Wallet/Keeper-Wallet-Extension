@@ -24,11 +24,12 @@ export function ImportSuccess() {
     <div className={styles.content}>
       <div className={cn(styles.successIcon, 'tx-approve-icon')} />
 
-      <p className="headline2 center margin-main-big-top margin-main-large">
-        <Trans
-          i18nKey="import.additionSuccess"
-          values={{ name: account.name }}
-        />
+      <p className="headline2 center margin-main-top margin-min">
+        <Trans i18nKey="import.readyToUse" values={{ name: account.name }} />
+      </p>
+
+      <p className="body1 basic500 center">
+        <Trans i18nKey="import.readyHelpText" />
       </p>
 
       <div className={styles.footer}>
@@ -41,17 +42,17 @@ export function ImportSuccess() {
         <Button
           className="margin2"
           type="submit"
-          onClick={() => dispatch(setTab(PAGES.ROOT))}
+          onClick={() => window.close()}
         >
-          <Trans i18nKey="import.addAnotherAccount" />
+          <Trans i18nKey="import.finish" />
         </Button>
 
         <Button
           className="margin1"
           type="button"
-          onClick={() => window.close()}
+          onClick={() => dispatch(setTab(PAGES.ROOT))}
         >
-          <Trans i18nKey="import.close" />
+          <Trans i18nKey="import.addAnotherAccount" />
         </Button>
       </div>
     </div>
