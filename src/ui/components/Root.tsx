@@ -103,7 +103,7 @@ class RootComponent extends React.Component {
     if (props.locked) {
       return props.initialized ? USER_START_PAGE : NO_USER_START_PAGE;
     }
-    return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT;
+    return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
   }
 
   static canUseTab(props, tab) {

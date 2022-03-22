@@ -35,7 +35,7 @@ export function RootAccounts() {
         ? state.state?.initialized
           ? PAGES.LOGIN
           : PAGES.WELCOME
-        : PAGES.IMPORT_FROM_ASSETS;
+        : PAGES.IMPORT_TAB;
     }
 
     if (tab !== state.tab) {

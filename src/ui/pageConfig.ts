@@ -42,8 +42,8 @@ export const PAGES = {
   CONDITIONS: 'conditions',
   LOGIN: 'login',
   NEW: 'new',
-  IMPORT: 'import',
-  IMPORT_FROM_ASSETS: 'import_and_back_to_assets',
+  IMPORT_POPUP: 'import_popup',
+  IMPORT_TAB: 'import_tab',
   NEW_ACCOUNT: 'new_account',
   NEW_ACCOUNT_BACK: 'new_account_back',
   ACCOUNT_NAME: 'account_name',
@@ -115,7 +115,7 @@ export const PAGES_CONF = {
       back: null,
     },
   },
-  [PAGES.IMPORT]: {
+  [PAGES.IMPORT_POPUP]: {
     component: Import,
     menu: {
       hasLogo: true,
@@ -123,7 +123,7 @@ export const PAGES_CONF = {
       back: null,
     },
   },
-  [PAGES.IMPORT_FROM_ASSETS]: {
+  [PAGES.IMPORT_TAB]: {
     component: Import,
     menu: {
       hasLogo: true,
