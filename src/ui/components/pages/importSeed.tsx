@@ -17,6 +17,7 @@ import {
 } from '../ui';
 import { PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
+import { InlineButton } from '../ui/buttons/inlineButton';
 
 interface Props {
   isNew?: boolean;
@@ -81,41 +82,24 @@ export function ImportSeed({ isNew, setTab }: Props) {
   let address: string | null = null;
   let validationError: React.ReactElement | string | null = null;
 
-  function switchToEncodedTabFromError() {
-    let newEncodedSeedValue = '';
-
-    if (activeTab === SEED_TAB_INDEX) {
-      newEncodedSeedValue = seedValue;
-    } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
-      newEncodedSeedValue = privateKeyValue;
-    }
-
-    setEncodedSeedValue(newEncodedSeedValue);
-    setShowValidationError(false);
-    setActiveTab(ENCODED_SEED_TAB_INDEX);
-  }
-
-  const errorSwitchTabElement = (
-    <span
+  const base58PrefixErrorSwitchTabEl = (
+    <InlineButton
       className={styles.errorSwitchTab}
-      role="button"
-      tabIndex={0}
       onClick={() => {
-        switchToEncodedTabFromError();
-      }}
-      onKeyUp={event => {
-        if (['Enter', ' '].includes(event.key)) {
-          switchToEncodedTabFromError();
+        let newEncodedSeedValue = '';
+
+        if (activeTab === SEED_TAB_INDEX) {
+          newEncodedSeedValue = seedValue;
+        } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+          newEncodedSeedValue = privateKeyValue;
         }
+
+        setEncodedSeedValue(newEncodedSeedValue);
+        setShowValidationError(false);
+        setActiveTab(ENCODED_SEED_TAB_INDEX);
       }}
     />
   );
-
-  function switchToPrivateKeyTabFromSeedError() {
-    setPrivateKeyValue(seedValue);
-    setShowValidationError(false);
-    setActiveTab(PRIVATE_KEY_TAB_INDEX);
-  }
 
   if (activeTab === SEED_TAB_INDEX) {
     const trimmedSeedValue = seedValue.trim();
@@ -134,7 +118,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
         <Trans
           i18nKey="importSeed.base58PrefixError"
           components={{
-            switchTab: errorSwitchTabElement,
+            switchTab: base58PrefixErrorSwitchTabEl,
           }}
         />
       );
@@ -148,17 +132,12 @@ export function ImportSeed({ isNew, setTab }: Props) {
           i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
           components={{
             switchTab: (
-              <span
+              <InlineButton
                 className={styles.errorSwitchTab}
-                role="button"
-                tabIndex={0}
                 onClick={() => {
-                  switchToPrivateKeyTabFromSeedError();
-                }}
-                onKeyUp={event => {
-                  if (['Enter', ' '].includes(event.key)) {
-                    switchToPrivateKeyTabFromSeedError();
-                  }
+                  setPrivateKeyValue(seedValue);
+                  setShowValidationError(false);
+                  setActiveTab(PRIVATE_KEY_TAB_INDEX);
                 }}
               />
             ),
@@ -198,7 +177,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
         <Trans
           i18nKey="importSeed.base58PrefixError"
           components={{
-            switchTab: errorSwitchTabElement,
+            switchTab: base58PrefixErrorSwitchTabEl,
           }}
         />
       );
