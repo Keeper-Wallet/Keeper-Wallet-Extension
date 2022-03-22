@@ -9,6 +9,7 @@ import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
+import background from 'ui/services/Background';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -106,7 +107,12 @@ export function OtherAccountsPage({ setTab }: Props) {
             className={styles.addAccountButton}
             data-testid="addAccountButton"
             type="button"
-            onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
+            onClick={() =>
+              background.showTab(
+                `${window.location.origin}/accounts.html`,
+                'accounts'
+              )
+            }
           >
             <Trans i18nKey="otherAccounts.addAccount" />
           </button>
