@@ -274,7 +274,7 @@
     "passwordPlaceholder": "Password used to create Keystore"
   },
   "importSeed": {
-    "accountExistsError": "Account already exists",
+    "accountExistsError": "Account already exists. Would you like to <selectAccount>switch to it</selectAccount>?",
     "address": "Account address",
     "base58DecodeError": "Doesn't look like base58-encoded value",
     "base58PrefixError": "Looks like you're trying to import encoded seed. Please, <switchTab>switch to \"Encoded seed\" tab</switchTab> for that",

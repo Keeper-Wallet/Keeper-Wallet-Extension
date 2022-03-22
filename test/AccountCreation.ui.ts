@@ -552,7 +552,7 @@ describe('Account creation', function () {
             );
 
             expect(await validationError.getText()).to.equal(
-              'Account already exists'
+              'Account already exists. Would you like to switch to it?'
             );
           });
 

@@ -4,7 +4,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { newAccountSelect } from '../../actions';
+import { newAccountSelect, selectAccount } from '../../actions/localState';
 import {
   Button,
   Error,
@@ -197,8 +197,27 @@ export function ImportSeed({ isNew, setTab }: Props) {
     }
   }
 
-  if (address && accounts.some(acc => acc.address === address)) {
-    validationError = t('importSeed.accountExistsError');
+  if (address) {
+    const existingAccount = accounts.find(acc => acc.address === address);
+
+    if (existingAccount) {
+      validationError = (
+        <Trans
+          i18nKey="importSeed.accountExistsError"
+          components={{
+            selectAccount: (
+              <InlineButton
+                className={styles.errorButton}
+                onClick={() => {
+                  dispatch(selectAccount(existingAccount));
+                  setTab(PAGES.ROOT);
+                }}
+              />
+            ),
+          }}
+        />
+      );
+    }
   }
 
   return (
