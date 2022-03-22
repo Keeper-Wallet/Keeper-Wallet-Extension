@@ -57,8 +57,7 @@ export function RootAccounts() {
     setTimeout(() => dispatch(loading(false)), 200);
   }, []);
 
-  const tab = currentTab; /* || PAGES.INTRO*/
-  const pageConf = PAGES_CONF[tab];
+  const pageConf = PAGES_CONF[currentTab];
   const Component = pageConf.component;
   const backTabFromConf =
     typeof pageConf.menu.back === 'string' ? pageConf.menu.back : null;
@@ -98,7 +97,7 @@ export function RootAccounts() {
         onBack={onBack}
         onDelete={onDelete}
       />
-      <Component {...pageProps} key={tab} />
+      <Component {...pageProps} key={currentTab} />
       <Bottom {...pageConf.bottom} />
     </div>
   );

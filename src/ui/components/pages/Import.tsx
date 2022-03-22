@@ -23,10 +23,8 @@ export function Import({ setTab }: Props) {
   );
 
   React.useEffect(() => {
-    const tag = window.location.hash.split('#')[1];
     let redirect;
-
-    switch (tag) {
+    switch (window.location.hash.split('#')[1]) {
       case 'create':
         redirect = PAGES.NEW_ACCOUNT;
         break;
@@ -41,7 +39,7 @@ export function Import({ setTab }: Props) {
         break;
     }
     if (redirect) {
-      window.location.hash = '';
+      history.replaceState(history.state, null, window.location.pathname);
       setTab(redirect);
     }
   }, []);
