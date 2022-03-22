@@ -287,6 +287,7 @@
     "privateKey": "Private key",
     "requiredError": "Cannot be blank",
     "seedIsAddressError": "It's an account address, not a seed phrase. Seed phrase usually consists of 15 words",
+    "seedIsAliasError": "It's an alias, not a seed phrase. Seed phrase usually consists of 15 words",
     "seedIsPublicOrPrivateKeyError": "An account with a seed phrase like that is vulnerable. May be you meant to <switchTab>use a private key</switchTab>?",
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
     "title": "Import using seed"

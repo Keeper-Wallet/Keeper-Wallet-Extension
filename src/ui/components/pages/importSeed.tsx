@@ -140,6 +140,8 @@ export function ImportSeed({ isNew, setTab }: Props) {
       );
     } else if (validators.isValidAddress(trimmedSeedValue)) {
       validationError = t('importSeed.seedIsAddressError');
+    } else if (/^alias:/i.test(trimmedSeedValue)) {
+      validationError = t('importSeed.seedIsAliasError');
     } else if (validators.isHash(trimmedSeedValue)) {
       validationError = (
         <Trans
