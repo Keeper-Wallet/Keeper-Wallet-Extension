@@ -84,7 +84,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
 
   const base58PrefixErrorSwitchTabEl = (
     <InlineButton
-      className={styles.errorSwitchTab}
+      className={styles.errorButton}
       onClick={() => {
         let newEncodedSeedValue = '';
 
@@ -133,7 +133,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
           components={{
             switchTab: (
               <InlineButton
-                className={styles.errorSwitchTab}
+                className={styles.errorButton}
                 onClick={() => {
                   setPrivateKeyValue(seedValue);
                   setShowValidationError(false);
