@@ -43,7 +43,6 @@ import {
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import { verifyCustomData } from '@waves/waves-transactions';
-import { getAdapterByType } from '@waves/signature-adapter';
 import { VaultController } from './controllers/VaultController';
 
 const version = extension.runtime.getManifest().version;
@@ -121,9 +120,6 @@ extension.runtime.onInstalled.addListener(async details => {
     );
   }
 });
-
-const Adapter = getAdapterByType('seed');
-const adapter = new Adapter('test seed for get seed adapter info');
 
 async function setupBackgroundService() {
   // Background service init
@@ -1113,7 +1109,10 @@ class BackgroundService extends EventEmitter {
       account,
       network: this._getCurrentNetwork(state.selectedAccount),
       messages,
-      txVersion: adapter.getSignVersions(),
+      txVersion: this.walletController.getTxVersions(
+        state.selectedAccount.address,
+        state.selectedAccount.network
+      ),
     };
   }
 

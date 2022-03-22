@@ -289,6 +289,11 @@ export class WalletController extends EventEmitter {
     return await wallet.decryptMessage(message, publicKey, prefix);
   }
 
+  getTxVersions(address, network) {
+    const wallet = this._findWallet(address, network);
+    return wallet.getTxVersions();
+  }
+
   // Private
   _checkForDuplicate(address, network) {
     if (

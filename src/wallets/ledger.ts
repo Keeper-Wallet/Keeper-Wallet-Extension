@@ -24,6 +24,30 @@ import { Wallet } from './wallet';
 import { AssetDetail } from 'ui/services/Background';
 import { convertInvokeListWorkAround } from './utils';
 
+const txVersions = {
+  [SIGN_TYPE.ISSUE]: [2],
+  [SIGN_TYPE.TRANSFER]: [2],
+  [SIGN_TYPE.REISSUE]: [2],
+  [SIGN_TYPE.BURN]: [2],
+  [SIGN_TYPE.EXCHANGE]: [0, 1, 2],
+  [SIGN_TYPE.LEASE]: [2],
+  [SIGN_TYPE.CANCEL_LEASING]: [2],
+  [SIGN_TYPE.CREATE_ALIAS]: [2],
+  [SIGN_TYPE.MASS_TRANSFER]: [1],
+  [SIGN_TYPE.DATA]: [1],
+  [SIGN_TYPE.SET_SCRIPT]: [1],
+  [SIGN_TYPE.SPONSORSHIP]: [1],
+  [SIGN_TYPE.SET_ASSET_SCRIPT]: [1],
+  [SIGN_TYPE.SCRIPT_INVOCATION]: [1],
+  [SIGN_TYPE.UPDATE_ASSET_INFO]: [1],
+  [SIGN_TYPE.AUTH]: [1],
+  [SIGN_TYPE.MATCHER_ORDERS]: [1],
+  [SIGN_TYPE.CREATE_ORDER]: [1, 2, 3],
+  [SIGN_TYPE.CANCEL_ORDER]: [1],
+  [SIGN_TYPE.COINOMAT_CONFIRMATION]: [1],
+  [SIGN_TYPE.WAVES_CONFIRMATION]: [1],
+};
+
 class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
   constructor(account: AccountOfType<'ledger'>) {
     super({
@@ -37,29 +61,7 @@ class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
   }
 
   getSignVersions() {
-    return {
-      [SIGN_TYPE.AUTH]: [1],
-      [SIGN_TYPE.MATCHER_ORDERS]: [1],
-      [SIGN_TYPE.WAVES_CONFIRMATION]: [1],
-      [SIGN_TYPE.CREATE_ORDER]: [1, 2, 3],
-      [SIGN_TYPE.CANCEL_ORDER]: [1],
-      [SIGN_TYPE.COINOMAT_CONFIRMATION]: [1],
-      [SIGN_TYPE.ISSUE]: [2],
-      [SIGN_TYPE.TRANSFER]: [2],
-      [SIGN_TYPE.REISSUE]: [2],
-      [SIGN_TYPE.BURN]: [2],
-      [SIGN_TYPE.EXCHANGE]: [0, 1, 2],
-      [SIGN_TYPE.LEASE]: [2],
-      [SIGN_TYPE.CANCEL_LEASING]: [2],
-      [SIGN_TYPE.CREATE_ALIAS]: [2],
-      [SIGN_TYPE.MASS_TRANSFER]: [1],
-      [SIGN_TYPE.DATA]: [1],
-      [SIGN_TYPE.SET_SCRIPT]: [1],
-      [SIGN_TYPE.SPONSORSHIP]: [1],
-      [SIGN_TYPE.SET_ASSET_SCRIPT]: [1],
-      [SIGN_TYPE.SCRIPT_INVOCATION]: [1],
-      [SIGN_TYPE.UPDATE_ASSET_INFO]: [1],
-    };
+    return txVersions;
   }
 }
 
@@ -128,6 +130,10 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
 
   getPrivateKey(): string {
     throw new Error('Cannot get private key');
+  }
+
+  getTxVersions() {
+    return txVersions;
   }
 
   async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
