@@ -157,28 +157,6 @@ export function Assets({ setTab }: Props) {
 
       <Modal
         animation={Modal.ANIMATION.FLASH_SCALE}
-        showModal={notifications.accountCreationSuccess}
-      >
-        <div className="modal notification">
-          <div>
-            <Trans i18nKey="assets.accountCreationSuccessNotification" />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        animation={Modal.ANIMATION.FLASH_SCALE}
-        showModal={notifications.accountImportSuccess}
-      >
-        <div className="modal notification">
-          <div>
-            <Trans i18nKey="assets.accountImportSuccessNotification" />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        animation={Modal.ANIMATION.FLASH_SCALE}
         showModal={notifications.selected}
       >
         <div className="modal notification">

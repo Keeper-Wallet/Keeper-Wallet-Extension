@@ -1,10 +1,5 @@
-import {
-  ACTION,
-  notificationAccountCreationSuccess,
-  notificationAccountImportSuccess,
-  setTab,
-} from '../actions';
-import background, { WalletTypes } from '../services/Background';
+import { ACTION, setTab } from '../actions';
+import background from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 
 export const addAccount = store => next => action => {
@@ -21,18 +16,6 @@ export const addAccount = store => next => action => {
       .then(() => {
         store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
 
-        if (meta.type === WalletTypes.New) {
-          store.dispatch(notificationAccountCreationSuccess(true));
-          setTimeout(() => {
-            store.dispatch(notificationAccountCreationSuccess(false));
-          }, 1000);
-        } else {
-          store.dispatch(notificationAccountImportSuccess(true));
-          setTimeout(() => {
-            store.dispatch(notificationAccountImportSuccess(false));
-          }, 1000);
-        }
-
         background.sendEvent('addWallet', { type: meta.type });
       });
   }
@@ -41,10 +24,7 @@ export const addAccount = store => next => action => {
     Promise.all(payload.map(account => background.addWallet(account))).then(
       () => {
         store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
-        store.dispatch(notificationAccountImportSuccess(true));
-        setTimeout(() => {
-          store.dispatch(notificationAccountImportSuccess(false));
-        }, 1000);
+
         background.sendEvent('addWallet', { type: meta.type });
       }
     );
