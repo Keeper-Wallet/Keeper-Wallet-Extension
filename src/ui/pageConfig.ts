@@ -135,7 +135,7 @@ export const PAGES_CONF = {
       isGenerateNew: true,
     },
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -146,7 +146,7 @@ export const PAGES_CONF = {
   [PAGES.NEW_ACCOUNT_BACK]: {
     component: NewWallet,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -157,7 +157,7 @@ export const PAGES_CONF = {
   [PAGES.ACCOUNT_NAME]: {
     component: NewWalletName,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -168,7 +168,7 @@ export const PAGES_CONF = {
   [PAGES.ACCOUNT_NAME_SEED]: {
     component: NewWalletName,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -180,7 +180,7 @@ export const PAGES_CONF = {
     component: ChangeAccountName,
     props: {},
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -191,7 +191,7 @@ export const PAGES_CONF = {
   [PAGES.SAVE_BACKUP]: {
     component: BackUpSeed,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -202,7 +202,7 @@ export const PAGES_CONF = {
   [PAGES.CONFIRM_BACKUP]: {
     component: ConfirmBackup,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -213,7 +213,7 @@ export const PAGES_CONF = {
   [PAGES.IMPORT_EMAIL]: {
     component: ImportEmail,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -249,7 +249,7 @@ export const PAGES_CONF = {
       isNew: true,
     },
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
@@ -260,7 +260,7 @@ export const PAGES_CONF = {
   [PAGES.IMPORT_SEED_BACK]: {
     component: ImportSeed,
     bottom: {
-      hide: true,
+      noChangeNetwork: true,
     },
     menu: {
       hasLogo: true,
