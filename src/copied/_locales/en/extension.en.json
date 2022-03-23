@@ -175,7 +175,7 @@
     "equalPassword": "Old password is equal new",
     "errorShortNew": "Password is too short",
     "errorShortOld": "Password can't be so short",
-    "errorWrongConfirm": "New passwords does not match",
+    "errorWrongConfirm": "New passwords do not match",
     "errorWrongOld": "Wrong password",
     "newPassword": "New password",
     "oldPassword": "Old password"
@@ -335,7 +335,7 @@
     "confirmPassword": "Confirm password",
     "create": "Continue",
     "createPassword": "Create a password",
-    "notMatch": "Passwords does not match",
+    "notMatch": "Passwords do not match",
     "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Waves Keeper. Waves does not store your passwords.",
     "protect": "Protect Your Account",
     "smallPass": "Password is too short"
