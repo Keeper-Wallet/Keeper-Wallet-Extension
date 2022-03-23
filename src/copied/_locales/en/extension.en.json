@@ -330,6 +330,7 @@
     "privateKey": "Private key",
     "requiredError": "Cannot be blank",
     "seedLengthError": "Seed cannot be shorter than {{minLength}} characters",
+    "switchAccount": "Switch account",
     "title": "Import using seed"
   },
   "info": {
@@ -393,15 +394,16 @@
     "smallPass": "Password is too short"
   },
   "newAccountName": {
-    "accountName": "Account name",
     "accountAddress": "Account address",
+    "accountName": "Account name",
     "cancel": "Cancel",
     "continue": "Continue",
+    "errorAlreadyExists": "Account already known as '{{ name }}'",
     "errorInUse": "Name already exist",
     "errorNameRequired": "Name is required",
     "errorRequired": "Required name",
-    "errorAlreadyExists": "Account already known as '{{ name }}'",
-    "nameInfo": "The account name will be known only to you"
+    "nameInfo": "The account name will be known only to you",
+    "switchAccount": "Switch account"
   },
   "newWallet": {
     "address": "Account address",

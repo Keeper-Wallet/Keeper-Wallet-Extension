@@ -1,7 +1,13 @@
-import * as styles from './styles/newaccountname.styl';
+import * as styles from 'ui/components/pages/newWalletName.module.css';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { createAccount, newAccountName, setTab } from '../../actions';
+import {
+  createAccount,
+  newAccountName,
+  newAccountSelect,
+  selectAccount,
+  setTab as resetTab,
+} from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
@@ -9,7 +15,7 @@ import * as libCrypto from '@waves/ts-lib-crypto';
 import { useAppDispatch, useAppSelector } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
-export function NewWalletName() {
+export function NewWalletName({ setTab }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -24,10 +30,13 @@ export function NewWalletName() {
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>('');
   const [touched, setTouched] = React.useState<boolean>(false);
-  const [isAddressExists, setAddressExists] = React.useState<boolean>(false);
 
   const accountAddress =
     account.address || libCrypto.address(account.seed, networkCode);
+
+  const existedAccount = accounts.find(
+    ({ address }) => address === accountAddress
+  );
 
   React.useEffect(() => {
     dispatch(newAccountName(accountName));
@@ -44,11 +53,7 @@ export function NewWalletName() {
       }
     }
 
-    const existedAccount = accounts.find(
-      ({ address }) => address === accountAddress
-    );
     if (existedAccount) {
-      setAddressExists(true);
       setError(
         t('newAccountName.errorAlreadyExists', {
           name: existedAccount.name,
@@ -69,8 +74,13 @@ export function NewWalletName() {
 
           setPending(true);
 
-          if (isAddressExists) {
-            dispatch(setTab(PAGES.ROOT));
+          if (existedAccount) {
+            dispatch(newAccountSelect(existedAccount));
+            dispatch(selectAccount(existedAccount));
+            return setTab(PAGES.IMPORT_SUCCESS);
+          }
+
+          if (error) {
             return;
           }
 
@@ -93,7 +103,7 @@ export function NewWalletName() {
             onChange={e => setAccountName(e.target.value)}
             value={accountName}
             maxLength="32"
-            disabled={isAddressExists}
+            disabled={existedAccount}
             autoFocus
             error={error}
             onFocus={() => setTouched(true)}
@@ -112,12 +122,23 @@ export function NewWalletName() {
 
           <div className={`${styles.greyLine} grey-line`}>{accountAddress}</div>
 
-          {isAddressExists ? (
-            <Button>
-              <Trans i18nKey="newAccountName.cancel" />
-            </Button>
+          {existedAccount ? (
+            <>
+              <Button className="margin2" type="submit">
+                <Trans i18nKey="newAccountName.switchAccount" />
+              </Button>
+
+              <Button
+                className="margin1"
+                type="button"
+                onClick={() => dispatch(resetTab(PAGES.ROOT))}
+              >
+                <Trans i18nKey="newAccountName.cancel" />
+              </Button>
+            </>
           ) : (
             <Button
+              className={styles.continueBtn}
               id="continue"
               type="submit"
               view="submit"

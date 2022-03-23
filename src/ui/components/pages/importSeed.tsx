@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { newAccountSelect } from '../../actions';
+import { newAccountSelect, selectAccount } from '../../actions';
 import {
   Button,
   Error,
@@ -202,6 +202,12 @@ export function ImportSeed({ isNew, setTab }: Props) {
         onSubmit={event => {
           event.preventDefault();
 
+          if (showValidationError && existedAccount) {
+            dispatch(newAccountSelect(existedAccount));
+            dispatch(selectAccount(existedAccount));
+            return setTab(PAGES.IMPORT_SUCCESS);
+          }
+
           setShowValidationError(true);
 
           if (validationError) {
@@ -328,7 +334,13 @@ export function ImportSeed({ isNew, setTab }: Props) {
         </div>
 
         <Button id="importAccount" type="submit" view="submit">
-          <Trans i18nKey="importSeed.importAccount" />
+          <Trans
+            i18nKey={
+              existedAccount && showValidationError
+                ? 'importSeed.switchAccount'
+                : 'importSeed.importAccount'
+            }
+          />
         </Button>
       </form>
     </div>
