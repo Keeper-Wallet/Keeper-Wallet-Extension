@@ -1,5 +1,5 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
 import { BigNumber } from '@waves/bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { IMoneyLike } from 'ui/utils/converters';
 
 export const messageType = 'script_invocation';
@@ -64,5 +64,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.SCRIPT_INVOCATION && type === txType;
+  return tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && type === txType;
 }

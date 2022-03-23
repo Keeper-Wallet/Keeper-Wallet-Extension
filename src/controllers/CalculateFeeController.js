@@ -1,5 +1,4 @@
 import { DEFAULT_FEE_CONFIG, DEFAULT_FEE_CONFIG_URL } from '../constants';
-import { SIGN_TYPE } from '@waves/signature-adapter';
 import { libs } from '@waves/waves-transactions';
 import { BigNumber } from '@waves/bignumber';
 
@@ -87,7 +86,7 @@ export const calculateFeeFabric =
       .filter(asset => asset.hasScript)
       .map(asset => asset.id);
 
-    if (type === SIGN_TYPE.CREATE_ORDER) {
+    if (type === 1002) {
       const minOrderFee = new BigNumber(300000);
       const matcherAddress = libs.crypto.address(
         { public: signData.data.matcherPublicKey },

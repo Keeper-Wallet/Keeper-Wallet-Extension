@@ -1,5 +1,3 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
-
 export const messageType = 'auth';
 export const txType = 'auth';
 
@@ -20,5 +18,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.AUTH && type === txType;
+  return tx.type === 1000 && type === txType;
 }

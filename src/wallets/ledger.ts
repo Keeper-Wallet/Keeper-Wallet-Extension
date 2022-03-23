@@ -10,7 +10,6 @@ import {
   AdapterType,
   CustomAdapter,
   IUserApi,
-  SIGN_TYPE,
   TSignData,
 } from '@waves/signature-adapter';
 import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
@@ -23,29 +22,28 @@ import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from './wallet';
 import { AssetDetail } from 'ui/services/Background';
 import { convertInvokeListWorkAround } from './utils';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 const txVersions = {
-  [SIGN_TYPE.ISSUE]: [2],
-  [SIGN_TYPE.TRANSFER]: [2],
-  [SIGN_TYPE.REISSUE]: [2],
-  [SIGN_TYPE.BURN]: [2],
-  [SIGN_TYPE.EXCHANGE]: [0, 1, 2],
-  [SIGN_TYPE.LEASE]: [2],
-  [SIGN_TYPE.CANCEL_LEASING]: [2],
-  [SIGN_TYPE.CREATE_ALIAS]: [2],
-  [SIGN_TYPE.MASS_TRANSFER]: [1],
-  [SIGN_TYPE.DATA]: [1],
-  [SIGN_TYPE.SET_SCRIPT]: [1],
-  [SIGN_TYPE.SPONSORSHIP]: [1],
-  [SIGN_TYPE.SET_ASSET_SCRIPT]: [1],
-  [SIGN_TYPE.SCRIPT_INVOCATION]: [1],
-  [SIGN_TYPE.UPDATE_ASSET_INFO]: [1],
-  [SIGN_TYPE.AUTH]: [1],
-  [SIGN_TYPE.MATCHER_ORDERS]: [1],
-  [SIGN_TYPE.CREATE_ORDER]: [1, 2, 3],
-  [SIGN_TYPE.CANCEL_ORDER]: [1],
-  [SIGN_TYPE.COINOMAT_CONFIRMATION]: [1],
-  [SIGN_TYPE.WAVES_CONFIRMATION]: [1],
+  [TRANSACTION_TYPE.ISSUE]: [2],
+  [TRANSACTION_TYPE.TRANSFER]: [2],
+  [TRANSACTION_TYPE.REISSUE]: [2],
+  [TRANSACTION_TYPE.BURN]: [2],
+  [TRANSACTION_TYPE.EXCHANGE]: [0, 1, 2],
+  [TRANSACTION_TYPE.LEASE]: [2],
+  [TRANSACTION_TYPE.CANCEL_LEASE]: [2],
+  [TRANSACTION_TYPE.ALIAS]: [2],
+  [TRANSACTION_TYPE.MASS_TRANSFER]: [1],
+  [TRANSACTION_TYPE.DATA]: [1],
+  [TRANSACTION_TYPE.SET_SCRIPT]: [1],
+  [TRANSACTION_TYPE.SPONSORSHIP]: [1],
+  [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: [1],
+  [TRANSACTION_TYPE.INVOKE_SCRIPT]: [1],
+  [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
+  1000: [1],
+  1001: [1],
+  1002: [1, 2, 3],
+  1003: [1],
 };
 
 class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
@@ -61,7 +59,11 @@ class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
   }
 
   getSignVersions() {
-    return txVersions;
+    return {
+      ...txVersions,
+      1004: [1],
+      1005: [1],
+    };
   }
 }
 
@@ -173,7 +175,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
 
     let amountPrecision: number, amount2Precision: number;
 
-    if (tx.type === SIGN_TYPE.SCRIPT_INVOCATION) {
+    if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
       const payment: Money[] = tx.data.payment ?? [];
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
@@ -186,7 +188,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     const feePrecision: number = feeAsset.precision;
 
     const signature =
-      tx.type === SIGN_TYPE.CREATE_ORDER
+      tx.type === 1002
         ? await this.ledger.signOrder({
             amountPrecision,
             feePrecision,
