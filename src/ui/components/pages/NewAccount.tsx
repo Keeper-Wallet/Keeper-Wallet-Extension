@@ -168,7 +168,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 autoComplete="off"
               />
               <Error show={this.state.secondError}>
-                <Trans i18nKey="newAccount.notMatch">Passwords no match</Trans>
+                <Trans i18nKey="newAccount.notMatch" />
               </Error>
             </div>
           </div>
