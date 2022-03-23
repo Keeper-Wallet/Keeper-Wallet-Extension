@@ -390,15 +390,6 @@ class Background {
     }
   }
 
-  async getUserList(type: string, from: number, to: number): Promise<any> {
-    try {
-      await this.initPromise;
-      return await this.background.getUserList(type, from, to);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async sendEvent(event: 'addWallet', properties: { type: string });
   async sendEvent(event: 'click', properties: { id: string });
   async sendEvent(event: string, properties: any = {}) {

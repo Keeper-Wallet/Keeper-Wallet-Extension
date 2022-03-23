@@ -19,7 +19,6 @@ import LocalStore from './lib/local-store';
 import {
   AssetInfoController,
   CurrentAccountController,
-  ExternalDeviceController,
   IdentityController,
   IdleController,
   MessageController,
@@ -610,10 +609,6 @@ class BackgroundService extends EventEmitter {
       },
       setCustomMatcher: async (url, network) =>
         this.networkController.setCustomMatcher(url, network),
-
-      // external devices
-      getUserList: async (type, from, to) =>
-        await ExternalDeviceController.getUserList(type, from, to),
 
       // asset information
       assetInfo: this.assetInfoController.assetInfo.bind(
