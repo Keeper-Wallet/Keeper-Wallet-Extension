@@ -176,11 +176,11 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     let amountPrecision: number, amount2Precision: number;
 
     if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
-      const payment: Money[] = tx.data.payment ?? [];
+      const payment: Money[] = (tx.data as any).payment ?? [];
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
     } else {
-      amountPrecision = (tx.data as any).amount?.asset?.precision || 0;
+      amountPrecision = (tx as any).data.amount?.asset?.precision || 0;
       amount2Precision = 0;
     }
 
