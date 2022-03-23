@@ -1,39 +1,8 @@
-import { SeedAdapter, TSignData } from '@waves/signature-adapter';
-import { libs, seedUtils } from '@waves/waves-transactions';
+import { libs } from '@waves/waves-transactions';
 import { concat, identity, ifElse, isNil, pipe } from 'ramda';
 
-export function networkByteFromAddress(address: string): string {
+function networkByteFromAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
-}
-
-export function addressFromPublicKey(pk: string, byte: string): string {
-  return new seedUtils.Seed(pk, byte).address;
-}
-
-export function encrypt(object, password: string): string {
-  const jsonObj = JSON.stringify(object);
-  return seedUtils.encryptSeed(jsonObj, password);
-}
-
-export function decrypt<T>(encryptedText: string, password: string): T | never {
-  try {
-    const decryptedJson = seedUtils.decryptSeed(encryptedText, password);
-    return JSON.parse(decryptedJson);
-  } catch (e) {
-    throw new Error('Invalid password');
-  }
-}
-
-export function getInitedAdapter(user, seed = 'validation seed'): SeedAdapter {
-  SeedAdapter.initOptions({ networkCode: user.networkCode.charCodeAt(0) });
-  return new SeedAdapter('validation seed', user.networkCode);
-}
-
-export async function getTxId(
-  adapter: SeedAdapter,
-  tx: TSignData
-): Promise<string> {
-  return await adapter.makeSignable(tx).getId();
 }
 
 export async function getNetworkByte(url: string): Promise<string> {
@@ -64,18 +33,6 @@ export async function getMatcherPublicKey(url: string): Promise<string> {
   throw new Error('Invalid matcher public key');
 }
 
-function blake2b(input): Uint8Array {
-  return libs.crypto.blake2b(input);
-}
-
-function keccak(input): Uint8Array {
-  return libs.crypto.keccak(input);
-}
-
-function hashChain(input): Uint8Array {
-  return keccak(blake2b(input));
-}
-
 async function getUrl(
   urlString: string,
   path = '',
@@ -98,17 +55,7 @@ async function getUrl(
   return fetch(url.href);
 }
 
-export const validateNode = async (url: string, networkCode: string) => {
-  const code = await getNetworkByte(url);
-
-  if (networkCode && code !== networkCode) {
-    throw new Error('Invalid code');
-  }
-
-  return code;
-};
-
-export const byteArrayToString = function (bytes: Uint8Array): string {
+function byteArrayToString(bytes: Uint8Array): string {
   const extraByteMap = [1, 1, 1, 1, 2, 2, 3, 0];
   const count = bytes.length;
   let str = '';
@@ -132,18 +79,18 @@ export const byteArrayToString = function (bytes: Uint8Array): string {
   }
 
   return str;
-};
+}
 
 const bytesToBase58 = libs.crypto.base58Encode;
 const bytesToString = byteArrayToString;
 
-export const bytesToSafeString = ifElse(
+const bytesToSafeString = ifElse(
   pipe(identity, bytesToString, isNil),
   pipe(identity, bytesToBase58, concat('base58:')),
   pipe(identity, bytesToString)
 );
 
-export const readAttachment = data => {
+export function readAttachment(data) {
   if (!data) {
     return '';
   }
@@ -153,4 +100,4 @@ export const readAttachment = data => {
   }
 
   return bytesToSafeString(data);
-};
+}
