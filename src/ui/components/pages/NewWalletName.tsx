@@ -98,7 +98,7 @@ export function NewWalletName({ setTab }) {
       >
         <div className={`margin1`}>
           <Input
-            id="newAccountName"
+            data-testid="newAccountNameInput"
             className="margin1"
             onChange={e => setAccountName(e.target.value)}
             value={accountName}
@@ -138,6 +138,7 @@ export function NewWalletName({ setTab }) {
             </>
           ) : (
             <Button
+              data-testid="continueBtn"
               className={styles.continueBtn}
               id="continue"
               type="submit"

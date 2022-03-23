@@ -63,9 +63,7 @@ describe('Account creation', function () {
 
     await App.open.call(this);
     await this.driver.wait(
-      until.elementLocated(
-        By.xpath("//div[contains(@class, '-import-import')]")
-      ),
+      until.elementLocated(By.css('[data-testid="importForm"]')),
       this.wait
     );
   });
@@ -80,25 +78,38 @@ describe('Account creation', function () {
     };
     const PILL_ANIMATION_DELAY = 200;
 
+    let tabKeeper, tabAccounts;
+
+    before(async function () {
+      tabKeeper = await this.driver.getWindowHandle();
+      await this.driver
+        .findElement(By.css('[data-testid="addAccountBtn"]'))
+        .click();
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        this.wait
+      );
+      for (const handle of await this.driver.getAllWindowHandles()) {
+        if (handle !== tabKeeper) {
+          tabAccounts = handle;
+          await this.driver.switchTo().window(tabAccounts);
+          break;
+        }
+      }
+    });
+
     after(deleteAllAccounts);
 
     it('Creating the first account via the "Create a new account" button', async function () {
-      await this.driver.findElement(By.css('button#createNewAccount')).click();
-
       await this.driver
-        .wait(until.elementLocated(By.css('button#continue')), this.wait)
+        .wait(
+          until.elementLocated(By.css('button#createNewAccount')),
+          this.wait
+        )
         .click();
 
       await this.driver
-        .wait(until.elementLocated(By.css('input#newAccountName')), this.wait)
-        .sendKeys(ACCOUNTS.FIRST);
-      await this.driver
-        .wait(
-          until.elementIsEnabled(
-            this.driver.findElement(By.css('button#createBackup'))
-          ),
-          this.wait
-        )
+        .wait(until.elementLocated(By.css('button#continue')), this.wait)
         .click();
 
       const seed: string[] = (
@@ -128,6 +139,27 @@ describe('Account creation', function () {
       await this.driver
         .wait(until.elementLocated(By.css('button#confirmBackup')), this.wait)
         .click();
+
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid=newAccountNameInput]')),
+          this.wait
+        )
+        .sendKeys(ACCOUNTS.FIRST);
+
+      await this.driver
+        .findElement(By.css('[data-testid=continueBtn]'))
+        .click();
+
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+          this.wait
+        )
+        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+        .click();
+
+      await this.driver.switchTo().window(tabKeeper);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal(
         ACCOUNTS.FIRST

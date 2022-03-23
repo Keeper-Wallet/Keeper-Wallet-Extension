@@ -25,6 +25,7 @@ export function Welcome({ setTab }: Props) {
     <div className={`${styles.content}`}>
       <BigLogo className="margin-main-large" />
       <Button
+        data-testid="getStartedBtn"
         type="submit"
         view="submit"
         onClick={() => {

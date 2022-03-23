@@ -25,10 +25,28 @@ export const App = {
   ) {
     await App.open.call(this);
 
+    const tabKeeper = await this.driver.getWindowHandle();
+    await this.driver.wait(
+      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      this.wait
+    );
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== tabKeeper) {
+        await this.driver.switchTo().window(handle);
+        break;
+      }
+    }
     await this.driver
-      .wait(until.elementLocated(By.css('.app button[type=submit]')), this.wait)
+      .wait(
+        until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
+        this.wait
+      )
       .click();
 
+    await this.driver.wait(
+      until.elementLocated(By.css('[data-testid="newAccountForm"]')),
+      this.wait
+    );
     await this.driver
       .wait(
         until.elementLocated(By.css('.app input#first[type=password]')),
@@ -52,13 +70,13 @@ export const App = {
         this.wait
       )
       .click();
-
     await this.driver.wait(
-      until.elementLocated(
-        By.xpath("//div[contains(@class, '-import-import')]")
-      ),
+      until.elementLocated(By.css('[data-testid="importForm"]')),
       this.wait
     );
+
+    await this.driver.close();
+    await this.driver.switchTo().window(tabKeeper);
   },
 
   resetVault: async function (this: mocha.Context) {

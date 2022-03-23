@@ -21,7 +21,7 @@ export function ImportSuccess() {
     account.address || libCrypto.address(account.seed, networkCode);
 
   return (
-    <div className={styles.content}>
+    <div data-testid="importSuccessForm" className={styles.content}>
       <div className={cn(styles.successIcon, 'tx-approve-icon')} />
 
       <p className="headline2 center margin-main-top margin-min">
@@ -48,6 +48,7 @@ export function ImportSuccess() {
         </Button>
 
         <Button
+          data-testid="addAnotherAccountBtn"
           className="margin1"
           type="button"
           onClick={() => dispatch(setTab(PAGES.ROOT))}

@@ -35,7 +35,7 @@ export function Import({ setTab }: Props) {
   }, []);
 
   return (
-    <div className={styles.root}>
+    <div data-testid="importForm" className={styles.root}>
       <img
         className={styles.importIcon}
         src={wavesKeeperLock}
@@ -264,6 +264,7 @@ export function Import({ setTab }: Props) {
               <Trans i18nKey="import.noAccounts" values={{ currentNetwork }} />
             </p>
             <Button
+              data-testid="addAccountBtn"
               type="submit"
               onClick={() =>
                 background.showTab(
