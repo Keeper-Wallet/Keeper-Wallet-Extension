@@ -18,6 +18,7 @@ describe('Account creation', function () {
   this.timeout(60 * 1000);
 
   async function deleteAllAccounts(this: mocha.Context) {
+    // todo fix me
     while (true) {
       await this.driver.wait(
         until.elementLocated(
@@ -172,6 +173,8 @@ describe('Account creation', function () {
           before(async function () {
             await Assets.addAccount.call(this);
 
+            await this.driver.switchTo().window(tabAccounts);
+
             await this.driver
               .wait(
                 until.elementLocated(By.css('button#createNewAccount')),
@@ -235,63 +238,18 @@ describe('Account creation', function () {
           });
         });
 
-        describe('Account name page', function () {
-          let accountNameInput: WebElement,
-            createBackupBtn: WebElement,
-            errorDiv: WebElement;
-          before(function () {
-            accountNameInput = this.driver.wait(
-              until.elementLocated(By.css('input#newAccountName')),
-              this.wait
-            );
-            createBackupBtn = this.driver.findElement(
-              By.css('button#createBackup')
-            );
-            errorDiv = this.driver.findElement(
-              By.xpath(
-                "//input[@id='newAccountName']" +
-                  "//following-sibling::div[contains(@class, '-error-error')]"
-              )
-            );
-          });
-
-          beforeEach(async function () {
-            await clear(accountNameInput);
-          });
-
-          it('Account cannot be given a name that is already in use', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.FIRST);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).matches(/name already exist/i);
-            expect(await createBackupBtn.isEnabled()).to.be.false;
-          });
-
-          it('Ability to paste account name from clipboard');
-          it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
-            await accountNameInput.sendKeys(ACCOUNTS.ANY);
-            await accountNameInput.sendKeys('\t');
-            expect(await errorDiv.getText()).to.be.empty;
-            expect(await createBackupBtn.isEnabled()).to.be.true;
-            await createBackupBtn.click();
-          });
-        });
-
         let rightSeed: string;
         describe('Save backup phrase page', function () {
-          it('After the Keeper is closed, the same screen opens', async function () {
-            rightSeed = await this.driver
-              .wait(until.elementLocated(By.css('div.cant-select')), this.wait)
-              .getText();
-            // reload page equals to close then open
-            await App.open.call(this);
-            expect(
-              await this.driver
-                .wait(
-                  until.elementLocated(By.css('div.cant-select')),
-                  this.wait
-                )
-                .getText()
-            ).to.be.equals(rightSeed);
+          it('Backup phrase is visible', async function () {
+            const seedEl = this.driver.wait(
+              until.elementLocated(By.css('div.cant-select')),
+              this.wait
+            );
+
+            expect(await seedEl.isDisplayed()).to.be.true;
+            rightSeed = await seedEl.getText();
+            expect(rightSeed).to.be.not.empty;
+
             await this.driver.findElement(By.css('button#continue')).click();
           });
 
@@ -385,11 +343,6 @@ describe('Account creation', function () {
             ).length(PILLS_COUNT);
           });
 
-          it('The "Clear" button resets a partially filled phrase', function () {
-            this.skip();
-            // FIXME ui doesnt show the "Clear" button if the phrase is partially filled
-          });
-
           it('The word can be reset by clicking (any, not only the last)', async function () {
             const writePills = await this.driver.wait(
               until.elementsLocated(By.xpath(xpWriteSeed + xpVisiblePill)),
@@ -439,7 +392,7 @@ describe('Account creation', function () {
             ).length(PILLS_COUNT);
           });
 
-          it('Additional account successfully created while filling in the phrase in the correct order', async function () {
+          it('Account name page opened while filling in the phrase in the correct order', async function () {
             const writePills = this.driver.wait(
               until.elementLocated(By.xpath(xpWriteSeed)),
               this.wait
@@ -461,8 +414,70 @@ describe('Account creation', function () {
                 this.wait
               )
               .click();
+          });
+        });
 
-            expect(await Assets.getOtherAccountNames.call(this)).to.include(
+        describe('Account name page', function () {
+          let accountNameInput: WebElement,
+            continueBtn: WebElement,
+            errorDiv: WebElement;
+          before(function () {
+            accountNameInput = this.driver.wait(
+              until.elementLocated(
+                By.css('[data-testid="newAccountNameInput"]')
+              ),
+              this.wait
+            );
+            continueBtn = this.driver.findElement(
+              By.css('[data-testid="continueBtn"]')
+            );
+            errorDiv = this.driver.findElement(
+              By.css('[data-testid="newAccountNameError"]')
+            );
+          });
+
+          beforeEach(async function () {
+            await clear(accountNameInput);
+          });
+
+          it('Account cannot be given a name that is already in use', async function () {
+            await accountNameInput.sendKeys(ACCOUNTS.FIRST);
+            await accountNameInput.sendKeys('\t');
+            expect(await errorDiv.getText()).matches(/name already exist/i);
+            expect(await continueBtn.isEnabled()).to.be.false;
+          });
+
+          it('Ability to paste account name from clipboard');
+
+          it('In the account name, you can enter numbers, special characters and symbols from any layout', async function () {
+            await accountNameInput.sendKeys(ACCOUNTS.ANY);
+            await accountNameInput.sendKeys('\t');
+            expect(await errorDiv.getText()).to.be.empty;
+            expect(await continueBtn.isEnabled()).to.be.true;
+          });
+
+          it('Account successfully created and selected', async function () {
+            await accountNameInput.sendKeys(ACCOUNTS.ANY);
+            await continueBtn.click();
+
+            const importSuccessForm = await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            );
+            expect(importSuccessForm).not.to.be.throw;
+
+            importSuccessForm
+              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+              .click();
+
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importForm"]')),
+              this.wait
+            );
+
+            await this.driver.switchTo().window(tabKeeper);
+
+            expect(await Assets.getActiveAccountName.call(this)).to.equal(
               ACCOUNTS.ANY
             );
           });
@@ -628,15 +643,16 @@ describe('Account creation', function () {
 
           before(function () {
             accountNameInput = this.driver.wait(
-              until.elementLocated(By.css('input#newAccountName')),
+              until.elementLocated(
+                By.css('[data-testid="newAccountNameInput"]')
+              ),
               this.wait
             );
-            continueBtn = this.driver.findElement(By.css('button#continue'));
+            continueBtn = this.driver.findElement(
+              By.css('[data-testid="continueBtn"]')
+            );
             errorDiv = this.driver.findElement(
-              By.xpath(
-                "//input[@id='newAccountName']" +
-                  "//following-sibling::div[contains(@class, '-error-error')]"
-              )
+              By.xpath('[data-testid="newAccountNameError"]')
             );
           });
 
@@ -658,6 +674,7 @@ describe('Account creation', function () {
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
+            // todo
             expect(await Assets.getOtherAccountNames.call(this)).to.include(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
