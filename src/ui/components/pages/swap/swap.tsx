@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { swappableAssetIds } from 'assets/constants';
 import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
 import * as React from 'react';

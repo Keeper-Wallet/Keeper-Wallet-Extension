@@ -10,6 +10,7 @@ import {
 } from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
 import { ERRORS } from '../lib/KeeperError';
@@ -853,7 +854,7 @@ export class MessageController extends EventEmitter {
     }
 
     switch (tx.type) {
-      case 3:
+      case TRANSACTION_TYPE.ISSUE:
         if (!this._isNumberLikePositive(tx.data.quantity)) {
           throw new Error('quantity is not valid');
         }
@@ -862,17 +863,17 @@ export class MessageController extends EventEmitter {
           throw new Error('precision is not valid');
         }
         break;
-      case 4:
+      case TRANSACTION_TYPE.TRANSFER:
         if (!this._isMoneyLikeValuePositive(tx.data.amount)) {
           throw new Error('amount is not valid');
         }
         break;
-      case 5:
+      case TRANSACTION_TYPE.REISSUE:
         if (!this._isNumberLikePositive(tx.data.quantity)) {
           throw new Error('quantity is not valid');
         }
         break;
-      case 6:
+      case TRANSACTION_TYPE.BURN:
         if (
           !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
@@ -880,7 +881,7 @@ export class MessageController extends EventEmitter {
           throw new Error('amount is not valid');
         }
         break;
-      case 8:
+      case TRANSACTION_TYPE.LEASE:
         if (
           !this._isMoneyLikeValuePositive(tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.amount)
@@ -888,7 +889,7 @@ export class MessageController extends EventEmitter {
           throw new Error('amount is not valid');
         }
         break;
-      case 11:
+      case TRANSACTION_TYPE.MASS_TRANSFER:
         tx.data.transfers.forEach(({ amount }) => {
           if (
             !this._isMoneyLikeValuePositive(amount) &&
@@ -898,7 +899,7 @@ export class MessageController extends EventEmitter {
           }
         });
         break;
-      case 14: {
+      case TRANSACTION_TYPE.SPONSORSHIP: {
         const value = this._getMoneyLikeValue(tx.data.minSponsoredAssetFee);
         const bn = value === null ? null : new BigNumber(value);
 
@@ -907,7 +908,7 @@ export class MessageController extends EventEmitter {
         }
         break;
       }
-      case 16:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
         if (tx.data.payment) {
           tx.data.payment.forEach(payment => {
             if (!this._isMoneyLikeValuePositive(payment)) {
