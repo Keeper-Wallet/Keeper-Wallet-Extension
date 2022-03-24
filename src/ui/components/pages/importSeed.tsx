@@ -203,7 +203,6 @@ export function ImportSeed({ isNew, setTab }: Props) {
           event.preventDefault();
 
           if (showValidationError && existedAccount) {
-            dispatch(newAccountSelect(existedAccount));
             dispatch(selectAccount(existedAccount));
             return setTab(PAGES.IMPORT_SUCCESS);
           }
@@ -219,6 +218,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'seed',
                 seed: seedValue,
+                address,
                 name: '',
                 hasBackup: true,
               })
@@ -228,6 +228,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'encodedSeed',
                 encodedSeed: encodedSeedValue,
+                address,
                 name: '',
                 hasBackup: true,
               })
@@ -237,6 +238,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'privateKey',
                 privateKey: privateKeyValue,
+                address,
                 name: '',
                 hasBackup: true,
               })

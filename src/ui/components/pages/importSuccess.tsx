@@ -4,21 +4,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
-import * as libCrypto from '@waves/ts-lib-crypto';
 import { useAppDispatch, useAppSelector } from 'accounts/store';
 import { setTab } from 'ui/actions';
 
 export function ImportSuccess() {
   const dispatch = useAppDispatch();
-  const account = useAppSelector(state => state.localState.newAccount);
-  const networkCode = useAppSelector(
-    state =>
-      state.customCodes[state.currentNetwork] ||
-      state.networks.find(n => state.currentNetwork === n.name).code
-  );
-
-  const accountAddress =
-    account.address || libCrypto.address(account.seed, networkCode);
+  const account = useAppSelector(state => state.selectedAccount);
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
@@ -37,7 +28,7 @@ export function ImportSuccess() {
           <Trans i18nKey="newAccountName.accountAddress" />
         </div>
 
-        <div className={`${styles.greyLine} grey-line`}>{accountAddress}</div>
+        <div className={`${styles.greyLine} grey-line`}>{account.address}</div>
 
         <Button
           className="margin2"

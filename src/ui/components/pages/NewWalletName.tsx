@@ -4,14 +4,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import {
   createAccount,
   newAccountName,
-  newAccountSelect,
   selectAccount,
   setTab as resetTab,
 } from '../../actions';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
-import * as libCrypto from '@waves/ts-lib-crypto';
 import { useAppDispatch, useAppSelector } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
@@ -21,21 +19,13 @@ export function NewWalletName({ setTab }) {
 
   const account = useAppSelector(state => state.localState.newAccount);
   const accounts = useAppSelector(state => state.accounts);
-  const networkCode = useAppSelector(
-    state =>
-      state.customCodes[state.currentNetwork] ||
-      state.networks.find(n => state.currentNetwork === n.name).code
-  );
   const [accountName, setAccountName] = React.useState<string>('');
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>('');
   const [touched, setTouched] = React.useState<boolean>(false);
 
-  const accountAddress =
-    account.address || libCrypto.address(account.seed, networkCode);
-
   const existedAccount = accounts.find(
-    ({ address }) => address === accountAddress
+    ({ address }) => address === account.address
   );
 
   React.useEffect(() => {
@@ -75,7 +65,6 @@ export function NewWalletName({ setTab }) {
           setPending(true);
 
           if (existedAccount) {
-            dispatch(newAccountSelect(existedAccount));
             dispatch(selectAccount(existedAccount));
             return setTab(PAGES.IMPORT_SUCCESS);
           }
@@ -108,7 +97,9 @@ export function NewWalletName({ setTab }) {
             error={error}
             onFocus={() => setTouched(true)}
           />
-          <Error show={!!error}>{error}</Error>
+          <Error data-testid="newAccountNameError" show={!!error}>
+            {error}
+          </Error>
         </div>
 
         <div className={`basic500 tag1 margin2`}>
@@ -120,7 +111,9 @@ export function NewWalletName({ setTab }) {
             <Trans i18nKey="newAccountName.accountAddress" />
           </div>
 
-          <div className={`${styles.greyLine} grey-line`}>{accountAddress}</div>
+          <div className={`${styles.greyLine} grey-line`}>
+            {account.address}
+          </div>
 
           {existedAccount ? (
             <>
