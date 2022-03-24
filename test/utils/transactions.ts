@@ -41,6 +41,14 @@ export const BURN = {
   },
 };
 
+export const BURN_WITH_QUANTITY = {
+  type: TRANSACTION_TYPE.BURN,
+  data: {
+    assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    quantity: 123456790,
+  },
+};
+
 export const LEASE = {
   type: TRANSACTION_TYPE.LEASE,
   data: { recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD', amount: 123456790 },
