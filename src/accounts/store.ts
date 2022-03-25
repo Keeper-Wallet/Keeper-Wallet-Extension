@@ -21,6 +21,7 @@ const reducer = combineReducers({
   version: reducers.version,
   localState: reducers.localState,
   uiState: reducers.uiState,
+  allNetworksAccounts: reducers.allNetworksAccounts,
 });
 
 export type AppState = ReturnType<typeof reducer>;

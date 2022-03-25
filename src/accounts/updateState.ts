@@ -23,8 +23,9 @@ interface UpdateStateInput {
 export function createUpdateState(store: UiStore) {
   return (state: UpdateStateInput) => {
     const actions = [];
-    // todo synchronize accounts
+
     const {
+      accounts = [],
       currentLocale,
       currentNetworkAccounts = [],
       selectedAccount = {},
@@ -82,6 +83,13 @@ export function createUpdateState(store: UiStore) {
       actions.push({
         type: ACTION.UPDATE_ACCOUNTS,
         payload: currentNetworkAccounts,
+      });
+    }
+
+    if (!equals(accounts, currentState.allNetworksAccounts)) {
+      actions.push({
+        type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
+        payload: accounts,
       });
     }
 
