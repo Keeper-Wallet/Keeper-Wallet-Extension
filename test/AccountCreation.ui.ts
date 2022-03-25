@@ -17,8 +17,7 @@ import {
 describe('Account creation', function () {
   this.timeout(60 * 1000);
 
-  async function deleteAllAccounts(this: mocha.Context) {
-    // todo fix me
+  async function deleteEachAndSwitchToAccounts(this: mocha.Context) {
     while (true) {
       await this.driver.wait(
         until.elementLocated(
@@ -53,7 +52,11 @@ describe('Account creation', function () {
 
     expect(await this.driver.findElements(By.css('[data-testid="importForm"]')))
       .not.to.be.empty;
+
+    await this.driver.switchTo().window(tabAccounts);
   }
+
+  let tabKeeper, tabAccounts;
 
   before(async function () {
     await App.initVault.call(this);
@@ -64,11 +67,28 @@ describe('Account creation', function () {
       until.elementLocated(By.css('[data-testid="importForm"]')),
       this.wait
     );
+
+    // save popup and accounts refs
+    tabKeeper = await this.driver.getWindowHandle();
+    await this.driver
+      .findElement(By.css('[data-testid="addAccountBtn"]'))
+      .click();
+    await this.driver.wait(
+      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      this.wait
+    );
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== tabKeeper) {
+        tabAccounts = handle;
+        await this.driver.switchTo().window(tabAccounts);
+        break;
+      }
+    }
   });
 
   after(App.resetVault);
 
-  describe('Create account', function () {
+  describe('Create', function () {
     const ACCOUNTS = {
       FIRST: 'first',
       SECOND: 'second',
@@ -76,29 +96,11 @@ describe('Account creation', function () {
     };
     const PILL_ANIMATION_DELAY = 200;
 
-    let tabKeeper, tabAccounts;
+    before(async function () {});
 
-    before(async function () {
-      tabKeeper = await this.driver.getWindowHandle();
-      await this.driver
-        .findElement(By.css('[data-testid="addAccountBtn"]'))
-        .click();
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
-        this.wait
-      );
-      for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper) {
-          tabAccounts = handle;
-          await this.driver.switchTo().window(tabAccounts);
-          break;
-        }
-      }
-    });
+    after(deleteEachAndSwitchToAccounts);
 
-    after(deleteAllAccounts);
-
-    it('Creating the first account via the "Create a new account" button', async function () {
+    it('first account via "Create a new account"', async function () {
       await this.driver
         .wait(
           until.elementLocated(By.css('button#createNewAccount')),
@@ -164,7 +166,7 @@ describe('Account creation', function () {
       );
     });
 
-    describe('Creating an additional account via the "Add account" button', function () {
+    describe('additional account via "Add account"', function () {
       describe('When you already have 1 account', function () {
         describe('Create new account page', function () {
           before(async function () {
@@ -488,7 +490,7 @@ describe('Account creation', function () {
     });
   });
 
-  describe('Import account using seed phrase', function () {
+  describe('Import via seed', function () {
     const ACCOUNTS = {
       FIRST: { SEED: 'this is first account seed', NAME: 'first' },
       MORE_24_CHARS: {
@@ -498,9 +500,9 @@ describe('Account creation', function () {
       LESS_24_CHARS: { SEED: 'too short seed', NAME: 'short' },
     };
 
-    after(deleteAllAccounts);
+    after(deleteEachAndSwitchToAccounts);
 
-    it('Importing the first account via the "Import account" button', async function () {
+    it('first account via "Import account"', async function () {
       await this.driver
         .wait(
           until.elementLocated(By.css('[data-testid="importSeed"]')),
@@ -517,30 +519,51 @@ describe('Account creation', function () {
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('button#importAccount'))
+            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
           ),
           this.wait
         )
         .click();
 
       await this.driver
-        .wait(until.elementLocated(By.css('input#newAccountName')), this.wait)
+        .wait(
+          until.elementLocated(By.css('[data-testid="newAccountNameInput"]')),
+          this.wait
+        )
         .sendKeys(ACCOUNTS.FIRST.NAME);
       await this.driver
         .wait(
           until.elementIsEnabled(
-            this.driver.findElement(By.css('button#continue'))
+            this.driver.findElement(By.css('[data-testid="continueBtn"]'))
           ),
           this.wait
         )
         .click();
+
+      const importSuccessForm = await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+        this.wait
+      );
+      expect(importSuccessForm).not.to.be.throw;
+
+      importSuccessForm
+        .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+        .click();
+
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      );
+
+      await this.driver.switchTo().window(tabKeeper);
+      await App.open.call(this);
 
       expect(await Assets.getActiveAccountName.call(this)).to.be.equals(
         ACCOUNTS.FIRST.NAME
       );
     });
 
-    describe('Importing an additional account via the "Add account" button', function () {
+    describe('additional account via the "Add account"', function () {
       describe('When you already have 1 account', function () {
         before(async function () {
           await Assets.addAccount.call(this);
@@ -563,7 +586,7 @@ describe('Account creation', function () {
               this.wait
             );
             importAccountBtn = this.driver.findElement(
-              By.css('button#importAccount')
+              By.css('[data-testid="continueBtn"]')
             );
             currentAddressDiv = this.driver.findElement(
               By.css('[data-testid="address"]')
@@ -576,7 +599,9 @@ describe('Account creation', function () {
 
           it("Can't import seed with length less than 24 characters", async function () {
             await seedTextarea.sendKeys(ACCOUNTS.LESS_24_CHARS.SEED);
-            await this.driver.findElement(By.css('#importAccount')).click();
+            await this.driver
+              .findElement(By.css('[data-testid="continueBtn"]'))
+              .click();
 
             const validationError = await this.driver.wait(
               until.elementLocated(By.css('[data-testid="validationError"]')),
@@ -589,7 +614,9 @@ describe('Account creation', function () {
 
           it("Can't import seed for an already added account", async function () {
             await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
-            await this.driver.findElement(By.css('#importAccount')).click();
+            await this.driver
+              .findElement(By.css('[data-testid="continueBtn"]'))
+              .click();
 
             const validationError = await this.driver.wait(
               until.elementLocated(By.css('[data-testid="validationError"]')),
@@ -686,7 +713,7 @@ describe('Account creation', function () {
     });
   });
 
-  describe('Import accounts using keystore file', function () {
+  describe('Import via keystore file', function () {
     describe('validation', () => {
       it(
         'keeps "Continue" button disabled until both keystore file is selected and password is entered'
@@ -1126,7 +1153,7 @@ describe('Account creation', function () {
       });
 
       describe('when the user already has an account with the same name, but different address', function () {
-        this.beforeEach(deleteAllAccounts);
+        this.beforeEach(deleteEachAndSwitchToAccounts);
 
         it('adds suffix to the name', async function () {
           await CreateNewAccount.importAccount.call(

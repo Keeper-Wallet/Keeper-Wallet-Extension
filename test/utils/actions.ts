@@ -240,7 +240,7 @@ export const CreateNewAccount = {
     await this.driver
       .wait(
         until.elementIsEnabled(
-          this.driver.findElement(By.css('button#importAccount'))
+          this.driver.findElement(By.css('[data-testid="continueBtn"]'))
         ),
         this.wait
       )
