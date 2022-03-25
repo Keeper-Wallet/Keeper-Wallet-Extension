@@ -1217,13 +1217,17 @@ describe('Account creation', function () {
             .click();
 
           await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
+            until.elementLocated(By.css('[data-testid="importForm"]')),
             this.wait
           );
         });
       });
 
       describe('when the user already has an account with the same name, but different address', function () {
+        before(async function () {
+          this.driver.switchTo().window(tabKeeper);
+        });
+
         this.beforeEach(deleteEachAndSwitchToAccounts);
 
         it('adds suffix to the name', async function () {
@@ -1235,9 +1239,11 @@ describe('Account creation', function () {
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
-          await Assets.addAccount.call(this);
           await this.driver
-            .findElement(By.css('[data-testid="importKeystore"]'))
+            .wait(
+              until.elementLocated(By.css('[data-testid="importKeystore"]')),
+              this.wait
+            )
             .click();
 
           await this.driver
@@ -1264,6 +1270,24 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
+
+          const importSuccessForm = await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
+          expect(importSuccessForm).not.to.be.throw;
+
+          importSuccessForm
+            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+            .click();
+
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importForm"]')),
+            this.wait
+          );
+
+          await this.driver.switchTo().window(tabKeeper);
+          await App.open.call(this);
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
@@ -1293,7 +1317,6 @@ describe('Account creation', function () {
             'this is a seed for the test account'
           );
 
-          await Assets.addAccount.call(this);
           await CreateNewAccount.importAccount.call(
             this,
             'test2 (1)',
@@ -1302,7 +1325,6 @@ describe('Account creation', function () {
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
-          await Assets.addAccount.call(this);
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
             .click();
@@ -1334,9 +1356,27 @@ describe('Account creation', function () {
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
+          const importSuccessForm = await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
+          expect(importSuccessForm).not.to.be.throw;
+
+          importSuccessForm
+            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+            .click();
+
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importForm"]')),
+            this.wait
+          );
+
+          await this.driver.switchTo().window(tabKeeper);
+          await App.open.call(this);
+
           expect(
             await Assets.getAllAccountNames.call(this)
-          ).to.have.ordered.members(['test2', 'test2 (1)', 'test2 (2)']);
+          ).to.have.ordered.members(['test2 (1)', 'test2', 'test2 (2)']);
 
           await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
 

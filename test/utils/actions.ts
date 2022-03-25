@@ -247,20 +247,30 @@ export const CreateNewAccount = {
       .click();
 
     await this.driver
-      .wait(until.elementLocated(By.css('input#newAccountName')), this.wait)
+      .wait(
+        until.elementLocated(By.css('[data-testid="newAccountNameInput"]')),
+        this.wait
+      )
       .sendKeys(name);
     await this.driver
       .wait(
         until.elementIsEnabled(
-          this.driver.findElement(By.css('button#continue'))
+          this.driver.findElement(By.css('[data-testid="continueBtn"]'))
         ),
         this.wait
       )
       .click();
+
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+        this.wait
+      )
+      .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+      .click();
+
     await this.driver.wait(
-      until.elementLocated(
-        By.xpath("//div[contains(@class, '-assets-assets')]")
-      ),
+      until.elementLocated(By.css('[data-testid="importForm"]')),
       this.wait
     );
   },
