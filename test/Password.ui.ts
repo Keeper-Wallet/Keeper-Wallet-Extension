@@ -102,7 +102,7 @@ describe('Password management', () => {
       );
       expect(
         await this.driver
-          .findElement(By.css('.app button#createNewAccount'))
+          .findElement(By.css('[data-testid="createNewAccountBtn"]'))
           .getText()
       ).matches(/create a new account/i);
     });

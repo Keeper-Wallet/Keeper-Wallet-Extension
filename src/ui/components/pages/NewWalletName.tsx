@@ -53,7 +53,7 @@ export function NewWalletName({ setTab }) {
   }, [accountName, accounts]);
 
   return (
-    <div className={styles.content}>
+    <div data-testid="newWalletNameForm" className={styles.content}>
       <h2 className={`title1 margin1`}>
         <Trans i18nKey="newAccountName.accountName" />
       </h2>

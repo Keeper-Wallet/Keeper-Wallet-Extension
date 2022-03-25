@@ -47,7 +47,7 @@ export function Import({ setTab }: Props) {
       {tabMode === 'tab' ? (
         <>
           <Button
-            id="createNewAccount"
+            data-testid="createNewAccountBtn"
             type="submit"
             view="submit"
             onClick={() => setTab(PAGES.NEW_ACCOUNT)}

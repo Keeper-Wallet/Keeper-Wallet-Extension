@@ -103,7 +103,7 @@ describe('Account creation', function () {
     it('first account via "Create a new account"', async function () {
       await this.driver
         .wait(
-          until.elementLocated(By.css('button#createNewAccount')),
+          until.elementLocated(By.css('[data-testid="createNewAccountBtn"]')),
           this.wait
         )
         .click();
@@ -176,7 +176,9 @@ describe('Account creation', function () {
 
             await this.driver
               .wait(
-                until.elementLocated(By.css('button#createNewAccount')),
+                until.elementLocated(
+                  By.css('[data-testid="createNewAccountBtn"]')
+                ),
                 this.wait
               )
               .click();
@@ -196,7 +198,9 @@ describe('Account creation', function () {
 
             await this.driver
               .wait(
-                until.elementLocated(By.css('button#createNewAccount')),
+                until.elementLocated(
+                  By.css('[data-testid="createNewAccountBtn"]')
+                ),
                 this.wait
               )
               .click();
@@ -568,6 +572,8 @@ describe('Account creation', function () {
         before(async function () {
           await Assets.addAccount.call(this);
 
+          await this.driver.switchTo().window(tabAccounts);
+
           await this.driver
             .wait(
               until.elementLocated(By.css('[data-testid="importSeed"]')),
@@ -575,7 +581,7 @@ describe('Account creation', function () {
             )
             .click();
         });
-        describe('Welcome back page', function () {
+        describe('Seed phrase page', function () {
           let seedTextarea: WebElement,
             importAccountBtn: WebElement,
             currentAddressDiv: WebElement;
@@ -612,19 +618,22 @@ describe('Account creation', function () {
             );
           });
 
-          it("Can't import seed for an already added account", async function () {
+          it('Can be switched to existed account', async function () {
             await seedTextarea.sendKeys(ACCOUNTS.FIRST.SEED);
-            await this.driver
-              .findElement(By.css('[data-testid="continueBtn"]'))
-              .click();
 
             const validationError = await this.driver.wait(
               until.elementLocated(By.css('[data-testid="validationError"]')),
               this.wait
             );
 
-            expect(await validationError.getText()).to.equal(
-              'Account already exists'
+            expect(
+              await this.driver
+                .findElement(By.css('[data-testid="continueBtn"]'))
+                .getText()
+            ).matches(/switch account/i);
+
+            expect(await validationError.getText()).matches(
+              /Account already known as .+/i
             );
           });
 
@@ -655,7 +664,7 @@ describe('Account creation', function () {
             await importAccountBtn.click();
 
             await this.driver.wait(
-              until.elementLocated(By.css('input#newAccountName')),
+              until.elementLocated(By.css('[data-testid="continueBtn"]')),
               this.wait
             );
           });
@@ -677,7 +686,7 @@ describe('Account creation', function () {
               By.css('[data-testid="continueBtn"]')
             );
             errorDiv = this.driver.findElement(
-              By.xpath('[data-testid="newAccountNameError"]')
+              By.css('[data-testid="newAccountNameError"]')
             );
           });
 
@@ -699,8 +708,25 @@ describe('Account creation', function () {
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
-            // todo
-            expect(await Assets.getOtherAccountNames.call(this)).to.include(
+            const importSuccessForm = await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            );
+            expect(importSuccessForm).not.to.be.throw;
+
+            importSuccessForm
+              .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+              .click();
+
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importForm"]')),
+              this.wait
+            );
+
+            await this.driver.switchTo().window(tabKeeper);
+            await App.open.call(this);
+
+            expect(await Assets.getActiveAccountName.call(this)).to.equal(
               ACCOUNTS.MORE_24_CHARS.NAME
             );
           });
