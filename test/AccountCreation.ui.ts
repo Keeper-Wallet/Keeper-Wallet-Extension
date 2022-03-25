@@ -749,7 +749,7 @@ describe('Account creation', function () {
     describe('file parsing and decryption', () => {
       beforeEach(async function () {
         await this.driver
-          .findElement(By.css('[data-testid="importKeystore"]'))
+          .wait(until.elementLocated(By.css('[data-testid="importKeystore"]')))
           .click();
       });
 
@@ -801,7 +801,10 @@ describe('Account creation', function () {
 
       it('can decrypt the correct keeper keystore file', async function () {
         await this.driver
-          .findElement(By.css('[data-testid="fileInput"]'))
+          .wait(
+            until.elementLocated(By.css('[data-testid="fileInput"]')),
+            this.wait
+          )
           .sendKeys('/app/test/fixtures/keystore-keeper.json');
 
         await this.driver
