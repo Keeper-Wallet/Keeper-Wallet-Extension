@@ -1,4 +1,5 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import * as Sentry from '@sentry/react';
 import WavesLedger from '@waves/ledger';
 import { Account } from 'accounts/types';
 import Background from 'ui/services/Background';
@@ -81,9 +82,19 @@ class LedgerService {
           this._connectionRetryIsNeeded = true;
         } else {
           console.error('NO MATCH FOR ERROR', err);
+          Sentry.captureException(err);
         }
       } else {
         console.error('NON-ERROR THROWN', err);
+
+        Sentry.captureException(
+          new Error('Non-Error was thrown, trying to connect to ledger'),
+          {
+            extra: {
+              thrownValue: err,
+            },
+          }
+        );
       }
     }
   }
