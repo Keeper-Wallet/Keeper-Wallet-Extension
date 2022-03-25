@@ -1040,9 +1040,12 @@ describe('Account creation', function () {
       describe('when some, but not all accounts already exist', function () {
         it('allows to select only unexisting accounts', async function () {
           await Assets.addAccount.call(this);
+          await this.driver.switchTo().window(tabAccounts);
 
           await this.driver
-            .findElement(By.css('[data-testid="importKeystore"]'))
+            .wait(
+              until.elementLocated(By.css('[data-testid="importKeystore"]'))
+            )
             .click();
 
           await this.driver
@@ -1084,6 +1087,24 @@ describe('Account creation', function () {
           await this.driver
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
+
+          const importSuccessForm = await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
+          expect(importSuccessForm).not.to.be.throw;
+
+          importSuccessForm
+            .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
+            .click();
+
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importForm"]')),
+            this.wait
+          );
+
+          await this.driver.switchTo().window(tabKeeper);
+          await App.open.call(this);
 
           await Network.switchTo.call(this, 'Testnet');
 
@@ -1149,6 +1170,7 @@ describe('Account creation', function () {
       describe('when all accounts exist', function () {
         it('does not allow selecting anything and shows the "Skip" button', async function () {
           await Assets.addAccount.call(this);
+          await this.driver.switchTo().window(tabAccounts);
 
           await this.driver
             .findElement(By.css('[data-testid="importKeystore"]'))
