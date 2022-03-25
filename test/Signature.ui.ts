@@ -30,7 +30,7 @@ import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 
 const { parse } = create();
 
-describe.only('Signature', function () {
+describe('Signature', function () {
   this.timeout(5 * 60 * 1000);
 
   let tabKeeper, tabOrigin;
