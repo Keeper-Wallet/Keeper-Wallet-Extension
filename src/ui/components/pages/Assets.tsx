@@ -81,7 +81,7 @@ export function Assets({ setTab }: Props) {
   }
 
   return (
-    <div className={styles.assets}>
+    <div data-testid="assetsForm" className={styles.assets}>
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}

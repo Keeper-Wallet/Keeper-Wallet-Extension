@@ -22,9 +22,7 @@ describe('Account creation', function () {
     while (true) {
       await this.driver.wait(
         until.elementLocated(
-          By.xpath(
-            "//div[(contains(@class, '-assets-assets') or contains(@class, '-import-import'))]"
-          )
+          By.css('[data-testid="assetsForm"], [data-testid="importForm"]')
         ),
         this.wait
       );
@@ -53,9 +51,8 @@ describe('Account creation', function () {
         .click();
     }
 
-    expect(
-      await this.driver.findElements(By.id('createNewAccount'))
-    ).to.have.length(1);
+    expect(await this.driver.findElements(By.css('[data-testid="importForm"]')))
+      .not.to.be.empty;
   }
 
   before(async function () {
@@ -476,6 +473,7 @@ describe('Account creation', function () {
             );
 
             await this.driver.switchTo().window(tabKeeper);
+            await App.open.call(this);
 
             expect(await Assets.getActiveAccountName.call(this)).to.equal(
               ACCOUNTS.ANY
