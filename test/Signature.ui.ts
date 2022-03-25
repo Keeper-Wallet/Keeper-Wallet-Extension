@@ -1,3 +1,7 @@
+import { binary } from '@waves/marshall';
+import { base58Encode, blake2b, verifySignature } from '@waves/ts-lib-crypto';
+import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
+import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
 import * as create from 'parse-json-bignumber';
@@ -34,6 +38,8 @@ describe('Signature', function () {
   this.timeout(5 * 60 * 1000);
 
   let tabKeeper, tabOrigin;
+
+  const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
 
   before(async function () {
     await App.initVault.call(this);
@@ -301,10 +307,12 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-issue-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: ISSUE.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             name: ISSUE.data.name,
             description: ISSUE.data.description,
             quantity: ISSUE.data.quantity,
@@ -313,7 +321,23 @@ describe('Signature', function () {
             reissuable: ISSUE.data.reissuable,
             fee: 100400000,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
 
@@ -328,10 +352,12 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-transfer-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: TRANSFER.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: TRANSFER.data.amount.assetId,
             recipient: TRANSFER.data.recipient,
             amount: TRANSFER.data.amount.amount,
@@ -339,7 +365,23 @@ describe('Signature', function () {
             fee: 500000,
             feeAssetId: null,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
       // TODO this checks should be into unittests
@@ -358,16 +400,34 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-reissue-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: REISSUE.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
             reissuable: REISSUE.data.reissuable,
             chainId: 84,
             fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -380,15 +440,33 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-burn-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: BURN.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: BURN.data.assetId,
             amount: BURN.data.amount,
             chainId: 84,
             fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -401,15 +479,33 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-burn-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: BURN_WITH_QUANTITY.data.assetId,
             amount: BURN_WITH_QUANTITY.data.quantity,
             chainId: 84,
             fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -422,15 +518,33 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-lease-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: LEASE.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             amount: LEASE.data.amount,
             recipient: LEASE.data.recipient,
             fee: 500000,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -443,14 +557,32 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-cancelLease-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: CANCEL_LEASE.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             leaseId: CANCEL_LEASE.data.leaseId,
             fee: 500000,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -463,14 +595,35 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-alias-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: ALIAS.type,
             version: 2,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             alias: ALIAS.data.alias,
             fee: 500000,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+          expect(parsedApproveResult.id).to.equal(
+            base58Encode(blake2b([bytes[0], ...bytes.slice(36, -16)]))
+          );
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
       // TODO this checks should be into unittests
@@ -486,10 +639,12 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-massTransfer-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: MASS_TRANSFER.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
               { amount: 1, recipient: 'alias:T:testy' },
@@ -498,7 +653,23 @@ describe('Signature', function () {
             fee: 600000,
             attachment: '3ke2ct1rnYr52Y1jQvzNG',
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -511,14 +682,32 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-data-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: DATA.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             fee: 500000,
             chainId: 84,
             data: DATA.data.data,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
     });
@@ -531,14 +720,32 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-setScript-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: SET_SCRIPT.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             chainId: 84,
             fee: 1400000,
             script: SET_SCRIPT.data.script,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
 
@@ -555,15 +762,33 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-sponsorship-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: SPONSORSHIP.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
             assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
             fee: 500000,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
 
@@ -579,15 +804,33 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-assetScript-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             assetId: SET_ASSET_SCRIPT.data.assetId,
             chainId: 84,
             fee: 100400000,
             script: SET_ASSET_SCRIPT.data.script,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
 
@@ -602,17 +845,35 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
             version: 1,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             dApp: INVOKE_SCRIPT.data.dApp,
             call: INVOKE_SCRIPT.data.call,
             payment: INVOKE_SCRIPT.data.payment,
             fee: 500000,
             feeAssetId: null,
             chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         }
       );
 
@@ -684,7 +945,9 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-createOrder-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             orderType: CREATE_ORDER.data.orderType,
             version: 3,
             assetPair: {
@@ -695,9 +958,26 @@ describe('Signature', function () {
             amount: 10000000000,
             matcherFee: 3000000,
             matcherPublicKey: CREATE_ORDER.data.matcherPublicKey,
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            senderPublicKey,
             matcherFeeAssetId: null,
+          };
+
+          const bytes = binary.serializeOrder({
+            ...expectedApproveResult,
+            expiration: parsedApproveResult.expiration,
+            timestamp: parsedApproveResult.timestamp,
           });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
         },
         60 * 1000
       );
@@ -711,11 +991,24 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-cancelOrder-transaction')]"),
         approveResult => {
-          expect(parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
             orderId: CANCEL_ORDER.data.id,
-            sender: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
-            senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
-          });
+            sender: senderPublicKey,
+          };
+
+          const bytes = cancelOrderParamsToBytes(expectedApproveResult);
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.signature
+            )
+          ).to.be.true;
         }
       );
     });
@@ -761,10 +1054,12 @@ describe('Signature', function () {
       approveResult => {
         expect(approveResult).to.have.length(7);
 
-        expect(parse(approveResult[0])).to.deep.contain({
+        const parsedApproveResult = approveResult.map(parse);
+
+        const expectedApproveResult0 = {
           type: ISSUE.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           name: ISSUE.data.name,
           description: ISSUE.data.description,
           quantity: ISSUE.data.quantity,
@@ -773,12 +1068,30 @@ describe('Signature', function () {
           reissuable: ISSUE.data.reissuable,
           fee: 100400000,
           chainId: 84,
+        };
+
+        const bytes0 = makeTxBytes({
+          ...expectedApproveResult0,
+          timestamp: parsedApproveResult[0].timestamp,
         });
 
-        expect(parse(approveResult[1])).to.deep.contain({
+        expect(parsedApproveResult[0]).to.deep.contain(expectedApproveResult0);
+        expect(parsedApproveResult[0].id).to.equal(
+          base58Encode(blake2b(bytes0))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes0,
+            parsedApproveResult[0].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult1 = {
           type: TRANSFER.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           assetId: TRANSFER.data.amount.assetId,
           recipient: TRANSFER.data.recipient,
           amount: TRANSFER.data.amount.amount,
@@ -786,59 +1099,167 @@ describe('Signature', function () {
           fee: 500000,
           feeAssetId: null,
           chainId: 84,
+        };
+
+        const bytes1 = makeTxBytes({
+          ...expectedApproveResult1,
+          timestamp: parsedApproveResult[1].timestamp,
         });
 
-        expect(parse(approveResult[2])).to.deep.contain({
+        expect(parsedApproveResult[1]).to.deep.contain(expectedApproveResult1);
+        expect(parsedApproveResult[1].id).to.equal(
+          base58Encode(blake2b(bytes1))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes1,
+            parsedApproveResult[1].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult2 = {
           type: REISSUE.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           assetId: REISSUE.data.assetId,
           quantity: REISSUE.data.quantity,
           reissuable: REISSUE.data.reissuable,
           chainId: 84,
           fee: 500000,
+        };
+
+        const bytes2 = makeTxBytes({
+          ...expectedApproveResult2,
+          timestamp: parsedApproveResult[2].timestamp,
         });
 
-        expect(parse(approveResult[3])).to.deep.contain({
+        expect(parsedApproveResult[2]).to.deep.contain(expectedApproveResult2);
+        expect(parsedApproveResult[2].id).to.equal(
+          base58Encode(blake2b(bytes2))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes2,
+            parsedApproveResult[2].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult3 = {
           type: BURN.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           assetId: BURN.data.assetId,
           amount: BURN.data.amount,
           chainId: 84,
           fee: 500000,
+        };
+
+        const bytes3 = makeTxBytes({
+          ...expectedApproveResult3,
+          timestamp: parsedApproveResult[3].timestamp,
         });
 
-        expect(parse(approveResult[4])).to.deep.contain({
+        expect(parsedApproveResult[3]).to.deep.contain(expectedApproveResult3);
+        expect(parsedApproveResult[3].id).to.equal(
+          base58Encode(blake2b(bytes3))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes3,
+            parsedApproveResult[3].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult4 = {
           type: LEASE.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           amount: LEASE.data.amount,
           recipient: LEASE.data.recipient,
           fee: 500000,
           chainId: 84,
+        };
+
+        const bytes4 = makeTxBytes({
+          ...expectedApproveResult4,
+          timestamp: parsedApproveResult[4].timestamp,
         });
 
-        expect(parse(approveResult[5])).to.deep.contain({
+        expect(parsedApproveResult[4]).to.deep.contain(expectedApproveResult4);
+        expect(parsedApproveResult[4].id).to.equal(
+          base58Encode(blake2b(bytes4))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes4,
+            parsedApproveResult[4].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult5 = {
           type: CANCEL_LEASE.type,
           version: 2,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           leaseId: CANCEL_LEASE.data.leaseId,
           fee: 500000,
           chainId: 84,
+        };
+
+        const bytes5 = makeTxBytes({
+          ...expectedApproveResult5,
+          timestamp: parsedApproveResult[5].timestamp,
         });
 
-        expect(parse(approveResult[6])).to.deep.contain({
+        expect(parsedApproveResult[5]).to.deep.contain(expectedApproveResult5);
+        expect(parsedApproveResult[5].id).to.equal(
+          base58Encode(blake2b(bytes5))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes5,
+            parsedApproveResult[5].proofs[0]
+          )
+        ).to.be.true;
+
+        const expectedApproveResult6 = {
           type: INVOKE_SCRIPT.type,
           version: 1,
-          senderPublicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+          senderPublicKey,
           dApp: INVOKE_SCRIPT.data.dApp,
           call: INVOKE_SCRIPT.data.call,
           payment: INVOKE_SCRIPT.data.payment,
           fee: 500000,
           feeAssetId: null,
           chainId: 84,
+        };
+
+        const bytes6 = makeTxBytes({
+          ...expectedApproveResult6,
+          timestamp: parsedApproveResult[6].timestamp,
         });
+
+        expect(parsedApproveResult[6]).to.deep.contain(expectedApproveResult6);
+        expect(parsedApproveResult[6].id).to.equal(
+          base58Encode(blake2b(bytes6))
+        );
+
+        expect(
+          verifySignature(
+            senderPublicKey,
+            bytes6,
+            parsedApproveResult[6].proofs[0]
+          )
+        ).to.be.true;
       }
     );
   });
@@ -878,12 +1299,24 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
         approveResult => {
-          expect(JSON.parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = JSON.parse(approveResult);
+
+          const expectedApproveResult = {
             binary: CUSTOM_DATA_V1.binary,
             version: CUSTOM_DATA_V1.version,
-            publicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            publicKey: senderPublicKey,
             hash: 'BddvukE8EsQ22TC916wr9hxL5MTinpcxj7cKmyQFu1Qj',
-          });
+          };
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              serializeCustomData(expectedApproveResult),
+              parsedApproveResult.signature
+            )
+          ).to.be.true;
         }
       );
     });
@@ -896,12 +1329,24 @@ describe('Signature', function () {
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
         approveResult => {
-          expect(JSON.parse(approveResult)).to.deep.contain({
+          const parsedApproveResult = JSON.parse(approveResult);
+
+          const expectedApproveResult = {
             data: CUSTOM_DATA_V2.data,
             version: CUSTOM_DATA_V2.version,
-            publicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+            publicKey: senderPublicKey,
             hash: 'CntDRDubtuhwBKsmCTtZzMLVF9TFK6hLoWP424V8Zz2K',
-          });
+          };
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              serializeCustomData(expectedApproveResult),
+              parsedApproveResult.signature
+            )
+          ).to.be.true;
         }
       );
     });

@@ -85,16 +85,16 @@ export const DATA = {
     data: [
       {
         key: 'stringValue',
-        type: 'string',
+        type: 'string' as const,
         value: 'Lorem ipsum dolor sit amet',
       },
       {
         key: 'longMaxValue',
-        type: 'integer',
+        type: 'integer' as const,
         value: '9223372036854775807',
       },
-      { key: 'flagValue', type: 'boolean', value: true },
-      { key: 'base64', type: 'binary', value: 'base64:BQbtKNoM' },
+      { key: 'flagValue', type: 'boolean' as const, value: true },
+      { key: 'base64', type: 'binary' as const, value: 'base64:BQbtKNoM' },
     ],
   },
 };
