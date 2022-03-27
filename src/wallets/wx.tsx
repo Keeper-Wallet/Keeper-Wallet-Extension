@@ -135,6 +135,7 @@ export class WxWallet extends Wallet<WxWalletData> {
 
     const signData = await signable.getSignData();
 
+    signData.proofs = signData.proofs ?? [];
     signData.proofs.push(await this.signBytes(bytes));
 
     const data = convert(signData, (item: any) => new BigNumber(item));
