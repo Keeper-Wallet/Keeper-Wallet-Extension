@@ -10,13 +10,23 @@ import { setTab } from 'ui/actions';
 export function ImportSuccess() {
   const dispatch = useAppDispatch();
   const account = useAppSelector(state => state.selectedAccount);
+  const isKeystoreImport = useAppSelector(
+    state => state.backTabs.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
+  );
 
   return (
     <div data-testid="importSuccessForm" className={styles.content}>
       <div className={cn(styles.successIcon, 'tx-approve-icon')} />
 
       <p className="headline2 center margin-main-top margin-min">
-        <Trans i18nKey="import.readyToUse" values={{ name: account.name }} />
+        <Trans
+          i18nKey={
+            !isKeystoreImport
+              ? 'import.readyToUse'
+              : 'import.readyToUseKeystore'
+          }
+          values={{ name: account.name }}
+        />
       </p>
 
       <p className="body1 basic500 center">
@@ -24,11 +34,17 @@ export function ImportSuccess() {
       </p>
 
       <div className={styles.footer}>
-        <div className={`tag1 basic500 input-title`}>
-          <Trans i18nKey="newAccountName.accountAddress" />
-        </div>
+        {!isKeystoreImport && (
+          <>
+            <div className={`tag1 basic500 input-title`}>
+              <Trans i18nKey="newAccountName.accountAddress" />
+            </div>
 
-        <div className={`${styles.greyLine} grey-line`}>{account.address}</div>
+            <div className={`${styles.greyLine} grey-line`}>
+              {account.address}
+            </div>
+          </>
+        )}
 
         <Button
           className="margin2"

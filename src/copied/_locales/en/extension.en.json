@@ -263,6 +263,7 @@
     "notSupportedByBrowser": "Not supported by your browser",
     "additionSuccess": "Your account '{{ name }}' has been successfully added!",
     "readyToUse": "Your account '{{ name }}' is ready to use",
+    "readyToUseKeystore": "Your accounts are ready to use",
     "readyHelpText": "You can now close this tab and continue using the extension or add more accounts.",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
