@@ -116,7 +116,7 @@ module.exports = ({
       filename: 'popup.html',
       template: path.resolve(SOURCE_FOLDER, 'popup.html'),
       hash: true,
-      chunks: ['ui'],
+      chunks: ['commons', 'ui'],
     })
   );
 
@@ -126,7 +126,7 @@ module.exports = ({
       filename: 'notification.html',
       template: path.resolve(SOURCE_FOLDER, 'notification.html'),
       hash: true,
-      chunks: ['ui'],
+      chunks: ['commons', 'ui'],
     })
   );
 
@@ -136,7 +136,7 @@ module.exports = ({
       filename: 'accounts.html',
       template: path.resolve(SOURCE_FOLDER, 'accounts.html'),
       hash: true,
-      chunks: ['accounts/ui'],
+      chunks: ['commons', 'accounts/ui'],
     })
   );
 
@@ -176,6 +176,19 @@ module.exports = ({
     },
 
     plugins,
+
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            name: 'commons',
+            chunks(chunk) {
+              return ['ui', 'accounts/ui'].includes(chunk.name);
+            },
+          },
+        },
+      },
+    },
 
     module: {
       rules: [
