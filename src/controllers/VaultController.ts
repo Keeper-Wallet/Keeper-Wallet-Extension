@@ -18,9 +18,10 @@ export class VaultController {
 
   constructor(opts: Options) {
     this.store = new ObservableStore(
-      Object.assign({}, { locked: null, initialized: null }, opts.initState)
+      Object.assign({}, { locked: null, initialized: null }, opts.initState, {
+        locked: true,
+      })
     );
-    this.store.updateState({ locked: true });
     this.wallet = opts.wallet;
     this.identity = opts.identity;
   }
