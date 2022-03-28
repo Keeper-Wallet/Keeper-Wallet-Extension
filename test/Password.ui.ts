@@ -64,7 +64,7 @@ describe('Password management', () => {
       await firstPasswordInput.sendKeys(PASSWORD.DEFAULT);
       await secondPasswordInput.sendKeys(PASSWORD.SHORT);
       expect(await secondPasswordErrorDiv.getText()).matches(
-        /passwords does not match/i
+        /passwords do not match/i
       );
     });
 
@@ -191,7 +191,7 @@ describe('Password management', () => {
           "//input[@id='second']//following-sibling::div[contains(@class, '-error-error')]"
         )
       );
-      expect(await errDiv.getText()).matches(/New passwords does not match/i);
+      expect(await errDiv.getText()).matches(/New passwords do not match/i);
       await clear(newSecondPasswordInput);
 
       await newSecondPasswordInput.sendKeys(PASSWORD.DEFAULT);
