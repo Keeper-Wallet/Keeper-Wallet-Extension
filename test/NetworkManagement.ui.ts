@@ -26,9 +26,7 @@ describe('Network management', function () {
       );
 
       await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-import-import')]")
-        ),
+        until.elementLocated(By.css('[data-testid="importForm"]')),
         this.wait
       );
 
@@ -66,11 +64,32 @@ describe('Network management', function () {
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
+        // save popup and accounts refs
+        const tabKeeper = await this.driver.getWindowHandle();
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="importForm"]')),
+            this.wait
+          )
+          .findElement(By.css('[data-testid="addAccountBtn"]'))
+          .click();
+        await this.driver.wait(
+          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          this.wait
+        );
+        for (const handle of await this.driver.getAllWindowHandles()) {
+          if (handle !== tabKeeper) {
+            await this.driver.switchTo().window(handle);
+            break;
+          }
+        }
         await CreateNewAccount.importAccount.call(
           this,
           'rich',
           'waves private node seed with waves tokens'
         );
+        await this.driver.switchTo().window(tabKeeper);
+
         await this.driver
           .wait(
             until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
