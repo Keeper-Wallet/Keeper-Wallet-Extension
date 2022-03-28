@@ -713,7 +713,7 @@ In case of a success, the leasing transaction is cancelled.
 
 ###### [Type 10 CREATE ALIAS – creating an alias for an address](https://docs.waves.tech/en/blockchain/transaction-type/create-alias-transaction)\*\*
 
-- `alias`[4, 30] string - alias
+- `alias`[4, 30] string - alias. [Alias Requirements](https://docs.waves.tech/en/blockchain/account/alias#alias-requirements)
 - `*fee` MoneyLike -fee
 - `*senderPublicKey` string - sender's public key in base58
 - `*timestamp` number/string – time in ms
@@ -724,7 +724,7 @@ Example:
 WavesKeeper.signAndPublishTransaction({
   type: 10,
   data: {
-    alias: 'testAlias',
+    alias: 'test_alias',
     fee: {
       tokens: '0.001',
       assetId: 'WAVES',

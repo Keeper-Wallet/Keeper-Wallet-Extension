@@ -358,7 +358,7 @@ WavesKeeper.signTransaction(txData)
 >
 > Описание поддерживаемых типов транзакций вы найдете ниже
 
-В примере мы подписываем транзакцию на перевод токенов Waves на алиас `test` в сети Waves.
+В примере мы подписываем транзакцию на перевод токенов Waves на псевдоним `test` в сети Waves.
 
 ОТВЕТ
 
@@ -484,8 +484,8 @@ WavesKeeper.signTransactionPackage(tx, name);
 
 Подписать 2 транзакции:
 
-- перевода на алиас test 1.567 Waves
-- перевода на алиас merry 0.1 Waves
+- перевода на псевдоним test 1.567 Waves
+- перевода на псевдоним merry 0.1 Waves
 
 ОТВЕТ
 
@@ -576,7 +576,7 @@ WavesKeeper.signAndPublishTransaction({
 ###### [Тип 4 TRANSFER - передача ассетов](https://docs.waves.tech/ru/blockchain/transaction-type/transfer-transaction)
 
 - `amount` MoneyLike - количество,
-- `recipient` string - адрес получателя или алиас
+- `recipient` string - адрес получателя или псевдоним
 - `attachment`[,140 bytes] string или Byte Array- доп информация
 - `*fee` MoneyLike - комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
@@ -670,7 +670,7 @@ WavesKeeper.signAndPublishTransaction({
 
 ###### [Тип 8 LEASE - Передача в лизинг](https://docs.waves.tech/ru/blockchain/transaction-type/lease-transaction)
 
-- `recipient` string - адрес получателя или алиас,
+- `recipient` string - адрес получателя или псевдоним,
 - `amount` [0 - (JLM)] number/string/MoneyLike - количество,
 - `*fee` MoneyLike -комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
@@ -730,9 +730,9 @@ WavesKeeper.signAndPublishTransaction({
 
 В случае успеха отменяется лизинг.
 
-###### [Тип 10 CREATE ALIAS - создание алиаса для адреса](https://docs.waves.tech/ru/blockchain/transaction-type/create-alias-transaction)
+###### [Тип 10 CREATE ALIAS - создание псевдонима для адреса](https://docs.waves.tech/ru/blockchain/transaction-type/create-alias-transaction)
 
-- `alias`[4, 30] string - имя
+- `alias`[4, 30] string - псевдоним. [Требования к псевдониму](https://docs.waves.tech/ru/blockchain/account/alias#%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F-%D0%BA-%D0%BF%D1%81%D0%B5%D0%B2%D0%B4%D0%BE%D0%BD%D0%B8%D0%BC%D1%83)
 - `*fee` MoneyLike -комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
 - `*timestamp` number/string - время в мс
@@ -743,7 +743,7 @@ WavesKeeper.signAndPublishTransaction({
 WavesKeeper.signAndPublishTransaction({
   type: 10,
   data: {
-    alias: 'testAlias',
+    alias: 'test_alias',
     fee: {
       tokens: '0.001',
       assetId: 'WAVES',
@@ -751,20 +751,20 @@ WavesKeeper.signAndPublishTransaction({
   },
 })
   .then(tx => {
-    console.log('Ура! Я теперь с алиасом!!!');
+    console.log('Ура! Теперь у меня есть псевдоним!!!');
   })
   .catch(error => {
     console.error('Что-то пошло не так', error);
   });
 ```
 
-В случае успеха для адреса создается алиас (дополнительное имя).
+В случае успеха для адреса создается псевдоним (дополнительное имя).
 
 ###### [Тип 11 MASS TRANSFER - массовая рассылка ассета](https://docs.waves.tech/ru/blockchain/transaction-type/mass-transfer-transaction)
 
 - `totalAmount` moneyLike - итого отправлено (можно не считать сумму и вставить `{ assetId: "id отправляемого ассета", coins: 0}`),
 - `transfers` массив объектов
-  - { `recipient`: string - адрес/алиас, `amount`: number/string/moneyLike }
+  - { `recipient`: string - адрес/псевдоним, `amount`: number/string/moneyLike }
 - `attachment` [,140 bytes в base58] string - доп информация
 - `*fee` MoneyLike -комиссия
 - `*senderPublicKey` string - публичный ключ отправителя в base58
