@@ -1,15 +1,20 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
-import { App, CreateNewAccount, Network } from './utils/actions';
+import { App, CreateNewAccount, Network, Settings } from './utils/actions';
 
 describe('Others', function () {
   this.timeout(60 * 1000);
 
+  let tabKeeper;
+
   before(async function () {
     await App.initVault.call(this);
+    await Settings.setMaxSessionTimeout.call(this);
+    await App.open.call(this);
   });
 
   after(async function () {
+    await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
 
@@ -47,7 +52,7 @@ describe('Others', function () {
       await Network.switchToAndCheck.call(this, 'Testnet');
 
       // save popup and accounts refs
-      const tabKeeper = await this.driver.getWindowHandle();
+      tabKeeper = await this.driver.getWindowHandle();
       await this.driver
         .wait(
           until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -62,6 +67,7 @@ describe('Others', function () {
       for (const handle of await this.driver.getAllWindowHandles()) {
         if (handle !== tabKeeper) {
           await this.driver.switchTo().window(handle);
+          await this.driver.navigate().refresh();
           break;
         }
       }

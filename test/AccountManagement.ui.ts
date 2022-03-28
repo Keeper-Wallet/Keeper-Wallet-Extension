@@ -1,5 +1,11 @@
 import * as mocha from 'mocha';
-import { App, Assets, CreateNewAccount, Network } from './utils/actions';
+import {
+  App,
+  Assets,
+  CreateNewAccount,
+  Network,
+  Settings,
+} from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { clear } from './utils';
 import { expect } from 'chai';
@@ -12,16 +18,15 @@ describe('Account management', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
-
+    await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
-    await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="importForm"]')),
-      this.wait
-    );
 
-    // save popup and accounts refs
     tabKeeper = await this.driver.getWindowHandle();
     await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      )
       .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
     await this.driver.wait(
@@ -32,6 +37,7 @@ describe('Account management', function () {
       if (handle !== tabKeeper) {
         tabAccounts = handle;
         await this.driver.switchTo().window(tabAccounts);
+        await this.driver.navigate().refresh();
         break;
       }
     }
@@ -52,7 +58,10 @@ describe('Account management', function () {
     await App.open.call(this);
   });
 
-  after(App.resetVault);
+  after(async function () {
+    await App.closeBgTabs.call(this, tabKeeper);
+    await App.resetVault.call(this);
+  });
 
   describe('Accounts list', function () {
     it('Change active account', async function () {
@@ -491,6 +500,7 @@ describe('Account management', function () {
   describe('Switching networks', function () {
     before(async function () {
       await this.driver.switchTo().window(tabAccounts);
+
       await CreateNewAccount.importAccount.call(
         this,
         'second',
@@ -516,6 +526,7 @@ describe('Account management', function () {
       );
 
       await Network.switchToAndCheck.call(this, 'Mainnet');
+
       await this.driver.switchTo().window(tabKeeper);
     });
 

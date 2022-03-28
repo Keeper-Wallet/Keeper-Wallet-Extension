@@ -15,6 +15,8 @@ const SPENDING_LIMIT = '1',
 describe('Settings', function () {
   this.timeout(BROWSER_TIMEOUT_DELAY + 60 * 1000);
 
+  let tabKeeper;
+
   async function performLogin(password: string) {
     const passwordEls = await this.driver.findElements(
       By.css('input#loginPassword')
@@ -35,8 +37,10 @@ describe('Settings', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
+    await Settings.setMaxSessionTimeout.call(this);
+    await App.open.call(this);
 
-    const tabKeeper = await this.driver.getWindowHandle();
+    tabKeeper = await this.driver.getWindowHandle();
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -51,6 +55,7 @@ describe('Settings', function () {
     for (const handle of await this.driver.getAllWindowHandles()) {
       if (handle !== tabKeeper) {
         await this.driver.switchTo().window(handle);
+        await this.driver.navigate().refresh();
         break;
       }
     }
@@ -71,8 +76,6 @@ describe('Settings', function () {
     );
     await this.driver.switchTo().window(tabKeeper);
 
-    await Settings.setMaxSessionTimeout.call(this);
-
     await App.open.call(this);
     await this.driver
       .wait(
@@ -89,6 +92,10 @@ describe('Settings', function () {
       ),
       this.wait
     );
+  });
+
+  after(async function () {
+    await App.closeBgTabs.call(this, tabKeeper);
   });
 
   describe('Export accounts', function () {

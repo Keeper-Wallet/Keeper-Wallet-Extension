@@ -61,16 +61,14 @@ describe('Account creation', function () {
   before(async function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
-
     await App.open.call(this);
-    await this.driver.wait(
-      until.elementLocated(By.css('[data-testid="importForm"]')),
-      this.wait
-    );
 
-    // save popup and accounts refs
     tabKeeper = await this.driver.getWindowHandle();
     await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      )
       .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
     await this.driver.wait(
@@ -81,12 +79,16 @@ describe('Account creation', function () {
       if (handle !== tabKeeper) {
         tabAccounts = handle;
         await this.driver.switchTo().window(tabAccounts);
+        await this.driver.navigate().refresh();
         break;
       }
     }
   });
 
-  after(App.resetVault);
+  after(async function () {
+    await App.closeBgTabs.call(this, tabKeeper);
+    await App.resetVault.call(this);
+  });
 
   describe('Create', function () {
     const ACCOUNTS = {
@@ -101,7 +103,14 @@ describe('Account creation', function () {
     it('first account via "Create a new account"', async function () {
       await this.driver
         .wait(
-          until.elementLocated(By.css('[data-testid="createNewAccountBtn"]')),
+          until.elementIsVisible(
+            this.driver.wait(
+              until.elementLocated(
+                By.css('[data-testid="createNewAccountBtn"]')
+              ),
+              this.wait
+            )
+          ),
           this.wait
         )
         .click();
@@ -174,8 +183,13 @@ describe('Account creation', function () {
 
             await this.driver
               .wait(
-                until.elementLocated(
-                  By.css('[data-testid="createNewAccountBtn"]')
+                until.elementIsVisible(
+                  await this.driver.wait(
+                    until.elementLocated(
+                      By.css('[data-testid="createNewAccountBtn"]')
+                    ),
+                    this.wait
+                  )
                 ),
                 this.wait
               )
@@ -571,10 +585,14 @@ describe('Account creation', function () {
           await Assets.addAccount.call(this);
 
           await this.driver.switchTo().window(tabAccounts);
-
           await this.driver
             .wait(
-              until.elementLocated(By.css('[data-testid="importSeed"]')),
+              until.elementIsVisible(
+                this.driver.wait(
+                  until.elementLocated(By.css('[data-testid="importSeed"]')),
+                  this.wait
+                )
+              ),
               this.wait
             )
             .click();
@@ -1042,11 +1060,19 @@ describe('Account creation', function () {
       describe('when some, but not all accounts already exist', function () {
         it('allows to select only unexisting accounts', async function () {
           await Assets.addAccount.call(this);
-          await this.driver.switchTo().window(tabAccounts);
 
+          await this.driver.switchTo().window(tabAccounts);
           await this.driver
             .wait(
-              until.elementLocated(By.css('[data-testid="importKeystore"]'))
+              until.elementIsVisible(
+                this.driver.wait(
+                  until.elementLocated(
+                    By.css('[data-testid="importKeystore"]')
+                  ),
+                  this.wait
+                )
+              ),
+              this.wait
             )
             .click();
 
@@ -1172,10 +1198,20 @@ describe('Account creation', function () {
       describe('when all accounts exist', function () {
         it('does not allow selecting anything and shows the "Skip" button', async function () {
           await Assets.addAccount.call(this);
-          await this.driver.switchTo().window(tabAccounts);
 
+          await this.driver.switchTo().window(tabAccounts);
           await this.driver
-            .findElement(By.css('[data-testid="importKeystore"]'))
+            .wait(
+              until.elementIsVisible(
+                this.driver.wait(
+                  until.elementLocated(
+                    By.css('[data-testid="importKeystore"]')
+                  ),
+                  this.wait
+                )
+              ),
+              this.wait
+            )
             .click();
 
           await this.driver

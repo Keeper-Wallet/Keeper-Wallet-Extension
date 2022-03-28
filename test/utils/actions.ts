@@ -34,12 +34,18 @@ export const App = {
     for (const handle of await this.driver.getAllWindowHandles()) {
       if (handle !== tabKeeper) {
         await this.driver.switchTo().window(handle);
+        await this.driver.navigate().refresh();
         break;
       }
     }
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
+        until.elementIsVisible(
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
+            this.wait
+          )
+        ),
         this.wait
       )
       .click();
@@ -155,6 +161,15 @@ export const App = {
       this.wait
     );
   },
+  closeBgTabs: async function (this: mocha.Context, foreground: string) {
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== foreground) {
+        await this.driver.switchTo().window(handle);
+        await this.driver.close();
+      }
+    }
+    await this.driver.switchTo().window(foreground);
+  },
 };
 
 export const Assets = {
@@ -227,7 +242,12 @@ export const CreateNewAccount = {
   ) {
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="importSeed"]')),
+        until.elementIsVisible(
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSeed"]')),
+            this.wait
+          )
+        ),
         this.wait
       )
       .click();

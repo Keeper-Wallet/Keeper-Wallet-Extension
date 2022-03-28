@@ -12,6 +12,10 @@ describe('Password management', () => {
   let currentPassword: string;
   let tabKeeper, tabAccounts;
 
+  after(async function () {
+    await App.closeBgTabs.call(this, tabKeeper);
+  });
+
   describe('Create password', function () {
     this.timeout(60 * 1000);
     let firstPasswordInput: WebElement,
@@ -37,7 +41,12 @@ describe('Password management', () => {
 
       await this.driver
         .wait(
-          until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
+          until.elementIsVisible(
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
+              this.wait
+            )
+          ),
           this.wait
         )
         .click();

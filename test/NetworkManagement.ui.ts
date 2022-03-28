@@ -7,12 +7,15 @@ import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 describe('Network management', function () {
   this.timeout(60 * 1000);
 
+  let tabKeeper;
+
   before(async function () {
     await App.initVault.call(this);
   });
 
   after(async function () {
     await Network.switchToAndCheck.call(this, 'Mainnet');
+    await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
 
@@ -32,7 +35,7 @@ describe('Network management', function () {
 
       it('Imported testnet account starts with 3N or 3M', async function () {
         // save popup and accounts refs
-        const tabKeeper = await this.driver.getWindowHandle();
+        tabKeeper = await this.driver.getWindowHandle();
         await this.driver
           .wait(
             until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -47,6 +50,7 @@ describe('Network management', function () {
         for (const handle of await this.driver.getAllWindowHandles()) {
           if (handle !== tabKeeper) {
             await this.driver.switchTo().window(handle);
+            await this.driver.navigate().refresh();
             break;
           }
         }

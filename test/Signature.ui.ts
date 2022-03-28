@@ -32,6 +32,9 @@ describe('Signature', function () {
 
   before(async function () {
     await App.initVault.call(this);
+    await Settings.setMaxSessionTimeout.call(this);
+    await App.open.call(this);
+
     await Network.switchToAndCheck.call(this, 'Testnet');
 
     tabKeeper = await this.driver.getWindowHandle();
@@ -49,6 +52,7 @@ describe('Signature', function () {
     for (const handle of await this.driver.getAllWindowHandles()) {
       if (handle !== tabKeeper) {
         await this.driver.switchTo().window(handle);
+        await this.driver.navigate().refresh();
         break;
       }
     }
@@ -59,16 +63,12 @@ describe('Signature', function () {
     );
     await this.driver.switchTo().window(tabKeeper);
 
-    await Settings.setMaxSessionTimeout.call(this);
-
     await this.driver.switchTo().newWindow('tab');
     tabOrigin = await this.driver.getWindowHandle();
   });
 
   after(async function () {
-    await this.driver.switchTo().window(tabOrigin);
-    await this.driver.close();
-    await this.driver.switchTo().window(tabKeeper);
+    await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
 
