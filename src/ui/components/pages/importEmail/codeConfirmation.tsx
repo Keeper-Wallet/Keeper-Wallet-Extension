@@ -44,7 +44,6 @@ export function CodeConfirmation({
       <VerifyCodeComponent
         className="margin4"
         isPending={isPending}
-        isCodeSent={Boolean(codeDelivery)}
         onPendingChange={setIsPending}
         onApplyCode={handleConfirmCode}
       />
