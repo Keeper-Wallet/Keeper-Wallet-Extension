@@ -8,20 +8,48 @@ import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 describe('Account management', function () {
   this.timeout(60 * 1000);
 
+  let tabKeeper, tabAccounts;
+
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
+
+    await App.open.call(this);
+    await this.driver.wait(
+      until.elementLocated(By.css('[data-testid="importForm"]')),
+      this.wait
+    );
+
+    // save popup and accounts refs
+    tabKeeper = await this.driver.getWindowHandle();
+    await this.driver
+      .findElement(By.css('[data-testid="addAccountBtn"]'))
+      .click();
+    await this.driver.wait(
+      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      this.wait
+    );
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== tabKeeper) {
+        tabAccounts = handle;
+        await this.driver.switchTo().window(tabAccounts);
+        break;
+      }
+    }
+
+    await CreateNewAccount.importAccount.call(
+      this,
+      'poor',
+      'waves private node seed without waves tokens'
+    );
+
     await CreateNewAccount.importAccount.call(
       this,
       'rich',
       'waves private node seed with waves tokens'
     );
 
-    await Assets.addAccount.call(this);
-    await CreateNewAccount.importAccount.call(
-      this,
-      'poor',
-      'waves private node seed without waves tokens'
-    );
+    await this.driver.switchTo().window(tabKeeper);
+    await App.open.call(this);
   });
 
   after(App.resetVault);
@@ -398,9 +426,7 @@ describe('Account management', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath(
-                "//div[(contains(@class, '-assets-assets') or contains(@class, '-import-import'))]"
-              )
+              By.css('[data-testid="importForm"], [data-testid="assetsForm"]')
             ),
             this.wait
           )
@@ -464,35 +490,33 @@ describe('Account management', function () {
 
   describe('Switching networks', function () {
     before(async function () {
+      await this.driver.switchTo().window(tabAccounts);
+      await CreateNewAccount.importAccount.call(
+        this,
+        'second',
+        'second account for testing selected account preservation'
+      );
       await CreateNewAccount.importAccount.call(
         this,
         'first',
         'first account for testing selected account preservation'
       );
 
-      await Assets.addAccount.call(this);
-      await CreateNewAccount.importAccount.call(
-        this,
-        'second',
-        'second account for testing selected account preservation'
-      );
-
       await Network.switchTo.call(this, 'Testnet');
 
+      await CreateNewAccount.importAccount.call(
+        this,
+        'fourth',
+        'fourth account for testing selected account preservation'
+      );
       await CreateNewAccount.importAccount.call(
         this,
         'third',
         'third account for testing selected account preservation'
       );
 
-      await Assets.addAccount.call(this);
-      await CreateNewAccount.importAccount.call(
-        this,
-        'fourth',
-        'fourth account for testing selected account preservation'
-      );
-
       await Network.switchTo.call(this, 'Mainnet');
+      await this.driver.switchTo().window(tabKeeper);
     });
 
     after(async function () {
