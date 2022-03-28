@@ -29,7 +29,6 @@ export function Login({
 }: LoginProps) {
   const [loginState, setLoginState] = React.useState<LoginStateType>('sign-in');
   const [codeDelivery, setCodeDelivery] = React.useState<CodeDelivery>();
-  const [is2FAEnabled, setIs2FAEnabled] = React.useState(false);
   const userRef = React.useRef<UserData>(userData);
 
   React.useEffect(() => {
@@ -44,7 +43,7 @@ export function Login({
         ...identityUser,
       });
     });
-  }, [is2FAEnabled, onConfirm]);
+  }, [onConfirm]);
 
   const signIn = React.useCallback(
     async (username: string, password: string): Promise<void> => {
@@ -64,13 +63,12 @@ export function Login({
             destination: 'TOTP device',
           });
           setLoginState('confirm-sign-in');
-          setIs2FAEnabled(true);
           break;
         default:
           handleSuccess();
       }
     },
-    [handleSuccess]
+    [onSubmit, handleSuccess]
   );
 
   const confirmSignIn = React.useCallback(
@@ -86,7 +84,7 @@ export function Login({
         }
       }
     },
-    [codeDelivery, handleSuccess, signIn]
+    [handleSuccess, signIn]
   );
 
   React.useEffect(() => {
