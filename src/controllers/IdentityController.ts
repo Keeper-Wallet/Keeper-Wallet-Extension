@@ -371,7 +371,13 @@ export class IdentityController implements IdentityApi {
   }
 
   updateSession() {
-    this.persistSession(this.getSelectedAccount().uuid);
+    const selectedAccount = this.getSelectedAccount();
+
+    if (selectedAccount.type !== 'wx') {
+      throw new Error('selectedAccount is not a wx account');
+    }
+
+    this.persistSession(selectedAccount.uuid);
     this.clearSession();
   }
 
@@ -478,7 +484,13 @@ export class IdentityController implements IdentityApi {
   }
 
   async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
-    const userId = this.getSelectedAccount().uuid;
+    const selectedAccount = this.getSelectedAccount();
+
+    if (selectedAccount.type !== 'wx') {
+      throw new Error('selectedAccount is not a wx account');
+    }
+
+    const userId = selectedAccount.uuid;
     await this.restoreSession(userId);
 
     const signature = libs.crypto.base58Decode(
