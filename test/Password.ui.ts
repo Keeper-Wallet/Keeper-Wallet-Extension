@@ -10,6 +10,7 @@ describe('Password management', () => {
     NEW: 'verystrongpassword',
   };
   let currentPassword: string;
+  let tabKeeper, tabAccounts;
 
   describe('Create password', function () {
     this.timeout(60 * 1000);
@@ -20,13 +21,32 @@ describe('Password management', () => {
 
     before(async function () {
       await App.open.call(this);
-      // Get Started page
+
+      tabKeeper = await this.driver.getWindowHandle();
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        this.wait
+      );
+      for (const handle of await this.driver.getAllWindowHandles()) {
+        if (handle !== tabKeeper) {
+          tabAccounts = handle;
+          await this.driver.switchTo().window(tabAccounts);
+          break;
+        }
+      }
+
       await this.driver
         .wait(
-          until.elementLocated(By.css('.app button[type=submit]')),
+          until.elementLocated(By.css('[data-testid="getStartedBtn"]')),
           this.wait
         )
         .click();
+
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="newAccountForm"]')),
+        this.wait
+      );
+
       // Protect Your Account page
       firstPasswordInput = this.driver.wait(
         until.elementLocated(By.css('.app input#first[type=password]')),
@@ -117,7 +137,9 @@ describe('Password management', () => {
       newSecondPasswordInput: WebElement;
 
     before(async function () {
+      await this.driver.switchTo().window(tabKeeper);
       await App.open.call(this);
+
       await this.driver
         .wait(
           until.elementLocated(
@@ -290,12 +312,14 @@ describe('Password management', () => {
     }
 
     before(async function () {
-      await App.open.call(this);
+      await this.driver.switchTo().window(tabAccounts);
       await CreateNewAccount.importAccount.call(
         this,
         'rich',
         'waves private node seed with waves tokens'
       );
+      await this.driver.switchTo().window(tabKeeper);
+      await App.open.call(this);
     });
 
     it('Logout', async function () {

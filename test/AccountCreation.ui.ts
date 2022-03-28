@@ -1227,7 +1227,7 @@ describe('Account creation', function () {
 
       describe('when the user already has an account with the same name, but different address', function () {
         before(async function () {
-          this.driver.switchTo().window(tabKeeper);
+          await this.driver.switchTo().window(tabKeeper);
         });
 
         this.beforeEach(deleteEachAndSwitchToAccounts);
