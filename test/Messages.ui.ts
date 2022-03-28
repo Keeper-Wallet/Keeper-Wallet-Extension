@@ -9,9 +9,10 @@ import {
 } from './utils/constants';
 
 describe('Messages', function () {
-  const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
-
   this.timeout(2 * 60 * 1000);
+
+  const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
+  let tabKeeper, tabAccounts;
 
   const sendMessage = () => {
     const done = arguments[arguments.length - 1];
@@ -42,11 +43,38 @@ describe('Messages', function () {
 
   before(async function () {
     await App.initVault.call(this);
+
+    await App.open.call(this);
+    await this.driver.wait(
+      until.elementLocated(By.css('[data-testid="importForm"]')),
+      this.wait
+    );
+
+    // save popup and accounts refs
+    tabKeeper = await this.driver.getWindowHandle();
+    await this.driver
+      .findElement(By.css('[data-testid="addAccountBtn"]'))
+      .click();
+    await this.driver.wait(
+      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      this.wait
+    );
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== tabKeeper) {
+        tabAccounts = handle;
+        await this.driver.switchTo().window(tabAccounts);
+        break;
+      }
+    }
+
     await CreateNewAccount.importAccount.call(
       this,
       'rich',
       'waves private node seed with waves tokens'
     );
+
+    await this.driver.switchTo().window(tabKeeper);
+    await App.open.call(this);
     await Settings.setMaxSessionTimeout.call(this);
   });
 
