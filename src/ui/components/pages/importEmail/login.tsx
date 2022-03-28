@@ -2,7 +2,6 @@ import * as React from 'react';
 import { SignInForm } from './signInForm';
 import { CodeConfirmation } from './codeConfirmation';
 import {
-  AuthChallenge,
   CodeDelivery,
   IdentityUser,
 } from '../../../../controllers/IdentityController';
@@ -23,7 +22,7 @@ type LoginProps = {
 };
 
 export function Login({
-  className = '',
+  className,
   userData,
   onConfirm,
   onSubmit,
@@ -38,7 +37,7 @@ export function Login({
   }, []);
 
   const handleSuccess = React.useCallback(() => {
-    background.identityUser().then((identityUser: IdentityUser) => {
+    background.identityUser().then(identityUser => {
       const [name, domain] = userRef.current.username.split('@');
       onConfirm({
         name: `${name[0]}*******@${domain}`,
@@ -56,8 +55,7 @@ export function Login({
       }
 
       const cognitoUser = await background.identitySignIn(username, password);
-      const challengeName: AuthChallenge | void = (cognitoUser as any)
-        .challengeName;
+      const challengeName = cognitoUser.challengeName;
 
       switch (challengeName) {
         case 'SOFTWARE_TOKEN_MFA':

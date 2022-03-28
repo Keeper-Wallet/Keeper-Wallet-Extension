@@ -1,6 +1,7 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 import { CognitoUser } from 'amazon-cognito-identity-js';
+import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
@@ -500,7 +501,9 @@ class Background {
   async identitySignIn(
     username: string,
     password: string
-  ): Promise<CognitoUser> {
+  ): Promise<
+    CognitoUser & Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+  > {
     try {
       await this.initPromise;
       return await this.background.identitySignIn(username, password);
@@ -518,7 +521,7 @@ class Background {
     }
   }
 
-  async identityUser() {
+  async identityUser(): Promise<IdentityUser> {
     try {
       await this.initPromise;
       return await this.background.identityUser();

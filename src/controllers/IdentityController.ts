@@ -223,10 +223,18 @@ export class IdentityController implements IdentityApi {
     }
   }
 
-  async signIn(username: string, password: string): Promise<CognitoUser> {
+  async signIn(
+    username: string,
+    password: string
+  ): Promise<
+    CognitoUser & Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+  > {
     this.clearSession();
 
-    return new Promise<CognitoUser>((resolve, reject) => {
+    return new Promise<
+      CognitoUser &
+        Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+    >((resolve, reject) => {
       if (!this.userPool) {
         return reject(new Error('No UserPool'));
       }
