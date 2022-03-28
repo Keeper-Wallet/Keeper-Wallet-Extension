@@ -96,8 +96,6 @@ describe('Account creation', function () {
     };
     const PILL_ANIMATION_DELAY = 200;
 
-    before(async function () {});
-
     after(deleteEachAndSwitchToAccounts);
 
     it('first account via "Create a new account"', async function () {
@@ -867,6 +865,10 @@ describe('Account creation', function () {
     describe('actual import', function () {
       function extractAccountCheckboxesFromDOM(this: mocha.Context) {
         return this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="chooseAccountsForm"]')),
+            this.wait
+          )
           .findElements(By.css('[data-testid="accountCard"]'))
           .then(cards =>
             Promise.all(
