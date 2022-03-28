@@ -18,16 +18,22 @@ import {
   BURN_WITH_QUANTITY,
   CANCEL_LEASE,
   DATA,
+  INVOKE_SCRIPT_WITHOUT_CALL,
   INVOKE_SCRIPT,
   ISSUE,
+  ISSUE_WITHOUT_SCRIPT,
   LEASE,
   MASS_TRANSFER,
+  MASS_TRANSFER_WITHOUT_ATTACHMENT,
   PACKAGE,
   REISSUE,
   SET_ASSET_SCRIPT,
   SET_SCRIPT,
+  SET_SCRIPT_WITHOUT_SCRIPT,
+  SPONSORSHIP_REMOVAL,
   SPONSORSHIP,
   TRANSFER,
+  TRANSFER_WITHOUT_ATTACHMENT,
 } from './utils/transactions';
 import { CANCEL_ORDER, CREATE_ORDER } from './utils/orders';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
@@ -344,6 +350,49 @@ describe('Signature', function () {
       it('Copying script to the clipboard');
     });
 
+    describe('Issue without script', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-issue-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: ISSUE_WITHOUT_SCRIPT.type,
+            version: 2,
+            senderPublicKey,
+            name: ISSUE_WITHOUT_SCRIPT.data.name,
+            description: ISSUE_WITHOUT_SCRIPT.data.description,
+            quantity: ISSUE_WITHOUT_SCRIPT.data.quantity,
+            decimals: ISSUE_WITHOUT_SCRIPT.data.precision,
+            reissuable: ISSUE_WITHOUT_SCRIPT.data.reissuable,
+            fee: 100400000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.script).to.not.exist;
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
     describe('Transfer', function () {
       beforeEach(async function () {
         await performSignTransaction.call(this, TRANSFER);
@@ -390,6 +439,48 @@ describe('Signature', function () {
       it('Waves / asset / smart asset');
       it('Attachment');
       it('Transfers to Gateways');
+    });
+
+    describe('Transfer without attachment', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-transfer-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: TRANSFER_WITHOUT_ATTACHMENT.type,
+            version: 2,
+            senderPublicKey,
+            assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
+            recipient: TRANSFER_WITHOUT_ATTACHMENT.data.recipient,
+            amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
+            attachment: '',
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
     });
 
     describe('Reissue', function () {
@@ -674,6 +765,52 @@ describe('Signature', function () {
       );
     });
 
+    describe('MassTransfer without attachment', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(
+          this,
+          MASS_TRANSFER_WITHOUT_ATTACHMENT
+        );
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-massTransfer-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
+            version: 1,
+            senderPublicKey,
+            assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
+            transfers: [
+              { amount: 1, recipient: 'alias:T:testy' },
+              { amount: 1, recipient: 'alias:T:merry' },
+            ],
+            fee: 600000,
+            attachment: '',
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
     describe('Data', function () {
       beforeEach(async function () {
         await performSignTransaction.call(this, DATA);
@@ -754,6 +891,45 @@ describe('Signature', function () {
       it('Cancel');
     });
 
+    describe('SetScript without script', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-setScript-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SET_SCRIPT_WITHOUT_SCRIPT.type,
+            version: 1,
+            senderPublicKey,
+            chainId: 84,
+            fee: 1400000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            script: SET_SCRIPT_WITHOUT_SCRIPT.data.script,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.script).to.not.exist;
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
     describe('Sponsorship', function () {
       beforeEach(async function () {
         await performSignTransaction.call(this, SPONSORSHIP);
@@ -794,6 +970,46 @@ describe('Signature', function () {
 
       it('Set');
       it('Cancel');
+    });
+
+    describe('Sponsorship removal', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-sponsorship-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: SPONSORSHIP_REMOVAL.type,
+            version: 1,
+            senderPublicKey,
+            minSponsoredAssetFee:
+              SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
+            assetId: SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.assetId,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
     });
 
     describe('SetAssetScript', function () {
@@ -888,6 +1104,46 @@ describe('Signature', function () {
         it('Maximum count');
         it('Waves / asset / smart asset');
       });
+    });
+
+    describe('InvokeScript without call', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: INVOKE_SCRIPT_WITHOUT_CALL.type,
+            version: 1,
+            senderPublicKey,
+            dApp: INVOKE_SCRIPT_WITHOUT_CALL.data.dApp,
+            payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
+            fee: 500000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
     });
 
     describe('UpdateAssetInfo', function () {

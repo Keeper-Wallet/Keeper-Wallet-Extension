@@ -12,6 +12,18 @@ export const ISSUE = {
   },
 };
 
+export const ISSUE_WITHOUT_SCRIPT = {
+  type: TRANSACTION_TYPE.ISSUE,
+  data: {
+    name: 'ShortToken',
+    description: 'Full description of ShortToken',
+    quantity: '9223372036854775807',
+    precision: 8,
+    reissuable: true,
+    script: '',
+  },
+};
+
 export const TRANSFER = {
   type: TRANSACTION_TYPE.TRANSFER,
   data: {
@@ -21,6 +33,17 @@ export const TRANSFER = {
     },
     recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD',
     attachment: 'base64:BQbtKNoM',
+  },
+};
+
+export const TRANSFER_WITHOUT_ATTACHMENT = {
+  type: TRANSACTION_TYPE.TRANSFER,
+  data: {
+    amount: {
+      amount: 123456790,
+      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    },
+    recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD',
   },
 };
 
@@ -79,6 +102,20 @@ export const MASS_TRANSFER = {
   },
 };
 
+export const MASS_TRANSFER_WITHOUT_ATTACHMENT = {
+  type: TRANSACTION_TYPE.MASS_TRANSFER,
+  data: {
+    totalAmount: {
+      amount: 0,
+      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    },
+    transfers: [
+      { amount: 1, recipient: 'testy' },
+      { amount: 1, recipient: 'merry' },
+    ],
+  },
+};
+
 export const DATA = {
   type: TRANSACTION_TYPE.DATA,
   data: {
@@ -104,12 +141,27 @@ export const SET_SCRIPT = {
   data: { script: 'base64:BQbtKNoM' },
 };
 
+export const SET_SCRIPT_WITHOUT_SCRIPT = {
+  type: TRANSACTION_TYPE.SET_SCRIPT,
+  data: { script: '' },
+};
+
 export const SPONSORSHIP = {
   type: TRANSACTION_TYPE.SPONSORSHIP,
   data: {
     minSponsoredAssetFee: {
       amount: 123456790,
       assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    },
+  },
+};
+
+export const SPONSORSHIP_REMOVAL = {
+  type: TRANSACTION_TYPE.SPONSORSHIP,
+  data: {
+    minSponsoredAssetFee: {
+      assetId: 'WAVES',
+      amount: 0,
     },
   },
 };
@@ -141,6 +193,18 @@ export const INVOKE_SCRIPT = {
         amount: 1,
       },
     ],
+  },
+};
+
+export const INVOKE_SCRIPT_WITHOUT_CALL = {
+  type: TRANSACTION_TYPE.INVOKE_SCRIPT,
+  data: {
+    fee: {
+      amount: 500000,
+      assetId: null,
+    },
+    dApp: '3My2kBJaGfeM2koiZroaYdd3y8rAgfV2EAx',
+    payment: [],
   },
 };
 
