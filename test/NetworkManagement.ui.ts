@@ -12,55 +12,22 @@ describe('Network management', function () {
   });
 
   after(async function () {
-    await Network.switchTo.call(this, 'Mainnet');
+    await Network.switchToAndCheck.call(this, 'Mainnet');
     await App.resetVault.call(this);
   });
 
   describe('Switching networks', function () {
-    async function expectNetworkChangedTo(network: string) {
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-intro-loader')]")
-        ),
-        this.wait
-      );
-
-      await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
-        this.wait
-      );
-
-      expect(
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-network-network')]" +
-                  "//span[contains(@class, 'network-networkBottom')]"
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).matches(new RegExp(network, 'i'));
-    }
-
-    async function networkShouldBeChangedTo(network: string) {
-      await Network.switchTo.call(this, network);
-      await expectNetworkChangedTo.call(this, network);
-    }
-
     it('Stagenet', async function () {
-      await networkShouldBeChangedTo.call(this, 'Stagenet');
+      await Network.switchToAndCheck.call(this, 'Stagenet');
     });
 
     it('Mainnet', async function () {
-      await networkShouldBeChangedTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
     });
 
     describe('Testnet', function () {
       it('Successfully switched', async function () {
-        await networkShouldBeChangedTo.call(this, 'Testnet');
+        await Network.switchToAndCheck.call(this, 'Testnet');
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
@@ -143,7 +110,7 @@ describe('Network management', function () {
           .findElement(By.css('button#networkSettingsSave'))
           .click();
 
-        await expectNetworkChangedTo.call(this, customNetwork);
+        await Network.checkNetwork.call(this, customNetwork);
       });
 
       describe('Changing network settings by "Edit" button', function () {

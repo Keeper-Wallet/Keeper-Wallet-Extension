@@ -1002,13 +1002,13 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          await Network.switchTo.call(this, 'Testnet');
+          await Network.switchToAndCheck.call(this, 'Testnet');
 
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test']);
 
-          await Network.switchTo.call(this, 'Stagenet');
+          await Network.switchToAndCheck.call(this, 'Stagenet');
 
           expect(
             await Assets.getAllAccountNames.call(this)
@@ -1108,19 +1108,19 @@ describe('Account creation', function () {
           await this.driver.switchTo().window(tabKeeper);
           await App.open.call(this);
 
-          await Network.switchTo.call(this, 'Testnet');
+          await Network.switchToAndCheck.call(this, 'Testnet');
 
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test', 'test3']);
 
-          await Network.switchTo.call(this, 'Stagenet');
+          await Network.switchToAndCheck.call(this, 'Stagenet');
 
           expect(
             await Assets.getAllAccountNames.call(this)
           ).to.have.ordered.members(['test4']);
 
-          await Network.switchTo.call(this, 'Mainnet');
+          await Network.switchToAndCheck.call(this, 'Mainnet');
 
           expect(
             await Assets.getAllAccountNames.call(this)

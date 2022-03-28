@@ -7,6 +7,7 @@ import { seedUtils } from '@waves/waves-transactions';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './constants';
+import { expect } from 'chai';
 
 interface VaultEntry {
   seed: string;
@@ -389,5 +390,38 @@ export const Network = {
         this.wait
       )
     );
+  },
+  checkNetwork: async function (this: mocha.Context, network: string) {
+    await this.driver.wait(
+      until.elementLocated(
+        By.xpath("//div[contains(@class, '-intro-loader')]")
+      ),
+      this.wait
+    );
+
+    await this.driver.wait(
+      until.elementLocated(
+        By.css('[data-testid="importForm"], [data-testid="assetsForm"]')
+      ),
+      this.wait
+    );
+
+    expect(
+      await this.driver
+        .wait(
+          until.elementLocated(
+            By.xpath(
+              "//div[contains(@class, '-network-network')]" +
+                "//span[contains(@class, 'network-networkBottom')]"
+            )
+          ),
+          this.wait
+        )
+        .getText()
+    ).matches(new RegExp(network, 'i'));
+  },
+  switchToAndCheck: async function (this: mocha.Context, network: string) {
+    await Network.switchTo.call(this, network);
+    await Network.checkNetwork.call(this, network);
   },
 };

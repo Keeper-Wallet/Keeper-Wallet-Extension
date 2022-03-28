@@ -32,7 +32,7 @@ describe('Signature', function () {
 
   before(async function () {
     await App.initVault.call(this);
-    await Network.switchTo.call(this, 'Testnet');
+    await Network.switchToAndCheck.call(this, 'Testnet');
 
     tabKeeper = await this.driver.getWindowHandle();
     await this.driver

@@ -502,7 +502,7 @@ describe('Account management', function () {
         'first account for testing selected account preservation'
       );
 
-      await Network.switchTo.call(this, 'Testnet');
+      await Network.switchToAndCheck.call(this, 'Testnet');
 
       await CreateNewAccount.importAccount.call(
         this,
@@ -515,12 +515,12 @@ describe('Account management', function () {
         'third account for testing selected account preservation'
       );
 
-      await Network.switchTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
       await this.driver.switchTo().window(tabKeeper);
     });
 
     after(async function () {
-      await Network.switchTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
     });
 
     it('should preserve previously selected account for the network', async function () {
@@ -540,7 +540,7 @@ describe('Account management', function () {
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
 
-      await Network.switchTo.call(this, 'Testnet');
+      await Network.switchToAndCheck.call(this, 'Testnet');
 
       await this.driver
         .wait(
@@ -558,9 +558,9 @@ describe('Account management', function () {
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
 
-      await Network.switchTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
       expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
-      await Network.switchTo.call(this, 'Testnet');
+      await Network.switchToAndCheck.call(this, 'Testnet');
       expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
     });
   });

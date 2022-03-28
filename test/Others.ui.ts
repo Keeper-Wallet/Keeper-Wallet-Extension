@@ -44,7 +44,7 @@ describe('Others', function () {
 
   describe('Send WAVES', function () {
     before(async function () {
-      await Network.switchTo.call(this, 'Testnet');
+      await Network.switchToAndCheck.call(this, 'Testnet');
 
       // save popup and accounts refs
       const tabKeeper = await this.driver.getWindowHandle();
@@ -74,7 +74,7 @@ describe('Others', function () {
     });
 
     after(async function () {
-      await Network.switchTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
     });
 
     beforeEach(async function () {
