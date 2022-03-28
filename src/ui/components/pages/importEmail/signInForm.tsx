@@ -91,10 +91,6 @@ export function SignInForm({ className, userData, signIn }: Props) {
     [email, password, signIn]
   );
 
-  const isSubmitEnabled =
-    Object.entries(errors).filter(([_key, value]) => Boolean(value)).length ===
-    0;
-
   return (
     <form className={className} onSubmit={handleSubmit}>
       <div className="margin1">
@@ -146,7 +142,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
           data-testid="submitButton"
           type="submit"
           onClick={handleSubmit}
-          disabled={pending || !isSubmitEnabled || !email || !password}
+          disabled={pending || !email || !password}
           loading={pending}
         >
           <Trans i18nKey="importEmail.continue" />
