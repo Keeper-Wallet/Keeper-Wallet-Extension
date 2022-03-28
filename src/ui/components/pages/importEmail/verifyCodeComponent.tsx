@@ -7,19 +7,17 @@ type VerifyCodeComponentProps = {
   className: string;
   isPending: boolean;
   codeLength?: number;
-  timerTime?: number;
-  isCodeSent?: boolean;
   onPendingChange(isPending: boolean): void;
   onApplyCode?(code: string): Promise<boolean>;
 };
 
-export const VerifyCodeComponent: React.FC<VerifyCodeComponentProps> = ({
+export function VerifyCodeComponent({
   className,
   codeLength = 6,
   onApplyCode,
   onPendingChange: onPending,
   isPending,
-}) => {
+}: VerifyCodeComponentProps) {
   const [isIncorrectCode, setIsIncorrectCode] = React.useState<boolean>(false);
   const refs = React.useMemo((): Array<React.RefObject<HTMLInputElement>> => {
     return new Array(codeLength).fill(undefined).map(() => React.createRef());
@@ -177,4 +175,4 @@ export const VerifyCodeComponent: React.FC<VerifyCodeComponentProps> = ({
       </div>
     </div>
   );
-};
+}
