@@ -1,4 +1,4 @@
-import { App, Assets, CreateNewAccount, Settings } from './utils/actions';
+import { App, CreateNewAccount, Settings } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import {
@@ -35,23 +35,41 @@ describe('Settings', function () {
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
+
+    const tabKeeper = await this.driver.getWindowHandle();
+    await this.driver
+      .wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      )
+      .findElement(By.css('[data-testid="addAccountBtn"]'))
+      .click();
+    await this.driver.wait(
+      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      this.wait
+    );
+    for (const handle of await this.driver.getAllWindowHandles()) {
+      if (handle !== tabKeeper) {
+        await this.driver.switchTo().window(handle);
+        break;
+      }
+    }
     await CreateNewAccount.importAccount.call(
       this,
       'rich',
       'waves private node seed with waves tokens'
     );
-    await Assets.addAccount.call(this);
     await CreateNewAccount.importAccount.call(
       this,
       'test',
       'side angry perfect sight capital absurd stuff pulp climb jealous onion address speed portion category'
     );
-    await Assets.addAccount.call(this);
     await CreateNewAccount.importAccount.call(
       this,
       'test3',
       'defy credit shoe expect pair gun future slender escape visa test book tone patient vibrant'
     );
+    await this.driver.switchTo().window(tabKeeper);
 
     await Settings.setMaxSessionTimeout.call(this);
 
