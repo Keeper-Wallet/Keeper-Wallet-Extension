@@ -8,8 +8,8 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import * as ObservableStore from 'obs-store';
-import { WxWalletInput } from 'wallets/wx';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
+import { Account, NetworkName } from 'accounts/types';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;
@@ -40,8 +40,6 @@ export type IdentityConfig = {
     endpoint: string;
   };
 };
-
-type AllNetworks = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
 
 function startsWith(source: string, target: string, flags = 'i'): boolean {
   return !!source.match(new RegExp(`^${target}`, flags));
@@ -153,8 +151,8 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
 }
 
 interface Options {
-  getNetwork: () => AllNetworks;
-  getSelectedAccount: () => WxWalletInput | any;
+  getNetwork: () => NetworkName;
+  getSelectedAccount: () => Partial<Account>;
   getIdentityConfig: () => IdentityConfig;
   initState: IdentityState;
 }
@@ -164,10 +162,10 @@ export interface IdentityApi {
 }
 
 export class IdentityController implements IdentityApi {
-  protected getNetwork: () => AllNetworks;
-  protected getSelectedAccount: () => WxWalletInput | any;
-  protected getIdentityConfig: (network: AllNetworks) => IdentityConfig;
-  private network: AllNetworks;
+  protected getNetwork: () => NetworkName;
+  protected getSelectedAccount: () => Partial<Account>;
+  protected getIdentityConfig: (network: NetworkName) => IdentityConfig;
+  private network: NetworkName;
   // identity properties
   private readonly seed = seedUtils.Seed.create();
   private userPool: CognitoUserPool | undefined = undefined;
@@ -377,14 +375,14 @@ export class IdentityController implements IdentityApi {
     // restores user session tokens from storage
     return new Promise((resolve, reject) => {
       if (!this.user) {
-        reject(new Error('Not authenticated'));
+        return reject(new Error('Not authenticated'));
       }
       this.user.getSession(err => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
 
-        this.refreshSessionIsNeed()
+        this.refreshSessionIsNeeded()
           .then(data => {
             this.persistSession(uuid);
             resolve(data);
@@ -394,7 +392,7 @@ export class IdentityController implements IdentityApi {
     });
   }
 
-  private async refreshSessionIsNeed() {
+  private async refreshSessionIsNeeded() {
     const token = this.getIdToken();
     const payload = token.decodePayload();
     const currentTime = Math.ceil(Date.now() / 1000);
