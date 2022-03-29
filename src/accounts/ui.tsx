@@ -19,6 +19,8 @@ import { RootAccounts } from 'ui/components/RootAccounts';
 import { LANGS } from 'ui/i18n';
 import backgroundService from 'ui/services/Background';
 import { createUiStore } from './store';
+import { LedgerSignRequest } from 'ledger/types';
+import { ledgerService } from 'ledger/service';
 
 Sentry.init({
   dsn: __SENTRY_DSN__,
@@ -82,6 +84,11 @@ async function startUi() {
   const emitterApi = {
     sendUpdate: async state => updateState(state),
     closeEdgeNotificationWindow: async () => undefined,
+    ledgerSignRequest: async (request: LedgerSignRequest) => {
+      const { selectedAccount } = store.getState();
+
+      return ledgerService.queueSignRequest(selectedAccount, request);
+    },
   };
 
   const dnode = setupDnode(connectionStream, emitterApi, 'api');

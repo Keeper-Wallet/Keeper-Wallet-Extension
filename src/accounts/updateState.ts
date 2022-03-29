@@ -12,6 +12,8 @@ interface UpdateStateInput {
   currentLocale: string;
   currentNetwork?: string;
   currentNetworkAccounts: Account[];
+  customCodes?: unknown;
+  customNodes?: unknown;
   idleOptions?: unknown;
   initialized: boolean;
   locked: boolean;
@@ -34,6 +36,8 @@ export function createUpdateState(store: UiStore) {
       currentNetwork = '',
       idleOptions = {},
       uiState = {},
+      customNodes = {},
+      customCodes = {},
     } = state;
     const currentState = store.getState();
 
@@ -48,6 +52,20 @@ export function createUpdateState(store: UiStore) {
       actions.push({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
         payload: idleOptions,
+      });
+    }
+
+    if (!equals(currentState.customNodes, customNodes)) {
+      actions.push({
+        type: ACTION.UPDATE_NODES,
+        payload: customNodes,
+      });
+    }
+
+    if (!equals(currentState.customCodes, customCodes)) {
+      actions.push({
+        type: ACTION.UPDATE_CODES,
+        payload: customCodes,
       });
     }
 

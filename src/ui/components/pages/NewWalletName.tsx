@@ -78,6 +78,7 @@ export function NewWalletName({ setTab }) {
             encodedSeed: WalletTypes.EncodedSeed,
             privateKey: WalletTypes.PrivateKey,
             wx: WalletTypes.Wx,
+            ledger: WalletTypes.Ledger,
           };
 
           dispatch(
