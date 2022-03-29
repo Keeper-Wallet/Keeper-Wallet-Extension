@@ -135,11 +135,17 @@ export class WxWallet extends Wallet<WxWalletData> {
 
     const signData = await signable.getSignData();
 
+    const proof = await this.signBytes(bytes);
     signData.proofs = signData.proofs ?? [];
-    signData.proofs.push(await this.signBytes(bytes));
+    signData.proofs.push(proof);
 
-    const data = convert(signData, (item: any) => new BigNumber(item));
-    convertInvokeListWorkAround(data);
+    let data;
+    try {
+      data = convert(signData, (item: any) => new BigNumber(item));
+      convertInvokeListWorkAround(data);
+    } catch (err) {
+      data = { ...signData, signature: proof };
+    }
 
     return stringify(data);
   }
