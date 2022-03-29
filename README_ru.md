@@ -874,7 +874,8 @@ WavesKeeper.signAndPublishTransaction({
 WavesKeeper.signAndPublishTransaction({
   type: 13,
   data: {
-    script: 'base64:BQkACccAAAADCAUAAAACdHgAAAAJYm9keUJ5dGVzCQABkQAAAAIIBQAAAAJ0eAAAAAZwcm9vZnMAAAAAAAAAAAAIBQAAAAJ0eAAAAA9zZW5kZXJQdWJsaWNLZXmfT++m',
+    script:
+      'base64:BQkACccAAAADCAUAAAACdHgAAAAJYm9keUJ5dGVzCQABkQAAAAIIBQAAAAJ0eAAAAAZwcm9vZnMAAAAAAAAAAAAIBQAAAAJ0eAAAAA9zZW5kZXJQdWJsaWNLZXmfT++m',
     fee: {
       tokens: '0.01',
       assetId: 'WAVES',

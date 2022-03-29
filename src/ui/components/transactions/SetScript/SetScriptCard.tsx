@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
+import SetScriptCardHeader from './SetScriptCardHeader';
 
 interface IProps {
   assets: any;
@@ -30,21 +30,9 @@ export class SetScriptCard extends React.PureComponent<IProps> {
     return (
       <>
         <div className={className}>
-          <div className={styles.cardHeader}>
-            <div className={styles.setScriptTxIcon}>
-              <TxIcon txType={messageType} />
-            </div>
-            <div>
-              <div className="basic500 body3 margin-min">
-                <Trans i18nKey="transactions.dataTransaction" />
-              </div>
-              <h1 className="headline1">
-                <Trans i18nKey="transactions.setScriptTransaction" />
-              </h1>
-            </div>
-          </div>
+          <SetScriptCardHeader script={script} />
 
-          <div className={`${styles.cardContent} marginTop1`}>
+          <div className={script ? `${styles.cardContent} marginTop1` : styles.cardContent}>
             <ShowScript
               script={script}
               showNotify={true}

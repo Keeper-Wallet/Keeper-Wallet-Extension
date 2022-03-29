@@ -631,6 +631,7 @@
     "scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
     "setAssetScriptHeader": "Set Asset Script transaction",
     "setScriptTransaction": "Set Script",
+    "setScriptTransactionCancel": "Cancel Account Script",
     "setSctiptHeader": "Script transaction",
     "setSponsored": "Set Sponsorship",
     "showAll": "Show all",
