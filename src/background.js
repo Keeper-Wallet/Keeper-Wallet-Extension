@@ -442,7 +442,6 @@ class BackgroundService extends EventEmitter {
       signRequest: this.walletController.signRequest.bind(
         this.walletController
       ),
-      signBytes: this.walletController.signBytes.bind(this.walletController),
       networkController: this.networkController,
       getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(
         this.networkController

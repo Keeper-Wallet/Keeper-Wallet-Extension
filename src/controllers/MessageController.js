@@ -69,7 +69,6 @@ export class MessageController extends EventEmitter {
     this.signCustomData = options.signCustomData;
     this.auth = options.auth;
     this.signRequest = options.signRequest;
-    this.signBytes = options.signBytes;
 
     // Broadcast and getMatcherPublicKey method from NetworkController
     this.broadcast = messages => options.networkController.broadcast(messages);
@@ -523,13 +522,6 @@ export class MessageController extends EventEmitter {
           message.account.network
         );
         break;
-      case 'bytes':
-        signedData = await this.signBytes(
-          message.account.address,
-          message.data,
-          message.account.network
-        );
-        break;
       case 'pairing':
         signedData = { approved: 'OK' };
         break;
@@ -772,7 +764,6 @@ export class MessageController extends EventEmitter {
         result.messageHash = messageMeta.id;
         result.bytes = Array.from(messageMeta.bytes);
         break;
-      case 'bytes':
       case 'authOrigin':
         break;
       case 'customData':

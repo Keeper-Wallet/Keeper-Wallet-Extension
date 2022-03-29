@@ -62,10 +62,6 @@ export class SeedWallet extends Wallet<SeedWalletData> {
     return stringify(data);
   }
 
-  signBytes(bytes: number[]) {
-    return this._adapter.signData(Uint8Array.from(bytes));
-  }
-
   signRequest(request: TSignData) {
     const signable = this._adapter.makeSignable(request);
     return signable.getSignature();

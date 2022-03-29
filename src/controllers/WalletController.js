@@ -230,18 +230,6 @@ export class WalletController extends EventEmitter {
   }
 
   /**
-   * Signs transaction
-   * @param {string} address - wallet address
-   * @param {array} bytes - array of bytes
-   * @param network
-   * @returns {Promise<string>} signed transaction as json string
-   */
-  async signBytes(address, bytes, network) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.signBytes(bytes);
-  }
-
-  /**
    * Signs request
    * @param {string} address - wallet address
    * @param {object} request - transaction to sign

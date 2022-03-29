@@ -211,10 +211,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(convert(data, (item: any) => new BigNumber(item)));
   }
 
-  signBytes(bytes: number[]) {
-    return this.ledger.signSomeData({ dataBuffer: new Uint8Array(bytes) });
-  }
-
   async signRequest(request: TSignData) {
     const signable = this._adapter.makeSignable(request);
     const dataBuffer = await signable.getBytes();
