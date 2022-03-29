@@ -47,6 +47,7 @@ export function ImportSuccess() {
         )}
 
         <Button
+          data-testid="finishBtn"
           className="margin2"
           type="submit"
           onClick={() => window.close()}
