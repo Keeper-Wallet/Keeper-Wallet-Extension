@@ -2,39 +2,44 @@ import * as React from 'react';
 import * as styles from './buttons.styl';
 import cn from 'classnames';
 
-export const BUTTON_TYPE = {
-  SUBMIT: 'submit',
-  SUBMIT_TINY: 'submitTiny',
-  GENERAL: 'submit',
-  TRANSPARENT: 'transparent',
-  ICON: 'icon',
-  WARNING: 'warning',
-  DANGER: 'danger',
-  INTERFACE: 'interface',
-  CUSTOM: 'custom',
-};
+export enum ButtonType {
+  BUTTON = 'button',
+  RESET = 'reset',
+  SUBMIT = 'submit',
+}
+
+export enum ButtonView {
+  CUSTOM = 'custom',
+  DANGER = 'danger',
+  ICON = 'icon',
+  INTERFACE = 'interface',
+  SUBMIT = 'submit',
+  SUBMIT_TINY = 'submitTiny',
+  TRANSPARENT = 'transparent',
+  WARNING = 'warning',
+}
 
 export function Button({
   id,
   className,
   loading,
   type,
+  view,
   withIcon,
   children,
   ...props
 }: IProps) {
   const btnClassName = cn(className, styles.button, {
     [styles.button_loading]: loading,
-    [styles.submit]: type === BUTTON_TYPE.SUBMIT,
-    [styles.submitTiny]: type === BUTTON_TYPE.SUBMIT_TINY,
-    [styles.submit]: type === BUTTON_TYPE.GENERAL,
-    [styles.transparent]: type === BUTTON_TYPE.TRANSPARENT,
+    [styles.submit]: view === ButtonView.SUBMIT,
+    [styles.submitTiny]: view === ButtonView.SUBMIT_TINY,
+    [styles.transparent]: view === ButtonView.TRANSPARENT,
     [styles.icon]: withIcon,
-    [styles.warning]: type === BUTTON_TYPE.WARNING,
-    [styles.danger]: type === BUTTON_TYPE.DANGER,
-    [styles.interface]: type === BUTTON_TYPE.INTERFACE,
-    [styles.custom]: type === BUTTON_TYPE.CUSTOM,
-    [styles.default]: !Object.values(BUTTON_TYPE).includes(type),
+    [styles.warning]: view === ButtonView.WARNING,
+    [styles.danger]: view === ButtonView.DANGER,
+    [styles.interface]: view === ButtonView.INTERFACE,
+    [styles.custom]: view === ButtonView.CUSTOM,
+    [styles.default]: !view,
   });
 
   return (
@@ -50,7 +55,8 @@ interface IProps {
   className?: string;
   loading?: boolean;
   onClick?: any;
-  type?: any;
+  type?: ButtonType;
+  view?: ButtonView;
   withIcon?: boolean;
   disabled?: any;
 }

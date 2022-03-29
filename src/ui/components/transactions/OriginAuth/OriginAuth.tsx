@@ -7,7 +7,8 @@ import { OriginAuthInfo } from './OriginAuthInfo';
 import {
   ApproveBtn,
   Button,
-  BUTTON_TYPE,
+  ButtonType,
+  ButtonView,
   CollapsedContent,
   DropdownButton,
 } from 'ui/components/ui';
@@ -78,7 +79,8 @@ class OriginAuthComponent extends SignClass {
               id="reject"
               key={'reject'}
               onClick={this.props.reject}
-              type={BUTTON_TYPE.WARNING}
+              type={ButtonType.BUTTON}
+              view={ButtonView.WARNING}
             >
               <Trans i18nKey="sign.reject" />
             </Button>
@@ -86,7 +88,8 @@ class OriginAuthComponent extends SignClass {
               id="rejectForever"
               key={'rejectForever'}
               onClick={this.props.rejectForever}
-              type={BUTTON_TYPE.DANGER}
+              type={ButtonType.BUTTON}
+              view={ButtonView.DANGER}
               className={'custom'}
             >
               <Trans i18nKey="sign.blacklist" />
@@ -95,7 +98,8 @@ class OriginAuthComponent extends SignClass {
           <ApproveBtn
             id="approve"
             onClick={e => this.props.approve(e, params)}
-            type={BUTTON_TYPE.SUBMIT}
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
           >
             <Trans i18nKey="sign.auth" />
           </ApproveBtn>

@@ -3,7 +3,7 @@ import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button } from 'ui/components/ui/buttons/Button';
+import { Button, ButtonType } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
 import * as styles from './result.module.css';
@@ -214,7 +214,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         )}
       </div>
 
-      <Button onClick={onClose}>
+      <Button type={ButtonType.BUTTON} onClick={onClose}>
         <Trans i18nKey="swap.closeBtnText" />
       </Button>
     </div>

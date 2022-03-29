@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './searchInput.module.css';
-import { Button, BUTTON_TYPE, Input } from 'ui/components/ui';
+import { Button, ButtonType, ButtonView, Input } from 'ui/components/ui';
 import cn from 'classnames';
 
 interface Props extends React.HTMLProps<HTMLInputElement> {
@@ -24,7 +24,8 @@ export function SearchInput({ value, onInput, onClear, ...restProps }: Props) {
       {typeof onClear === 'function' && value && (
         <Button
           className={styles.searchClear}
-          type={BUTTON_TYPE.CUSTOM}
+          type={ButtonType.BUTTON}
+          view={ButtonView.CUSTOM}
           onClick={() => {
             inputRef.current.focus();
             onClear();

@@ -2,7 +2,7 @@ import * as styles from './chooseFile.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Error, Input } from '../../ui';
+import { Button, ButtonType, ButtonView, Error, Input } from '../../ui';
 
 interface Props {
   error: string | null;
@@ -81,7 +81,8 @@ export function ImportKeystoreChooseFile({ error, onSubmit }: Props) {
       <Button
         data-testid="submitButton"
         disabled={keystoreFile == null || !password}
-        type="submit"
+        type={ButtonType.SUBMIT}
+        view={ButtonView.SUBMIT}
       >
         <Trans i18nKey="importKeystore.chooseFileSubmitBtn" />
       </Button>

@@ -2,7 +2,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { setCustomCode, setCustomMatcher, setCustomNode } from '../../actions';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE, Copy, Error, Input, Modal } from '../ui';
+import {
+  Button,
+  ButtonType,
+  ButtonView,
+  Copy,
+  Error,
+  Input,
+  Modal,
+} from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
@@ -173,7 +181,8 @@ class NetworksSettingsComponent extends React.PureComponent {
 
         <div>
           <Button
-            type={BUTTON_TYPE.SUBMIT}
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
             disabled={
               disableSave ||
               !(this.state.hasChanges || this.state.hasChangesMatcher)
@@ -189,6 +198,7 @@ class NetworksSettingsComponent extends React.PureComponent {
           {showSetDefaultBtn ? (
             <Button
               id="setDefault"
+              type={ButtonType.BUTTON}
               disabled={
                 disableSave ||
                 (this.state.isDefault && this.state.isDefaultMatcher)

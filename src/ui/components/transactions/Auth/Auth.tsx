@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
-import { ApproveBtn, Button, BUTTON_TYPE } from '../../ui';
+import { ApproveBtn, Button, ButtonType, ButtonView } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
@@ -27,14 +27,20 @@ export function Auth(props) {
       </div>
 
       <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-        <Button id="reject" onClick={props.reject} type={BUTTON_TYPE.WARNING}>
+        <Button
+          id="reject"
+          onClick={props.reject}
+          type={ButtonType.BUTTON}
+          view={ButtonView.WARNING}
+        >
           <Trans i18nKey="sign.reject" />
         </Button>
         <SignWrapper onConfirm={props.approve}>
           {({ onPrepare, pending }) => (
             <ApproveBtn
               id="approve"
-              type={BUTTON_TYPE.SUBMIT}
+              type={ButtonType.SUBMIT}
+              view={ButtonView.SUBMIT}
               loading={pending || status.approvePending}
               onClick={onPrepare}
             >

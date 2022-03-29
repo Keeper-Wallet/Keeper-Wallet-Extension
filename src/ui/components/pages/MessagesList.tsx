@@ -15,7 +15,7 @@ import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
-import { Button, BUTTON_TYPE } from '../ui';
+import { Button, ButtonType, ButtonView } from '../ui';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return messages.map(message => {
@@ -155,7 +155,8 @@ class MessageListComponent extends React.Component {
                 </div>
                 <Button
                   id="clearAllMessages"
-                  type={BUTTON_TYPE.TRANSPARENT}
+                  type={ButtonType.BUTTON}
+                  view={ButtonView.TRANSPARENT}
                   onClick={this.deleteAll}
                   className={`${styles.clearAllBtn} body3 basic500`}
                 >

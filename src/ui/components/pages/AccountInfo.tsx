@@ -2,7 +2,17 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
-import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
+import {
+  Avatar,
+  Balance,
+  Button,
+  ButtonType,
+  ButtonView,
+  CopyText,
+  Error,
+  Input,
+  Modal,
+} from '../ui';
 import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
@@ -90,7 +100,8 @@ class AccountInfoComponent extends React.Component {
             <div className={styles.accountData}>
               <div>
                 <Button
-                  type="transparent"
+                  type={ButtonType.BUTTON}
+                  view={ButtonView.TRANSPARENT}
                   className={styles.accountName}
                   onClick={this.editNameHandler}
                 >
@@ -289,19 +300,25 @@ class AccountInfoComponent extends React.Component {
                 id="passwordEnter"
                 disabled={this.state.passwordError || !this.state.password}
                 className="margin-main-big"
-                type="submit"
+                type={ButtonType.SUBMIT}
+                view={ButtonView.SUBMIT}
               >
                 <Trans i18nKey="accountInfo.enter">Enter</Trans>
               </Button>
 
-              <Button id="passwordCancel" onClick={this.rejectPassword}>
+              <Button
+                id="passwordCancel"
+                type={ButtonType.BUTTON}
+                onClick={this.rejectPassword}
+              >
                 <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
               </Button>
 
               <Button
                 className="modal-close"
                 onClick={this.rejectPassword}
-                type="transparent"
+                type={ButtonType.BUTTON}
+                view={ButtonView.TRANSPARENT}
               />
             </form>
           </div>

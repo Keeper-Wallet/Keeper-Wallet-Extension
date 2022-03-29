@@ -2,7 +2,7 @@ import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
 import { changePassword } from '../../actions';
 import * as React from 'react';
-import { Button, Error, Input, Modal } from '../ui';
+import { Button, ButtonType, ButtonView, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { Trans } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
@@ -124,7 +124,11 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
               </Error>
             </div>
           </div>
-          <Button type="submit" disabled={this.state.buttonDisabled}>
+          <Button
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
+            disabled={this.state.buttonDisabled}
+          >
             <Trans i18nKey="changePassword.create">Save</Trans>
           </Button>
         </form>

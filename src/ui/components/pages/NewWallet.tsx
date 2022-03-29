@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { newAccountSelect } from '../../actions';
-import { AvatarList, Button } from '../ui';
+import { AvatarList, Button, ButtonType, ButtonView } from '../ui';
 import { seedUtils } from '@waves/waves-transactions';
 import { PAGES } from '../../pageConfig';
 
@@ -113,7 +113,11 @@ class NewWalletComponent extends React.Component<Props> {
         </div>
 
         <form onSubmit={this.onSubmit}>
-          <Button type="submit" id="continue">
+          <Button
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
+            id="continue"
+          >
             <Trans i18nKey="newWallet.continue">Continue</Trans>
           </Button>
         </form>

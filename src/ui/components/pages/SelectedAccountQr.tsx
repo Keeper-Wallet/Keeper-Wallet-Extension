@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
-import { Button, QRCode } from '../ui';
+import { Button, ButtonType, ButtonView, QRCode } from '../ui';
 
 class QRCodeSelectedAccountComponent extends React.PureComponent {
   readonly props;
@@ -34,7 +34,8 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
 
         {isEdge ? null : (
           <Button
-            type="submitTiny"
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT_TINY}
             className={`${styles.downloadQr}`}
             onClick={this.downloadHandler}
           >

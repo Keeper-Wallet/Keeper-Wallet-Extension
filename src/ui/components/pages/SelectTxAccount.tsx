@@ -1,7 +1,7 @@
 import * as styles from './styles/selectTxAccount.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
+import { Button, ButtonType, ButtonView } from '../ui';
 import { connect } from 'react-redux';
 import {
   clearMessages,
@@ -81,7 +81,11 @@ class SelectTxAccountComponent extends React.PureComponent {
             </Trans>
           </div>
 
-          <Button type={BUTTON_TYPE.SUBMIT} onClick={this.onClick}>
+          <Button
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
+            onClick={this.onClick}
+          >
             <Trans i18nKey="sign.switchAccount">Switch account</Trans>
           </Button>
         </div>

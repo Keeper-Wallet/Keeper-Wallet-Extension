@@ -1,7 +1,7 @@
 import * as styles from 'ui/components/pages/styles/transactions.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { ApproveBtn, Button, BUTTON_TYPE } from 'ui/components/ui';
+import { ApproveBtn, Button, ButtonType, ButtonView } from 'ui/components/ui';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
 
@@ -22,17 +22,18 @@ export function TxFooter({
         data-testid="rejectButton"
         id="reject"
         onClick={reject}
-        type={BUTTON_TYPE.WARNING}
+        type={ButtonType.BUTTON}
+        view={ButtonView.WARNING}
       >
         <Trans i18nKey="sign.reject" />
       </Button>
-
       {!hideApprove && (
         <SignWrapper onConfirm={approve}>
           {({ onPrepare, pending }) => (
             <ApproveBtn
               id="approve"
-              type={BUTTON_TYPE.SUBMIT}
+              type={ButtonType.SUBMIT}
+              view={ButtonView.SUBMIT}
               loading={pending || status.approvePending}
               disabled={pending || status.approvePending}
               autoClickProtection={autoClickProtection}

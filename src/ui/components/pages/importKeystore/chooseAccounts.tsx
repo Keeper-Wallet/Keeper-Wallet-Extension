@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
-import { Button } from 'ui/components/ui';
+import { Button, ButtonType, ButtonView } from 'ui/components/ui';
 import {
   Account,
   KeystoreAccount,
@@ -203,7 +203,7 @@ export function ImportKeystoreChooseAccounts({
         {selected.size === 0 ? (
           <Button
             data-testid="skipButton"
-            type="interface"
+            view={ButtonView.INTERFACE}
             onClick={() => {
               onSkip();
             }}
@@ -211,7 +211,11 @@ export function ImportKeystoreChooseAccounts({
             <Trans i18nKey="importKeystore.chooseAccountsSkipBtn" />
           </Button>
         ) : (
-          <Button data-testid="submitButton" type="submit">
+          <Button
+            data-testid="submitButton"
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
+          >
             <Trans
               i18nKey="importKeystore.chooseAccountsImportBtn"
               count={selected.size}

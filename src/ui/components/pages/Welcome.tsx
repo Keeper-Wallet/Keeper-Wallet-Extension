@@ -2,7 +2,7 @@ import * as styles from './styles/welcome.styl';
 import * as React from 'react';
 import { BigLogo } from '../head';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
+import { Button, ButtonType, ButtonView } from '../ui';
 import { PAGES } from '../../pageConfig';
 
 interface IWelcomeProps {
@@ -20,7 +20,8 @@ export class Welcome extends React.Component<IWelcomeProps> {
       <div className={`${styles.content}`}>
         <BigLogo className="margin-main-large" />
         <Button
-          type={BUTTON_TYPE.GENERAL}
+          type={ButtonType.SUBMIT}
+          view={ButtonView.SUBMIT}
           onClick={this.clickHandler}
           className="margin-main-big"
         >

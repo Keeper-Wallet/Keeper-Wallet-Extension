@@ -2,7 +2,7 @@ import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
 import { createNew, setTab } from '../../actions';
 import * as React from 'react';
-import { Button, Error, Input } from '../ui';
+import { Button, ButtonType, ButtonView, Error, Input } from '../ui';
 import { Trans } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 
@@ -215,7 +215,11 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             </label>
           </div>
 
-          <Button type="submit" disabled={this.state.buttonDisabled}>
+          <Button
+            type={ButtonType.SUBMIT}
+            view={ButtonView.SUBMIT}
+            disabled={this.state.buttonDisabled}
+          >
             <Trans i18nKey="newAccount.create">Continue</Trans>
           </Button>
           <div className={`tag1 left basic500 marginTop3`}>
