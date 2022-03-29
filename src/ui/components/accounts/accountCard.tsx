@@ -6,11 +6,7 @@ import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import * as styles from './accountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
-
-interface Account {
-  address: string;
-  name: string;
-}
+import { Account } from '../../../accounts/types';
 
 interface Props {
   account: Account;
@@ -23,7 +19,7 @@ export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {
   return (
     <div className={styles.root} data-testid="accountCard">
       <div className={styles.accountInfo}>
-        <Avatar size={40} address={account.address} />
+        <Avatar size={40} address={account.address} type={account.type} />
 
         <div className={styles.accountInfoText}>
           <div className={styles.accountName} data-testid="accountName">

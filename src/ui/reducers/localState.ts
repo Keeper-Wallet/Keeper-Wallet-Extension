@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import {
   ACTION,
-  setSwapScreenInitialState,
   resetSwapScreenInitialState,
+  setSwapScreenInitialState,
 } from '../actions';
 import { pairing } from './pairing';
 
@@ -93,7 +93,17 @@ function notifications(
   }
 }
 
-function transactionStatus(state = {}, { type, payload }) {
+interface TransactionStatusState {
+  approvePending?: boolean;
+  approveOk?: boolean;
+  approveError?: boolean;
+  rejectOk?: boolean;
+}
+
+function transactionStatus(
+  state: TransactionStatusState = {},
+  { type, payload }: { type: string; payload: boolean }
+): TransactionStatusState {
   switch (type) {
     case ACTION.APPROVE_PENDING:
       return { ...state, approvePending: payload };

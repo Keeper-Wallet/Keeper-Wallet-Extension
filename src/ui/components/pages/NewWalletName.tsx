@@ -137,6 +137,7 @@ class NewWalletNameComponent extends React.Component {
       seed: WalletTypes.Seed,
       encodedSeed: WalletTypes.EncodedSeed,
       privateKey: WalletTypes.PrivateKey,
+      wx: WalletTypes.Wx,
     };
 
     this.props.addUser(

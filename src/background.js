@@ -19,6 +19,7 @@ import {
   AssetInfoController,
   CurrentAccountController,
   ExternalDeviceController,
+  IdentityController,
   IdleController,
   MessageController,
   NetworkController,
@@ -42,6 +43,7 @@ import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { getAdapterByType } from '@waves/signature-adapter';
+import { VaultController } from './controllers/VaultController';
 
 const version = extension.runtime.getManifest().version;
 
@@ -247,9 +249,19 @@ class BackgroundService extends EventEmitter {
       initState: initState.RemoteConfigController,
     });
 
+    this.remoteConfigController.on('identityConfigChanged', () => {
+      // update cognito identity configuration
+      this.identityController.configure();
+    });
+
     this.permissionsController = new PermissionsController({
       initState: initState.PermissionsController,
       remoteConfig: this.remoteConfigController,
+      getSelectedAccount: () => this.preferencesController.getSelectedAccount(),
+      identity: {
+        restoreSession: userId =>
+          this.identityController.restoreSession(userId),
+      },
     });
 
     // Network. Works with blockchain
@@ -269,14 +281,30 @@ class BackgroundService extends EventEmitter {
       getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
     });
 
-    // On network change select accounts of this network
-    this.networkController.store.subscribe(() =>
-      this.preferencesController.syncCurrentNetworkAccounts()
-    );
+    // On network change
+    this.networkController.store.subscribe(() => {
+      // select accounts of this network
+      this.preferencesController.syncCurrentNetworkAccounts();
+      // update cognito identity configuration
+      this.identityController.configure();
+    });
 
     // Ui State. Provides storage for ui application
     this.uiStateController = new UiStateController({
       initState: initState.UiStateController,
+    });
+
+    this.identityController = new IdentityController({
+      initState: initState.IdentityController,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+      getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
+        this.preferencesController
+      ),
+      getIdentityConfig: this.remoteConfigController.getIdentityConfig.bind(
+        this.remoteConfigController
+      ),
     });
 
     // Wallet. Wallet creation, app locking, signing method
@@ -292,20 +320,37 @@ class BackgroundService extends EventEmitter {
         this.networkController
       ),
       trash: this.trash,
+      identity: {
+        signBytes: bytes => this.identityController.signBytes(bytes),
+      },
     });
 
-    this.walletController.store.subscribe(state => {
-      if (!state.locked || !state.initialized) {
-        const accounts = this.walletController.getAccounts();
-        this.preferencesController.syncAccounts(accounts);
-      }
+    this.vaultController = new VaultController({
+      initState: initState.VaultController,
+      wallet: this.walletController,
+      identity: this.identityController,
     });
+
+    this.walletController.store.subscribe(() => {
+      const accounts = this.walletController.getAccounts();
+      this.preferencesController.syncAccounts(accounts);
+      this.currentAccountController.updateBalances();
+    });
+
+    this.walletController
+      .on('addWallet', wallet => {
+        if (wallet.getAccount().type === 'wx') {
+          // persist current session to storage
+          this.identityController.persistSession(wallet.getAccount().uuid);
+        }
+      })
+      .on('removeWallet', wallet => {
+        if (wallet.getAccount().type === 'wx') {
+          this.identityController.removeSession(wallet.getAccount().uuid);
+        }
+      });
 
     this.networkController.store.subscribe(() =>
-      this.currentAccountController.updateBalances()
-    );
-
-    this.walletController.store.subscribe(() =>
       this.currentAccountController.updateBalances()
     );
 
@@ -335,7 +380,7 @@ class BackgroundService extends EventEmitter {
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController
       ),
-      isLocked: this.walletController.isLocked.bind(this.walletController),
+      isLocked: this.vaultController.isLocked.bind(this.vaultController),
       assetInfoController: this.assetInfoController,
     });
 
@@ -419,6 +464,8 @@ class BackgroundService extends EventEmitter {
       RemoteConfigController: this.remoteConfigController.store,
       NotificationsController: this.notificationsController.store,
       TrashController: this.trash.store,
+      VaultController: this.vaultController.store,
+      IdentityController: this.identityController.store,
     });
 
     // Call send update, which is bound to ui EventEmitter, on every store update
@@ -467,16 +514,15 @@ class BackgroundService extends EventEmitter {
       addWallet: async account => this.walletController.addWallet(account),
       removeWallet: async (address, network) =>
         this.walletController.removeWallet(address, network),
-      lock: async () => this.walletController.lock(),
-      unlock: async password => this.walletController.unlock(password),
+      lock: async () => this.vaultController.lock(),
+      unlock: async password => this.vaultController.unlock(password),
       initVault: async password => {
-        const result = await this.walletController.initVault(password);
+        this.vaultController.init(password);
         this.statisticsController.addEvent('initVault');
-        return result;
       },
       deleteVault: async () => {
         await this.messageController.clearMessages();
-        await this.walletController.deleteVault();
+        await this.vaultController.clear();
       },
       newPassword: async (oldPassword, newPassword) =>
         this.walletController.newPassword(oldPassword, newPassword),
@@ -596,6 +642,16 @@ class BackgroundService extends EventEmitter {
 
       shouldIgnoreError: async (context, message) =>
         this.remoteConfigController.shouldIgnoreError(context, message),
+
+      identitySignIn: async (username, password) =>
+        this.identityController.signIn(username, password),
+      identityConfirmSignIn: async code =>
+        this.identityController.confirmSignIn(code),
+      identityUser: async () => this.identityController.getIdentityUser(),
+      identityRestore: async userId =>
+        this.identityController.restoreSession(userId),
+      identityUpdate: async () => this.identityController.updateSession(),
+      identityClear: async () => this.identityController.clearSession(),
     };
   }
 
@@ -692,7 +748,7 @@ class BackgroundService extends EventEmitter {
       }
 
       if (origin) {
-        if (this.permissionsController.canApprove(origin, data)) {
+        if (await this.permissionsController.canApprove(origin, data)) {
           this.messageController.approve(result.id);
         } else {
           this.emit('Show notification');

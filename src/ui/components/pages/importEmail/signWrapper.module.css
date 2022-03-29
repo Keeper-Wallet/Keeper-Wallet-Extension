@@ -1,0 +1,15 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 329px;
+  padding: 28px;
+  border-radius: 4px;
+  background: var(--color-white);
+}

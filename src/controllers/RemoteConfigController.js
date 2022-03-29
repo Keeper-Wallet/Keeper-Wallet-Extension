@@ -2,11 +2,15 @@ import ObservableStore from 'obs-store';
 import {
   CONFIG_URL,
   DEFAULT_CONFIG,
+  DEFAULT_IDENTITY_CONFIG,
   DEFAULT_IGNORE_ERRORS_CONFIG,
+  IDENTITY_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_URL,
   STATUS,
 } from '../constants';
+import { EventEmitter } from 'events';
+import * as R from 'ramda';
 
 const extendValues = (defaultValues, newValues) => {
   return Object.entries(defaultValues).reduce(
@@ -34,8 +38,9 @@ const extendValues = (defaultValues, newValues) => {
   );
 };
 
-export class RemoteConfigController {
+export class RemoteConfigController extends EventEmitter {
   constructor(options = {}) {
+    super();
     const defaults = {
       blacklist: [],
       whitelist: [],
@@ -47,6 +52,7 @@ export class RemoteConfigController {
         idle: DEFAULT_CONFIG.IDLE,
       },
       ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
+      identityConfig: DEFAULT_IDENTITY_CONFIG,
       status: STATUS.PENDING,
     };
 
@@ -54,6 +60,7 @@ export class RemoteConfigController {
     this._getConfig();
 
     this._getIgnoreErrorsConfig();
+    this._fetchIdentityConfig();
   }
 
   getPackConfig() {
@@ -216,5 +223,62 @@ export class RemoteConfigController {
         return re.test(message);
       })
     );
+  }
+
+  async _fetchIdentityConfig() {
+    const { identityConfig } = this.store.getState();
+    const networks = ['mainnet', 'testnet'];
+
+    fetch('https://configs.waves.exchange/web/networks.json')
+      .then(resp =>
+        resp.ok
+          ? resp.json()
+          : resp.text().then(text => Promise.reject(new Error(text)))
+      )
+      .then(wavesNetworks =>
+        Promise.all(
+          networks.map(async network => {
+            const envNetworkConfig = wavesNetworks.find(
+              c => c.name === network
+            );
+            if (!envNetworkConfig) {
+              throw new Error(`No network configuration found for ${network}`);
+            }
+
+            return fetch(
+              `${envNetworkConfig.configService.url}/` +
+                `${envNetworkConfig.configService.featuresConfigUrl}`
+            ).then(response =>
+              response.ok
+                ? response.json()
+                : response.text().then(text => Promise.reject(new Error(text)))
+            );
+          })
+        )
+      )
+      .then(networkConfigs => {
+        const fetchedConfig = Object.fromEntries(
+          networks.map((network, i) => [network, networkConfigs[i].identity])
+        );
+
+        if (!R.equals(identityConfig, fetchedConfig)) {
+          this.store.updateState({
+            identityConfig: Object.assign({}, identityConfig, fetchedConfig),
+          });
+          this.emit('identityConfigChanged');
+        }
+      })
+      .catch(() => undefined) // ignore
+      .then(() =>
+        setTimeout(
+          () => this._fetchIdentityConfig(),
+          IDENTITY_CONFIG_UPDATE_INTERVAL
+        )
+      );
+  }
+
+  getIdentityConfig(network) {
+    const { identityConfig } = this.store.getState();
+    return identityConfig[network === 'testnet' ? 'testnet' : 'mainnet'];
   }
 }

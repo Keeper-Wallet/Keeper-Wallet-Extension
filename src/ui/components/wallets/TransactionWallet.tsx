@@ -4,6 +4,7 @@ import cn from 'classnames';
 import * as styles from './wallet.styl';
 import { Trans } from 'react-i18next';
 import { Tooltip } from '../ui/tooltip';
+import { Account } from '../../../accounts/types';
 
 export const TransactionWallet = ({
   className = '',
@@ -49,7 +50,11 @@ export const TransactionWallet = ({
   return (
     <div className={`${className} ${styles.inner} ${styles.txWallet} flex`}>
       <div className={styles.avatar}>
-        <Avatar size={avatarSize} address={account.address} />
+        <Avatar
+          size={avatarSize}
+          address={account.address}
+          type={account.type}
+        />
       </div>
 
       <div className={`body3 ${styles.accountData}`}>
@@ -94,7 +99,7 @@ interface ITransactionWalletProps {
   className?: string;
   onSelect?: (account: any) => void;
   onActive?: (account: any) => void;
-  account: any;
+  account: Account;
   active?: boolean;
   hideButton?: boolean;
   children?: any;

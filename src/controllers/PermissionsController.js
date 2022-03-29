@@ -35,6 +35,8 @@ export class PermissionsController {
     this.remoteConfig = options.remoteConfig;
     this.store = new ObservableStore({ ...defaults, ...options.initState });
     this._updateByConfig();
+    this.getSelectedAccount = options.getSelectedAccount;
+    this.identity = options.identity;
   }
 
   getMessageIdAccess(origin) {
@@ -196,7 +198,21 @@ export class PermissionsController {
     return true;
   }
 
-  canApprove(origin, tx) {
+  async canApprove(origin, tx) {
+    const account = this.getSelectedAccount();
+    switch (account.type) {
+      case 'wx':
+        try {
+          await this.identity.restoreSession(account.uuid);
+        } catch (err) {
+          // if we can't restore session, then we can't auto-approve
+          return false;
+        }
+        break;
+      default:
+        break;
+    }
+
     if (this.matcherOrdersAllow(origin, tx)) {
       return true;
     }

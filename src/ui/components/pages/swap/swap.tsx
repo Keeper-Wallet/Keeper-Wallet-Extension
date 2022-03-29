@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import BigNumber from '@waves/bignumber';
-import { Money, Asset } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/waves-transactions/dist/transactions';
 import { swappableAssetIds } from 'assets/constants';
 import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
@@ -11,10 +11,11 @@ import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { PAGES } from 'ui/pageConfig';
 import background, { AssetDetail } from 'ui/services/Background';
-import { useAppSelector, useAppDispatch } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
+import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -128,19 +129,17 @@ export function Swap({ setTab }: Props) {
         ) : (
           <div className={styles.content}>
             <div className={styles.accountInfoHeader}>
-              <Avatar address={selectedAccount.address} size={28} />
+              <Avatar
+                address={selectedAccount.address}
+                type={selectedAccount.type}
+                size={28}
+              />
               <div className={styles.accountName}>{selectedAccount.name}</div>
             </div>
 
             {performedSwapData == null ? (
-              <SwapForm
-                initialFromAssetId={initialFromAssetId}
-                initialToAssetId={initialToAssetId}
-                isSwapInProgress={isSwapInProgress}
-                swapErrorMessage={swapErrorMessage}
-                swappableAssets={swappableAssets}
-                wavesFeeCoins={wavesFeeCoins}
-                onSwap={async ({
+              <SignWrapper
+                onConfirm={async ({
                   feeAssetId,
                   fromAssetId,
                   fromCoins,
@@ -238,7 +237,19 @@ export function Swap({ setTab }: Props) {
                     }
                   }
                 }}
-              />
+              >
+                {({ onPrepare, pending }) => (
+                  <SwapForm
+                    initialFromAssetId={initialFromAssetId}
+                    initialToAssetId={initialToAssetId}
+                    isSwapInProgress={pending || isSwapInProgress}
+                    swapErrorMessage={swapErrorMessage}
+                    swappableAssets={swappableAssets}
+                    wavesFeeCoins={wavesFeeCoins}
+                    onSwap={onPrepare}
+                  />
+                )}
+              </SignWrapper>
             ) : (
               <SwapResult
                 fromMoney={performedSwapData.fromMoney}
