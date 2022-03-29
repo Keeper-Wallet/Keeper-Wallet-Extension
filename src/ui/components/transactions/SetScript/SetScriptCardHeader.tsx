@@ -15,9 +15,7 @@ const SetScriptCardHeader: React.FC<IProps> = ({ script }) => {
     <div className={styles.header}>
       <TxIcon className={styles.icon} txType="set-script" />
       <div>
-        <div className={styles.data}>
-          {t('transactions.dataTransaction')}
-        </div>
+        <div className={styles.data}>{t('transactions.dataTransaction')}</div>
         <h1 className={styles.title}>
           {t('transactions.setScriptTransaction')}
         </h1>
@@ -31,6 +29,6 @@ const SetScriptCardHeader: React.FC<IProps> = ({ script }) => {
       </h1>
     </div>
   );
-}
+};
 
 export default SetScriptCardHeader;

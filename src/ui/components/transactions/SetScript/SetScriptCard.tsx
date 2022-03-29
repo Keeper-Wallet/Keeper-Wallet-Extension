@@ -32,7 +32,11 @@ export class SetScriptCard extends React.PureComponent<IProps> {
         <div className={className}>
           <SetScriptCardHeader script={script} />
 
-          <div className={script ? `${styles.cardContent} marginTop1` : styles.cardContent}>
+          <div
+            className={
+              script ? `${styles.cardContent} marginTop1` : styles.cardContent
+            }
+          >
             <ShowScript
               script={script}
               showNotify={true}
