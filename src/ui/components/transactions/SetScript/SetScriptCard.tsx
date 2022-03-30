@@ -1,10 +1,9 @@
 import * as styles from './setScript.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
-import SetScriptCardHeader from './SetScriptCardHeader';
+import { SetScriptCardHeader } from './SetScriptCardHeader';
 
 interface IProps {
   assets: any;

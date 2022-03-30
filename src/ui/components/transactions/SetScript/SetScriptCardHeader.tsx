@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { TxIcon } from '../BaseTransaction';
 
-interface IProps {
+interface Props {
   script?: string;
 }
 
-const SetScriptCardHeader: React.FC<IProps> = ({ script }) => {
+export const SetScriptCardHeader = ({ script }: Props) => {
   const { t } = useTranslation();
 
   return script ? (
@@ -30,5 +30,3 @@ const SetScriptCardHeader: React.FC<IProps> = ({ script }) => {
     </div>
   );
 };
-
-export default SetScriptCardHeader;

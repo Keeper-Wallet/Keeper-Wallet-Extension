@@ -10,7 +10,7 @@
 }
 
 .data {
-  color: #9ba6b2;
+  color: var(--color-basic500);
   font-size: 12px;
   margin-bottom: 4px;
 }
