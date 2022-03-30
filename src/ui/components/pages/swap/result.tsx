@@ -214,7 +214,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         )}
       </div>
 
-      <Button onClick={onClose}>
+      <Button type="button" onClick={onClose}>
         <Trans i18nKey="swap.closeBtnText" />
       </Button>
     </div>

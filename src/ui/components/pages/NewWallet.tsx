@@ -113,7 +113,7 @@ class NewWalletComponent extends React.Component<Props> {
         </div>
 
         <form onSubmit={this.onSubmit}>
-          <Button type="submit" id="continue">
+          <Button type="submit" view="submit" id="continue">
             <Trans i18nKey="newWallet.continue">Continue</Trans>
           </Button>
         </form>

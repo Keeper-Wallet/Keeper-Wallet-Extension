@@ -82,7 +82,12 @@ export const TransactionWallet = ({
       <div className={styles.controls} onClick={clickHandler}>
         {children}
         {hideButton ? null : (
-          <Button type="custom" onClick={selectHandler} className={iconClass} />
+          <Button
+            type="button"
+            view="custom"
+            onClick={selectHandler}
+            className={iconClass}
+          />
         )}
       </div>
 

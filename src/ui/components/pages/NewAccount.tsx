@@ -215,7 +215,11 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             </label>
           </div>
 
-          <Button type="submit" disabled={this.state.buttonDisabled}>
+          <Button
+            type="submit"
+            view="submit"
+            disabled={this.state.buttonDisabled}
+          >
             <Trans i18nKey="newAccount.create">Continue</Trans>
           </Button>
           <div className={`tag1 left basic500 marginTop3`}>

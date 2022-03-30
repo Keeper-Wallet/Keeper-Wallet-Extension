@@ -2,7 +2,7 @@ import * as styles from './styles/langsSettings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../ui';
+import { Button } from '../ui';
 import { setLocale, setUiState } from '../../actions';
 import cn from 'classnames';
 
@@ -63,7 +63,8 @@ class LangsSettingsComponent extends React.PureComponent {
           <Button
             className={styles.langsConfirm}
             onClick={this.confirmHandler}
-            type={BUTTON_TYPE.SUBMIT}
+            type="submit"
+            view="submit"
           >
             <Trans i18nKey="langsSettings.confirm">Confirm</Trans>
           </Button>

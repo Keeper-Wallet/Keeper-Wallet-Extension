@@ -599,6 +599,7 @@ export function SwapForm({
         }
         loading={isSwapInProgress}
         type="submit"
+        view="submit"
       >
         <Trans i18nKey="swap.submitButtonText" />
       </Button>

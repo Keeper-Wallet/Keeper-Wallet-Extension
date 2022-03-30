@@ -95,6 +95,7 @@ class NewWalletNameComponent extends React.Component {
               <Button
                 id="continue"
                 type="submit"
+                view="submit"
                 onClick={this._onSave}
                 disabled={this.state.errors.length || this.state.disabled}
               >
@@ -104,6 +105,7 @@ class NewWalletNameComponent extends React.Component {
               <Button
                 id="createBackup"
                 type="submit"
+                view="submit"
                 disabled={this.state.errors.length}
               >
                 <Trans i18nKey="newAccountName.continueBackup">

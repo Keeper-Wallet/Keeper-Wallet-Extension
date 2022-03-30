@@ -96,7 +96,8 @@ class ChangeAccountNameComponent extends React.PureComponent {
           <Button
             id="save"
             type="submit"
-            disabled={this.state.errors.length || !this.state.newName}
+            view="submit"
+            disabled={!!this.state.errors.length || !this.state.newName}
           >
             <Trans i18nKey="changeName.save">Save</Trans>
           </Button>

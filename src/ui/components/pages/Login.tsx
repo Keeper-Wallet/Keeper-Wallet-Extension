@@ -66,6 +66,7 @@ class LoginComponent extends React.Component {
           <Button
             id="loginEnter"
             type="submit"
+            view="submit"
             className="margin4"
             disabled={!this.state.password}
           >

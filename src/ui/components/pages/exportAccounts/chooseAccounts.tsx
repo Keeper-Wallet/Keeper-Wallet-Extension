@@ -124,6 +124,7 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
           data-testid="exportButton"
           disabled={selected.size === 0}
           type="submit"
+          view="submit"
         >
           <Trans
             i18nKey="exportKeystore.chooseAccountsExportBtn"

@@ -84,7 +84,8 @@ export function DeleteAllAccounts({ onBack }) {
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
         <Button
-          type="warning"
+          type="button"
+          view="warning"
           disabled={hasError}
           onClick={() => dispatch(deleteAccount())}
           data-testid="resetConfirm"

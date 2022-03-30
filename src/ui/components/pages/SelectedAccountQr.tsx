@@ -34,7 +34,8 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
 
         {isEdge ? null : (
           <Button
-            type="submitTiny"
+            type="submit"
+            view="submitTiny"
             className={`${styles.downloadQr}`}
             onClick={this.downloadHandler}
           >

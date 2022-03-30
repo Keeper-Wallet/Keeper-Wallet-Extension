@@ -37,7 +37,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.general}`}>
             <Button
               id="settingsGeneral"
-              type="transparent"
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.settingsGeneral}
             >
@@ -50,7 +51,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
             <Button
               id="settingsPermission"
-              type="transparent"
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.permissionsHandler}
             >
@@ -65,7 +67,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.network}`}>
             <Button
               id="settingsNetwork"
-              type="transparent"
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.networkHandler}
             >
@@ -79,7 +82,8 @@ class SettingsComponent extends React.Component {
             <Button
               data-testid="exportMenuItem"
               id="settingsExport"
-              type="transparent"
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.exportHandler}
             >

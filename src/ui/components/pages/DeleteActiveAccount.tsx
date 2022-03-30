@@ -28,7 +28,8 @@ class DeleteActiveAccountComponent extends React.Component {
           <Button
             id="deleteAccount"
             onClick={this.onClickHandler}
-            type="warning"
+            type="button"
+            view="warning"
             disabled={this.state.disable}
           >
             <Trans i18nKey="deleteAccount.delete">Delete account</Trans>

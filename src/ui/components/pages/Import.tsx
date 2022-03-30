@@ -40,6 +40,7 @@ export const Import = connect((state: any) => ({
       <Button
         id="createNewAccount"
         type="submit"
+        view="submit"
         onClick={() => setTab('new_account')}
       >
         <Trans i18nKey="import.createNew" />
@@ -54,7 +55,8 @@ export const Import = connect((state: any) => ({
           <Button
             className={styles.importButton}
             data-testid="importSeed"
-            type="transparent"
+            type="button"
+            view="transparent"
             onClick={() => setTab('import_seed')}
           >
             <svg
@@ -80,7 +82,8 @@ export const Import = connect((state: any) => ({
           <Button
             className={styles.importButton}
             data-testid="importKeystore"
-            type="transparent"
+            type="button"
+            view="transparent"
             onClick={() => setTab('import_keystore')}
           >
             <svg
@@ -132,7 +135,8 @@ export const Import = connect((state: any) => ({
             <Button
               className={styles.importButton}
               data-testid="importEmail"
-              type="transparent"
+              type="button"
+              view="transparent"
               onClick={() => setTab('import_email')}
             >
               <svg

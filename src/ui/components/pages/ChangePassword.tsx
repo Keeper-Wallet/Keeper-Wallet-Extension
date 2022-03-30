@@ -124,7 +124,11 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
               </Error>
             </div>
           </div>
-          <Button type="submit" disabled={this.state.buttonDisabled}>
+          <Button
+            type="submit"
+            view="submit"
+            disabled={this.state.buttonDisabled}
+          >
             <Trans i18nKey="changePassword.create">Save</Trans>
           </Button>
         </form>

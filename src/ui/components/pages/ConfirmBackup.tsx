@@ -92,6 +92,7 @@ class ConfirmBackupComponent extends React.Component {
           <Button
             id="confirmBackup"
             type="submit"
+            view="submit"
             disabled={this.state.disabled}
             className={styles.confirm}
             onClick={this.onSubmit}
@@ -101,7 +102,7 @@ class ConfirmBackupComponent extends React.Component {
         ) : null}
         {showClear ? (
           <div className={`center tag1 ${styles.clearSeed}`}>
-            <Button type="transparent" onClick={this.onClear}>
+            <Button type="button" view="transparent" onClick={this.onClear}>
               <span className="submit400">
                 <Trans i18nKey="confirmBackup.clear">Clear</Trans>{' '}
               </span>

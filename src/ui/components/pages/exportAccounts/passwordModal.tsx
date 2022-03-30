@@ -79,18 +79,20 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
             disabled={!password}
             className="margin1"
             type="submit"
+            view="submit"
           >
             <Trans i18nKey="exportKeystore.verifyBtn" />
           </Button>
 
-          <Button onClick={onClose}>
+          <Button type="button" onClick={onClose}>
             <Trans i18nKey="exportKeystore.cancelBtn" />
           </Button>
 
           <Button
             className="modal-close"
             onClick={onClose}
-            type="transparent"
+            type="button"
+            view="transparent"
           />
         </form>
       </div>

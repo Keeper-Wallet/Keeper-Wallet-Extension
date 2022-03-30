@@ -323,7 +323,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
           {address}
         </div>
 
-        <Button id="importAccount" type="submit">
+        <Button id="importAccount" type="submit" view="submit">
           <Trans i18nKey="importSeed.importAccount" />
         </Button>
       </form>

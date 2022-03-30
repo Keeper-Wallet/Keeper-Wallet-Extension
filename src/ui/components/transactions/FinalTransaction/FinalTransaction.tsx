@@ -1,7 +1,7 @@
 import * as styles from './final.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE } from '../../ui';
+import { Button } from '../../ui';
 import cn from 'classnames';
 import oauth from '../OriginAuth';
 import { isMe as isOrder } from '../CreateOrder/parseTx';
@@ -138,19 +138,24 @@ export class FinalTransaction extends React.PureComponent {
           })}
         >
           {isShowList ? (
-            <Button onClick={onList}>
+            <Button type="button" onClick={onList}>
               <Trans i18nKey="sign.pendingList" />
             </Button>
           ) : null}
 
           {isShowNext ? (
-            <Button type={BUTTON_TYPE.SUBMIT} onClick={onNext}>
+            <Button type="submit" view="submit" onClick={onNext}>
               <Trans i18nKey="sign.nextTransaction" />
             </Button>
           ) : null}
 
           {isShowClose ? (
-            <Button data-testid="closeTransaction" id="close" onClick={onClose}>
+            <Button
+              data-testid="closeTransaction"
+              id="close"
+              type="button"
+              onClick={onClose}
+            >
               {isError ? <Trans i18nKey="sign.understand" /> : null}
               {isReject || isApprove ? <Trans i18nKey="sign.close" /> : null}
             </Button>

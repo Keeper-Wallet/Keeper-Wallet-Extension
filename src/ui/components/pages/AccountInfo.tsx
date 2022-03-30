@@ -90,7 +90,8 @@ class AccountInfoComponent extends React.Component {
             <div className={styles.accountData}>
               <div>
                 <Button
-                  type="transparent"
+                  type="button"
+                  view="transparent"
                   className={styles.accountName}
                   onClick={this.editNameHandler}
                 >
@@ -290,18 +291,24 @@ class AccountInfoComponent extends React.Component {
                 disabled={this.state.passwordError || !this.state.password}
                 className="margin-main-big"
                 type="submit"
+                view="submit"
               >
                 <Trans i18nKey="accountInfo.enter">Enter</Trans>
               </Button>
 
-              <Button id="passwordCancel" onClick={this.rejectPassword}>
+              <Button
+                id="passwordCancel"
+                type="button"
+                onClick={this.rejectPassword}
+              >
                 <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
               </Button>
 
               <Button
                 className="modal-close"
+                type="button"
+                view="transparent"
                 onClick={this.rejectPassword}
-                type="transparent"
               />
             </form>
           </div>

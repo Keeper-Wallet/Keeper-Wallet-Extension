@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as styles from './buttons.styl';
-import * as myStyles from './powerBtn.styl';
+import * as styles from './powerBtn.styl';
 import cn from 'classnames';
 
 export function PowerButton({
@@ -10,8 +9,8 @@ export function PowerButton({
   children,
   ...props
 }: IProps) {
-  const btnClassName = cn(className, myStyles.powerBtn, {
-    [myStyles.powerBtnOn]: enabled,
+  const btnClassName = cn(className, styles.powerBtn, {
+    [styles.powerBtnOn]: enabled,
   });
 
   return (

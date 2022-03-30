@@ -199,6 +199,7 @@ export function Send() {
             data-testid="submitButton"
             disabled={isSubmitting}
             type="submit"
+            view="submit"
           >
             <Trans i18nKey="send.submitButtonText" />
           </Button>

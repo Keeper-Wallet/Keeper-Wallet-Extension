@@ -2,7 +2,7 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, BUTTON_TYPE, Select } from '../ui';
+import { Button, Select } from '../ui';
 import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
@@ -50,7 +50,8 @@ class SettingsGeneralComponent extends React.Component {
           <div className={cn(styles.settingsMenuItem, styles.password)}>
             <Button
               id="changePassword"
-              type={BUTTON_TYPE.TRANSPARENT}
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.passwordHandler}
             >

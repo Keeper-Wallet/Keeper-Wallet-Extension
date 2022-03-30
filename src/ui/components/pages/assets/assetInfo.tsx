@@ -130,11 +130,16 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           </div>
         )}
 
-        <Button onClick={onClose} type="button">
+        <Button type="button" onClick={onClose}>
           <Trans i18nKey="assetInfo.closeBtn" />
         </Button>
 
-        <Button className="modal-close" onClick={onClose} type="transparent" />
+        <Button
+          className="modal-close"
+          onClick={onClose}
+          type="button"
+          view="transparent"
+        />
       </div>
     </div>
   );

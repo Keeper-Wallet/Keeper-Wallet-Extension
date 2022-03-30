@@ -194,7 +194,12 @@ export function AssetSelectModal({
           </ul>
         </div>
 
-        <Button className="modal-close" onClick={onClose} type="transparent" />
+        <Button
+          className="modal-close"
+          type="button"
+          view="transparent"
+          onClick={onClose}
+        />
       </div>
     </div>
   );

@@ -90,14 +90,14 @@ export class PlateCollapsable extends React.PureComponent<
         <div className="buttons-wrapper">
           {showCopy && (
             <Copy text={textToCopy} onCopy={this.onCopy}>
-              <Button>
+              <Button type="button">
                 <Trans i18nKey="plateComponent.copy" />
               </Button>
             </Copy>
           )}
 
           {showExpand && (
-            <Button onClick={this.toggleExpand}>
+            <Button onClick={this.toggleExpand} type="button">
               <Trans
                 i18nKey={
                   isExpanded

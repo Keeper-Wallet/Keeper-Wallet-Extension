@@ -168,7 +168,7 @@ export class ShowScript extends React.PureComponent {
             <div className="buttons-wrapper">
               {hasScript ? (
                 <Copy text={toCopy} onCopy={this.onCopy}>
-                  <Button>
+                  <Button type="button">
                     <Trans i18nKey="showScriptComponent.copyCode">
                       Copy code
                     </Trans>
@@ -176,7 +176,7 @@ export class ShowScript extends React.PureComponent {
                 </Copy>
               ) : null}
               {this.state.showResizeBtn ? (
-                <Button onClick={this.toggleShowScript}>
+                <Button type="button" onClick={this.toggleShowScript}>
                   {!this.state.showAllScript ? (
                     <Trans i18nKey="showScriptComponent.showAll">
                       Show all

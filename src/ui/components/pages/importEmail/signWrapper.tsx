@@ -69,7 +69,8 @@ export function SignWrapper({ onConfirm, children }: Props) {
                   setShowModal(false);
                   setPending(false);
                 }}
-                type="transparent"
+                type="button"
+                view="transparent"
               />
 
               <h2 className={cn('margin4', 'title1')}>

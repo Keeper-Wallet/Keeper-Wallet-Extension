@@ -35,6 +35,7 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
 
         <Button
           type="submit"
+          view="submit"
           onClick={() =>
             background.sendEvent('click', { id: 'featureUpdateInfo.backupBtn' })
           }
@@ -50,7 +51,8 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
             });
             onClose();
           })}
-          type="transparent"
+          type="button"
+          view="transparent"
         />
       </form>
     </div>

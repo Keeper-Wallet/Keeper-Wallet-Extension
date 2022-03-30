@@ -82,6 +82,7 @@ export function ImportKeystoreChooseFile({ error, onSubmit }: Props) {
         data-testid="submitButton"
         disabled={keystoreFile == null || !password}
         type="submit"
+        view="submit"
       >
         <Trans i18nKey="importKeystore.chooseFileSubmitBtn" />
       </Button>

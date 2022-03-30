@@ -203,7 +203,7 @@ export function ImportKeystoreChooseAccounts({
         {selected.size === 0 ? (
           <Button
             data-testid="skipButton"
-            type="interface"
+            view="interface"
             onClick={() => {
               onSkip();
             }}
@@ -211,7 +211,7 @@ export function ImportKeystoreChooseAccounts({
             <Trans i18nKey="importKeystore.chooseAccountsSkipBtn" />
           </Button>
         ) : (
-          <Button data-testid="submitButton" type="submit">
+          <Button data-testid="submitButton" type="submit" view="submit">
             <Trans
               i18nKey="importKeystore.chooseAccountsImportBtn"
               count={selected.size}

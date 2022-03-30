@@ -79,7 +79,8 @@ export class DropdownButton extends React.PureComponent<Props, State> {
 
           <div className={cn(styles.arrowButton)}>
             <Button
-              type={defaultItem.props.type}
+              type="button"
+              view={defaultItem.props.view}
               onClick={this.clickHandler}
               className={cn(styles.dropdownButton)}
             />
