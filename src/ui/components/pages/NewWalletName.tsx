@@ -1,4 +1,4 @@
-import * as styles from 'ui/components/pages/newWalletName.module.css';
+import * as styles from './newWalletName.module.css';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
@@ -6,10 +6,10 @@ import {
   newAccountName,
   selectAccount,
   setTab as resetTab,
-} from '../../actions';
-import { Button, Error, Input } from '../ui';
-import { CONFIG } from '../../appConfig';
-import { WalletTypes } from '../../services/Background';
+} from 'ui/actions';
+import { Button, Error, Input } from 'ui/components/ui';
+import { CONFIG } from 'ui/appConfig';
+import { WalletTypes } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
