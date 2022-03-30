@@ -35,6 +35,7 @@ import {
   SPONSORSHIP,
   TRANSFER,
   TRANSFER_WITHOUT_ATTACHMENT,
+  UPDATE_ASSET_INFO,
 } from './utils/transactions';
 import { CANCEL_ORDER, CREATE_ORDER } from './utils/orders';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
@@ -1187,7 +1188,44 @@ describe('Signature', function () {
     });
 
     describe('UpdateAssetInfo', function () {
-      it('Not supported yet');
+      beforeEach(async function () {
+        await performSignTransaction.call(this, UPDATE_ASSET_INFO);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-index-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: UPDATE_ASSET_INFO.type,
+            version: 1 as const,
+            senderPublicKey,
+            name: UPDATE_ASSET_INFO.data.name,
+            description: UPDATE_ASSET_INFO.data.description,
+            assetId: UPDATE_ASSET_INFO.data.assetId,
+            fee: 100000,
+            feeAssetId: null,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
     });
   });
 

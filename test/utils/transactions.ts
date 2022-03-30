@@ -213,6 +213,19 @@ export const INVOKE_SCRIPT_WITHOUT_CALL = {
   },
 };
 
+export const UPDATE_ASSET_INFO = {
+  type: TRANSACTION_TYPE.UPDATE_ASSET_INFO,
+  data: {
+    fee: {
+      amount: 100000,
+      assetId: null,
+    },
+    assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    name: 'New Name',
+    description: 'New Description',
+  },
+};
+
 export const PACKAGE = [
   ISSUE,
   TRANSFER,
