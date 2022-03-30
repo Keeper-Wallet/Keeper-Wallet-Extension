@@ -4,7 +4,7 @@ import * as copy from 'copy-to-clipboard';
 export class Copy extends React.PureComponent {
   static defaultProps = {
     onCopy: undefined,
-    options: undefined,
+    options: { format: 'text/plain' },
     text: '',
   };
 
