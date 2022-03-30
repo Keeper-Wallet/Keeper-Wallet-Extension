@@ -18,11 +18,12 @@ import {
   BURN_WITH_QUANTITY,
   CANCEL_LEASE,
   DATA,
-  INVOKE_SCRIPT_WITHOUT_CALL,
   INVOKE_SCRIPT,
+  INVOKE_SCRIPT_WITHOUT_CALL,
   ISSUE,
   ISSUE_WITHOUT_SCRIPT,
   LEASE,
+  LEASE_WITH_ALIAS,
   MASS_TRANSFER,
   MASS_TRANSFER_WITHOUT_ATTACHMENT,
   PACKAGE,
@@ -456,7 +457,7 @@ describe('Signature', function () {
             version: 2,
             senderPublicKey,
             assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
-            recipient: TRANSFER_WITHOUT_ATTACHMENT.data.recipient,
+            recipient: 'alias:T:alice',
             amount: TRANSFER_WITHOUT_ATTACHMENT.data.amount.amount,
             attachment: '',
             fee: 500000,
@@ -640,6 +641,45 @@ describe('Signature', function () {
       );
     });
 
+    describe('Lease with alias', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, LEASE_WITH_ALIAS);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: LEASE_WITH_ALIAS.type,
+            version: 2,
+            senderPublicKey,
+            amount: LEASE_WITH_ALIAS.data.amount,
+            recipient: 'alias:T:bobby',
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
     describe('Cancel lease', function () {
       beforeEach(async function () {
         await performSignTransaction.call(this, CANCEL_LEASE);
@@ -738,7 +778,7 @@ describe('Signature', function () {
             senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
-              { amount: 1, recipient: 'alias:T:testy' },
+              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
               { amount: 1, recipient: 'alias:T:merry' },
             ],
             fee: 600000,
@@ -784,7 +824,7 @@ describe('Signature', function () {
             senderPublicKey,
             assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
             transfers: [
-              { amount: 1, recipient: 'alias:T:testy' },
+              { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
               { amount: 1, recipient: 'alias:T:merry' },
             ],
             fee: 600000,
@@ -1120,7 +1160,7 @@ describe('Signature', function () {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
             version: 1,
             senderPublicKey,
-            dApp: INVOKE_SCRIPT_WITHOUT_CALL.data.dApp,
+            dApp: 'alias:T:chris',
             payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
             fee: 500000,
             feeAssetId: null,

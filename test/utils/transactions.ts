@@ -43,7 +43,7 @@ export const TRANSFER_WITHOUT_ATTACHMENT = {
       amount: 123456790,
       assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
     },
-    recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD',
+    recipient: 'alice',
   },
 };
 
@@ -77,6 +77,11 @@ export const LEASE = {
   data: { recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD', amount: 123456790 },
 };
 
+export const LEASE_WITH_ALIAS = {
+  type: TRANSACTION_TYPE.LEASE,
+  data: { recipient: 'bobby', amount: 123456790 },
+};
+
 export const CANCEL_LEASE = {
   type: TRANSACTION_TYPE.CANCEL_LEASE,
   data: { leaseId: '6r2u8Bf3WTqJw4HQvPTsWs8Zak5PLwjzjjGU76nXph1u' },
@@ -95,7 +100,7 @@ export const MASS_TRANSFER = {
       assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
     },
     transfers: [
-      { amount: 1, recipient: 'testy' },
+      { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
       { amount: 1, recipient: 'merry' },
     ],
     attachment: 'base64:BQbtKNoM',
@@ -110,7 +115,7 @@ export const MASS_TRANSFER_WITHOUT_ATTACHMENT = {
       assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
     },
     transfers: [
-      { amount: 1, recipient: 'testy' },
+      { amount: 1, recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD' },
       { amount: 1, recipient: 'merry' },
     ],
   },
@@ -203,7 +208,7 @@ export const INVOKE_SCRIPT_WITHOUT_CALL = {
       amount: 500000,
       assetId: null,
     },
-    dApp: '3My2kBJaGfeM2koiZroaYdd3y8rAgfV2EAx',
+    dApp: 'chris',
     payment: [],
   },
 };
