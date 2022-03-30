@@ -24,7 +24,7 @@ const getClassName = (className?: string, view?: View, loading?: boolean) =>
     [styles.submit]: view === 'submit',
     [styles.transparent]: view === 'transparent',
     [styles.warning]: view === 'warning',
-  })
+  });
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   view?: View;
@@ -49,4 +49,3 @@ export const Button: React.FC<IProps> = ({
     </button>
   );
 };
-  
