@@ -24,7 +24,7 @@ const getClassName = (className?: string, view?: View, loading?: boolean) =>
     [styles.submit]: view === 'submit',
     [styles.transparent]: view === 'transparent',
     [styles.warning]: view === 'warning',
-  });
+  })
 
 interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   view?: View;
@@ -37,8 +37,16 @@ export const Button: React.FC<IProps> = ({
   loading,
   children,
   ...props
-}: IProps) => (
-  <button className={getClassName(className, view, loading)} {...props}>
-    {children}
-  </button>
-);
+}: IProps) => {
+  const buttonClassName = React.useMemo(
+    () => getClassName(className, view, loading),
+    [className, view, loading]
+  );
+
+  return (
+    <button className={buttonClassName} {...props}>
+      {children}
+    </button>
+  );
+};
+  
