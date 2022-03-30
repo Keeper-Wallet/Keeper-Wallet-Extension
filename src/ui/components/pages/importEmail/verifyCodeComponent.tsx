@@ -170,7 +170,12 @@ export function VerifyCodeComponent({
           <Trans i18nKey="importEmail.incorrectCode" />
         </Error>
         {isPending && (
-          <Button className="center fullwidth" type="transparent" loading />
+          <Button
+            className="center fullwidth"
+            type="button"
+            view="transparent"
+            loading
+          />
         )}
       </div>
     </div>

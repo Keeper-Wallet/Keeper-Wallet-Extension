@@ -141,6 +141,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
           className="fullwidth"
           data-testid="submitButton"
           type="submit"
+          view="submit"
           onClick={handleSubmit}
           disabled={pending || !email || !password}
           loading={pending}

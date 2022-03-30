@@ -135,7 +135,8 @@ export const Import = connect((state: any) => ({
             <Button
               className={styles.importButton}
               data-testid="importEmail"
-              type="transparent"
+              type="button"
+              view="transparent"
               onClick={() => setTab('import_email')}
             >
               <svg

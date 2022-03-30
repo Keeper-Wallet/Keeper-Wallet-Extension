@@ -26,25 +26,26 @@ const getClassName = (className?: string, view?: View, loading?: boolean) =>
     [styles.warning]: view === 'warning',
   });
 
-interface IProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   view?: View;
   loading?: boolean;
 }
 
-export const Button: React.FC<IProps> = ({
+export const Button: React.FC<Props> = ({
   className,
   view,
   loading,
+  type = 'button',
   children,
   ...props
-}: IProps) => {
+}) => {
   const buttonClassName = React.useMemo(
     () => getClassName(className, view, loading),
     [className, view, loading]
   );
 
   return (
-    <button className={buttonClassName} {...props}>
+    <button type={type} className={buttonClassName} {...props}>
       {children}
     </button>
   );
