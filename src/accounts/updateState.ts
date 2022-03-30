@@ -1,4 +1,4 @@
-import { UiStore } from './store';
+import { AccountsStore } from './store';
 import { ACTION } from 'ui/actions/constants';
 import { equals } from 'ramda';
 
@@ -22,7 +22,7 @@ interface UpdateStateInput {
   uiState: unknown;
 }
 
-export function createUpdateState(store: UiStore) {
+export function createUpdateState(store: AccountsStore) {
   return (state: UpdateStateInput) => {
     const actions = [];
 

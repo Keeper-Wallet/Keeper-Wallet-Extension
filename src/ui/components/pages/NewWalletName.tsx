@@ -10,15 +10,15 @@ import {
 import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
-import { useAppDispatch, useAppSelector } from 'accounts/store';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
 export function NewWalletName({ setTab }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const account = useAppSelector(state => state.localState.newAccount);
-  const accounts = useAppSelector(state => state.accounts);
+  const account = useAccountsSelector(state => state.localState.newAccount);
+  const accounts = useAccountsSelector(state => state.accounts);
   const [accountName, setAccountName] = React.useState<string>('');
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>('');

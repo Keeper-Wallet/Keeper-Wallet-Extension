@@ -4,12 +4,12 @@ import { addBackTab, loading, removeBackTab, setTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { useAppDispatch, useAppSelector } from 'accounts/store';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 
 export function RootAccounts() {
   const dispatch = useAppDispatch();
-  const backTabs = useAppSelector(state => state.backTabs);
-  const currentTab = useAppSelector(state => {
+  const backTabs = useAccountsSelector(state => state.backTabs);
+  const currentTab = useAccountsSelector(state => {
     if (state.localState.loading) {
       return PAGES.INTRO;
     }

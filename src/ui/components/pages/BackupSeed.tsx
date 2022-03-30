@@ -3,12 +3,12 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { useAppDispatch, useAppSelector } from 'accounts/store';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 
 export function BackUpSeed({ setTab }) {
   const dispatch = useAppDispatch();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
-  const newAccount = useAppSelector(state => state.localState.newAccount);
+  const newAccount = useAccountsSelector(state => state.localState.newAccount);
 
   return (
     <div className={styles.content}>

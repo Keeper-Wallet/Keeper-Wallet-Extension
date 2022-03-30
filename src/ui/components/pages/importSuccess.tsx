@@ -4,13 +4,13 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { useAppDispatch, useAppSelector } from 'accounts/store';
+import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { setTab } from 'ui/actions';
 
 export function ImportSuccess() {
   const dispatch = useAppDispatch();
-  const account = useAppSelector(state => state.selectedAccount);
-  const isKeystoreImport = useAppSelector(
+  const account = useAccountsSelector(state => state.selectedAccount);
+  const isKeystoreImport = useAccountsSelector(
     state => state.backTabs.slice(-1)[0] === PAGES.IMPORT_KEYSTORE
   );
 

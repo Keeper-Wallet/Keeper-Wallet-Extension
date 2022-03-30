@@ -24,11 +24,12 @@ const reducer = combineReducers({
   allNetworksAccounts: reducers.allNetworksAccounts,
 });
 
-export type AppState = ReturnType<typeof reducer>;
+export type AccountsState = ReturnType<typeof reducer>;
 
-export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
+export const useAccountsSelector: TypedUseSelectorHook<AccountsState> =
+  useSelector;
 
-export function createUiStore() {
+export function createAccountsStore() {
   return createStore(
     reducer,
     { version: extension.runtime.getManifest().version },
@@ -36,6 +37,6 @@ export function createUiStore() {
   );
 }
 
-export type UiStore = ReturnType<typeof createUiStore>;
+export type AccountsStore = ReturnType<typeof createAccountsStore>;
 
-export const useAppDispatch = () => useDispatch<UiStore['dispatch']>();
+export const useAppDispatch = () => useDispatch<AccountsStore['dispatch']>();

@@ -18,7 +18,7 @@ import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
 import { LANGS } from 'ui/i18n';
 import backgroundService from 'ui/services/Background';
-import { createUiStore } from './store';
+import { createAccountsStore } from './store';
 import { LedgerSignRequest } from 'ledger/types';
 import { ledgerService } from 'ledger/service';
 
@@ -62,7 +62,7 @@ log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 startUi();
 
 async function startUi() {
-  const store = createUiStore();
+  const store = createAccountsStore();
 
   store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
