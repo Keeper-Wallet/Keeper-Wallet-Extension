@@ -19,10 +19,9 @@ export function NewWalletName({ setTab }) {
 
   const account = useAccountsSelector(state => state.localState.newAccount);
   const accounts = useAccountsSelector(state => state.accounts);
-  const [accountName, setAccountName] = React.useState<string>('');
+  const [accountName, setAccountName] = React.useState<string>();
   const [pending, setPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>('');
-  const [touched, setTouched] = React.useState<boolean>(false);
 
   const existedAccount = accounts.find(
     ({ address }) => address === account.address
@@ -31,7 +30,7 @@ export function NewWalletName({ setTab }) {
   React.useEffect(() => {
     dispatch(newAccountName(accountName));
 
-    if (touched) {
+    if (accountName != null) {
       setError(null);
 
       if (accountName.length < CONFIG.NAME_MIN_LENGTH) {
@@ -91,12 +90,11 @@ export function NewWalletName({ setTab }) {
             data-testid="newAccountNameInput"
             className="margin1"
             onChange={e => setAccountName(e.target.value)}
-            value={accountName}
+            value={accountName ?? ''}
             maxLength="32"
             disabled={existedAccount}
             autoFocus
             error={error}
-            onFocus={() => setTouched(true)}
           />
           <Error data-testid="newAccountNameError" show={!!error}>
             {error}
