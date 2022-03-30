@@ -2,7 +2,7 @@ import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView, Modal } from '../ui';
+import { Button, Modal } from '../ui';
 import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { connect } from 'react-redux';
@@ -39,8 +39,8 @@ export const Import = connect((state: any) => ({
 
       <Button
         id="createNewAccount"
-        type={ButtonType.SUBMIT}
-        view={ButtonView.SUBMIT}
+        type="submit"
+        view="submit"
         onClick={() => setTab('new_account')}
       >
         <Trans i18nKey="import.createNew" />
@@ -55,8 +55,8 @@ export const Import = connect((state: any) => ({
           <Button
             className={styles.importButton}
             data-testid="importSeed"
-            type={ButtonType.BUTTON}
-            view={ButtonView.TRANSPARENT}
+            type="button"
+            view="transparent"
             onClick={() => setTab('import_seed')}
           >
             <svg
@@ -82,8 +82,8 @@ export const Import = connect((state: any) => ({
           <Button
             className={styles.importButton}
             data-testid="importKeystore"
-            type={ButtonType.BUTTON}
-            view={ButtonView.TRANSPARENT}
+            type="button"
+            view="transparent"
             onClick={() => setTab('import_keystore')}
           >
             <svg

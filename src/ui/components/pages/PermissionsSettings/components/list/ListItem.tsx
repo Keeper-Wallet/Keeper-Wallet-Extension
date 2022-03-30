@@ -1,6 +1,6 @@
 import * as React from 'react';
 import cn from 'classnames';
-import { Button, ButtonType, ButtonView } from 'ui/components/ui/buttons';
+import { Button } from 'ui/components/ui/buttons';
 import * as styles from './list.styl';
 
 export const ListItem: React.FunctionComponent<IParams> = ({
@@ -37,8 +37,8 @@ const ItemButton: React.FunctionComponent<any> = ({ permissions, onClick }) => {
   const className = cn(styles.button, styles[status]);
   return (
     <Button
-      type={ButtonType.BUTTON}
-      view={ButtonView.TRANSPARENT}
+      type="button"
+      view="transparent"
       onClick={() => onClick(!isApproved)}
       className={className}
     />
@@ -50,8 +50,8 @@ const Icon = () => <div className={cn(styles.icon, styles.button)} />;
 const SettingsButton: React.FunctionComponent<any> = props => {
   return (
     <Button
-      type={ButtonType.BUTTON}
-      view={ButtonView.TRANSPARENT}
+      type="button"
+      view="transparent"
       onClick={props.onClick}
       className={cn(styles.button, styles.settings)}
     />

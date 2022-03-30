@@ -1,13 +1,5 @@
 import { Trans } from 'react-i18next';
-import {
-  Balance,
-  Button,
-  ButtonType,
-  ButtonView,
-  Copy,
-  DateFormat,
-  Ellipsis,
-} from '../../ui';
+import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
@@ -138,15 +130,15 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
           </div>
         )}
 
-        <Button type={ButtonType.BUTTON} onClick={onClose}>
+        <Button type="button" onClick={onClose}>
           <Trans i18nKey="assetInfo.closeBtn" />
         </Button>
 
         <Button
           className="modal-close"
           onClick={onClose}
-          type={ButtonType.BUTTON}
-          view={ButtonView.TRANSPARENT}
+          type="button"
+          view="transparent"
         />
       </div>
     </div>

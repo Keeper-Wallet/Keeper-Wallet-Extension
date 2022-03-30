@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
-import { Button, ButtonType, ButtonView, Error, Input } from 'ui/components/ui';
+import { Button, Error, Input } from 'ui/components/ui';
 
 const key = key => `bottom.${key}`;
 
@@ -98,8 +98,8 @@ export class NetworkSettings extends React.PureComponent<
           <div>
             <Button
               id="networkSettingsSave"
-              type={ButtonType.SUBMIT}
-              view={ButtonView.SUBMIT}
+              type="submit"
+              view="submit"
               onClick={this.saveHandler}
               className="margin-main-big relative"
             >
@@ -111,8 +111,8 @@ export class NetworkSettings extends React.PureComponent<
             <div className="center">
               <Button
                 onClick={this.state.onClose}
-                type={ButtonType.BUTTON}
-                view={ButtonView.TRANSPARENT}
+                type="button"
+                view="transparent"
               >
                 <Trans i18nKey="networkSettings.cancel">Cancel</Trans>
               </Button>
@@ -121,8 +121,8 @@ export class NetworkSettings extends React.PureComponent<
             <Button
               className="modal-close"
               onClick={this.state.onClose}
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
+              type="button"
+              view="transparent"
             />
           </div>
         </div>

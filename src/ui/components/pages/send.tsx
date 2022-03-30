@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
-import { Button, ButtonType, ButtonView } from '../ui/buttons/Button';
+import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances } from 'ui/actions';
 import { Error, Loader } from '../ui';
@@ -198,8 +198,8 @@ export function Send() {
             className="fullwidth"
             data-testid="submitButton"
             disabled={isSubmitting}
-            type={ButtonType.SUBMIT}
-            view={ButtonView.SUBMIT}
+            type="submit"
+            view="submit"
           >
             <Trans i18nKey="send.submitButtonText" />
           </Button>

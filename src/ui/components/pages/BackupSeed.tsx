@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { setUiState, setUiStateAndSetTab } from '../../actions';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView, Copy, Modal } from '../ui';
+import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
 
 class BackUpSeedComponent extends React.Component {
@@ -45,19 +45,15 @@ class BackUpSeedComponent extends React.Component {
         <Button
           id="continue"
           className="margin-main-big"
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
+          type="submit"
+          view="submit"
           onClick={this.onClick}
           disabled={this.state.disabled}
         >
           <Trans i18nKey="backupSeed.continue">Continue</Trans>
         </Button>
 
-        <Button
-          id="cancelCreation"
-          type={ButtonType.BUTTON}
-          onClick={this.cancelHandler}
-        >
+        <Button id="cancelCreation" type="button" onClick={this.cancelHandler}>
           <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
         </Button>
 

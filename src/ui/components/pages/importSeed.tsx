@@ -6,8 +6,6 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect } from '../../actions';
 import {
   Button,
-  ButtonType,
-  ButtonView,
   Error,
   Input,
   Tab,
@@ -325,11 +323,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
           {address}
         </div>
 
-        <Button
-          id="importAccount"
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
-        >
+        <Button id="importAccount" type="submit" view="submit">
           <Trans i18nKey="importSeed.importAccount" />
         </Button>
       </form>

@@ -2,7 +2,7 @@ import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView, Error, Pills } from '../ui';
+import { Button, Error, Pills } from '../ui';
 import { addUser, setUiState } from '../../actions';
 import { WalletTypes } from '../../services/Background';
 import { AppState } from 'ui/store';
@@ -91,8 +91,8 @@ class ConfirmBackupComponent extends React.Component {
         {showButton ? (
           <Button
             id="confirmBackup"
-            type={ButtonType.SUBMIT}
-            view={ButtonView.SUBMIT}
+            type="submit"
+            view="submit"
             disabled={this.state.disabled}
             className={styles.confirm}
             onClick={this.onSubmit}
@@ -102,11 +102,7 @@ class ConfirmBackupComponent extends React.Component {
         ) : null}
         {showClear ? (
           <div className={`center tag1 ${styles.clearSeed}`}>
-            <Button
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
-              onClick={this.onClear}
-            >
+            <Button type="button" view="transparent" onClick={this.onClear}>
               <span className="submit400">
                 <Trans i18nKey="confirmBackup.clear">Clear</Trans>{' '}
               </span>

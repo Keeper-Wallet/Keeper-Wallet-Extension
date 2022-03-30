@@ -3,7 +3,7 @@ import * as React from 'react';
 import { setTab } from '../../actions';
 import { Trans } from 'react-i18next';
 import { connect } from 'react-redux';
-import { Button, ButtonType, ButtonView } from '../ui';
+import { Button } from '../ui';
 import { ConditionsAndTerms } from '../conditions/Conditions';
 
 interface IConditionsComponentProps {
@@ -32,8 +32,8 @@ class ConditionsComponent extends React.Component<IConditionsComponentProps> {
         <Button
           className={`centered ${styles.acceptTermsBtn}`}
           onClick={this.onClick.bind(this)}
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
+          type="submit"
+          view="submit"
         >
           <Trans i18nKey="conditions.close">Close</Trans>
         </Button>

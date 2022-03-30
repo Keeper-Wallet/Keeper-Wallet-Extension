@@ -2,7 +2,7 @@ import * as styles from './styles/deleteAccount.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView } from '../ui';
+import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
 
 class DeleteActiveAccountComponent extends React.Component {
@@ -28,8 +28,8 @@ class DeleteActiveAccountComponent extends React.Component {
           <Button
             id="deleteAccount"
             onClick={this.onClickHandler}
-            type={ButtonType.BUTTON}
-            view={ButtonView.WARNING}
+            type="button"
+            view="warning"
             disabled={this.state.disable}
           >
             <Trans i18nKey="deleteAccount.delete">Delete account</Trans>

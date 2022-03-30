@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-  DateFormat,
-  Input,
-} from 'ui/components/ui';
+import { Button, DateFormat, Input } from 'ui/components/ui';
 import { Trans } from 'react-i18next';
 import {
   closeNotificationWindow,
@@ -161,7 +155,7 @@ class NotificationsComponent extends React.Component {
 
         <div className={`${styles.notificationButtons} buttons-wrapper`}>
           {showToList && (
-            <Button type={ButtonType.BUTTON} onClick={this.toListHandler}>
+            <Button type="button" onClick={this.toListHandler}>
               <Trans i18nKey="notifications.toListBtn">Notifications</Trans>
             </Button>
           )}
@@ -171,11 +165,7 @@ class NotificationsComponent extends React.Component {
           )}
 
           {hasNotifications && (
-            <Button
-              type={ButtonType.SUBMIT}
-              view={ButtonView.SUBMIT}
-              onClick={this.nextHandler}
-            >
+            <Button type="submit" view="submit" onClick={this.nextHandler}>
               <Trans i18nKey="notifications.nextBtn">Next</Trans>
             </Button>
           )}
@@ -187,7 +177,7 @@ class NotificationsComponent extends React.Component {
           {showClose && (
             <Button
               id="closeNotification"
-              type={ButtonType.BUTTON}
+              type="button"
               onClick={this.closeHandler}
             >
               <Trans i18nKey="notifications.closeBtn">Close</Trans>

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import { Copy } from '../copy';
-import { Button, ButtonType } from '../buttons';
+import { Button } from '../buttons';
 import { Modal } from '..';
 
 const ContentScript = ({ script, getScriptRef }) => (
@@ -168,7 +168,7 @@ export class ShowScript extends React.PureComponent {
             <div className="buttons-wrapper">
               {hasScript ? (
                 <Copy text={toCopy} onCopy={this.onCopy}>
-                  <Button type={ButtonType.BUTTON}>
+                  <Button type="button">
                     <Trans i18nKey="showScriptComponent.copyCode">
                       Copy code
                     </Trans>
@@ -176,10 +176,7 @@ export class ShowScript extends React.PureComponent {
                 </Copy>
               ) : null}
               {this.state.showResizeBtn ? (
-                <Button
-                  type={ButtonType.BUTTON}
-                  onClick={this.toggleShowScript}
-                >
+                <Button type="button" onClick={this.toggleShowScript}>
                   {!this.state.showAllScript ? (
                     <Trans i18nKey="showScriptComponent.showAll">
                       Show all

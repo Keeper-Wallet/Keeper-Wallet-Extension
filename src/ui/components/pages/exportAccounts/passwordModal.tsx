@@ -5,11 +5,7 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 import { Trans } from 'react-i18next';
 import { Input } from 'ui/components/ui/input';
 import { Error } from 'ui/components/ui/error';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-} from 'ui/components/ui/buttons/Button';
+import { Button } from 'ui/components/ui/buttons/Button';
 
 interface Props {
   onClose: () => void;
@@ -82,21 +78,21 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
             data-testid="verifyButton"
             disabled={!password}
             className="margin1"
-            type={ButtonType.SUBMIT}
-            view={ButtonView.SUBMIT}
+            type="submit"
+            view="submit"
           >
             <Trans i18nKey="exportKeystore.verifyBtn" />
           </Button>
 
-          <Button type={ButtonType.BUTTON} onClick={onClose}>
+          <Button type="button" onClick={onClose}>
             <Trans i18nKey="exportKeystore.cancelBtn" />
           </Button>
 
           <Button
             className="modal-close"
             onClick={onClose}
-            type={ButtonType.BUTTON}
-            view={ButtonView.TRANSPARENT}
+            type="button"
+            view="transparent"
           />
         </form>
       </div>

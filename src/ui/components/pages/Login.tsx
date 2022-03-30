@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
-import { Button, ButtonType, ButtonView, Error, Input } from '../ui';
+import { Button, Error, Input } from '../ui';
 import { login } from '../../actions';
 import { PAGES } from '../../pageConfig';
 
@@ -65,8 +65,8 @@ class LoginComponent extends React.Component {
           </div>
           <Button
             id="loginEnter"
-            type={ButtonType.SUBMIT}
-            view={ButtonView.SUBMIT}
+            type="submit"
+            view="submit"
             className="margin4"
             disabled={!this.state.password}
           >

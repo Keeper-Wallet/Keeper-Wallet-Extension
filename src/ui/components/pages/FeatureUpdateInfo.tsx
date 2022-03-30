@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonType, ButtonView } from '../ui';
+import { Button } from '../ui';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './featureUpdateInfo.styl';
@@ -34,8 +34,8 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
         </p>
 
         <Button
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
+          type="submit"
+          view="submit"
           onClick={() =>
             background.sendEvent('click', { id: 'featureUpdateInfo.backupBtn' })
           }
@@ -51,8 +51,8 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
             });
             onClose();
           })}
-          type={ButtonType.BUTTON}
-          view={ButtonView.TRANSPARENT}
+          type="button"
+          view="transparent"
         />
       </form>
     </div>

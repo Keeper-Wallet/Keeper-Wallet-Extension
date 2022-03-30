@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView, Error, Input } from '../ui';
+import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 
 class ChangeAccountNameComponent extends React.PureComponent {
@@ -95,9 +95,9 @@ class ChangeAccountNameComponent extends React.PureComponent {
 
           <Button
             id="save"
-            type={ButtonType.SUBMIT}
-            view={ButtonView.SUBMIT}
-            disabled={this.state.errors.length || !this.state.newName}
+            type="submit"
+            view="submit"
+            disabled={!!this.state.errors.length || !this.state.newName}
           >
             <Trans i18nKey="changeName.save">Save</Trans>
           </Button>

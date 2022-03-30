@@ -1,7 +1,7 @@
 import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ButtonType, ButtonView, Error, Input } from 'ui/components/ui';
+import { Button, Error, Input } from 'ui/components/ui';
 import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -80,16 +80,12 @@ export function DeleteAllAccounts({ onBack }) {
       </div>
 
       <div className="buttons-wrapper">
-        <Button
-          type={ButtonType.BUTTON}
-          onClick={onBack}
-          data-testid="resetCancel"
-        >
+        <Button type="button" onClick={onBack} data-testid="resetCancel">
           <Trans i18nKey="forgotPassword.resetCancel" />
         </Button>
         <Button
-          type={ButtonType.BUTTON}
-          view={ButtonView.WARNING}
+          type="button"
+          view="warning"
           disabled={hasError}
           onClick={() => dispatch(deleteAccount())}
           data-testid="resetConfirm"

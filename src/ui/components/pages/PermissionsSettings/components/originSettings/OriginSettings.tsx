@@ -2,13 +2,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './settings.styl';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-  Input,
-  Select,
-} from 'ui/components/ui';
+import { Button, Input, Select } from 'ui/components/ui';
 import { BigNumber } from '@waves/bignumber';
 
 const CONFIG = {
@@ -275,9 +269,9 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
             <div className="buttons-wrapper">
               <Button
                 id="delete"
-                type={ButtonType.BUTTON}
+                type="button"
                 onClick={this.deleteHandler}
-                view={ButtonView.WARNING}
+                view="warning"
               >
                 <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
               </Button>
@@ -285,8 +279,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
               <Button
                 id="save"
                 className={styles.test}
-                type={ButtonType.SUBMIT}
-                view={ButtonView.SUBMIT}
+                type="submit"
+                view="submit"
                 disabled={!this.state.canSave}
                 onClick={this.saveHandler}
               >
@@ -297,8 +291,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
             <Button
               id="save"
               className={styles.test}
-              type={ButtonType.SUBMIT}
-              view={ButtonView.SUBMIT}
+              type="submit"
+              view="submit"
               disabled={!this.state.canSave}
               onClick={this.saveHandler}
             >
@@ -309,8 +303,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           <Button
             id="cancel"
             className={styles.cancelBtn}
-            type={ButtonType.BUTTON}
-            view={ButtonView.TRANSPARENT}
+            type="button"
+            view="transparent"
             onClick={this.props.onClose}
           >
             <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
@@ -319,8 +313,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           <Button
             className="modal-close"
             onClick={this.props.onClose}
-            type={ButtonType.BUTTON}
-            view={ButtonView.TRANSPARENT}
+            type="button"
+            view="transparent"
           />
         </div>
       </div>

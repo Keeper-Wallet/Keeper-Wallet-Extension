@@ -1,7 +1,7 @@
 import * as React from 'react';
 import cn from 'classnames';
 import * as styles from './dropdownButton.styl';
-import { Button, ButtonType } from './Button';
+import { Button } from './Button';
 
 interface Props extends React.ComponentProps<'div'> {
   children?: any;
@@ -79,7 +79,7 @@ export class DropdownButton extends React.PureComponent<Props, State> {
 
           <div className={cn(styles.arrowButton)}>
             <Button
-              type={ButtonType.BUTTON}
+              type="button"
               view={defaultItem.props.view}
               onClick={this.clickHandler}
               className={cn(styles.dropdownButton)}

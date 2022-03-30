@@ -6,11 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelectModal } from 'assets/selectModal';
 import { convertToSponsoredAssetFee } from 'assets/utils';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-} from 'ui/components/ui/buttons/Button';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { Select } from 'ui/components/ui/select/Select';
@@ -602,8 +598,8 @@ export function SwapForm({
           isSwapInProgress
         }
         loading={isSwapInProgress}
-        type={ButtonType.SUBMIT}
-        view={ButtonView.SUBMIT}
+        type="submit"
+        view="submit"
       >
         <Trans i18nKey="swap.submitButtonText" />
       </Button>

@@ -1,11 +1,7 @@
 import * as styles from './chooseAccounts.styl';
 import cn from 'classnames';
 import * as React from 'react';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-} from 'ui/components/ui/buttons/Button';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { Trans } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { NetworkName, Account } from 'accounts/types';
@@ -127,8 +123,8 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
         <Button
           data-testid="exportButton"
           disabled={selected.size === 0}
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
+          type="submit"
+          view="submit"
         >
           <Trans
             i18nKey="exportKeystore.chooseAccountsExportBtn"

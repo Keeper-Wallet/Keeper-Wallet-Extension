@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 
 import { UnknownCard } from './UnknownCard';
 import { UnknownInfo } from './UnknownInfo';
-import { ApproveBtn, Button, ButtonType, ButtonView } from '../../ui';
+import { ApproveBtn, Button } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 
 export function Unknown(props) {
@@ -23,19 +23,14 @@ export function Unknown(props) {
       </div>
 
       <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
-        <Button
-          id="reject"
-          onClick={props.reject}
-          type={ButtonType.BUTTON}
-          view={ButtonView.WARNING}
-        >
+        <Button id="reject" onClick={props.reject} type="button" view="warning">
           <Trans i18nKey="sign.reject" />
         </Button>
         <ApproveBtn
           id="approve"
           onClick={props.approve}
-          type={ButtonType.SUBMIT}
-          view={ButtonView.SUBMIT}
+          type="submit"
+          view="submit"
         >
           <Trans i18nKey="sign.auth" />
         </ApproveBtn>

@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Avatar,
-  Button,
-  ButtonType,
-  ButtonView,
-  Copy,
-  Ellipsis,
-  Modal,
-} from '../ui';
+import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
 import cn from 'classnames';
 import * as styles from './wallet.styl';
 import { Trans } from 'react-i18next';
@@ -91,8 +83,8 @@ export const TransactionWallet = ({
         {children}
         {hideButton ? null : (
           <Button
-            type={ButtonType.BUTTON}
-            view={ButtonView.CUSTOM}
+            type="button"
+            view="custom"
             onClick={selectHandler}
             className={iconClass}
           />

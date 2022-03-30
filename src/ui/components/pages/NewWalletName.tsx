@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
 import { addUser, newAccountName, setUiState } from '../../actions';
-import { Button, ButtonType, ButtonView, Error, Input } from '../ui';
+import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 import { WalletTypes } from '../../services/Background';
 import { AppState } from 'ui/store';
@@ -94,8 +94,8 @@ class NewWalletNameComponent extends React.Component {
             {this.props.account.hasBackup ? (
               <Button
                 id="continue"
-                type={ButtonType.SUBMIT}
-                view={ButtonView.SUBMIT}
+                type="submit"
+                view="submit"
                 onClick={this._onSave}
                 disabled={this.state.errors.length || this.state.disabled}
               >
@@ -104,8 +104,8 @@ class NewWalletNameComponent extends React.Component {
             ) : (
               <Button
                 id="createBackup"
-                type={ButtonType.SUBMIT}
-                view={ButtonView.SUBMIT}
+                type="submit"
+                view="submit"
                 disabled={this.state.errors.length}
               >
                 <Trans i18nKey="newAccountName.continueBackup">

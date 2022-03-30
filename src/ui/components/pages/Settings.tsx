@@ -2,7 +2,7 @@ import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView, PowerButton } from '../ui';
+import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Tooltip } from '../ui/tooltip';
@@ -37,8 +37,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.general}`}>
             <Button
               id="settingsGeneral"
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.settingsGeneral}
             >
@@ -51,8 +51,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.permissions}`}>
             <Button
               id="settingsPermission"
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.permissionsHandler}
             >
@@ -67,8 +67,8 @@ class SettingsComponent extends React.Component {
           <div className={`${styles.settingsMenuItem} ${styles.network}`}>
             <Button
               id="settingsNetwork"
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.networkHandler}
             >
@@ -82,8 +82,8 @@ class SettingsComponent extends React.Component {
             <Button
               data-testid="exportMenuItem"
               id="settingsExport"
-              type={ButtonType.BUTTON}
-              view={ButtonView.TRANSPARENT}
+              type="button"
+              view="transparent"
               className={styles.settingsBtn}
               onClick={this.exportHandler}
             >

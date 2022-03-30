@@ -1,7 +1,7 @@
 import * as styles from './index.styl';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType, ButtonView } from '../../ui';
+import { Button } from '../../ui';
 import cn from 'classnames';
 
 export class NotificationCard extends React.PureComponent<INotification> {
@@ -50,8 +50,8 @@ export class NotificationCard extends React.PureComponent<INotification> {
             {collapsed && (
               <div>
                 <Button
-                  type={ButtonType.BUTTON}
-                  view={ButtonView.TRANSPARENT}
+                  type="button"
+                  view="transparent"
                   onClick={this.deleteHandler}
                   className={styles.cardClose}
                 />

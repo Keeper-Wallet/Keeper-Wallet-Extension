@@ -4,11 +4,7 @@ import cn from 'classnames';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-  Button,
-  ButtonType,
-  ButtonView,
-} from 'ui/components/ui/buttons/Button';
+import { Button } from 'ui/components/ui/buttons/Button';
 import { Input } from 'ui/components/ui/input/index';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
@@ -200,9 +196,9 @@ export function AssetSelectModal({
 
         <Button
           className="modal-close"
+          type="button"
+          view="transparent"
           onClick={onClose}
-          type={ButtonType.BUTTON}
-          view={ButtonView.TRANSPARENT}
         />
       </div>
     </div>

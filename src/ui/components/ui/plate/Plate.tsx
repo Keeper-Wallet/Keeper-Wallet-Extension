@@ -2,7 +2,7 @@ import * as styles from './plate.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { Trans } from 'react-i18next';
-import { Button, ButtonType } from '../buttons';
+import { Button } from '../buttons';
 import { Copy } from '../copy';
 import { Modal } from '../modal/Modal';
 
@@ -90,14 +90,14 @@ export class PlateCollapsable extends React.PureComponent<
         <div className="buttons-wrapper">
           {showCopy && (
             <Copy text={textToCopy} onCopy={this.onCopy}>
-              <Button type={ButtonType.BUTTON}>
+              <Button type="button">
                 <Trans i18nKey="plateComponent.copy" />
               </Button>
             </Copy>
           )}
 
           {showExpand && (
-            <Button onClick={this.toggleExpand} type={ButtonType.BUTTON}>
+            <Button onClick={this.toggleExpand} type="button">
               <Trans
                 i18nKey={
                   isExpanded
