@@ -211,7 +211,10 @@ async function setupBackgroundService() {
   });
   // Tabs manager
   const tabsManager = new TabsManager();
-  backgroundService.on('Show tab', tabsManager.getOrCreate.bind(tabsManager));
+  backgroundService.on('Show tab', async (url, name) => {
+    await windowManager.closePopupWindow();
+    return tabsManager.getOrCreate(url, name);
+  });
 
   backgroundService.idleController = new IdleController({ backgroundService });
 
