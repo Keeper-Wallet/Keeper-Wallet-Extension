@@ -18,20 +18,16 @@ export class TabsManager {
     }
 
     return new Promise((resolve, reject) => {
-      browser.tabs.create({ url: 'about:blank' }, tab => {
-        browser.tabs.remove(tab.id, () => {
-          try {
-            browser.tabs.get(currentTab?.id, tab => {
-              if (!tab) {
-                reject(new Error("Tab doesn't exists"));
-              }
-            });
-            browser.tabs.update(currentTab.id, tabProps, () => resolve());
-          } catch (err) {
-            reject(err);
+      try {
+        browser.tabs.get(currentTab?.id, tab => {
+          if (!tab) {
+            reject(new Error("Tab doesn't exists"));
           }
         });
-      });
+        browser.tabs.update(currentTab.id, tabProps, () => resolve());
+      } catch (err) {
+        reject(err);
+      }
     }).catch(() =>
       browser.tabs.create({ url: url }, tab => {
         this._tabs[key] = { ...tab, url };
