@@ -335,7 +335,6 @@ describe('Signature', function () {
                 data: {
                   senderPublicKey,
                   timestamp,
-                  version: 1,
                 },
               })
             )
