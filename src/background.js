@@ -103,6 +103,7 @@ extension.runtime.onInstalled.addListener(async details => {
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
+    bgService.vaultController.migrate();
 
     const storageContents = await new Promise(resolve =>
       extension.storage.local.get(resolve)
@@ -329,6 +330,13 @@ class BackgroundService extends EventEmitter {
       initState: initState.VaultController,
       wallet: this.walletController,
       identity: this.identityController,
+    });
+
+    this.vaultController.store.subscribe(state => {
+      if (!state.locked || !state.initialized) {
+        const accounts = this.walletController.getAccounts();
+        this.preferencesController.syncAccounts(accounts);
+      }
     });
 
     this.walletController.store.subscribe(() => {
