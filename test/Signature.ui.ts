@@ -1,7 +1,8 @@
-import { binary } from '@waves/marshall';
+import { binary, serializePrimitives } from '@waves/marshall';
 import {
   base58Encode,
   blake2b,
+  concat,
   verifySignature,
 } from '@waves/ts-lib-crypto';
 import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
@@ -309,6 +310,60 @@ describe('Signature', function () {
         expect(
           verifySignature(senderPublicKey, bytes, parsedApproveResult.signature)
         ).to.be.true;
+      }
+    );
+  });
+
+  describe('Matcher orders', function () {
+    const timestamp = Date.now();
+
+    before(async function () {
+      await this.driver.switchTo().window(tabOrigin);
+      await this.driver.get(`http://${WHITELIST[3]}`);
+      await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+    });
+
+    beforeEach(async function () {
+      await this.driver.switchTo().window(tabOrigin);
+
+      await this.driver.executeScript(
+        (senderPublicKey, timestamp) => {
+          WavesKeeper.initialPromise
+            .then(api =>
+              api.signRequest({
+                type: 1001,
+                data: {
+                  senderPublicKey,
+                  timestamp,
+                  version: 1,
+                },
+              })
+            )
+            .then(
+              result => {
+                (window as any).approveResult = result;
+              },
+              () => {
+                (window as any).approveResult = null;
+              }
+            );
+        },
+        senderPublicKey,
+        timestamp
+      );
+
+      await this.driver.switchTo().window(tabKeeper);
+    });
+
+    checkAnyTransaction(
+      By.xpath("//div[contains(@class, '-matcher-transaction')]"),
+      signature => {
+        const bytes = concat(
+          serializePrimitives.BASE58_STRING(senderPublicKey),
+          serializePrimitives.LONG(timestamp)
+        );
+
+        expect(verifySignature(senderPublicKey, bytes, signature)).to.be.true;
       }
     );
   });
