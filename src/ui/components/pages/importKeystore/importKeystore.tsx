@@ -33,12 +33,23 @@ function findNetworkByNetworkCode(networkCode: string): NetworkName {
   return networkCodeToNetworkMap[networkCode] || 'custom';
 }
 
-interface ExchangeKeystoreAccount {
+type ExchangeKeystoreAccount = {
   address: string;
   name: string;
   networkByte: number;
-  seed: string;
-}
+} & (
+  | {
+      userType: 'seed';
+      seed: string;
+    }
+  | {
+      userType: 'ledger';
+      id: number;
+    }
+  | {
+      userType: 'wavesKeeper';
+    }
+);
 
 interface EncryptedKeystore {
   type: WalletTypes;
@@ -88,18 +99,27 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 testnet: { accounts: [] },
               };
 
-              accounts.forEach(acc => {
-                const networkCode = String.fromCharCode(acc.networkByte);
-                const network = findNetworkByNetworkCode(networkCode);
+              accounts
+                .filter(
+                  (
+                    acc
+                  ): acc is Extract<
+                    ExchangeKeystoreAccount,
+                    { userType: 'seed' }
+                  > => acc.userType === 'seed'
+                )
+                .forEach(acc => {
+                  const networkCode = String.fromCharCode(acc.networkByte);
+                  const network = findNetworkByNetworkCode(networkCode);
 
-                profiles[network].accounts.push({
-                  address: acc.address,
-                  name: acc.name,
-                  networkCode,
-                  seed: acc.seed,
-                  type: 'seed',
+                  profiles[network].accounts.push({
+                    address: acc.address,
+                    name: acc.name,
+                    networkCode,
+                    seed: acc.seed,
+                    type: 'seed',
+                  });
                 });
-              });
 
               return profiles;
             } catch (err) {
