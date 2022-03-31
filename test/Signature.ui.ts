@@ -1,6 +1,11 @@
 import { binary } from '@waves/marshall';
-import { base58Encode, blake2b, verifySignature } from '@waves/ts-lib-crypto';
+import {
+  base58Encode,
+  blake2b,
+  verifySignature,
+} from '@waves/ts-lib-crypto';
 import { makeTxBytes, serializeCustomData } from '@waves/waves-transactions';
+import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { expect } from 'chai';
 import * as mocha from 'mocha';
@@ -267,16 +272,44 @@ describe('Signature', function () {
 
       await this.driver.executeScript(() => {
         // @ts-ignore
-        WavesKeeper.initialPromise.then(api => {
-          api.auth({ data: 'generated auth data' });
-        });
+        WavesKeeper.initialPromise
+          .then(api => api.auth({ data: 'generated auth data' }))
+          .then(
+            result => {
+              (window as any).approveResult = JSON.stringify(result);
+            },
+            () => {
+              (window as any).approveResult = null;
+            }
+          );
       });
 
       await this.driver.switchTo().window(tabKeeper);
     });
 
     checkAnyTransaction(
-      By.xpath("//div[contains(@class, '-auth-transaction')]")
+      By.xpath("//div[contains(@class, '-auth-transaction')]"),
+      approveResult => {
+        const parsedApproveResult = JSON.parse(approveResult);
+
+        const expectedApproveResult = {
+          host: WHITELIST[3],
+          prefix: 'WavesWalletAuthentication',
+          address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
+          publicKey: senderPublicKey,
+        };
+
+        const bytes = serializeAuthData({
+          host: WHITELIST[3],
+          data: 'generated auth data',
+        });
+
+        expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+
+        expect(
+          verifySignature(senderPublicKey, bytes, parsedApproveResult.signature)
+        ).to.be.true;
+      }
     );
   });
 
