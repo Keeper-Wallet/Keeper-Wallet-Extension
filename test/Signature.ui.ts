@@ -314,7 +314,7 @@ describe('Signature', function () {
     );
   });
 
-  describe('Matcher orders', function () {
+  describe('Matcher request', function () {
     const timestamp = Date.now();
 
     before(async function () {
