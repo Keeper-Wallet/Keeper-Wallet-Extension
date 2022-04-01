@@ -50,6 +50,7 @@ export function ImportSuccess() {
           data-testid="finishBtn"
           className="margin2"
           type="submit"
+          view="submit"
           onClick={() => window.close()}
         >
           <Trans i18nKey="import.finish" />

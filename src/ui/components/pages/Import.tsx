@@ -266,6 +266,7 @@ export function Import({ setTab }: Props) {
             <Button
               data-testid="addAccountBtn"
               type="submit"
+              view="submit"
               onClick={() =>
                 background.showTab(
                   `${window.location.origin}/accounts.html`,
