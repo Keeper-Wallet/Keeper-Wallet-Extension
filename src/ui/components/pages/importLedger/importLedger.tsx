@@ -242,7 +242,7 @@ export function ImportLedger({ setTab }: Props) {
           </div>
 
           <Button
-            type="submit"
+            view="submit"
             onClick={() => {
               if (accounts.some(acc => acc.address === selectedUser.address)) {
                 setSelectAccountError(t('importLedger.accountExistsError'));
@@ -281,7 +281,7 @@ export function ImportLedger({ setTab }: Props) {
           ) : (
             <Button
               disabled={isConnecting}
-              type="submit"
+              view="submit"
               onClick={connectToLedger}
             >
               <Trans i18nKey="importLedger.tryAgainButton" />
