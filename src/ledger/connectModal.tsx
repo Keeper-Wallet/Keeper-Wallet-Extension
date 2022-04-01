@@ -59,7 +59,8 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
           onClick={() => {
             onClose();
           }}
-          type="transparent"
+          type="button"
+          view="transparent"
         />
 
         <h1 className={styles.title}>
@@ -80,6 +81,7 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
           <Button
             disabled={isConnecting}
             type="submit"
+            view="submit"
             onClick={connectToLedger}
           >
             <Trans i18nKey="ledgerConnectModal.tryAgainButton" />
