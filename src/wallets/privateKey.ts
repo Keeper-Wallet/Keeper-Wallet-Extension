@@ -4,9 +4,18 @@ import { address, concat, publicKey, signBytes } from '@waves/ts-lib-crypto';
 import { customData, makeTxBytes, wavesAuth } from '@waves/waves-transactions';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
-import { fromSignatureAdapterToNode } from 'transactions/utils';
+import {
+  fromSignatureAdapterToNode,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
@@ -54,7 +63,7 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     return signBytes({ privateKey: this.getPrivateKey() }, bytes);
   }
 
-  async signTx(tx) {
+  async signTx(tx: SaTransaction) {
     const result = fromSignatureAdapterToNode.transaction(
       tx,
       this.data.networkCode.charCodeAt(0)
@@ -65,7 +74,7 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     return stringify(result);
   }
 
-  signAuth(auth) {
+  async signAuth(auth: SaAuth) {
     return this.signBytes(
       serializeAuthData({
         data: auth.data.data,
@@ -74,7 +83,7 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     );
   }
 
-  signRequest(request) {
+  async signRequest(request: SaRequest) {
     return this.signBytes(
       concat(
         serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
@@ -83,7 +92,7 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     );
   }
 
-  async signOrder(order) {
+  async signOrder(order: SaOrder) {
     const result = fromSignatureAdapterToNode.order(order);
 
     result.proofs.push(this.signBytes(binary.serializeOrder(result)));
@@ -91,7 +100,7 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     return stringify(result);
   }
 
-  async signCancelOrder(cancelOrder) {
+  async signCancelOrder(cancelOrder: SaCancelOrder) {
     const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
 
     result.signature = this.signBytes(cancelOrderParamsToBytes(result));
@@ -99,11 +108,11 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
     return stringify(result);
   }
 
-  async signWavesAuth(data) {
+  async signWavesAuth(data: IWavesAuthParams) {
     return wavesAuth(data, { privateKey: this.getPrivateKey() });
   }
 
-  async signCustomData(data) {
+  async signCustomData(data: TCustomData) {
     return customData(data, { privateKey: this.getPrivateKey() });
   }
 }

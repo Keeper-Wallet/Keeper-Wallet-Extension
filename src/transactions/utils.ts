@@ -1,3 +1,5 @@
+import { BigNumber } from '@waves/bignumber';
+import { Money } from '@waves/data-entities';
 import { base58Encode, stringToBytes } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
@@ -19,7 +21,6 @@ import {
   updateAssetInfo,
   validators,
 } from '@waves/waves-transactions';
-import BigNumber from '@waves/bignumber';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -27,8 +28,279 @@ function processAliasOrAddress(recipient: string, chainId: number) {
     : `alias:${String.fromCharCode(chainId)}:${recipient}`;
 }
 
+interface SaIssue {
+  type: typeof TRANSACTION_TYPE.ISSUE;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    name: string;
+    description: string;
+    quantity: string | number | BigNumber;
+    script?: string;
+    precision: number;
+    reissuable: boolean;
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaTransfer {
+  type: typeof TRANSACTION_TYPE.TRANSFER;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    amount: Money;
+    recipient: string;
+    attachment?: string;
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaReissue {
+  type: typeof TRANSACTION_TYPE.REISSUE;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    assetId: string;
+    quantity: string | BigNumber | number;
+    reissuable: boolean;
+    chainId?: number;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+  };
+}
+
+interface SaBurn {
+  type: typeof TRANSACTION_TYPE.BURN;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    assetId: string;
+    amount?: string | BigNumber;
+    quantity?: string | BigNumber;
+    chainId?: number;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+  };
+}
+
+interface SaLease {
+  type: typeof TRANSACTION_TYPE.LEASE;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    amount: string | BigNumber;
+    recipient: string;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+    chainId?: number;
+  };
+}
+
+interface SaCancelLease {
+  type: typeof TRANSACTION_TYPE.CANCEL_LEASE;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    leaseId: string;
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaAlias {
+  type: typeof TRANSACTION_TYPE.ALIAS;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    alias: string;
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaMassTransfer {
+  type: typeof TRANSACTION_TYPE.MASS_TRANSFER;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    totalAmount: Money;
+    transfers: Array<{
+      recipient: string;
+      amount: string | number | BigNumber;
+    }>;
+    fee: Money;
+    timestamp: number;
+    attachment?: string;
+    proofs?: string[];
+    chainId?: number;
+  };
+}
+
+interface SaData {
+  type: typeof TRANSACTION_TYPE.DATA;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+    chainId?: number;
+    data: Array<{
+      key: string;
+      type: string;
+      value: any;
+    }>;
+  };
+}
+
+interface SaSetScript {
+  type: typeof TRANSACTION_TYPE.SET_SCRIPT;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    chainId?: number;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+    script: string;
+  };
+}
+
+interface SaSponsorship {
+  type: typeof TRANSACTION_TYPE.SPONSORSHIP;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    minSponsoredAssetFee: Money;
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaSetAssetScript {
+  type: typeof TRANSACTION_TYPE.SET_ASSET_SCRIPT;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    assetId: string;
+    chainId?: number;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+    script: string;
+  };
+}
+
+interface SaInvokeScript {
+  type: typeof TRANSACTION_TYPE.INVOKE_SCRIPT;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    dApp: string;
+    call: {
+      function: string;
+      args?: Array<{
+        type: string;
+        value: any;
+      }>;
+    } | null;
+    payment: Money[];
+    fee: Money;
+    timestamp: number;
+    chainId?: number;
+    proofs?: string[];
+  };
+}
+
+interface SaUpdateAssetInfo {
+  type: typeof TRANSACTION_TYPE.UPDATE_ASSET_INFO;
+  data: {
+    version?: number;
+    senderPublicKey?: string;
+    name: string;
+    description: string;
+    assetId: string;
+    fee: Money;
+    timestamp: number;
+    proofs?: string[];
+    chainId?: number;
+  };
+}
+
+export type SaTransaction =
+  | SaIssue
+  | SaTransfer
+  | SaReissue
+  | SaBurn
+  | SaLease
+  | SaCancelLease
+  | SaAlias
+  | SaMassTransfer
+  | SaData
+  | SaSetScript
+  | SaSponsorship
+  | SaSetAssetScript
+  | SaInvokeScript
+  | SaUpdateAssetInfo;
+
+export interface SaOrder {
+  data: {
+    orderType: 'buy' | 'sell';
+    version?: 1 | 2 | 3 | 4;
+    amount: Money;
+    price: Money;
+    timestamp: number;
+    expiration: number;
+    matcherFee: Money;
+    matcherPublicKey: string;
+    senderPublicKey?: string;
+    proofs?: string[];
+  };
+}
+
+export interface SaCancelOrder {
+  data: {
+    id: string;
+    senderPublicKey?: string;
+  };
+}
+
+export interface SaAuth {
+  type: 1000;
+  data: {
+    prefix: string;
+    host: string;
+    data: string;
+    timestamp?: number;
+    version?: number;
+    proofs?: string[];
+  };
+}
+
+export interface SaRequest {
+  data: {
+    senderPublicKey?: string;
+    timestamp: number;
+  };
+}
+
 export const fromSignatureAdapterToNode = {
-  transaction: (input, defaultChainId: number) => {
+  transaction: (input: SaTransaction, defaultChainId: number) => {
     switch (input.type) {
       case TRANSACTION_TYPE.ISSUE:
         return issue({
@@ -241,10 +513,10 @@ export const fromSignatureAdapterToNode = {
           chainId: input.data.chainId || defaultChainId,
         } as any);
       default:
-        throw new Error(`Unexpected type: ${input.type}`);
+        throw new Error(`Unexpected type: ${(input as any).type}`);
     }
   },
-  order: input =>
+  order: (input: SaOrder) =>
     order({
       orderType: input.data.orderType,
       version: input.data.version || 3,
@@ -261,8 +533,8 @@ export const fromSignatureAdapterToNode = {
       senderPublicKey: input.data.senderPublicKey,
       proofs: input.data.proofs || [],
       matcherFeeAssetId: input.data.matcherFee.asset.id,
-    }),
-  cancelOrder: input =>
+    } as any),
+  cancelOrder: (input: SaCancelOrder) =>
     cancelOrder({
       orderId: input.data.id,
       senderPublicKey: input.data.senderPublicKey,

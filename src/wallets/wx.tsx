@@ -1,17 +1,27 @@
 import { BigNumber } from '@waves/bignumber';
 import { binary, serializePrimitives } from '@waves/marshall';
 import { base58Encode, blake2b, concat } from '@waves/ts-lib-crypto';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { makeTxBytes } from '@waves/waves-transactions';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
-import { serializeCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import {
+  serializeCustomData,
+  TCustomData,
+} from '@waves/waves-transactions/dist/requests/custom-data';
 import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { validate } from '@waves/waves-transactions/dist/validators';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { IdentityApi } from 'controllers/IdentityController';
-import { fromSignatureAdapterToNode } from 'transactions/utils';
+import {
+  fromSignatureAdapterToNode,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
@@ -79,19 +89,11 @@ export class WxWallet extends Wallet<WxWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async encryptMessage(
-    message,
-    publicKey,
-    prefix = 'waveskeeper'
-  ): Promise<string> {
+  async encryptMessage(): Promise<string> {
     throw new Error('Unable to encrypt message with this account type');
   }
 
-  async decryptMessage(
-    message,
-    publicKey,
-    prefix = 'waveskeeper'
-  ): Promise<string> {
+  async decryptMessage(): Promise<string> {
     throw new Error('Unable to decrypt message with this account type');
   }
 
@@ -99,7 +101,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     return this.identity.signBytes(bytes);
   }
 
-  async signTx(tx): Promise<string> {
+  async signTx(tx: SaTransaction): Promise<string> {
     const result = fromSignatureAdapterToNode.transaction(
       tx,
       this.data.networkCode.charCodeAt(0)
@@ -110,7 +112,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     return stringify(result);
   }
 
-  async signAuth(auth): Promise<string> {
+  async signAuth(auth: SaAuth): Promise<string> {
     return this.signBytes(
       serializeAuthData({
         data: auth.data.data,
@@ -119,7 +121,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     );
   }
 
-  async signRequest(request): Promise<string> {
+  async signRequest(request: SaRequest): Promise<string> {
     return this.signBytes(
       concat(
         serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
@@ -128,7 +130,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     );
   }
 
-  async signOrder(order): Promise<string> {
+  async signOrder(order: SaOrder): Promise<string> {
     const result = fromSignatureAdapterToNode.order(order);
 
     result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
@@ -136,7 +138,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     return stringify(result);
   }
 
-  async signCancelOrder(cancelOrder): Promise<string> {
+  async signCancelOrder(cancelOrder: SaCancelOrder): Promise<string> {
     const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
 
     result.signature = await this.signBytes(cancelOrderParamsToBytes(result));
@@ -144,7 +146,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     return stringify(result);
   }
 
-  async signWavesAuth(data) {
+  async signWavesAuth(data: IWavesAuthParams) {
     const account = this.getAccount();
     const publicKey = data.publicKey || account.publicKey;
     const timestamp = data.timestamp || Date.now();
@@ -166,7 +168,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     return rx;
   }
 
-  async signCustomData(data) {
+  async signCustomData(data: TCustomData) {
     validate.customData(data);
 
     const bytes = serializeCustomData(data);

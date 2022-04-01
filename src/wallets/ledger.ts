@@ -17,11 +17,19 @@ import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth'
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { validate } from '@waves/waves-transactions/dist/validators';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { AssetDetail } from 'ui/services/Background';
-import { fromSignatureAdapterToNode } from 'transactions/utils';
+import {
+  fromSignatureAdapterToNode,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
@@ -89,7 +97,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async signTx(tx): Promise<string> {
+  async signTx(tx: SaTransaction): Promise<string> {
     let amountPrecision: number, amount2Precision: number;
 
     if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
@@ -97,7 +105,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
     } else {
-      amountPrecision = tx.data.amount?.asset?.precision || 0;
+      amountPrecision = (tx.data as any).amount?.asset?.precision || 0;
       amount2Precision = 0;
     }
 
@@ -125,7 +133,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(result);
   }
 
-  async signAuth(auth) {
+  async signAuth(auth: SaAuth) {
     return this.ledger.signRequest({
       dataBuffer: serializeAuthData({
         data: auth.data.data,
@@ -134,7 +142,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     });
   }
 
-  async signRequest(request) {
+  async signRequest(request: SaRequest) {
     return this.ledger.signRequest({
       dataBuffer: concat(
         serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
@@ -143,7 +151,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     });
   }
 
-  async signOrder(order): Promise<string> {
+  async signOrder(order: SaOrder): Promise<string> {
     const result = fromSignatureAdapterToNode.order(order);
 
     result.proofs.push(
@@ -158,7 +166,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(result);
   }
 
-  async signCancelOrder(cancelOrder): Promise<string> {
+  async signCancelOrder(cancelOrder: SaCancelOrder): Promise<string> {
     const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
 
     result.signature = await this.ledger.signRequest({
@@ -168,7 +176,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(result);
   }
 
-  async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
+  async signWavesAuth(data: IWavesAuthParams) {
     const publicKey = data.publicKey || this.data.publicKey;
     const timestamp = data.timestamp || Date.now();
     validate.wavesAuth({ publicKey, timestamp });
