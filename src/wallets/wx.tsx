@@ -1,16 +1,18 @@
 import { BigNumber } from '@waves/bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
-import { Wallet } from './wallet';
-import { TSignData } from '@waves/signature-adapter';
-import * as create from 'parse-json-bignumber';
-import { convertInvokeListWorkAround } from './utils';
-import { InfoAdapter } from 'controllers/MessageController';
-import { convert } from '@waves/money-like-to-node';
-import { IdentityApi } from 'controllers/IdentityController';
-import { validate } from '@waves/waves-transactions/dist/validators';
-import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { binary, serializePrimitives } from '@waves/marshall';
+import { base58Encode, blake2b, concat } from '@waves/ts-lib-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { makeTxBytes } from '@waves/waves-transactions';
+import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
+import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import { serializeCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
-import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
+import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { validate } from '@waves/waves-transactions/dist/validators';
+import * as create from 'parse-json-bignumber';
+import { AccountOfType, NetworkName } from 'accounts/types';
+import { IdentityApi } from 'controllers/IdentityController';
+import { fromSignatureAdapterToNode } from 'transactions/utils';
+import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
 
@@ -32,7 +34,6 @@ type WxWalletData = AccountOfType<'wx'> & {
 };
 
 export class WxWallet extends Wallet<WxWalletData> {
-  private readonly _adapter: InfoAdapter;
   private identity: IdentityApi;
 
   constructor(
@@ -58,7 +59,6 @@ export class WxWallet extends Wallet<WxWalletData> {
       type: 'wx',
     });
 
-    this._adapter = new InfoAdapter(this.data);
     this.identity = identity;
   }
 
@@ -130,35 +130,76 @@ export class WxWallet extends Wallet<WxWalletData> {
     return { ...data, hash, publicKey, signature };
   }
 
-  async signTx(tx: TSignData): Promise<string> {
-    const signable = this._adapter.makeSignable(tx);
-    const bytes = await signable.getBytes();
+  async signTx(tx): Promise<string> {
+    const defaultChainId = this.data.networkCode.charCodeAt(0);
 
-    const signData = await signable.getSignData();
+    switch (tx.type) {
+      case TRANSACTION_TYPE.ISSUE:
+      case TRANSACTION_TYPE.TRANSFER:
+      case TRANSACTION_TYPE.REISSUE:
+      case TRANSACTION_TYPE.BURN:
+      case TRANSACTION_TYPE.LEASE:
+      case TRANSACTION_TYPE.CANCEL_LEASE:
+      case TRANSACTION_TYPE.ALIAS:
+      case TRANSACTION_TYPE.MASS_TRANSFER:
+      case TRANSACTION_TYPE.DATA:
+      case TRANSACTION_TYPE.SET_SCRIPT:
+      case TRANSACTION_TYPE.SPONSORSHIP:
+      case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
+      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
+        const result = fromSignatureAdapterToNode.transaction(
+          tx,
+          defaultChainId
+        );
 
-    const proof = await this.signBytes(bytes);
-    signData.proofs = signData.proofs ?? [];
-    signData.proofs.push(proof);
+        result.proofs.push(await this.signBytes(makeTxBytes(result)));
 
-    let data;
-    try {
-      data = convert(signData, (item: any) => new BigNumber(item));
-      convertInvokeListWorkAround(data);
-    } catch (err) {
-      data = { ...signData, signature: proof };
+        return stringify(result);
+      }
+      case 1002: {
+        const result = fromSignatureAdapterToNode.order(tx);
+
+        result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
+
+        return stringify(result);
+      }
+      case 1003: {
+        const result = fromSignatureAdapterToNode.cancelOrder(tx);
+
+        result.signature = await this.signBytes(
+          cancelOrderParamsToBytes(result)
+        );
+
+        return stringify(result);
+      }
+      default:
+        throw new Error(`Unexpected tx type: ${tx.type}`);
     }
-
-    return stringify(data);
   }
 
   async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
     return this.identity.signBytes(bytes);
   }
 
-  async signRequest(request: TSignData): Promise<string> {
-    const signable = this._adapter.makeSignable(request);
-    const bytes = await signable.getBytes();
-
-    return this.signBytes(bytes);
+  async signRequest(request): Promise<string> {
+    switch (request.type) {
+      case 1000:
+        return this.signBytes(
+          serializeAuthData({
+            data: request.data.data,
+            host: request.data.host,
+          })
+        );
+      case 1001:
+        return this.signBytes(
+          concat(
+            serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
+            serializePrimitives.LONG(request.data.timestamp)
+          )
+        );
+      default:
+        throw new Error(`Unexpected request type: ${request.type}`);
+    }
   }
 }

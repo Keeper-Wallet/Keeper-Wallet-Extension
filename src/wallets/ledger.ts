@@ -5,67 +5,24 @@ import {
   ISignOrderData,
   ISignTxData,
 } from '@waves/ledger/lib/Waves';
-import { convert } from '@waves/money-like-to-node';
+import { binary, serializePrimitives } from '@waves/marshall';
+import { base58Encode, blake2b, concat } from '@waves/ts-lib-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
-  AdapterType,
-  CustomAdapter,
-  IUserApi,
-  TSignData,
-} from '@waves/signature-adapter';
-import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
-import { customData, serializeCustomData } from '@waves/waves-transactions';
+  customData,
+  makeTxBytes,
+  serializeCustomData,
+} from '@waves/waves-transactions';
+import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
+import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
 import { validate } from '@waves/waves-transactions/dist/validators';
-import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
-import { Wallet } from './wallet';
 import { AssetDetail } from 'ui/services/Background';
-import { convertInvokeListWorkAround } from './utils';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
-
-const txVersions = {
-  [TRANSACTION_TYPE.ISSUE]: [2],
-  [TRANSACTION_TYPE.TRANSFER]: [2],
-  [TRANSACTION_TYPE.REISSUE]: [2],
-  [TRANSACTION_TYPE.BURN]: [2],
-  [TRANSACTION_TYPE.EXCHANGE]: [0, 1, 2],
-  [TRANSACTION_TYPE.LEASE]: [2],
-  [TRANSACTION_TYPE.CANCEL_LEASE]: [2],
-  [TRANSACTION_TYPE.ALIAS]: [2],
-  [TRANSACTION_TYPE.MASS_TRANSFER]: [1],
-  [TRANSACTION_TYPE.DATA]: [1],
-  [TRANSACTION_TYPE.SET_SCRIPT]: [1],
-  [TRANSACTION_TYPE.SPONSORSHIP]: [1],
-  [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: [1],
-  [TRANSACTION_TYPE.INVOKE_SCRIPT]: [1],
-  [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
-  1000: [1],
-  1001: [1],
-  1002: [1, 2, 3],
-  1003: [1],
-};
-
-class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
-  constructor(account: AccountOfType<'ledger'>) {
-    super({
-      type: AdapterType.Custom,
-      isAvailable: () => true,
-      getAddress: () => account.address,
-      getPublicKey: () => account.publicKey,
-    });
-
-    this._code = account.networkCode.charCodeAt(0);
-  }
-
-  getSignVersions() {
-    return {
-      ...txVersions,
-      1004: [1],
-      1005: [1],
-    };
-  }
-}
+import { fromSignatureAdapterToNode } from 'transactions/utils';
+import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
 
@@ -92,7 +49,6 @@ export interface LedgerApi {
 type GetAssetInfo = (assetId: string | null) => Promise<AssetDetail>;
 
 export class LedgerWallet extends Wallet<LedgerWalletData> {
-  private readonly _adapter: LedgerInfoAdapter;
   private getAssetInfo: GetAssetInfo;
   private readonly ledger: LedgerApi;
 
@@ -111,7 +67,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       type: 'ledger',
     });
 
-    this._adapter = new LedgerInfoAdapter(this.data);
     this.getAssetInfo = getAssetInfo;
     this.ledger = ledger;
   }
@@ -140,81 +95,128 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     validate.wavesAuth({ publicKey, timestamp });
 
     const rx = {
-      hash: '',
-      signature: '',
       timestamp,
       publicKey,
       address: this.data.address,
     };
 
-    const dataBuffer = serializeWavesAuthData(rx);
+    const bytes = serializeWavesAuthData(rx);
 
-    rx.signature = await this.ledger.signSomeData({ dataBuffer });
-    rx.hash = base58Encode(blake2b(dataBuffer));
-
-    return rx;
+    return {
+      ...rx,
+      hash: base58Encode(blake2b(bytes)),
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
+    };
   }
 
   async signCustomData(data: TCustomData) {
-    const dataBuffer = serializeCustomData(data);
+    const bytes = serializeCustomData(data);
 
     return {
       ...customData(data),
       publicKey: data.publicKey || this.data.publicKey,
-      signature: await this.ledger.signSomeData({ dataBuffer }),
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
     };
   }
 
-  async signTx(tx: TSignData) {
-    const signable = this._adapter.makeSignable(tx);
-
-    const [dataBuffer, data] = await Promise.all([
-      signable.getBytes(),
-      signable.getSignData(),
-    ]);
+  async signTx(tx): Promise<string> {
+    const defaultChainId = this.data.networkCode.charCodeAt(0);
 
     let amountPrecision: number, amount2Precision: number;
 
     if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
-      const payment: Money[] = (tx.data as any).payment ?? [];
+      const payment: Money[] = tx.data.payment ?? [];
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
     } else {
-      amountPrecision = (tx as any).data.amount?.asset?.precision || 0;
+      amountPrecision = tx.data.amount?.asset?.precision || 0;
       amount2Precision = 0;
     }
 
-    const feeAsset = await this.getAssetInfo(data.feeAssetId);
-    const feePrecision: number = feeAsset.precision;
+    switch (tx.type) {
+      case TRANSACTION_TYPE.ISSUE:
+      case TRANSACTION_TYPE.TRANSFER:
+      case TRANSACTION_TYPE.REISSUE:
+      case TRANSACTION_TYPE.BURN:
+      case TRANSACTION_TYPE.LEASE:
+      case TRANSACTION_TYPE.CANCEL_LEASE:
+      case TRANSACTION_TYPE.ALIAS:
+      case TRANSACTION_TYPE.MASS_TRANSFER:
+      case TRANSACTION_TYPE.DATA:
+      case TRANSACTION_TYPE.SET_SCRIPT:
+      case TRANSACTION_TYPE.SPONSORSHIP:
+      case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
+      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
+        const result = fromSignatureAdapterToNode.transaction(
+          tx,
+          defaultChainId
+        );
 
-    const signature =
-      tx.type === 1002
-        ? await this.ledger.signOrder({
-            amountPrecision,
-            feePrecision,
-            dataBuffer,
-            dataVersion: data.version,
-          })
-        : await this.ledger.signTransaction({
+        const feePrecision =
+          ('feeAssetId' in result &&
+            (await this.getAssetInfo(result.feeAssetId))?.precision) ||
+          0;
+
+        result.proofs.push(
+          await this.ledger.signTransaction({
             amountPrecision,
             amount2Precision,
             feePrecision,
-            dataBuffer,
-            dataType: data.type,
-            dataVersion: data.version,
-          });
+            dataBuffer: makeTxBytes(result),
+            dataType: result.type,
+            dataVersion: result.version,
+          })
+        );
 
-    data.proofs.push(signature);
+        return stringify(result);
+      }
+      case 1002: {
+        const result = fromSignatureAdapterToNode.order(tx);
 
-    convertInvokeListWorkAround(data);
+        result.proofs.push(
+          await this.ledger.signOrder({
+            amountPrecision,
+            feePrecision: 8,
+            dataBuffer: binary.serializeOrder(result),
+            dataVersion: result.version,
+          })
+        );
 
-    return stringify(convert(data, (item: any) => new BigNumber(item)));
+        return stringify(result);
+      }
+      case 1003: {
+        const result = fromSignatureAdapterToNode.cancelOrder(tx);
+
+        result.signature = await this.ledger.signRequest({
+          dataBuffer: cancelOrderParamsToBytes(result),
+        });
+
+        return stringify(result);
+      }
+      default:
+        throw new Error(`Unexpected tx type: ${tx.type}`);
+    }
   }
 
-  async signRequest(request: TSignData) {
-    const signable = this._adapter.makeSignable(request);
-    const dataBuffer = await signable.getBytes();
-
-    return this.ledger.signRequest({ dataBuffer });
+  async signRequest(request) {
+    switch (request.type) {
+      case 1000:
+        return this.ledger.signRequest({
+          dataBuffer: serializeAuthData({
+            data: request.data.data,
+            host: request.data.host,
+          }),
+        });
+      case 1001:
+        return this.ledger.signRequest({
+          dataBuffer: concat(
+            serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
+            serializePrimitives.LONG(request.data.timestamp)
+          ),
+        });
+      default:
+        throw new Error(`Unexpected request type: ${request.type}`);
+    }
   }
 }
