@@ -1,20 +1,20 @@
 import { BigNumber } from '@waves/bignumber';
 import { binary, serializePrimitives } from '@waves/marshall';
-import { concat } from '@waves/ts-lib-crypto';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { customData, makeTxBytes, wavesAuth } from '@waves/waves-transactions';
-import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import {
   address,
+  concat,
   privateKey,
   publicKey,
   signBytes,
 } from '@waves/ts-lib-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { customData, makeTxBytes, wavesAuth } from '@waves/waves-transactions';
+import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
+import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { fromSignatureAdapterToNode } from 'transactions/utils';
 import { Wallet } from './wallet';
-import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 
 const { stringify } = create({ BigNumber });
 
