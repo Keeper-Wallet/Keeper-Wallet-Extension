@@ -1,6 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { base58Encode, stringToBytes } from '@waves/ts-lib-crypto';
+import { binary, serializePrimitives } from '@waves/marshall';
+import { base58Encode, concat, stringToBytes } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
   alias,
@@ -20,7 +21,10 @@ import {
   transfer,
   updateAssetInfo,
   validators,
+  makeTxBytes,
 } from '@waves/waves-transactions';
+import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
+import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -299,7 +303,17 @@ export interface SaRequest {
   };
 }
 
-export const fromSignatureAdapterToNode = {
+interface NativeAuth {
+  data: string;
+  host: string;
+}
+
+interface NativeRequest {
+  senderPublicKey: string;
+  timestamp: number;
+}
+
+export const convertFromSa = {
   transaction: (input: SaTransaction, defaultChainId: number) => {
     switch (input.type) {
       case TRANSACTION_TYPE.ISSUE:
@@ -516,6 +530,14 @@ export const fromSignatureAdapterToNode = {
         throw new Error(`Unexpected type: ${(input as any).type}`);
     }
   },
+  auth: (input: SaAuth): NativeAuth => ({
+    data: input.data.data,
+    host: input.data.host,
+  }),
+  request: (request: SaRequest): NativeRequest => ({
+    senderPublicKey: request.data.senderPublicKey,
+    timestamp: request.data.timestamp,
+  }),
   order: (input: SaOrder) =>
     order({
       orderType: input.data.orderType,
@@ -539,4 +561,16 @@ export const fromSignatureAdapterToNode = {
       orderId: input.data.id,
       senderPublicKey: input.data.senderPublicKey,
     }),
+};
+
+export const makeBytes = {
+  transaction: makeTxBytes,
+  auth: serializeAuthData,
+  request: (input: NativeRequest) =>
+    concat(
+      serializePrimitives.BASE58_STRING(input.senderPublicKey),
+      serializePrimitives.LONG(input.timestamp)
+    ),
+  order: binary.serializeOrder,
+  cancelOrder: cancelOrderParamsToBytes,
 };

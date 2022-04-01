@@ -8,15 +8,14 @@ import {
   publicKey,
   signBytes,
 } from '@waves/ts-lib-crypto';
-import { customData, makeTxBytes, wavesAuth } from '@waves/waves-transactions';
-import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
-import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+import { customData, wavesAuth } from '@waves/waves-transactions';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import {
-  fromSignatureAdapterToNode,
+  convertFromSa,
+  makeBytes,
   SaAuth,
   SaCancelOrder,
   SaOrder,
@@ -76,46 +75,36 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
   }
 
   async signTx(tx: SaTransaction) {
-    const result = fromSignatureAdapterToNode.transaction(
+    const result = convertFromSa.transaction(
       tx,
       this.data.networkCode.charCodeAt(0)
     );
 
-    result.proofs.push(this.signBytes(makeTxBytes(result)));
+    result.proofs.push(this.signBytes(makeBytes.transaction(result)));
 
     return stringify(result);
   }
 
   async signAuth(auth: SaAuth) {
-    return this.signBytes(
-      serializeAuthData({
-        data: auth.data.data,
-        host: auth.data.host,
-      })
-    );
+    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
   }
 
   async signRequest(request: SaRequest) {
-    return this.signBytes(
-      concat(
-        serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
-        serializePrimitives.LONG(request.data.timestamp)
-      )
-    );
+    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
   }
 
   async signOrder(order: SaOrder) {
-    const result = fromSignatureAdapterToNode.order(order);
+    const result = convertFromSa.order(order);
 
-    result.proofs.push(this.signBytes(binary.serializeOrder(result)));
+    result.proofs.push(this.signBytes(makeBytes.order(result)));
 
     return stringify(result);
   }
 
   async signCancelOrder(cancelOrder: SaCancelOrder) {
-    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
+    const result = convertFromSa.cancelOrder(cancelOrder);
 
-    result.signature = this.signBytes(cancelOrderParamsToBytes(result));
+    result.signature = this.signBytes(makeBytes.cancelOrder(result));
 
     return stringify(result);
   }

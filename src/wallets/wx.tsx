@@ -1,10 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
-import { binary, serializePrimitives } from '@waves/marshall';
-import { base58Encode, blake2b, concat } from '@waves/ts-lib-crypto';
-import { makeTxBytes } from '@waves/waves-transactions';
-import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
-import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
 import {
+  customData,
   serializeCustomData,
   TCustomData,
 } from '@waves/waves-transactions/dist/requests/custom-data';
@@ -15,7 +12,8 @@ import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { IdentityApi } from 'controllers/IdentityController';
 import {
-  fromSignatureAdapterToNode,
+  convertFromSa,
+  makeBytes,
   SaAuth,
   SaCancelOrder,
   SaOrder,
@@ -102,46 +100,36 @@ export class WxWallet extends Wallet<WxWalletData> {
   }
 
   async signTx(tx: SaTransaction): Promise<string> {
-    const result = fromSignatureAdapterToNode.transaction(
+    const result = convertFromSa.transaction(
       tx,
       this.data.networkCode.charCodeAt(0)
     );
 
-    result.proofs.push(await this.signBytes(makeTxBytes(result)));
+    result.proofs.push(await this.signBytes(makeBytes.transaction(result)));
 
     return stringify(result);
   }
 
   async signAuth(auth: SaAuth): Promise<string> {
-    return this.signBytes(
-      serializeAuthData({
-        data: auth.data.data,
-        host: auth.data.host,
-      })
-    );
+    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
   }
 
   async signRequest(request: SaRequest): Promise<string> {
-    return this.signBytes(
-      concat(
-        serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
-        serializePrimitives.LONG(request.data.timestamp)
-      )
-    );
+    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
   }
 
   async signOrder(order: SaOrder): Promise<string> {
-    const result = fromSignatureAdapterToNode.order(order);
+    const result = convertFromSa.order(order);
 
-    result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
+    result.proofs.push(await this.signBytes(makeBytes.order(result)));
 
     return stringify(result);
   }
 
   async signCancelOrder(cancelOrder: SaCancelOrder): Promise<string> {
-    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
+    const result = convertFromSa.cancelOrder(cancelOrder);
 
-    result.signature = await this.signBytes(cancelOrderParamsToBytes(result));
+    result.signature = await this.signBytes(makeBytes.cancelOrder(result));
 
     return stringify(result);
   }
@@ -152,9 +140,7 @@ export class WxWallet extends Wallet<WxWalletData> {
     const timestamp = data.timestamp || Date.now();
     validate.wavesAuth({ publicKey, timestamp });
 
-    let rx = {
-      hash: '',
-      signature: '',
+    const rx = {
       timestamp,
       publicKey,
       address: account.address,
@@ -162,22 +148,20 @@ export class WxWallet extends Wallet<WxWalletData> {
 
     const bytes = serializeWavesAuthData(rx);
 
-    rx.signature = await this.signBytes(bytes);
-    rx.hash = base58Encode(blake2b(Uint8Array.from(bytes)));
-
-    return rx;
+    return {
+      ...rx,
+      hash: base58Encode(blake2b(Uint8Array.from(bytes))),
+      signature: await this.signBytes(bytes),
+    };
   }
 
   async signCustomData(data: TCustomData) {
-    validate.customData(data);
-
     const bytes = serializeCustomData(data);
-    const hash = base58Encode(blake2b(bytes));
-    const publicKey = data.publicKey
-      ? data.publicKey
-      : this.getAccount().publicKey;
-    const signature = await this.signBytes(bytes);
 
-    return { ...data, hash, publicKey, signature };
+    return {
+      ...customData(data),
+      publicKey: data.publicKey || this.getAccount().publicKey,
+      signature: await this.signBytes(bytes),
+    };
   }
 }
