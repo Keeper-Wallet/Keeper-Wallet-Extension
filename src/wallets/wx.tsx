@@ -99,6 +99,51 @@ export class WxWallet extends Wallet<WxWalletData> {
     return this.identity.signBytes(bytes);
   }
 
+  async signTx(tx): Promise<string> {
+    const result = fromSignatureAdapterToNode.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
+
+    result.proofs.push(await this.signBytes(makeTxBytes(result)));
+
+    return stringify(result);
+  }
+
+  async signAuth(auth): Promise<string> {
+    return this.signBytes(
+      serializeAuthData({
+        data: auth.data.data,
+        host: auth.data.host,
+      })
+    );
+  }
+
+  async signRequest(request): Promise<string> {
+    return this.signBytes(
+      concat(
+        serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
+        serializePrimitives.LONG(request.data.timestamp)
+      )
+    );
+  }
+
+  async signOrder(order): Promise<string> {
+    const result = fromSignatureAdapterToNode.order(order);
+
+    result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder): Promise<string> {
+    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
+
+    result.signature = await this.signBytes(cancelOrderParamsToBytes(result));
+
+    return stringify(result);
+  }
+
   async signWavesAuth(data) {
     const account = this.getAccount();
     const publicKey = data.publicKey || account.publicKey;
@@ -132,53 +177,5 @@ export class WxWallet extends Wallet<WxWalletData> {
     const signature = await this.signBytes(bytes);
 
     return { ...data, hash, publicKey, signature };
-  }
-
-  async signTx(tx): Promise<string> {
-    const result = fromSignatureAdapterToNode.transaction(
-      tx,
-      this.data.networkCode.charCodeAt(0)
-    );
-
-    result.proofs.push(await this.signBytes(makeTxBytes(result)));
-
-    return stringify(result);
-  }
-
-  async signOrder(order): Promise<string> {
-    const result = fromSignatureAdapterToNode.order(order);
-
-    result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
-
-    return stringify(result);
-  }
-
-  async signCancelOrder(cancelOrder): Promise<string> {
-    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
-
-    result.signature = await this.signBytes(cancelOrderParamsToBytes(result));
-
-    return stringify(result);
-  }
-
-  async signRequest(request): Promise<string> {
-    switch (request.type) {
-      case 1000:
-        return this.signBytes(
-          serializeAuthData({
-            data: request.data.data,
-            host: request.data.host,
-          })
-        );
-      case 1001:
-        return this.signBytes(
-          concat(
-            serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
-            serializePrimitives.LONG(request.data.timestamp)
-          )
-        );
-      default:
-        throw new Error(`Unexpected request type: ${request.type}`);
-    }
   }
 }

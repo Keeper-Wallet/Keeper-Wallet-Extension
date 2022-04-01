@@ -89,36 +89,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
-    const publicKey = data.publicKey || this.data.publicKey;
-    const timestamp = data.timestamp || Date.now();
-    validate.wavesAuth({ publicKey, timestamp });
-
-    const rx = {
-      timestamp,
-      publicKey,
-      address: this.data.address,
-    };
-
-    const bytes = serializeWavesAuthData(rx);
-
-    return {
-      ...rx,
-      hash: base58Encode(blake2b(bytes)),
-      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
-    };
-  }
-
-  async signCustomData(data: TCustomData) {
-    const bytes = serializeCustomData(data);
-
-    return {
-      ...customData(data),
-      publicKey: data.publicKey || this.data.publicKey,
-      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
-    };
-  }
-
   async signTx(tx): Promise<string> {
     let amountPrecision: number, amount2Precision: number;
 
@@ -155,6 +125,24 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(result);
   }
 
+  async signAuth(auth) {
+    return this.ledger.signRequest({
+      dataBuffer: serializeAuthData({
+        data: auth.data.data,
+        host: auth.data.host,
+      }),
+    });
+  }
+
+  async signRequest(request) {
+    return this.ledger.signRequest({
+      dataBuffer: concat(
+        serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
+        serializePrimitives.LONG(request.data.timestamp)
+      ),
+    });
+  }
+
   async signOrder(order): Promise<string> {
     const result = fromSignatureAdapterToNode.order(order);
 
@@ -180,24 +168,33 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     return stringify(result);
   }
 
-  async signRequest(request) {
-    switch (request.type) {
-      case 1000:
-        return this.ledger.signRequest({
-          dataBuffer: serializeAuthData({
-            data: request.data.data,
-            host: request.data.host,
-          }),
-        });
-      case 1001:
-        return this.ledger.signRequest({
-          dataBuffer: concat(
-            serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
-            serializePrimitives.LONG(request.data.timestamp)
-          ),
-        });
-      default:
-        throw new Error(`Unexpected request type: ${request.type}`);
-    }
+  async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
+    const publicKey = data.publicKey || this.data.publicKey;
+    const timestamp = data.timestamp || Date.now();
+    validate.wavesAuth({ publicKey, timestamp });
+
+    const rx = {
+      timestamp,
+      publicKey,
+      address: this.data.address,
+    };
+
+    const bytes = serializeWavesAuthData(rx);
+
+    return {
+      ...rx,
+      hash: base58Encode(blake2b(bytes)),
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
+    };
+  }
+
+  async signCustomData(data: TCustomData) {
+    const bytes = serializeCustomData(data);
+
+    return {
+      ...customData(data),
+      publicKey: data.publicKey || this.data.publicKey,
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
+    };
   }
 }

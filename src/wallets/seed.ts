@@ -53,14 +53,6 @@ export class SeedWallet extends Wallet<SeedWalletData> {
     return signBytes(this.data.seed, bytes);
   }
 
-  async signWavesAuth(data) {
-    return wavesAuth(data, this.getSeed());
-  }
-
-  async signCustomData(data) {
-    return customData(data, this.getSeed());
-  }
-
   async signTx(tx) {
     const result = fromSignatureAdapterToNode.transaction(
       tx,
@@ -70,6 +62,24 @@ export class SeedWallet extends Wallet<SeedWalletData> {
     result.proofs.push(this.signBytes(makeTxBytes(result)));
 
     return stringify(result);
+  }
+
+  signAuth(auth) {
+    return this.signBytes(
+      serializeAuthData({
+        data: auth.data.data,
+        host: auth.data.host,
+      })
+    );
+  }
+
+  signRequest(request) {
+    return this.signBytes(
+      concat(
+        serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
+        serializePrimitives.LONG(request.data.timestamp)
+      )
+    );
   }
 
   async signOrder(order) {
@@ -88,24 +98,11 @@ export class SeedWallet extends Wallet<SeedWalletData> {
     return stringify(result);
   }
 
-  signRequest(request) {
-    switch (request.type) {
-      case 1000:
-        return this.signBytes(
-          serializeAuthData({
-            data: request.data.data,
-            host: request.data.host,
-          })
-        );
-      case 1001:
-        return this.signBytes(
-          concat(
-            serializePrimitives.BASE58_STRING(request.data.senderPublicKey),
-            serializePrimitives.LONG(request.data.timestamp)
-          )
-        );
-      default:
-        throw new Error(`Unexpected request type: ${request.type}`);
-    }
+  async signWavesAuth(data) {
+    return wavesAuth(data, this.getSeed());
+  }
+
+  async signCustomData(data) {
+    return customData(data, this.getSeed());
   }
 }

@@ -274,7 +274,7 @@ export class WalletController extends EventEmitter {
    */
   async auth(address, authData, network) {
     const wallet = this._findWallet(address, network);
-    const signature = await wallet.signRequest(authData);
+    const signature = await wallet.signAuth(authData);
     const { host, name, prefix, version } = authData.data;
     return {
       host,
