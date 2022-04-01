@@ -83,7 +83,8 @@ export const Import = connect((state: any) => ({
           <div className={styles.importButtonsItem}>
             <Button
               className={styles.importButton}
-              type="transparent"
+              type="button"
+              view="transparent"
               onClick={() => setTab(PAGES.IMPORT_LEDGER)}
             >
               <svg
