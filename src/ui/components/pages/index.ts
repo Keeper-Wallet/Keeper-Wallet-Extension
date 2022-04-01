@@ -1,5 +1,5 @@
 export * from './Welcome';
-export * from './NewWalet';
+export * from './NewWallet';
 export * from './NewWalletName';
 export * from './ChangeName';
 export * from './BackupSeed';
