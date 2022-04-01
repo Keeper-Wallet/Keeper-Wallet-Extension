@@ -219,6 +219,30 @@ export class WalletController extends EventEmitter {
     return await wallet.signTx(tx);
   }
 
+  /**
+   * Signs order
+   * @param {string} address - wallet address
+   * @param {object} order - order to sign
+   * @param {object} network
+   * @returns {Promise<string>} signed order as json string
+   */
+  async signOrder(address, order, network) {
+    const wallet = this._findWallet(address, network);
+    return await wallet.signOrder(order);
+  }
+
+  /**
+   * Signs order cancellation request
+   * @param {string} address - wallet address
+   * @param {object} cancelOrder - order cancellation request to sign
+   * @param {object} network
+   * @returns {Promise<string>} signed order cancellation request as json string
+   */
+  async signCancelOrder(address, cancelOrder, network) {
+    const wallet = this._findWallet(address, network);
+    return await wallet.signCancelOrder(cancelOrder);
+  }
+
   async signWavesAuth(data, address, network) {
     const wallet = this._findWallet(address, network);
     return await wallet.signWavesAuth(data);

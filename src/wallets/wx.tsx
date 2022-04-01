@@ -95,6 +95,10 @@ export class WxWallet extends Wallet<WxWalletData> {
     throw new Error('Unable to decrypt message with this account type');
   }
 
+  private async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
+    return this.identity.signBytes(bytes);
+  }
+
   async signWavesAuth(data) {
     const account = this.getAccount();
     const publicKey = data.publicKey || account.publicKey;
@@ -131,55 +135,30 @@ export class WxWallet extends Wallet<WxWalletData> {
   }
 
   async signTx(tx): Promise<string> {
-    const defaultChainId = this.data.networkCode.charCodeAt(0);
+    const result = fromSignatureAdapterToNode.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
 
-    switch (tx.type) {
-      case TRANSACTION_TYPE.ISSUE:
-      case TRANSACTION_TYPE.TRANSFER:
-      case TRANSACTION_TYPE.REISSUE:
-      case TRANSACTION_TYPE.BURN:
-      case TRANSACTION_TYPE.LEASE:
-      case TRANSACTION_TYPE.CANCEL_LEASE:
-      case TRANSACTION_TYPE.ALIAS:
-      case TRANSACTION_TYPE.MASS_TRANSFER:
-      case TRANSACTION_TYPE.DATA:
-      case TRANSACTION_TYPE.SET_SCRIPT:
-      case TRANSACTION_TYPE.SPONSORSHIP:
-      case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
-      case TRANSACTION_TYPE.INVOKE_SCRIPT:
-      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
-        const result = fromSignatureAdapterToNode.transaction(
-          tx,
-          defaultChainId
-        );
+    result.proofs.push(await this.signBytes(makeTxBytes(result)));
 
-        result.proofs.push(await this.signBytes(makeTxBytes(result)));
-
-        return stringify(result);
-      }
-      case 1002: {
-        const result = fromSignatureAdapterToNode.order(tx);
-
-        result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
-
-        return stringify(result);
-      }
-      case 1003: {
-        const result = fromSignatureAdapterToNode.cancelOrder(tx);
-
-        result.signature = await this.signBytes(
-          cancelOrderParamsToBytes(result)
-        );
-
-        return stringify(result);
-      }
-      default:
-        throw new Error(`Unexpected tx type: ${tx.type}`);
-    }
+    return stringify(result);
   }
 
-  async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
-    return this.identity.signBytes(bytes);
+  async signOrder(order): Promise<string> {
+    const result = fromSignatureAdapterToNode.order(order);
+
+    result.proofs.push(await this.signBytes(binary.serializeOrder(result)));
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder): Promise<string> {
+    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
+
+    result.signature = await this.signBytes(cancelOrderParamsToBytes(result));
+
+    return stringify(result);
   }
 
   async signRequest(request): Promise<string> {

@@ -65,6 +65,8 @@ export class MessageController extends EventEmitter {
 
     // Signing methods from WalletController
     this.signTx = options.signTx;
+    this.signOrder = options.signOrder;
+    this.signCancelOrder = options.signCancelOrder;
     this.signWavesAuth = options.signWavesAuth;
     this.signCustomData = options.signCustomData;
     this.auth = options.auth;
@@ -473,8 +475,6 @@ export class MessageController extends EventEmitter {
   async _signMessage(message) {
     let signedData;
     switch (message.type) {
-      case 'order':
-      case 'cancelOrder':
       case 'transaction':
         signedData = await this.signTx(
           message.account.address,
@@ -491,6 +491,20 @@ export class MessageController extends EventEmitter {
               message.account.network
             );
           })
+        );
+        break;
+      case 'order':
+        signedData = await this.signOrder(
+          message.account.address,
+          message.data,
+          message.account.network
+        );
+        break;
+      case 'cancelOrder':
+        signedData = await this.signCancelOrder(
+          message.account.address,
+          message.data,
+          message.account.network
         );
         break;
       case 'auth':

@@ -120,8 +120,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
   }
 
   async signTx(tx): Promise<string> {
-    const defaultChainId = this.data.networkCode.charCodeAt(0);
-
     let amountPrecision: number, amount2Precision: number;
 
     if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
@@ -133,70 +131,53 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       amount2Precision = 0;
     }
 
-    switch (tx.type) {
-      case TRANSACTION_TYPE.ISSUE:
-      case TRANSACTION_TYPE.TRANSFER:
-      case TRANSACTION_TYPE.REISSUE:
-      case TRANSACTION_TYPE.BURN:
-      case TRANSACTION_TYPE.LEASE:
-      case TRANSACTION_TYPE.CANCEL_LEASE:
-      case TRANSACTION_TYPE.ALIAS:
-      case TRANSACTION_TYPE.MASS_TRANSFER:
-      case TRANSACTION_TYPE.DATA:
-      case TRANSACTION_TYPE.SET_SCRIPT:
-      case TRANSACTION_TYPE.SPONSORSHIP:
-      case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
-      case TRANSACTION_TYPE.INVOKE_SCRIPT:
-      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
-        const result = fromSignatureAdapterToNode.transaction(
-          tx,
-          defaultChainId
-        );
+    const result = fromSignatureAdapterToNode.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
 
-        const feePrecision =
-          ('feeAssetId' in result &&
-            (await this.getAssetInfo(result.feeAssetId))?.precision) ||
-          0;
+    const feePrecision =
+      ('feeAssetId' in result &&
+        (await this.getAssetInfo(result.feeAssetId))?.precision) ||
+      0;
 
-        result.proofs.push(
-          await this.ledger.signTransaction({
-            amountPrecision,
-            amount2Precision,
-            feePrecision,
-            dataBuffer: makeTxBytes(result),
-            dataType: result.type,
-            dataVersion: result.version,
-          })
-        );
+    result.proofs.push(
+      await this.ledger.signTransaction({
+        amountPrecision,
+        amount2Precision,
+        feePrecision,
+        dataBuffer: makeTxBytes(result),
+        dataType: result.type,
+        dataVersion: result.version,
+      })
+    );
 
-        return stringify(result);
-      }
-      case 1002: {
-        const result = fromSignatureAdapterToNode.order(tx);
+    return stringify(result);
+  }
 
-        result.proofs.push(
-          await this.ledger.signOrder({
-            amountPrecision,
-            feePrecision: 8,
-            dataBuffer: binary.serializeOrder(result),
-            dataVersion: result.version,
-          })
-        );
+  async signOrder(order): Promise<string> {
+    const result = fromSignatureAdapterToNode.order(order);
 
-        return stringify(result);
-      }
-      case 1003: {
-        const result = fromSignatureAdapterToNode.cancelOrder(tx);
+    result.proofs.push(
+      await this.ledger.signOrder({
+        amountPrecision: order.data.amount?.asset?.precision || 0,
+        feePrecision: 8,
+        dataBuffer: binary.serializeOrder(result),
+        dataVersion: result.version,
+      })
+    );
 
-        result.signature = await this.ledger.signRequest({
-          dataBuffer: cancelOrderParamsToBytes(result),
-        });
+    return stringify(result);
+  }
 
-        return stringify(result);
-      }
-      default:
-        throw new Error(`Unexpected tx type: ${tx.type}`);
-    }
+  async signCancelOrder(cancelOrder): Promise<string> {
+    const result = fromSignatureAdapterToNode.cancelOrder(cancelOrder);
+
+    result.signature = await this.ledger.signRequest({
+      dataBuffer: cancelOrderParamsToBytes(result),
+    });
+
+    return stringify(result);
   }
 
   async signRequest(request) {
