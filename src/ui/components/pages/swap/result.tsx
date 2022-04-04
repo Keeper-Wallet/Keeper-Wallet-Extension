@@ -190,24 +190,12 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
           />
 
           <div className={styles.cardText}>
-            <Balance
-              addSign="-"
-              split
-              showAsset
-              balance={fromMoney}
-              showUsdAmount
-            />
+            <Balance addSign="-" split showAsset balance={fromMoney} />
 
             {[SwapStatus.Pending, SwapStatus.Succeeded].includes(
               swapStatus
             ) && (
-              <Balance
-                addSign="+"
-                split
-                showAsset
-                balance={receivedMoney}
-                showUsdAmount
-              />
+              <Balance addSign="+" split showAsset balance={receivedMoney} />
             )}
           </div>
         </div>
