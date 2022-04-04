@@ -4,17 +4,32 @@ import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';
 import { getAsset } from '../../../actions';
+import { AssetDetail } from 'ui/services/Background';
+import { UsdAmount } from '../UsdAmount';
+import * as styles from './Balance.module.css';
 
 const SEPARATOR = '.';
 
-const Loading = ({ children }) => {
-  return (
-    <div>
-      <Loader />
-      {children}
-    </div>
-  );
-};
+const Loading = ({ children }) => (
+  <div>
+    <Loader />
+    {children}
+  </div>
+);
+
+interface Props {
+  balance: Money | string | BigNumber;
+  assetId?: string;
+  split?: boolean;
+  showAsset?: boolean;
+  showUsdAmount?: boolean;
+  isShortFormat?: boolean;
+  children?: any;
+  addSign?: string;
+  className?: string;
+  assets?: Record<string, AssetDetail>;
+  getAsset: (id: string) => void;
+}
 
 const BalanceComponent = ({
   balance,
@@ -22,12 +37,13 @@ const BalanceComponent = ({
   getAsset,
   addSign = null,
   showAsset,
+  showUsdAmount,
   isShortFormat,
   children,
   assets,
   assetId = 'WAVES',
   ...props
-}: IProps) => {
+}: Props) => {
   let balanceOut: Money;
 
   React.useEffect(() => {
@@ -57,7 +73,16 @@ const BalanceComponent = ({
   if (!split) {
     return (
       <div {...props}>
-        {tokens.join(SEPARATOR)} {assetName} {children}
+        {tokens.join(SEPARATOR)} {assetName}
+        {showUsdAmount && (
+          <UsdAmount
+            className={styles.usdAmountNote}
+            asset={assets[balanceOut.asset.id]}
+            amount={+balanceOut.toTokens()}
+            addSign={addSign}
+          />
+        )}
+        {children}
       </div>
     );
   }
@@ -74,6 +99,14 @@ const BalanceComponent = ({
       ) : null}
       &nbsp;
       <span className="font400">{assetName}</span>
+      {showUsdAmount && (
+        <UsdAmount
+          className={styles.usdAmount}
+          asset={assets[balanceOut.asset.id]}
+          amount={+balanceOut.toTokens()}
+          addSign={addSign}
+        />
+      )}
       {children}
     </div>
   );
@@ -82,16 +115,3 @@ const BalanceComponent = ({
 export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(
   BalanceComponent
 );
-
-interface IProps {
-  balance: Money | string | BigNumber;
-  assetId?: string;
-  split?: boolean;
-  showAsset?: boolean;
-  isShortFormat?: boolean;
-  children?: any;
-  addSign?: string;
-  className?: string;
-  assets?: Object;
-  getAsset: (id: string) => void;
-}

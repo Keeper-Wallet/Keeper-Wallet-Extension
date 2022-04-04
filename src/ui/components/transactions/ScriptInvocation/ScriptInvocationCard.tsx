@@ -15,7 +15,7 @@ const AmountTable = props => {
           {props.amounts.map((amount, index) => (
             <tr key={index} className={cn(styles.dataRow)}>
               <td className={styles.dataItem}>
-                <Balance isShortFormat={true} balance={amount} />
+                <Balance isShortFormat={true} balance={amount} showUsdAmount />
               </td>
               <td className={styles.dataItemLast}>
                 <Asset assetId={amount.asset.id} />

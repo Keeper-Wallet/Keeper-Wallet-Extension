@@ -97,7 +97,7 @@ export class NetworkController {
     return this.store.getState().customMatchers;
   }
 
-  getMather(network) {
+  getMatcher(network) {
     network = network || this.getNetwork();
     return (
       this.getCustomMatchers()[network] ||
@@ -107,7 +107,7 @@ export class NetworkController {
 
   async getMatcherPublicKey() {
     const keyMap = {};
-    const url = new URL('/matcher', this.getMather()).toString();
+    const url = new URL('/matcher', this.getMatcher()).toString();
     if (keyMap[url] == null) {
       const resp = await fetch(url);
 
@@ -126,7 +126,7 @@ export class NetworkController {
         url = new URL('transactions/broadcast', API_BASE).toString();
         break;
       case 'order':
-        API_BASE = this.getMather();
+        API_BASE = this.getMatcher();
         if (!API_BASE) {
           throw new Error('Matcher not set. Cannot send order');
         }
@@ -134,7 +134,7 @@ export class NetworkController {
         break;
       case 'cancelOrder':
         const { amountAsset, priceAsset } = message;
-        API_BASE = this.getMather();
+        API_BASE = this.getMatcher();
         if (!API_BASE) {
           throw new Error('Matcher not set. Cannot send order');
         }

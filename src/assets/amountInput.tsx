@@ -8,11 +8,13 @@ import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
 import { Loader } from 'ui/components/ui';
 import { Trans } from 'react-i18next';
+import { UsdAmount } from '../ui/components/ui/UsdAmount';
 
 interface Props {
   balance: Money;
   label: string;
   loading?: boolean;
+  showUsdAmount?: boolean;
   value: string;
   onChange?: (newValue: string) => void;
   onLogoClick?: () => void;
@@ -23,11 +25,13 @@ export function AssetAmountInput({
   balance,
   label,
   loading,
+  showUsdAmount,
   value,
   onChange,
   onLogoClick,
   onMaxClick,
 }: Props) {
+  const assets = useAppSelector(state => state.assets);
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
@@ -120,7 +124,14 @@ export function AssetAmountInput({
       <div className={styles.main}>
         <div className={styles.top}>
           <div className={styles.label}>{label}</div>
-          <div className={styles.balance}>{balance.toTokens()}</div>
+          <div>
+            <UsdAmount
+              className={styles.usdBalance}
+              asset={assets[asset.id]}
+              amount={+balance.toTokens()}
+            />
+            <div className={styles.balance}>{balance.toTokens()}</div>
+          </div>
         </div>
 
         <div className={styles.bottom}>
@@ -128,16 +139,32 @@ export function AssetAmountInput({
             {loading ? (
               <Loader />
             ) : onChange ? (
-              <input
-                className={styles.input}
-                placeholder="0.0"
-                maxLength={23}
-                ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
-                data-testid="amountInput"
-              />
+              <>
+                <input
+                  className={styles.input}
+                  placeholder="0.0"
+                  maxLength={23}
+                  ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+                  data-testid="amountInput"
+                />
+                {showUsdAmount && (
+                  <UsdAmount
+                    className={styles.usdAmount}
+                    asset={assets[asset.id]}
+                    amount={+value}
+                  />
+                )}
+              </>
             ) : (
               <div className={styles.result} title={formattedValue}>
                 {formattedValue}
+                {showUsdAmount && (
+                  <UsdAmount
+                    className={styles.usdResult}
+                    asset={assets[asset.id]}
+                    amount={+formattedValue}
+                  />
+                )}
               </div>
             )}
           </div>

@@ -17,6 +17,19 @@ const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const MAX_AGE = 60 * 60 * 1000;
 
+const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
+const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
+const MARKETDATA_POLL_INTERVAL = 10 * 60 * 1000;
+
+const stablecoinAssetTickers = {
+  '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU': 'UST',
+  '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ': 'USDT',
+  '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1': 'BUSD',
+  '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R': 'DAI',
+  DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p: 'USDN',
+  DUk2YTxhRoAqMJLus4G2b3fR8hMHVh6eiyFx5r29VR6t: 'EURN',
+};
+
 const assetTickers = {
   B1dG9exXzJdFASDF2MwCE7TYJE5My4UgVRx43nqDbF6s: 'ABTCLPC',
   '4NyYnDGopZvEAQ3TcBDJrJFWSiA2xzuAw83Ms8jT7WuK': 'ABTCLPM',
@@ -142,6 +155,7 @@ export class AssetInfoController {
         },
       },
     };
+    this.usdPriceAssets = undefined;
     this.suspiciousAssets = undefined;
     this.suspiciousLastUpdated = 0;
 
@@ -151,6 +165,9 @@ export class AssetInfoController {
       Object.assign({}, defaults, options.initState)
     );
     this.updateSuspiciousAssets();
+
+    this.updateUsdPriceAssets();
+    setInterval(this.updateUsdPriceAssets.bind(this), MARKETDATA_POLL_INTERVAL);
   }
 
   addTickersForExistingAssets() {
@@ -238,6 +255,9 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
             isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
+            usdPrice: this.usdPriceAssets
+              ? this.usdPriceAssets[assetInfo.assetId]
+              : undefined,
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -322,6 +342,9 @@ export class AssetInfoController {
               issuer: assetInfo.issuer,
               isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
               lastUpdated,
+              usdPrice: this.usdPriceAssets
+                ? this.usdPriceAssets[assetInfo.assetId]
+                : undefined,
             };
           }
         });
@@ -359,5 +382,34 @@ export class AssetInfoController {
     }
 
     this.store.updateState({ assets });
+  }
+
+  async updateUsdPriceAssets() {
+    let { assets } = this.store.getState();
+    const network = this.getNetwork();
+
+    const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
+
+    if (resp.ok) {
+      const tickers = await resp.json();
+      this.usdPriceAssets = tickers.reduce((acc, ticker) => {
+        if (
+          !stablecoinAssetTickers[ticker.amountAssetID] &&
+          ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
+        ) {
+          acc[ticker.amountAssetID] = ticker['24h_close'];
+
+          const asset =
+            assets[network] && assets[network][ticker.amountAssetID];
+          if (asset) {
+            asset.usdPrice = ticker['24h_close'];
+          }
+        }
+
+        return acc;
+      }, {});
+
+      this.store.updateState({ assets });
+    }
   }
 }

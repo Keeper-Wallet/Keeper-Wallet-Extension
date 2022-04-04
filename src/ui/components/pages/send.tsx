@@ -150,6 +150,7 @@ export function Send() {
                             asset: currentAsset.displayName,
                           })}
                           value={amountValue}
+                          showUsdAmount
                           onChange={value => {
                             setAmountValue(value);
                           }}

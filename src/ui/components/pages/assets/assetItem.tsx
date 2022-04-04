@@ -86,7 +86,13 @@ export function AssetItem({
         </div>
 
         <div className={styles.balance}>
-          <Balance isShortFormat={false} split={true} balance={balance} />
+          <Balance
+            isShortFormat={false}
+            split={true}
+            balance={balance}
+            assetId={assetId}
+            showUsdAmount
+          />
         </div>
       </div>
 

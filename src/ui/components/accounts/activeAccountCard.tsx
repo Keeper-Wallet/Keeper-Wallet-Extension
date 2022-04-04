@@ -42,7 +42,13 @@ export function ActiveAccountCard({
             {account.name}
           </div>
 
-          <Balance balance={balance} isShortFormat={false} showAsset split />
+          <Balance
+            balance={balance}
+            isShortFormat={false}
+            showAsset
+            showUsdAmount
+            split
+          />
         </div>
 
         <Tooltip content={<Trans i18nKey="assets.inStorage" />}>
