@@ -594,14 +594,6 @@ export class MessageController extends EventEmitter {
    * @returns {Promise<{ id, bytes }>}
    */
   async _getMessageDataHash(data, account) {
-    if (data && data.type === 'wavesAuth') {
-      return { id: wavesAuth(data.data, 'fake user').hash };
-    }
-
-    if (data && data.type === 'customData') {
-      return { id: customData(data.data, 'fake user').hash };
-    }
-
     let signableData = await this._transformData({ ...data.data });
 
     const adapter = new InfoAdapter(account);
@@ -643,8 +635,7 @@ export class MessageController extends EventEmitter {
         result.data = message.data;
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        messageMeta = await this._getMessageDataHash(message, message.account);
-        result.messageHash = messageMeta.id;
+        result.messageHash = wavesAuth(message.data, 'fake user').hash;
         break;
       case 'auth':
         try {
@@ -794,8 +785,7 @@ export class MessageController extends EventEmitter {
       case 'customData':
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        messageMeta = await this._getMessageDataHash(result, message.account);
-        result.messageHash = messageMeta.id;
+        result.messageHash = customData(result.data, 'fake user').hash;
         break;
       case 'pairing':
         if (
