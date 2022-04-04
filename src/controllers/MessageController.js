@@ -18,6 +18,7 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
+import { convertFromSa } from 'transactions/utils';
 import { getTxVersions } from '../wallets';
 
 const { stringify } = create({ BigNumber });
@@ -75,6 +76,7 @@ export class MessageController extends EventEmitter {
     // Broadcast and getMatcherPublicKey method from NetworkController
     this.broadcast = messages => options.networkController.broadcast(messages);
     this.getMatcherPublicKey = options.getMatcherPublicKey;
+    this.networkController = options.networkController;
 
     this.getMessagesConfig = options.getMessagesConfig;
     this.getPackConfig = options.getPackConfig;
@@ -736,7 +738,9 @@ export class MessageController extends EventEmitter {
         );
         result.messageHash = messageMeta.id;
         result.bytes = Array.from(messageMeta.bytes);
-        result.json = await this._prepareMessageJson(clone(result));
+        result.json = await this._fillSignableData(clone(result)).then(
+          filledMessage => stringify(convertFromSa.order(filledMessage.data))
+        );
         break;
       case 'transaction':
         if (!result.data.type || result.data.type >= 1000) {
@@ -754,7 +758,14 @@ export class MessageController extends EventEmitter {
         const [meta, lease, json] = await Promise.all([
           this._getMessageDataHash(result.data, message.account),
           result.data.type === 9 && this.txInfo(result.data.data.leaseId),
-          this._prepareMessageJson(clone(result)),
+          this._fillSignableData(clone(result)).then(filledMessage =>
+            stringify(
+              convertFromSa.transaction(
+                filledMessage.data,
+                this.networkController.getNetworkCode().charCodeAt(0)
+              )
+            )
+          ),
         ]);
 
         result.messageHash = meta.id;
@@ -973,17 +984,5 @@ export class MessageController extends EventEmitter {
       matcherFee: defaultFee,
     };
     return { ...orderDefaults, ...orderParams };
-  }
-
-  async _prepareMessageJson(message) {
-    const filledMessage = await this._fillSignableData(clone(message));
-
-    const adapter = new InfoAdapter(message.account);
-    const signable = adapter.makeSignable(filledMessage.data);
-
-    return stringify({
-      ...(await signable.getSignData()),
-      sender: message.account.address,
-    });
   }
 }
