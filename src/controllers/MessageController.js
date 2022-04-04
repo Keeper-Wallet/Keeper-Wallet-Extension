@@ -18,7 +18,7 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
-import { convertFromSa } from 'transactions/utils';
+import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
 import { getTxVersions } from '../wallets';
 
 const { stringify } = create({ BigNumber });
@@ -140,15 +140,12 @@ export class MessageController extends EventEmitter {
         noSign: true,
         id: message.id,
         hash: message.messageHash,
-        bytes: message.bytes,
       };
     }
 
-    const { bytes, ...toSave } = message;
-
     log.debug(`Generated message ${JSON.stringify(message)}`);
 
-    messages.push(toSave);
+    messages.push(message);
 
     this._updateStore(messages);
 
@@ -587,25 +584,6 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  /**
-   * Calculates hash of message data. It is TX id for transactions. Also used for auth and requests. Throws if data is invalid
-   * @param {object} data - data field from message
-   * @param {object} account - Waves Keeper account
-   * @returns {Promise<{ id, bytes }>}
-   */
-  async _getMessageDataHash(data, account) {
-    let signableData = await this._transformData({ ...data.data });
-
-    const adapter = new InfoAdapter(account);
-    const signable = adapter.makeSignable({ ...data, data: signableData });
-
-    const [id, bytes] = await Promise.all([
-      signable.getId(),
-      signable.getBytes(),
-    ]);
-    return { id, bytes: Array.from(bytes) };
-  }
-
   async _generateMessage(messageData) {
     const { options } = messageData;
 
@@ -621,7 +599,7 @@ export class MessageController extends EventEmitter {
 
   async _validateAndTransform(message) {
     let result = { ...message };
-    let messageMeta;
+
     if (message.data && message.data.successPath) {
       result.successPath = message.data.successPath;
     }
@@ -663,18 +641,14 @@ export class MessageController extends EventEmitter {
           },
         };
 
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
+        result.messageHash = getHash.auth(
+          makeBytes.auth(convertFromSa.auth(result.data))
         );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
         break;
-      case 'transactionPackage':
+      case 'transactionPackage': {
         if (!Array.isArray(message.data))
           throw new Error('Should contain array of txParams');
         const { max, allow_tx } = this.getPackConfig();
-        const {} = this.getMessagesConfig();
 
         const msgs = message.data.length;
 
@@ -691,95 +665,104 @@ export class MessageController extends EventEmitter {
         }
 
         const ids = [];
-        const bytes = [];
 
         const dataPromises = message.data.map(async txParams => {
-          const hasFee = !!txParams.data.fee;
           this._validateTx(txParams, message.account);
           const data = this._prepareTx(txParams.data, message.account);
-          let readyData = { ...txParams, data };
-          const feeData = !hasFee ? await this._getFee(message, readyData) : {};
-          readyData = { ...readyData, data: { ...data, ...feeData } };
-          messageMeta = await this._getMessageDataHash(
-            readyData,
-            message.account
+
+          const feeData = !txParams.data.fee
+            ? await this._getFee(message, { ...txParams, data })
+            : {};
+
+          const readyData = await this._transformData({
+            ...txParams,
+            data: { ...data, ...feeData },
+          });
+
+          const id = getHash.transaction(
+            makeBytes.transaction(
+              convertFromSa.transaction(
+                readyData,
+                this.networkController.getNetworkCode().charCodeAt(0)
+              )
+            )
           );
-          ids.push(messageMeta.id);
-          bytes.push(messageMeta.bytes);
-          readyData.id = messageMeta.id;
+          ids.push(id);
+          readyData.id = id;
           return readyData;
         });
         result.data = await Promise.all(dataPromises);
         result.messageHash = ids;
-        result.bytes = bytes;
         break;
-      case 'order':
+      }
+      case 'order': {
         this._validateOrder(result.data);
+
         result.data.data = await this._prepareOrder(
           result.data.data,
           message.account
         );
+
         const matcherFeeData = !hasFee
           ? await this._getFee(message, result.data)
           : {};
+
+        const filledMessage = await this._fillSignableData(clone(result));
+        const convertedData = convertFromSa.order(filledMessage.data);
+
         result.data.data = { ...result.data.data, ...matcherFeeData };
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
-        );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
-        result.json = await this._fillSignableData(clone(result)).then(
-          filledMessage => stringify(convertFromSa.order(filledMessage.data))
-        );
+        result.messageHash = getHash.order(makeBytes.order(convertedData));
+        result.json = stringify(convertedData);
         break;
-      case 'transaction':
+      }
+      case 'transaction': {
         if (!result.data.type || result.data.type >= 1000) {
           throw ERRORS.REQUEST_ERROR(result.data);
         }
 
         this._validateTx(result.data, message.account);
         result.data.data = this._prepareTx(result.data.data, message.account);
+
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
+
         result.data.data = { ...result.data.data, ...feeData };
         result.data.data.initialFee = result.data.data.initialFee || {
           ...result.data.data.fee,
         };
 
-        const [meta, lease, json] = await Promise.all([
-          this._getMessageDataHash(result.data, message.account),
+        const [lease, filledMessage] = await Promise.all([
           result.data.type === 9 && this.txInfo(result.data.data.leaseId),
-          this._fillSignableData(clone(result)).then(filledMessage =>
-            stringify(
-              convertFromSa.transaction(
-                filledMessage.data,
-                this.networkController.getNetworkCode().charCodeAt(0)
-              )
-            )
-          ),
+          this._fillSignableData(clone(result)),
         ]);
 
-        result.messageHash = meta.id;
-        result.bytes = Array.from(meta.bytes);
         result.lease = lease;
-        result.json = json;
+
+        const convertedData = convertFromSa.transaction(
+          filledMessage.data,
+          this.networkController.getNetworkCode().charCodeAt(0)
+        );
+
+        result.messageHash = getHash.transaction(
+          makeBytes.transaction(convertedData)
+        );
+
+        result.json = stringify(convertedData);
         break;
+      }
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
-      case 'request':
+      case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
           senderPublicKey: message.account.publicKey,
         };
         result.data.data = { ...requestDefaults, ...result.data.data };
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
+        result.messageHash = getHash.request(
+          makeBytes.request(convertFromSa.request(result.data))
         );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
         break;
+      }
       case 'authOrigin':
         break;
       case 'customData':

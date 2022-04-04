@@ -1,7 +1,12 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { binary, serializePrimitives } from '@waves/marshall';
-import { base58Encode, concat, stringToBytes } from '@waves/ts-lib-crypto';
+import {
+  base58Encode,
+  blake2b,
+  concat,
+  stringToBytes,
+} from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
   alias,
@@ -573,4 +578,14 @@ export const makeBytes = {
     ),
   order: binary.serializeOrder,
   cancelOrder: cancelOrderParamsToBytes,
+};
+
+const hash = (bytes: Uint8Array | number[]) => base58Encode(blake2b(bytes));
+
+export const getHash = {
+  transaction: (bytes: Uint8Array) =>
+    hash(bytes[0] === 10 ? [bytes[0], ...bytes.slice(36, -16)] : bytes),
+  auth: hash,
+  request: hash,
+  order: hash,
 };
