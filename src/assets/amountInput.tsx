@@ -125,11 +125,13 @@ export function AssetAmountInput({
         <div className={styles.top}>
           <div className={styles.label}>{label}</div>
           <div>
-            <UsdAmount
-              className={styles.usdBalance}
-              asset={assets[asset.id]}
-              amount={+balance.toTokens()}
-            />
+            {showUsdAmount && (
+              <UsdAmount
+                className={styles.usdBalance}
+                asset={assets[asset.id]}
+                amount={+balance.toTokens()}
+              />
+            )}
             <div className={styles.balance}>{balance.toTokens()}</div>
           </div>
         </div>
