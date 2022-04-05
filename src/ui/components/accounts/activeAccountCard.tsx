@@ -41,7 +41,7 @@ export function ActiveAccountCard({
           </div>
 
           {amount !== null ? (
-            <p className={styles.accountAmount}>{`≈ $${amount.toFixed(2)}`}</p>
+            <p className={styles.accountAmount}>{`$${amount.toFixed(2)}`}</p>
           ) : (
             <Loader />
           )}
