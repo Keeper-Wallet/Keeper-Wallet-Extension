@@ -802,6 +802,13 @@ export class MessageController extends EventEmitter {
       throw new Error('fee is not valid');
     }
 
+    if (
+      'chainId' in tx.data &&
+      tx.data.chainId !== this.networkController.getNetworkCode().charCodeAt(0)
+    ) {
+      throw new Error('chainId does not match current network');
+    }
+
     const versions = getTxVersions(account.type)[tx.type];
 
     if ('version' in tx.data && !versions.includes(tx.data.version)) {
