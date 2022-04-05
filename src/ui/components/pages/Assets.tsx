@@ -10,7 +10,7 @@ import {
   setUiState,
 } from 'ui/actions';
 import { PAGES } from 'ui/pageConfig';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -72,20 +72,26 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
-  const assetInfo = assets['WAVES'];
+  const amount = balances[address]?.assets
+    ? Object.entries(balances[address].assets).reduce(
+        (acc, [id, { balance }]) => {
+          if (assets[id]?.usdPrice) {
+            const tokens = new Money(balance, assets[id]).toTokens();
+            acc += +assets[id].usdPrice * +tokens;
+          }
 
-  let wavesBalance;
-  if (assetInfo) {
-    const asset = new Asset(assetInfo);
-    wavesBalance = new Money(balances[address]?.available || 0, asset);
-  }
+          return acc;
+        },
+        0
+      )
+    : null;
 
   return (
     <div data-testid="assetsForm" className={styles.assets}>
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          balance={wavesBalance}
+          amount={amount}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

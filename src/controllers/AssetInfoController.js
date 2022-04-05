@@ -24,10 +24,10 @@ const MARKETDATA_POLL_INTERVAL = 10 * 60 * 1000;
 const stablecoinAssetTickers = {
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU': 'UST',
   '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ': 'USDT',
+  '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ': 'USDC',
   '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1': 'BUSD',
   '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R': 'DAI',
   DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p: 'USDN',
-  DUk2YTxhRoAqMJLus4G2b3fR8hMHVh6eiyFx5r29VR6t: 'EURN',
 };
 
 const assetTickers = {

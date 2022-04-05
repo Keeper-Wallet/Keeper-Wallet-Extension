@@ -4,14 +4,12 @@ import { AssetDetail } from 'ui/services/Background';
 interface Props {
   asset?: AssetDetail;
   amount: number;
-  addSign?: string;
   className?: string;
 }
 
-export const UsdAmount = ({ asset, amount, addSign, className }: Props) =>
+export const UsdAmount = ({ asset, amount, className }: Props) =>
   +asset?.usdPrice ? (
-    <p className={className}>
-      {addSign ? <span>{addSign}</span> : null}
-      <span>{`$${(+asset.usdPrice * amount).toFixed(2)}`}</span>
-    </p>
+    <p className={className}>{`≈ $${
+      Math.ceil(+asset.usdPrice * amount * 100) / 100
+    }`}</p>
   ) : null;

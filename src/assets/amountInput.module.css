@@ -77,13 +77,6 @@
   text-overflow: ellipsis;
 }
 
-.usdBalance {
-  font-size: 10px;
-  position: absolute;
-  right: 0;
-  top: -11px;
-}
-
 .value {
   flex: 1 1 0;
   position: relative;
@@ -102,8 +95,9 @@
 }
 
 .usdAmount {
-  bottom: -11px;
-  font-size: 10px;
+  bottom: -12px;
+  color: #9ba6b2;
+  font-size: 11px;
   font-weight: 500;
   left: 0;
   position: absolute;
@@ -118,8 +112,9 @@
 }
 
 .usdResult {
-  bottom: -11px;
-  font-size: 10px;
+  bottom: -12px;
+  color: #9ba6b2;
+  font-size: 11px;
   font-weight: 700;
   left: 0;
   position: absolute;
