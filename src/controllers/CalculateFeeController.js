@@ -140,6 +140,7 @@ function currentFeeFactory(config) {
       case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
       case TRANSACTION_TYPE.SET_SCRIPT:
       case TRANSACTION_TYPE.SPONSORSHIP:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
         return minFee;
       case TRANSACTION_TYPE.REISSUE:
       case TRANSACTION_TYPE.BURN:
