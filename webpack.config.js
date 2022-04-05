@@ -19,7 +19,6 @@ const devConf = conf => ({
           '@waves/data-entities',
           '@waves/money-like-to-node',
           '@waves/node-api-js',
-          '@waves/signature-adapter',
           '@waves/ts-lib-crypto',
         ].map(
           moduleName =>

@@ -3,11 +3,6 @@ import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events';
-import {
-  AdapterType,
-  CustomAdapter,
-  WavesKeeperAdapter,
-} from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
@@ -24,35 +19,6 @@ import { getTxVersions } from '../wallets';
 const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
-
-class AccountAdapterApi {
-  type = AdapterType.Custom;
-
-  constructor(account) {
-    this.account = account;
-  }
-
-  isAvailable() {
-    return true;
-  }
-  getAddress() {
-    return this.account.address;
-  }
-  getPublicKey() {
-    return this.account.publicKey;
-  }
-}
-
-class InfoAdapter extends CustomAdapter {
-  constructor(account) {
-    super(new AccountAdapterApi(account));
-    this._code = account.networkCode.charCodeAt(0);
-  }
-
-  getSignVersions() {
-    return WavesKeeperAdapter._txVersion;
-  }
-}
 
 export class MessageController extends EventEmitter {
   constructor(options = {}) {
@@ -787,12 +753,12 @@ export class MessageController extends EventEmitter {
   }
 
   async _getFee(message, signData) {
-    let signableData = await this._transformData({ ...signData });
-
-    const adapter = new InfoAdapter(message.account);
+    const signableData = await this._transformData({ ...signData });
 
     const fee = {
-      coins: (await this.getFee(adapter, signableData)).toString(),
+      coins: (
+        await this.getFee(signableData, message.account.address)
+      ).toString(),
       assetId: 'WAVES',
     };
     return {
