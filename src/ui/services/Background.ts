@@ -1,4 +1,4 @@
-import { Asset } from '@waves/data-entities';
+import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
@@ -583,7 +583,7 @@ export enum WalletTypes {
   KeystoreWx = 'keystore_wx',
 }
 
-export interface AssetDetail extends Asset {
+export interface AssetDetail extends IAssetInfo {
   displayName: string;
   originTransactionId: string;
   issuer?: string;

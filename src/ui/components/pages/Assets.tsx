@@ -10,7 +10,7 @@ import {
   setUiState,
 } from 'ui/actions';
 import { PAGES } from 'ui/pageConfig';
-import { Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -76,7 +76,7 @@ export function Assets({ setTab }: Props) {
     ? Object.entries(balances[address].assets).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id]?.usdPrice) {
-            const tokens = new Money(balance, assets[id]).toTokens();
+            const tokens = new Money(balance, new Asset(assets[id])).toTokens();
             acc += +assets[id].usdPrice * +tokens;
           }
 

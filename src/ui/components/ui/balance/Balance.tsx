@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';
@@ -59,7 +59,10 @@ const BalanceComponent = ({
       balanceOut = balance as Money;
       break;
     case new BigNumber(balance as string).isNaN() === false:
-      balanceOut = Money.fromTokens(balance as string, assets['WAVES']);
+      balanceOut = Money.fromTokens(
+        balance as string,
+        new Asset(assets['WAVES'])
+      );
       break;
     default:
       return <div>N/A</div>;
