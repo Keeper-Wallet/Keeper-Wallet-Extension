@@ -11,7 +11,7 @@ import { Account } from '../../../accounts/types';
 
 interface Props {
   account: Account;
-  amount: number | null;
+  amountInUsd: number | null;
   onClick: (account: Account) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
@@ -21,7 +21,7 @@ interface Props {
 
 export function ActiveAccountCard({
   account,
-  amount,
+  amountInUsd,
   onClick,
   onCopy,
   onOtherAccountsClick,
@@ -40,8 +40,10 @@ export function ActiveAccountCard({
             {account.name}
           </div>
 
-          {amount !== null ? (
-            <p className={styles.accountAmount}>{`$${amount.toFixed(2)}`}</p>
+          {amountInUsd !== null ? (
+            <p className={styles.accountAmount}>{`$${amountInUsd.toFixed(
+              2
+            )}`}</p>
           ) : (
             <Loader />
           )}

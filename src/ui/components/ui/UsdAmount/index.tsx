@@ -7,9 +7,10 @@ interface Props {
   className?: string;
 }
 
-export const UsdAmount = ({ asset, amount, className }: Props) =>
-  +asset?.usdPrice ? (
+export function UsdAmount({ asset, amount, className }: Props) {
+  return +asset?.usdPrice ? (
     <p className={className}>{`≈ $${
       Math.ceil(+asset.usdPrice * amount * 100) / 100
     }`}</p>
   ) : null;
+}

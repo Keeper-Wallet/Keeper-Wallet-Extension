@@ -72,7 +72,7 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
-  const amount = balances[address]?.assets
+  const amountInUsd = balances[address]?.assets
     ? Object.entries(balances[address].assets).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id]?.usdPrice) {
@@ -91,7 +91,7 @@ export function Assets({ setTab }: Props) {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          amount={amount}
+          amountInUsd={amountInUsd}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

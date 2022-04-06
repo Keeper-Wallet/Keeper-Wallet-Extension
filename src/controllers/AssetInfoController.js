@@ -21,14 +21,14 @@ const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_POLL_INTERVAL = 10 * 60 * 1000;
 
-const stablecoinAssetTickers = {
-  '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU': 'UST',
-  '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ': 'USDT',
-  '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ': 'USDC',
-  '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1': 'BUSD',
-  '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R': 'DAI',
-  DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p: 'USDN',
-};
+const stablecoinAssetTickers = new Set([
+  '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
+  '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ',
+  '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ',
+  '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1',
+  '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R',
+  'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p',
+]);
 
 const assetTickers = {
   B1dG9exXzJdFASDF2MwCE7TYJE5My4UgVRx43nqDbF6s: 'ABTCLPC',
@@ -219,7 +219,10 @@ export class AssetInfoController {
 
     const { assets } = this.store.getState();
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
-      return WAVES;
+      return {
+        ...WAVES,
+        usdPrice: this.usdPriceAssets && this.usdPriceAssets['WAVES'],
+      };
 
     const network = this.getNetwork();
     const API_BASE = this.getNode();
@@ -255,9 +258,8 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
             isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
-            usdPrice: this.usdPriceAssets
-              ? this.usdPriceAssets[assetInfo.assetId]
-              : undefined,
+            usdPrice:
+              this.usdPriceAssets && this.usdPriceAssets[assetInfo.assetId],
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -342,13 +344,15 @@ export class AssetInfoController {
               issuer: assetInfo.issuer,
               isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
               lastUpdated,
-              usdPrice: this.usdPriceAssets
-                ? this.usdPriceAssets[assetInfo.assetId]
-                : undefined,
+              usdPrice:
+                this.usdPriceAssets && this.usdPriceAssets[assetInfo.assetId],
             };
           }
         });
-        assets[network]['WAVES'] = this.getWavesAsset();
+        assets[network]['WAVES'] = {
+          ...WAVES,
+          usdPrice: this.usdPriceAssets && this.usdPriceAssets['WAVES'],
+        };
         this.store.updateState({ assets });
         break;
       default:
@@ -394,7 +398,7 @@ export class AssetInfoController {
       const tickers = await resp.json();
       this.usdPriceAssets = tickers.reduce((acc, ticker) => {
         if (
-          !stablecoinAssetTickers[ticker.amountAssetID] &&
+          !stablecoinAssetTickers.has(ticker.amountAssetID) &&
           ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
         ) {
           acc[ticker.amountAssetID] = ticker['24h_close'];
