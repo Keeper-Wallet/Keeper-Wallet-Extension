@@ -44,6 +44,7 @@ import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
+import { getTxVersions } from './wallets';
 
 const version = extension.runtime.getManifest().version;
 
@@ -1109,10 +1110,7 @@ class BackgroundService extends EventEmitter {
       account,
       network: this._getCurrentNetwork(state.selectedAccount),
       messages,
-      txVersion: this.walletController.getTxVersions(
-        state.selectedAccount.address,
-        state.selectedAccount.network
-      ),
+      txVersion: getTxVersions(state.selectedAccount.type),
     };
   }
 

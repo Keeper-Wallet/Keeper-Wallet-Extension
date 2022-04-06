@@ -132,10 +132,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  getTxVersions() {
-    return txVersions;
-  }
-
   async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
     const publicKey = data.publicKey || this.data.publicKey;
     const timestamp = data.timestamp || Date.now();

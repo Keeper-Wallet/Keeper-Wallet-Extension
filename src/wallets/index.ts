@@ -1,3 +1,5 @@
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { AccountType } from 'accounts/types';
 import { SeedWallet, SeedWalletInput } from './seed';
 import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
 import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
@@ -73,5 +75,54 @@ export function createWallet(
       );
     default:
       throw new Error(`Unsupported wallet type: "${(input as any).type}"`);
+  }
+}
+
+export function getTxVersions(accountType: AccountType) {
+  switch (accountType) {
+    case 'ledger':
+      return {
+        [TRANSACTION_TYPE.ISSUE]: [2],
+        [TRANSACTION_TYPE.TRANSFER]: [2],
+        [TRANSACTION_TYPE.REISSUE]: [2],
+        [TRANSACTION_TYPE.BURN]: [2],
+        [TRANSACTION_TYPE.EXCHANGE]: [0, 1, 2],
+        [TRANSACTION_TYPE.LEASE]: [2],
+        [TRANSACTION_TYPE.CANCEL_LEASE]: [2],
+        [TRANSACTION_TYPE.ALIAS]: [2],
+        [TRANSACTION_TYPE.MASS_TRANSFER]: [1],
+        [TRANSACTION_TYPE.DATA]: [1],
+        [TRANSACTION_TYPE.SET_SCRIPT]: [1],
+        [TRANSACTION_TYPE.SPONSORSHIP]: [1],
+        [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: [1],
+        [TRANSACTION_TYPE.INVOKE_SCRIPT]: [1],
+        [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
+        1000: [1],
+        1001: [1],
+        1002: [1, 2, 3],
+        1003: [1],
+      };
+    default:
+      return {
+        [TRANSACTION_TYPE.ISSUE]: [3, 2],
+        [TRANSACTION_TYPE.TRANSFER]: [3, 2],
+        [TRANSACTION_TYPE.REISSUE]: [3, 2],
+        [TRANSACTION_TYPE.BURN]: [3, 2],
+        [TRANSACTION_TYPE.EXCHANGE]: [0, 1, 3, 2],
+        [TRANSACTION_TYPE.LEASE]: [3, 2],
+        [TRANSACTION_TYPE.CANCEL_LEASE]: [3, 2],
+        [TRANSACTION_TYPE.ALIAS]: [3, 2],
+        [TRANSACTION_TYPE.MASS_TRANSFER]: [2, 1],
+        [TRANSACTION_TYPE.DATA]: [2, 1],
+        [TRANSACTION_TYPE.SET_SCRIPT]: [2, 1],
+        [TRANSACTION_TYPE.SPONSORSHIP]: [2, 1],
+        [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: [2, 1],
+        [TRANSACTION_TYPE.INVOKE_SCRIPT]: [2, 1],
+        [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
+        1000: [1],
+        1001: [1],
+        1002: [1, 2, 3],
+        1003: [0, 1],
+      };
   }
 }
