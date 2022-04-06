@@ -51,14 +51,16 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
           </div>
         </div>
 
-        <div className={styles.cardContent}>
-          <div className={styles.txRow}>
-            <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.recipient" />
+        {message.lease?.recipient && (
+          <div className={styles.cardContent}>
+            <div className={styles.txRow}>
+              <div className="tx-title tag1 basic500">
+                <Trans i18nKey="transactions.recipient" />
+              </div>
+              <div className={styles.txValue}>{message.lease.recipient}</div>
             </div>
-            <div className={styles.txValue}>{message.lease.recipient}</div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
