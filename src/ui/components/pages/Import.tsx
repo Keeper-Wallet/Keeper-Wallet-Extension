@@ -28,6 +28,12 @@ export const Import = connect((state: any) => ({
     dispatch(setUiState({ isFeatureUpdateShown: true }));
   const exportToKeystore = () => setTab(PAGES.EXPORT_ACCOUNTS);
 
+  const [isLedgerSupported, setIsLedgerSupported] = React.useState(false);
+
+  React.useEffect(() => {
+    TransportWebUSB.isSupported().then(setIsLedgerSupported);
+  }, []);
+
   return (
     <div className={styles.root}>
       <img
@@ -79,7 +85,7 @@ export const Import = connect((state: any) => ({
           </Button>
         </div>
 
-        {TransportWebUSB.isSupported && (
+        {isLedgerSupported && (
           <div className={styles.importButtonsItem}>
             <Button
               className={styles.importButton}
