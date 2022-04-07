@@ -29,6 +29,7 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
 
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx, message), assets);
+    const recipient = message.lease?.recipient || data.lease?.recipient;
 
     return (
       <div className={className}>
@@ -51,13 +52,13 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
           </div>
         </div>
 
-        {message.lease?.recipient && (
+        {recipient && (
           <div className={styles.cardContent}>
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
                 <Trans i18nKey="transactions.recipient" />
               </div>
-              <div className={styles.txValue}>{message.lease.recipient}</div>
+              <div className={styles.txValue}>{recipient}</div>
             </div>
           </div>
         )}

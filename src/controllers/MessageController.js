@@ -656,6 +656,10 @@ export class MessageController extends EventEmitter {
           );
           ids.push(id);
           readyData.id = id;
+          if (txParams.type === 9 && txParams.data.leaseId) {
+            const lease = await this.txInfo(txParams.data.leaseId);
+            readyData = { ...readyData, data: { ...data, lease } };
+          }
           return readyData;
         });
         result.data = await Promise.all(dataPromises);
