@@ -86,17 +86,13 @@ export function AssetItem({
         </div>
 
         <div className={styles.balance}>
-          {!isLoading ? (
-            <Balance
-              isShortFormat={false}
-              split={true}
-              balance={balance}
-              assetId={assetId}
-              showUsdAmount
-            />
-          ) : (
-            <Loader />
-          )}
+          <Balance
+            isShortFormat={false}
+            split={true}
+            balance={balance}
+            assetId={isLoading ? 'WAVES' : assetId}
+            showUsdAmount
+          />
         </div>
       </div>
 
