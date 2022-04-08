@@ -96,7 +96,7 @@
 
 .usdAmount {
   bottom: -12px;
-  color: #9ba6b2;
+  color: var(--color-basic500);
   font-size: 11px;
   font-weight: 500;
   left: 0;
@@ -113,7 +113,7 @@
 
 .usdResult {
   bottom: -12px;
-  color: #9ba6b2;
+  color: var(--color-basic500);
   font-size: 11px;
   font-weight: 700;
   left: 0;
