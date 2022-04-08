@@ -188,7 +188,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 I have read and agree with the
               </Trans>{' '}
               <a
-                href="https://keeper-wallet.app/privacy-policy"
+                href="https://keeper-wallet.app/terms-of-use"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -210,7 +210,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 I have read and agree with the
               </Trans>{' '}
               <a
-                href="https://keeper-wallet.app/terms-of-use"
+                href="https://keeper-wallet.app/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
               >
