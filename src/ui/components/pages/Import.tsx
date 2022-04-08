@@ -85,28 +85,36 @@ export const Import = connect((state: any) => ({
           </Button>
         </div>
 
-        {isLedgerSupported && (
-          <div className={styles.importButtonsItem}>
-            <Button
-              className={styles.importButton}
-              type="button"
-              view="transparent"
-              onClick={() => setTab(PAGES.IMPORT_LEDGER)}
+        <div className={styles.importButtonsItem}>
+          <Button
+            className={styles.importButton}
+            disabled={!isLedgerSupported}
+            type="button"
+            view="transparent"
+            onClick={() => setTab(PAGES.IMPORT_LEDGER)}
+          >
+            <svg
+              className={styles.importButtonIcon}
+              width="20"
+              height="21"
+              fill="#000"
+              stroke="#000"
+              viewBox="0 0 20 21"
             >
-              <svg
-                className={styles.importButtonIcon}
-                width="20"
-                height="21"
-                fill="#000"
-                stroke="#000"
-                viewBox="0 0 20 21"
-              >
-                <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
-              </svg>
-              <Trans i18nKey="import.viaLedger" />
-            </Button>
-          </div>
-        )}
+              <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
+            </svg>
+            <div>
+              <div>
+                <Trans i18nKey="import.viaLedger" />
+              </div>
+              {!isLedgerSupported && (
+                <div className={styles.importButtonNote}>
+                  <Trans i18nKey="import.notSupportedByBrowser" />
+                </div>
+              )}
+            </div>
+          </Button>
+        </div>
 
         <div className={styles.importButtonsItem}>
           <Button

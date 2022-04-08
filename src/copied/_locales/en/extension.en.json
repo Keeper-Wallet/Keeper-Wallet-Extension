@@ -255,6 +255,7 @@
     "beta": "beta",
     "createNew": "Create a new account",
     "importVia": "Or import via",
+    "notSupportedByBrowser": "Not supported by your browser",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",

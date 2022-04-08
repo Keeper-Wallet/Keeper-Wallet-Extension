@@ -34,7 +34,7 @@
     background: url(../../../assets/img/arrow-right-14-basic-200.svg) right center no-repeat;
     text-align: left;
 
-    &:hover
+    &:not(:disabled):hover
       color: $submit300;
 
 .importButton {
@@ -44,12 +44,21 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  line-height: 28px;
+}
+
+.importButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .importButtonIcon {
   width: 25px;
   height: 28px;
+}
+
+.importButtonNote {
+  color: var(--color-basic500);
+  font-size: 12px;
 }
 
 .importButtonBadge {
