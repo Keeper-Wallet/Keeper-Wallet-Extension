@@ -9,7 +9,7 @@ export const txType = 'transactionPackage';
 export function getTransactionData(item) {
   const tx = { type: item.type, ...(item.data ? item.data : item) };
   const config = getConfigByTransaction({ data: item, type: 'transaction' });
-  return { tx, config, lease: item.lease };
+  return { tx, config, ...(item.lease ? { lease: item.lease } : {} ) };
 }
 
 export function getAssetsId(tx): Array<string> {
