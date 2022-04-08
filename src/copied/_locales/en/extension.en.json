@@ -176,16 +176,16 @@
     "verifyBtn": "Verify"
   },
   "featureUpdateInfo": {
-    "intro": "Waves Keeper cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
+    "intro": "Keeper Wallet cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
     "recommendation": "So we highly recommend to create a backup file with seed phrases of all your accounts.",
     "keystoreInfo": "Keystore file is a secure place where you can store seed phrases encrypted with your password.",
-    "keystoreImport": "You can later import accounts from this file back into Waves Keeper.",
+    "keystoreImport": "You can later import accounts from this file back into Keeper Wallet.",
     "backupBtn": "Back up to a keystore file",
     "cancelBtn": "I'll do it later"
   },
   "forgotPassword": {
     "attention": "Attention!",
-    "attentionMessage": "To reset the password, you need to delete all accounts from Waves Keeper, set a new password, import each of your account again from the Seed phrase.",
+    "attentionMessage": "To reset the password, you need to delete all accounts from Keeper Wallet, set a new password, import each of your account again from the Seed phrase.",
     "warningMessage": "If you have not saved the Seed phrase or Private key, then you will not be able to recover access to your account.",
     "continueMessage": "To continue, type this into the field below",
     "phrase": "DELETE ALL ACCOUNTS",
@@ -339,7 +339,7 @@
   },
   "info": {
     "joinUs": "Join the Waves Community",
-    "keepUp": "Waves Keeper — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Waves Keeper, you can sign transactions and remain safe from malicious sites."
+    "keepUp": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
   },
   "langsSettings": {
     "confirm": "Confirm",
@@ -393,7 +393,7 @@
     "create": "Continue",
     "createPassword": "Create a password",
     "notMatch": "Passwords do not match",
-    "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Waves Keeper. Waves does not store your passwords.",
+    "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Keeper Wallet. Waves does not store your passwords.",
     "protect": "Protect Your Account",
     "smallPass": "Password is too short"
   },
@@ -732,7 +732,7 @@
   },
   "welcome": {
     "getStarted": "Get Started",
-    "info": "Waves Keeper — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps.",
-    "info2": "Using Waves Keeper, you can sign transactions and remain safe from malicious sites."
+    "info": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps.",
+    "info2": "Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
   }
 }

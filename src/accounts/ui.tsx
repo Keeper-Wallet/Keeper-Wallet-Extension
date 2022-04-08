@@ -10,7 +10,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import { WAVESKEEPER_DEBUG } from '../constants';
+import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnode-util';
 import * as PortStream from 'lib/port-stream.js';
 import { setLangs, setTabMode } from 'ui/actions';
@@ -25,7 +25,7 @@ import { initUiSentry } from 'sentry';
 
 initUiSentry('accounts');
 
-log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
+log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 startUi();
 

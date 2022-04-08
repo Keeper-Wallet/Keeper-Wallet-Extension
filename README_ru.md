@@ -1,4 +1,4 @@
-# Waves Keeper
+# Keeper Wallet
 
 [en](https://github.com/wavesplatform/waves-keeper/blob/master/README.md) | ru
 
@@ -6,12 +6,14 @@
 и проведения транзакций в блокчейн сети Waves.
 [Информация о сети Waves](https://docs.waves.tech/ru/)
 
-## Waves Keeper API
+## Keeper Wallet API
 
 На страницах браузера, работающим по протоколам http/https (не работает на локальных страничках по протоколу `file://`),
-с установленным расширением Waves Keeper
-становятся доступным глобальный объект WavesKeeper
-в котором вы найдете следующие методы:
+с установленным расширением Keeper Wallet становятся доступным глобальный объект KeeperWallet.
+
+> Глобальный объект WavesKeeper является **устаревшим** и не рекомендуется к использованию в будущем.
+
+В объекте KeeperWallet вы найдете следующие методы:
 
 - `auth`
 - `publicState`
@@ -34,22 +36,22 @@
 
 В вашем коде вы можете использовать [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
 
-При загрузке страницы в объекте WavesKeeper нет методов апи до окончания инициализации плагина.
-Для облегчения работы с WavesKeeper при инициализации в `window.WavesKeeper` есть `initialPromise`,
+При загрузке страницы в объекте KeeperWallet нет методов апи до окончания инициализации плагина.
+Для облегчения работы с KeeperWallet при инициализации в `window.KeeperWallet` есть `initialPromise`,
 который отрабатывает в момент окончания инициализации.
 Пример:
 
 ```js
-WavesKeeper.initialPromise.then(keeperApi => {
-  /*...инициализация работы приложения с WavesKeeper*/
+KeeperWallet.initialPromise.then(keeperApi => {
+  /*...инициализация работы приложения с KeeperWallet*/
   keeperApi.publicState().then(state => startApp(state));
 });
 ```
 
-В Waves Keeper, для большей безопасности и удобства использования,
+В KeeperWallet, для большей безопасности и удобства использования,
 каждый новый сайт использующий API должен быть разрешен пользователем.
 При первой попытке использования API (кроме `on`) пользователю будет показан запрос на
-разрешение работы Waves Keeper с этим сайтом. Если пользователь согласен дать доступ,
+разрешение работы KeeperWallet с этим сайтом. Если пользователь согласен дать доступ,
 сайт становится доверенным, и получает возможность использовать API на своих страницах.
 В противном случае сайт блокируется и на все запросы будет возвращена ошибка
 `{message: "Api rejected by user", code: 12}`, пользователь не увидит новых уведомлений.
@@ -64,7 +66,7 @@ WavesKeeper.initialPromise.then(keeperApi => {
 Пример:
 
 ```js
-WavesKeeper.publicState()
+KeeperWallet.publicState()
   .then(state => {
     console.log(state); //вывод в консоль результата
     /*...обработка данных */
@@ -80,7 +82,7 @@ WavesKeeper.publicState()
 ```js
 const getPublicState = async () => {
   try {
-    const state = await WavesKeeper.publicState();
+    const state = await KeeperWallet.publicState();
     console.log(state); //вывод в консоль результата
     /*...обработка данных */
   } catch (error) {
@@ -134,20 +136,20 @@ const result = await getPublicState();
 
 Возможные ошибки
 
-- `{ message: "Init Waves Keeper and add account" }` - Keeper не проинициализирован
-- `{ message: "Add Waves Keeper account" }` - вход в Keeper произведен, но нет аккаунтов
+- `{ message: "Init Keeper Wallet and add account" }` - Keeper не проинициализирован
+- `{ message: "Add Keeper Wallet account" }` - вход в Keeper произведен, но нет аккаунтов
 - `{ message: "User denied message" }` - пользователь запретил сайту работать с Keeper API
 
 #### encryptMessage
 
 Вы можете зашифровать текст для конкретного пользователя сети Waves, зная его публичный ключ.
 
-WavesKeeper.encryptMessage(`текст для шифрования`, `публичный ключ в кодировке base58`, `префикс строкой уникальный для каждого приложения`)
+KeeperWallet.encryptMessage(`текст для шифрования`, `публичный ключ в кодировке base58`, `префикс строкой уникальный для каждого приложения`)
 
 Пример:
 
 ```js
-WavesKeeper.encryptMessage(
+KeeperWallet.encryptMessage(
   'My message',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
   'для меня'
@@ -158,10 +160,10 @@ WavesKeeper.encryptMessage(
 
 Возможные ошибки
 
-- `{ message: "Init Waves Keeper and add account" }` – кипер не проинициализирован
+- `{ message: "Init Keeper Wallet and add account" }` – кипер не проинициализирован
 - `{ message: "App is locked" }` – кипер заблокирован
 
-* `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов
+* `{ message: "Add Keeper Wallet account" }` - вход в кипер произведен, но нет аккаунтов
 * `{ message: "User denied message" }` - пользователь запретил сайту работать с Keeper API
 
 #### decryptMessage
@@ -169,7 +171,7 @@ WavesKeeper.encryptMessage(
 Вы можете расшифровать сообщение, зашифрованное для вас пользователем сети Waves, зная сообщение и публичный ключ отправителя.
 
 ```js
-WavesKeeper.decryptMessage(
+KeeperWallet.decryptMessage(
   `зашифрованный текст`,
   `публичный ключ в кодировке base58`,
   `префикс строкой уникальный для каждого приложения`
@@ -179,7 +181,7 @@ WavesKeeper.decryptMessage(
 Example:
 
 ```js
-WavesKeeper.decryptMessage(
+KeeperWallet.decryptMessage(
   '**encrypted msg**',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc'
 ).then(message => {
@@ -189,15 +191,15 @@ WavesKeeper.decryptMessage(
 
 Возможные ошибки
 
-- `{ message: "Init Waves Keeper and add account" }` – кипер не проинициализирован
+- `{ message: "Init Keeper Wallet and add account" }` – кипер не проинициализирован
 - `{ message: "App is locked" }` – кипер заблокирован
 
-* `{ message: "Add Waves Keeper account" }` - вход в кипер произведен, но нет аккаунтов
+* `{ message: "Add Keeper Wallet account" }` - вход в кипер произведен, но нет аккаунтов
 * `{ message: "User denied message" }` - пользователь запретил сайту работать с Keeper API
 
 #### on
 
-Позволяет подписаться на события из Waves Keeper.
+Позволяет подписаться на события из Keeper Wallet.
 
 Поддерживает события:
 
@@ -206,8 +208,8 @@ WavesKeeper.decryptMessage(
 Пример:
 
 ```js
-WavesKeeper.on('update', state => {
-  //state бъект как из WavesKeeper.publicState
+KeeperWallet.on('update', state => {
+  //state бъект как из KeeperWallet.publicState
 });
 ```
 
@@ -227,7 +229,7 @@ WavesKeeper.on('update', state => {
 Пример:
 
 ```js
-WavesKeeper.notification({
+KeeperWallet.notification({
   title: 'Hello!',
   message: 'Congratulation!!!',
 });
@@ -249,7 +251,7 @@ WavesKeeper.notification({
 
 ```js
 const authData = { data: 'Auth on my site' };
-WavesKeeper.auth(authData)
+KeeperWallet.auth(authData)
   .then(auth => {
     console.log(auth); //вывод в консоль результата
     /*...обработка данных */
@@ -265,7 +267,7 @@ WavesKeeper.auth(authData)
 ```js
 const getAuthData = async authData => {
   try {
-    const state = await WavesKeeper.auth(authData);
+    const state = await KeeperWallet.auth(authData);
     console.log(state); //вывод в консоль результата
     /*...обработка данных */
   } catch (error) {
@@ -297,7 +299,7 @@ const authData = {
   successPath: 'login',
 };
 
-WavesKeeper.auth(authData)
+KeeperWallet.auth(authData)
   .then(data => {
     //data - данные от кипера
     //проверка подписи и сохранение адреса...
@@ -345,7 +347,7 @@ const txData = {
     recipient: 'test',
   },
 };
-WavesKeeper.signTransaction(txData)
+KeeperWallet.signTransaction(txData)
   .then(data => {
     //data - строка готовая для отсылки на ноду(сервер) сети Waves
   })
@@ -406,7 +408,7 @@ const txData = {
   },
 };
 
-WavesKeeper.signAndPublishTransaction(txData)
+KeeperWallet.signAndPublishTransaction(txData)
   .then(data => {
     //data - строка готовая для отсылки на ноду(сервер) сети Waves
   })
@@ -479,7 +481,7 @@ const tx = [
   },
 ];
 
-WavesKeeper.signTransactionPackage(tx, name);
+KeeperWallet.signTransactionPackage(tx, name);
 ```
 
 Подписать 2 транзакции:
@@ -498,7 +500,7 @@ WavesKeeper.signTransactionPackage(tx, name);
 
 У каждого пользователя в сети waves есть стейт (балансы, ассеты, данные, скрипты),
 любая прошедшая транзакция меняет эти данные.
-В WavesKeeper API - отличается от [NODE REST API](https://docs.waves.tech/ru/waves-node/node-api/).
+В KeeperWallet API - отличается от [NODE REST API](https://docs.waves.tech/ru/waves-node/node-api/).
 
 `signTransaction`, `signAndPublishTransaction` принимают транзакцию в следующем виде
 
@@ -513,7 +515,7 @@ WavesKeeper.signTransactionPackage(tx, name);
 
 Условные обозначения
 
-> \* - необязательное поле, данные подставятся автоматически из WavesKeeper.
+> \* - необязательное поле, данные подставятся автоматически из KeeperWallet.
 > [x,y] - ограничение длины от x, до y.
 > [,x] - ограничение длины до x.
 > [y,] - ограничение длины от y.
@@ -548,7 +550,7 @@ MoneyLike может иметь вид:
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 3,
   data: {
     name: 'Best Token',
@@ -585,7 +587,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 4,
   data: {
     amount: { tokens: '3.3333333', assetId: 'WAVES' },
@@ -613,7 +615,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 5,
   data: {
     quantity: 1000,
@@ -647,7 +649,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 6,
   data: {
     amount: 1000,
@@ -679,7 +681,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 8,
   data: {
     amount: 1000,
@@ -710,7 +712,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 9,
   data: {
     leaseId: '6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS',
@@ -740,7 +742,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 10,
   data: {
     alias: 'test_alias',
@@ -773,7 +775,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 11,
   data: {
     totalAmount: { assetId: 'WAVES', coins: 0 },
@@ -810,7 +812,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 12,
   data: {
     data: [
@@ -848,7 +850,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 13,
   data: {
     script: '',
@@ -871,7 +873,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример2:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 13,
   data: {
     script:
@@ -902,7 +904,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 14,
   data: {
     minSponsoredAssetFee: {
@@ -939,7 +941,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 15,
   data: {
     assetId: '',
@@ -976,7 +978,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 16,
   data: {
     fee: {
@@ -1012,7 +1014,7 @@ WavesKeeper.signAndPublishTransaction({
 
 #### signOrder
 
-Метод Waves Keeper для подписи ордера в матчер.
+Метод Keeper Wallet для подписи ордера в матчер.
 Принимает на вход объект похожий на транзакцию вида
 
 ```js
@@ -1038,7 +1040,7 @@ WavesKeeper.signAndPublishTransaction({
 Пример:
 
 ```js
-WavesKeeper.signOrder({
+KeeperWallet.signOrder({
   type: 1002,
   data: {
     matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
@@ -1078,7 +1080,7 @@ WavesKeeper.signOrder({
 
 #### signAndPublishOrder
 
-Метод Waves Keeper создания ордера на матчер работает идентично `signOrder`, но еще пытается отослать данные на матчер
+Метод Keeper Wallet создания ордера на матчер работает идентично `signOrder`, но еще пытается отослать данные на матчер
 
 ОТВЕТ:
 Строка ответ матчера об успешной постановке ордера.
@@ -1090,7 +1092,7 @@ WavesKeeper.signOrder({
 
 #### signCancelOrder
 
-Метод Waves Keeper подпись отмены ордера на матчер.
+Метод Keeper Wallet подпись отмены ордера на матчер.
 Принимает на вход объект похожий на транзакцию вида
 
 ```js
@@ -1108,7 +1110,7 @@ WavesKeeper.signOrder({
 Пример:
 
 ```js
-WavesKeeper.signCancelOrder({
+KeeperWallet.signCancelOrder({
   type: 1003,
   data: {
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
@@ -1127,13 +1129,13 @@ WavesKeeper.signCancelOrder({
 
 #### signAndPublishCancelOrder
 
-Метод Waves Keeper для отмены ордера на матчер, работает идентично `signCancelOrder`,
+Метод Keeper Wallet для отмены ордера на матчер, работает идентично `signCancelOrder`,
 но еще пытается отослать данные на матчер, для которого необходимо передать еще 2 поля `priceAsset` и `amountAsset` из ордера.
 
 Пример:
 
 ```js
-WavesKeeper.signAndPublishCancelOrder({
+KeeperWallet.signAndPublishCancelOrder({
   type: 1003,
   priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
   amountAsset: 'WAVES',
@@ -1160,7 +1162,7 @@ WavesKeeper.signAndPublishCancelOrder({
 
 #### signRequest
 
-Метод Waves Keeper для подписи типизированных данных, для подтверждения запросов на разных сервисах.
+Метод Keeper Wallet для подписи типизированных данных, для подтверждения запросов на разных сервисах.
 Принимает на вход объект похожий на транзакцию вида
 
 ```js
@@ -1182,7 +1184,7 @@ WavesKeeper.signAndPublishCancelOrder({
 Пример:
 
 ```js
-WavesKeeper.signRequest({
+KeeperWallet.signRequest({
   type: 1001,
   data: {
     timestamp: 234234242423423,
@@ -1201,7 +1203,7 @@ WavesKeeper.signRequest({
 
 #### signCustomData
 
-Метод Waves Keeper для подписи данных, для подтверждения их на разных сервисах.
+Метод Keeper Wallet для подписи данных, для подтверждения их на разных сервисах.
 Принимает на вход объект:
 
 ##### version 1
@@ -1212,7 +1214,7 @@ WavesKeeper.signRequest({
 Пример:
 
 ```js
-WavesKeeper.signCustomData({
+KeeperWallet.signCustomData({
   version: 1,
   binary: 'base64:AADDEE==',
 });
@@ -1246,7 +1248,7 @@ WavesKeeper.signCustomData({
 Пример:
 
 ```js
-WavesKeeper.signCustomData({
+KeeperWallet.signCustomData({
   version: 2,
   data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
 });
@@ -1296,7 +1298,7 @@ WavesKeeper.signCustomData({
 Пример:
 
 ```js
-WavesKeeper.verifyCustomData({
+KeeperWallet.verifyCustomData({
   version: 2,
   data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
   signature: 'wrong signature',
@@ -1313,7 +1315,7 @@ WavesKeeper.verifyCustomData({
 Пример:
 
 ```js
-WavesKeeper.resourceIsApproved().then(result => {
+KeeperWallet.resourceIsApproved().then(result => {
   console.log(result);
 });
 ```
@@ -1327,7 +1329,7 @@ WavesKeeper.resourceIsApproved().then(result => {
 Пример:
 
 ```js
-WavesKeeper.resourceIsBlocked().then(result => {
+KeeperWallet.resourceIsBlocked().then(result => {
   console.log(result);
 });
 ```

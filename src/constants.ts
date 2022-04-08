@@ -1,5 +1,5 @@
-export const WAVESKEEPER_DEBUG = process.env.NODE_ENV !== 'production';
-export const WAVESKEEPER_ENV = process.env.NODE_ENV || 'development';
+export const KEEPERWALLET_DEBUG = process.env.NODE_ENV !== 'production';
+export const KEEPERWALLET_ENV = process.env.NODE_ENV || 'development';
 
 export const CONFIG_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/waves_keeper_blacklist.json';

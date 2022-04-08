@@ -9,7 +9,7 @@ import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
 import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
-import { MSG_STATUSES, WAVESKEEPER_DEBUG } from './constants';
+import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
 import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
@@ -49,7 +49,7 @@ import { TabsManager } from 'lib/tabsManager';
 const version = extension.runtime.getManifest().version;
 
 const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
-log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
+log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 const bgPromise = setupBackgroundService();
 
@@ -57,7 +57,7 @@ Sentry.init({
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,
-  debug: WAVESKEEPER_DEBUG,
+  debug: KEEPERWALLET_DEBUG,
   autoSessionTracking: false,
   initialScope: {
     tags: {
@@ -133,7 +133,7 @@ async function setupBackgroundService() {
   });
 
   // global access to service on debug
-  if (WAVESKEEPER_DEBUG) {
+  if (KEEPERWALLET_DEBUG) {
     global.background = backgroundService;
   }
 

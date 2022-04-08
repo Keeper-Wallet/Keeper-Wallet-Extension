@@ -355,7 +355,7 @@ describe('Settings', function () {
         // this requests permission first
         const permissionRequest = () => {
           // @ts-ignore
-          WavesKeeper.initialPromise.then(api => {
+          KeeperWallet.initialPromise.then(api => {
             api.publicState().then(
               resolved => {
                 // @ts-ignore

@@ -279,7 +279,7 @@ export class MessageController extends EventEmitter {
   }
 
   /**
-   * Removes unused messages in final states from previous versions of Waves Keeper
+   * Removes unused messages in final states from previous versions of Keeper Wallet
    */
   clearUnusedMessages() {
     const unusedStatuses = [

@@ -10,7 +10,7 @@ if (shouldInject()) {
 
 // function initKeeper() {
 //     let cbs = [];
-//     window.WavesKeeper = window.Waves = {
+//     window.KeeperWallet = window.Waves = {
 //         on: function (event, cb) { cbs.push({ event, cb }) },
 //         _inited: function (api) {
 //             cbs.forEach(function ({ event, cb }) {
@@ -52,7 +52,7 @@ function setupConnection() {
 
   // forward communication plugin->inpage
   pump(pageStream, pluginStream, pageStream, err =>
-    logStreamDisconnectWarning('Waveskeeper Contentscript Forwarding', err)
+    logStreamDisconnectWarning('Keeperwallet Contentscript Forwarding', err)
   );
 }
 
@@ -63,7 +63,7 @@ function setupConnection() {
  * @param {Error} err Stream connection error
  */
 function logStreamDisconnectWarning(remoteLabel, err) {
-  let warningMsg = `WaveskeeperContentscript - lost connection to ${remoteLabel}`;
+  let warningMsg = `KeeperwalletContentscript - lost connection to ${remoteLabel}`;
   if (err) warningMsg += '\n' + err.stack;
   console.warn(warningMsg);
 }

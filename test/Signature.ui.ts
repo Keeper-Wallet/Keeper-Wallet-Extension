@@ -222,7 +222,7 @@ describe('Signature', function () {
       }
       await this.driver.executeScript(() => {
         // @ts-ignore
-        WavesKeeper.initialPromise.then(api => {
+        KeeperWallet.initialPromise.then(api => {
           api.publicState();
         });
       });
@@ -273,16 +273,16 @@ describe('Signature', function () {
 
       await this.driver.executeScript(() => {
         // @ts-ignore
-        WavesKeeper.initialPromise
-          .then(api => api.auth({ data: 'generated auth data' }))
-          .then(
-            result => {
-              (window as any).approveResult = JSON.stringify(result);
-            },
-            () => {
-              (window as any).approveResult = null;
-            }
-          );
+        KeeperWallet.initialPromise
+        .then(api => api.auth({ data: 'generated auth data' }))
+        .then(
+          result => {
+            (window as any).approveResult = JSON.stringify(result);
+          },
+          () => {
+            (window as any).approveResult = null;
+          }
+        );
       });
 
       await this.driver.switchTo().window(tabKeeper);
@@ -328,7 +328,8 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (senderPublicKey, timestamp) => {
-          WavesKeeper.initialPromise
+          // @ts-ignore
+          KeeperWallet.initialPromise
             .then(api =>
               api.signRequest({
                 type: 1001,
@@ -373,16 +374,16 @@ describe('Signature', function () {
 
       await this.driver.executeScript(tx => {
         // @ts-ignore
-        WavesKeeper.initialPromise
-          .then(api => api.signTransaction(tx))
-          .then(
-            result => {
-              (window as any).approveResult = result;
-            },
-            () => {
-              (window as any).approveResult = null;
-            }
-          );
+        KeeperWallet.initialPromise
+        .then(api => api.signTransaction(tx))
+        .then(
+          result => {
+            (window as any).approveResult = result;
+          },
+          () => {
+            (window as any).approveResult = null;
+          }
+        );
       }, tx);
 
       await this.driver.switchTo().window(tabKeeper);
@@ -1319,29 +1320,29 @@ describe('Signature', function () {
   describe('Order', function () {
     const createOrder = tx => {
       // @ts-ignore
-      WavesKeeper.initialPromise
-        .then(api => api.signOrder(tx))
-        .then(
-          result => {
-            (window as any).approveResult = result;
-          },
-          () => {
-            (window as any).approveResult = null;
-          }
-        );
-    };
-    const cancelOrder = tx => {
-      // @ts-ignore
-      WavesKeeper.initialPromise
-        .then(api => api.signCancelOrder(tx))
-        .then(
-          result => {
-            (window as any).approveResult = result;
-          },
-          () => {
-            (window as any).approveResult = null;
-          }
-        );
+      KeeperWallet.initialPromise
+      .then(api => api.signOrder(tx))
+      .then(
+        result => {
+          (window as any).approveResult = result;
+        },
+        () => {
+          (window as any).approveResult = null;
+        }
+      );
+  };
+  const cancelOrder = tx => {
+    // @ts-ignore
+    KeeperWallet.initialPromise
+      .then(api => api.signCancelOrder(tx))
+      .then(
+        result => {
+          (window as any).approveResult = result;
+        },
+        () => {
+          (window as any).approveResult = null;
+        }
+      );
     };
 
     async function performSignOrder(script: (tx: any) => {}, tx: any) {
@@ -1442,16 +1443,16 @@ describe('Signature', function () {
       await this.driver.executeScript(
         (tx, name) => {
           // @ts-ignore
-          WavesKeeper.initialPromise
-            .then(api => api.signTransactionPackage(tx, name))
-            .then(
-              result => {
-                (window as any).approveResult = result;
-              },
-              () => {
-                (window as any).approveResult = null;
-              }
-            );
+          KeeperWallet.initialPromise
+          .then(api => api.signTransactionPackage(tx, name))
+          .then(
+            result => {
+              (window as any).approveResult = result;
+            },
+            () => {
+              (window as any).approveResult = null;
+            }
+          );
         },
         tx,
         name
@@ -1691,16 +1692,16 @@ describe('Signature', function () {
 
       await this.driver.executeScript(data => {
         // @ts-ignore
-        WavesKeeper.initialPromise
-          .then(api => api.signCustomData(data))
-          .then(
-            result => {
-              (window as any).approveResult = JSON.stringify(result);
-            },
-            () => {
-              (window as any).approveResult = null;
-            }
-          );
+        KeeperWallet.initialPromise
+        .then(api => api.signCustomData(data))
+        .then(
+          result => {
+            (window as any).approveResult = JSON.stringify(result);
+          },
+          () => {
+            (window as any).approveResult = null;
+          }
+        );
       }, data);
 
       await this.driver.switchTo().window(tabKeeper);

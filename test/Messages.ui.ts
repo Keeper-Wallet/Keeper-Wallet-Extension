@@ -17,7 +17,7 @@ describe('Messages', function () {
   const sendMessage = () => {
     const done = arguments[arguments.length - 1];
     // @ts-ignore
-    WavesKeeper.initialPromise.then(api => {
+    KeeperWallet.initialPromise.then(api => {
       api
         .notification({ title: 'Hello!', message: 'World!' })
         .then(done)

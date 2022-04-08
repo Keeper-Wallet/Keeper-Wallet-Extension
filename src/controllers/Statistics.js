@@ -4,7 +4,7 @@ import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config.json';
 import extension from 'extensionizer';
 import { detect } from '../lib/detectBrowser';
-import { WAVESKEEPER_ENV } from '../constants';
+import { KEEPERWALLET_ENV } from '../constants';
 
 export class StatisticsController {
   events = [];
@@ -41,7 +41,7 @@ export class StatisticsController {
       browser_version: this.browser.version,
       browser_version_major:
         this.browser.version && this.browser.version.split('.')[0],
-      environment: WAVESKEEPER_ENV,
+      environment: KEEPERWALLET_ENV,
       network: network,
       chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
       extensionId: this.id,

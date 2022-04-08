@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "Waves Keeper",
+    "message": "Keeper Wallet",
     "description": "The name of the application"
   },
   "appDescription": {
-    "message": "Waves Keeper is your entry point to the Waves blockchain and Waves-powered web services",
+    "message": "Keeper Wallet is your entry point to the Waves blockchain and Waves-powered web services",
     "description": "The description of the application"
   }
 }
