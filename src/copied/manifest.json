@@ -60,7 +60,7 @@
       "210": "images/icon_210.png",
       "270": "images/icon_270.png"
     },
-    "default_title": "Waves Keeper",
+    "default_title": "Keeper Wallet",
     "default_popup": "popup.html"
   },
   "content_scripts": [

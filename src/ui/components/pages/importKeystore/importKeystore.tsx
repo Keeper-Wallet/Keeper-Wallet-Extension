@@ -49,9 +49,6 @@ type ExchangeKeystoreAccount = {
   | {
       userType: 'wavesKeeper';
     }
-  | {
-      userType: 'keeperWallet';
-    }
 );
 
 interface EncryptedKeystore {
