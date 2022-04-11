@@ -145,6 +145,7 @@ function currentFeeFactory(config) {
       case TRANSACTION_TYPE.REISSUE:
       case TRANSACTION_TYPE.BURN:
       case TRANSACTION_TYPE.TRANSFER:
+      case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
         return minFee.add(
           getSmartAssetFeeByAssetId(tx.assetId, config, smartAssetIdList || [])
         );
