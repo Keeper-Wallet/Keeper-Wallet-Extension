@@ -98,15 +98,15 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
                 >
                   <>
                     {amounts.map((amount, index) => (
-                      <Balance
-                        className={styles.balance}
-                        isShortFormat
-                        balance={amount}
-                        assetId={amount.asset.id}
-                        showAsset
-                        showUsdAmount
-                        key={index}
-                      />
+                      <div className={styles.balance} key={index}>
+                        <Balance
+                          isShortFormat
+                          balance={amount}
+                          assetId={amount.asset.id}
+                          showAsset
+                          showUsdAmount
+                        />
+                      </div>
                     ))}
                   </>
                 </PlateCollapsable>

@@ -75,32 +75,36 @@ const BalanceComponent = ({
 
   if (!split) {
     return (
-      <div {...props}>
-        {tokens.join(SEPARATOR)} {assetName}
+      <>
+        <div {...props}>
+          {tokens.join(SEPARATOR)} {assetName} {children}
+        </div>
         {showUsdAmount && (
-          <UsdAmount
-            className={styles.usdAmountNote}
-            asset={assets[balanceOut.asset.id]}
-            amount={+balanceOut.toTokens()}
-          />
-        )}
-        {children}
-      </div>
+            <UsdAmount
+              className={styles.usdAmountNote}
+              asset={assets[balanceOut.asset.id]}
+              amount={+balanceOut.toTokens()}
+            />
+          )}
+      </>
     );
   }
 
   return (
-    <div {...props}>
-      {addSign ? <span>{addSign}</span> : null}
-      <span className="font600">{tokens[0]}</span>
-      {tokens[1] ? (
-        <span className="font400">
-          {SEPARATOR}
-          {tokens[1]}
-        </span>
-      ) : null}
-      &nbsp;
-      <span className="font400">{assetName}</span>
+    <>
+      <div {...props}>
+        {addSign ? <span>{addSign}</span> : null}
+        <span className="font600">{tokens[0]}</span>
+        {tokens[1] ? (
+          <span className="font400">
+            {SEPARATOR}
+            {tokens[1]}
+          </span>
+        ) : null}
+        &nbsp;
+        <span className="font400">{assetName}</span>
+        {children}
+      </div>
       {showUsdAmount && (
         <UsdAmount
           className={styles.usdAmount}
@@ -108,8 +112,7 @@ const BalanceComponent = ({
           amount={+balanceOut.toTokens()}
         />
       )}
-      {children}
-    </div>
+    </>
   );
 };
 
