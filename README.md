@@ -37,7 +37,7 @@ In KeeperWallet you will find the following methods:
 
 All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
-In code, you can use [TypeScript types](https://github.com/wavesplatform/KeeperWallet-types)
+In code, you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
 
 On initialize `window.KeeperWallet` has not api methods.
 You can use `KeeperWallet.initialPromise` for waiting end initializing api.
