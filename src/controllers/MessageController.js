@@ -5,6 +5,7 @@ import log from 'loglevel';
 import EventEmitter from 'events';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
@@ -678,7 +679,13 @@ export class MessageController extends EventEmitter {
 
         result.data.data = { ...result.data.data, ...matcherFeeData };
         result.messageHash = getHash.order(makeBytes.order(convertedData));
-        result.json = stringify(convertedData);
+        result.json = stringify({
+          ...convertedData,
+          sender: address(
+            { publicKey: convertedData.senderPublicKey },
+            this.networkController.getNetworkCode().charCodeAt(0)
+          ),
+        });
         break;
       }
       case 'transaction': {
@@ -703,16 +710,24 @@ export class MessageController extends EventEmitter {
 
         result.lease = lease;
 
+        const chainId = this.networkController.getNetworkCode().charCodeAt(0);
+
         const convertedData = convertFromSa.transaction(
           filledMessage.data,
-          this.networkController.getNetworkCode().charCodeAt(0)
+          chainId
         );
 
         result.messageHash = getHash.transaction(
           makeBytes.transaction(convertedData)
         );
 
-        result.json = stringify(convertedData);
+        result.json = stringify({
+          ...convertedData,
+          sender: address(
+            { publicKey: convertedData.senderPublicKey },
+            chainId
+          ),
+        });
         break;
       }
       case 'cancelOrder':
