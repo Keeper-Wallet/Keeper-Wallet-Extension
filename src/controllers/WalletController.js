@@ -216,7 +216,14 @@ export class WalletController extends EventEmitter {
    */
   async signTx(address, tx, network) {
     const wallet = this._findWallet(address, network);
-    return await wallet.signTx(tx);
+
+    return await wallet.signTx({
+      ...tx,
+      data: {
+        senderPublicKey: wallet.getAccount().publicKey,
+        ...tx.data,
+      },
+    });
   }
 
   /**
@@ -228,7 +235,14 @@ export class WalletController extends EventEmitter {
    */
   async signOrder(address, order, network) {
     const wallet = this._findWallet(address, network);
-    return await wallet.signOrder(order);
+
+    return await wallet.signOrder({
+      ...order,
+      data: {
+        senderPublicKey: wallet.getAccount().publicKey,
+        ...order.data,
+      },
+    });
   }
 
   /**
