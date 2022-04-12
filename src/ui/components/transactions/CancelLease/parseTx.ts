@@ -1,4 +1,4 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 export const messageType = 'cancel-leasing';
 export const txType = 'transaction';
@@ -30,5 +30,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.CANCEL_LEASING && type === 'transaction';
+  return tx.type === TRANSACTION_TYPE.CANCEL_LEASE && type === 'transaction';
 }

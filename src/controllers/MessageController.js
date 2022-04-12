@@ -3,13 +3,10 @@ import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
 import EventEmitter from 'events';
-import {
-  AdapterType,
-  CustomAdapter,
-  WavesKeeperAdapter,
-} from '@waves/signature-adapter';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
+import { address } from '@waves/ts-lib-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
 import { ERRORS } from '../lib/KeeperError';
@@ -17,40 +14,12 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
+import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
 import { getTxVersions } from '../wallets';
 
 const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
-
-class AccountAdapterApi {
-  type = AdapterType.Custom;
-
-  constructor(account) {
-    this.account = account;
-  }
-
-  isAvailable() {
-    return true;
-  }
-  getAddress() {
-    return this.account.address;
-  }
-  getPublicKey() {
-    return this.account.publicKey;
-  }
-}
-
-export class InfoAdapter extends CustomAdapter {
-  constructor(account) {
-    super(new AccountAdapterApi(account));
-    this._code = account.networkCode.charCodeAt(0);
-  }
-
-  getSignVersions() {
-    return WavesKeeperAdapter._txVersion;
-  }
-}
 
 export class MessageController extends EventEmitter {
   constructor(options = {}) {
@@ -64,15 +33,17 @@ export class MessageController extends EventEmitter {
 
     // Signing methods from WalletController
     this.signTx = options.signTx;
+    this.signOrder = options.signOrder;
+    this.signCancelOrder = options.signCancelOrder;
     this.signWavesAuth = options.signWavesAuth;
     this.signCustomData = options.signCustomData;
     this.auth = options.auth;
     this.signRequest = options.signRequest;
-    this.signBytes = options.signBytes;
 
     // Broadcast and getMatcherPublicKey method from NetworkController
     this.broadcast = messages => options.networkController.broadcast(messages);
     this.getMatcherPublicKey = options.getMatcherPublicKey;
+    this.networkController = options.networkController;
 
     this.getMessagesConfig = options.getMessagesConfig;
     this.getPackConfig = options.getPackConfig;
@@ -136,15 +107,12 @@ export class MessageController extends EventEmitter {
         noSign: true,
         id: message.id,
         hash: message.messageHash,
-        bytes: message.bytes,
       };
     }
 
-    const { bytes, ...toSave } = message;
-
     log.debug(`Generated message ${JSON.stringify(message)}`);
 
-    messages.push(toSave);
+    messages.push(message);
 
     this._updateStore(messages);
 
@@ -473,8 +441,6 @@ export class MessageController extends EventEmitter {
   async _signMessage(message) {
     let signedData;
     switch (message.type) {
-      case 'order':
-      case 'cancelOrder':
       case 'transaction':
         signedData = await this.signTx(
           message.account.address,
@@ -491,6 +457,20 @@ export class MessageController extends EventEmitter {
               message.account.network
             );
           })
+        );
+        break;
+      case 'order':
+        signedData = await this.signOrder(
+          message.account.address,
+          message.data,
+          message.account.network
+        );
+        break;
+      case 'cancelOrder':
+        signedData = await this.signCancelOrder(
+          message.account.address,
+          message.data,
+          message.account.network
         );
         break;
       case 'auth':
@@ -519,13 +499,6 @@ export class MessageController extends EventEmitter {
         signedData = await this.signCustomData(
           message.data,
           message.account.address,
-          message.account.network
-        );
-        break;
-      case 'bytes':
-        signedData = await this.signBytes(
-          message.account.address,
-          message.data,
           message.account.network
         );
         break;
@@ -578,33 +551,6 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  /**
-   * Calculates hash of message data. It is TX id for transactions. Also used for auth and requests. Throws if data is invalid
-   * @param {object} data - data field from message
-   * @param {object} account - Waves Keeper account
-   * @returns {Promise<{ id, bytes }>}
-   */
-  async _getMessageDataHash(data, account) {
-    if (data && data.type === 'wavesAuth') {
-      return { id: wavesAuth(data.data, 'fake user').hash };
-    }
-
-    if (data && data.type === 'customData') {
-      return { id: customData(data.data, 'fake user').hash };
-    }
-
-    let signableData = await this._transformData({ ...data.data });
-
-    const adapter = new InfoAdapter(account);
-    const signable = adapter.makeSignable({ ...data, data: signableData });
-
-    const [id, bytes] = await Promise.all([
-      signable.getId(),
-      signable.getBytes(),
-    ]);
-    return { id, bytes: Array.from(bytes) };
-  }
-
   async _generateMessage(messageData) {
     const { options } = messageData;
 
@@ -620,7 +566,7 @@ export class MessageController extends EventEmitter {
 
   async _validateAndTransform(message) {
     let result = { ...message };
-    let messageMeta;
+
     if (message.data && message.data.successPath) {
       result.successPath = message.data.successPath;
     }
@@ -634,8 +580,7 @@ export class MessageController extends EventEmitter {
         result.data = message.data;
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        messageMeta = await this._getMessageDataHash(message, message.account);
-        result.messageHash = messageMeta.id;
+        result.messageHash = wavesAuth(message.data, 'fake user').hash;
         break;
       case 'auth':
         try {
@@ -663,18 +608,14 @@ export class MessageController extends EventEmitter {
           },
         };
 
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
+        result.messageHash = getHash.auth(
+          makeBytes.auth(convertFromSa.auth(result.data))
         );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
         break;
-      case 'transactionPackage':
+      case 'transactionPackage': {
         if (!Array.isArray(message.data))
           throw new Error('Should contain array of txParams');
         const { max, allow_tx } = this.getPackConfig();
-        const {} = this.getMessagesConfig();
 
         const msgs = message.data.length;
 
@@ -691,94 +632,124 @@ export class MessageController extends EventEmitter {
         }
 
         const ids = [];
-        const bytes = [];
 
         const dataPromises = message.data.map(async txParams => {
-          const hasFee = !!txParams.data.fee;
           this._validateTx(txParams, message.account);
           const data = this._prepareTx(txParams.data, message.account);
-          let readyData = { ...txParams, data };
-          const feeData = !hasFee ? await this._getFee(message, readyData) : {};
-          readyData = { ...readyData, data: { ...data, ...feeData } };
-          messageMeta = await this._getMessageDataHash(
-            readyData,
-            message.account
+
+          const feeData = !txParams.data.fee
+            ? await this._getFee(message, { ...txParams, data })
+            : {};
+
+          const readyData = await this._transformData({
+            ...txParams,
+            data: { ...data, ...feeData },
+          });
+
+          const id = getHash.transaction(
+            makeBytes.transaction(
+              convertFromSa.transaction(
+                readyData,
+                this.networkController.getNetworkCode().charCodeAt(0)
+              )
+            )
           );
-          ids.push(messageMeta.id);
-          bytes.push(messageMeta.bytes);
-          readyData.id = messageMeta.id;
+          ids.push(id);
+          readyData.id = id;
           return readyData;
         });
         result.data = await Promise.all(dataPromises);
         result.messageHash = ids;
-        result.bytes = bytes;
         break;
-      case 'order':
+      }
+      case 'order': {
         this._validateOrder(result.data);
+
         result.data.data = await this._prepareOrder(
           result.data.data,
           message.account
         );
+
         const matcherFeeData = !hasFee
           ? await this._getFee(message, result.data)
           : {};
+
+        const filledMessage = await this._fillSignableData(clone(result));
+        const convertedData = convertFromSa.order(filledMessage.data);
+
         result.data.data = { ...result.data.data, ...matcherFeeData };
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
-        );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
-        result.json = await this._prepareMessageJson(clone(result));
+        result.messageHash = getHash.order(makeBytes.order(convertedData));
+        result.json = stringify({
+          ...convertedData,
+          sender: address(
+            { publicKey: convertedData.senderPublicKey },
+            this.networkController.getNetworkCode().charCodeAt(0)
+          ),
+        });
         break;
-      case 'transaction':
+      }
+      case 'transaction': {
         if (!result.data.type || result.data.type >= 1000) {
           throw ERRORS.REQUEST_ERROR(result.data);
         }
 
         this._validateTx(result.data, message.account);
         result.data.data = this._prepareTx(result.data.data, message.account);
+
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
+
         result.data.data = { ...result.data.data, ...feeData };
         result.data.data.initialFee = result.data.data.initialFee || {
           ...result.data.data.fee,
         };
 
-        const [meta, lease, json] = await Promise.all([
-          this._getMessageDataHash(result.data, message.account),
+        const [lease, filledMessage] = await Promise.all([
           result.data.type === 9 && this.txInfo(result.data.data.leaseId),
-          this._prepareMessageJson(clone(result)),
+          this._fillSignableData(clone(result)),
         ]);
 
-        result.messageHash = meta.id;
-        result.bytes = Array.from(meta.bytes);
         result.lease = lease;
-        result.json = json;
+
+        const chainId = this.networkController.getNetworkCode().charCodeAt(0);
+
+        const convertedData = convertFromSa.transaction(
+          filledMessage.data,
+          chainId
+        );
+
+        result.messageHash = getHash.transaction(
+          makeBytes.transaction(convertedData)
+        );
+
+        result.json = stringify({
+          ...convertedData,
+          sender: address(
+            { publicKey: convertedData.senderPublicKey },
+            chainId
+          ),
+        });
         break;
+      }
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
-      case 'request':
+      case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
           senderPublicKey: message.account.publicKey,
         };
         result.data.data = { ...requestDefaults, ...result.data.data };
-        messageMeta = await this._getMessageDataHash(
-          result.data,
-          message.account
+        result.messageHash = getHash.request(
+          makeBytes.request(convertFromSa.request(result.data))
         );
-        result.messageHash = messageMeta.id;
-        result.bytes = Array.from(messageMeta.bytes);
         break;
-      case 'bytes':
+      }
       case 'authOrigin':
         break;
       case 'customData':
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        messageMeta = await this._getMessageDataHash(result, message.account);
-        result.messageHash = messageMeta.id;
+        result.messageHash = customData(result.data, 'fake user').hash;
         break;
       case 'pairing':
         if (
@@ -797,12 +768,12 @@ export class MessageController extends EventEmitter {
   }
 
   async _getFee(message, signData) {
-    let signableData = await this._transformData({ ...signData });
-
-    const adapter = new InfoAdapter(message.account);
+    const signableData = await this._transformData({ ...signData });
 
     const fee = {
-      coins: (await this.getFee(adapter, signableData)).toString(),
+      coins: (
+        await this.getFee(signableData, message.account.address)
+      ).toString(),
       assetId: 'WAVES',
     };
     return {
@@ -846,6 +817,13 @@ export class MessageController extends EventEmitter {
       throw new Error('fee is not valid');
     }
 
+    if (
+      'chainId' in tx.data &&
+      tx.data.chainId !== this.networkController.getNetworkCode().charCodeAt(0)
+    ) {
+      throw new Error('chainId does not match current network');
+    }
+
     const versions = getTxVersions(account.type)[tx.type];
 
     if ('version' in tx.data && !versions.includes(tx.data.version)) {
@@ -853,7 +831,7 @@ export class MessageController extends EventEmitter {
     }
 
     switch (tx.type) {
-      case 3:
+      case TRANSACTION_TYPE.ISSUE:
         if (!this._isNumberLikePositive(tx.data.quantity)) {
           throw new Error('quantity is not valid');
         }
@@ -862,17 +840,17 @@ export class MessageController extends EventEmitter {
           throw new Error('precision is not valid');
         }
         break;
-      case 4:
+      case TRANSACTION_TYPE.TRANSFER:
         if (!this._isMoneyLikeValuePositive(tx.data.amount)) {
           throw new Error('amount is not valid');
         }
         break;
-      case 5:
+      case TRANSACTION_TYPE.REISSUE:
         if (!this._isNumberLikePositive(tx.data.quantity)) {
           throw new Error('quantity is not valid');
         }
         break;
-      case 6:
+      case TRANSACTION_TYPE.BURN:
         if (
           !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
@@ -880,7 +858,7 @@ export class MessageController extends EventEmitter {
           throw new Error('amount is not valid');
         }
         break;
-      case 8:
+      case TRANSACTION_TYPE.LEASE:
         if (
           !this._isMoneyLikeValuePositive(tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.amount)
@@ -888,7 +866,7 @@ export class MessageController extends EventEmitter {
           throw new Error('amount is not valid');
         }
         break;
-      case 11:
+      case TRANSACTION_TYPE.MASS_TRANSFER:
         tx.data.transfers.forEach(({ amount }) => {
           if (
             !this._isMoneyLikeValuePositive(amount) &&
@@ -898,7 +876,7 @@ export class MessageController extends EventEmitter {
           }
         });
         break;
-      case 14: {
+      case TRANSACTION_TYPE.SPONSORSHIP: {
         const value = this._getMoneyLikeValue(tx.data.minSponsoredAssetFee);
         const bn = value === null ? null : new BigNumber(value);
 
@@ -907,7 +885,7 @@ export class MessageController extends EventEmitter {
         }
         break;
       }
-      case 16:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
         if (tx.data.payment) {
           tx.data.payment.forEach(payment => {
             if (!this._isMoneyLikeValuePositive(payment)) {
@@ -967,17 +945,5 @@ export class MessageController extends EventEmitter {
       matcherFee: defaultFee,
     };
     return { ...orderDefaults, ...orderParams };
-  }
-
-  async _prepareMessageJson(message) {
-    const filledMessage = await this._fillSignableData(clone(message));
-
-    const adapter = new InfoAdapter(message.account);
-    const signable = adapter.makeSignable(filledMessage.data);
-
-    return stringify({
-      ...(await signable.getSignData()),
-      sender: message.account.address,
-    });
   }
 }

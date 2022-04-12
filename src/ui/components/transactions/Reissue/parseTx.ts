@@ -1,4 +1,4 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 export const messageType = 'reissue';
 export const txType = 'transaction';
@@ -29,5 +29,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.REISSUE && type === 'transaction';
+  return tx.type === TRANSACTION_TYPE.REISSUE && type === 'transaction';
 }

@@ -19,7 +19,6 @@ import LocalStore from './lib/local-store';
 import {
   AssetInfoController,
   CurrentAccountController,
-  ExternalDeviceController,
   IdentityController,
   IdleController,
   MessageController,
@@ -433,6 +432,10 @@ class BackgroundService extends EventEmitter {
     this.messageController = new MessageController({
       initState: initState.MessageController,
       signTx: this.walletController.signTx.bind(this.walletController),
+      signOrder: this.walletController.signOrder.bind(this.walletController),
+      signCancelOrder: this.walletController.signCancelOrder.bind(
+        this.walletController
+      ),
       signWavesAuth: this.walletController.signWavesAuth.bind(
         this.walletController
       ),
@@ -443,7 +446,6 @@ class BackgroundService extends EventEmitter {
       signRequest: this.walletController.signRequest.bind(
         this.walletController
       ),
-      signBytes: this.walletController.signBytes.bind(this.walletController),
       networkController: this.networkController,
       getMatcherPublicKey: this.networkController.getMatcherPublicKey.bind(
         this.networkController
@@ -610,10 +612,6 @@ class BackgroundService extends EventEmitter {
       },
       setCustomMatcher: async (url, network) =>
         this.networkController.setCustomMatcher(url, network),
-
-      // external devices
-      getUserList: async (type, from, to) =>
-        await ExternalDeviceController.getUserList(type, from, to),
 
       // asset information
       assetInfo: this.assetInfoController.assetInfo.bind(

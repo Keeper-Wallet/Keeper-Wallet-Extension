@@ -5,65 +5,26 @@ import {
   ISignOrderData,
   ISignTxData,
 } from '@waves/ledger/lib/Waves';
-import { convert } from '@waves/money-like-to-node';
-import {
-  AdapterType,
-  CustomAdapter,
-  IUserApi,
-  SIGN_TYPE,
-  TSignData,
-} from '@waves/signature-adapter';
 import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, serializeCustomData } from '@waves/waves-transactions';
-import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
-import { validate } from '@waves/waves-transactions/dist/validators';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import { validate } from '@waves/waves-transactions/dist/validators';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
-import { Wallet } from './wallet';
 import { AssetDetail } from 'ui/services/Background';
-import { convertInvokeListWorkAround } from './utils';
-
-const txVersions = {
-  [SIGN_TYPE.ISSUE]: [2],
-  [SIGN_TYPE.TRANSFER]: [2],
-  [SIGN_TYPE.REISSUE]: [2],
-  [SIGN_TYPE.BURN]: [2],
-  [SIGN_TYPE.EXCHANGE]: [0, 1, 2],
-  [SIGN_TYPE.LEASE]: [2],
-  [SIGN_TYPE.CANCEL_LEASING]: [2],
-  [SIGN_TYPE.CREATE_ALIAS]: [2],
-  [SIGN_TYPE.MASS_TRANSFER]: [1],
-  [SIGN_TYPE.DATA]: [1],
-  [SIGN_TYPE.SET_SCRIPT]: [1],
-  [SIGN_TYPE.SPONSORSHIP]: [1],
-  [SIGN_TYPE.SET_ASSET_SCRIPT]: [1],
-  [SIGN_TYPE.SCRIPT_INVOCATION]: [1],
-  [SIGN_TYPE.UPDATE_ASSET_INFO]: [1],
-  [SIGN_TYPE.AUTH]: [1],
-  [SIGN_TYPE.MATCHER_ORDERS]: [1],
-  [SIGN_TYPE.CREATE_ORDER]: [1, 2, 3],
-  [SIGN_TYPE.CANCEL_ORDER]: [1],
-  [SIGN_TYPE.COINOMAT_CONFIRMATION]: [1],
-  [SIGN_TYPE.WAVES_CONFIRMATION]: [1],
-};
-
-class LedgerInfoAdapter extends CustomAdapter<IUserApi> {
-  constructor(account: AccountOfType<'ledger'>) {
-    super({
-      type: AdapterType.Custom,
-      isAvailable: () => true,
-      getAddress: () => account.address,
-      getPublicKey: () => account.publicKey,
-    });
-
-    this._code = account.networkCode.charCodeAt(0);
-  }
-
-  getSignVersions() {
-    return txVersions;
-  }
-}
+import {
+  convertFromSa,
+  makeBytes,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
+import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
 
@@ -90,7 +51,6 @@ export interface LedgerApi {
 type GetAssetInfo = (assetId: string | null) => Promise<AssetDetail>;
 
 export class LedgerWallet extends Wallet<LedgerWalletData> {
-  private readonly _adapter: LedgerInfoAdapter;
   private getAssetInfo: GetAssetInfo;
   private readonly ledger: LedgerApi;
 
@@ -109,7 +69,6 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       type: 'ledger',
     });
 
-    this._adapter = new LedgerInfoAdapter(this.data);
     this.getAssetInfo = getAssetInfo;
     this.ledger = ledger;
   }
@@ -132,48 +91,10 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async signWavesAuth(data: { publicKey?: string; timestamp?: number }) {
-    const publicKey = data.publicKey || this.data.publicKey;
-    const timestamp = data.timestamp || Date.now();
-    validate.wavesAuth({ publicKey, timestamp });
-
-    const rx = {
-      hash: '',
-      signature: '',
-      timestamp,
-      publicKey,
-      address: this.data.address,
-    };
-
-    const dataBuffer = serializeWavesAuthData(rx);
-
-    rx.signature = await this.ledger.signSomeData({ dataBuffer });
-    rx.hash = base58Encode(blake2b(dataBuffer));
-
-    return rx;
-  }
-
-  async signCustomData(data: TCustomData) {
-    const dataBuffer = serializeCustomData(data);
-
-    return {
-      ...customData(data),
-      publicKey: data.publicKey || this.data.publicKey,
-      signature: await this.ledger.signSomeData({ dataBuffer }),
-    };
-  }
-
-  async signTx(tx: TSignData) {
-    const signable = this._adapter.makeSignable(tx);
-
-    const [dataBuffer, data] = await Promise.all([
-      signable.getBytes(),
-      signable.getSignData(),
-    ]);
-
+  async signTx(tx: SaTransaction): Promise<string> {
     let amountPrecision: number, amount2Precision: number;
 
-    if (tx.type === SIGN_TYPE.SCRIPT_INVOCATION) {
+    if (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT) {
       const payment: Money[] = tx.data.payment ?? [];
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
@@ -182,41 +103,95 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       amount2Precision = 0;
     }
 
-    const feeAsset = await this.getAssetInfo(data.feeAssetId);
-    const feePrecision: number = feeAsset.precision;
+    const result = convertFromSa.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
 
-    const signature =
-      tx.type === SIGN_TYPE.CREATE_ORDER
-        ? await this.ledger.signOrder({
-            amountPrecision,
-            feePrecision,
-            dataBuffer,
-            dataVersion: data.version,
-          })
-        : await this.ledger.signTransaction({
-            amountPrecision,
-            amount2Precision,
-            feePrecision,
-            dataBuffer,
-            dataType: data.type,
-            dataVersion: data.version,
-          });
+    const feePrecision =
+      ('feeAssetId' in result &&
+        (await this.getAssetInfo(result.feeAssetId))?.precision) ||
+      0;
 
-    data.proofs.push(signature);
+    result.proofs.push(
+      await this.ledger.signTransaction({
+        amountPrecision,
+        amount2Precision,
+        feePrecision,
+        dataBuffer: makeBytes.transaction(result),
+        dataType: result.type,
+        dataVersion: result.version,
+      })
+    );
 
-    convertInvokeListWorkAround(data);
-
-    return stringify(convert(data, (item: any) => new BigNumber(item)));
+    return stringify(result);
   }
 
-  signBytes(bytes: number[]) {
-    return this.ledger.signSomeData({ dataBuffer: new Uint8Array(bytes) });
+  async signAuth(auth: SaAuth) {
+    return this.ledger.signRequest({
+      dataBuffer: makeBytes.auth(convertFromSa.auth(auth)),
+    });
   }
 
-  async signRequest(request: TSignData) {
-    const signable = this._adapter.makeSignable(request);
-    const dataBuffer = await signable.getBytes();
+  async signRequest(request: SaRequest) {
+    return this.ledger.signRequest({
+      dataBuffer: makeBytes.request(convertFromSa.request(request)),
+    });
+  }
 
-    return this.ledger.signRequest({ dataBuffer });
+  async signOrder(order: SaOrder): Promise<string> {
+    const result = convertFromSa.order(order);
+
+    result.proofs.push(
+      await this.ledger.signOrder({
+        amountPrecision: order.data.amount?.asset?.precision || 0,
+        feePrecision: 8,
+        dataBuffer: makeBytes.order(result),
+        dataVersion: result.version,
+      })
+    );
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder: SaCancelOrder): Promise<string> {
+    const result = convertFromSa.cancelOrder(cancelOrder);
+
+    result.signature = await this.ledger.signRequest({
+      dataBuffer: makeBytes.cancelOrder(result),
+    });
+
+    return stringify(result);
+  }
+
+  async signWavesAuth(data: IWavesAuthParams) {
+    const account = this.getAccount();
+    const publicKey = data.publicKey || account.publicKey;
+    const timestamp = data.timestamp || Date.now();
+    validate.wavesAuth({ publicKey, timestamp });
+
+    const rx = {
+      timestamp,
+      publicKey,
+      address: account.address,
+    };
+
+    const bytes = serializeWavesAuthData(rx);
+
+    return {
+      ...rx,
+      hash: base58Encode(blake2b(bytes)),
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
+    };
+  }
+
+  async signCustomData(data: TCustomData) {
+    const bytes = serializeCustomData(data);
+
+    return {
+      ...customData(data),
+      publicKey: data.publicKey || this.getAccount().publicKey,
+      signature: await this.ledger.signSomeData({ dataBuffer: bytes }),
+    };
   }
 }

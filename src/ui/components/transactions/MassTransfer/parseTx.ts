@@ -1,5 +1,5 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
 import { BigNumber } from '@waves/bignumber';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 export const messageType = 'mass_transfer';
 export const txType = 'transaction';
@@ -59,5 +59,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.MASS_TRANSFER && type === txType;
+  return tx.type === TRANSACTION_TYPE.MASS_TRANSFER && type === txType;
 }

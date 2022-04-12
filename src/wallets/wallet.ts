@@ -5,6 +5,13 @@ import {
   sharedKey,
 } from '@waves/ts-lib-crypto';
 import { Account } from 'accounts/types';
+import {
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 
 export abstract class Wallet<TData extends Account> {
   readonly data: TData;
@@ -58,4 +65,9 @@ export abstract class Wallet<TData extends Account> {
       sharedKey(privateKey, publicKey, (prefix || '') + 'waves')
     );
   }
+  abstract signTx(tx: SaTransaction): Promise<string>;
+  abstract signAuth(auth: SaAuth): Promise<string>;
+  abstract signRequest(auth: SaRequest): Promise<string>;
+  abstract signOrder(auth: SaOrder): Promise<string>;
+  abstract signCancelOrder(auth: SaCancelOrder): Promise<string>;
 }

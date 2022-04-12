@@ -1,11 +1,25 @@
 import { BigNumber } from '@waves/bignumber';
-import { SeedAdapter, TSignData } from '@waves/signature-adapter';
+import {
+  address,
+  privateKey,
+  publicKey,
+  signBytes,
+} from '@waves/ts-lib-crypto';
 import { customData, wavesAuth } from '@waves/waves-transactions';
-import * as libCrypto from '@waves/ts-lib-crypto';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
+import {
+  convertFromSa,
+  makeBytes,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 import { Wallet } from './wallet';
-import { convertInvokeListWorkAround } from './utils';
 
 const { stringify } = create({ BigNumber });
 
@@ -21,20 +35,16 @@ type SeedWalletData = AccountOfType<'seed'> & {
 };
 
 export class SeedWallet extends Wallet<SeedWalletData> {
-  private readonly _adapter: SeedAdapter;
-
   constructor({ name, network, networkCode, seed }: SeedWalletInput) {
     super({
-      address: libCrypto.address(seed, networkCode),
+      address: address(seed, networkCode),
       name,
       network,
       networkCode,
-      publicKey: libCrypto.publicKey(seed),
+      publicKey: publicKey(seed),
       seed,
       type: 'seed',
     });
-
-    this._adapter = new SeedAdapter(seed, networkCode);
   }
 
   getSeed() {
@@ -42,32 +52,53 @@ export class SeedWallet extends Wallet<SeedWalletData> {
   }
 
   getPrivateKey() {
-    return libCrypto.privateKey(this.getSeed());
+    return privateKey(this.getSeed());
   }
 
-  async signWavesAuth(data) {
+  private signBytes(bytes: Uint8Array) {
+    return signBytes(this.data.seed, bytes);
+  }
+
+  async signTx(tx: SaTransaction) {
+    const result = convertFromSa.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
+
+    result.proofs.push(this.signBytes(makeBytes.transaction(result)));
+
+    return stringify(result);
+  }
+
+  async signAuth(auth: SaAuth) {
+    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
+  }
+
+  async signRequest(request: SaRequest) {
+    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
+  }
+
+  async signOrder(order: SaOrder) {
+    const result = convertFromSa.order(order);
+
+    result.proofs.push(this.signBytes(makeBytes.order(result)));
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder: SaCancelOrder) {
+    const result = convertFromSa.cancelOrder(cancelOrder);
+
+    result.signature = this.signBytes(makeBytes.cancelOrder(result));
+
+    return stringify(result);
+  }
+
+  async signWavesAuth(data: IWavesAuthParams) {
     return wavesAuth(data, this.getSeed());
   }
 
-  async signCustomData(data) {
+  async signCustomData(data: TCustomData) {
     return customData(data, this.getSeed());
-  }
-
-  async signTx(tx: TSignData) {
-    const signable = this._adapter.makeSignable(tx);
-    const data = await signable.getDataForApi();
-
-    convertInvokeListWorkAround(data);
-
-    return stringify(data);
-  }
-
-  signBytes(bytes: number[]) {
-    return this._adapter.signData(Uint8Array.from(bytes));
-  }
-
-  signRequest(request: TSignData) {
-    const signable = this._adapter.makeSignable(request);
-    return signable.getSignature();
   }
 }

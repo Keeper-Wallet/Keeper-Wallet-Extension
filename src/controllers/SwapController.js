@@ -1,6 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
-import { SIGN_TYPE } from '@waves/signature-adapter';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { SWAP_DAPP_ADDRESS } from '../constants';
 
 export class SwapController {
@@ -31,7 +31,7 @@ export class SwapController {
     ]);
 
     const tx = {
-      type: SIGN_TYPE.SCRIPT_INVOCATION,
+      type: TRANSACTION_TYPE.INVOKE_SCRIPT,
       data: {
         timestamp: Date.now(),
         dApp: SWAP_DAPP_ADDRESS,

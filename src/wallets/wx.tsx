@@ -1,16 +1,26 @@
 import { BigNumber } from '@waves/bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
-import { Wallet } from './wallet';
-import { TSignData } from '@waves/signature-adapter';
-import * as create from 'parse-json-bignumber';
-import { convertInvokeListWorkAround } from './utils';
-import { InfoAdapter } from 'controllers/MessageController';
-import { convert } from '@waves/money-like-to-node';
-import { IdentityApi } from 'controllers/IdentityController';
-import { validate } from '@waves/waves-transactions/dist/validators';
-import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
-import { serializeCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { base58Encode, blake2b } from '@waves/ts-lib-crypto';
+import {
+  customData,
+  serializeCustomData,
+  TCustomData,
+} from '@waves/waves-transactions/dist/requests/custom-data';
+import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import { validate } from '@waves/waves-transactions/dist/validators';
+import * as create from 'parse-json-bignumber';
+import { AccountOfType, NetworkName } from 'accounts/types';
+import { IdentityApi } from 'controllers/IdentityController';
+import {
+  convertFromSa,
+  makeBytes,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
+import { Wallet } from './wallet';
 
 const { stringify } = create({ BigNumber });
 
@@ -32,7 +42,6 @@ type WxWalletData = AccountOfType<'wx'> & {
 };
 
 export class WxWallet extends Wallet<WxWalletData> {
-  private readonly _adapter: InfoAdapter;
   private identity: IdentityApi;
 
   constructor(
@@ -58,7 +67,6 @@ export class WxWallet extends Wallet<WxWalletData> {
       type: 'wx',
     });
 
-    this._adapter = new InfoAdapter(this.data);
     this.identity = identity;
   }
 
@@ -79,31 +87,60 @@ export class WxWallet extends Wallet<WxWalletData> {
     throw new Error('Cannot get private key');
   }
 
-  async encryptMessage(
-    message,
-    publicKey,
-    prefix = 'waveskeeper'
-  ): Promise<string> {
+  async encryptMessage(): Promise<string> {
     throw new Error('Unable to encrypt message with this account type');
   }
 
-  async decryptMessage(
-    message,
-    publicKey,
-    prefix = 'waveskeeper'
-  ): Promise<string> {
+  async decryptMessage(): Promise<string> {
     throw new Error('Unable to decrypt message with this account type');
   }
 
-  async signWavesAuth(data) {
+  private async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
+    return this.identity.signBytes(bytes);
+  }
+
+  async signTx(tx: SaTransaction): Promise<string> {
+    const result = convertFromSa.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
+
+    result.proofs.push(await this.signBytes(makeBytes.transaction(result)));
+
+    return stringify(result);
+  }
+
+  async signAuth(auth: SaAuth): Promise<string> {
+    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
+  }
+
+  async signRequest(request: SaRequest): Promise<string> {
+    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
+  }
+
+  async signOrder(order: SaOrder): Promise<string> {
+    const result = convertFromSa.order(order);
+
+    result.proofs.push(await this.signBytes(makeBytes.order(result)));
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder: SaCancelOrder): Promise<string> {
+    const result = convertFromSa.cancelOrder(cancelOrder);
+
+    result.signature = await this.signBytes(makeBytes.cancelOrder(result));
+
+    return stringify(result);
+  }
+
+  async signWavesAuth(data: IWavesAuthParams) {
     const account = this.getAccount();
     const publicKey = data.publicKey || account.publicKey;
     const timestamp = data.timestamp || Date.now();
     validate.wavesAuth({ publicKey, timestamp });
 
-    let rx = {
-      hash: '',
-      signature: '',
+    const rx = {
       timestamp,
       publicKey,
       address: account.address,
@@ -111,54 +148,20 @@ export class WxWallet extends Wallet<WxWalletData> {
 
     const bytes = serializeWavesAuthData(rx);
 
-    rx.signature = await this.signBytes(bytes);
-    rx.hash = base58Encode(blake2b(Uint8Array.from(bytes)));
-
-    return rx;
+    return {
+      ...rx,
+      hash: base58Encode(blake2b(Uint8Array.from(bytes))),
+      signature: await this.signBytes(bytes),
+    };
   }
 
-  async signCustomData(data) {
-    validate.customData(data);
-
+  async signCustomData(data: TCustomData) {
     const bytes = serializeCustomData(data);
-    const hash = base58Encode(blake2b(bytes));
-    const publicKey = data.publicKey
-      ? data.publicKey
-      : this.getAccount().publicKey;
-    const signature = await this.signBytes(bytes);
 
-    return { ...data, hash, publicKey, signature };
-  }
-
-  async signTx(tx: TSignData): Promise<string> {
-    const signable = this._adapter.makeSignable(tx);
-    const bytes = await signable.getBytes();
-
-    const signData = await signable.getSignData();
-
-    const proof = await this.signBytes(bytes);
-    signData.proofs = signData.proofs ?? [];
-    signData.proofs.push(proof);
-
-    let data;
-    try {
-      data = convert(signData, (item: any) => new BigNumber(item));
-      convertInvokeListWorkAround(data);
-    } catch (err) {
-      data = { ...signData, signature: proof };
-    }
-
-    return stringify(data);
-  }
-
-  async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
-    return this.identity.signBytes(bytes);
-  }
-
-  async signRequest(request: TSignData): Promise<string> {
-    const signable = this._adapter.makeSignable(request);
-    const bytes = await signable.getBytes();
-
-    return this.signBytes(bytes);
+    return {
+      ...customData(data),
+      publicKey: data.publicKey || this.getAccount().publicKey,
+      signature: await this.signBytes(bytes),
+    };
   }
 }

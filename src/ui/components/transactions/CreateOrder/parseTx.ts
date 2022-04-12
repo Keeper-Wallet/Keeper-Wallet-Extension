@@ -1,4 +1,3 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
 import { getMoney } from '../../../utils/converters';
 
 export const messageType = 'create-order';
@@ -59,5 +58,5 @@ export function getPriceAmount(tx, assets) {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.CREATE_ORDER && type === txType;
+  return tx.type === 1002 && type === txType;
 }

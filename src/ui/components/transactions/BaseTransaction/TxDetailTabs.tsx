@@ -1,3 +1,8 @@
+import { BigNumber } from '@waves/bignumber';
+import cn from 'classnames';
+import * as create from 'parse-json-bignumber';
+import * as React from 'react';
+import { Trans } from 'react-i18next';
 import {
   Highlight,
   PlateCollapsable,
@@ -6,22 +11,19 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-} from '../../ui';
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+} from 'ui/components/ui';
+import { useAppSelector } from 'ui/store';
 import * as styles from './txdetailtabs.styl';
-import cn from 'classnames';
+
+const { parse, stringify } = create({ BigNumber });
 
 interface Props {
-  message: any;
   children?: React.ReactNode;
 }
 
-export const TxDetailTabs = connect(
-  (store: any) => ({ message: store.activePopup?.msg }),
-  null
-)(function TxDetailTabs({ message, children }: Props) {
+export function TxDetailTabs({ children }: Props) {
+  const message = useAppSelector(state => state.activePopup?.msg);
+
   return (
     <Tabs>
       <TabList className="body3">
@@ -38,11 +40,11 @@ export const TxDetailTabs = connect(
           <PlateCollapsable showExpand showCopy>
             <Highlight
               className={cn('json', 'body3', styles.code)}
-              data={JSON.stringify(JSON.parse(message.json), null, 2)}
+              data={stringify(parse(message.json), null, 2)}
             />
           </PlateCollapsable>
         </TabPanel>
       </TabPanels>
     </Tabs>
   );
-});
+}

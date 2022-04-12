@@ -1,4 +1,4 @@
-import { SIGN_TYPE } from '@waves/signature-adapter';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
 
 export const messageType = 'updateAssetInfo';
 export const txType = 'transaction';
@@ -20,5 +20,5 @@ export function getAmountSign() {
 }
 
 export function isMe(tx: any, type: string) {
-  return tx.type === SIGN_TYPE.UPDATE_ASSET_INFO && type === txType;
+  return tx.type === TRANSACTION_TYPE.UPDATE_ASSET_INFO && type === txType;
 }

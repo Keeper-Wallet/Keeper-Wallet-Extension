@@ -1,11 +1,28 @@
 import { BigNumber } from '@waves/bignumber';
-import { SeedAdapter, TSignData } from '@waves/signature-adapter';
+import { binary, serializePrimitives } from '@waves/marshall';
+import {
+  address,
+  base58Decode,
+  concat,
+  privateKey,
+  publicKey,
+  signBytes,
+} from '@waves/ts-lib-crypto';
 import { customData, wavesAuth } from '@waves/waves-transactions';
-import * as libCrypto from '@waves/ts-lib-crypto';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import * as create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
+import {
+  convertFromSa,
+  makeBytes,
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
 import { Wallet } from './wallet';
-import { convertInvokeListWorkAround } from './utils';
 
 const { stringify } = create({ BigNumber });
 
@@ -21,8 +38,6 @@ type EncodedSeedWalletData = AccountOfType<'encodedSeed'> & {
 };
 
 export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
-  private readonly _adapter: SeedAdapter;
-
   constructor({
     encodedSeed,
     name,
@@ -30,22 +45,17 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
     networkCode,
   }: EncodedSeedWalletInput) {
     const encodedSeedWithoutPrefix = encodedSeed.replace(/^base58:/, '');
-    const decodedSeed = libCrypto.base58Decode(encodedSeedWithoutPrefix);
+    const decodedSeed = base58Decode(encodedSeedWithoutPrefix);
 
     super({
-      address: libCrypto.address(decodedSeed, networkCode),
+      address: address(decodedSeed, networkCode),
       encodedSeed: encodedSeedWithoutPrefix,
       name,
       network,
       networkCode,
-      publicKey: libCrypto.publicKey(decodedSeed),
+      publicKey: publicKey(decodedSeed),
       type: 'encodedSeed',
     });
-
-    this._adapter = new SeedAdapter(
-      `base58:${encodedSeedWithoutPrefix}`,
-      networkCode
-    );
   }
 
   getSeed(): string {
@@ -57,32 +67,53 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
   }
 
   getPrivateKey() {
-    return libCrypto.privateKey(libCrypto.base58Decode(this.data.encodedSeed));
+    return privateKey(base58Decode(this.data.encodedSeed));
   }
 
-  async signWavesAuth(data) {
+  private signBytes(bytes: Uint8Array) {
+    return signBytes({ privateKey: this.getPrivateKey() }, bytes);
+  }
+
+  async signTx(tx: SaTransaction) {
+    const result = convertFromSa.transaction(
+      tx,
+      this.data.networkCode.charCodeAt(0)
+    );
+
+    result.proofs.push(this.signBytes(makeBytes.transaction(result)));
+
+    return stringify(result);
+  }
+
+  async signAuth(auth: SaAuth) {
+    return this.signBytes(makeBytes.auth(convertFromSa.auth(auth)));
+  }
+
+  async signRequest(request: SaRequest) {
+    return this.signBytes(makeBytes.request(convertFromSa.request(request)));
+  }
+
+  async signOrder(order: SaOrder) {
+    const result = convertFromSa.order(order);
+
+    result.proofs.push(this.signBytes(makeBytes.order(result)));
+
+    return stringify(result);
+  }
+
+  async signCancelOrder(cancelOrder: SaCancelOrder) {
+    const result = convertFromSa.cancelOrder(cancelOrder);
+
+    result.signature = this.signBytes(makeBytes.cancelOrder(result));
+
+    return stringify(result);
+  }
+
+  async signWavesAuth(data: IWavesAuthParams) {
     return wavesAuth(data, { privateKey: this.getPrivateKey() });
   }
 
-  async signCustomData(data) {
+  async signCustomData(data: TCustomData) {
     return customData(data, { privateKey: this.getPrivateKey() });
-  }
-
-  async signTx(tx: TSignData) {
-    const signable = this._adapter.makeSignable(tx);
-    const data = await signable.getDataForApi();
-
-    convertInvokeListWorkAround(data);
-
-    return stringify(data);
-  }
-
-  signBytes(bytes: number[]) {
-    return this._adapter.signData(Uint8Array.from(bytes));
-  }
-
-  signRequest(request: TSignData) {
-    const signable = this._adapter.makeSignable(request);
-    return signable.getSignature();
   }
 }

@@ -216,7 +216,45 @@ export class WalletController extends EventEmitter {
    */
   async signTx(address, tx, network) {
     const wallet = this._findWallet(address, network);
-    return await wallet.signTx(tx);
+
+    return await wallet.signTx({
+      ...tx,
+      data: {
+        senderPublicKey: wallet.getAccount().publicKey,
+        ...tx.data,
+      },
+    });
+  }
+
+  /**
+   * Signs order
+   * @param {string} address - wallet address
+   * @param {object} order - order to sign
+   * @param {object} network
+   * @returns {Promise<string>} signed order as json string
+   */
+  async signOrder(address, order, network) {
+    const wallet = this._findWallet(address, network);
+
+    return await wallet.signOrder({
+      ...order,
+      data: {
+        senderPublicKey: wallet.getAccount().publicKey,
+        ...order.data,
+      },
+    });
+  }
+
+  /**
+   * Signs order cancellation request
+   * @param {string} address - wallet address
+   * @param {object} cancelOrder - order cancellation request to sign
+   * @param {object} network
+   * @returns {Promise<string>} signed order cancellation request as json string
+   */
+  async signCancelOrder(address, cancelOrder, network) {
+    const wallet = this._findWallet(address, network);
+    return await wallet.signCancelOrder(cancelOrder);
   }
 
   async signWavesAuth(data, address, network) {
@@ -227,18 +265,6 @@ export class WalletController extends EventEmitter {
   async signCustomData(data, address, network) {
     const wallet = this._findWallet(address, network);
     return await wallet.signCustomData(data);
-  }
-
-  /**
-   * Signs transaction
-   * @param {string} address - wallet address
-   * @param {array} bytes - array of bytes
-   * @param network
-   * @returns {Promise<string>} signed transaction as json string
-   */
-  async signBytes(address, bytes, network) {
-    const wallet = this._findWallet(address, network);
-    return await wallet.signBytes(bytes);
   }
 
   /**
@@ -262,7 +288,7 @@ export class WalletController extends EventEmitter {
    */
   async auth(address, authData, network) {
     const wallet = this._findWallet(address, network);
-    const signature = await wallet.signRequest(authData);
+    const signature = await wallet.signAuth(authData);
     const { host, name, prefix, version } = authData.data;
     return {
       host,

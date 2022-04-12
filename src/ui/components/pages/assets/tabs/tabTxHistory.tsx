@@ -4,10 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
-import {
-  ITransaction,
-  WithId,
-} from '@waves/waves-transactions/dist/transactions';
+import { WithId } from '@waves/waves-transactions/dist/transactions';
 import { useAppSelector } from 'ui/store';
 import {
   buildTxTypeOptions,
@@ -16,7 +13,7 @@ import {
   MONTH,
   useTxHistoryFilter,
 } from './helpers';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { TRANSACTION_TYPE, Transaction } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from 'controllers/CurrentAccountController';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
@@ -67,11 +64,11 @@ const Row = ({ data, index, style }) => {
   );
 };
 
-const PLACEHOLDERS = [...Array(4).keys()].map<ITransaction & WithId>(
+const PLACEHOLDERS = [...Array(4).keys()].map<Transaction & WithId>(
   key =>
     ({
       id: `${key}`,
-    } as ITransaction & WithId)
+    } as Transaction & WithId)
 );
 
 export function TabTxHistory() {
@@ -191,7 +188,7 @@ export function TabTxHistory() {
               (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
           );
         })
-        .reduce<Array<(ITransaction & WithId) | { groupName: string }>>(
+        .reduce<Array<(Transaction & WithId) | { groupName: string }>>(
           (result, tx, index, prevItems) => {
             const d = new Date(tx.timestamp);
             const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
