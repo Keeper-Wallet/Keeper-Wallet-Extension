@@ -17,7 +17,7 @@ export const ConditionsAndTerms = () => {
         1. Agreement
       </h3>
       <div className="margin-main">
-        These Waves Keeper Terms of Use ("Terms") govern your use of a plug-in
+        These Keeper Wallet Terms of Use ("Terms") govern your use of a plug-in
         that extends the functionality of web browsers and allows you to keep
         secret phrases (“SEED”) from your Waves accounts in the Waves Client and
         approve transactions without entering your SEED on third-parties

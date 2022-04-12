@@ -4,7 +4,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button, Modal } from '../ui';
-import * as wavesKeeperLock from '../../assets/img/waves-keeper-lock.svg';
+import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -38,7 +38,7 @@ export function Import({ setTab }: Props) {
     <div data-testid="importForm" className={styles.root}>
       <img
         className={styles.importIcon}
-        src={wavesKeeperLock}
+        src={keeperWalletLock}
         alt=""
         width={220}
         height={200}

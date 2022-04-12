@@ -1,16 +1,20 @@
-# Waves Keeper
+# Keeper Wallet
 
 en | [ru](https://github.com/wavesplatform/waves-keeper/blob/master/README_ru.md)
 
-Waves Keeper is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
+Keeper Wallet is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
 
 Seed phrases and private keys are encrypted and stored within the extension and cannot be accessed by online dApps and services, making sure that users' funds are always protected from hackers and malicious websites. Completion of a transaction doesn't require entering any sensitive information.
 
-Waves Keeper is designed for convenience, so users can sign transactions with just a couple of clicks. Users can create multiple wallets and switch between them easily. And if a user ever forgets the password to the account, it can be recovered from the seed phrase.
+Keeper Wallet is designed for convenience, so users can sign transactions with just a couple of clicks. Users can create multiple wallets and switch between them easily. And if a user ever forgets the password to the account, it can be recovered from the seed phrase.
 
-## Waves Keeper API
+## Keeper Wallet API
 
-On browser pages that operate under the http/https (not worked local pages with file:// protocol) with Waves Keeper extension installed, Waves Keeper global object becomes available, featuring the following methods:
+On browser pages that operate under the http/https (not worked local pages with file:// protocol) with Keeper Wallet extension installed, KeeperWallet global object becomes available.
+
+> WavesKeeper global object is **deprecated** and is not recommended for future use.
+
+In KeeperWallet you will find the following methods:
 
 - `auth`
 - `publicState`
@@ -35,29 +39,29 @@ All methods, except for "on" operate asynchronously and return [promises](https:
 
 In code, you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
 
-On initialize `window.WavesKeeper` has not api methods.
-You can use `WavesKeeper.initialPromise` for waiting end initializing api.
+On initialize `window.KeeperWallet` has not api methods.
+You can use `KeeperWallet.initialPromise` for waiting end initializing api.
 Example:
 
 ```js
-WavesKeeper.initialPromise.then(keeperApi => {
+KeeperWallet.initialPromise.then(keeperApi => {
   /*...init app*/
   keeperApi.publicState().then(state => startApp(state));
 });
 ```
 
-In Waves Keeper, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except "`on"`), the user will see a request to allow that website's access to Waves Keeper. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and an error message will be displayed in response to all requests `{message: "Api rejected by user", code: 12}`. The users won't see new notifications. To grant access, the user will mark the website as trusted in the interface.
+In Keeper Wallet, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except "`on"`), the user will see a request to allow that website's access to Keeper Wallet. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and an error message will be displayed in response to all requests `{message: "Api rejected by user", code: 12}`. The users won't see new notifications. To grant access, the user will mark the website as trusted in the interface.
 
 ### Description of methods
 
 #### publicState
 
-If a website is trusted, Waves Keeper public data are returned.
+If a website is trusted, Keeper Wallet public data are returned.
 
 Example:
 
 ```js
-WavesKeeper.publicState()
+KeeperWallet.publicState()
   .then(state => {
     console.log(state); //displaying the result in the console
     /*...processing data */
@@ -73,7 +77,7 @@ or
 ```js
 const getPublicState = async () => {
   try {
-    const state = await WavesKeeper.publicState();
+    const state = await KeeperWallet.publicState();
     console.log(state); // displaying the result in the console
     /*... processing data*/
   } catch (error) {
@@ -127,9 +131,9 @@ Description of query return fields
 
 Possible errors
 
-- `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
-- `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
 
 #### notification
 
@@ -146,7 +150,7 @@ return Promise
 Example:
 
 ```js
-WavesKeeper.notification({
+KeeperWallet.notification({
   title: 'Hello!',
   message: 'Congratulation!!!',
 });
@@ -164,12 +168,12 @@ Possible errors
 You can encrypt string messages to account in Waves network.
 You need have recipient publicKey.
 
-WavesKeeper.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+KeeperWallet.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
 
 Example:
 
 ```js
-WavesKeeper.encryptMessage(
+KeeperWallet.encryptMessage(
   'My message',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
   'my app'
@@ -180,22 +184,22 @@ WavesKeeper.encryptMessage(
 
 Possible errors
 
-- `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
-- `{ message: "App is locked" }` – Waves Keeper is locked
-- `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
+- `{ message: "App is locked" }` – Keeper Wallet is locked
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
 
 #### decryptMessage
 
 You can decrypt string messages from account in Waves network to you.
 You need have sender publicKey and encrypted message.
 
-WavesKeeper.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+KeeperWallet.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
 
 Example:
 
 ```js
-WavesKeeper.decryptMessage(
+KeeperWallet.decryptMessage(
   '**encrypted msg**',
   '416z9d8DQDy5MPTqDhvReRBaPb19gEyVRWvHcewpP6Nc',
   'my app'
@@ -206,14 +210,14 @@ WavesKeeper.decryptMessage(
 
 Possible errors
 
-- `{ message: "Init Waves Keeper and add account" }` – Waves Keeper is not initialized
-- `{ message: "App is locked" }` – Waves Keeper is locked
-- `{ message: "Add Waves Keeper account" }` – Waves Keeper accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Waves Keeper
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
+- `{ message: "App is locked" }` – Keeper Wallet is locked
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
 
 #### on
 
-Allows subscribing to Waves Keeper events.
+Allows subscribing to Keeper Wallet events.
 
 Supports events:
 
@@ -222,8 +226,8 @@ Supports events:
 Example:
 
 ```js
-WavesKeeper.on('update', state => {
-  //state object as from WavesKeeper.publicState
+KeeperWallet.on('update', state => {
+  //state object as from KeeperWallet.publicState
 });
 ```
 
@@ -237,7 +241,7 @@ Example:
 
 ```js
 const authData = { data: 'Auth on my site' };
-WavesKeeper.auth(authData)
+KeeperWallet.auth(authData)
   .then(auth => {
     console.log(auth); //displaying the result on the console
     /*...processing data */
@@ -253,7 +257,7 @@ or
 ```js
 const getAuthData = async authData => {
   try {
-    const state = await WavesKeeper.auth(authData);
+    const state = await KeeperWallet.auth(authData);
     console.log(state); // displaying the result on the console
     /*... processing data */
   } catch (error) {
@@ -285,9 +289,9 @@ const authData = {
   successPath: 'login',
 };
 
-WavesKeeper.auth(authData)
+KeeperWallet.auth(authData)
   .then(data => {
-    //data – data from Waves Keeper
+    //data – data from Keeper Wallet
     //verifying signature and saving the address...
     console.log(data);
   })
@@ -296,7 +300,7 @@ WavesKeeper.auth(authData)
   });
 ```
 
-If the verification is successful, Waves Keeper will return to the promise an object containing data for signature verification:
+If the verification is successful, Keeper Wallet will return to the promise an object containing data for signature verification:
 
 - `host` – a host that requested a signature
 - `name` – the name of an application that requested a signature
@@ -333,7 +337,7 @@ const txData = {
     recipient: 'test',
   },
 };
-WavesKeeper.signTransaction(txData)
+KeeperWallet.signTransaction(txData)
   .then(data => {
     //data – a line ready for sending to Waves network's node (server)
   })
@@ -394,7 +398,7 @@ const txData = {
   },
 };
 
-WavesKeeper.signAndPublishTransaction(txData)
+KeeperWallet.signAndPublishTransaction(txData)
   .then(data => {
     //data - a line ready for sending to Waves network's node (server)
   })
@@ -465,7 +469,7 @@ const tx = [
   },
 ];
 
-WavesKeeper.signTransactionPackage(tx, name);
+KeeperWallet.signTransactionPackage(tx, name);
 ```
 
 Sign two transaction:
@@ -484,7 +488,7 @@ Same as in `signTransaction`
 ##### [Transactions](https://docs.waves.tech/en/building-apps/waves-api-and-sdk/client-libraries/waves-transactions)\*\*
 
 Every user of Waves' network has a state (balances, assets, data, scripts), and every past transactions changes these data. \
-In Waves Keeper API it is different from [NODE REST API](https://docs.waves.tech/en/waves-node/node-api/).
+In Keeper Wallet API it is different from [NODE REST API](https://docs.waves.tech/en/waves-node/node-api/).
 
 `signTransaction`, `signAndPublishTransaction` accept transactions as follows
 
@@ -499,7 +503,7 @@ In Waves Keeper API it is different from [NODE REST API](https://docs.waves.tech
 
 Legend keys
 
-- - optional field, data are automatically supplied from WavesKeeper. \
+- - optional field, data are automatically supplied from KeeperWallet. \
     [x,y] – length limit from x to y. \
     [,x] – length limit to x. \
     [y,] – length limit from y. \
@@ -531,7 +535,7 @@ If the field contains other types than MoneyLike, for instance, string/MoneyLike
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 3,
   data: {
     name: 'Best Token',
@@ -567,7 +571,7 @@ In case of a success, we are issuing a new asset in the quantity of 1,000,000, a
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 4,
   data: {
     amount: { tokens: '3.3333333', assetId: 'WAVES' },
@@ -595,7 +599,7 @@ WavesKeeper.signAndPublishTransaction({
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 5,
   data: {
     quantity: 1000,
@@ -628,7 +632,7 @@ In case of a success, we are re-issuing a new asset in the quantity of 1,000,000
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 6,
   data: {
     amount: 1000,
@@ -660,7 +664,7 @@ In case of a success, 1,000 coins `are burned`.
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 8,
   data: {
     amount: 1000,
@@ -691,7 +695,7 @@ In case of a success, 0.00001000 WAVES is leased.
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 9,
   data: {
     leaseId: '6frvwF8uicAfyEfTfyC2sXqBJH7V5C8he5K4YH3BkNiS',
@@ -721,7 +725,7 @@ In case of a success, the leasing transaction is cancelled.
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 10,
   data: {
     alias: 'test_alias',
@@ -754,7 +758,7 @@ In case of a success, an alias (another name) is created.
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 11,
   data: {
     totalAmount: { assetId: 'WAVES', coins: 0 },
@@ -791,7 +795,7 @@ In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
 Field:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 12,
   data: {
     data: [
@@ -836,7 +840,7 @@ For cancelling a script the field `script` has to be `null`. [Script development
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 13,
   data: {
     script: '',
@@ -859,7 +863,7 @@ In case of a success, the script will be removed from the account.
 Example 2:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 13,
   data: {
     script:
@@ -890,7 +894,7 @@ In case of a success, a new script will be added to the account, allowing any tr
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 14,
   data: {
     minSponsoredAssetFee: {
@@ -926,7 +930,7 @@ It's now impossible to cancel a script, you can only add a new script. [Script 
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 15,
   data: {
     assetId: '',
@@ -963,7 +967,7 @@ In case of a success, the asset's script will be reset.
 Example:
 
 ```js
-WavesKeeper.signAndPublishTransaction({
+KeeperWallet.signAndPublishTransaction({
   type: 16,
   data: {
     fee: {
@@ -999,7 +1003,7 @@ In case of a success, invoke script function `tellme` in testnet account `3N27HU
 
 #### signOrder\*\*
 
-Waves Keeper's method for signing an order to the matcher. As input, it accepts an object similar to a transaction like this:
+Keeper Wallet's method for signing an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
 ```js
 {
@@ -1023,7 +1027,7 @@ Waves Keeper's method for signing an order to the matcher. As input, it accepts 
 Example:
 
 ```js
-WavesKeeper.signOrder({
+KeeperWallet.signOrder({
   type: 1002,
   data: {
     matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
@@ -1061,7 +1065,7 @@ ERRORS:
 
 #### signAndPublishOrder
 
-Waves Keeper's method for creating an order to the matcher is identical to `signOrder`, but it also tries to send data to the matcher.
+Keeper Wallet's method for creating an order to the matcher is identical to `signOrder`, but it also tries to send data to the matcher.
 
 REPLY: the matcher's reply line about successful creation of an order.
 
@@ -1072,7 +1076,7 @@ ERRORS:
 
 #### signCancelOrder
 
-Waves Keeper's method for signing cancellation of an order to the matcher. As input, it accepts an object similar to a transaction like this:
+Keeper Wallet's method for signing cancellation of an order to the matcher. As input, it accepts an object similar to a transaction like this:
 
 ```js
 {
@@ -1089,7 +1093,7 @@ Waves Keeper's method for signing cancellation of an order to the matcher. As in
 Example:
 
 ```js
-WavesKeeper.signCancelOrder({
+KeeperWallet.signCancelOrder({
   type: 1003,
   data: {
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
@@ -1107,13 +1111,13 @@ ERRORS:
 
 #### signAndPublishCancelOrder
 
-Waves Keeper's method for cancelling an order to the matcher. It works identically to `signCancelOrder`,
+Keeper Wallet's method for cancelling an order to the matcher. It works identically to `signCancelOrder`,
 but also tries to send data to the matcher. For api need know also 2 field `priceAsset` and `amountAsset` from order.
 
 Example:
 
 ```js
-WavesKeeper.signAndPublishCancelOrder({
+KeeperWallet.signAndPublishCancelOrder({
   type: 1003,
   priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
   amountAsset: 'WAVES',
@@ -1138,7 +1142,7 @@ ERRORS:
 
 #### signRequest
 
-Waves Keeper's method for signing typified data, for signing requests on various services. As input, it accepts an object similar to a transaction like this:
+Keeper Wallet's method for signing typified data, for signing requests on various services. As input, it accepts an object similar to a transaction like this:
 
 ```js
 {
@@ -1159,7 +1163,7 @@ Currently, the method supports the following types:
 Example:
 
 ```js
-WavesKeeper.signRequest({
+KeeperWallet.signRequest({
   type: 1001,
   data: {
     timestamp: 234234242423423,
@@ -1177,7 +1181,7 @@ ERRORS:
 
 #### signCustomData
 
-Method Waves Keeper for sign custom data for different services, it accepts an object:
+Method Keeper Wallet for sign custom data for different services, it accepts an object:
 
 ##### version 1
 
@@ -1189,7 +1193,7 @@ Note: This method adds the `[255, 255, 255, 1]` prefix to the signed bytes. This
 Example:
 
 ```js
-WavesKeeper.signCustomData({
+KeeperWallet.signCustomData({
   version: 1,
   binary: 'base64:AADDEE==',
 });
@@ -1226,7 +1230,7 @@ Bytes to sign: [255, 255, 255, 2, ...(from data Array to bin)]
 Example:
 
 ```js
-WavesKeeper.signCustomData({
+KeeperWallet.signCustomData({
   version: 2,
   data: [{ type: 'string', key: 'name', value: 'Mr. First' }],
 });
@@ -1276,7 +1280,7 @@ or
 Example:
 
 ```js
-WavesKeeper.verifyCustomData({
+KeeperWallet.verifyCustomData({
   version: 1,
   binary: 'base64:AADDEE==',
   publicKey: '3BvAsKuGZe2LbSwKr9SA7eSXcNDKnRqN1j2K2bZaTn5X',
@@ -1299,7 +1303,7 @@ Check allow API status for your origin
 Example:
 
 ```js
-WavesKeeper.resourceIsApproved().then(result => {
+KeeperWallet.resourceIsApproved().then(result => {
   console.log(result);
 });
 ```
@@ -1313,7 +1317,7 @@ Check block API status for your origin
 Example:
 
 ```js
-WavesKeeper.resourceIsBlocked().then(result => {
+KeeperWallet.resourceIsBlocked().then(result => {
   console.log(result);
 });
 ```

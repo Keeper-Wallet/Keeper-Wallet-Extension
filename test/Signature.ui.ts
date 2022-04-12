@@ -222,7 +222,7 @@ describe('Signature', function () {
       }
       await this.driver.executeScript(() => {
         // @ts-ignore
-        WavesKeeper.initialPromise.then(api => {
+        KeeperWallet.initialPromise.then(api => {
           api.publicState();
         });
       });
@@ -273,7 +273,7 @@ describe('Signature', function () {
 
       await this.driver.executeScript(() => {
         // @ts-ignore
-        WavesKeeper.initialPromise
+        KeeperWallet.initialPromise
           .then(api => api.auth({ data: 'generated auth data' }))
           .then(
             result => {
@@ -328,7 +328,8 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (senderPublicKey, timestamp) => {
-          WavesKeeper.initialPromise
+          // @ts-ignore
+          KeeperWallet.initialPromise
             .then(api =>
               api.signRequest({
                 type: 1001,
@@ -373,7 +374,7 @@ describe('Signature', function () {
 
       await this.driver.executeScript(tx => {
         // @ts-ignore
-        WavesKeeper.initialPromise
+        KeeperWallet.initialPromise
           .then(api => api.signTransaction(tx))
           .then(
             result => {
@@ -1319,7 +1320,7 @@ describe('Signature', function () {
   describe('Order', function () {
     const createOrder = tx => {
       // @ts-ignore
-      WavesKeeper.initialPromise
+      KeeperWallet.initialPromise
         .then(api => api.signOrder(tx))
         .then(
           result => {
@@ -1332,7 +1333,7 @@ describe('Signature', function () {
     };
     const cancelOrder = tx => {
       // @ts-ignore
-      WavesKeeper.initialPromise
+      KeeperWallet.initialPromise
         .then(api => api.signCancelOrder(tx))
         .then(
           result => {
@@ -1442,7 +1443,7 @@ describe('Signature', function () {
       await this.driver.executeScript(
         (tx, name) => {
           // @ts-ignore
-          WavesKeeper.initialPromise
+          KeeperWallet.initialPromise
             .then(api => api.signTransactionPackage(tx, name))
             .then(
               result => {
@@ -1691,7 +1692,7 @@ describe('Signature', function () {
 
       await this.driver.executeScript(data => {
         // @ts-ignore
-        WavesKeeper.initialPromise
+        KeeperWallet.initialPromise
           .then(api => api.signCustomData(data))
           .then(
             result => {

@@ -1,4 +1,4 @@
-import { WAVESKEEPER_DEBUG } from '../constants';
+import { KEEPERWALLET_DEBUG } from '../constants';
 import * as Sentry from '@sentry/react';
 import backgroundService from 'ui/services/Background';
 
@@ -7,7 +7,7 @@ export function initUiSentry(source: 'popup' | 'accounts') {
     dsn: __SENTRY_DSN__,
     environment: __SENTRY_ENVIRONMENT__,
     release: __SENTRY_RELEASE__,
-    debug: WAVESKEEPER_DEBUG,
+    debug: KEEPERWALLET_DEBUG,
     autoSessionTracking: false,
     initialScope: {
       tags: {

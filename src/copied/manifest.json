@@ -17,20 +17,15 @@
   },
   "icons": {
     "16": "images/icon_16.png",
-    "20": "images/icon_20.png",
     "24": "images/icon_24.png",
-    "30": "images/icon_30.png",
-    "42": "images/icon_42.png",
-    "44": "images/icon_44.png",
-    "50": "images/icon_50.png",
-    "54": "images/icon_54.png",
-    "70": "images/icon_70.png",
-    "90": "images/icon_90.png",
-    "120": "images/icon_120.png",
+    "32": "images/icon_32.png",
+    "48": "images/icon_48.png",
+    "64": "images/icon_64.png",
+    "96": "images/icon_96.png",
     "128": "images/icon_128.png",
-    "150": "images/icon_150.png",
-    "210": "images/icon_210.png",
-    "270": "images/icon_270.png"
+    "192": "images/icon_192.png",
+    "256": "images/icon_256.png",
+    "512": "images/icon_512.png"
   },
   "applications": {
     "gecko": {
@@ -45,22 +40,17 @@
   "browser_action": {
     "default_icon": {
       "16": "images/icon_16.png",
-      "20": "images/icon_20.png",
       "24": "images/icon_24.png",
-      "30": "images/icon_30.png",
-      "42": "images/icon_42.png",
-      "44": "images/icon_44.png",
-      "50": "images/icon_50.png",
-      "54": "images/icon_54.png",
-      "70": "images/icon_70.png",
-      "90": "images/icon_90.png",
-      "120": "images/icon_120.png",
+      "32": "images/icon_32.png",
+      "48": "images/icon_48.png",
+      "64": "images/icon_64.png",
+      "96": "images/icon_96.png",
       "128": "images/icon_128.png",
-      "150": "images/icon_150.png",
-      "210": "images/icon_210.png",
-      "270": "images/icon_270.png"
+      "192": "images/icon_192.png",
+      "256": "images/icon_256.png",
+      "512": "images/icon_512.png"
     },
-    "default_title": "Waves Keeper",
+    "default_title": "Keeper Wallet",
     "default_popup": "popup.html"
   },
   "content_scripts": [

@@ -11,7 +11,7 @@ export class Info extends React.Component {
 
         <div className="margin-main basic500">
           <Trans i18nKey="info.keepUp">
-            Waves Keeper — is the safest way to interact with third-party web
+            Keeper Wallet — is the safest way to interact with third-party web
             resources with Waves-integrated functionality or DApps. Using Waves
             Keeper, you can sign transactions and remain safe from malicious
             sites.

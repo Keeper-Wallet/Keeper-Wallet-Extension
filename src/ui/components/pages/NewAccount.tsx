@@ -188,7 +188,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 I have read and agree with the
               </Trans>{' '}
               <a
-                href="https://s3.eu-central-1.amazonaws.com/waves.tech/TERMS_OF_USE_Keeper_fin_DL_Tech_695afeecb3.pdf"
+                href="https://keeper-wallet.app/terms-of-use"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -210,7 +210,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 I have read and agree with the
               </Trans>{' '}
               <a
-                href="https://s3.eu-central-1.amazonaws.com/waves.tech/Privacy_Policy_Waves_Keeper_fin_DL_Tech_9ce50e1fe0.pdf"
+                href="https://keeper-wallet.app/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -230,7 +230,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             <Trans i18nKey="newAccount.passinfo">
               The password you entered will be stored locally. If you change
               device or lose your password, you will have to repeat the process
-              of adding accounts to Waves Keeper. Waves does not store your
+              of adding accounts to Keeper Wallet. Waves does not store your
               passwords.
             </Trans>
           </div>

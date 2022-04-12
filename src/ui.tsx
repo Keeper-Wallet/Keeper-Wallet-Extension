@@ -10,7 +10,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import { WAVESKEEPER_DEBUG } from './constants';
+import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
@@ -27,7 +27,7 @@ const isNotificationWindow = window.location.pathname === '/notification.html';
 
 initUiSentry('popup');
 
-log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
+log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 startUi();
 
@@ -73,7 +73,7 @@ async function startUi() {
   });
 
   // global access to service on debug
-  if (WAVESKEEPER_DEBUG) {
+  if (KEEPERWALLET_DEBUG) {
     (global as any).background = background;
   }
 

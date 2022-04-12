@@ -54,7 +54,7 @@ module.exports = () => {
       DIST: 'dist',
       PLATFORMS: ['chrome', 'firefox', 'opera', 'edge'],
       LANGS: ['en'],
-      PAGE_TITLE: 'Waves Keeper',
+      PAGE_TITLE: 'Keeper Wallet',
       isProduction,
     }),
   });
