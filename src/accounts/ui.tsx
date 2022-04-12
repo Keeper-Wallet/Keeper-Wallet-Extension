@@ -66,7 +66,7 @@ async function startUi() {
     });
   });
 
-  if (WAVESKEEPER_DEBUG) {
+  if (KEEPERWALLET_DEBUG) {
     (global as any).background = background;
   }
 

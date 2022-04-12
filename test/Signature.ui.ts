@@ -274,15 +274,15 @@ describe('Signature', function () {
       await this.driver.executeScript(() => {
         // @ts-ignore
         KeeperWallet.initialPromise
-        .then(api => api.auth({ data: 'generated auth data' }))
-        .then(
-          result => {
-            (window as any).approveResult = JSON.stringify(result);
-          },
-          () => {
-            (window as any).approveResult = null;
-          }
-        );
+          .then(api => api.auth({ data: 'generated auth data' }))
+          .then(
+            result => {
+              (window as any).approveResult = JSON.stringify(result);
+            },
+            () => {
+              (window as any).approveResult = null;
+            }
+          );
       });
 
       await this.driver.switchTo().window(tabKeeper);
@@ -375,15 +375,15 @@ describe('Signature', function () {
       await this.driver.executeScript(tx => {
         // @ts-ignore
         KeeperWallet.initialPromise
-        .then(api => api.signTransaction(tx))
-        .then(
-          result => {
-            (window as any).approveResult = result;
-          },
-          () => {
-            (window as any).approveResult = null;
-          }
-        );
+          .then(api => api.signTransaction(tx))
+          .then(
+            result => {
+              (window as any).approveResult = result;
+            },
+            () => {
+              (window as any).approveResult = null;
+            }
+          );
       }, tx);
 
       await this.driver.switchTo().window(tabKeeper);
@@ -1321,28 +1321,28 @@ describe('Signature', function () {
     const createOrder = tx => {
       // @ts-ignore
       KeeperWallet.initialPromise
-      .then(api => api.signOrder(tx))
-      .then(
-        result => {
-          (window as any).approveResult = result;
-        },
-        () => {
-          (window as any).approveResult = null;
-        }
-      );
-  };
-  const cancelOrder = tx => {
-    // @ts-ignore
-    KeeperWallet.initialPromise
-      .then(api => api.signCancelOrder(tx))
-      .then(
-        result => {
-          (window as any).approveResult = result;
-        },
-        () => {
-          (window as any).approveResult = null;
-        }
-      );
+        .then(api => api.signOrder(tx))
+        .then(
+          result => {
+            (window as any).approveResult = result;
+          },
+          () => {
+            (window as any).approveResult = null;
+          }
+        );
+    };
+    const cancelOrder = tx => {
+      // @ts-ignore
+      KeeperWallet.initialPromise
+        .then(api => api.signCancelOrder(tx))
+        .then(
+          result => {
+            (window as any).approveResult = result;
+          },
+          () => {
+            (window as any).approveResult = null;
+          }
+        );
     };
 
     async function performSignOrder(script: (tx: any) => {}, tx: any) {
@@ -1444,15 +1444,15 @@ describe('Signature', function () {
         (tx, name) => {
           // @ts-ignore
           KeeperWallet.initialPromise
-          .then(api => api.signTransactionPackage(tx, name))
-          .then(
-            result => {
-              (window as any).approveResult = result;
-            },
-            () => {
-              (window as any).approveResult = null;
-            }
-          );
+            .then(api => api.signTransactionPackage(tx, name))
+            .then(
+              result => {
+                (window as any).approveResult = result;
+              },
+              () => {
+                (window as any).approveResult = null;
+              }
+            );
         },
         tx,
         name
@@ -1693,15 +1693,15 @@ describe('Signature', function () {
       await this.driver.executeScript(data => {
         // @ts-ignore
         KeeperWallet.initialPromise
-        .then(api => api.signCustomData(data))
-        .then(
-          result => {
-            (window as any).approveResult = JSON.stringify(result);
-          },
-          () => {
-            (window as any).approveResult = null;
-          }
-        );
+          .then(api => api.signCustomData(data))
+          .then(
+            result => {
+              (window as any).approveResult = JSON.stringify(result);
+            },
+            () => {
+              (window as any).approveResult = null;
+            }
+          );
       }, data);
 
       await this.driver.switchTo().window(tabKeeper);
