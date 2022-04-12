@@ -9,6 +9,8 @@ import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
 import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
+import background from 'ui/services/Background';
+import { setTab as resetTab } from 'ui/actions';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -30,7 +32,7 @@ export function OtherAccountsPage({ setTab }: Props) {
   const otherAccounts = accounts
     .filter(
       account =>
-        account.address !== activeAccount.address &&
+        account.address !== activeAccount?.address &&
         (!term ||
           account.name.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
           account.address === term ||
@@ -106,7 +108,13 @@ export function OtherAccountsPage({ setTab }: Props) {
             className={styles.addAccountButton}
             data-testid="addAccountButton"
             type="button"
-            onClick={() => setTab(PAGES.IMPORT_FROM_ASSETS)}
+            onClick={() => {
+              background.showTab(
+                `${window.location.origin}/accounts.html`,
+                'accounts'
+              );
+              dispatch(resetTab(PAGES.ROOT));
+            }}
           >
             <Trans i18nKey="otherAccounts.addAccount" />
           </button>

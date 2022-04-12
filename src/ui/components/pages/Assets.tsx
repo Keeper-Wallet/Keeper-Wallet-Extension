@@ -81,7 +81,7 @@ export function Assets({ setTab }: Props) {
   }
 
   return (
-    <div className={styles.assets}>
+    <div data-testid="assetsForm" className={styles.assets}>
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
@@ -152,28 +152,6 @@ export function Assets({ setTab }: Props) {
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
         <div className="modal notification">
           <Trans i18nKey="assets.copied" />
-        </div>
-      </Modal>
-
-      <Modal
-        animation={Modal.ANIMATION.FLASH_SCALE}
-        showModal={notifications.accountCreationSuccess}
-      >
-        <div className="modal notification">
-          <div>
-            <Trans i18nKey="assets.accountCreationSuccessNotification" />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        animation={Modal.ANIMATION.FLASH_SCALE}
-        showModal={notifications.accountImportSuccess}
-      >
-        <div className="modal notification">
-          <div>
-            <Trans i18nKey="assets.accountImportSuccessNotification" />
-          </div>
         </div>
       </Modal>
 

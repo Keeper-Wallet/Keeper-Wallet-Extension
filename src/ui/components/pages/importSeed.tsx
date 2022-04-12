@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { newAccountSelect } from '../../actions';
+import { newAccountSelect, selectAccount } from '../../actions';
 import {
   Button,
   Error,
@@ -182,8 +182,12 @@ export function ImportSeed({ isNew, setTab }: Props) {
     }
   }
 
-  if (address && accounts.some(acc => acc.address === address)) {
-    validationError = t('importSeed.accountExistsError');
+  const existedAccount =
+    address && accounts.find(acc => acc.address === address);
+  if (existedAccount) {
+    validationError = t('importSeed.accountExistsError', {
+      name: existedAccount.name,
+    });
   }
 
   return (
@@ -198,6 +202,11 @@ export function ImportSeed({ isNew, setTab }: Props) {
         onSubmit={event => {
           event.preventDefault();
 
+          if (showValidationError && existedAccount) {
+            dispatch(selectAccount(existedAccount));
+            return setTab(PAGES.IMPORT_SUCCESS);
+          }
+
           setShowValidationError(true);
 
           if (validationError) {
@@ -209,6 +218,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'seed',
                 seed: seedValue,
+                address,
                 name: '',
                 hasBackup: true,
               })
@@ -218,6 +228,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'encodedSeed',
                 encodedSeed: encodedSeedValue,
+                address,
                 name: '',
                 hasBackup: true,
               })
@@ -227,6 +238,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
               newAccountSelect({
                 type: 'privateKey',
                 privateKey: privateKeyValue,
+                address,
                 name: '',
                 hasBackup: true,
               })
@@ -323,8 +335,14 @@ export function ImportSeed({ isNew, setTab }: Props) {
           {address}
         </div>
 
-        <Button id="importAccount" type="submit" view="submit">
-          <Trans i18nKey="importSeed.importAccount" />
+        <Button data-testid="continueBtn" type="submit" view="submit">
+          <Trans
+            i18nKey={
+              existedAccount && showValidationError
+                ? 'importSeed.switchAccount'
+                : 'importSeed.importAccount'
+            }
+          />
         </Button>
       </form>
     </div>

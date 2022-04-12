@@ -1,0 +1,27 @@
+.content {
+  display: block;
+  position: relative;
+  margin: 84px 60px 0;
+  height: calc(100% - 180px);
+}
+
+.importIcon {
+  display: block;
+  margin: auto;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+.greyLine {
+  margin: 0 -64px 20px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}

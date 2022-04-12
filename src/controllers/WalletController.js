@@ -44,6 +44,7 @@ export class WalletController extends EventEmitter {
     this.wallets.push(wallet);
     this._saveWallets();
     this.emit('addWallet', wallet);
+    return wallet.getAccount();
   }
 
   removeWallet(address, network) {

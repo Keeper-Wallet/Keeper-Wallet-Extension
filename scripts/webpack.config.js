@@ -116,7 +116,7 @@ module.exports = ({
       filename: 'popup.html',
       template: path.resolve(SOURCE_FOLDER, 'popup.html'),
       hash: true,
-      excludeChunks: ['background', 'contentscript', 'inpage'],
+      chunks: ['commons', 'ui'],
     })
   );
 
@@ -126,9 +126,20 @@ module.exports = ({
       filename: 'notification.html',
       template: path.resolve(SOURCE_FOLDER, 'notification.html'),
       hash: true,
-      excludeChunks: ['background', 'contentscript', 'inpage'],
+      chunks: ['commons', 'ui'],
     })
   );
+
+  plugins.push(
+    new HtmlWebpackPlugin({
+      title: PAGE_TITLE,
+      filename: 'accounts.html',
+      template: path.resolve(SOURCE_FOLDER, 'accounts.html'),
+      hash: true,
+      chunks: ['commons', 'accounts/ui'],
+    })
+  );
+
   plugins.push(
     new WebpackCustomActions({
       onBuildStart: [() => getLocales(LANGS, 'src/copied/_locales')],
@@ -141,6 +152,7 @@ module.exports = ({
     stats: 'errors-warnings',
     entry: {
       ui: path.resolve(SOURCE_FOLDER, 'ui'),
+      'accounts/ui': path.resolve(SOURCE_FOLDER, 'accounts/ui'),
       background: path.resolve(SOURCE_FOLDER, 'background'),
       contentscript: path.resolve(SOURCE_FOLDER, 'contentscript'),
       inpage: path.resolve(SOURCE_FOLDER, 'inpage'),
@@ -164,6 +176,19 @@ module.exports = ({
     },
 
     plugins,
+
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            name: 'commons',
+            chunks(chunk) {
+              return ['ui', 'accounts/ui'].includes(chunk.name);
+            },
+          },
+        },
+      },
+    },
 
     module: {
       rules: [

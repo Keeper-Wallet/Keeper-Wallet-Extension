@@ -45,6 +45,7 @@ import { WindowManager } from './lib/WindowManger';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
+import { TabsManager } from 'lib/tabsManager';
 
 const version = extension.runtime.getManifest().version;
 
@@ -207,6 +208,12 @@ async function setupBackgroundService() {
   });
   backgroundService.on('Resize notification', (width, height) => {
     windowManager.resizeWindow(width, height);
+  });
+  // Tabs manager
+  const tabsManager = new TabsManager();
+  backgroundService.on('Show tab', async (url, name) => {
+    await windowManager.closePopupWindow();
+    return tabsManager.getOrCreate(url, name);
   });
 
   backgroundService.idleController = new IdleController({ backgroundService });
@@ -622,6 +629,8 @@ class BackgroundService extends EventEmitter {
       closeNotificationWindow: async () => this.emit('Close notification'),
       resizeNotificationWindow: async (width, height) =>
         this.emit('Resize notification', width, height),
+
+      showTab: async (url, name) => this.emit('Show tab', url, name),
 
       // origin settings
       allowOrigin: async origin => {

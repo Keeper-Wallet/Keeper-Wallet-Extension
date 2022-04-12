@@ -66,6 +66,7 @@ export function ImportKeystoreChooseAccounts({
 
   return (
     <form
+      data-testid="chooseAccountsForm"
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();

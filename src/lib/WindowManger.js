@@ -17,7 +17,7 @@ export class WindowManager {
       extension.windows.update(notificationWindow.id, { focused: true });
     } else {
       // create new notification popup
-      await new Promise((resolve, reject) => {
+      await new Promise(resolve => {
         extension.windows.create(
           {
             url: 'notification.html',
@@ -50,7 +50,7 @@ export class WindowManager {
 
   async _getNotificationWindow() {
     // get all extension windows
-    const windows = await new Promise((resolve, reject) =>
+    const windows = await new Promise(resolve =>
       extension.windows.getAll({}, windows => {
         resolve(windows || []);
       })
@@ -61,5 +61,12 @@ export class WindowManager {
       window =>
         window.type === 'popup' && window.id === this._notificationWindowId
     );
+  }
+
+  async closePopupWindow() {
+    const popup = extension.extension
+      .getViews({ type: 'popup' })
+      .find(w => w.location.pathname === '/popup.html');
+    return popup && popup.close();
   }
 }

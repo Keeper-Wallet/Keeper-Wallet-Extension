@@ -3,6 +3,7 @@ import {
   ACTION,
   resetSwapScreenInitialState,
   setSwapScreenInitialState,
+  setTabMode,
 } from '../actions';
 import { pairing } from './pairing';
 
@@ -78,10 +79,6 @@ function notifications(
   { type, payload }: { type: string; payload: boolean }
 ): NotificationsState {
   switch (type) {
-    case ACTION.NOTIFICATION_ACCOUNT_CREATION_SUCCESS:
-      return { ...state, accountCreationSuccess: payload };
-    case ACTION.NOTIFICATION_ACCOUNT_IMPORT_SUCCESS:
-      return { ...state, accountImportSuccess: payload };
     case ACTION.NOTIFICATION_SELECT:
       return { ...state, selected: payload };
     case ACTION.NOTIFICATION_DELETE:
@@ -142,7 +139,19 @@ function swapScreenInitialState(
   }
 }
 
+export type TabMode = 'popup' | 'tab';
+function tabMode(
+  state: TabMode = 'popup',
+  action: ReturnType<typeof setTabMode>
+): TabMode {
+  if (action.type === ACTION.SET_TAB_MODE) {
+    return action.payload;
+  }
+  return state;
+}
+
 export const localState = combineReducers({
+  tabMode,
   loading,
   newUser,
   login,

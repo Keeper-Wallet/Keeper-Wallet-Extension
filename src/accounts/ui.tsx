@@ -1,7 +1,7 @@
-import './initProtobuf';
-import './ui/styles/app.styl';
-import './ui/styles/icons.styl';
-import './ui/i18n';
+import 'initProtobuf';
+import 'ui/styles/app.styl';
+import 'ui/styles/icons.styl';
+import 'ui/i18n';
 
 import * as Sentry from '@sentry/react';
 import * as extension from 'extensionizer';
@@ -10,36 +10,35 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import { WAVESKEEPER_DEBUG } from './constants';
-import { ledgerService } from './ledger/service';
-import { LedgerSignRequest } from './ledger/types';
-import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
-import * as PortStream from './lib/port-stream.js';
-import { setLangs } from './ui/actions';
-import { createUpdateState } from './ui/actions/updateState';
-import { Root } from './ui/components/Root';
-import { LANGS } from './ui/i18n';
-import backgroundService from './ui/services/Background';
-import { createUiStore } from './ui/store';
+import { WAVESKEEPER_DEBUG } from '../constants';
+import { cbToPromise, setupDnode, transformMethods } from 'lib/dnode-util';
+import * as PortStream from 'lib/port-stream.js';
+import { setLangs, setTabMode } from 'ui/actions';
+import { createUpdateState } from './updateState';
+import { RootAccounts } from 'ui/components/RootAccounts';
+import { LANGS } from 'ui/i18n';
+import backgroundService from 'ui/services/Background';
+import { createAccountsStore } from './store';
+import { LedgerSignRequest } from 'ledger/types';
+import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
 
-const isNotificationWindow = window.location.pathname === '/notification.html';
-
-initUiSentry('popup');
+initUiSentry('accounts');
 
 log.setDefaultLevel(WAVESKEEPER_DEBUG ? 'debug' : 'warn');
 
 startUi();
 
 async function startUi() {
-  const store = createUiStore();
+  const store = createAccountsStore();
 
+  store.dispatch(setTabMode('tab'));
   store.dispatch(setLangs(LANGS));
 
   ReactDOM.render(
     <Provider store={store}>
       <div className="app">
-        <Root />
+        <RootAccounts />
       </div>
     </Provider>,
     document.getElementById('app-content')
@@ -52,12 +51,7 @@ async function startUi() {
 
   const emitterApi = {
     sendUpdate: async state => updateState(state),
-    // This method is used in Microsoft Edge browser
-    closeEdgeNotificationWindow: async () => {
-      if (isNotificationWindow) {
-        window.close();
-      }
-    },
+    closeEdgeNotificationWindow: async () => undefined,
     ledgerSignRequest: async (request: LedgerSignRequest) => {
       const { selectedAccount } = store.getState();
 
@@ -72,31 +66,14 @@ async function startUi() {
     });
   });
 
-  // global access to service on debug
   if (WAVESKEEPER_DEBUG) {
     (global as any).background = background;
-  }
-
-  // If popup is opened close notification window
-  if (extension.extension.getViews({ type: 'popup' }).length > 0) {
-    await background.closeNotificationWindow();
-  }
-
-  if (isNotificationWindow) {
-    background.resizeNotificationWindow(
-      357 + window.outerWidth - window.innerWidth,
-      600 + window.outerHeight - window.innerHeight
-    );
   }
 
   const [state, networks] = await Promise.all([
     background.getState(),
     background.getNetworks(),
   ]);
-
-  if (!state.initialized) {
-    background.showTab(window.location.origin + '/accounts.html', 'accounts');
-  }
 
   updateState({ ...state, networks });
 
@@ -108,5 +85,4 @@ async function startUi() {
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
-  window.addEventListener('beforeunload', () => background.identityClear());
 }

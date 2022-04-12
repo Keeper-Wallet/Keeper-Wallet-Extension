@@ -1,4 +1,4 @@
-import { SwapScreenInitialState } from 'ui/reducers/localState';
+import { SwapScreenInitialState, TabMode } from 'ui/reducers/localState';
 import { ACTION } from './constants';
 
 function createMVAction<TPayload>(type: string) {
@@ -29,12 +29,6 @@ export const addBackTab = createMVAction(ACTION.ADD_BACK_TAB);
 export const removeBackTab = createMVAction(ACTION.REMOVE_BACK_TAB);
 export const setLangs = createMVAction(ACTION.UPDATE_LANGS);
 export const loading = createMVAction(ACTION.LOADING);
-export const notificationAccountCreationSuccess = createMVAction<boolean>(
-  ACTION.NOTIFICATION_ACCOUNT_CREATION_SUCCESS
-);
-export const notificationAccountImportSuccess = createMVAction<boolean>(
-  ACTION.NOTIFICATION_ACCOUNT_IMPORT_SUCCESS
-);
 export const notificationDelete = createMVAction<boolean>(
   ACTION.NOTIFICATION_DELETE
 );
@@ -65,4 +59,8 @@ export function setSwapScreenInitialState(
 
 export function resetSwapScreenInitialState() {
   return { type: ACTION.RESET_SWAP_SCREEN_INITIAL_STATE };
+}
+
+export function setTabMode(mode: TabMode) {
+  return { type: ACTION.SET_TAB_MODE, payload: mode };
 }

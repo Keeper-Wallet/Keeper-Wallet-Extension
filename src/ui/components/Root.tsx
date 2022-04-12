@@ -1,13 +1,7 @@
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  addBackTab,
-  loading,
-  removeBackTab,
-  setTab,
-  setUiState,
-} from '../actions';
+import { addBackTab, loading, removeBackTab, setTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
@@ -31,14 +25,6 @@ class RootComponent extends React.Component {
     if (nextProps.loading) {
       return { tab: PAGES.INTRO };
     }
-
-    /**
-     * Select lang page
-     */
-    // // select langs at first
-    // if (!nextProps.ui.selectedLangs) {
-    //     return { tab: PAGES.LANGS_SETTINGS_INTRO };
-    // }
 
     let tab = nextProps.tab;
 
@@ -117,18 +103,12 @@ class RootComponent extends React.Component {
     if (props.locked) {
       return props.initialized ? USER_START_PAGE : NO_USER_START_PAGE;
     }
-
-    if (props.ui && props.ui.account) {
-      return PAGES.NEW_ACCOUNT;
-    }
-
-    return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT;
+    return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
   }
 
   static canUseTab(props, tab) {
     switch (tab) {
       case PAGES.NEW:
-      case PAGES.CONDITIONS:
       case PAGES.INTRO:
         return !props.initialized;
       case PAGES.LOGIN:
@@ -201,7 +181,6 @@ const mapStateToProps = function (store: any) {
     tab: store.tab || '',
     tmpTab: store.tmpTab,
     backTabs: store.backTabs,
-    ui: store.uiState,
     messages: store.messages,
     notifications: store.notifications,
     activePopup: store.activePopup,
@@ -209,7 +188,6 @@ const mapStateToProps = function (store: any) {
 };
 
 const actions = {
-  setUiState,
   setLoading: loading,
   setTab,
   addBackTab,
@@ -232,5 +210,4 @@ interface IProps {
   notifications: Array<any>;
   activePopup: { msg: any | null; notify: Array<any> | null } | null;
   loading: boolean;
-  ui: any;
 }

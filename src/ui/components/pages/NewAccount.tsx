@@ -124,7 +124,11 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
   render() {
     return (
       <div className={styles.account}>
-        <form className={styles.content} onSubmit={this.onSubmit}>
+        <form
+          data-testid="newAccountForm"
+          className={styles.content}
+          onSubmit={this.onSubmit}
+        >
           <h2 className={`title1 margin3 left`}>
             <Trans i18nKey="newAccount.protect">Protect Your Account</Trans>
           </h2>

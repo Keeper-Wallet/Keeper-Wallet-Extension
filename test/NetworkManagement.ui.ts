@@ -7,70 +7,60 @@ import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 describe('Network management', function () {
   this.timeout(60 * 1000);
 
+  let tabKeeper;
+
   before(async function () {
     await App.initVault.call(this);
   });
 
   after(async function () {
-    await Network.switchTo.call(this, 'Mainnet');
+    await Network.switchToAndCheck.call(this, 'Mainnet');
+    await App.closeBgTabs.call(this, tabKeeper);
     await App.resetVault.call(this);
   });
 
   describe('Switching networks', function () {
-    async function expectNetworkChangedTo(network: string) {
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-intro-loader')]")
-        ),
-        this.wait
-      );
-
-      await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-import-import')]")
-        ),
-        this.wait
-      );
-
-      expect(
-        await this.driver
-          .wait(
-            until.elementLocated(
-              By.xpath(
-                "//div[contains(@class, '-network-network')]" +
-                  "//span[contains(@class, 'network-networkBottom')]"
-              )
-            ),
-            this.wait
-          )
-          .getText()
-      ).matches(new RegExp(network, 'i'));
-    }
-
-    async function networkShouldBeChangedTo(network: string) {
-      await Network.switchTo.call(this, network);
-      await expectNetworkChangedTo.call(this, network);
-    }
-
     it('Stagenet', async function () {
-      await networkShouldBeChangedTo.call(this, 'Stagenet');
+      await Network.switchToAndCheck.call(this, 'Stagenet');
     });
 
     it('Mainnet', async function () {
-      await networkShouldBeChangedTo.call(this, 'Mainnet');
+      await Network.switchToAndCheck.call(this, 'Mainnet');
     });
 
     describe('Testnet', function () {
       it('Successfully switched', async function () {
-        await networkShouldBeChangedTo.call(this, 'Testnet');
+        await Network.switchToAndCheck.call(this, 'Testnet');
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
+        // save popup and accounts refs
+        tabKeeper = await this.driver.getWindowHandle();
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="importForm"]')),
+            this.wait
+          )
+          .findElement(By.css('[data-testid="addAccountBtn"]'))
+          .click();
+        await this.driver.wait(
+          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          this.wait
+        );
+        for (const handle of await this.driver.getAllWindowHandles()) {
+          if (handle !== tabKeeper) {
+            await this.driver.switchTo().window(handle);
+            await this.driver.navigate().refresh();
+            break;
+          }
+        }
         await CreateNewAccount.importAccount.call(
           this,
           'rich',
           'waves private node seed with waves tokens'
         );
+        await this.driver.switchTo().window(tabKeeper);
+
         await this.driver
           .wait(
             until.elementLocated(By.css('[data-testid="activeAccountCard"]')),
@@ -124,7 +114,7 @@ describe('Network management', function () {
           .findElement(By.css('button#networkSettingsSave'))
           .click();
 
-        await expectNetworkChangedTo.call(this, customNetwork);
+        await Network.checkNetwork.call(this, customNetwork);
       });
 
       describe('Changing network settings by "Edit" button', function () {
