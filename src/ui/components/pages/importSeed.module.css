@@ -12,15 +12,13 @@
 
 .error {
   margin-bottom: 44px;
-  height: 12px;
 }
 
-.errorSwitchTab {
-  background: none;
+.errorButton {
   color: var(--color-submit400);
   cursor: pointer;
 }
 
-.errorSwitchTab:hover {
+.errorButton:hover {
   color: var(--color-submit300);
 }

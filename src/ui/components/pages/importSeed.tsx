@@ -1,4 +1,5 @@
 import * as libCrypto from '@waves/ts-lib-crypto';
+import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ import {
 } from '../ui';
 import { PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
+import { InlineButton } from '../ui/buttons/inlineButton';
 
 interface Props {
   isNew?: boolean;
@@ -80,57 +82,70 @@ export function ImportSeed({ isNew, setTab }: Props) {
   let address: string | null = null;
   let validationError: React.ReactElement | string | null = null;
 
-  function switchToEncodedTabFromError() {
-    let newEncodedSeedValue = '';
-
-    if (activeTab === SEED_TAB_INDEX) {
-      newEncodedSeedValue = seedValue;
-    } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
-      newEncodedSeedValue = privateKeyValue;
-    }
-
-    setEncodedSeedValue(newEncodedSeedValue);
-    setShowValidationError(false);
-    setActiveTab(ENCODED_SEED_TAB_INDEX);
-  }
-
-  const errorSwitchTabElement = (
-    <span
-      className={styles.errorSwitchTab}
-      role="button"
-      tabIndex={0}
+  const base58PrefixErrorSwitchTabEl = (
+    <InlineButton
+      className={styles.errorButton}
       onClick={() => {
-        switchToEncodedTabFromError();
-      }}
-      onKeyUp={event => {
-        if (['Enter', ' '].includes(event.key)) {
-          switchToEncodedTabFromError();
+        let newEncodedSeedValue = '';
+
+        if (activeTab === SEED_TAB_INDEX) {
+          newEncodedSeedValue = seedValue;
+        } else if (activeTab === PRIVATE_KEY_TAB_INDEX) {
+          newEncodedSeedValue = privateKeyValue;
         }
+
+        setEncodedSeedValue(newEncodedSeedValue);
+        setShowValidationError(false);
+        setActiveTab(ENCODED_SEED_TAB_INDEX);
       }}
     />
   );
 
   if (activeTab === SEED_TAB_INDEX) {
-    if (!seedValue) {
+    const trimmedSeedValue = seedValue.trim();
+
+    if (!trimmedSeedValue) {
       validationError = t('importSeed.requiredError');
-    } else if (seedValue.length < SEED_MIN_LENGTH) {
+    } else if (trimmedSeedValue.length < SEED_MIN_LENGTH) {
       validationError = t('importSeed.seedLengthError', {
         minLength: SEED_MIN_LENGTH,
       });
     } else if (
-      seedValue.startsWith('base58:') &&
-      isValidBase58(stripBase58Prefix(seedValue))
+      trimmedSeedValue.startsWith('base58:') &&
+      isValidBase58(stripBase58Prefix(trimmedSeedValue))
     ) {
       validationError = (
         <Trans
           i18nKey="importSeed.base58PrefixError"
           components={{
-            switchTab: errorSwitchTabElement,
+            switchTab: base58PrefixErrorSwitchTabEl,
+          }}
+        />
+      );
+    } else if (validators.isValidAddress(trimmedSeedValue)) {
+      validationError = t('importSeed.seedIsAddressError');
+    } else if (/^alias:/i.test(trimmedSeedValue)) {
+      validationError = t('importSeed.seedIsAliasError');
+    } else if (validators.isHash(trimmedSeedValue)) {
+      validationError = (
+        <Trans
+          i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
+          components={{
+            switchTab: (
+              <InlineButton
+                className={styles.errorButton}
+                onClick={() => {
+                  setPrivateKeyValue(seedValue);
+                  setShowValidationError(false);
+                  setActiveTab(PRIVATE_KEY_TAB_INDEX);
+                }}
+              />
+            ),
           }}
         />
       );
     } else {
-      address = libCrypto.address(seedValue.trim(), networkCode);
+      address = libCrypto.address(trimmedSeedValue, networkCode);
     }
   } else if (activeTab === ENCODED_SEED_TAB_INDEX) {
     if (!encodedSeedValue) {
@@ -162,7 +177,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
         <Trans
           i18nKey="importSeed.base58PrefixError"
           components={{
-            switchTab: errorSwitchTabElement,
+            switchTab: base58PrefixErrorSwitchTabEl,
           }}
         />
       );
