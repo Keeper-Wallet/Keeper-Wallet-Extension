@@ -80,6 +80,7 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "@ledgerhq/hw-transport-webusb": "^6.24.1",
     "@sentry/react": "^6.16.1",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.0",
@@ -92,6 +93,8 @@
     "@types/resize-observer-browser": "^0.1.6",
     "@types/selenium-webdriver": "^4.0.15",
     "@types/uuid": "^7.0.5",
+    "@types/w3c-web-usb": "^1.0.5",
+    "@waves/ledger": "^4.0.0",
     "@waves/signature-generator": "^5.2.1",
     "@waves/waveskeeper-types": "^0.2.1",
     "awesome-typescript-loader": "^5.2.1",

@@ -1,26 +1,39 @@
+import cn from 'classnames';
 import * as React from 'react';
 import { Avatar } from './Avatar';
-import * as styles from './avatar.styl';
-import cn from 'classnames';
+import * as styles from './AvatarList.module.css';
 
-export function AvatarList({
-  className = '',
-  items = [],
+interface AvatarListItem {
+  address: string;
+}
+
+interface Props<T extends AvatarListItem> {
+  items: T[];
+  selected: T;
+  size: number;
+  onSelect: (account: T) => void;
+}
+
+export function AvatarList<T extends AvatarListItem>({
+  items,
   selected,
+  size,
   onSelect,
-  ...props
-}) {
-  const myClassName = cn(styles.avatarList, className);
-
+}: Props<T>) {
   return (
-    <div className={myClassName}>
+    <div className={styles.avatarList}>
       {items.map(item => (
-        <Avatar
+        <div
           key={item.address}
-          selected={selected.address === item.address}
-          onClick={onSelect && onSelect.bind(null, item)}
-          {...{ ...props, ...item }}
-        />
+          className={cn(styles.avatarListItem, {
+            [styles.avatarListItem_selected]: selected.address === item.address,
+          })}
+          onClick={() => {
+            onSelect(item);
+          }}
+        >
+          <Avatar address={item.address} size={size} />
+        </div>
       ))}
     </div>
   );

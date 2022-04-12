@@ -17,6 +17,7 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
+import { getTxVersions } from '../wallets';
 
 const { stringify } = create({ BigNumber });
 
@@ -694,7 +695,7 @@ export class MessageController extends EventEmitter {
 
         const dataPromises = message.data.map(async txParams => {
           const hasFee = !!txParams.data.fee;
-          this._validateTx(txParams);
+          this._validateTx(txParams, message.account);
           const data = this._prepareTx(txParams.data, message.account);
           let readyData = { ...txParams, data };
           const feeData = !hasFee ? await this._getFee(message, readyData) : {};
@@ -735,7 +736,7 @@ export class MessageController extends EventEmitter {
           throw ERRORS.REQUEST_ERROR(result.data);
         }
 
-        this._validateTx(result.data);
+        this._validateTx(result.data, message.account);
         result.data.data = this._prepareTx(result.data.data, message.account);
         const feeData = !hasFee ? await this._getFee(message, result.data) : {};
         result.data.data = { ...result.data.data, ...feeData };
@@ -840,9 +841,15 @@ export class MessageController extends EventEmitter {
     return this._isNumberLikePositive(value);
   }
 
-  _validateTx(tx) {
+  _validateTx(tx, account) {
     if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
       throw new Error('fee is not valid');
+    }
+
+    const versions = getTxVersions(account.type)[tx.type];
+
+    if ('version' in tx.data && !versions.includes(tx.data.version)) {
+      throw new Error('Unsupported tx version');
     }
 
     switch (tx.type) {

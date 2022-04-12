@@ -1,0 +1,79 @@
+.root {
+  position: relative;
+  margin: 84px 58px 0;
+  height: calc(100% - 180px);
+}
+
+.title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.instructions {
+  margin: 20px 0;
+  font-size: 14px;
+  color: #999;
+}
+
+.error {
+  margin: 10px 0;
+}
+
+.errorRetryButton {
+  background: none;
+  color: var(--color-submit400);
+  font: inherit;
+  cursor: pointer;
+}
+
+.loader {
+  height: 200px;
+  background: url(../../../assets/img/loader.gif) center no-repeat;
+  background-size: 100px;
+}
+
+.avatarList {
+  position: relative;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+}
+
+.avatarListArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  cursor: pointer;
+}
+
+.avatarListArrow:disabled {
+  cursor: not-allowed;
+}
+
+.avatarListArrow_left {
+  left: -30px;
+}
+
+.avatarListArrow_right {
+  right: -30px;
+}
+
+.avatarListArrowSvg {
+  vertical-align: middle;
+  fill: #dae1e9;
+}
+
+.avatarListArrow:not(:disabled):hover .avatarListArrowSvg {
+  fill: #000;
+}
+
+.avatarListArrowSvg_left {
+  transform: scaleX(-1);
+}
+
+.address {
+  margin: 0 -64px 40px;
+}

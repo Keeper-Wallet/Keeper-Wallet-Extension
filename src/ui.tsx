@@ -11,6 +11,8 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { WAVESKEEPER_DEBUG } from './constants';
+import { ledgerService } from './ledger/service';
+import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
@@ -87,6 +89,11 @@ async function startUi() {
       if (isNotificationWindow) {
         window.close();
       }
+    },
+    ledgerSignRequest: async (request: LedgerSignRequest) => {
+      const { selectedAccount } = store.getState();
+
+      return ledgerService.queueSignRequest(selectedAccount, request);
     },
   };
 

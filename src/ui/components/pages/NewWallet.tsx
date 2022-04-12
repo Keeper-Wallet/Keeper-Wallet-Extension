@@ -1,15 +1,13 @@
-import * as styles from './styles/newwallet.styl';
+import { seedUtils } from '@waves/waves-transactions';
+import { Account } from 'accounts/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Trans } from 'react-i18next';
+import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions';
-import { AvatarList, Button } from '../ui';
-import { seedUtils } from '@waves/waves-transactions';
 import { PAGES } from '../../pageConfig';
-
-interface Account {
-  address: string;
-}
+import { AvatarList, Button } from '../ui';
+import * as styles from './styles/newwallet.styl';
 
 interface Network {
   code: string;
@@ -22,8 +20,8 @@ interface Props {
   customCodes: unknown;
   isGenerateNew?: boolean;
   networks: Network[];
-  newAccountSelect: (newAccount: Account) => void;
-  notSaveAccount: unknown;
+  newAccountSelect: (newAccount: Account & { hasBackup: boolean }) => void;
+  notSaveAccount: Account;
   setTab: (newTab: string) => void;
 }
 
@@ -71,7 +69,7 @@ class NewWalletComponent extends React.Component<Props> {
     return list;
   }
 
-  onSelect = account => this._onSelect(account);
+  onSelect = (account: Account) => this._onSelect(account);
 
   onSubmit = e => this._onSubmit(e);
 
@@ -97,9 +95,9 @@ class NewWalletComponent extends React.Component<Props> {
 
         <div className={`margin4 avatar-list`}>
           <AvatarList
-            size={38}
             items={this.state.list}
             selected={this.props.account}
+            size={38}
             onSelect={this.onSelect}
           />
         </div>
@@ -121,7 +119,7 @@ class NewWalletComponent extends React.Component<Props> {
     );
   }
 
-  _onSelect(account) {
+  _onSelect(account: Account) {
     this.props.newAccountSelect({
       name: '',
       ...account,
@@ -141,7 +139,7 @@ const actions = {
   newAccountSelect,
 };
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store: AppState) {
   return {
     account: store.localState.newAccount,
     notSaveAccount: store.uiState.account,

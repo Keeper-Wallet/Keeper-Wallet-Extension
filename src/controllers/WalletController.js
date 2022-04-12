@@ -23,9 +23,11 @@ export class WalletController extends EventEmitter {
     this.store = new ObservableStore(options.initState);
     this.password = null;
     this.wallets = [];
+    this.assetInfo = options.assetInfo;
     this.getNetwork = options.getNetwork;
     this.getNetworks = options.getNetworks;
     this.getNetworkCode = options.getNetworkCode;
+    this.ledger = options.ledger;
     this.trashControl = options.trash;
     this.identity = options.identity;
   }
@@ -310,7 +312,9 @@ export class WalletController extends EventEmitter {
 
   _createWallet(user) {
     return createWallet(user, {
+      getAssetInfo: this.assetInfo,
       identity: this.identity,
+      ledger: this.ledger,
     });
   }
 

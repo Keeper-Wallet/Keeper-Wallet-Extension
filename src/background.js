@@ -7,6 +7,7 @@ import debounceStream from 'debounce-stream';
 import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
+import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
 import { MSG_STATUSES, WAVESKEEPER_DEBUG } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
@@ -42,8 +43,8 @@ import {
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManger';
 import { verifyCustomData } from '@waves/waves-transactions';
-import { getAdapterByType } from '@waves/signature-adapter';
 import { VaultController } from './controllers/VaultController';
+import { getTxVersions } from './wallets';
 
 const version = extension.runtime.getManifest().version;
 
@@ -120,9 +121,6 @@ extension.runtime.onInstalled.addListener(async details => {
     );
   }
 });
-
-const Adapter = getAdapterByType('seed');
-const adapter = new Adapter('test seed for get seed adapter info');
 
 async function setupBackgroundService() {
   // Background service init
@@ -310,6 +308,7 @@ class BackgroundService extends EventEmitter {
 
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
+      assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
       initState: initState.WalletController,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
@@ -320,6 +319,28 @@ class BackgroundService extends EventEmitter {
       getNetworks: this.networkController.getNetworks.bind(
         this.networkController
       ),
+      ledger: {
+        signOrder: data =>
+          this.ledgerSign('order', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signRequest: data =>
+          this.ledgerSign('request', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signSomeData: data =>
+          this.ledgerSign('someData', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+        signTransaction: data =>
+          this.ledgerSign('transaction', {
+            ...data,
+            dataBuffer: Array.from(data.dataBuffer),
+          }),
+      },
       trash: this.trash,
       identity: {
         signBytes: bytes => this.identityController.signBytes(bytes),
@@ -660,6 +681,14 @@ class BackgroundService extends EventEmitter {
         this.identityController.restoreSession(userId),
       identityUpdate: async () => this.identityController.updateSession(),
       identityClear: async () => this.identityController.clearSession(),
+
+      ledgerSignResponse: async (requestId, err, signature) => {
+        this.emit(
+          `ledger:signResponse:${requestId}`,
+          err ? new Error(err) : null,
+          signature
+        );
+      },
     };
   }
 
@@ -741,6 +770,8 @@ class BackgroundService extends EventEmitter {
         await this.validatePermission(origin);
       }
 
+      const { selectedAccount } = this.getState();
+
       const { noSign, ...result } = await this.messageController.newMessage({
         data,
         type,
@@ -748,7 +779,7 @@ class BackgroundService extends EventEmitter {
         origin,
         options,
         broadcast,
-        account: this.getState().selectedAccount,
+        account: selectedAccount,
       });
 
       if (noSign) {
@@ -756,7 +787,10 @@ class BackgroundService extends EventEmitter {
       }
 
       if (origin) {
-        if (await this.permissionsController.canApprove(origin, data)) {
+        if (
+          selectedAccount.type !== 'ledger' &&
+          (await this.permissionsController.canApprove(origin, data))
+        ) {
           this.messageController.approve(result.id);
         } else {
           this.emit('Show notification');
@@ -981,12 +1015,17 @@ class BackgroundService extends EventEmitter {
         remote.closeEdgeNotificationWindow.bind(remote);
       this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
 
+      const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
+
+      this.on('ledger:signRequest', ledgerSignRequest);
+
       dnode.on('end', () => {
         this.removeListener('update', sendUpdate);
         this.removeListener(
           'closeEdgeNotificationWindow',
           closeEdgeNotificationWindow
         );
+        this.removeListener('ledger:signRequest', ledgerSignRequest);
       });
 
       this.statisticsController.sendOpenEvent();
@@ -1071,7 +1110,23 @@ class BackgroundService extends EventEmitter {
       account,
       network: this._getCurrentNetwork(state.selectedAccount),
       messages,
-      txVersion: adapter.getSignVersions(),
+      txVersion: getTxVersions(state.selectedAccount.type),
     };
+  }
+
+  ledgerSign(type, data) {
+    return new Promise((resolve, reject) => {
+      const requestId = uuidv4();
+
+      this.emit('ledger:signRequest', { id: requestId, type, data });
+
+      this.once(`ledger:signResponse:${requestId}`, (err, signature) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(signature);
+      });
+    });
   }
 }
