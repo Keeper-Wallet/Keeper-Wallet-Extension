@@ -28,8 +28,8 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
     const { data = {} } = message;
 
     const tx = { type: data.type, ...data.data };
-    const amount = getMoney(getAmount(tx, message), assets);
-    const recipient = message.lease?.recipient;
+    const amount = getMoney(getAmount(tx), assets);
+    const recipient = tx.lease?.recipient;
 
     return (
       <div className={className}>

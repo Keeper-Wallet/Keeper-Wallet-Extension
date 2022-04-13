@@ -657,7 +657,7 @@ export class MessageController extends EventEmitter {
           ids.push(id);
           readyData.id = id;
           if (txParams.type === 9 && txParams.data.leaseId) {
-            readyData.lease = await this.txInfo(txParams.data.leaseId);
+            readyData.data.lease = await this.txInfo(txParams.data.leaseId);
           }
           return readyData;
         });
@@ -711,7 +711,7 @@ export class MessageController extends EventEmitter {
           this._fillSignableData(clone(result)),
         ]);
 
-        result.lease = lease;
+        result.data.data.lease = lease;
 
         const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
