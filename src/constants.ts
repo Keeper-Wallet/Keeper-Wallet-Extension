@@ -125,9 +125,15 @@ export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 60000;
 
 export const DEFAULT_IGNORE_ERRORS_CONFIG = {
   ignoreAll: false,
-  beforeSendAccounts: ['Failed to fetch'],
-  beforeSendBackground: ['Failed to fetch'],
-  beforeSendPopup: ['Failed to fetch'],
+  beforeSend: [
+    'Failed to fetch',
+    'NetworkError when attempting to fetch resource',
+    'An operation that changes interface state is in progress',
+    'No device selected',
+  ],
+  beforeSendAccounts: [],
+  beforeSendBackground: [],
+  beforeSendPopup: [],
   contentScriptApprove: [] as string[],
   popupApprove: [] as string[],
 };

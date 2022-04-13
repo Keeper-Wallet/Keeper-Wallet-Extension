@@ -31,10 +31,12 @@ export function initUiSentry({
           ? hint.originalException.message
           : String(hint.originalException);
 
-      const shouldIgnore = await backgroundService.shouldIgnoreError(
-        ignoreErrorContext,
-        message
-      );
+      const [shouldIgnoreGlobal, shouldIgnoreContext] = await Promise.all([
+        backgroundService.shouldIgnoreError('beforeSend', message),
+        backgroundService.shouldIgnoreError(ignoreErrorContext, message),
+      ]);
+
+      const shouldIgnore = shouldIgnoreGlobal || shouldIgnoreContext;
 
       if (shouldIgnore) {
         return null;

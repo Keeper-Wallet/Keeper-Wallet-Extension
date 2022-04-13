@@ -78,6 +78,10 @@ Sentry.init({
 
     const shouldIgnore =
       backgroundService.remoteConfigController.shouldIgnoreError(
+        'beforeSend',
+        message
+      ) ||
+      backgroundService.remoteConfigController.shouldIgnoreError(
         'beforeSendBackground',
         message
       );
