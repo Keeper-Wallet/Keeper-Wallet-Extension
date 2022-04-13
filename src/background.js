@@ -1117,7 +1117,9 @@ class BackgroundService extends EventEmitter {
       account,
       network: this._getCurrentNetwork(state.selectedAccount),
       messages,
-      txVersion: getTxVersions(state.selectedAccount.type),
+      txVersion: getTxVersions(
+        state.selectedAccount ? state.selectedAccount.type : 'seed'
+      ),
     };
   }
 
