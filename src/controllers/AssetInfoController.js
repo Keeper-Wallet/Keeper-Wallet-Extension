@@ -347,10 +347,6 @@ export class AssetInfoController {
       if (resp.ok) {
         this.suspiciousAssets = (await resp.text()).split('\n').sort();
         this.suspiciousLastUpdated = new Date().getTime();
-      } else {
-        if (resp.status < 500 && resp.status !== 403) {
-          throw new Error(await resp.text());
-        }
       }
     }
 
