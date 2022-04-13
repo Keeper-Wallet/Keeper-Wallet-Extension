@@ -23,7 +23,10 @@ import { LedgerSignRequest } from 'ledger/types';
 import { ledgerService } from 'ledger/service';
 import { initUiSentry } from 'sentry';
 
-initUiSentry('accounts');
+initUiSentry({
+  ignoreErrorContext: 'beforeSendAccounts',
+  source: 'accounts',
+});
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 

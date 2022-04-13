@@ -2,7 +2,13 @@ import { KEEPERWALLET_DEBUG } from '../constants';
 import * as Sentry from '@sentry/react';
 import backgroundService from 'ui/services/Background';
 
-export function initUiSentry(source: 'popup' | 'accounts') {
+export function initUiSentry({
+  ignoreErrorContext,
+  source,
+}: {
+  ignoreErrorContext: 'beforeSendAccounts' | 'beforeSendPopup';
+  source: 'popup' | 'accounts';
+}) {
   return Sentry.init({
     dsn: __SENTRY_DSN__,
     environment: __SENTRY_ENVIRONMENT__,
@@ -26,7 +32,7 @@ export function initUiSentry(source: 'popup' | 'accounts') {
           : String(hint.originalException);
 
       const shouldIgnore = await backgroundService.shouldIgnoreError(
-        'beforeSendPopup',
+        ignoreErrorContext,
         message
       );
 

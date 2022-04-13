@@ -25,7 +25,10 @@ import { initUiSentry } from 'sentry';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
 
-initUiSentry('popup');
+initUiSentry({
+  ignoreErrorContext: 'beforeSendPopup',
+  source: 'popup',
+});
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 

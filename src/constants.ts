@@ -125,6 +125,7 @@ export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 60000;
 
 export const DEFAULT_IGNORE_ERRORS_CONFIG = {
   ignoreAll: false,
+  beforeSendAccounts: ['Failed to fetch'],
   beforeSendBackground: ['Failed to fetch'],
   beforeSendPopup: ['Failed to fetch'],
   contentScriptApprove: [] as string[],
