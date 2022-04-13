@@ -3,10 +3,9 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
-import { useAccountsSelector, useAppDispatch } from 'accounts/store';
+import { useAccountsSelector } from 'accounts/store';
 
 export function BackUpSeed({ setTab }) {
-  const dispatch = useAppDispatch();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(state => state.localState.newAccount);
 
@@ -47,12 +46,12 @@ export function BackUpSeed({ setTab }) {
         id="continue"
         className="margin-main-big"
         type="submit"
-        onClick={() => dispatch(setTab(PAGES.CONFIRM_BACKUP))}
+        onClick={() => setTab(PAGES.CONFIRM_BACKUP)}
       >
         <Trans i18nKey="backupSeed.continue">Continue</Trans>
       </Button>
 
-      <Button id="cancelCreation" onClick={() => dispatch(setTab(PAGES.ROOT))}>
+      <Button id="cancelCreation" onClick={() => setTab(PAGES.ROOT)}>
         <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
       </Button>
 
