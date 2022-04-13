@@ -1,7 +1,7 @@
 import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
 import { AppState } from 'ui/store';
 import { PAGES } from 'ui/pageConfig';
@@ -49,15 +49,14 @@ class ConfirmBackupComponent extends React.Component {
   onSubmit = e => this._onSubmit(e);
 
   render() {
+    const { t } = this.props;
     const { selectedList, list, complete, wrongSeed } = this.state;
     const showButton = complete && !wrongSeed;
     const showClear = complete && wrongSeed;
 
     return (
       <div className={styles.content}>
-        <h2 className={`title1 margin1`}>
-          <Trans i18nKey="confirmBackup.confirmBackup">Confirm backup</Trans>
-        </h2>
+        <h2 className={`title1 margin1`}>{t('confirmBackup.confirmBackup')}</h2>
 
         <Pills
           className={`${styles.readSeed} plate body3`}
@@ -67,16 +66,10 @@ class ConfirmBackupComponent extends React.Component {
         />
 
         <div className="center body3">
-          {complete ? null : (
-            <Trans i18nKey="confirmBackup.selectWord">
-              Please, tap each word in the correct order
-            </Trans>
-          )}
+          {complete ? null : t('confirmBackup.selectWord')}
           {showClear ? (
             <Error show={true} className={styles.noMargin}>
-              <Trans i18nKey="confirmBackup.wrongSeed">
-                Wrong order, try again
-              </Trans>
+              {t('confirmBackup.wrongSeed')}
             </Error>
           ) : null}
         </div>
@@ -96,16 +89,14 @@ class ConfirmBackupComponent extends React.Component {
             className={styles.confirm}
             onClick={this.onSubmit}
           >
-            <Trans i18nKey="confirmBackup.confirm">Confirm</Trans>
+            {t('confirmBackup.confirm')}
           </Button>
         ) : null}
         {showClear ? (
           <div className={`center tag1 ${styles.clearSeed}`}>
             <Button type="button" view="transparent" onClick={this.onClear}>
-              <span className="submit400">
-                <Trans i18nKey="confirmBackup.clear">Clear</Trans>{' '}
-              </span>
-              <Trans i18nKey="confirmBackup.selectAgain"> and tap again</Trans>
+              <span className="submit400">{t('confirmBackup.clear')} </span>
+              {t('confirmBackup.selectAgain')}
             </Button>
           </div>
         ) : null}
@@ -158,4 +149,6 @@ const mapStateToProps = function (state: AppState) {
   };
 };
 
-export const ConfirmBackup = connect(mapStateToProps)(ConfirmBackupComponent);
+export const ConfirmBackup = connect(mapStateToProps)(
+  withTranslation()(ConfirmBackupComponent)
+);

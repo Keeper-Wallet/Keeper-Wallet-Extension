@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, Select, TabPanel } from 'ui/components/ui';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
@@ -22,6 +22,7 @@ import cn from 'classnames';
 import { getTxHistoryLink } from 'ui/urls';
 
 const Row = ({ data, index, style }) => {
+  const { t } = useTranslation();
   const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
   const historyOrGroup = historyWithGroups[index];
 
@@ -38,17 +39,11 @@ const Row = ({ data, index, style }) => {
       {index === historyWithGroups.length - 1 && hasMore && (
         <div className="basic500 center margin-main-top margin-main">
           <div className="margin-min">
-            {hasFilters ? (
-              <Trans
-                i18nKey="assets.maxFiltersHistory"
-                values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
-              />
-            ) : (
-              <Trans
-                i18nKey="assets.maxHistory"
-                values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
-              />
-            )}
+            {hasFilters
+              ? t('assets.maxFiltersHistory', {
+                  count: MAX_TX_HISTORY_ITEMS - 1,
+                })
+              : t('assets.maxHistory', { count: MAX_TX_HISTORY_ITEMS - 1 })}
           </div>
           <a
             className="blue link"
@@ -56,7 +51,7 @@ const Row = ({ data, index, style }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <Trans i18nKey="assets.showExplorerHistory" />
+            {t('assets.showExplorerHistory')}
           </a>
         </div>
       )}
@@ -72,7 +67,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Transaction & WithId>(
 );
 
 export function TabTxHistory() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
@@ -191,7 +186,6 @@ export function TabTxHistory() {
         .reduce<Array<(Transaction & WithId) | { groupName: string }>>(
           (result, tx, index, prevItems) => {
             const d = new Date(tx.timestamp);
-            const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
 
             if (
               tx.timestamp &&
@@ -199,15 +193,24 @@ export function TabTxHistory() {
                 new Date(prevItems[index - 1].timestamp).toDateString() !==
                   d.toDateString())
             ) {
-              result.push({
-                groupName: `${t(`date.${MONTH[M]}`)} ${D}${
-                  Y !== thisYear
-                    ? ', ' + Y
-                    : M === thisMonth && D === thisDate
-                    ? ', Today'
-                    : ''
-                } `.trim(),
-              });
+              const [Y, M, D] = [d.getFullYear(), d.getMonth(), d.getDate()];
+              const options: Intl.DateTimeFormatOptions = {
+                month: 'short',
+                day: '2-digit',
+              };
+              let note = '';
+
+              if (Y !== thisYear) {
+                options.year = 'numeric';
+              } else if (M === thisMonth && D === thisDate) {
+                note = t('date.today');
+              }
+
+              const txDate = new Intl.DateTimeFormat(
+                i18n.language,
+                options
+              ).format(d);
+              result.push({ groupName: note ? `${txDate} ${note}` : txDate });
             }
             result.push(tx);
             return result;
@@ -231,7 +234,7 @@ export function TabTxHistory() {
           }}
         />
 
-        <Tooltip content={<Trans i18nKey="historyFilters.type" />}>
+        <Tooltip content={t('historyFilters.type')}>
           {({ ref, ...restProps }) => (
             <Select
               className={styles.filterTxSelect}
@@ -247,7 +250,7 @@ export function TabTxHistory() {
           )}
         </Tooltip>
 
-        <Tooltip content={<Trans i18nKey="historyFilters.incoming" />}>
+        <Tooltip content={t('historyFilters.incoming')}>
           {props => (
             <div
               className={styles.filterBtn}
@@ -272,7 +275,7 @@ export function TabTxHistory() {
           )}
         </Tooltip>
 
-        <Tooltip content={<Trans i18nKey="historyFilters.outgoing" />}>
+        <Tooltip content={t('historyFilters.outgoing')}>
           {props => (
             <div
               className={styles.filterBtn}
@@ -303,17 +306,16 @@ export function TabTxHistory() {
           {term || type || onlyIn || onlyOut ? (
             <>
               <div className="margin-min">
-                <Trans
-                  i18nKey="assets.notFoundHistory"
-                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
-                />
+                {t('assets.notFoundHistory', {
+                  count: MAX_TX_HISTORY_ITEMS - 1,
+                })}
               </div>
               <p className="blue link" onClick={() => clearFilters()}>
-                <Trans i18nKey="assets.resetFilters" />
+                {t('assets.resetFilters')}
               </p>
             </>
           ) : (
-            <Trans i18nKey="assets.emptyHistory" />
+            t('assets.emptyHistory')
           )}
         </div>
       ) : (

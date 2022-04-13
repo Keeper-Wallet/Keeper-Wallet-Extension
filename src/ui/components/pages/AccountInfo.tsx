@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
@@ -63,7 +63,7 @@ class AccountInfoComponent extends React.Component {
   };
 
   render() {
-    const { selectedAccount } = this.props;
+    const { t, selectedAccount } = this.props;
     const { onCopyHandler } = this;
     const { leaseBalance } = this.state;
     const showLease =
@@ -113,7 +113,7 @@ class AccountInfoComponent extends React.Component {
                   >
                     <span>{leaseBalance.toFormat()}</span>
                     <span className="basic500 font300">
-                      <Trans i18nKey="wallet.lease">Leased</Trans>
+                      {t('wallet.lease')}
                     </span>
                   </div>
                 )}
@@ -128,14 +128,14 @@ class AccountInfoComponent extends React.Component {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Trans i18nKey="accountInfo.viewInExplorer" />
+              {t('accountInfo.viewInExplorer')}
             </a>
           </div>
         </div>
 
         <div id="accountInfoAddress" className="margin-main-big">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.address">Your address</Trans>
+            {t('accountInfo.address')}
           </div>
           <div className="input-like tag1">
             <CopyText
@@ -149,7 +149,7 @@ class AccountInfoComponent extends React.Component {
 
         <div id="accountInfoPublicKey" className="margin-main-big">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="accountInfo.pubKey">Public key</Trans>
+            {t('accountInfo.pubKey')}
           </div>
           <div className={`input-like tag1 ${styles.ellipsis}`}>
             <CopyText
@@ -166,7 +166,7 @@ class AccountInfoComponent extends React.Component {
         ) && (
           <div id="accountInfoPrivateKey" className="margin-main-big">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="accountInfo.privKey">Private key</Trans>
+              {t('accountInfo.privKey')}
             </div>
             <div className="input-like password-input tag1">
               <CopyText
@@ -182,7 +182,7 @@ class AccountInfoComponent extends React.Component {
         {selectedAccount.type === 'seed' ? (
           <div id="accountInfoBackupPhrase" className="margin-main-big">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="accountInfo.backUp">Backup phrase</Trans>
+              {t('accountInfo.backUp')}
             </div>
             <div className="input-like password-input tag1">
               <CopyText
@@ -195,18 +195,14 @@ class AccountInfoComponent extends React.Component {
           </div>
         ) : selectedAccount.type === 'privateKey' ? (
           <div className="margin-main-big basic500">
-            <div className="input-title tag1">
-              <Trans i18nKey="accountInfo.backUp" />
-            </div>
+            <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 
-            <div>
-              <Trans i18nKey="accountInfo.privateKeyNoBackupPhrase" />
-            </div>
+            <div>{t('accountInfo.privateKeyNoBackupPhrase')}</div>
           </div>
         ) : selectedAccount.type === 'encodedSeed' ? (
           <div id="accountInfoBackupPhrase" className="margin-main-big">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="accountInfo.encodedSeed" />
+              {t('accountInfo.encodedSeed')}
             </div>
             <div className="input-like password-input tag1">
               <CopyText
@@ -221,7 +217,7 @@ class AccountInfoComponent extends React.Component {
           <>
             <div className="margin-main-big">
               <div className="input-title basic500 tag1">
-                <Trans i18nKey="accountInfo.email" />
+                {t('accountInfo.email')}
               </div>
               <div className={`input-like tag1 ${styles.ellipsis}`}>
                 <CopyText
@@ -234,13 +230,9 @@ class AccountInfoComponent extends React.Component {
             </div>
 
             <div className="margin-main-big basic500">
-              <div className="input-title tag1">
-                <Trans i18nKey="accountInfo.backUp" />
-              </div>
+              <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 
-              <div>
-                <Trans i18nKey="accountInfo.emailNoBackupPhrase" />
-              </div>
+              <div>{t('accountInfo.emailNoBackupPhrase')}</div>
             </div>
           </>
         ) : null}
@@ -248,9 +240,7 @@ class AccountInfoComponent extends React.Component {
         <div className={styles.accountInfoFooter}>
           <div className={styles.deleteButton} onClick={this.onDeleteHandler}>
             <div className={`${styles.deleteIcon} delete-icon`} />
-            <div>
-              <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
-            </div>
+            <div>{t('deleteAccount.delete')}</div>
           </div>
         </div>
 
@@ -268,7 +258,7 @@ class AccountInfoComponent extends React.Component {
 
               <div className="margin1 relative">
                 <div className="basic500 tag1 input-title">
-                  <Trans i18nKey="accountInfo.password">Password</Trans>
+                  {t('accountInfo.password')}
                 </div>
                 <Input
                   autoFocus
@@ -279,11 +269,7 @@ class AccountInfoComponent extends React.Component {
                 />
 
                 <Error show={this.state.passwordError}>
-                  <div className="error">
-                    <Trans i18nKey="accountInfo.passwordError">
-                      Incorrect password
-                    </Trans>
-                  </div>
+                  <div className="error">{t('accountInfo.passwordError')}</div>
                 </Error>
               </div>
 
@@ -294,7 +280,7 @@ class AccountInfoComponent extends React.Component {
                 type="submit"
                 view="submit"
               >
-                <Trans i18nKey="accountInfo.enter">Enter</Trans>
+                {t('accountInfo.enter')}
               </Button>
 
               <Button
@@ -302,7 +288,7 @@ class AccountInfoComponent extends React.Component {
                 type="button"
                 onClick={this.rejectPassword}
               >
-                <Trans i18nKey="accountInfo.cancel">Cancel</Trans>
+                {t('accountInfo.cancel')}
               </Button>
 
               <Button
@@ -319,9 +305,7 @@ class AccountInfoComponent extends React.Component {
           animation={Modal.ANIMATION.FLASH_SCALE}
           showModal={this.state.showCopied}
         >
-          <div className="modal notification">
-            <Trans i18nKey="accountInfo.copied">Copied!</Trans>
-          </div>
+          <div className="modal notification">{t('accountInfo.copied')}</div>
         </Modal>
 
         <Modal
@@ -329,9 +313,7 @@ class AccountInfoComponent extends React.Component {
           showModal={this.state.changeNameNotify}
         >
           <div className="modal notification active-asset" key="change_name">
-            <div>
-              <Trans i18nKey="assets.changeName">Account name changed</Trans>
-            </div>
+            <div>{t('assets.changeName')}</div>
           </div>
         </Modal>
       </div>
@@ -444,4 +426,4 @@ const actions = {
 export const AccountInfo = connect(
   mapStateToProps,
   actions
-)(AccountInfoComponent);
+)(withTranslation()(AccountInfoComponent));

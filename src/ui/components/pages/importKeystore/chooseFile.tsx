@@ -1,7 +1,7 @@
 import * as styles from './chooseFile.styl';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../../ui';
 
 interface Props {
@@ -23,11 +23,11 @@ export function ImportKeystoreChooseFile({ error, onSubmit }: Props) {
       }}
     >
       <h2 className={'title1 margin3 left'}>
-        <Trans i18nKey="importKeystore.chooseFileTitle" />
+        {t('importKeystore.chooseFileTitle')}
       </h2>
 
       <div className={'tag1 basic500 input-title'}>
-        <Trans i18nKey="importKeystore.keystoreLabel" />
+        {t('importKeystore.keystoreLabel')}
       </div>
 
       <label className={cn(styles.keystoreFile, 'margin1')}>
@@ -42,23 +42,21 @@ export function ImportKeystoreChooseFile({ error, onSubmit }: Props) {
               setKeystoreFile(event.currentTarget.files[0] || null);
             }}
           />
-          <Trans i18nKey="importKeystore.browse" />
+          {t('importKeystore.browse')}
         </span>
 
         <span
           className={cn('body1', styles.keystoreFileName)}
           title={keystoreFile ? keystoreFile.name : undefined}
         >
-          {keystoreFile ? (
-            keystoreFile.name
-          ) : (
-            <Trans i18nKey="importKeystore.noFileSelected" />
-          )}
+          {keystoreFile
+            ? keystoreFile.name
+            : t('importKeystore.noFileSelected')}
         </span>
       </label>
 
       <div className={'tag1 basic500 input-title'}>
-        <Trans i18nKey="importKeystore.passwordLabel" />
+        {t('importKeystore.passwordLabel')}
       </div>
 
       <Input
@@ -84,7 +82,7 @@ export function ImportKeystoreChooseFile({ error, onSubmit }: Props) {
         type="submit"
         view="submit"
       >
-        <Trans i18nKey="importKeystore.chooseFileSubmitBtn" />
+        {t('importKeystore.chooseFileSubmitBtn')}
       </Button>
     </form>
   );

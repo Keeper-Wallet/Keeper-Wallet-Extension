@@ -2,7 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
@@ -102,16 +102,13 @@ export function Send() {
       <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            <Trans
-              i18nKey="send.title"
-              values={{ name: currentAsset?.displayName }}
-            />
+            {t('send.title', { name: currentAsset?.displayName })}
           </h1>
         </header>
 
         <div className={styles.fields}>
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="send.recipientInputLabel" />
+            {t('send.recipientInputLabel')}
           </div>
 
           <div className="margin-main-big">
@@ -168,13 +165,10 @@ export function Send() {
           )}
 
           <div className="input-title basic500 tag1">
-            <Trans
-              i18nKey="send.attachmentInputLabel"
-              count={attachmentByteCount}
-              values={{
-                max: 140,
-              }}
-            />
+            {t('send.attachmentInputLabel', {
+              count: attachmentByteCount,
+              max: 140,
+            })}
           </div>
 
           <div>
@@ -202,7 +196,7 @@ export function Send() {
             type="submit"
             view="submit"
           >
-            <Trans i18nKey="send.submitButtonText" />
+            {t('send.submitButtonText')}
           </Button>
         </div>
       </div>

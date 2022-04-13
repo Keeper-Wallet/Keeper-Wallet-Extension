@@ -2,12 +2,14 @@ import { TransactionWallet } from '../../wallets/TransactionWallet';
 import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const OriginWarning = ({ message }) => {
   if (!message.origin && !message.account?.network) {
     return null;
   }
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -15,7 +17,7 @@ const OriginWarning = ({ message }) => {
       <div className={cn(styles.originNetwork, 'flex')}>
         <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
         <span className={styles.networkBottom}>
-          <Trans i18nKey={`bottom.${message?.account?.network}`} />
+          {t(`bottom.${message?.account?.network}`)}
         </span>
       </div>
     </>

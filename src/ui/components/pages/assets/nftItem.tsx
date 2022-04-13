@@ -4,7 +4,7 @@ import { AssetLogo } from './assetLogo';
 import { Loader } from '../../ui';
 import * as React from 'react';
 import { Asset } from '@waves/data-entities';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Tooltip } from '../../ui/tooltip';
 import { MoreActions } from './moreActions';
 
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export function NftItem({ asset, className, onInfoClick, onSendClick }: Props) {
+  const { t } = useTranslation();
   const isLoading = !asset.displayName;
   return (
     <div className={cn(styles.nftCard, className, 'flex')}>
@@ -35,7 +36,7 @@ export function NftItem({ asset, className, onInfoClick, onSendClick }: Props) {
 
       {!isLoading && (
         <MoreActions>
-          <Tooltip content={<Trans i18nKey="assetInfo.infoTooltip" />}>
+          <Tooltip content={t('assetInfo.infoTooltip')}>
             {props => (
               <button
                 className={styles.infoBtn}
@@ -51,7 +52,7 @@ export function NftItem({ asset, className, onInfoClick, onSendClick }: Props) {
             )}
           </Tooltip>
 
-          <Tooltip content={<Trans i18nKey={'assetInfo.sendAssetTooltip'} />}>
+          <Tooltip content={t('assetInfo.sendAssetTooltip')}>
             {props => (
               <button
                 className={styles.sendBtn}

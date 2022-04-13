@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './auth.styl';
 
-interface IProps {
+interface IProps extends WithTranslation {
   message: any;
   assets: any;
 }
 
-export class AuthInfo extends React.PureComponent<IProps> {
+class AuthInfoComponent extends React.PureComponent<IProps> {
   render() {
-    const { message } = this.props;
+    const { t, message } = this.props;
     const { messageHash } = message;
 
     return (
@@ -18,7 +18,7 @@ export class AuthInfo extends React.PureComponent<IProps> {
           className={`${styles.txRow} ${styles.borderedBottom} margin-main-big `}
         >
           <div className="tx-title body3 basic500">
-            <Trans i18nKey="transactions.dataHash" />
+            {t('transactions.dataHash')}
           </div>
           <div className={styles.txValue}>{messageHash}</div>
         </div>
@@ -27,11 +27,11 @@ export class AuthInfo extends React.PureComponent<IProps> {
           <div>
             <i className="inactive-account-icon" />
           </div>
-          <div>
-            <Trans i18nKey="sign.signAccessInfo" />
-          </div>
+          <div>{t('sign.signAccessInfo')}</div>
         </div>
       </div>
     );
   }
 }
+
+export const AuthInfo = withTranslation()(AuthInfoComponent);

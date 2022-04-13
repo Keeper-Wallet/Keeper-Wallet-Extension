@@ -1,24 +1,24 @@
 import * as styles from './customData.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class CustomDataCard extends React.PureComponent<IProps> {
+class CustomDataCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(styles.dataTransactionCard, this.props.className, {
       [styles.dataCard_collapsed]: this.props.collapsed,
     });
 
-    const { message } = this.props;
+    const { t, message } = this.props;
     const { data = {} } = message;
     const { data: dataToShow, binary } = data;
     return (
@@ -29,11 +29,9 @@ export class CustomDataCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="sign.customData" />
+              {t('sign.customData')}
             </div>
-            <h1 className="headline1">
-              <Trans i18nKey="sign.customDataName" />
-            </h1>
+            <h1 className="headline1">{t('sign.customDataName')}</h1>
           </div>
         </div>
 
@@ -52,3 +50,5 @@ export class CustomDataCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const CustomDataCard = withTranslation()(CustomDataCardComponent);

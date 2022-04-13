@@ -1,26 +1,26 @@
 import * as styles from './issue.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance, ShowScript } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class IssueCard extends React.PureComponent<IProps> {
+class IssueCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(styles.issueTransactionCard, this.props.className, {
       [styles.issueCard_collapsed]: this.props.collapsed,
     });
 
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
@@ -35,17 +35,13 @@ export class IssueCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              {isNFT ? (
-                !tx.script ? (
-                  <Trans i18nKey="transactions.issueNFT" />
-                ) : (
-                  <Trans i18nKey="transactions.issueSmartNFT" />
-                )
-              ) : !tx.script ? (
-                <Trans i18nKey="transactions.issueToken" />
-              ) : (
-                <Trans i18nKey="transactions.issueSmartToken" />
-              )}
+              {isNFT
+                ? !tx.script
+                  ? t('transactions.issueNFT')
+                  : t('transactions.issueSmartNFT')
+                : !tx.script
+                ? t('transactions.issueToken')
+                : t('transactions.issueSmartToken')}
             </div>
             <h1 className="headline1">
               <Balance
@@ -62,7 +58,7 @@ export class IssueCard extends React.PureComponent<IProps> {
           {!!tx.description && (
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.description" />
+                {t('transactions.description')}
               </div>
               <div className={styles.txValue}>{tx.description}</div>
             </div>
@@ -71,7 +67,7 @@ export class IssueCard extends React.PureComponent<IProps> {
           {!isNFT && (
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.decimalPoints">Decimals</Trans>
+                {t('transactions.decimalPoints')}
               </div>
               <div className={styles.txValue}>{decimals}</div>
             </div>
@@ -80,16 +76,14 @@ export class IssueCard extends React.PureComponent<IProps> {
           {!isNFT && (
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.issueType" />
+                {t('transactions.issueType')}
               </div>
               <div className={styles.txValue}>
-                <Trans
-                  i18nKey={
-                    tx.reissuable
-                      ? 'transactions.reissuable'
-                      : 'transactions.noReissuable'
-                  }
-                />
+                {t(
+                  tx.reissuable
+                    ? 'transactions.reissuable'
+                    : 'transactions.noReissuable'
+                )}
               </div>
             </div>
           )}
@@ -97,7 +91,7 @@ export class IssueCard extends React.PureComponent<IProps> {
           {!!tx.script && (
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.script" />
+                {t('transactions.script')}
               </div>
               <div className={styles.txValue}>
                 <ShowScript
@@ -114,3 +108,5 @@ export class IssueCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const IssueCard = withTranslation()(IssueCardComponent);

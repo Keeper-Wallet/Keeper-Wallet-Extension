@@ -2,7 +2,7 @@ import * as styles from './chooseAccounts.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { NetworkName, Account } from 'accounts/types';
 
@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
+  const { t } = useTranslation();
   const [selected, setSelected] = React.useState(
     () => new Set(accounts.map(({ address }) => address))
   );
@@ -51,11 +52,11 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
       }}
     >
       <h1 className={cn(styles.centered, 'margin1', 'title1')}>
-        <Trans i18nKey="exportKeystore.chooseAccountsTitle" />
+        {t('exportKeystore.chooseAccountsTitle')}
       </h1>
 
       <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
-        <Trans i18nKey="exportKeystore.chooseAccountsDesc" />
+        {t('exportKeystore.chooseAccountsDesc')}
       </p>
 
       <div className={styles.accounts}>
@@ -126,10 +127,9 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
           type="submit"
           view="submit"
         >
-          <Trans
-            i18nKey="exportKeystore.chooseAccountsExportBtn"
-            count={selected.size}
-          />
+          {t('exportKeystore.chooseAccountsExportBtn', {
+            count: selected.size,
+          })}
         </Button>
       </div>
     </form>

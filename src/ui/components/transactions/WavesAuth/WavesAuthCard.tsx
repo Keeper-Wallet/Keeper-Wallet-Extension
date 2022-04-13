@@ -1,19 +1,19 @@
 import * as styles from './wavesAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 
-interface IProps {
+interface IProps extends WithTranslation {
   className: string;
   collapsed: boolean;
 
   message: any;
 }
 
-export class WavesAuthCard extends React.PureComponent<IProps> {
+class WavesAuthCardComponent extends React.PureComponent<IProps> {
   render() {
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { origin } = message;
     const className = cn(
       styles.wavesAuthTransactionCard,
@@ -37,7 +37,7 @@ export class WavesAuthCard extends React.PureComponent<IProps> {
                     {origin}
                   </div>
                   <h1 className="headline1">
-                    <Trans i18nKey="transactions.signRequestWavesAuth" />
+                    {t('transactions.signRequestWavesAuth')}
                   </h1>
                 </div>
               </div>
@@ -52,7 +52,7 @@ export class WavesAuthCard extends React.PureComponent<IProps> {
           <div className={styles.cardContent}>
             <div className={styles.wavesAuthOriginAddress}>{origin}</div>
             <div className={styles.wavesAuthOriginDescription}>
-              <Trans i18nKey="transactions.originWarning" />
+              {t('transactions.originWarning')}
             </div>
           </div>
         )}
@@ -60,3 +60,5 @@ export class WavesAuthCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const WavesAuthCard = withTranslation()(WavesAuthCardComponent);

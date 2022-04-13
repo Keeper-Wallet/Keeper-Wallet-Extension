@@ -1,20 +1,20 @@
 import * as styles from './matcher.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   className: string;
   collapsed: boolean;
 
   message: any;
 }
 
-export class MatcherCard extends React.PureComponent<IProps> {
+class MatcherCardComponent extends React.PureComponent<IProps> {
   render() {
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { origin } = message;
     const className = cn(styles.matcherTransactionCard, this.props.className, {
       [styles.matcherCard_collapsed]: this.props.collapsed,
@@ -34,7 +34,7 @@ export class MatcherCard extends React.PureComponent<IProps> {
                     {origin}
                   </div>
                   <h1 className="headline1">
-                    <Trans i18nKey="transactions.signRequestMatcher" />
+                    {t('transactions.signRequestMatcher')}
                   </h1>
                 </div>
               </div>
@@ -50,3 +50,5 @@ export class MatcherCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const MatcherCard = withTranslation()(MatcherCardComponent);

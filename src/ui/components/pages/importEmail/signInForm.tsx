@@ -1,6 +1,6 @@
 import * as styles from './importEmail.module.css';
 import cn from 'classnames';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../../ui';
 import * as React from 'react';
 import { useAppSelector } from '../../../store';
@@ -95,7 +95,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
     <form className={className} onSubmit={handleSubmit}>
       <div className="margin1">
         <div className={'tag1 basic500 input-title'}>
-          <Trans i18nKey="importEmail.emailLabel" />
+          {t('importEmail.emailLabel')}
         </div>
 
         {userData?.username ? (
@@ -119,7 +119,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
 
       <div className="margin4">
         <div className={'tag1 basic500 input-title'}>
-          <Trans i18nKey="importEmail.passwordLabel" />
+          {t('importEmail.passwordLabel')}
         </div>
 
         <Input
@@ -146,7 +146,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
           disabled={pending || !email || !password}
           loading={pending}
         >
-          <Trans i18nKey="importEmail.continue" />
+          {t('importEmail.continue')}
         </Button>
 
         <Error show={errors._form != null}>{errors._form}</Error>
@@ -159,12 +159,12 @@ export function SignInForm({ className, userData, signIn }: Props) {
           href={`${baseByNetwork[networkId]}/sign-in/email`}
           target="_blank"
         >
-          <Trans i18nKey="importEmail.forgotPassword" />
+          {t('importEmail.forgotPassword')}
         </a>
 
         {!userData?.username && (
           <div>
-            <Trans i18nKey="importEmail.dontHaveAccount" />
+            {t('importEmail.dontHaveAccount')}
             &nbsp;
             <a
               rel="noopener noreferrer"
@@ -172,7 +172,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
               href={`${baseByNetwork[networkId]}/sign-up/email`}
               target="_blank"
             >
-              <Trans i18nKey="importEmail.signUp" />
+              {t('importEmail.signUp')}
             </a>
           </div>
         )}

@@ -2,7 +2,7 @@ import { seedUtils } from '@waves/waves-transactions';
 import { Account } from 'accounts/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -14,7 +14,7 @@ interface Network {
   name: string;
 }
 
-interface Props {
+interface Props extends WithTranslation {
   account: Account;
   currentNetwork: string;
   customCodes: unknown;
@@ -67,23 +67,16 @@ class NewWalletComponent extends React.Component<Props> {
   onSubmit = e => this._onSubmit(e);
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.content}>
         <div>
-          <h2 className={`title1 margin3 left`}>
-            <Trans i18nKey="newWallet.createNew">Create New Account</Trans>
-          </h2>
+          <h2 className={`title1 margin3 left`}>{t('newWallet.createNew')}</h2>
         </div>
 
         <div className={`margin3`}>
-          <div className={`body3`}>
-            <Trans i18nKey="newWallet.select">Choose your address avatar</Trans>
-          </div>
-          <div className={`tag1 basic500`}>
-            <Trans i18nKey="newWallet.selectInfo">
-              This avatar is unique. You cannot change it later.
-            </Trans>
-          </div>
+          <div className={`body3`}>{t('newWallet.select')}</div>
+          <div className={`tag1 basic500`}>{t('newWallet.selectInfo')}</div>
         </div>
 
         <div className={`margin4 avatar-list`}>
@@ -96,7 +89,7 @@ class NewWalletComponent extends React.Component<Props> {
         </div>
 
         <div className={`tag1 basic500 input-title`}>
-          <Trans i18nKey="newWallet.address">Account address</Trans>
+          {t('newWallet.address')}
         </div>
 
         <div className={`${styles.greyLine} grey-line`}>
@@ -105,7 +98,7 @@ class NewWalletComponent extends React.Component<Props> {
 
         <form onSubmit={this.onSubmit}>
           <Button type="submit" view="submit" id="continue">
-            <Trans i18nKey="newWallet.continue">Continue</Trans>
+            {t('newWallet.continue')}
           </Button>
         </form>
       </div>
@@ -141,4 +134,7 @@ const mapStateToProps = function (store: AppState) {
   };
 };
 
-export const NewWallet = connect(mapStateToProps, actions)(NewWalletComponent);
+export const NewWallet = connect(
+  mapStateToProps,
+  actions
+)(withTranslation()(NewWalletComponent));

@@ -1,13 +1,14 @@
 import * as styles from './importSuccess.module.css';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { setTab } from 'ui/actions';
 
 export function ImportSuccess() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const account = useAccountsSelector(state => state.selectedAccount);
   const isKeystoreImport = useAccountsSelector(
@@ -19,25 +20,19 @@ export function ImportSuccess() {
       <div className={cn(styles.successIcon, 'tx-approve-icon')} />
 
       <p className="headline2 center margin-main-top margin-min">
-        <Trans
-          i18nKey={
-            !isKeystoreImport
-              ? 'import.readyToUse'
-              : 'import.readyToUseKeystore'
-          }
-          values={{ name: account.name }}
-        />
+        {t(
+          !isKeystoreImport ? 'import.readyToUse' : 'import.readyToUseKeystore',
+          { name: account.name }
+        )}
       </p>
 
-      <p className="body1 basic500 center">
-        <Trans i18nKey="import.readyHelpText" />
-      </p>
+      <p className="body1 basic500 center">{t('import.readyHelpText')}</p>
 
       <div className={styles.footer}>
         {!isKeystoreImport && (
           <>
             <div className={`tag1 basic500 input-title`}>
-              <Trans i18nKey="newAccountName.accountAddress" />
+              {t('newAccountName.accountAddress')}
             </div>
 
             <div className={`${styles.greyLine} grey-line`}>
@@ -53,7 +48,7 @@ export function ImportSuccess() {
           view="submit"
           onClick={() => window.close()}
         >
-          <Trans i18nKey="import.finish" />
+          {t('import.finish')}
         </Button>
 
         <Button
@@ -62,7 +57,7 @@ export function ImportSuccess() {
           type="button"
           onClick={() => dispatch(setTab(PAGES.ROOT))}
         >
-          <Trans i18nKey="import.addAnotherAccount" />
+          {t('import.addAnotherAccount')}
         </Button>
       </div>
     </div>

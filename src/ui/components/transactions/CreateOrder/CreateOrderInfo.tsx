@@ -1,18 +1,18 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './createOrder.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-interface IProps {
+interface IProps extends WithTranslation {
   message: any;
   assets: any;
 }
 
-export class CreateOrderInfo extends React.PureComponent<IProps> {
+class CreateOrderInfoComponent extends React.PureComponent<IProps> {
   render() {
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { messageHash, data = {} } = message;
     const tx = { type: data.type, ...data.data };
 
@@ -20,16 +20,12 @@ export class CreateOrderInfo extends React.PureComponent<IProps> {
     return (
       <div>
         <div className={styles.txRow}>
-          <div className="tx-title tag1 basic500">
-            <Trans i18nKey="transactions.txid" />
-          </div>
+          <div className="tx-title tag1 basic500">{t('transactions.txid')}</div>
           <div className={styles.txValue}>{messageHash}</div>
         </div>
 
         <div className={styles.txRow}>
-          <div className="tx-title tag1 basic500">
-            <Trans i18nKey="transactions.fee" />
-          </div>
+          <div className="tx-title tag1 basic500">{t('transactions.fee')}</div>
           <div className={styles.txValue}>
             <Balance isShortFormat={true} balance={fee} showAsset={true} />
           </div>
@@ -37,13 +33,15 @@ export class CreateOrderInfo extends React.PureComponent<IProps> {
 
         <div className={styles.txRow}>
           <div className="tx-title tag1 basic500">
-            <Trans i18nKey="transactions.txTime" />
+            {t('transactions.txTime')}
           </div>
           <div className={styles.txValue}>
-            <DateFormat value={tx.timestamp} />
+            <DateFormat date={tx.timestamp} />
           </div>
         </div>
       </div>
     );
   }
 }
+
+export const CreateOrderInfo = withTranslation()(CreateOrderInfoComponent);

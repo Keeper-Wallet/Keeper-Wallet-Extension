@@ -1,6 +1,6 @@
 import * as styles from './auth.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
@@ -10,6 +10,7 @@ import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
 
 export function Auth(props) {
+  const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 
   const { message, assets } = props;
@@ -28,7 +29,7 @@ export function Auth(props) {
 
       <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
         <Button id="reject" onClick={props.reject} type="button" view="warning">
-          <Trans i18nKey="sign.reject" />
+          {t('sign.reject')}
         </Button>
         <SignWrapper onConfirm={props.approve}>
           {({ onPrepare, pending }) => (
@@ -39,7 +40,7 @@ export function Auth(props) {
               loading={pending || status.approvePending}
               onClick={onPrepare}
             >
-              <Trans i18nKey="sign.auth" />
+              {t('sign.auth')}
             </ApproveBtn>
           )}
         </SignWrapper>

@@ -1,6 +1,6 @@
 import * as styles from './final.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, useTranslation } from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
 import oauth from '../OriginAuth';
@@ -8,12 +8,13 @@ import { isMe as isOrder } from '../CreateOrder/parseTx';
 import { TxHeader } from '../BaseTransaction';
 
 const Error = ({ approveError }) => {
+  const { t } = useTranslation();
   return (
     <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
       <div
         className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}
       >
-        <Trans i18nKey="sign.someError" />
+        {t('sign.someError')}
       </div>
       <div className={`body3 ${styles.finalTxPlate}`}>
         {JSON.stringify(approveError.error, null, 4)}
@@ -22,11 +23,12 @@ const Error = ({ approveError }) => {
   );
 };
 
-export class FinalTransaction extends React.PureComponent {
+class FinalTransactionComponent extends React.PureComponent {
   readonly props: any;
 
   render() {
     const {
+      t,
       transactionStatus,
       selectedAccount,
       messages,
@@ -118,14 +120,14 @@ export class FinalTransaction extends React.PureComponent {
                 href={txLink}
                 target="_blank"
               >
-                <Trans i18nKey="sign.viewTransaction" />
+                {t('sign.viewTransaction')}
               </a>
             </div>
           )}
           {!isNotOrder && (
             <div className={`${styles.txRow} margin-main-top`}>
               <div className="basic500 tx-title tag1">
-                <Trans i18nKey="transactions.orderId" />
+                {t('transactions.orderId')}
               </div>
               <div className="black">{message.messageHash}</div>
             </div>
@@ -139,13 +141,13 @@ export class FinalTransaction extends React.PureComponent {
         >
           {isShowList ? (
             <Button type="button" onClick={onList}>
-              <Trans i18nKey="sign.pendingList" />
+              {t('sign.pendingList')}
             </Button>
           ) : null}
 
           {isShowNext ? (
             <Button type="submit" view="submit" onClick={onNext}>
-              <Trans i18nKey="sign.nextTransaction" />
+              {t('sign.nextTransaction')}
             </Button>
           ) : null}
 
@@ -156,8 +158,8 @@ export class FinalTransaction extends React.PureComponent {
               type="button"
               onClick={onClose}
             >
-              {isError ? <Trans i18nKey="sign.understand" /> : null}
-              {isReject || isApprove ? <Trans i18nKey="sign.close" /> : null}
+              {isError ? t('sign.understand') : null}
+              {isReject || isApprove ? t('sign.close') : null}
             </Button>
           ) : null}
         </div>
@@ -165,3 +167,5 @@ export class FinalTransaction extends React.PureComponent {
     );
   }
 }
+
+export const FinalTransaction = withTranslation()(FinalTransactionComponent);

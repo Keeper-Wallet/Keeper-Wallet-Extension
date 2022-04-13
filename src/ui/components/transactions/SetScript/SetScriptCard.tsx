@@ -1,18 +1,18 @@
 import * as styles from './setScript.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
 import { SetScriptCardHeader } from './SetScriptCardHeader';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class SetScriptCard extends React.PureComponent<IProps> {
+class SetScriptCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.setScriptTransactionCard,
@@ -22,7 +22,7 @@ export class SetScriptCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const script = tx.script;
@@ -46,11 +46,11 @@ export class SetScriptCard extends React.PureComponent<IProps> {
         {!collapsed ? (
           <>
             <div className="font600 tag1 basic500 margin-min margin-main-top">
-              <Trans i18nKey="transactions.scriptWarningHeader" />
+              {t('transactions.scriptWarningHeader')}
             </div>
 
             <div className="tag1 basic500 margin-main">
-              <Trans i18nKey="transactions.scriptWarningDescription" />
+              {t('transactions.scriptWarningDescription')}
             </div>
           </>
         ) : null}
@@ -58,3 +58,5 @@ export class SetScriptCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const SetScriptCard = withTranslation()(SetScriptCardComponent);

@@ -2,7 +2,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Modal } from '../ui';
 import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export function Import({ setTab }: Props) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const showUpdateInfo = useAppSelector(
@@ -52,13 +53,13 @@ export function Import({ setTab }: Props) {
             view="submit"
             onClick={() => setTab(PAGES.NEW_ACCOUNT)}
           >
-            <Trans i18nKey="import.createNew" />
+            {t('import.createNew')}
           </Button>
 
           <div
             className={cn('body1', 'disabled500', 'font300', styles.separator)}
           >
-            <Trans i18nKey="import.importVia">Or import via</Trans>
+            {t('import.importVia')}
           </div>
 
           <div>
@@ -85,7 +86,7 @@ export function Import({ setTab }: Props) {
                     fill="#0055FF"
                   />
                 </svg>
-                <Trans i18nKey="import.viaSeed" />
+                {t('import.viaSeed')}
               </Button>
             </div>
 
@@ -108,12 +109,10 @@ export function Import({ setTab }: Props) {
                   <path d="M19.254 3.558v8.446H8.122V.912h8.54c1.417 0 2.596 1.213 2.592 2.645v.001ZM3.329.912h1.017v3.663H.668V3.563c0-1.483 1.225-2.65 2.661-2.65ZM.668 8.406h3.678v3.662H.668V8.406Zm15.93 11.092H15.58V15.84h3.678v1.007c0 1.483-1.225 2.651-2.662 2.651ZM8.121 15.84H11.8v3.663H8.122V15.84ZM.668 16.852V15.84h3.678v3.663H3.329a2.665 2.665 0 0 1-2.661-2.651Z" />
                 </svg>
                 <div>
-                  <div>
-                    <Trans i18nKey="import.viaLedger" />
-                  </div>
+                  <div>{t('import.viaLedger')}</div>
                   {!isLedgerSupported && (
                     <div className={styles.importButtonNote}>
-                      <Trans i18nKey="import.notSupportedByBrowser" />
+                      {t('import.notSupportedByBrowser')}
                     </div>
                   )}
                 </div>
@@ -168,7 +167,7 @@ export function Import({ setTab }: Props) {
                     fill="black"
                   />
                 </svg>
-                <Trans i18nKey="import.viaKeystore" />
+                {t('import.viaKeystore')}
               </Button>
             </div>
 
@@ -248,9 +247,9 @@ export function Import({ setTab }: Props) {
                     </g>
                   </svg>
 
-                  <Trans i18nKey="import.viaEmail" />
+                  {t('import.viaEmail')}
                   <div className={styles.importButtonBadge}>
-                    <Trans i18nKey="import.beta" />
+                    {t('import.beta')}
                   </div>
                 </Button>
               </div>
@@ -261,7 +260,7 @@ export function Import({ setTab }: Props) {
         tabMode === 'popup' && (
           <>
             <p className="body1 disabled500 font300 center margin-main-big-top margin-main-large">
-              <Trans i18nKey="import.noAccounts" values={{ currentNetwork }} />
+              {t('import.noAccounts', { currentNetwork })}
             </p>
             <Button
               data-testid="addAccountBtn"
@@ -274,7 +273,7 @@ export function Import({ setTab }: Props) {
                 )
               }
             >
-              <Trans i18nKey="import.addAccount" />
+              {t('import.addAccount')}
             </Button>
           </>
         )

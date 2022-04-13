@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Button, DateFormat, Input } from 'ui/components/ui';
-import { Trans } from 'react-i18next';
+import {
+  withTranslation,
+  WithTranslation,
+  useTranslation,
+} from 'react-i18next';
 import {
   closeNotificationWindow,
   deleteNotifications,
@@ -13,30 +17,33 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 
-const NotificationItem = ({ notification }) => (
-  <div className={`margin-main-big`}>
-    <div className={`${styles.messageItemInner} margin-2`}>
-      <div className="flex">
-        <div className={styles.messageIcon} />
-        <div className={styles.messageTitle}>
-          <div className="basic500">{notification && notification.origin}</div>
-          <h2 className="">{notification && notification.title}</h2>
+const NotificationItem = ({ notification }) => {
+  const { t } = useTranslation();
+  return (
+    <div className={`margin-main-big`}>
+      <div className={`${styles.messageItemInner} margin-2`}>
+        <div className="flex">
+          <div className={styles.messageIcon} />
+          <div className={styles.messageTitle}>
+            <div className="basic500">
+              {notification && notification.origin}
+            </div>
+            <h2 className="">{notification && notification.title}</h2>
+          </div>
+        </div>
+        <div className={styles.messageText}>
+          {notification && notification.message}
         </div>
       </div>
-      <div className={styles.messageText}>
-        {notification && notification.message}
+      <div className={styles.timestamp}>
+        <div className="basic500 margin-min">{t('notifications.time')}</div>
+        <DateFormat date={notification.timestamp} />
       </div>
     </div>
-    <div className={styles.timestamp}>
-      <div className="basic500 margin-min">
-        <Trans i18nKey="notifications.time">Time</Trans>
-      </div>
-      <DateFormat value={notification.timestamp} />
-    </div>
-  </div>
-);
+  );
+};
 
-class NotificationsComponent extends React.Component {
+class NotificationsComponent extends React.Component<WithTranslation> {
   readonly state = {} as any;
   readonly props;
 
@@ -105,6 +112,7 @@ class NotificationsComponent extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
     const {
       activeNotification,
       showToList,
@@ -146,9 +154,7 @@ class NotificationsComponent extends React.Component {
               onChange={this.toggleCanShowHandler}
             />
             <label htmlFor="checkbox_noshow">
-              <Trans i18nKey="notifications.allowSending">
-                Allow sending messages
-              </Trans>
+              {t('notifications.allowSending')}
             </label>
           </div>
         </div>
@@ -156,7 +162,7 @@ class NotificationsComponent extends React.Component {
         <div className={`${styles.notificationButtons} buttons-wrapper`}>
           {showToList && (
             <Button type="button" onClick={this.toListHandler}>
-              <Trans i18nKey="notifications.toListBtn">Notifications</Trans>
+              {t('notifications.toListBtn')}
             </Button>
           )}
 
@@ -166,7 +172,7 @@ class NotificationsComponent extends React.Component {
 
           {hasNotifications && (
             <Button type="submit" view="submit" onClick={this.nextHandler}>
-              <Trans i18nKey="notifications.nextBtn">Next</Trans>
+              {t('notifications.nextBtn')}
             </Button>
           )}
 
@@ -180,7 +186,7 @@ class NotificationsComponent extends React.Component {
               type="button"
               onClick={this.closeHandler}
             >
-              <Trans i18nKey="notifications.closeBtn">Close</Trans>
+              {t('notifications.closeBtn')}
             </Button>
           )}
         </div>
@@ -216,4 +222,4 @@ const actions = {
 export const Notifications = connect(
   mapStateToProps,
   actions
-)(NotificationsComponent);
+)(withTranslation()(NotificationsComponent));

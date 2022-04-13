@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './originAuth.styl';
 
-interface IProps {
+interface IProps extends WithTranslation {
   message: any;
   assets: any;
 }
 
-export class OriginAuthInfo extends React.PureComponent<IProps> {
+class OriginAuthInfoComponent extends React.PureComponent<IProps> {
   render() {
+    const { t } = this.props;
     return (
       <div>
         <div
@@ -17,11 +18,11 @@ export class OriginAuthInfo extends React.PureComponent<IProps> {
           <div>
             <i className="inactive-account-icon" />
           </div>
-          <div>
-            <Trans i18nKey="sign.signAccessInfo" />
-          </div>
+          <div>{t('sign.signAccessInfo')}</div>
         </div>
       </div>
     );
   }
 }
+
+export const OriginAuthInfo = withTranslation()(OriginAuthInfoComponent);

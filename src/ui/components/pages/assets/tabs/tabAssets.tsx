@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { AssetItem } from 'ui/components/pages/assets//assetItem';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
@@ -51,6 +51,7 @@ interface Props {
 }
 
 export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
+  const { t } = useTranslation();
   const assets = useAppSelector(state => state.assets);
   const showSuspiciousAssets = useAppSelector(
     state => state.uiState?.showSuspiciousAssets
@@ -88,7 +89,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
           onInput={e => setTerm(e.target.value)}
           onClear={() => setTerm('')}
         />
-        <Tooltip content={<Trans i18nKey="assets.onlyFavorites" />}>
+        <Tooltip content={t('assets.onlyFavorites')}>
           {props => (
             <div
               className={styles.filterBtn}
@@ -111,7 +112,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
           )}
         </Tooltip>
 
-        <Tooltip content={<Trans i18nKey="assets.onlyMyAssets" />}>
+        <Tooltip content={t('assets.onlyMyAssets')}>
           {props => (
             <div
               className={styles.filterBtn}
@@ -149,15 +150,13 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
         <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy || onlyFav ? (
             <>
-              <div className="margin-min">
-                <Trans i18nKey="assets.notFoundAssets" />
-              </div>
+              <div className="margin-min">{t('assets.notFoundAssets')}</div>
               <p className="blue link" onClick={() => clearFilters()}>
-                <Trans i18nKey="assets.resetFilters" />
+                {t('assets.resetFilters')}
               </p>
             </>
           ) : (
-            <Trans i18nKey="assets.emptyAssets" />
+            t('assets.emptyAssets')
           )}
         </div>
       ) : (

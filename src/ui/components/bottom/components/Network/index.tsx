@@ -1,7 +1,11 @@
 import cn from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import {
+  withTranslation,
+  useTranslation,
+  WithTranslation,
+} from 'react-i18next';
 import {
   loading,
   setCustomCode,
@@ -17,6 +21,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 const key = key => `bottom.${key}`;
 
 const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
+  const { t } = useTranslation();
   const classNames = cn(styles.selectNetworks, { [styles.isShow]: isShow });
   const nets = networks.reduce(
     (acc, item) => ((acc[item.name] = item), acc),
@@ -46,7 +51,7 @@ const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
           <div onClick={onSelectNet} className={className} key={currentNetwork}>
             <i className={`networkIcon ${styles.networkIcon}`}> </i>
             <i className={`networkIconActive ${styles.networkIconActive}`}> </i>
-            <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
+            {t(key(currentNetwork))}
           </div>
         );
       })}
@@ -167,6 +172,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
       this.props.noChangeNetwork && styles.disabledNet
     );
 
+    const { t } = this.props;
     const {
       networkHash,
       showSettings,
@@ -180,7 +186,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     return (
       <Tooltip
         className={styles.tooltipContent}
-        content={<Trans i18nKey={'bottom.network.disabled'} />}
+        content={t('bottom.network.disabled')}
       >
         {props => (
           <div
@@ -194,7 +200,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
             >
               <i className={`networkIcon ${styles.networkIcon}`}> </i>
               <span className={styles.networkBottom}>
-                <Trans i18nKey={key(currentNetwork)}>{currentNetwork}</Trans>
+                {t(key(currentNetwork))}
               </span>
             </div>
             {showEdit ? (
@@ -205,7 +211,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
                 )}
                 onClick={this.editClickHandler}
               >
-                <Trans i18nKey="bottom.network.edit">Edit</Trans>
+                {t('bottom.network.edit')}
               </div>
             ) : null}
             <Networks
@@ -258,9 +264,12 @@ const actions = {
   setCustomCode,
 };
 
-export const Network = connect(mapStateToProps, actions)(NetworkComponent);
+export const Network = connect(
+  mapStateToProps,
+  actions
+)(withTranslation()(NetworkComponent));
 
-interface INetworkProps {
+interface INetworkProps extends WithTranslation {
   className?: string;
   noChangeNetwork: boolean;
   currentNetwork: string;

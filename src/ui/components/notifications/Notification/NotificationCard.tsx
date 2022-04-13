@@ -1,10 +1,10 @@
 import * as styles from './index.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
 
-export class NotificationCard extends React.PureComponent<INotification> {
+class NotificationCardComponent extends React.PureComponent<INotification> {
   deleteHandler = event => {
     event.stopPropagation();
     event.preventDefault();
@@ -19,13 +19,17 @@ export class NotificationCard extends React.PureComponent<INotification> {
   };
 
   render() {
-    const { notifications, className: propsClassName, collapsed } = this.props;
+    const {
+      t,
+      notifications,
+      className: propsClassName,
+      collapsed,
+    } = this.props;
     const className = cn(styles.notificationCard, propsClassName);
     const isGroup = notifications.length > 1;
     const title = isGroup ? (
       <span>
-        {notifications.length}{' '}
-        <Trans i18nKey="notifications.messages">Messages</Trans>
+        {notifications.length} {t('notifications.messages')}
       </span>
     ) : (
       notifications[0].title
@@ -64,10 +68,12 @@ export class NotificationCard extends React.PureComponent<INotification> {
   }
 }
 
-interface INotification {
+interface INotification extends WithTranslation {
   collapsed?: boolean;
   className?: string;
   deleteNotifications: (ids: [string]) => void;
   onShow?: (item) => void;
   notifications?: any;
 }
+
+export const NotificationCard = withTranslation()(NotificationCardComponent);

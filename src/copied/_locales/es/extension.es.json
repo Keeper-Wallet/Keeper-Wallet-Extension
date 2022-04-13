@@ -140,7 +140,18 @@
   },
   "copyAddress": "Copy address",
   "date": {
-    "today": "Today"
+    "Jan": "Jan",
+    "Feb": "Feb",
+    "Mar": "Mar",
+    "Apr": "Apr",
+    "May": "May",
+    "Jun": "Jun",
+    "Jul": "Jul",
+    "Aug": "Aug",
+    "Sep": "Sep",
+    "Oct": "Oct",
+    "Nov": "Nov",
+    "Dec": "Dec"
   },
   "deleteAccount": {
     "attention": "Attention!",
@@ -302,8 +313,6 @@
     "connectInstructions": "Connect Ledger device and open Waves app",
     "continueButton": "Continue",
     "couldNotGetUsersError": "Could not get more users from ledger. Please ensure that ledger is connected, unlocked and the Waves app is open, then click <retryButton>Retry</retryButton>",
-    "userIdInputNumbersError": "Only numbers are allowed",
-    "userIdInputMaxValueError": "Account ID cannot be greater than {{ maxUserId }}",
     "selectAccountInstructions": "Choose your address",
     "title": "Import Ledger",
     "tryAgainButton": "Try Again"
@@ -333,7 +342,7 @@
     "keepUp": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
   },
   "langsSettings": {
-    "confirm": "Confirm",
+    "confirm": "Confirmar",
     "title": "Change the language"
   },
   "ledgerErrors": {
@@ -384,15 +393,15 @@
   },
   "newAccount": {
     "acceptTerms": "I have read and agree with the",
+    "termsAndConditions": "Terms and Conditions",
     "confirmPassword": "Confirm password",
     "create": "Continue",
     "createPassword": "Create a password",
     "notMatch": "Passwords do not match",
     "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Keeper Wallet. Waves does not store your passwords.",
-    "privacyPolicy": "Privacy Policy",
     "protect": "Protect Your Account",
-    "smallPass": "Password is too short",
-    "termsAndConditions": "Terms and Conditions"
+    "privacyPolicy": "Privacy Policy",
+    "smallPass": "Password is too short"
   },
   "newAccountName": {
     "accountAddress": "Account address",
@@ -461,8 +470,8 @@
     },
     "notify": {
       "allowed": "Allowed!",
-      "deleted": "Deleted!",
-      "disallowed": "Disallowed!"
+      "disallowed": "Disallowed!",
+      "deleted": "Deleted!"
     },
     "empty": "Nothing here…",
     "rejectedOrigin": "Rejected",
@@ -506,26 +515,26 @@
     "sessionTimeout": "Session timeout in",
     "settings": "Settings",
     "settingsGeneral": "General",
-    "suspiciousAssetsProtection": "Suspicious assets protection",
-    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets",
     "time_10m": "10 min",
     "time_1h": "1 hour",
     "time_20m": "20 min",
     "time_40m": "40 min",
     "time_5m": "5 min",
     "time_idle": "Browser timeout",
-    "tooltipContent": "Protect yourself from Clicker Trojans threats"
+    "tooltipContent": "Protect yourself from Clicker Trojans threats",
+    "suspiciousAssetsProtection": "Suspicious assets protection",
+    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets"
   },
   "showQR": "Show QR",
   "showScriptComponent": {
+    "key": "Key",
+    "type": "Type",
+    "value": "Value",
     "copied": "Copied!",
     "copy": "Copy",
     "copyCode": "Copy code",
     "hide": "Hide",
-    "key": "Key",
-    "showAll": "Show all",
-    "type": "Type",
-    "value": "Value"
+    "showAll": "Show all"
   },
   "sign": {
     "action": "Action",

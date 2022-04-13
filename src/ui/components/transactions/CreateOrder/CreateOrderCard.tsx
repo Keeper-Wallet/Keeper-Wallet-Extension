@@ -1,6 +1,6 @@
 import * as styles from './createOrder.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance, DateFormat } from '../../ui';
@@ -14,14 +14,14 @@ import {
   messageType,
 } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class CreateOrderCard extends React.PureComponent<IProps> {
+class CreateOrderCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.createOrderTransactionCard,
@@ -31,7 +31,7 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const isSell = tx.orderType === 'sell';
@@ -46,11 +46,7 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans
-                i18nKey={
-                  isSell ? 'transactions.orderSell' : 'transactions.orderBuy'
-                }
-              />
+              {t(isSell ? 'transactions.orderSell' : 'transactions.orderBuy')}
               <span>
                 : <Asset assetId={amount.asset.id} />/
                 <Asset assetId={price.asset.id} />
@@ -80,7 +76,7 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
         <div className={styles.cardContent}>
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.price" />
+              {t('transactions.price')}
             </div>
             <div className={styles.txValue}>
               <Balance
@@ -94,16 +90,16 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
 
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.expires" />
+              {t('transactions.expires')}
             </div>
             <div className={styles.txValue}>
-              <DateFormat value={tx.expiration} />
+              <DateFormat date={tx.expiration} />
             </div>
           </div>
 
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.matcherPublicKey" />
+              {t('transactions.matcherPublicKey')}
             </div>
             <div className={styles.txValue}>{tx.matcherPublicKey}</div>
           </div>
@@ -112,3 +108,5 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const CreateOrderCard = withTranslation()(CreateOrderCardComponent);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { Avatar } from '../ui/avatar/Avatar';
@@ -40,6 +40,7 @@ export function ActiveAccountCard({
   onShowQr,
   onSwapClick,
 }: Props) {
+  const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
@@ -65,7 +66,7 @@ export function ActiveAccountCard({
           )}
         </div>
 
-        <Tooltip content={<Trans i18nKey="assets.inStorage" />}>
+        <Tooltip content={t('assets.inStorage')}>
           {props => (
             <button
               className={cn(styles.iconButton, styles.otherAccountsButton)}
@@ -92,15 +93,13 @@ export function ActiveAccountCard({
               <path d="m11.56 4.01-1.266-1.268a.6.6 0 0 1 .848-.848l2.291 2.29a.6.6 0 0 1 0 .85l-2.29 2.29a.6.6 0 1 1-.85-.848l1.268-1.267H4.99a.6.6 0 0 1 0-1.2h6.57ZM2.44 9.99l1.266 1.268a.6.6 0 1 1-.848.848L.567 9.816a.6.6 0 0 1 0-.85l2.29-2.29a.6.6 0 1 1 .849.848L2.439 8.791h6.57a.6.6 0 0 1 0 1.2h-6.57Z" />
             </svg>
 
-            <span>
-              <Trans i18nKey="activeAccountCard.swapButton" />
-            </span>
+            <span>{t('activeAccountCard.swapButton')}</span>
           </button>
         )}
 
         <span className={styles.controlsExpand} />
 
-        <Tooltip content={<Trans i18nKey="copyAddress" />}>
+        <Tooltip content={t('copyAddress')}>
           {props => (
             <Copy text={account.address} onCopy={onCopy}>
               <button
@@ -111,7 +110,7 @@ export function ActiveAccountCard({
           )}
         </Tooltip>
 
-        <Tooltip content={<Trans i18nKey="showQR" />} placement="bottom-end">
+        <Tooltip content={t('showQR')} placement="bottom-end">
           {props => (
             <button
               className={cn(styles.iconButton, 'showQrIcon')}

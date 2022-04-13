@@ -1,6 +1,6 @@
 import * as styles from './deleteAccounts.module.css';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
 import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
@@ -38,26 +38,24 @@ export function DeleteAllAccounts({ onBack }) {
     >
       <i className={cn('error-icon', styles.errorIcon)} />
 
-      <h2 className="title1 margin1">
-        <Trans i18nKey="forgotPassword.attention" />
-      </h2>
+      <h2 className="title1 margin1">{t('forgotPassword.attention')}</h2>
 
       <div className="body1 margin1">
-        <Trans i18nKey="forgotPassword.attentionMessage" />
+        {t('forgotPassword.attentionMessage')}
       </div>
 
       <div className={cn('plate', 'body1', 'margin1', styles.error)}>
-        <Trans i18nKey="forgotPassword.warningMessage" />
+        {t('forgotPassword.warningMessage')}
       </div>
       <div className="margin1 margin-main-big-top">
-        <Trans i18nKey="forgotPassword.continueMessage" />
+        {t('forgotPassword.continueMessage')}
       </div>
 
       <div
         className="plate center margin1 cant-select"
         data-testid="defaultPhrase"
       >
-        <Trans i18nKey="forgotPassword.phrase" />
+        {t('forgotPassword.phrase')}
       </div>
       <div>
         <Input
@@ -75,13 +73,13 @@ export function DeleteAllAccounts({ onBack }) {
           show={hasError && (isBlur || isCorrectLength)}
           data-testid="confirmPhraseError"
         >
-          <Trans i18nKey="forgotPassword.phraseError" />
+          {t('forgotPassword.phraseError')}
         </Error>
       </div>
 
       <div className="buttons-wrapper">
         <Button type="button" onClick={onBack} data-testid="resetCancel">
-          <Trans i18nKey="forgotPassword.resetCancel" />
+          {t('forgotPassword.resetCancel')}
         </Button>
         <Button
           type="button"
@@ -90,7 +88,7 @@ export function DeleteAllAccounts({ onBack }) {
           onClick={() => dispatch(deleteAccount())}
           data-testid="resetConfirm"
         >
-          <Trans i18nKey="forgotPassword.resetConfirm" />
+          {t('forgotPassword.resetConfirm')}
         </Button>
       </div>
     </div>

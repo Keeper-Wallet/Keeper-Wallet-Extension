@@ -1,6 +1,6 @@
 import * as styles from './massTransfer.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance, Ellipsis, PlateCollapsable } from '../../ui';
@@ -46,14 +46,14 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
   });
 };
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class MassTransferCard extends React.PureComponent<IProps> {
+class MassTransferCardComponent extends React.PureComponent<IProps> {
   readonly state = Object.create(null);
 
   toggleShowRecipients = count => {
@@ -69,7 +69,7 @@ export class MassTransferCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, assets, collapsed } = this.props;
+    const { t, message, assets, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
@@ -82,7 +82,7 @@ export class MassTransferCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.massTransfer" />
+              {t('transactions.massTransfer')}
             </div>
             <h1 className="headline1">
               <Balance
@@ -99,7 +99,7 @@ export class MassTransferCard extends React.PureComponent<IProps> {
         <div className={styles.cardContent}>
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.recipients" />
+              {t('transactions.recipients')}
             </div>
             <div className={styles.txValue}>
               <PlateCollapsable
@@ -118,7 +118,7 @@ export class MassTransferCard extends React.PureComponent<IProps> {
           {tx.attachment && tx.attachment.length ? (
             <div className={`${styles.txRow} ${styles.txRowDescription}`}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.attachment" />
+                {t('transactions.attachment')}
               </div>
               <Attachment
                 className="plate fullwidth"
@@ -131,3 +131,5 @@ export class MassTransferCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const MassTransferCard = withTranslation()(MassTransferCardComponent);

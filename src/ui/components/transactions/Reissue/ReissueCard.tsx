@@ -1,26 +1,26 @@
 import * as styles from './reissue.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class ReissueCard extends React.PureComponent<IProps> {
+class ReissueCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(styles.reissueTransactionCard, this.props.className, {
       [styles.reissueCard_collapsed]: this.props.collapsed,
     });
 
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
@@ -33,7 +33,7 @@ export class ReissueCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.reissue" />
+              {t('transactions.reissue')}
             </div>
             <h1 className="headline1">
               <Balance
@@ -50,16 +50,14 @@ export class ReissueCard extends React.PureComponent<IProps> {
         <div className={styles.cardContent}>
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.issueType" />
+              {t('transactions.issueType')}
             </div>
             <div className={styles.txValue}>
-              <Trans
-                i18nKey={
-                  tx.reissuable
-                    ? 'transactions.reissuable'
-                    : 'transactions.noReissuable'
-                }
-              />
+              {t(
+                tx.reissuable
+                  ? 'transactions.reissuable'
+                  : 'transactions.noReissuable'
+              )}
             </div>
           </div>
         </div>
@@ -67,3 +65,5 @@ export class ReissueCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const ReissueCard = withTranslation()(ReissueCardComponent);

@@ -4,7 +4,7 @@ import background from 'ui/services/Background';
 import { Button, Modal } from 'ui/components/ui';
 import cn from 'classnames';
 import { Login } from './login';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as styles from './signWrapper.module.css';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
@@ -18,6 +18,7 @@ type Props = {
 };
 
 export function SignWrapper({ onConfirm, children }: Props) {
+  const { t } = useTranslation();
   const account = useAppSelector(state => state.selectedAccount);
 
   const [showModal, setShowModal] = React.useState(false);
@@ -98,7 +99,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
               />
 
               <h2 className={cn('margin4', 'title1')}>
-                <Trans i18nKey="importEmail.loginRequired" />
+                {t('importEmail.loginRequired')}
               </h2>
 
               <Login

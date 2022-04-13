@@ -1,7 +1,7 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -28,10 +28,11 @@ class SettingsComponent extends React.Component {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.content}>
         <div className={`${styles.title1} title1`}>
-          <Trans i18nKey="settings.settings">Settings</Trans>
+          {t('settings.settings')}
         </div>
         <div className={styles.settingsMenu}>
           <div className={`${styles.settingsMenuItem} ${styles.general}`}>
@@ -42,9 +43,7 @@ class SettingsComponent extends React.Component {
               className={styles.settingsBtn}
               onClick={this.settingsGeneral}
             >
-              <div className="body1 left">
-                <Trans i18nKey="settings.settingsGeneral">General</Trans>
-              </div>
+              <div className="body1 left">{t('settings.settingsGeneral')}</div>
             </Button>
           </div>
 
@@ -57,10 +56,20 @@ class SettingsComponent extends React.Component {
               onClick={this.permissionsHandler}
             >
               <div className="body1 left">
-                <Trans i18nKey="settings.permissionsControl">
-                  Permissions control
-                </Trans>
+                {t('settings.permissionsControl')}
               </div>
+            </Button>
+          </div>
+
+          <div className={`${styles.settingsMenuItem} ${styles.language}`}>
+            <Button
+              id="settingsLangs"
+              type="button"
+              view="transparent"
+              className={styles.settingsBtn}
+              onClick={this.langsHandler}
+            >
+              <div className="body1 left">{t('settings.langs')}</div>
             </Button>
           </div>
 
@@ -72,9 +81,7 @@ class SettingsComponent extends React.Component {
               className={styles.settingsBtn}
               onClick={this.networkHandler}
             >
-              <div className="body1 left">
-                <Trans i18nKey="settings.network">Network</Trans>
-              </div>
+              <div className="body1 left">{t('settings.network')}</div>
             </Button>
           </div>
 
@@ -87,9 +94,7 @@ class SettingsComponent extends React.Component {
               className={styles.settingsBtn}
               onClick={this.exportHandler}
             >
-              <div className="body1 left">
-                <Trans i18nKey="settings.export" />
-              </div>
+              <div className="body1 left">{t('settings.export')}</div>
             </Button>
           </div>
         </div>
@@ -106,25 +111,21 @@ class SettingsComponent extends React.Component {
               data-teston={this.props.autoClickProtection}
             />
             <div className={`${styles.powerBtnState} left`}>
-              <div>
-                <Trans i18nKey="settings.autoClick">
-                  Auto-click protection
-                </Trans>
-              </div>
+              <div>{t('settings.autoClick')}</div>
               <div data-testid="clickProtectionStatus">
                 {!this.props.autoClickProtection ? (
                   <span className="basic500">
-                    <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
+                    {t('settings.autoClickDisable')}
                   </span>
                 ) : (
                   <span className="submit400">
-                    <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
+                    {t('settings.autoClickEnable')}
                   </span>
                 )}
               </div>
             </div>
             <Tooltip
-              content={<Trans i18nKey="settings.tooltipContent" />}
+              content={t('settings.tooltipContent')}
               className={styles.helpTooltip}
               data-testid="clickProtectionTooltip"
             >
@@ -150,23 +151,21 @@ class SettingsComponent extends React.Component {
               data-teston={!this.props.showSuspiciousAssets}
             />
             <div className={`${styles.powerBtnState} left`}>
-              <div>
-                <Trans i18nKey="settings.suspiciousAssetsProtection" />
-              </div>
+              <div>{t('settings.suspiciousAssetsProtection')}</div>
               <div data-testid="showSuspiciousAssetsStatus">
                 {this.props.showSuspiciousAssets ? (
                   <span className="basic500">
-                    <Trans i18nKey="settings.autoClickDisable">Disabled</Trans>
+                    {t('settings.autoClickDisable')}
                   </span>
                 ) : (
                   <span className="submit400">
-                    <Trans i18nKey="settings.autoClickEnable">Enabled</Trans>
+                    {t('settings.autoClickEnable')}
                   </span>
                 )}
               </div>
             </div>
             <Tooltip
-              content={<Trans i18nKey="settings.suspiciousAssetsTooltip" />}
+              content={t('settings.suspiciousAssetsTooltip')}
               className={styles.helpTooltip}
               data-testid="showSuspiciousAssetsTooltip"
             >
@@ -189,19 +188,13 @@ class SettingsComponent extends React.Component {
                 onClick={this.deleteHandler}
               >
                 <i className={styles.icon}> </i>
-                <span>
-                  <Trans i18nKey="settings.deleteAccounts">
-                    Delete accounts
-                  </Trans>
-                </span>
+                <span>{t('settings.deleteAccounts')}</span>
               </div>
             </div>
             <div>
               <div className={styles.logout} onClick={this.lock}>
                 <i className={styles.icon}> </i>
-                <span>
-                  <Trans i18nKey="settings.logOut">Log out</Trans>
-                </span>
+                <span>{t('settings.logOut')}</span>
               </div>
             </div>
           </div>
@@ -219,5 +212,5 @@ const mapStateToProps = function (store) {
 };
 
 export const Settings = connect(mapStateToProps, { lock, setUiState })(
-  SettingsComponent
+  withTranslation()(SettingsComponent)
 );

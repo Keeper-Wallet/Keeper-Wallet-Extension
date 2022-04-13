@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { NftItem } from 'ui/components/pages/assets/nftItem';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
@@ -13,6 +13,7 @@ import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
 
 const Row = ({ data, index, style }) => {
+  const { t } = useTranslation();
   const { nftWithGroups, onInfoClick, onSendClick } = data;
   const nftOrGroup = nftWithGroups[index];
 
@@ -20,10 +21,7 @@ const Row = ({ data, index, style }) => {
     <div style={style}>
       {'groupName' in nftOrGroup ? (
         <div className={cn('basic500 margin-min', 'margin-min-top')}>
-          <Trans
-            i18nKey="assets.issuedBy"
-            values={{ issuer: nftOrGroup.groupName }}
-          />
+          {t('assets.issuedBy', { issuer: nftOrGroup.groupName })}
         </div>
       ) : (
         <NftItem
@@ -44,6 +42,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
 );
 
 export function TabNfts({ onInfoClick, onSendClick }) {
+  const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
 
@@ -102,7 +101,7 @@ export function TabNfts({ onInfoClick, onSendClick }) {
             setTerm('');
           }}
         />
-        <Tooltip content={<Trans i18nKey="assets.onlyMyAssets" />}>
+        <Tooltip content={t('assets.onlyMyAssets')}>
           {props => (
             <div
               className={styles.filterBtn}
@@ -143,15 +142,13 @@ export function TabNfts({ onInfoClick, onSendClick }) {
         <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy ? (
             <>
-              <div className="margin-min">
-                <Trans i18nKey="assets.notFoundNFTs" />
-              </div>
+              <div className="margin-min">{t('assets.notFoundNFTs')}</div>
               <p className="blue link" onClick={() => clearFilters()}>
-                <Trans i18nKey="assets.resetFilters" />
+                {t('assets.resetFilters')}
               </p>
             </>
           ) : (
-            <Trans i18nKey="assets.emptyNFTs" />
+            t('assets.emptyNFTs')
           )}
         </div>
       ) : (

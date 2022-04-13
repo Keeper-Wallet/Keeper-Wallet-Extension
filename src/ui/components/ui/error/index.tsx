@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './error.styl';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const Errors = ({ errors, show }) => {
   if (!show || !errors || !errors.length) {
@@ -9,12 +9,9 @@ const Errors = ({ errors, show }) => {
   }
 
   return errors.map(({ key, msg }) => {
+    const { t } = useTranslation();
     key = key.replace(/\s/g, '');
-    return (
-      <Trans i18nKey={key} key={key}>
-        {msg}
-      </Trans>
-    );
+    return t(key, { defaultValue: msg, key });
   });
 };
 

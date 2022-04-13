@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/transactions.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { ApproveBtn, Button } from 'ui/components/ui';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
@@ -12,6 +12,7 @@ export function TxFooter({
   hideApprove,
   autoClickProtection,
 }) {
+  const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 
   const isSend = message.broadcast;
@@ -25,7 +26,7 @@ export function TxFooter({
         type="button"
         view="warning"
       >
-        <Trans i18nKey="sign.reject" />
+        {t('sign.reject')}
       </Button>
       {!hideApprove && (
         <SignWrapper onConfirm={approve}>
@@ -39,9 +40,7 @@ export function TxFooter({
               autoClickProtection={autoClickProtection}
               onClick={onPrepare}
             >
-              <Trans
-                i18nKey={isSend ? 'sign.confirmButton' : 'sign.signButton'}
-              />
+              {t(isSend ? 'sign.confirmButton' : 'sign.signButton')}
             </ApproveBtn>
           )}
         </SignWrapper>
