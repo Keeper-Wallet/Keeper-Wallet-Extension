@@ -8,9 +8,13 @@ interface Props {
 }
 
 export function UsdAmount({ asset, amount, className }: Props) {
-  return +asset?.usdPrice ? (
+  if (!asset?.usdPrice || asset.usdPrice === '1') {
+    return null;
+  }
+
+  return (
     <p className={className}>{`≈ $${
       Math.ceil(+asset.usdPrice * amount * 100) / 100
     }`}</p>
-  ) : null;
+  );
 }

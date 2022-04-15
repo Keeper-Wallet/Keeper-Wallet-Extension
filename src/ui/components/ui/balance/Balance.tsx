@@ -80,12 +80,12 @@ const BalanceComponent = ({
           {tokens.join(SEPARATOR)} {assetName} {children}
         </div>
         {showUsdAmount && (
-            <UsdAmount
-              className={styles.usdAmountNote}
-              asset={assets[balanceOut.asset.id]}
-              amount={+balanceOut.toTokens()}
-            />
-          )}
+          <UsdAmount
+            className={styles.usdAmountNote}
+            asset={assets[balanceOut.asset.id]}
+            amount={+balanceOut.toTokens()}
+          />
+        )}
       </>
     );
   }

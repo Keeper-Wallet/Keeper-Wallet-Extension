@@ -413,6 +413,14 @@ export class AssetInfoController {
         return acc;
       }, {});
 
+      stablecoinAssetTickers.forEach(ticker => {
+        const asset = assets[network] && assets[network][ticker];
+        if (asset) {
+          asset.usdPrice = '1';
+          this.usdPriceAssets[ticker] = '1';
+        }
+      });
+
       this.store.updateState({ assets });
     }
   }

@@ -167,9 +167,7 @@ describe('Others', function () {
         this.wait
       );
 
-      expect(await transferAmount.getText()).to.equal(
-        '-0.12300000 WAVES'
-      );
+      expect(await transferAmount.getText()).to.equal('-0.12300000 WAVES');
 
       expect(
         await this.driver
@@ -212,9 +210,7 @@ describe('Others', function () {
         this.wait
       );
 
-      expect(await transferAmount.getText()).to.equal(
-        '-0.87654321 WAVES'
-      );
+      expect(await transferAmount.getText()).to.equal('-0.87654321 WAVES');
 
       expect(
         await this.driver
