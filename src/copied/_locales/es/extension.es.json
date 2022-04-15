@@ -11,16 +11,12 @@
     "encodedSeed": "Encoded seed",
     "enter": "Enter",
     "email": "Email",
-    "modal": {
-      "error": "Incorrect password"
-    },
     "password": "Password",
     "passwordError": "Incorrect password",
     "privateKeyNoBackupPhrase": "This account was imported using private key, so there's no backup phrase to copy",
     "emailNoBackupPhrase": "This account was imported using the Waves.Exchange account, so there is no backup phrase or private key to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "seed": "Backup phrase",
     "viewInExplorer": "View in Explorer"
   },
   "activeAccountCard": {
@@ -57,16 +53,11 @@
   },
   "assets": {
     "account": "Account",
-    "accountCreationSuccessNotification": "Account created",
-    "accountImportSuccessNotification": "Account import succeeded",
-    "activatedModal": "Account set active!",
-    "addAccount": "Add account",
     "changeName": "Account name changed",
     "copied": "Copied!",
     "deleteAccount": "Delete account",
     "inStorage": "Other accounts",
     "issuedBy": "Issued by {{ issuer }}",
-    "lastUpdate": "Last update:",
     "selectAccountNotification": "Active account changed",
     "assets": "Assets",
     "nfts": "NFTs",
@@ -124,12 +115,6 @@
     "newPassword": "New password",
     "oldPassword": "Old password"
   },
-  "conditions": {
-    "accept": "Accept",
-    "agreement": "Agreement",
-    "attention": "ATTENTION: PLEASE READ CAREFULLY THESE TERMS AND CONDITIONS AS THEY AFFECT YOUR OBLIGATIONS AND LEGAL RIGHTS, INCLUDING, BUT NOT LIMITED TO WAIVERS OF RIGHTS AND LIMITATION OF LIABILITY. IF YOU DO NOT AGREE WITH THESE TERMS AND CONDITIONS DO NOT PROCEED WITH REGISTRATION AT WAVES PLATFORM",
-    "title": "Terms and conditions"
-  },
   "confirmBackup": {
     "clear": "Clear",
     "confirm": "Confirm",
@@ -140,28 +125,12 @@
   },
   "copyAddress": "Copy address",
   "date": {
-    "Jan": "Jan",
-    "Feb": "Feb",
-    "Mar": "Mar",
-    "Apr": "Apr",
-    "May": "May",
-    "Jun": "Jun",
-    "Jul": "Jul",
-    "Aug": "Aug",
-    "Sep": "Sep",
-    "Oct": "Oct",
-    "Nov": "Nov",
-    "Dec": "Dec"
+    "today": "Today"
   },
   "deleteAccount": {
     "attention": "Attention!",
     "delete": "Delete account",
     "warn": "Deleting an account will lead to its irretrievable loss!"
-  },
-  "deleteUser": {
-    "attention": "Attention!",
-    "delete": "Delete account",
-    "warn": "Deleting an account may lead to irretrievable loss of access to funds! Always make sure you have backed up your SEED."
   },
   "exportKeystore": {
     "cancelBtn": "Cancel",
@@ -228,8 +197,7 @@
     "swap": "Token Swap",
     "transfer": "Transfer",
     "transferReceive": "Incoming Transfer",
-    "transferSelf": "Self-transfer",
-    "updateAssetInfo": "Update Asset Info"
+    "transferSelf": "Self-transfer"
   },
   "historyFilters": {
     "all": "All",
@@ -342,7 +310,7 @@
     "keepUp": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
   },
   "langsSettings": {
-    "confirm": "Confirmar",
+    "confirm": "Confirm",
     "title": "Change the language"
   },
   "ledgerErrors": {
@@ -393,15 +361,15 @@
   },
   "newAccount": {
     "acceptTerms": "I have read and agree with the",
-    "termsAndConditions": "Terms and Conditions",
     "confirmPassword": "Confirm password",
     "create": "Continue",
     "createPassword": "Create a password",
     "notMatch": "Passwords do not match",
     "passinfo": "The password you entered will be stored locally. If you change device or lose your password, you will have to repeat the process of adding accounts to Keeper Wallet. Waves does not store your passwords.",
-    "protect": "Protect Your Account",
     "privacyPolicy": "Privacy Policy",
-    "smallPass": "Password is too short"
+    "protect": "Protect Your Account",
+    "smallPass": "Password is too short",
+    "termsAndConditions": "Terms and Conditions"
   },
   "newAccountName": {
     "accountAddress": "Account address",
@@ -422,13 +390,6 @@
     "createNew": "Create New Account",
     "select": "Choose your address avatar",
     "selectInfo": "This avatar is unique. You cannot change it later."
-  },
-  "originAuth": {
-    "allow": "Allow",
-    "block": "Block",
-    "deny": "Deny",
-    "description": "wants to access your Waves Address",
-    "title": "Allow access"
   },
   "otherAccounts": {
     "addAccount": "Add account",
@@ -463,15 +424,10 @@
   "permissionsSettings": {
     "approvedOrigin": "Approved",
     "automaticOrigin": "+ Automatic signing",
-    "button": {
-      "delete": "Delete",
-      "disable": "Disallow",
-      "enable": "Allow"
-    },
     "notify": {
       "allowed": "Allowed!",
-      "disallowed": "Disallowed!",
-      "deleted": "Deleted!"
+      "deleted": "Deleted!",
+      "disallowed": "Disallowed!"
     },
     "empty": "Nothing here…",
     "rejectedOrigin": "Rejected",
@@ -503,54 +459,46 @@
     "autoClick": "Auto-click protection",
     "autoClickDisable": "Disabled",
     "autoClickEnable": "Enabled",
-    "delete": "Delete all accounts",
     "deleteAccounts": "Delete accounts",
     "export": "Export accounts",
     "langs": "Change language",
     "logOut": "Log out",
     "network": "Network",
-    "pairing": "Device Pairing",
     "password": "Change password",
     "permissionsControl": "Permissions control",
     "sessionTimeout": "Session timeout in",
     "settings": "Settings",
     "settingsGeneral": "General",
+    "suspiciousAssetsProtection": "Suspicious assets protection",
+    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets",
     "time_10m": "10 min",
     "time_1h": "1 hour",
     "time_20m": "20 min",
     "time_40m": "40 min",
     "time_5m": "5 min",
     "time_idle": "Browser timeout",
-    "tooltipContent": "Protect yourself from Clicker Trojans threats",
-    "suspiciousAssetsProtection": "Suspicious assets protection",
-    "suspiciousAssetsTooltip": "Don't show balances and transactions related to suspicious assets"
+    "tooltipContent": "Protect yourself from Clicker Trojans threats"
   },
   "showQR": "Show QR",
   "showScriptComponent": {
-    "key": "Key",
-    "type": "Type",
-    "value": "Value",
     "copied": "Copied!",
     "copy": "Copy",
     "copyCode": "Copy code",
     "hide": "Hide",
-    "showAll": "Show all"
+    "key": "Key",
+    "showAll": "Show all",
+    "type": "Type",
+    "value": "Value"
   },
   "sign": {
-    "action": "Action",
-    "approve": "Approve",
-    "approved": "Your transaction is approved!",
     "auth": "Auth",
     "authConfirmed": "Request has been signed!",
-    "authOriginOk": "Allow requests",
-    "authOriginReject": "Blocked requests",
     "authRejected": "Request has not been signed.",
     "blacklist": "Add to blacklist",
     "changeAccount": "Do you want to change your account?",
     "changeAccountInfo": "If you change account, we will cancel the current transaction. After selecting a new active account, repeat the operation.",
     "close": "Close",
     "confirmButton": "Approve",
-    "customConfirmed": "Confirm a request!",
     "customData": "Custom Data",
     "customDataConfirmed": "Your data has been signed!",
     "customDataFailed": "Your data is rejected!",
@@ -562,41 +510,13 @@
     "nextTransaction": "Next",
     "pendingList": "Pending list",
     "reject": "Reject",
-    "rejected": "Your transaction is rejected!",
-    "requestRejected": "Request has not been signed",
-    "signAccessHost": "wants to access your Waves Address",
     "signAccessInfo": "The application will have access to your Waves address but will not expose your SEED or private key. Never enter your secret phrase (SEED) on any website you are redirected to.",
-    "signAccessWaves": "Sign in with Waves",
     "signButton": "Sign",
     "someError": "Something went wrong",
     "switchAccount": "Switch account",
-    "transactionApproved": "Your have approved send",
-    "transactionConfirm": {
-      "alias": "You have approved Alias creation.",
-      "lease": "Your approved transaction",
-      "transfer": "You have approved a Send transaction for"
-    },
-    "transactionConfirmAlias": "You have approved Alias creation.",
-    "transactionConfirmCancelLeasing": "You have approved a Cancel Lease transaction",
-    "transactionConfirmCancelOrder": "You have approved a Cancel Order transaction",
-    "transactionConfirmCreateOrder": "You have approved a Create Order transaction",
-    "transactionConfirmData": "You have approved a Data transaction",
-    "transactionConfirmIssure": "You have approved generated",
-    "transactionConfirmLease": "Your approved transaction",
-    "transactionConfirmMassTransfer": "You have approved a Mass Transfer transaction for",
-    "transactionConfirmReIssure": "You have approved additional Issuance of",
-    "transactionConfirmSetAssetScript": "You have approved a Set Asset Script transaction",
-    "transactionConfirmSetScript": "You have approved a Set Script transaction",
-    "transactionConfirmSponsor": "You have approved a Set Sponsorship transaction",
-    "transactionConfirmTransfer": "You have approved a Send transaction for",
     "transactionConfirmed": "Your transaction is confirmed!",
-    "transactionConfirmedBurn": "You have approved a Burn transaction.",
     "transactionFailed": "Your transaction is rejected!",
     "transactionSend": "You have sent",
-    "transactionSendAlias": "An alias has been created.",
-    "transactionSendCreateOrder": "You have approved a Create Order transaction",
-    "transactionSendMassTransfer": "You have sent",
-    "transactionSendTransfer": "You have sent transfer",
     "understand": "I understand",
     "viewTransaction": "View transaction",
     "wavesAuthConfirmed": "Sign a waves auth request!"
@@ -643,9 +563,6 @@
     "attachment": "Attachment",
     "burn": "Burn",
     "clearSponsored": "Disable Sponsorship",
-    "confirmationRequest": "Confirmation request",
-    "copied": "Copied!",
-    "copy": "Copy",
     "createAlias": "Create Alias",
     "dApp": "dApp",
     "dataHash": "Data Hash",
@@ -657,9 +574,6 @@
     "dex": "DEX",
     "expires": "Expires",
     "fee": "Fee",
-    "function": "Function",
-    "hashId": "Request hash",
-    "hide": "hide",
     "hideTransactions": "Hide transactions",
     "issueType": "Type",
     "json": "JSON",
@@ -669,19 +583,12 @@
     "matcherTimeStamp": "Matcher Time Stamp",
     "matcherPublicKey": "Matcher Public Key",
     "name": "Name",
-    "nodeAddress": "Node address",
     "noReissuable": "Not reissuable",
-    "order_buy": "buy",
-    "order_sell": "sell",
     "orderBuy": "Buy",
     "orderCancel": "Cancel the order",
-    "orderExpiration": "Order Expiration",
     "orderId": "Order ID",
-    "orderPrice": "Price",
     "orderSell": "Sell",
-    "orderType": "Order Type",
     "originWarning": "wants to access your Waves Address",
-    "packTransactionFee": "Fee",
     "packTransactionGroup": "Group",
     "packTransactions": "Transactions",
     "packTransactionsFees": "Fees",
@@ -692,34 +599,23 @@
     "permission": {
       "details": "Permission details"
     },
-    "permissionsWarning": "The application will have access to your Waves address but will not expose your SEED or private key. Never enter your secret phrase (SEED) on any website you are redirected to.",
     "price": "Price",
     "publicKey": "Public Key",
     "recipient": "Recipient",
     "recipients": "Recipients",
     "reissuable": "Reissuable",
     "script": "Script",
-    "scriptAddress": "Script address",
     "scriptInvocation": "Script invocation",
     "scriptInvocationFunction": "Function",
-    "scriptInvocationName": "Script Invocation",
     "scriptWarningDescription": "We do not recommend you submit script transactions unless you are an experienced user. Errors can lead to permanent loss of access to your account.",
     "scriptWarningHeader": "Warning: actions can lead to loss of access to your account",
-    "setAssetScriptHeader": "Set Asset Script transaction",
     "setScriptTransaction": "Set Script",
     "setScriptTransactionCancel": "Remove Account Script",
-    "setSctiptHeader": "Script transaction",
     "setSponsored": "Set Sponsorship",
     "showAll": "Show all",
     "showTransactions": "Show transactions",
-    "signAccessWaves": "Sign in with Waves",
-    "signCustomRequest": "Sign a request",
-    "signMatcherRequest": "Sign a request to the Matcher",
     "signRequestMatcher": "Sign a request to the Matcher",
     "signRequestWavesAuth": "Sign a waves auth request",
-    "signToMatcher": "Sign a request to the Matcher",
-    "to": "To",
-    "total": "Total",
     "updateAssetInfo": "Update Asset Info",
     "issueToken": "Issue Token",
     "issueSmartToken": "Issue Smart Token",
@@ -727,21 +623,13 @@
     "issueSmartNFT": "Issue Smart NFT",
     "reissue": "Reissue",
     "transfer": "Transfer",
-    "transfersClose": "Hide",
-    "transfersShowAll": "Show All",
     "txid": "TXID",
     "txTime": "TX Time",
     "unknown": "Unknown",
-    "waves": "WAVES",
     "wavesAuthTimeStamp": "Time Stamp"
   },
   "ui": {
     "logoTitle": "Keep your Waves keys safe online"
-  },
-  "ur": {
-    "activeNow": "Active",
-    "copyAddress": "Copy address",
-    "unactive": "Make active"
   },
   "notifications": {
     "allowSending": "Allow sending messages",
