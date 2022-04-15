@@ -41,9 +41,9 @@ export function ActiveAccountCard({
           </div>
 
           {amountInUsd !== null ? (
-            <p className={styles.accountAmount}>{`$${amountInUsd.toFixed(
-              2
-            )}`}</p>
+            <p className={styles.accountAmount}>{`$${
+              Math.ceil(+amountInUsd * 100) / 100
+            }`}</p>
           ) : (
             <Loader />
           )}
