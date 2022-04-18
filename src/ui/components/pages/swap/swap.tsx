@@ -144,7 +144,6 @@ export function Swap({ setTab }: Props) {
                   fromAssetId,
                   fromCoins,
                   minReceivedCoins,
-                  route,
                   slippageTolerance,
                 }) => {
                   setSwapErrorMessage(null);
@@ -163,7 +162,6 @@ export function Swap({ setTab }: Props) {
                       fromAssetId,
                       fromCoins: fromCoins.toFixed(),
                       minReceivedCoins: minReceivedCoins.toFixed(),
-                      route,
                       slippageTolerance,
                     });
 

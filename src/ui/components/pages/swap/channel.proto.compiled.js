@@ -234,6 +234,7 @@ export const proto = $root.proto = (() => {
              * @property {string|null} [source] Exchange source
              * @property {string|null} [target] Exchange target
              * @property {Long|null} [amount] Exchange amount
+             * @property {number|null} [slippageTolerance] Exchange slippageTolerance
              */
 
             /**
@@ -284,6 +285,14 @@ export const proto = $root.proto = (() => {
             Exchange.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
             /**
+             * Exchange slippageTolerance.
+             * @member {number} slippageTolerance
+             * @memberof proto.Request.Exchange
+             * @instance
+             */
+            Exchange.prototype.slippageTolerance = 0;
+
+            /**
              * Creates a new Exchange instance using the specified properties.
              * @function create
              * @memberof proto.Request.Exchange
@@ -315,6 +324,8 @@ export const proto = $root.proto = (() => {
                     writer.uint32(/* id 3, wireType 2 =*/26).string(message.target);
                 if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
                     writer.uint32(/* id 4, wireType 0 =*/32).int64(message.amount);
+                if (message.slippageTolerance != null && Object.hasOwnProperty.call(message, "slippageTolerance"))
+                    writer.uint32(/* id 5, wireType 0 =*/40).int32(message.slippageTolerance);
                 return writer;
             };
 
@@ -360,6 +371,9 @@ export const proto = $root.proto = (() => {
                         break;
                     case 4:
                         message.amount = reader.int64();
+                        break;
+                    case 5:
+                        message.slippageTolerance = reader.int32();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -408,6 +422,9 @@ export const proto = $root.proto = (() => {
                 if (message.amount != null && message.hasOwnProperty("amount"))
                     if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                         return "amount: integer|Long expected";
+                if (message.slippageTolerance != null && message.hasOwnProperty("slippageTolerance"))
+                    if (!$util.isInteger(message.slippageTolerance))
+                        return "slippageTolerance: integer expected";
                 return null;
             };
 
@@ -438,6 +455,8 @@ export const proto = $root.proto = (() => {
                         message.amount = object.amount;
                     else if (typeof object.amount === "object")
                         message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
+                if (object.slippageTolerance != null)
+                    message.slippageTolerance = object.slippageTolerance | 0;
                 return message;
             };
 
@@ -463,6 +482,7 @@ export const proto = $root.proto = (() => {
                         object.amount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                     } else
                         object.amount = options.longs === String ? "0" : 0;
+                    object.slippageTolerance = 0;
                 }
                 if (message.id != null && message.hasOwnProperty("id"))
                     object.id = message.id;
@@ -475,6 +495,8 @@ export const proto = $root.proto = (() => {
                         object.amount = options.longs === String ? String(message.amount) : message.amount;
                     else
                         object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
+                if (message.slippageTolerance != null && message.hasOwnProperty("slippageTolerance"))
+                    object.slippageTolerance = message.slippageTolerance;
                 return object;
             };
 
@@ -726,14 +748,259 @@ export const proto = $root.proto = (() => {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
+        Response.Error = (function() {
+
+            /**
+             * Properties of an Error.
+             * @memberof proto.Response
+             * @interface IError
+             * @property {proto.Response.Error.CODES|null} [code] Error code
+             * @property {string|null} [message] Error message
+             */
+
+            /**
+             * Constructs a new Error.
+             * @memberof proto.Response
+             * @classdesc Represents an Error.
+             * @implements IError
+             * @constructor
+             * @param {proto.Response.IError=} [properties] Properties to set
+             */
+            function Error(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Error code.
+             * @member {proto.Response.Error.CODES} code
+             * @memberof proto.Response.Error
+             * @instance
+             */
+            Error.prototype.code = 0;
+
+            /**
+             * Error message.
+             * @member {string} message
+             * @memberof proto.Response.Error
+             * @instance
+             */
+            Error.prototype.message = "";
+
+            /**
+             * Creates a new Error instance using the specified properties.
+             * @function create
+             * @memberof proto.Response.Error
+             * @static
+             * @param {proto.Response.IError=} [properties] Properties to set
+             * @returns {proto.Response.Error} Error instance
+             */
+            Error.create = function create(properties) {
+                return new Error(properties);
+            };
+
+            /**
+             * Encodes the specified Error message. Does not implicitly {@link proto.Response.Error.verify|verify} messages.
+             * @function encode
+             * @memberof proto.Response.Error
+             * @static
+             * @param {proto.Response.Error} message Error message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Error.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.code);
+                if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.message);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified Error message, length delimited. Does not implicitly {@link proto.Response.Error.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof proto.Response.Error
+             * @static
+             * @param {proto.Response.Error} message Error message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Error.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes an Error message from the specified reader or buffer.
+             * @function decode
+             * @memberof proto.Response.Error
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {proto.Response.Error} Error
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Error.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Error();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.code = reader.int32();
+                        break;
+                    case 2:
+                        message.message = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes an Error message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof proto.Response.Error
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {proto.Response.Error} Error
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Error.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies an Error message.
+             * @function verify
+             * @memberof proto.Response.Error
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            Error.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.code != null && message.hasOwnProperty("code"))
+                    switch (message.code) {
+                    default:
+                        return "code: enum value expected";
+                    case 0:
+                    case 1:
+                    case 2:
+                        break;
+                    }
+                if (message.message != null && message.hasOwnProperty("message"))
+                    if (!$util.isString(message.message))
+                        return "message: string expected";
+                return null;
+            };
+
+            /**
+             * Creates an Error message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof proto.Response.Error
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {proto.Response.Error} Error
+             */
+            Error.fromObject = function fromObject(object) {
+                if (object instanceof $root.proto.Response.Error)
+                    return object;
+                let message = new $root.proto.Response.Error();
+                switch (object.code) {
+                case "UNAVAILABLE":
+                case 0:
+                    message.code = 0;
+                    break;
+                case "UNEXPECTED":
+                case 1:
+                    message.code = 1;
+                    break;
+                case "INVALID_ASSET_PAIR":
+                case 2:
+                    message.code = 2;
+                    break;
+                }
+                if (object.message != null)
+                    message.message = String(object.message);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from an Error message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof proto.Response.Error
+             * @static
+             * @param {proto.Response.Error} message Error
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Error.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.code = options.enums === String ? "UNAVAILABLE" : 0;
+                    object.message = "";
+                }
+                if (message.code != null && message.hasOwnProperty("code"))
+                    object.code = options.enums === String ? $root.proto.Response.Error.CODES[message.code] : message.code;
+                if (message.message != null && message.hasOwnProperty("message"))
+                    object.message = message.message;
+                return object;
+            };
+
+            /**
+             * Converts this Error to JSON.
+             * @function toJSON
+             * @memberof proto.Response.Error
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Error.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * CODES enum.
+             * @name proto.Response.Error.CODES
+             * @enum {number}
+             * @property {number} UNAVAILABLE=0 UNAVAILABLE value
+             * @property {number} UNEXPECTED=1 UNEXPECTED value
+             * @property {number} INVALID_ASSET_PAIR=2 INVALID_ASSET_PAIR value
+             */
+            Error.CODES = (function() {
+                const valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[0] = "UNAVAILABLE"] = 0;
+                values[valuesById[1] = "UNEXPECTED"] = 1;
+                values[valuesById[2] = "INVALID_ASSET_PAIR"] = 2;
+                return values;
+            })();
+
+            return Error;
+        })();
+
         Response.Exchange = (function() {
 
             /**
              * Properties of an Exchange.
              * @memberof proto.Response
              * @interface IExchange
-             * @property {proto.Response.Exchange.Result|null} [result] Exchange result
-             * @property {Array.<string>|null} [errors] Exchange errors
+             * @property {string|null} [vendor] Exchange vendor
+             * @property {proto.Response.Exchange.Data|null} [data] Exchange data
+             * @property {proto.Response.Error|null} [error] Exchange error
              */
 
             /**
@@ -745,7 +1012,6 @@ export const proto = $root.proto = (() => {
              * @param {proto.Response.IExchange=} [properties] Properties to set
              */
             function Exchange(properties) {
-                this.errors = [];
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                         if (properties[keys[i]] != null)
@@ -753,20 +1019,42 @@ export const proto = $root.proto = (() => {
             }
 
             /**
-             * Exchange result.
-             * @member {proto.Response.Exchange.Result|null|undefined} result
+             * Exchange vendor.
+             * @member {string} vendor
              * @memberof proto.Response.Exchange
              * @instance
              */
-            Exchange.prototype.result = null;
+            Exchange.prototype.vendor = "";
 
             /**
-             * Exchange errors.
-             * @member {Array.<string>} errors
+             * Exchange data.
+             * @member {proto.Response.Exchange.Data|null|undefined} data
              * @memberof proto.Response.Exchange
              * @instance
              */
-            Exchange.prototype.errors = $util.emptyArray;
+            Exchange.prototype.data = null;
+
+            /**
+             * Exchange error.
+             * @member {proto.Response.Error|null|undefined} error
+             * @memberof proto.Response.Exchange
+             * @instance
+             */
+            Exchange.prototype.error = null;
+
+            // OneOf field names bound to virtual getters and setters
+            let $oneOfFields;
+
+            /**
+             * Exchange result.
+             * @member {"data"|"error"|undefined} result
+             * @memberof proto.Response.Exchange
+             * @instance
+             */
+            Object.defineProperty(Exchange.prototype, "result", {
+                get: $util.oneOfGetter($oneOfFields = ["data", "error"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
 
             /**
              * Creates a new Exchange instance using the specified properties.
@@ -792,11 +1080,12 @@ export const proto = $root.proto = (() => {
             Exchange.encode = function encode(message, writer) {
                 if (!writer)
                     writer = $Writer.create();
-                if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                    $root.proto.Response.Exchange.Result.encode(message.result, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                if (message.errors != null && message.errors.length)
-                    for (let i = 0; i < message.errors.length; ++i)
-                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.errors[i]);
+                if (message.vendor != null && Object.hasOwnProperty.call(message, "vendor"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.vendor);
+                if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                    $root.proto.Response.Exchange.Data.encode(message.data, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                if (message.error != null && Object.hasOwnProperty.call(message, "error"))
+                    $root.proto.Response.Error.encode(message.error, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                 return writer;
             };
 
@@ -832,12 +1121,13 @@ export const proto = $root.proto = (() => {
                     let tag = reader.uint32();
                     switch (tag >>> 3) {
                     case 1:
-                        message.result = $root.proto.Response.Exchange.Result.decode(reader, reader.uint32());
+                        message.vendor = reader.string();
                         break;
                     case 2:
-                        if (!(message.errors && message.errors.length))
-                            message.errors = [];
-                        message.errors.push(reader.string());
+                        message.data = $root.proto.Response.Exchange.Data.decode(reader, reader.uint32());
+                        break;
+                    case 3:
+                        message.error = $root.proto.Response.Error.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -874,17 +1164,27 @@ export const proto = $root.proto = (() => {
             Exchange.verify = function verify(message) {
                 if (typeof message !== "object" || message === null)
                     return "object expected";
-                if (message.result != null && message.hasOwnProperty("result")) {
-                    let error = $root.proto.Response.Exchange.Result.verify(message.result);
-                    if (error)
-                        return "result." + error;
+                let properties = {};
+                if (message.vendor != null && message.hasOwnProperty("vendor"))
+                    if (!$util.isString(message.vendor))
+                        return "vendor: string expected";
+                if (message.data != null && message.hasOwnProperty("data")) {
+                    properties.result = 1;
+                    {
+                        let error = $root.proto.Response.Exchange.Data.verify(message.data);
+                        if (error)
+                            return "data." + error;
+                    }
                 }
-                if (message.errors != null && message.hasOwnProperty("errors")) {
-                    if (!Array.isArray(message.errors))
-                        return "errors: array expected";
-                    for (let i = 0; i < message.errors.length; ++i)
-                        if (!$util.isString(message.errors[i]))
-                            return "errors: string[] expected";
+                if (message.error != null && message.hasOwnProperty("error")) {
+                    if (properties.result === 1)
+                        return "result: multiple values";
+                    properties.result = 1;
+                    {
+                        let error = $root.proto.Response.Error.verify(message.error);
+                        if (error)
+                            return "error." + error;
+                    }
                 }
                 return null;
             };
@@ -901,17 +1201,17 @@ export const proto = $root.proto = (() => {
                 if (object instanceof $root.proto.Response.Exchange)
                     return object;
                 let message = new $root.proto.Response.Exchange();
-                if (object.result != null) {
-                    if (typeof object.result !== "object")
-                        throw TypeError(".proto.Response.Exchange.result: object expected");
-                    message.result = $root.proto.Response.Exchange.Result.fromObject(object.result);
+                if (object.vendor != null)
+                    message.vendor = String(object.vendor);
+                if (object.data != null) {
+                    if (typeof object.data !== "object")
+                        throw TypeError(".proto.Response.Exchange.data: object expected");
+                    message.data = $root.proto.Response.Exchange.Data.fromObject(object.data);
                 }
-                if (object.errors) {
-                    if (!Array.isArray(object.errors))
-                        throw TypeError(".proto.Response.Exchange.errors: array expected");
-                    message.errors = [];
-                    for (let i = 0; i < object.errors.length; ++i)
-                        message.errors[i] = String(object.errors[i]);
+                if (object.error != null) {
+                    if (typeof object.error !== "object")
+                        throw TypeError(".proto.Response.Exchange.error: object expected");
+                    message.error = $root.proto.Response.Error.fromObject(object.error);
                 }
                 return message;
             };
@@ -929,16 +1229,19 @@ export const proto = $root.proto = (() => {
                 if (!options)
                     options = {};
                 let object = {};
-                if (options.arrays || options.defaults)
-                    object.errors = [];
                 if (options.defaults)
-                    object.result = null;
-                if (message.result != null && message.hasOwnProperty("result"))
-                    object.result = $root.proto.Response.Exchange.Result.toObject(message.result, options);
-                if (message.errors && message.errors.length) {
-                    object.errors = [];
-                    for (let j = 0; j < message.errors.length; ++j)
-                        object.errors[j] = message.errors[j];
+                    object.vendor = "";
+                if (message.vendor != null && message.hasOwnProperty("vendor"))
+                    object.vendor = message.vendor;
+                if (message.data != null && message.hasOwnProperty("data")) {
+                    object.data = $root.proto.Response.Exchange.Data.toObject(message.data, options);
+                    if (options.oneofs)
+                        object.result = "data";
+                }
+                if (message.error != null && message.hasOwnProperty("error")) {
+                    object.error = $root.proto.Response.Error.toObject(message.error, options);
+                    if (options.oneofs)
+                        object.result = "error";
                 }
                 return object;
             };
@@ -1266,28 +1569,25 @@ export const proto = $root.proto = (() => {
                 return Pool;
             })();
 
-            Exchange.Result = (function() {
+            Exchange.Route = (function() {
 
                 /**
-                 * Properties of a Result.
+                 * Properties of a Route.
                  * @memberof proto.Response.Exchange
-                 * @interface IResult
-                 * @property {Long|null} [amount] Result amount
-                 * @property {Long|null} [worstAmount] Result worstAmount
-                 * @property {number|null} [priceImpact] Result priceImpact
-                 * @property {Array.<proto.Response.Exchange.Pool>|null} [route] Result route
+                 * @interface IRoute
+                 * @property {Array.<proto.Response.Exchange.Pool>|null} [pools] Route pools
                  */
 
                 /**
-                 * Constructs a new Result.
+                 * Constructs a new Route.
                  * @memberof proto.Response.Exchange
-                 * @classdesc Represents a Result.
-                 * @implements IResult
+                 * @classdesc Represents a Route.
+                 * @implements IRoute
                  * @constructor
-                 * @param {proto.Response.Exchange.IResult=} [properties] Properties to set
+                 * @param {proto.Response.Exchange.IRoute=} [properties] Properties to set
                  */
-                function Result(properties) {
-                    this.route = [];
+                function Route(properties) {
+                    this.pools = [];
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                             if (properties[keys[i]] != null)
@@ -1295,117 +1595,78 @@ export const proto = $root.proto = (() => {
                 }
 
                 /**
-                 * Result amount.
-                 * @member {Long} amount
-                 * @memberof proto.Response.Exchange.Result
+                 * Route pools.
+                 * @member {Array.<proto.Response.Exchange.Pool>} pools
+                 * @memberof proto.Response.Exchange.Route
                  * @instance
                  */
-                Result.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                Route.prototype.pools = $util.emptyArray;
 
                 /**
-                 * Result worstAmount.
-                 * @member {Long} worstAmount
-                 * @memberof proto.Response.Exchange.Result
-                 * @instance
-                 */
-                Result.prototype.worstAmount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-                /**
-                 * Result priceImpact.
-                 * @member {number} priceImpact
-                 * @memberof proto.Response.Exchange.Result
-                 * @instance
-                 */
-                Result.prototype.priceImpact = 0;
-
-                /**
-                 * Result route.
-                 * @member {Array.<proto.Response.Exchange.Pool>} route
-                 * @memberof proto.Response.Exchange.Result
-                 * @instance
-                 */
-                Result.prototype.route = $util.emptyArray;
-
-                /**
-                 * Creates a new Result instance using the specified properties.
+                 * Creates a new Route instance using the specified properties.
                  * @function create
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
-                 * @param {proto.Response.Exchange.IResult=} [properties] Properties to set
-                 * @returns {proto.Response.Exchange.Result} Result instance
+                 * @param {proto.Response.Exchange.IRoute=} [properties] Properties to set
+                 * @returns {proto.Response.Exchange.Route} Route instance
                  */
-                Result.create = function create(properties) {
-                    return new Result(properties);
+                Route.create = function create(properties) {
+                    return new Route(properties);
                 };
 
                 /**
-                 * Encodes the specified Result message. Does not implicitly {@link proto.Response.Exchange.Result.verify|verify} messages.
+                 * Encodes the specified Route message. Does not implicitly {@link proto.Response.Exchange.Route.verify|verify} messages.
                  * @function encode
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
-                 * @param {proto.Response.Exchange.Result} message Result message or plain object to encode
+                 * @param {proto.Response.Exchange.Route} message Route message or plain object to encode
                  * @param {$protobuf.Writer} [writer] Writer to encode to
                  * @returns {$protobuf.Writer} Writer
                  */
-                Result.encode = function encode(message, writer) {
+                Route.encode = function encode(message, writer) {
                     if (!writer)
                         writer = $Writer.create();
-                    if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                        writer.uint32(/* id 1, wireType 0 =*/8).int64(message.amount);
-                    if (message.worstAmount != null && Object.hasOwnProperty.call(message, "worstAmount"))
-                        writer.uint32(/* id 2, wireType 0 =*/16).int64(message.worstAmount);
-                    if (message.priceImpact != null && Object.hasOwnProperty.call(message, "priceImpact"))
-                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.priceImpact);
-                    if (message.route != null && message.route.length)
-                        for (let i = 0; i < message.route.length; ++i)
-                            $root.proto.Response.Exchange.Pool.encode(message.route[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    if (message.pools != null && message.pools.length)
+                        for (let i = 0; i < message.pools.length; ++i)
+                            $root.proto.Response.Exchange.Pool.encode(message.pools[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                     return writer;
                 };
 
                 /**
-                 * Encodes the specified Result message, length delimited. Does not implicitly {@link proto.Response.Exchange.Result.verify|verify} messages.
+                 * Encodes the specified Route message, length delimited. Does not implicitly {@link proto.Response.Exchange.Route.verify|verify} messages.
                  * @function encodeDelimited
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
-                 * @param {proto.Response.Exchange.Result} message Result message or plain object to encode
+                 * @param {proto.Response.Exchange.Route} message Route message or plain object to encode
                  * @param {$protobuf.Writer} [writer] Writer to encode to
                  * @returns {$protobuf.Writer} Writer
                  */
-                Result.encodeDelimited = function encodeDelimited(message, writer) {
+                Route.encodeDelimited = function encodeDelimited(message, writer) {
                     return this.encode(message, writer).ldelim();
                 };
 
                 /**
-                 * Decodes a Result message from the specified reader or buffer.
+                 * Decodes a Route message from the specified reader or buffer.
                  * @function decode
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
                  * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
                  * @param {number} [length] Message length if known beforehand
-                 * @returns {proto.Response.Exchange.Result} Result
+                 * @returns {proto.Response.Exchange.Route} Route
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                Result.decode = function decode(reader, length) {
+                Route.decode = function decode(reader, length) {
                     if (!(reader instanceof $Reader))
                         reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Exchange.Result();
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Exchange.Route();
                     while (reader.pos < end) {
                         let tag = reader.uint32();
                         switch (tag >>> 3) {
                         case 1:
-                            message.amount = reader.int64();
-                            break;
-                        case 2:
-                            message.worstAmount = reader.int64();
-                            break;
-                        case 3:
-                            message.priceImpact = reader.float();
-                            break;
-                        case 4:
-                            if (!(message.route && message.route.length))
-                                message.route = [];
-                            message.route.push($root.proto.Response.Exchange.Pool.decode(reader, reader.uint32()));
+                            if (!(message.pools && message.pools.length))
+                                message.pools = [];
+                            message.pools.push($root.proto.Response.Exchange.Pool.decode(reader, reader.uint32()));
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -1416,30 +1677,842 @@ export const proto = $root.proto = (() => {
                 };
 
                 /**
-                 * Decodes a Result message from the specified reader or buffer, length delimited.
+                 * Decodes a Route message from the specified reader or buffer, length delimited.
                  * @function decodeDelimited
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
                  * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {proto.Response.Exchange.Result} Result
+                 * @returns {proto.Response.Exchange.Route} Route
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                Result.decodeDelimited = function decodeDelimited(reader) {
+                Route.decodeDelimited = function decodeDelimited(reader) {
                     if (!(reader instanceof $Reader))
                         reader = new $Reader(reader);
                     return this.decode(reader, reader.uint32());
                 };
 
                 /**
-                 * Verifies a Result message.
+                 * Verifies a Route message.
                  * @function verify
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Route
                  * @static
                  * @param {Object.<string,*>} message Plain object to verify
                  * @returns {string|null} `null` if valid, otherwise the reason why it is not
                  */
-                Result.verify = function verify(message) {
+                Route.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.pools != null && message.hasOwnProperty("pools")) {
+                        if (!Array.isArray(message.pools))
+                            return "pools: array expected";
+                        for (let i = 0; i < message.pools.length; ++i) {
+                            let error = $root.proto.Response.Exchange.Pool.verify(message.pools[i]);
+                            if (error)
+                                return "pools." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a Route message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof proto.Response.Exchange.Route
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {proto.Response.Exchange.Route} Route
+                 */
+                Route.fromObject = function fromObject(object) {
+                    if (object instanceof $root.proto.Response.Exchange.Route)
+                        return object;
+                    let message = new $root.proto.Response.Exchange.Route();
+                    if (object.pools) {
+                        if (!Array.isArray(object.pools))
+                            throw TypeError(".proto.Response.Exchange.Route.pools: array expected");
+                        message.pools = [];
+                        for (let i = 0; i < object.pools.length; ++i) {
+                            if (typeof object.pools[i] !== "object")
+                                throw TypeError(".proto.Response.Exchange.Route.pools: object expected");
+                            message.pools[i] = $root.proto.Response.Exchange.Pool.fromObject(object.pools[i]);
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a Route message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof proto.Response.Exchange.Route
+                 * @static
+                 * @param {proto.Response.Exchange.Route} message Route
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                Route.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.arrays || options.defaults)
+                        object.pools = [];
+                    if (message.pools && message.pools.length) {
+                        object.pools = [];
+                        for (let j = 0; j < message.pools.length; ++j)
+                            object.pools[j] = $root.proto.Response.Exchange.Pool.toObject(message.pools[j], options);
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this Route to JSON.
+                 * @function toJSON
+                 * @memberof proto.Response.Exchange.Route
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                Route.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return Route;
+            })();
+
+            Exchange.Argument = (function() {
+
+                /**
+                 * Properties of an Argument.
+                 * @memberof proto.Response.Exchange
+                 * @interface IArgument
+                 * @property {Long|null} [integerValue] Argument integerValue
+                 * @property {Uint8Array|null} [binaryValue] Argument binaryValue
+                 * @property {string|null} [stringValue] Argument stringValue
+                 * @property {boolean|null} [booleanValue] Argument booleanValue
+                 * @property {proto.Response.Exchange.Argument.List|null} [list] Argument list
+                 */
+
+                /**
+                 * Constructs a new Argument.
+                 * @memberof proto.Response.Exchange
+                 * @classdesc Represents an Argument.
+                 * @implements IArgument
+                 * @constructor
+                 * @param {proto.Response.Exchange.IArgument=} [properties] Properties to set
+                 */
+                function Argument(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * Argument integerValue.
+                 * @member {Long|null|undefined} integerValue
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Argument.prototype.integerValue = null;
+
+                /**
+                 * Argument binaryValue.
+                 * @member {Uint8Array|null|undefined} binaryValue
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Argument.prototype.binaryValue = null;
+
+                /**
+                 * Argument stringValue.
+                 * @member {string|null|undefined} stringValue
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Argument.prototype.stringValue = null;
+
+                /**
+                 * Argument booleanValue.
+                 * @member {boolean|null|undefined} booleanValue
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Argument.prototype.booleanValue = null;
+
+                /**
+                 * Argument list.
+                 * @member {proto.Response.Exchange.Argument.List|null|undefined} list
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Argument.prototype.list = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * Argument value.
+                 * @member {"integerValue"|"binaryValue"|"stringValue"|"booleanValue"|"list"|undefined} value
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 */
+                Object.defineProperty(Argument.prototype, "value", {
+                    get: $util.oneOfGetter($oneOfFields = ["integerValue", "binaryValue", "stringValue", "booleanValue", "list"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new Argument instance using the specified properties.
+                 * @function create
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {proto.Response.Exchange.IArgument=} [properties] Properties to set
+                 * @returns {proto.Response.Exchange.Argument} Argument instance
+                 */
+                Argument.create = function create(properties) {
+                    return new Argument(properties);
+                };
+
+                /**
+                 * Encodes the specified Argument message. Does not implicitly {@link proto.Response.Exchange.Argument.verify|verify} messages.
+                 * @function encode
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {proto.Response.Exchange.Argument} message Argument message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Argument.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.integerValue != null && Object.hasOwnProperty.call(message, "integerValue"))
+                        writer.uint32(/* id 1, wireType 0 =*/8).int64(message.integerValue);
+                    if (message.binaryValue != null && Object.hasOwnProperty.call(message, "binaryValue"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.binaryValue);
+                    if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
+                        writer.uint32(/* id 3, wireType 2 =*/26).string(message.stringValue);
+                    if (message.booleanValue != null && Object.hasOwnProperty.call(message, "booleanValue"))
+                        writer.uint32(/* id 4, wireType 0 =*/32).bool(message.booleanValue);
+                    if (message.list != null && Object.hasOwnProperty.call(message, "list"))
+                        $root.proto.Response.Exchange.Argument.List.encode(message.list, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified Argument message, length delimited. Does not implicitly {@link proto.Response.Exchange.Argument.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {proto.Response.Exchange.Argument} message Argument message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Argument.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes an Argument message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {proto.Response.Exchange.Argument} Argument
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Argument.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Exchange.Argument();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.integerValue = reader.int64();
+                            break;
+                        case 2:
+                            message.binaryValue = reader.bytes();
+                            break;
+                        case 3:
+                            message.stringValue = reader.string();
+                            break;
+                        case 4:
+                            message.booleanValue = reader.bool();
+                            break;
+                        case 10:
+                            message.list = $root.proto.Response.Exchange.Argument.List.decode(reader, reader.uint32());
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes an Argument message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {proto.Response.Exchange.Argument} Argument
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Argument.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies an Argument message.
+                 * @function verify
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                Argument.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.integerValue != null && message.hasOwnProperty("integerValue")) {
+                        properties.value = 1;
+                        if (!$util.isInteger(message.integerValue) && !(message.integerValue && $util.isInteger(message.integerValue.low) && $util.isInteger(message.integerValue.high)))
+                            return "integerValue: integer|Long expected";
+                    }
+                    if (message.binaryValue != null && message.hasOwnProperty("binaryValue")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        if (!(message.binaryValue && typeof message.binaryValue.length === "number" || $util.isString(message.binaryValue)))
+                            return "binaryValue: buffer expected";
+                    }
+                    if (message.stringValue != null && message.hasOwnProperty("stringValue")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        if (!$util.isString(message.stringValue))
+                            return "stringValue: string expected";
+                    }
+                    if (message.booleanValue != null && message.hasOwnProperty("booleanValue")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        if (typeof message.booleanValue !== "boolean")
+                            return "booleanValue: boolean expected";
+                    }
+                    if (message.list != null && message.hasOwnProperty("list")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        {
+                            let error = $root.proto.Response.Exchange.Argument.List.verify(message.list);
+                            if (error)
+                                return "list." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates an Argument message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {proto.Response.Exchange.Argument} Argument
+                 */
+                Argument.fromObject = function fromObject(object) {
+                    if (object instanceof $root.proto.Response.Exchange.Argument)
+                        return object;
+                    let message = new $root.proto.Response.Exchange.Argument();
+                    if (object.integerValue != null)
+                        if ($util.Long)
+                            (message.integerValue = $util.Long.fromValue(object.integerValue)).unsigned = false;
+                        else if (typeof object.integerValue === "string")
+                            message.integerValue = parseInt(object.integerValue, 10);
+                        else if (typeof object.integerValue === "number")
+                            message.integerValue = object.integerValue;
+                        else if (typeof object.integerValue === "object")
+                            message.integerValue = new $util.LongBits(object.integerValue.low >>> 0, object.integerValue.high >>> 0).toNumber();
+                    if (object.binaryValue != null)
+                        if (typeof object.binaryValue === "string")
+                            $util.base64.decode(object.binaryValue, message.binaryValue = $util.newBuffer($util.base64.length(object.binaryValue)), 0);
+                        else if (object.binaryValue.length)
+                            message.binaryValue = object.binaryValue;
+                    if (object.stringValue != null)
+                        message.stringValue = String(object.stringValue);
+                    if (object.booleanValue != null)
+                        message.booleanValue = Boolean(object.booleanValue);
+                    if (object.list != null) {
+                        if (typeof object.list !== "object")
+                            throw TypeError(".proto.Response.Exchange.Argument.list: object expected");
+                        message.list = $root.proto.Response.Exchange.Argument.List.fromObject(object.list);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from an Argument message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof proto.Response.Exchange.Argument
+                 * @static
+                 * @param {proto.Response.Exchange.Argument} message Argument
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                Argument.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.integerValue != null && message.hasOwnProperty("integerValue")) {
+                        if (typeof message.integerValue === "number")
+                            object.integerValue = options.longs === String ? String(message.integerValue) : message.integerValue;
+                        else
+                            object.integerValue = options.longs === String ? $util.Long.prototype.toString.call(message.integerValue) : options.longs === Number ? new $util.LongBits(message.integerValue.low >>> 0, message.integerValue.high >>> 0).toNumber() : message.integerValue;
+                        if (options.oneofs)
+                            object.value = "integerValue";
+                    }
+                    if (message.binaryValue != null && message.hasOwnProperty("binaryValue")) {
+                        object.binaryValue = options.bytes === String ? $util.base64.encode(message.binaryValue, 0, message.binaryValue.length) : options.bytes === Array ? Array.prototype.slice.call(message.binaryValue) : message.binaryValue;
+                        if (options.oneofs)
+                            object.value = "binaryValue";
+                    }
+                    if (message.stringValue != null && message.hasOwnProperty("stringValue")) {
+                        object.stringValue = message.stringValue;
+                        if (options.oneofs)
+                            object.value = "stringValue";
+                    }
+                    if (message.booleanValue != null && message.hasOwnProperty("booleanValue")) {
+                        object.booleanValue = message.booleanValue;
+                        if (options.oneofs)
+                            object.value = "booleanValue";
+                    }
+                    if (message.list != null && message.hasOwnProperty("list")) {
+                        object.list = $root.proto.Response.Exchange.Argument.List.toObject(message.list, options);
+                        if (options.oneofs)
+                            object.value = "list";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this Argument to JSON.
+                 * @function toJSON
+                 * @memberof proto.Response.Exchange.Argument
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                Argument.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                Argument.List = (function() {
+
+                    /**
+                     * Properties of a List.
+                     * @memberof proto.Response.Exchange.Argument
+                     * @interface IList
+                     * @property {Array.<proto.Response.Exchange.Argument>|null} [items] List items
+                     */
+
+                    /**
+                     * Constructs a new List.
+                     * @memberof proto.Response.Exchange.Argument
+                     * @classdesc Represents a List.
+                     * @implements IList
+                     * @constructor
+                     * @param {proto.Response.Exchange.Argument.IList=} [properties] Properties to set
+                     */
+                    function List(properties) {
+                        this.items = [];
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * List items.
+                     * @member {Array.<proto.Response.Exchange.Argument>} items
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @instance
+                     */
+                    List.prototype.items = $util.emptyArray;
+
+                    /**
+                     * Creates a new List instance using the specified properties.
+                     * @function create
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {proto.Response.Exchange.Argument.IList=} [properties] Properties to set
+                     * @returns {proto.Response.Exchange.Argument.List} List instance
+                     */
+                    List.create = function create(properties) {
+                        return new List(properties);
+                    };
+
+                    /**
+                     * Encodes the specified List message. Does not implicitly {@link proto.Response.Exchange.Argument.List.verify|verify} messages.
+                     * @function encode
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {proto.Response.Exchange.Argument.List} message List message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    List.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.items != null && message.items.length)
+                            for (let i = 0; i < message.items.length; ++i)
+                                $root.proto.Response.Exchange.Argument.encode(message.items[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified List message, length delimited. Does not implicitly {@link proto.Response.Exchange.Argument.List.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {proto.Response.Exchange.Argument.List} message List message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    List.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a List message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {proto.Response.Exchange.Argument.List} List
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    List.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Exchange.Argument.List();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.items && message.items.length))
+                                    message.items = [];
+                                message.items.push($root.proto.Response.Exchange.Argument.decode(reader, reader.uint32()));
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a List message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {proto.Response.Exchange.Argument.List} List
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    List.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a List message.
+                     * @function verify
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    List.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.items != null && message.hasOwnProperty("items")) {
+                            if (!Array.isArray(message.items))
+                                return "items: array expected";
+                            for (let i = 0; i < message.items.length; ++i) {
+                                let error = $root.proto.Response.Exchange.Argument.verify(message.items[i]);
+                                if (error)
+                                    return "items." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a List message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {proto.Response.Exchange.Argument.List} List
+                     */
+                    List.fromObject = function fromObject(object) {
+                        if (object instanceof $root.proto.Response.Exchange.Argument.List)
+                            return object;
+                        let message = new $root.proto.Response.Exchange.Argument.List();
+                        if (object.items) {
+                            if (!Array.isArray(object.items))
+                                throw TypeError(".proto.Response.Exchange.Argument.List.items: array expected");
+                            message.items = [];
+                            for (let i = 0; i < object.items.length; ++i) {
+                                if (typeof object.items[i] !== "object")
+                                    throw TypeError(".proto.Response.Exchange.Argument.List.items: object expected");
+                                message.items[i] = $root.proto.Response.Exchange.Argument.fromObject(object.items[i]);
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a List message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @static
+                     * @param {proto.Response.Exchange.Argument.List} message List
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    List.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.arrays || options.defaults)
+                            object.items = [];
+                        if (message.items && message.items.length) {
+                            object.items = [];
+                            for (let j = 0; j < message.items.length; ++j)
+                                object.items[j] = $root.proto.Response.Exchange.Argument.toObject(message.items[j], options);
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this List to JSON.
+                     * @function toJSON
+                     * @memberof proto.Response.Exchange.Argument.List
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    List.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return List;
+                })();
+
+                return Argument;
+            })();
+
+            Exchange.Data = (function() {
+
+                /**
+                 * Properties of a Data.
+                 * @memberof proto.Response.Exchange
+                 * @interface IData
+                 * @property {Long|null} [amount] Data amount
+                 * @property {Long|null} [worstAmount] Data worstAmount
+                 * @property {number|null} [priceImpact] Data priceImpact
+                 * @property {Array.<proto.Response.Exchange.Route>|null} [routes] Data routes
+                 * @property {Array.<proto.Response.Exchange.Argument>|null} ["arguments"] Data arguments
+                 */
+
+                /**
+                 * Constructs a new Data.
+                 * @memberof proto.Response.Exchange
+                 * @classdesc Represents a Data.
+                 * @implements IData
+                 * @constructor
+                 * @param {proto.Response.Exchange.IData=} [properties] Properties to set
+                 */
+                function Data(properties) {
+                    this.routes = [];
+                    this["arguments"] = [];
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * Data amount.
+                 * @member {Long} amount
+                 * @memberof proto.Response.Exchange.Data
+                 * @instance
+                 */
+                Data.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                /**
+                 * Data worstAmount.
+                 * @member {Long} worstAmount
+                 * @memberof proto.Response.Exchange.Data
+                 * @instance
+                 */
+                Data.prototype.worstAmount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                /**
+                 * Data priceImpact.
+                 * @member {number} priceImpact
+                 * @memberof proto.Response.Exchange.Data
+                 * @instance
+                 */
+                Data.prototype.priceImpact = 0;
+
+                /**
+                 * Data routes.
+                 * @member {Array.<proto.Response.Exchange.Route>} routes
+                 * @memberof proto.Response.Exchange.Data
+                 * @instance
+                 */
+                Data.prototype.routes = $util.emptyArray;
+
+                /**
+                 * Data arguments.
+                 * @member {Array.<proto.Response.Exchange.Argument>} arguments
+                 * @memberof proto.Response.Exchange.Data
+                 * @instance
+                 */
+                Data.prototype["arguments"] = $util.emptyArray;
+
+                /**
+                 * Creates a new Data instance using the specified properties.
+                 * @function create
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {proto.Response.Exchange.IData=} [properties] Properties to set
+                 * @returns {proto.Response.Exchange.Data} Data instance
+                 */
+                Data.create = function create(properties) {
+                    return new Data(properties);
+                };
+
+                /**
+                 * Encodes the specified Data message. Does not implicitly {@link proto.Response.Exchange.Data.verify|verify} messages.
+                 * @function encode
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {proto.Response.Exchange.Data} message Data message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Data.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
+                        writer.uint32(/* id 1, wireType 0 =*/8).int64(message.amount);
+                    if (message.worstAmount != null && Object.hasOwnProperty.call(message, "worstAmount"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).int64(message.worstAmount);
+                    if (message.priceImpact != null && Object.hasOwnProperty.call(message, "priceImpact"))
+                        writer.uint32(/* id 3, wireType 1 =*/25).double(message.priceImpact);
+                    if (message.routes != null && message.routes.length)
+                        for (let i = 0; i < message.routes.length; ++i)
+                            $root.proto.Response.Exchange.Route.encode(message.routes[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    if (message["arguments"] != null && message["arguments"].length)
+                        for (let i = 0; i < message["arguments"].length; ++i)
+                            $root.proto.Response.Exchange.Argument.encode(message["arguments"][i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified Data message, length delimited. Does not implicitly {@link proto.Response.Exchange.Data.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {proto.Response.Exchange.Data} message Data message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Data.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a Data message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {proto.Response.Exchange.Data} Data
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Data.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.proto.Response.Exchange.Data();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.amount = reader.int64();
+                            break;
+                        case 2:
+                            message.worstAmount = reader.int64();
+                            break;
+                        case 3:
+                            message.priceImpact = reader.double();
+                            break;
+                        case 4:
+                            if (!(message.routes && message.routes.length))
+                                message.routes = [];
+                            message.routes.push($root.proto.Response.Exchange.Route.decode(reader, reader.uint32()));
+                            break;
+                        case 6:
+                            if (!(message["arguments"] && message["arguments"].length))
+                                message["arguments"] = [];
+                            message["arguments"].push($root.proto.Response.Exchange.Argument.decode(reader, reader.uint32()));
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a Data message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {proto.Response.Exchange.Data} Data
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Data.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a Data message.
+                 * @function verify
+                 * @memberof proto.Response.Exchange.Data
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                Data.verify = function verify(message) {
                     if (typeof message !== "object" || message === null)
                         return "object expected";
                     if (message.amount != null && message.hasOwnProperty("amount"))
@@ -1451,30 +2524,39 @@ export const proto = $root.proto = (() => {
                     if (message.priceImpact != null && message.hasOwnProperty("priceImpact"))
                         if (typeof message.priceImpact !== "number")
                             return "priceImpact: number expected";
-                    if (message.route != null && message.hasOwnProperty("route")) {
-                        if (!Array.isArray(message.route))
-                            return "route: array expected";
-                        for (let i = 0; i < message.route.length; ++i) {
-                            let error = $root.proto.Response.Exchange.Pool.verify(message.route[i]);
+                    if (message.routes != null && message.hasOwnProperty("routes")) {
+                        if (!Array.isArray(message.routes))
+                            return "routes: array expected";
+                        for (let i = 0; i < message.routes.length; ++i) {
+                            let error = $root.proto.Response.Exchange.Route.verify(message.routes[i]);
                             if (error)
-                                return "route." + error;
+                                return "routes." + error;
+                        }
+                    }
+                    if (message["arguments"] != null && message.hasOwnProperty("arguments")) {
+                        if (!Array.isArray(message["arguments"]))
+                            return "arguments: array expected";
+                        for (let i = 0; i < message["arguments"].length; ++i) {
+                            let error = $root.proto.Response.Exchange.Argument.verify(message["arguments"][i]);
+                            if (error)
+                                return "arguments." + error;
                         }
                     }
                     return null;
                 };
 
                 /**
-                 * Creates a Result message from a plain object. Also converts values to their respective internal types.
+                 * Creates a Data message from a plain object. Also converts values to their respective internal types.
                  * @function fromObject
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Data
                  * @static
                  * @param {Object.<string,*>} object Plain object
-                 * @returns {proto.Response.Exchange.Result} Result
+                 * @returns {proto.Response.Exchange.Data} Data
                  */
-                Result.fromObject = function fromObject(object) {
-                    if (object instanceof $root.proto.Response.Exchange.Result)
+                Data.fromObject = function fromObject(object) {
+                    if (object instanceof $root.proto.Response.Exchange.Data)
                         return object;
-                    let message = new $root.proto.Response.Exchange.Result();
+                    let message = new $root.proto.Response.Exchange.Data();
                     if (object.amount != null)
                         if ($util.Long)
                             (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -1495,34 +2577,46 @@ export const proto = $root.proto = (() => {
                             message.worstAmount = new $util.LongBits(object.worstAmount.low >>> 0, object.worstAmount.high >>> 0).toNumber();
                     if (object.priceImpact != null)
                         message.priceImpact = Number(object.priceImpact);
-                    if (object.route) {
-                        if (!Array.isArray(object.route))
-                            throw TypeError(".proto.Response.Exchange.Result.route: array expected");
-                        message.route = [];
-                        for (let i = 0; i < object.route.length; ++i) {
-                            if (typeof object.route[i] !== "object")
-                                throw TypeError(".proto.Response.Exchange.Result.route: object expected");
-                            message.route[i] = $root.proto.Response.Exchange.Pool.fromObject(object.route[i]);
+                    if (object.routes) {
+                        if (!Array.isArray(object.routes))
+                            throw TypeError(".proto.Response.Exchange.Data.routes: array expected");
+                        message.routes = [];
+                        for (let i = 0; i < object.routes.length; ++i) {
+                            if (typeof object.routes[i] !== "object")
+                                throw TypeError(".proto.Response.Exchange.Data.routes: object expected");
+                            message.routes[i] = $root.proto.Response.Exchange.Route.fromObject(object.routes[i]);
+                        }
+                    }
+                    if (object["arguments"]) {
+                        if (!Array.isArray(object["arguments"]))
+                            throw TypeError(".proto.Response.Exchange.Data.arguments: array expected");
+                        message["arguments"] = [];
+                        for (let i = 0; i < object["arguments"].length; ++i) {
+                            if (typeof object["arguments"][i] !== "object")
+                                throw TypeError(".proto.Response.Exchange.Data.arguments: object expected");
+                            message["arguments"][i] = $root.proto.Response.Exchange.Argument.fromObject(object["arguments"][i]);
                         }
                     }
                     return message;
                 };
 
                 /**
-                 * Creates a plain object from a Result message. Also converts values to other types if specified.
+                 * Creates a plain object from a Data message. Also converts values to other types if specified.
                  * @function toObject
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Data
                  * @static
-                 * @param {proto.Response.Exchange.Result} message Result
+                 * @param {proto.Response.Exchange.Data} message Data
                  * @param {$protobuf.IConversionOptions} [options] Conversion options
                  * @returns {Object.<string,*>} Plain object
                  */
-                Result.toObject = function toObject(message, options) {
+                Data.toObject = function toObject(message, options) {
                     if (!options)
                         options = {};
                     let object = {};
-                    if (options.arrays || options.defaults)
-                        object.route = [];
+                    if (options.arrays || options.defaults) {
+                        object.routes = [];
+                        object["arguments"] = [];
+                    }
                     if (options.defaults) {
                         if ($util.Long) {
                             let long = new $util.Long(0, 0, false);
@@ -1548,26 +2642,31 @@ export const proto = $root.proto = (() => {
                             object.worstAmount = options.longs === String ? $util.Long.prototype.toString.call(message.worstAmount) : options.longs === Number ? new $util.LongBits(message.worstAmount.low >>> 0, message.worstAmount.high >>> 0).toNumber() : message.worstAmount;
                     if (message.priceImpact != null && message.hasOwnProperty("priceImpact"))
                         object.priceImpact = options.json && !isFinite(message.priceImpact) ? String(message.priceImpact) : message.priceImpact;
-                    if (message.route && message.route.length) {
-                        object.route = [];
-                        for (let j = 0; j < message.route.length; ++j)
-                            object.route[j] = $root.proto.Response.Exchange.Pool.toObject(message.route[j], options);
+                    if (message.routes && message.routes.length) {
+                        object.routes = [];
+                        for (let j = 0; j < message.routes.length; ++j)
+                            object.routes[j] = $root.proto.Response.Exchange.Route.toObject(message.routes[j], options);
+                    }
+                    if (message["arguments"] && message["arguments"].length) {
+                        object["arguments"] = [];
+                        for (let j = 0; j < message["arguments"].length; ++j)
+                            object["arguments"][j] = $root.proto.Response.Exchange.Argument.toObject(message["arguments"][j], options);
                     }
                     return object;
                 };
 
                 /**
-                 * Converts this Result to JSON.
+                 * Converts this Data to JSON.
                  * @function toJSON
-                 * @memberof proto.Response.Exchange.Result
+                 * @memberof proto.Response.Exchange.Data
                  * @instance
                  * @returns {Object.<string,*>} JSON object
                  */
-                Result.prototype.toJSON = function toJSON() {
+                Data.prototype.toJSON = function toJSON() {
                     return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                 };
 
-                return Result;
+                return Data;
             })();
 
             return Exchange;
