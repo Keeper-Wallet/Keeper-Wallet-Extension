@@ -1,3 +1,15 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  position: relative;
+  padding: 14px;
+}
+
+.accountInfoHeader {
+  margin-bottom: 16px;
+}
+
 .swapDirectionBtnWrapper {
   position: relative;
   z-index: 1;
@@ -155,7 +167,7 @@
 }
 
 .error {
-  margin: 8px 0;
+  margin-top: 8px;
   overflow: auto;
   color: #e5494d;
   font-size: 12px;
@@ -273,4 +285,20 @@
   width: 7px;
   height: 12px;
   fill: currentColor;
+}
+
+.stickyBottomPanel {
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+  border-top: 1px solid #edf0f4;
+  padding: 14px;
+  background: #fff;
+}
+
+.stickyBottomPanelError {
+  margin-bottom: 8px;
+  overflow: auto;
+  color: #e5494d;
+  font-size: 12px;
 }

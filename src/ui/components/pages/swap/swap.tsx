@@ -8,14 +8,13 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
-import { Avatar } from 'ui/components/ui/avatar/Avatar';
+import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { PAGES } from 'ui/pageConfig';
 import background, { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
-import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -113,157 +112,139 @@ export function Swap({ setTab }: Props) {
     ([_assetId, asset]) => asset
   );
 
+  if (
+    wavesFeeCoins == null ||
+    !accountBalance.assets ||
+    swappableAssets.some(asset => asset == null)
+  ) {
+    return <div className={styles.loader} />;
+  }
+
+  if (performedSwapData != null) {
+    return (
+      <SwapResult
+        fromMoney={performedSwapData.fromMoney}
+        transactionId={performedSwapData.transactionId}
+        onClose={() => {
+          setTab(PAGES.ROOT);
+        }}
+      />
+    );
+  }
+
   return (
-    <div className={styles.root}>
-      <div className={styles.wrapper}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{t('swap.title')}</h1>
-        </header>
+    <SignWrapper
+      onConfirm={async ({
+        feeAssetId,
+        fromAssetId,
+        fromCoins,
+        minReceivedCoins,
+        slippageTolerance,
+      }) => {
+        setSwapErrorMessage(null);
+        setIsSwapInProgress(true);
 
-        {wavesFeeCoins == null ||
-        !accountBalance.assets ||
-        swappableAssets.some(asset => asset == null) ? (
-          <div className={styles.loader} />
-        ) : (
-          <div className={styles.content}>
-            <div className={styles.accountInfoHeader}>
-              <Avatar
-                address={selectedAccount.address}
-                type={selectedAccount.type}
-                size={28}
-              />
-              <div className={styles.accountName}>{selectedAccount.name}</div>
-            </div>
+        const fee = convertToSponsoredAssetFee(
+          new BigNumber(wavesFeeCoins),
+          new Asset(assets[feeAssetId]),
+          accountBalance.assets[feeAssetId]
+        );
 
-            {performedSwapData == null ? (
-              <SignWrapper
-                onConfirm={async ({
-                  feeAssetId,
-                  fromAssetId,
-                  fromCoins,
-                  minReceivedCoins,
-                  slippageTolerance,
-                }) => {
-                  setSwapErrorMessage(null);
-                  setIsSwapInProgress(true);
+        try {
+          const swapResult = await background.swapAssets({
+            feeAssetId,
+            feeCoins: fee.toCoins(),
+            fromAssetId,
+            fromCoins: fromCoins.toFixed(),
+            minReceivedCoins: minReceivedCoins.toFixed(),
+            slippageTolerance,
+          });
 
-                  const fee = convertToSponsoredAssetFee(
-                    new BigNumber(wavesFeeCoins),
-                    new Asset(assets[feeAssetId]),
-                    accountBalance.assets[feeAssetId]
-                  );
+          setPerformedSwapData({
+            fromMoney: new Money(fromCoins, new Asset(assets[fromAssetId])),
+            transactionId: swapResult.transactionId,
+          });
+        } catch (err) {
+          const errMessage = err?.message;
+          let capture = true;
 
-                  try {
-                    const swapResult = await background.swapAssets({
-                      feeAssetId,
-                      feeCoins: fee.toCoins(),
-                      fromAssetId,
-                      fromCoins: fromCoins.toFixed(),
-                      minReceivedCoins: minReceivedCoins.toFixed(),
-                      slippageTolerance,
-                    });
+          if (typeof errMessage === 'string') {
+            // errors from nested invokes
+            let match = errMessage.match(
+              /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
+            );
 
-                    setPerformedSwapData({
-                      fromMoney: new Money(
-                        fromCoins,
-                        new Asset(assets[fromAssetId])
-                      ),
-                      transactionId: swapResult.transactionId,
-                    });
-                  } catch (err) {
-                    const errMessage = err?.message;
-                    let capture = true;
+            if (match) {
+              let msg = match[1];
 
-                    if (typeof errMessage === 'string') {
-                      // errors from nested invokes
-                      let match = errMessage.match(
-                        /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
-                      );
+              if (
+                /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
+                  msg
+                )
+              ) {
+                msg = t('swap.amountToSendError');
+                capture = false;
+              } else if (
+                /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
+                  msg
+                )
+              ) {
+                capture = false;
+              }
 
-                      if (match) {
-                        let msg = match[1];
+              setSwapErrorMessage(msg);
+              setIsSwapInProgress(false);
 
-                        if (
-                          /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
-                            msg
-                          )
-                        ) {
-                          msg = t('swap.amountToSendError');
-                          capture = false;
-                        } else if (
-                          /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
-                            msg
-                          )
-                        ) {
-                          capture = false;
-                        }
+              if (capture) {
+                Sentry.captureException(new Error(msg));
+              }
+              return;
+            }
 
-                        setSwapErrorMessage(msg);
-                        setIsSwapInProgress(false);
+            // errors from contract itself
+            match = errMessage.match(
+              /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
+            );
 
-                        if (capture) {
-                          Sentry.captureException(new Error(msg));
-                        }
-                        return;
-                      }
+            if (match) {
+              const msg = match[1];
 
-                      // errors from contract itself
-                      match = errMessage.match(
-                        /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
-                      );
+              setSwapErrorMessage(msg);
+              setIsSwapInProgress(false);
 
-                      if (match) {
-                        const msg = match[1];
+              if (capture) {
+                Sentry.captureException(new Error(msg));
+              }
+              return;
+            }
 
-                        setSwapErrorMessage(msg);
-                        setIsSwapInProgress(false);
+            if (/Request is rejected on ledger/i.test(errMessage)) {
+              setSwapErrorMessage(errMessage);
+              setIsSwapInProgress(false);
+              return;
+            }
+          }
 
-                        if (capture) {
-                          Sentry.captureException(new Error(msg));
-                        }
-                        return;
-                      }
+          setSwapErrorMessage(errMessage || t('swap.failMessage'));
+          setIsSwapInProgress(false);
 
-                      if (/Request is rejected on ledger/i.test(errMessage)) {
-                        setSwapErrorMessage(t('swap.ledgerFailMessage'));
-                        setIsSwapInProgress(false);
-                        return;
-                      }
-                    }
-
-                    setSwapErrorMessage(errMessage || t('swap.failMessage'));
-                    setIsSwapInProgress(false);
-
-                    if (capture) {
-                      Sentry.captureException(new Error(errMessage));
-                    }
-                  }
-                }}
-              >
-                {({ onPrepare, pending }) => (
-                  <SwapForm
-                    initialFromAssetId={initialFromAssetId}
-                    initialToAssetId={initialToAssetId}
-                    isSwapInProgress={pending || isSwapInProgress}
-                    swapErrorMessage={swapErrorMessage}
-                    swappableAssets={swappableAssets}
-                    wavesFeeCoins={wavesFeeCoins}
-                    onSwap={onPrepare}
-                  />
-                )}
-              </SignWrapper>
-            ) : (
-              <SwapResult
-                fromMoney={performedSwapData.fromMoney}
-                transactionId={performedSwapData.transactionId}
-                onClose={() => {
-                  setTab(PAGES.ROOT);
-                }}
-              />
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+          if (capture) {
+            Sentry.captureException(new Error(errMessage));
+          }
+        }
+      }}
+    >
+      {({ onPrepare, pending }) => (
+        <SwapForm
+          initialFromAssetId={initialFromAssetId}
+          initialToAssetId={initialToAssetId}
+          isSwapInProgress={pending || isSwapInProgress}
+          swapErrorMessage={swapErrorMessage}
+          swappableAssets={swappableAssets}
+          wavesFeeCoins={wavesFeeCoins}
+          onSwap={onPrepare}
+        />
+      )}
+    </SignWrapper>
   );
 }
