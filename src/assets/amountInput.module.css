@@ -1,67 +1,19 @@
 .root {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 4px;
   border: solid 1px var(--color-basic100);
-  padding: 16px 14px;
+  padding: 14px;
   border-radius: 4px;
   background: #fff;
 }
 
-.logo {
-  box-sizing: content-box;
-  margin: 0 -3px;
-  padding: 3px;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: none;
-}
-
-.logo:not(:disabled) {
-  cursor: pointer;
-}
-
-.logo:not(:disabled):hover {
-  background: var(--color-basic100);
-}
-
-.logoImg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.logoPlaceholder {
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 24px;
-  text-align: center;
-}
-
-.main {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.top {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-  position: relative;
-}
-
-.bottom {
+.head {
   display: flex;
   gap: 8px;
 }
 
 .label {
-  flex: 1 1 0;
   color: var(--color-basic500);
   font-size: 11px;
   overflow: hidden;
@@ -70,6 +22,7 @@
 }
 
 .balance {
+  margin-left: auto;
   flex-shrink: 0;
   font-size: 11px;
   overflow: hidden;
@@ -77,17 +30,36 @@
   text-overflow: ellipsis;
 }
 
-.value {
-  flex: 1 1 0;
+.balanceValue {
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.balanceValue:not(:disabled) {
+  cursor: pointer;
+}
+
+.balanceValue:not(:disabled):hover {
+  color: var(--color-submit400);
+}
+
+.main {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assetSelect {
+  margin-left: -6px;
 }
 
 .input {
-  display: block;
   width: 100%;
   background: none;
   font-size: 14px;
-  text-align: inherit;
+  text-align: right;
 }
 
 .input:focus {
@@ -95,43 +67,10 @@
 }
 
 .usdAmount {
-  bottom: -12px;
+  position: absolute;
+  right: 0;
+  bottom: -6px;
   color: var(--color-basic500);
   font-size: 11px;
   font-weight: 500;
-  left: 0;
-  position: absolute;
-}
-
-.result {
-  font-size: 14px;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.usdResult {
-  bottom: -12px;
-  color: var(--color-basic500);
-  font-size: 11px;
-  font-weight: 700;
-  left: 0;
-  position: absolute;
-}
-
-.maxButton {
-  margin: -3px -6px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  background: none;
-  color: var(--color-submit400);
-  font-weight: 300;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.maxButton:hover {
-  background: var(--color-submit400);
-  color: var(--color-white);
 }

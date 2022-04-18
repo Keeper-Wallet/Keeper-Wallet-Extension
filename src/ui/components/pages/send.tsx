@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
-import { getBalances } from 'ui/actions';
+import { getBalances, setUiState } from 'ui/actions';
 import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
 import { AssetAmountInput } from '../../../assets/amountInput';
@@ -28,6 +28,8 @@ export function Send() {
     currentAsset.precision === 0 &&
     currentAsset.quantity == 1 &&
     !currentAsset.reissuable;
+
+  const assets = useAppSelector(state => state.assets);
 
   React.useEffect(() => {
     if (!assetBalances) {
@@ -142,17 +144,24 @@ export function Send() {
                     return (
                       <>
                         <AssetAmountInput
+                          assetBalances={assetBalances}
+                          assetOptions={Object.values(assets).filter(
+                            asset => assetBalances[asset.id] != null
+                          )}
                           balance={balance}
-                          label={t('send.amountInputLabel', {
-                            asset: currentAsset.displayName,
-                          })}
-                          value={amountValue}
+                          label={t('send.amountInputLabel')}
                           showUsdAmount
+                          value={amountValue}
+                          onAssetChange={assetId => {
+                            dispatch(
+                              setUiState({ currentAsset: assets[assetId] })
+                            );
+                          }}
+                          onBalanceClick={() => {
+                            setAmountValue(balance.toTokens());
+                          }}
                           onChange={value => {
                             setAmountValue(value);
-                          }}
-                          onMaxClick={() => {
-                            setAmountValue(balance.toTokens());
                           }}
                         />
                         <Error show={showAmountError}>{amountError}</Error>

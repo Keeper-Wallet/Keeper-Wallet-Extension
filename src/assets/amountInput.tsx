@@ -1,41 +1,42 @@
 import BigNumber from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
-import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
+import { BalanceAssets } from 'ui/reducers/updateState';
+import { AssetDetail } from 'ui/services/Background';
 import { useAppSelector } from 'ui/store';
 import * as styles from './amountInput.module.css';
-import { getAssetLogo } from './utils';
-import { Loader } from 'ui/components/ui';
+import { AssetSelect } from './assetSelect';
 import { useTranslation } from 'react-i18next';
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 
 interface Props {
+  assetBalances: BalanceAssets;
+  assetOptions: AssetDetail[];
   balance: Money;
   label: string;
-  loading?: boolean;
   showUsdAmount?: boolean;
   value: string;
-  onChange?: (newValue: string) => void;
-  onLogoClick?: () => void;
-  onMaxClick?: () => void;
+  onAssetChange: (newAssetId: string) => void;
+  onBalanceClick?: () => void;
+  onChange: (newValue: string) => void;
 }
 
 export function AssetAmountInput({
+  assetBalances,
+  assetOptions,
   balance,
   label,
-  loading,
   showUsdAmount,
   value,
+  onAssetChange,
+  onBalanceClick,
   onChange,
-  onLogoClick,
-  onMaxClick,
 }: Props) {
   const assets = useAppSelector(state => state.assets);
   const { t } = useTranslation();
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
-  const logoSrc = getAssetLogo(network, asset.id);
 
   const mask = useIMask({
     mapToRadix: ['.', ','],
@@ -86,95 +87,51 @@ export function AssetAmountInput({
   }, [value]);
 
   const bigNumberValue = new BigNumber(value || '0');
-  const formattedValue = bigNumberValue.toFormat(
-    asset.precision,
-    BigNumber.ROUND_MODE.ROUND_FLOOR,
-    {
-      fractionGroupSeparator: '',
-      fractionGroupSize: 0,
-      decimalSeparator: '.',
-      groupSeparator: ' ',
-      groupSize: 3,
-      prefix: '',
-      secondaryGroupSize: 0,
-      suffix: '',
-    }
-  );
   const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();
 
   return (
     <div className={styles.root}>
-      <button
-        className={styles.logo}
-        disabled={!onLogoClick}
-        type="button"
-        onClick={onLogoClick}
-      >
-        {logoSrc ? (
-          <img className={styles.logoImg} src={logoSrc} alt="" />
-        ) : (
-          <div
-            className={styles.logoPlaceholder}
-            style={{
-              backgroundColor: new ColorHash().hex(asset.id),
-            }}
+      <div className={styles.head}>
+        <div className={styles.label}>{label}</div>
+
+        <div className={styles.balance}>
+          {t('assetAmountInput.balanceLabel')}:{' '}
+          <button
+            className={styles.balanceValue}
+            disabled={!onBalanceClick}
+            onClick={onBalanceClick}
           >
-            {asset.displayName[0].toUpperCase()}
-          </div>
-        )}
-      </button>
+            {balance.getTokens().toFixed()}
+          </button>
+        </div>
+      </div>
 
       <div className={styles.main}>
-        <div className={styles.top}>
-          <div className={styles.label}>{label}</div>
-          <div className={styles.balance}>{balance.toTokens()}</div>
+        <div className={styles.assetSelect}>
+          <AssetSelect
+            assetBalances={assetBalances}
+            network={network}
+            options={assetOptions}
+            value={asset.id}
+            onChange={onAssetChange}
+          />
         </div>
 
-        <div className={styles.bottom}>
-          <div className={styles.value}>
-            {loading ? (
-              <Loader />
-            ) : onChange ? (
-              <>
-                <input
-                  className={styles.input}
-                  placeholder="0.0"
-                  maxLength={23}
-                  ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
-                  data-testid="amountInput"
-                />
-                {showUsdAmount && (
-                  <UsdAmount
-                    className={styles.usdAmount}
-                    asset={assets[asset.id]}
-                    tokens={tokens}
-                  />
-                )}
-              </>
-            ) : (
-              <div className={styles.result} title={formattedValue}>
-                {formattedValue}
-                {showUsdAmount && (
-                  <UsdAmount
-                    className={styles.usdResult}
-                    asset={assets[asset.id]}
-                    tokens={tokens}
-                  />
-                )}
-              </div>
-            )}
-          </div>
+        <input
+          className={styles.input}
+          data-testid="amountInput"
+          maxLength={23}
+          placeholder="0.0"
+          ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+        />
 
-          {onMaxClick && (
-            <button
-              className={styles.maxButton}
-              type="button"
-              onClick={onMaxClick}
-            >
-              {t('assetAmountInput.maxButtonText')}
-            </button>
-          )}
-        </div>
+        {showUsdAmount && (
+          <UsdAmount
+            className={styles.usdAmount}
+            asset={assets[asset.id]}
+            tokens={tokens}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { Account } from 'accounts/types';
@@ -416,7 +415,6 @@ class Background {
     fromAssetId: string;
     fromCoins: string;
     minReceivedCoins: string;
-    route: ExchangePool[];
     slippageTolerance: number;
   }): Promise<{ transactionId: string }> {
     try {
