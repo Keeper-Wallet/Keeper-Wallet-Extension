@@ -329,6 +329,11 @@ export function SwapForm({
 
   const dispatch = useAppDispatch();
 
+  const priceImpact =
+    fromAmountTokens.eq(0) || vendorExchangeInfo.type !== 'data'
+      ? new BigNumber(0)
+      : new BigNumber(vendorExchangeInfo.priceImpact);
+
   return (
     <>
       <form
@@ -643,27 +648,37 @@ export function SwapForm({
                       {toAsset.displayName}
                     </span>
                   )}{' '}
-                  (
-                  {
-                    <Tooltip
-                      className={styles.tooltipContent}
-                      content={<Trans i18nKey="swap.priceImpactTooltip" />}
-                    >
-                      {props => (
-                        <span
-                          className={styles.summaryTooltipTarget}
-                          {...props}
-                        >
-                          {(fromAmountTokens.eq(0)
-                            ? new BigNumber(0)
-                            : new BigNumber(vendorExchangeInfo.priceImpact)
-                          ).toFixed(3, BigNumber.ROUND_MODE.ROUND_FLOOR)}
-                          %
-                        </span>
-                      )}
-                    </Tooltip>
-                  }
-                  )
+                  <span
+                    style={{
+                      color: priceImpact.gte(10)
+                        ? 'var(--color-error400)'
+                        : priceImpact.gte(5)
+                        ? 'var(--color-warning400)'
+                        : undefined,
+                    }}
+                  >
+                    (
+                    {
+                      <Tooltip
+                        className={styles.tooltipContent}
+                        content={<Trans i18nKey="swap.priceImpactTooltip" />}
+                      >
+                        {props => (
+                          <span
+                            className={styles.summaryTooltipTarget}
+                            {...props}
+                          >
+                            {priceImpact.toFixed(
+                              3,
+                              BigNumber.ROUND_MODE.ROUND_FLOOR
+                            )}
+                            %
+                          </span>
+                        )}
+                      </Tooltip>
+                    }
+                    )
+                  </span>
                 </div>
               ) : (
                 <Trans i18nKey="swap.notAvailable" />
