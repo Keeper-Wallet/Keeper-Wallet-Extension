@@ -1,54 +1,5 @@
-.root {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 48px);
-  overflow: auto;
-}
-
-.wrapper {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  position: sticky;
-  z-index: 1;
-  top: 0;
-  border-bottom: 1px solid #edf0f4;
-  padding: 14px;
-  background: #fff;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: normal;
-}
-
 .loader {
   height: 100%;
   background: url(../../../assets/img/loader.gif) center no-repeat;
   background-size: 100px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
-  position: relative;
-  padding: 14px;
-  background: #f8f9fb;
-}
-
-.accountInfoHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.accountName {
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

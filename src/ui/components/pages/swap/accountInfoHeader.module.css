@@ -1,0 +1,11 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.accountName {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
