@@ -52,7 +52,7 @@ export class IssueCard extends React.PureComponent<IProps> {
                 split={true}
                 showAsset={true}
                 balance={amount}
-                className={styles.txBalanceWrapper}
+                showUsdAmount
               />
             </h1>
           </div>

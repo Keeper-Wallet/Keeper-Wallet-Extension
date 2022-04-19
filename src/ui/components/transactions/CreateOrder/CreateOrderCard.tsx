@@ -56,13 +56,13 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
                 <Asset assetId={price.asset.id} />
               </span>
             </div>
-            <h1 className="headline1">
+            <h1 className="headline1 margin-min">
               <Balance
                 split={true}
                 addSign={getAmountSign(tx)}
                 showAsset={true}
                 balance={amount}
-                className={styles.txBalanceWrapper}
+                showUsdAmount
               />
             </h1>
             <h1 className="headline1">
@@ -71,7 +71,7 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
                 addSign={getPriceSign(tx)}
                 showAsset={true}
                 balance={getPriceAmount(tx, assets)}
-                className={styles.txBalanceWrapper}
+                showUsdAmount
               />
             </h1>
           </div>
@@ -83,7 +83,12 @@ export class CreateOrderCard extends React.PureComponent<IProps> {
               <Trans i18nKey="transactions.price" />
             </div>
             <div className={styles.txValue}>
-              <Balance isShortFormat={true} balance={price} showAsset={true} />
+              <Balance
+                isShortFormat={true}
+                balance={price}
+                showAsset={true}
+                showUsdAmount
+              />
             </div>
           </div>
 

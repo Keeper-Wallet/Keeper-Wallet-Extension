@@ -24,6 +24,10 @@
   text-overflow: ellipsis;
 }
 
+.accountAmount {
+  font-weight: 600;
+}
+
 .otherAccountsButton {
   align-self: center;
   position: relative;

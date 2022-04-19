@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
@@ -8,11 +8,13 @@ import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
 import { Loader } from 'ui/components/ui';
 import { Trans } from 'react-i18next';
+import { UsdAmount } from '../ui/components/ui/UsdAmount';
 
 interface Props {
   balance: Money;
   label: string;
   loading?: boolean;
+  showUsdAmount?: boolean;
   value: string;
   onChange?: (newValue: string) => void;
   onLogoClick?: () => void;
@@ -23,11 +25,13 @@ export function AssetAmountInput({
   balance,
   label,
   loading,
+  showUsdAmount,
   value,
   onChange,
   onLogoClick,
   onMaxClick,
 }: Props) {
+  const assets = useAppSelector(state => state.assets);
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
@@ -80,7 +84,8 @@ export function AssetAmountInput({
     }
   }, [value]);
 
-  const formattedValue = new BigNumber(value || '0').toFormat(
+  const bigNumberValue = new BigNumber(value || '0');
+  const formattedValue = bigNumberValue.toFormat(
     asset.precision,
     BigNumber.ROUND_MODE.ROUND_FLOOR,
     {
@@ -94,6 +99,7 @@ export function AssetAmountInput({
       suffix: '',
     }
   );
+  const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();
 
   return (
     <div className={styles.root}>
@@ -128,16 +134,32 @@ export function AssetAmountInput({
             {loading ? (
               <Loader />
             ) : onChange ? (
-              <input
-                className={styles.input}
-                placeholder="0.0"
-                maxLength={23}
-                ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
-                data-testid="amountInput"
-              />
+              <>
+                <input
+                  className={styles.input}
+                  placeholder="0.0"
+                  maxLength={23}
+                  ref={mask.ref as React.MutableRefObject<HTMLInputElement>}
+                  data-testid="amountInput"
+                />
+                {showUsdAmount && (
+                  <UsdAmount
+                    className={styles.usdAmount}
+                    asset={assets[asset.id]}
+                    tokens={tokens}
+                  />
+                )}
+              </>
             ) : (
               <div className={styles.result} title={formattedValue}>
                 {formattedValue}
+                {showUsdAmount && (
+                  <UsdAmount
+                    className={styles.usdResult}
+                    asset={assets[asset.id]}
+                    tokens={tokens}
+                  />
+                )}
               </div>
             )}
           </div>

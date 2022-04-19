@@ -3,30 +3,9 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Asset, Balance, PlateCollapsable, ShowScript } from '../../ui';
+import { Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
-
-const AmountTable = props => {
-  return (
-    <div className={props.className}>
-      <table className={cn(styles.data, styles.dataTable)}>
-        <tbody>
-          {props.amounts.map((amount, index) => (
-            <tr key={index} className={cn(styles.dataRow)}>
-              <td className={styles.dataItem}>
-                <Balance isShortFormat={true} balance={amount} />
-              </td>
-              <td className={styles.dataItemLast}>
-                <Asset assetId={amount.asset.id} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
 
 interface IProps {
   assets: any;
@@ -117,7 +96,19 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
                   className={styles.expandableList}
                   showExpand={!collapsed}
                 >
-                  <AmountTable amounts={amounts} />
+                  <>
+                    {amounts.map((amount, index) => (
+                      <div className={styles.balance} key={index}>
+                        <Balance
+                          isShortFormat
+                          balance={amount}
+                          assetId={amount.asset.id}
+                          showAsset
+                          showUsdAmount
+                        />
+                      </div>
+                    ))}
+                  </>
                 </PlateCollapsable>
               </div>
             </div>

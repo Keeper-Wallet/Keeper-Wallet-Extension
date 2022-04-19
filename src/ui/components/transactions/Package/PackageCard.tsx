@@ -70,7 +70,8 @@ export class PackageCard extends React.PureComponent<IProps> {
                       balance={amount}
                       split
                       showAsset
-                      addSign={`${sign} `}
+                      addSign={`${sign}`}
+                      showUsdAmount
                     />
                   </div>
                 ))}

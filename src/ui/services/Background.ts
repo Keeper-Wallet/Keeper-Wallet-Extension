@@ -589,4 +589,5 @@ export interface AssetDetail extends IAssetInfo {
   issuer?: string;
   isFavorite?: boolean;
   isSuspicious?: boolean;
+  usdPrice?: string;
 }

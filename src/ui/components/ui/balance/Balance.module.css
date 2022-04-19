@@ -1,0 +1,10 @@
+.usdAmount {
+  color: var(--color-basic500);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.usdAmountNote {
+  color: var(--color-basic500);
+  font-size: 10px;
+}

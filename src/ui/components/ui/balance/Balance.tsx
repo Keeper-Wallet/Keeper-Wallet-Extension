@@ -1,20 +1,35 @@
 import * as React from 'react';
-import { Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';
 import { getAsset } from '../../../actions';
+import { AssetDetail } from 'ui/services/Background';
+import { UsdAmount } from '../UsdAmount';
+import * as styles from './Balance.module.css';
 
 const SEPARATOR = '.';
 
-const Loading = ({ children }) => {
-  return (
-    <div>
-      <Loader />
-      {children}
-    </div>
-  );
-};
+const Loading = ({ children }) => (
+  <div>
+    <Loader />
+    {children}
+  </div>
+);
+
+interface Props {
+  balance: Money | string | BigNumber;
+  assetId?: string;
+  split?: boolean;
+  showAsset?: boolean;
+  showUsdAmount?: boolean;
+  isShortFormat?: boolean;
+  children?: any;
+  addSign?: string;
+  className?: string;
+  assets?: Record<string, AssetDetail>;
+  getAsset: (id: string) => void;
+}
 
 const BalanceComponent = ({
   balance,
@@ -22,12 +37,13 @@ const BalanceComponent = ({
   getAsset,
   addSign = null,
   showAsset,
+  showUsdAmount,
   isShortFormat,
   children,
   assets,
   assetId = 'WAVES',
   ...props
-}: IProps) => {
+}: Props) => {
   let balanceOut: Money;
 
   React.useEffect(() => {
@@ -43,7 +59,10 @@ const BalanceComponent = ({
       balanceOut = balance as Money;
       break;
     case new BigNumber(balance as string).isNaN() === false:
-      balanceOut = Money.fromTokens(balance as string, assets['WAVES']);
+      balanceOut = Money.fromTokens(
+        balance as string,
+        new Asset(assets['WAVES'])
+      );
       break;
     default:
       return <div>N/A</div>;
@@ -56,42 +75,47 @@ const BalanceComponent = ({
 
   if (!split) {
     return (
-      <div {...props}>
-        {tokens.join(SEPARATOR)} {assetName} {children}
-      </div>
+      <>
+        <div {...props}>
+          {tokens.join(SEPARATOR)} {assetName} {children}
+        </div>
+        {showUsdAmount && (
+          <UsdAmount
+            className={styles.usdAmountNote}
+            asset={assets[balanceOut.asset.id]}
+            tokens={balanceOut.getTokens()}
+          />
+        )}
+      </>
     );
   }
 
   return (
-    <div {...props}>
-      {addSign ? <span>{addSign}</span> : null}
-      <span className="font600">{tokens[0]}</span>
-      {tokens[1] ? (
-        <span className="font400">
-          {SEPARATOR}
-          {tokens[1]}
-        </span>
-      ) : null}
-      &nbsp;
-      <span className="font400">{assetName}</span>
-      {children}
-    </div>
+    <>
+      <div {...props}>
+        {addSign ? <span>{addSign}</span> : null}
+        <span className="font600">{tokens[0]}</span>
+        {tokens[1] ? (
+          <span className="font400">
+            {SEPARATOR}
+            {tokens[1]}
+          </span>
+        ) : null}
+        &nbsp;
+        <span className="font400">{assetName}</span>
+        {children}
+      </div>
+      {showUsdAmount && (
+        <UsdAmount
+          className={styles.usdAmount}
+          asset={assets[balanceOut.asset.id]}
+          tokens={balanceOut.getTokens()}
+        />
+      )}
+    </>
   );
 };
 
 export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(
   BalanceComponent
 );
-
-interface IProps {
-  balance: Money | string | BigNumber;
-  assetId?: string;
-  split?: boolean;
-  showAsset?: boolean;
-  isShortFormat?: boolean;
-  children?: any;
-  addSign?: string;
-  className?: string;
-  assets?: Object;
-  getAsset: (id: string) => void;
-}

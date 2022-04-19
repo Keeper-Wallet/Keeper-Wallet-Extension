@@ -57,7 +57,7 @@ export class SponsorshipCard extends React.PureComponent<IProps> {
                     split={true}
                     showAsset={true}
                     balance={assetFee}
-                    className={styles.txBalanceWrapper}
+                    showUsdAmount
                   />
                 ) : (
                   <Asset assetId={assetFee.asset.id} />

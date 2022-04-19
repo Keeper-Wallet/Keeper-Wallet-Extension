@@ -26,7 +26,13 @@ export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {
             {account.name}
           </div>
 
-          <Balance balance={balance} isShortFormat={false} showAsset split />
+          <Balance
+            balance={balance}
+            isShortFormat={false}
+            showAsset
+            showUsdAmount
+            split
+          />
         </div>
       </div>
 

@@ -34,7 +34,12 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
           {isAddress ? <Ellipsis text={recipient} /> : recipient}
         </div>
         <div className={cn('body3', 'submit400', styles.massTransferAmount)}>
-          <Balance isShortFormat={true} balance={money} showAsset={false} />
+          <Balance
+            isShortFormat={true}
+            balance={money}
+            showAsset={false}
+            showUsdAmount
+          />
         </div>
       </div>
     );
@@ -82,10 +87,10 @@ export class MassTransferCard extends React.PureComponent<IProps> {
             <h1 className="headline1">
               <Balance
                 split={true}
-                addSign="- "
+                addSign="-"
                 showAsset={true}
                 balance={amount}
-                className={styles.txBalanceWrapper}
+                showUsdAmount
               />
             </h1>
           </div>

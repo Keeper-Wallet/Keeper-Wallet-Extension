@@ -104,6 +104,7 @@ class AccountInfoComponent extends React.Component {
                   split={true}
                   showAsset={true}
                   balance={this.state.balance}
+                  showUsdAmount
                 />
 
                 {showLease && (

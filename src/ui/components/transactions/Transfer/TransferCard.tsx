@@ -40,10 +40,10 @@ export class TransferCard extends React.PureComponent<IProps> {
               <Balance
                 data-testid="transferAmount"
                 split={true}
-                addSign="- "
+                addSign="-"
                 showAsset={true}
                 balance={amount}
-                className={styles.txBalanceWrapper}
+                showUsdAmount
               />
             </h1>
           </div>

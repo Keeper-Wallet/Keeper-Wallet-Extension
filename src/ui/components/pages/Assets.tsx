@@ -11,6 +11,7 @@ import {
 } from 'ui/actions';
 import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
+import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -72,20 +73,29 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
-  const assetInfo = assets['WAVES'];
+  const amountInUsd = balances[address]?.assets
+    ? Object.entries(balances[address].assets).reduce(
+        (acc, [id, { balance }]) => {
+          if (assets[id]?.usdPrice) {
+            const tokens = new Money(
+              balance,
+              new Asset(assets[id])
+            ).getTokens();
+            acc = acc.add(new BigNumber(assets[id].usdPrice).mul(tokens));
+          }
 
-  let wavesBalance;
-  if (assetInfo) {
-    const asset = new Asset(assetInfo);
-    wavesBalance = new Money(balances[address]?.available || 0, asset);
-  }
+          return acc;
+        },
+        new BigNumber(0)
+      )
+    : null;
 
   return (
     <div data-testid="assetsForm" className={styles.assets}>
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
-          balance={wavesBalance}
+          amountInUsd={amountInUsd}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

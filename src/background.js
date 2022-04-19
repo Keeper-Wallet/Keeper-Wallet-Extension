@@ -1085,7 +1085,7 @@ class BackgroundService extends EventEmitter {
     const networks = {
       code: this.networkController.getNetworkCode(),
       server: this.networkController.getNode(),
-      matcher: this.networkController.getMather(),
+      matcher: this.networkController.getMatcher(),
     };
     return !account ? null : networks;
   }
