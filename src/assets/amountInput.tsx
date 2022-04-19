@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Money } from '@waves/data-entities';
+import { Asset, Money } from '@waves/data-entities';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
@@ -84,7 +84,8 @@ export function AssetAmountInput({
     }
   }, [value]);
 
-  const formattedValue = new BigNumber(value || '0').toFormat(
+  const bigNumberValue = new BigNumber(value || '0');
+  const formattedValue = bigNumberValue.toFormat(
     asset.precision,
     BigNumber.ROUND_MODE.ROUND_FLOOR,
     {
@@ -98,6 +99,7 @@ export function AssetAmountInput({
       suffix: '',
     }
   );
+  const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();
 
   return (
     <div className={styles.root}>
@@ -144,7 +146,7 @@ export function AssetAmountInput({
                   <UsdAmount
                     className={styles.usdAmount}
                     asset={assets[asset.id]}
-                    amount={+value}
+                    tokens={tokens}
                   />
                 )}
               </>
@@ -155,7 +157,7 @@ export function AssetAmountInput({
                   <UsdAmount
                     className={styles.usdResult}
                     asset={assets[asset.id]}
-                    amount={+formattedValue}
+                    tokens={tokens}
                   />
                 )}
               </div>

@@ -21,7 +21,7 @@ const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_POLL_INTERVAL = 10 * 60 * 1000;
 
-const stablecoinAssetTickers = new Set([
+const stablecoinAssetIds = new Set([
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
   '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ',
   '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ',
@@ -155,7 +155,7 @@ export class AssetInfoController {
         },
       },
     };
-    this.usdPriceAssets = undefined;
+    this.usdPrices = undefined;
     this.suspiciousAssets = undefined;
     this.suspiciousLastUpdated = 0;
 
@@ -166,8 +166,8 @@ export class AssetInfoController {
     );
     this.updateSuspiciousAssets();
 
-    this.updateUsdPriceAssets();
-    setInterval(this.updateUsdPriceAssets.bind(this), MARKETDATA_POLL_INTERVAL);
+    this.updateUsdPrices();
+    setInterval(this.updateUsdPrices.bind(this), MARKETDATA_POLL_INTERVAL);
   }
 
   addTickersForExistingAssets() {
@@ -221,7 +221,7 @@ export class AssetInfoController {
     if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
       return {
         ...WAVES,
-        usdPrice: this.usdPriceAssets && this.usdPriceAssets['WAVES'],
+        usdPrice: this.usdPrices && this.usdPrices['WAVES'],
       };
 
     const network = this.getNetwork();
@@ -258,8 +258,7 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
             isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
-            usdPrice:
-              this.usdPriceAssets && this.usdPriceAssets[assetInfo.assetId],
+            usdPrice: this.usdPrices && this.usdPrices[assetInfo.assetId],
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -344,14 +343,13 @@ export class AssetInfoController {
               issuer: assetInfo.issuer,
               isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
               lastUpdated,
-              usdPrice:
-                this.usdPriceAssets && this.usdPriceAssets[assetInfo.assetId],
+              usdPrice: this.usdPrices && this.usdPrices[assetInfo.assetId],
             };
           }
         });
         assets[network]['WAVES'] = {
           ...WAVES,
-          usdPrice: this.usdPriceAssets && this.usdPriceAssets['WAVES'],
+          usdPrice: this.usdPrices && this.usdPrices['WAVES'],
         };
         this.store.updateState({ assets });
         break;
@@ -388,7 +386,7 @@ export class AssetInfoController {
     this.store.updateState({ assets });
   }
 
-  async updateUsdPriceAssets() {
+  async updateUsdPrices() {
     let { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -396,9 +394,9 @@ export class AssetInfoController {
 
     if (resp.ok) {
       const tickers = await resp.json();
-      this.usdPriceAssets = tickers.reduce((acc, ticker) => {
+      this.usdPrices = tickers.reduce((acc, ticker) => {
         if (
-          !stablecoinAssetTickers.has(ticker.amountAssetID) &&
+          !stablecoinAssetIds.has(ticker.amountAssetID) &&
           ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
         ) {
           acc[ticker.amountAssetID] = ticker['24h_close'];
@@ -413,8 +411,8 @@ export class AssetInfoController {
         return acc;
       }, {});
 
-      stablecoinAssetTickers.forEach(ticker => {
-        this.usdPriceAssets[ticker] = '1';
+      stablecoinAssetIds.forEach(ticker => {
+        this.usdPrices[ticker] = '1';
 
         const asset = assets[network] && assets[network][ticker];
         if (asset) {

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import BigNumber from '@waves/bignumber';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
@@ -11,7 +12,7 @@ import { Account } from '../../../accounts/types';
 
 interface Props {
   account: Account;
-  amountInUsd: number | null;
+  amountInUsd: BigNumber | null;
   onClick: (account: Account) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
@@ -41,9 +42,9 @@ export function ActiveAccountCard({
           </div>
 
           {amountInUsd !== null ? (
-            <p className={styles.accountAmount}>{`$${
-              Math.ceil(+amountInUsd * 100) / 100
-            }`}</p>
+            <p className={styles.accountAmount}>{`$${amountInUsd.toFixed(
+              2
+            )}`}</p>
           ) : (
             <Loader />
           )}

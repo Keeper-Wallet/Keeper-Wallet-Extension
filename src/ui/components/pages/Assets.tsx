@@ -11,6 +11,7 @@ import {
 } from 'ui/actions';
 import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
+import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { Intro } from './Intro';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -76,13 +77,16 @@ export function Assets({ setTab }: Props) {
     ? Object.entries(balances[address].assets).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id]?.usdPrice) {
-            const tokens = new Money(balance, new Asset(assets[id])).toTokens();
-            acc += +assets[id].usdPrice * +tokens;
+            const tokens = new Money(
+              balance,
+              new Asset(assets[id])
+            ).getTokens();
+            acc = acc.add(new BigNumber(assets[id].usdPrice).mul(tokens));
           }
 
           return acc;
         },
-        0
+        new BigNumber(0)
       )
     : null;
 

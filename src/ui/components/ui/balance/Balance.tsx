@@ -83,7 +83,7 @@ const BalanceComponent = ({
           <UsdAmount
             className={styles.usdAmountNote}
             asset={assets[balanceOut.asset.id]}
-            amount={+balanceOut.toTokens()}
+            tokens={balanceOut.getTokens()}
           />
         )}
       </>
@@ -109,7 +109,7 @@ const BalanceComponent = ({
         <UsdAmount
           className={styles.usdAmount}
           asset={assets[balanceOut.asset.id]}
-          amount={+balanceOut.toTokens()}
+          tokens={balanceOut.getTokens()}
         />
       )}
     </>
