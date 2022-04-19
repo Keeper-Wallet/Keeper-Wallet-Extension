@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useIMask } from 'react-imask';
