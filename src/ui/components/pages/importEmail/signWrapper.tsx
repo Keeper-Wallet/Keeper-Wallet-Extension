@@ -62,7 +62,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
             };
           }
 
-          ledgerService.updateStatus().then(() => {
+          ledgerService.updateStatus(account.networkCode).then(() => {
             if (ledgerService.status === LedgerServiceStatus.Ready) {
               setPending(false);
               onConfirm(...args);

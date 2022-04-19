@@ -18,6 +18,7 @@ function delay(ms: number) {
 class LedgerService {
   private _connectionRetryIsNeeded: boolean;
   private _ledger: WavesLedger;
+  private _networkCode: string = null;
   private _signRequestPromise = Promise.resolve();
   private _status = LedgerServiceStatus.Disconnected;
 
@@ -32,6 +33,8 @@ class LedgerService {
   async connectUsb(networkCode: string) {
     await this.disconnect();
 
+    this._networkCode = networkCode;
+
     this._ledger = new WavesLedger({
       debug: true,
       openTimeout: 3000,
@@ -42,7 +45,7 @@ class LedgerService {
     });
 
     while (this._ledger && this._status !== LedgerServiceStatus.Ready) {
-      await this.updateStatus();
+      await this.updateStatus(networkCode);
 
       if (this._connectionRetryIsNeeded) {
         await delay(1000);
@@ -51,10 +54,15 @@ class LedgerService {
     }
   }
 
-  async updateStatus() {
+  async updateStatus(networkCode: string) {
     this._connectionRetryIsNeeded = false;
 
     if (!this._ledger) {
+      return;
+    }
+
+    if (this._networkCode !== networkCode) {
+      this.disconnect();
       return;
     }
 
@@ -190,6 +198,7 @@ class LedgerService {
   async disconnect(status = LedgerServiceStatus.Disconnected) {
     const ledger = this._ledger;
     this._ledger = null;
+    this._networkCode = null;
     this._status = status;
 
     if (ledger) {
