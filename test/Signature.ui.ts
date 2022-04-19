@@ -43,7 +43,11 @@ import {
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
 } from './utils/transactions';
-import { CANCEL_ORDER, CREATE_ORDER } from './utils/orders';
+import {
+  CANCEL_ORDER,
+  CREATE_ORDER,
+  CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION,
+} from './utils/orders';
 import { CUSTOM_DATA_V1, CUSTOM_DATA_V2 } from './utils/customData';
 
 const { parse } = create();
@@ -1382,6 +1386,62 @@ describe('Signature', function () {
             matcherPublicKey: CREATE_ORDER.data.matcherPublicKey,
             senderPublicKey,
             matcherFeeAssetId: null,
+          };
+
+          const bytes = binary.serializeOrder({
+            ...expectedApproveResult,
+            expiration: parsedApproveResult.expiration,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        },
+        60 * 1000
+      );
+    });
+
+    describe('Create with price precision conversion', function () {
+      beforeEach(async function () {
+        await performSignOrder.call(
+          this,
+          createOrder,
+          CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
+        );
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-createOrder-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            orderType:
+              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.orderType,
+            version: 3,
+            assetPair: {
+              amountAsset:
+                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.amount
+                  .assetId,
+              priceAsset:
+                CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.price.assetId,
+            },
+            price: 101400200,
+            amount: 1000000,
+            matcherFee: 4077612,
+            matcherPublicKey:
+              CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data
+                .matcherPublicKey,
+            senderPublicKey,
+            matcherFeeAssetId: 'EMAMLxDnv3xiz8RXg8Btj33jcEw3wLczL3JKYYmuubpc',
           };
 
           const bytes = binary.serializeOrder({

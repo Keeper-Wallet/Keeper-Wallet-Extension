@@ -551,7 +551,15 @@ export const convertFromSa = {
         amountAsset: input.data.amount.asset.id,
         priceAsset: input.data.price.asset.id,
       },
-      price: input.data.price.getCoins(),
+      price: input.data.price
+        .getTokens()
+        .mul(
+          new BigNumber(10).pow(
+            8 +
+              input.data.price.asset.precision -
+              input.data.amount.asset.precision
+          )
+        ),
       amount: input.data.amount.getCoins(),
       timestamp: input.data.timestamp,
       expiration: input.data.expiration,
