@@ -15,7 +15,6 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { SwapAccountInfoHeader } from './accountInfoHeader';
 import { proto } from './channel.proto.compiled';
 import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
@@ -98,7 +97,6 @@ export function SwapForm({
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const selectedAccount = useAppSelector(state => state.selectedAccount);
 
   const swapChannel = useAppSelector(
     state => state.config.network_config[state.currentNetwork].swapChannel
@@ -340,10 +338,6 @@ export function SwapForm({
   return (
     <SwapLayout>
       <div className={styles.root}>
-        <div className={styles.accountInfoHeader}>
-          <SwapAccountInfoHeader account={selectedAccount} />
-        </div>
-
         <form
           id="swapForm"
           onSubmit={event => {

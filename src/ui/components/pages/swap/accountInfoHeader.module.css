@@ -5,7 +5,10 @@
 }
 
 .accountName {
-  font-size: 14px;
+  max-height: 2.4em;
   overflow: hidden;
+  font-size: 14px;
+  line-height: 1.2;
   text-overflow: ellipsis;
+  word-wrap: anywhere;
 }

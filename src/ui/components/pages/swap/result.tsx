@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
-import { SwapAccountInfoHeader } from './accountInfoHeader';
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
 
@@ -159,10 +158,6 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   return (
     <SwapLayout>
       <div className={styles.root}>
-        <div className={styles.accountInfoHeader}>
-          <SwapAccountInfoHeader account={selectedAccount} />
-        </div>
-
         <div className={styles.content}>
           <div className={styles.statusBox}>
             {swapStatus === SwapStatus.Pending ? (
