@@ -43,9 +43,10 @@ export class PackageInfo extends React.PureComponent<IProps> {
     return (
       <div>
         {isOpened
-          ? txs.map(({ config, tx }, index) => {
+          ? txs.map(({ config, tx, lease }, index) => {
               const message = {
                 data: { ...tx, data: tx },
+                lease,
                 messageHash: hashes[index],
                 type: 'transaction',
               };

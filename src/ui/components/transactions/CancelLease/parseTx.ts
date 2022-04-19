@@ -17,12 +17,12 @@ export function getAssetsId(tx): Array<string> {
 
 export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAmount(tx = null, message) {
-  if (!message || !message.lease) {
+export function getAmount(tx) {
+  if (!tx?.lease) {
     return { coins: null, assetId: 'WAVES' };
   }
 
-  return { coins: message.lease.amount, assetId: 'WAVES' };
+  return { coins: tx.lease.amount, assetId: 'WAVES' };
 }
 
 export function getAmountSign() {
