@@ -33,6 +33,7 @@ class SettingsGeneralComponent extends React.Component {
           <div className="margin-main-big">
             <Select
               description={t('settings.sessionTimeout')}
+              fill
               selectList={selectList as any}
               selected={this.props.idleOptions.type}
               onSelectItem={this.setIdle}

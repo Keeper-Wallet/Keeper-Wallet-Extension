@@ -215,7 +215,8 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           </div>
 
           <Select
-            className={cn(styles.selectTime)}
+            className={styles.selectTime}
+            fill
             selectList={timeList}
             selected={this.state.selected}
             description={t('permissionSettings.modal.time')}

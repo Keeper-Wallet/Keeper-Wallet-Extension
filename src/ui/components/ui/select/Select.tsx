@@ -11,14 +11,23 @@ interface SelectItem<T> {
 }
 
 type ListPlacement = 'top' | 'bottom';
+type Theme = 'compact' | 'solid' | 'underlined';
+
+const themeClassNames: Record<Theme, string> = {
+  compact: styles.theme_compact,
+  solid: styles.theme_solid,
+  underlined: styles.theme_underlined,
+};
 
 interface Props<T> {
   className?: string;
   description?: TText;
+  fill?: boolean;
   forwardRef?: React.MutableRefObject<HTMLDivElement>;
   listPlacement?: ListPlacement;
   selected?: string | number;
   selectList: Array<SelectItem<T>>;
+  theme?: Theme;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onSelectItem: (id: string | number, value: T) => void;
@@ -27,10 +36,12 @@ interface Props<T> {
 export function Select<T>({
   className,
   description,
+  fill,
   forwardRef,
   listPlacement = 'bottom',
   selected,
   selectList,
+  theme = 'solid',
   onSelectItem,
   ...otherProps
 }: Props<T>) {
@@ -76,7 +87,12 @@ export function Select<T>({
     selectList.find(({ id }) => id === selected) || selectList[0];
 
   return (
-    <div className={cn(className, styles.root)} ref={getRef}>
+    <div
+      className={cn(className, styles.root, themeClassNames[theme], {
+        [styles.root_fill]: fill,
+      })}
+      ref={getRef}
+    >
       {description ? (
         <div className="left input-title basic500 tag1">{description}</div>
       ) : null}
