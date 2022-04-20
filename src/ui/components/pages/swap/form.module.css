@@ -88,7 +88,7 @@
   display: inline-flex;
   justify-content: space-between;
   border: solid 1px var(--color-basic100);
-  padding: 14px;
+  padding: 16px 14px;
   width: 100%;
   border-radius: 5px;
   background: none;
@@ -112,6 +112,15 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.toAmountCardUsdAmount {
+  position: absolute;
+  right: 14px;
+  bottom: 2px;
+  color: var(--color-basic500);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .toAmountCardError {

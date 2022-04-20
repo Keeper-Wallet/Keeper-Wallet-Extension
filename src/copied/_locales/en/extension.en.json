@@ -594,7 +594,6 @@
     "exchangeChannelUnknownError": "Failed to get swap details",
     "failMessage": "Swap did not succeed, please try again",
     "fromInputLabel": "From",
-    "gainBestPrice": "Best Price",
     "insufficientFundsError": "Insufficient funds",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
