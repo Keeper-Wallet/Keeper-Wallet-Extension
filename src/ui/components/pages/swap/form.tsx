@@ -336,6 +336,37 @@ export function SwapForm({
       ? new BigNumber(0)
       : new BigNumber(vendorExchangeInfo.priceImpact);
 
+  const sortedExchangeInfoEntries = (
+    Object.entries(exchangeInfo) as Array<
+      [ExchangeInfoVendor, ExchangeInfoVendorState]
+    >
+  ).sort(([aVendor, aInfo], [bVendor, bInfo]) => {
+    if (aInfo.type !== 'data' && bInfo.type !== 'data') {
+      return 0;
+    }
+
+    if (aInfo.type !== 'data') {
+      return -1;
+    }
+
+    if (bInfo.type !== 'data') {
+      return 1;
+    }
+
+    const aAmount = aInfo.toAmountTokens;
+    const bAmount = bInfo.toAmountTokens;
+
+    return aAmount.gt(bAmount)
+      ? -1
+      : bAmount.gt(aAmount)
+      ? 1
+      : aVendor === ExchangeInfoVendor.Keeper
+      ? -1
+      : bVendor === ExchangeInfoVendor.Keeper
+      ? 1
+      : 0;
+  });
+
   return (
     <SwapLayout>
       <div className={styles.root}>
@@ -457,112 +488,113 @@ export function SwapForm({
             </div>
 
             <div className={styles.toAmountCards}>
-              {Object.entries(exchangeInfo).map(
-                ([vendor, info]: [
-                  ExchangeInfoVendor,
-                  ExchangeInfoVendorState
-                ]) => {
-                  const amountTokens = new BigNumber(
-                    info.type !== 'data'
-                      ? '0'
-                      : (fromAmountTokens.eq(0)
-                          ? new BigNumber(0)
-                          : info.toAmountTokens
-                        ).toFixed()
-                  );
+              {sortedExchangeInfoEntries.map(([vendor, info], index) => {
+                const amountTokens = new BigNumber(
+                  info.type !== 'data'
+                    ? '0'
+                    : (fromAmountTokens.eq(0)
+                        ? new BigNumber(0)
+                        : info.toAmountTokens
+                      ).toFixed()
+                );
 
-                  const formattedValue = amountTokens.toFormat(
-                    toAssetBalance.asset.precision,
-                    BigNumber.ROUND_MODE.ROUND_FLOOR,
-                    {
-                      fractionGroupSeparator: '',
-                      fractionGroupSize: 0,
-                      decimalSeparator: '.',
-                      groupSeparator: ' ',
-                      groupSize: 3,
-                      prefix: '',
-                      secondaryGroupSize: 0,
-                      suffix: '',
-                    }
-                  );
+                const formattedValue = amountTokens.toFormat(
+                  toAssetBalance.asset.precision,
+                  BigNumber.ROUND_MODE.ROUND_FLOOR,
+                  {
+                    fractionGroupSeparator: '',
+                    fractionGroupSize: 0,
+                    decimalSeparator: '.',
+                    groupSeparator: ' ',
+                    groupSize: 3,
+                    prefix: '',
+                    secondaryGroupSize: 0,
+                    suffix: '',
+                  }
+                );
 
-                  const profitTokens =
-                    info.type === 'data' && !fromAmountTokens.eq(0)
-                      ? info.toAmountTokens.sub(info.worstAmountTokens)
-                      : null;
+                const nextInfo =
+                  sortedExchangeInfoEntries.length > index + 1
+                    ? sortedExchangeInfoEntries[index + 1][1]
+                    : null;
 
-                  const toAssetDetail = assets[toAssetId];
+                const profitTokens =
+                  info.type === 'data' &&
+                  !fromAmountTokens.eq(0) &&
+                  index === 0 &&
+                  nextInfo != null &&
+                  nextInfo.type === 'data'
+                    ? info.toAmountTokens.sub(nextInfo.toAmountTokens)
+                    : null;
 
-                  return (
-                    <button
-                      key={vendor}
-                      className={cn(styles.toAmountCard, {
-                        [styles.toAmountCard_selected]:
-                          selectedExchangeVendor === vendor,
-                      })}
-                      type="button"
-                      onClick={() => {
-                        setSelectedExchangeVendor(vendor);
-                      }}
-                    >
-                      <div className={styles.toAmountCardLabel}>{vendor}</div>
+                const toAssetDetail = assets[toAssetId];
 
-                      {info.type === 'loading' ? (
-                        <Loader />
-                      ) : info.type === 'data' ? (
-                        <>
-                          <div
-                            className={styles.toAmountCardValue}
-                            title={formattedValue}
-                          >
-                            {formattedValue}
-                          </div>
+                return (
+                  <button
+                    key={vendor}
+                    className={cn(styles.toAmountCard, {
+                      [styles.toAmountCard_selected]:
+                        selectedExchangeVendor === vendor,
+                    })}
+                    type="button"
+                    onClick={() => {
+                      setSelectedExchangeVendor(vendor);
+                    }}
+                  >
+                    <div className={styles.toAmountCardLabel}>{vendor}</div>
 
-                          <UsdAmount
-                            asset={toAssetDetail}
-                            className={styles.toAmountCardUsdAmount}
-                            tokens={amountTokens}
-                          />
-                        </>
-                      ) : (
-                        <div className={styles.toAmountCardError}>
-                          {info.code ===
-                          proto.Response.Error.CODES.INVALID_ASSET_PAIR
-                            ? t('swap.exchangeChannelInvalidAssetPairError')
-                            : info.code ===
-                              proto.Response.Error.CODES.UNAVAILABLE
-                            ? t('swap.exchangeChannelUnavailableError')
-                            : t('swap.exchangeChannelUnknownError')}
+                    {info.type === 'loading' ? (
+                      <Loader />
+                    ) : info.type === 'data' ? (
+                      <>
+                        <div
+                          className={styles.toAmountCardValue}
+                          title={formattedValue}
+                        >
+                          {formattedValue}
                         </div>
-                      )}
 
-                      {profitTokens != null && (
-                        <div className={styles.toAmountCardBadge}>
-                          <span>
-                            +
-                            {profitTokens.toFixed(
-                              toAsset.precision,
-                              BigNumber.ROUND_MODE.ROUND_FLOOR
-                            )}{' '}
-                            {toAsset.displayName}
-                            {toAssetDetail.usdPrice &&
-                              toAssetDetail.usdPrice !== '1' && (
-                                <>
-                                  {' '}
-                                  (≈ $
-                                  {new BigNumber(toAssetDetail.usdPrice)
-                                    .mul(profitTokens)
-                                    .toFixed(2)}
-                                  )
-                                </>
-                              )}
-                          </span>
-                        </div>
-                      )}
-                    </button>
-                  );
-                }
-              )}
+                        <UsdAmount
+                          asset={toAssetDetail}
+                          className={styles.toAmountCardUsdAmount}
+                          tokens={amountTokens}
+                        />
+                      </>
+                    ) : (
+                      <div className={styles.toAmountCardError}>
+                        {info.code ===
+                        proto.Response.Error.CODES.INVALID_ASSET_PAIR
+                          ? t('swap.exchangeChannelInvalidAssetPairError')
+                          : info.code === proto.Response.Error.CODES.UNAVAILABLE
+                          ? t('swap.exchangeChannelUnavailableError')
+                          : t('swap.exchangeChannelUnknownError')}
+                      </div>
+                    )}
+
+                    {profitTokens != null && (
+                      <div className={styles.toAmountCardBadge}>
+                        <Trans i18nKey="swap.profitLabel" />: +
+                        {profitTokens.toFixed(
+                          toAsset.precision,
+                          BigNumber.ROUND_MODE.ROUND_FLOOR
+                        )}{' '}
+                        {toAsset.displayName}
+                        {toAssetDetail.usdPrice &&
+                          toAssetDetail.usdPrice !== '1' && (
+                            <>
+                              {' '}
+                              (≈ $
+                              {new BigNumber(toAssetDetail.usdPrice)
+                                .mul(profitTokens)
+                                .toFixed(2)}
+                              )
+                            </>
+                          )}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
