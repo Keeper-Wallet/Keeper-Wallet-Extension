@@ -235,13 +235,14 @@ export function TabTxHistory() {
           {({ ref, ...restProps }) => (
             <Select
               className={styles.filterTxSelect}
+              forwardRef={ref}
               selected={type}
+              selectList={buildTxTypeOptions(t)}
+              theme="underlined"
               onSelectItem={(id, value) => {
                 listRef.current && listRef.current.resetAfterIndex(0);
                 setType(value);
               }}
-              selectList={buildTxTypeOptions(t)}
-              forwardRef={ref}
               {...restProps}
             />
           )}

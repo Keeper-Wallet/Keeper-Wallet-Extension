@@ -729,6 +729,7 @@ export function SwapForm({
                         value: assetId,
                       })
                     )}
+                    theme="compact"
                     onSelectItem={(_id, value) => {
                       setFeeAssetId(value);
                     }}
