@@ -19,6 +19,7 @@ import { proto } from './channel.proto.compiled';
 import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
+import { UsdAmount } from 'ui/components/ui/UsdAmount';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),
@@ -362,6 +363,7 @@ export function SwapForm({
             )}
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
+            showUsdAmount
             value={fromAmountValue}
             onAssetChange={newAssetId => {
               setAssetIds(prevState => ({
@@ -460,14 +462,16 @@ export function SwapForm({
                   ExchangeInfoVendor,
                   ExchangeInfoVendorState
                 ]) => {
-                  const formattedValue = new BigNumber(
+                  const amountTokens = new BigNumber(
                     info.type !== 'data'
                       ? '0'
                       : (fromAmountTokens.eq(0)
                           ? new BigNumber(0)
                           : info.toAmountTokens
                         ).toFixed()
-                  ).toFormat(
+                  );
+
+                  const formattedValue = amountTokens.toFormat(
                     toAssetBalance.asset.precision,
                     BigNumber.ROUND_MODE.ROUND_FLOOR,
                     {
@@ -481,6 +485,13 @@ export function SwapForm({
                       suffix: '',
                     }
                   );
+
+                  const profitTokens =
+                    info.type === 'data' && !fromAmountTokens.eq(0)
+                      ? info.toAmountTokens.sub(info.worstAmountTokens)
+                      : null;
+
+                  const toAssetDetail = assets[toAssetId];
 
                   return (
                     <button
@@ -499,12 +510,20 @@ export function SwapForm({
                       {info.type === 'loading' ? (
                         <Loader />
                       ) : info.type === 'data' ? (
-                        <div
-                          className={styles.toAmountCardValue}
-                          title={formattedValue}
-                        >
-                          {formattedValue}
-                        </div>
+                        <>
+                          <div
+                            className={styles.toAmountCardValue}
+                            title={formattedValue}
+                          >
+                            {formattedValue}
+                          </div>
+
+                          <UsdAmount
+                            asset={toAssetDetail}
+                            className={styles.toAmountCardUsdAmount}
+                            tokens={amountTokens}
+                          />
+                        </>
                       ) : (
                         <div className={styles.toAmountCardError}>
                           {info.code ===
@@ -517,31 +536,27 @@ export function SwapForm({
                         </div>
                       )}
 
-                      {info.type !== 'data' || fromAmountTokens.eq(0) ? null : (
+                      {profitTokens != null && (
                         <div className={styles.toAmountCardBadge}>
-                          {info.toAmountTokens.eq(info.worstAmountTokens) ? (
-                            t('swap.gainBestPrice')
-                          ) : (
-                            <span>
-                              +
-                              {info.toAmountTokens
-                                .sub(info.worstAmountTokens)
-                                .toFixed(
-                                  toAsset.precision,
-                                  BigNumber.ROUND_MODE.ROUND_FLOOR
-                                )}{' '}
-                              {toAsset.displayName} (
-                              {info.toAmountTokens
-                                .div(info.worstAmountTokens)
-                                .sub(1)
-                                .mul(100)
-                                .toFixed(
-                                  2,
-                                  BigNumber.ROUND_MODE.ROUND_HALF_EVEN
-                                )}
-                              %)
-                            </span>
-                          )}
+                          <span>
+                            +
+                            {profitTokens.toFixed(
+                              toAsset.precision,
+                              BigNumber.ROUND_MODE.ROUND_FLOOR
+                            )}{' '}
+                            {toAsset.displayName}
+                            {toAssetDetail.usdPrice &&
+                              toAssetDetail.usdPrice !== '1' && (
+                                <>
+                                  {' '}
+                                  (≈ $
+                                  {new BigNumber(toAssetDetail.usdPrice)
+                                    .mul(profitTokens)
+                                    .toFixed(2)}
+                                  )
+                                </>
+                              )}
+                          </span>
                         </div>
                       )}
                     </button>
@@ -636,7 +651,7 @@ export function SwapForm({
                     </button>
                     {isPriceDirectionSwapped ? (
                       <span>
-                        1 {toAsset.displayName} ~{' '}
+                        1 {toAsset.displayName} ≈{' '}
                         {(fromAmountTokens.eq(0)
                           ? new BigNumber(1)
                           : fromAmountTokens

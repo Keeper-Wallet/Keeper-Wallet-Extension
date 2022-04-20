@@ -535,7 +535,6 @@
     "failMessage": "Swap did not succeed, please try again",
     "ledgerFailMessage": "Request is rejected on ledger",
     "fromInputLabel": "From",
-    "gainBestPrice": "Best Price",
     "insufficientFundsError": "Insufficient funds",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
