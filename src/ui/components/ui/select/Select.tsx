@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as React from 'react';
-import * as styles from './index.styl';
+import * as styles from './Select.module.css';
 
 type TText = string | React.ReactNode;
 
@@ -76,19 +76,19 @@ export function Select<T>({
     selectList.find(({ id }) => id === selected) || selectList[0];
 
   return (
-    <div className={cn(className, styles.select)} ref={getRef}>
+    <div className={cn(className, styles.root)} ref={getRef}>
       {description ? (
         <div className="left input-title basic500 tag1">{description}</div>
       ) : null}
 
       <div
-        className={cn(styles.selectInput, 'cant-select')}
+        className={styles.trigger}
         onClick={() => {
           setIsOpen(prevState => !prevState);
         }}
         {...otherProps}
       >
-        <div className={styles.listItemSelected}>{selectedItem.text}</div>
+        <div className={styles.triggerText}>{selectedItem.text}</div>
       </div>
 
       {isOpen && (
@@ -106,7 +106,7 @@ export function Select<T>({
             .map(item => (
               <div
                 key={item.id}
-                className={styles.listItem}
+                className={styles.item}
                 onClick={() => {
                   setIsOpen(false);
                   onSelectItem(item.id, item.value);
