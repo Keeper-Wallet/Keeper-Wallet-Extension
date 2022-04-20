@@ -1,0 +1,66 @@
+.root {
+  position: relative;
+}
+
+.trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: solid 1px var(--color-basic100);
+  padding: 10px 14px;
+  border-radius: 4px;
+  background: var(--color-white);
+  font-size: 14px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.trigger:after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: url(../../../assets/img/select-14-black.svg) center no-repeat;
+}
+
+.triggerText {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.list {
+  box-shadow: 0 4px 6px 0 rgba(155, 166, 178, 0.4);
+  background: var(--color-white);
+  border-radius: 4px;
+  position: absolute;
+  z-index: 50;
+  right: 0;
+  min-width: 100%;
+  max-width: 300px;
+  width: fit-content;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.list_placement_bottom {
+  margin-top: 2px;
+}
+
+.list_placement_top {
+  bottom: 100%;
+  margin-bottom: 2px;
+}
+
+.item {
+  height: 40px;
+  cursor: pointer;
+  line-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.item:hover {
+  background: var(--color-basic50);
+}
