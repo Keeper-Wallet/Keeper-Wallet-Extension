@@ -488,7 +488,11 @@ export function SwapForm({
             </div>
 
             <div className={styles.toAmountCards}>
-              {sortedExchangeInfoEntries.map(([vendor, info], index) => {
+              {(
+                Object.entries(exchangeInfo) as Array<
+                  [ExchangeInfoVendor, ExchangeInfoVendorState]
+                >
+              ).map(([vendor, info]) => {
                 const amountTokens = new BigNumber(
                   info.type !== 'data'
                     ? '0'
@@ -513,15 +517,18 @@ export function SwapForm({
                   }
                 );
 
+                const sortedIndex = sortedExchangeInfoEntries.findIndex(
+                  ([entryVendor]) => entryVendor === vendor
+                );
+
                 const nextInfo =
-                  sortedExchangeInfoEntries.length > index + 1
-                    ? sortedExchangeInfoEntries[index + 1][1]
+                  sortedIndex < sortedExchangeInfoEntries.length - 1
+                    ? sortedExchangeInfoEntries[sortedIndex + 1][1]
                     : null;
 
                 const profitTokens =
                   info.type === 'data' &&
                   !fromAmountTokens.eq(0) &&
-                  index === 0 &&
                   nextInfo != null &&
                   nextInfo.type === 'data'
                     ? info.toAmountTokens.sub(nextInfo.toAmountTokens)
