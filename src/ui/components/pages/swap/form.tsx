@@ -206,10 +206,14 @@ export function SwapForm({
       fromTokens = new BigNumber(1);
     }
 
+    const latestSlippageTolerance =
+      SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
+
     return channelClient?.exchange(
       {
         fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
         fromAsset,
+        slippageTolerance: latestSlippageTolerance.toNumber() * 10,
         toAsset,
       },
       (err, vendor, response) => {
@@ -286,19 +290,36 @@ export function SwapForm({
 
   const watchExchangeTimeoutRef = React.useRef<number | null>(null);
 
+  function scheduleWatchExchangeUpdate() {
+    if (watchExchangeTimeoutRef.current != null) {
+      window.clearTimeout(watchExchangeTimeoutRef.current);
+    }
+
+    watchExchangeTimeoutRef.current = window.setTimeout(() => {
+      watchExchangeRef.current();
+    }, 500);
+  }
+
+  React.useEffect(() => {
+    return () => {
+      if (watchExchangeTimeoutRef.current != null) {
+        window.clearTimeout(watchExchangeTimeoutRef.current);
+      }
+    };
+  }, []);
+
   function setFromAmount(newValue: string) {
     if (newValue !== fromAmountValue) {
       setFromAmountValue(newValue);
       setExchangeInfo(exchangeInfoInitialState);
-
-      if (watchExchangeTimeoutRef.current != null) {
-        window.clearTimeout(watchExchangeTimeoutRef.current);
-      }
-
-      watchExchangeTimeoutRef.current = window.setTimeout(() => {
-        watchExchangeRef.current();
-      }, 500);
+      scheduleWatchExchangeUpdate();
     }
+  }
+
+  function setSlippageToleranceIndex(index: number) {
+    dispatch(setUiState({ slippageToleranceIndex: index }));
+    setExchangeInfo(exchangeInfoInitialState);
+    scheduleWatchExchangeUpdate();
   }
 
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
@@ -307,6 +328,12 @@ export function SwapForm({
   const slippageToleranceIndex = useAppSelector(
     state => state.uiState.slippageToleranceIndex ?? 2
   );
+
+  const latestSlippageToleranceIndexRef = React.useRef(slippageToleranceIndex);
+
+  React.useEffect(() => {
+    latestSlippageToleranceIndexRef.current = slippageToleranceIndex;
+  }, [slippageToleranceIndex]);
 
   const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
@@ -834,9 +861,7 @@ export function SwapForm({
                         type="radio"
                         value={index}
                         onChange={() => {
-                          dispatch(
-                            setUiState({ slippageToleranceIndex: index })
-                          );
+                          setSlippageToleranceIndex(index);
                         }}
                       />
 

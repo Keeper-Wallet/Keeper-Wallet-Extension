@@ -27,6 +27,7 @@ type ExchangeChannelResult =
 interface ExchangeInput {
   fromAmountCoins: BigNumber;
   fromAsset: Asset;
+  slippageTolerance: number;
   toAsset: Asset;
 }
 
@@ -161,13 +162,15 @@ export class ExchangeChannelClient {
 
   private send() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      const { fromAmountCoins, id, fromAsset, toAsset } = this.activeRequest;
+      const { fromAmountCoins, id, fromAsset, slippageTolerance, toAsset } =
+        this.activeRequest;
 
       const encoded = proto.Request.encode(
         proto.Request.create({
           exchange: proto.Request.Exchange.create({
             amount: Long.fromString(fromAmountCoins.toFixed()),
             id,
+            slippageTolerance,
             source: fromAsset.id,
             target: toAsset.id,
           }),
