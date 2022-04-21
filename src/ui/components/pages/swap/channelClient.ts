@@ -43,31 +43,34 @@ type Subscriber = (
 ) => void;
 
 function convertArg(arg: proto.Response.Exchange.Argument): CallArg {
-  if ('integerValue' in arg) {
-    return {
-      type: 'integer',
-      value: new BigNumber(String(arg.integerValue)),
-    };
-  } else if ('binaryValue' in arg) {
-    return {
-      type: 'binary',
-      value: `base64:${base64Encode(arg.binaryValue)}`,
-    };
-  } else if ('stringValue' in arg) {
-    return {
-      type: 'string',
-      value: arg.stringValue,
-    };
-  } else if ('booleanValue' in arg) {
-    return {
-      type: 'boolean',
-      value: arg.booleanValue,
-    };
-  } else if ('list' in arg) {
-    return {
-      type: 'list',
-      value: arg.list.items.map(a => convertArg(a)),
-    };
+  switch (arg.value) {
+    case 'integerValue':
+      return {
+        type: 'integer',
+        value: new BigNumber(String(arg.integerValue)),
+      };
+    case 'binaryValue':
+      return {
+        type: 'binary',
+        value: `base64:${base64Encode(arg.binaryValue)}`,
+      };
+    case 'stringValue':
+      return {
+        type: 'string',
+        value: arg.stringValue,
+      };
+    case 'booleanValue':
+      return {
+        type: 'boolean',
+        value: arg.booleanValue,
+      };
+    case 'list':
+      return {
+        type: 'list',
+        value: arg.list.items.map(a => convertArg(a)),
+      };
+    default:
+      throw new Error(`Unexpected value of arg.value: ${arg.value}`);
   }
 }
 
@@ -109,21 +112,28 @@ export class ExchangeChannelClient {
         return;
       }
 
-      if (res.exchange.data) {
-        this.subscriber(null, res.exchange.vendor, {
-          type: 'data',
-          args: res.exchange.data.arguments.map(arg => convertArg(arg)),
-          priceImpact: res.exchange.data.priceImpact,
-          toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
-          worstAmountCoins: new BigNumber(
-            String(res.exchange.data.worstAmount)
-          ),
-        });
-      } else {
-        this.subscriber(null, res.exchange.vendor, {
-          type: 'error',
-          code: res.exchange.error.code,
-        });
+      switch (res.exchange.result) {
+        case 'data':
+          this.subscriber(null, res.exchange.vendor, {
+            type: 'data',
+            args: res.exchange.data.arguments.map(arg => convertArg(arg)),
+            priceImpact: res.exchange.data.priceImpact,
+            toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+            worstAmountCoins: new BigNumber(
+              String(res.exchange.data.worstAmount)
+            ),
+          });
+          break;
+        case 'error':
+          this.subscriber(null, res.exchange.vendor, {
+            type: 'error',
+            code: res.exchange.error.code,
+          });
+          break;
+        default:
+          throw new Error(
+            `Unexpected value of res.exchange.result: ${res.exchange.result}`
+          );
       }
     };
 
