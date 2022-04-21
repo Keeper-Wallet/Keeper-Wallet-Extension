@@ -135,11 +135,11 @@ export function Swap({ setTab }: Props) {
   return (
     <SignWrapper
       onConfirm={async ({
+        args,
         feeAssetId,
         fromAssetId,
         fromCoins,
-        minReceivedCoins,
-        slippageTolerance,
+        vendor,
       }) => {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
@@ -152,12 +152,12 @@ export function Swap({ setTab }: Props) {
 
         try {
           const swapResult = await background.swapAssets({
+            args,
             feeAssetId,
             feeCoins: fee.toCoins(),
             fromAssetId,
             fromCoins: fromCoins.toFixed(),
-            minReceivedCoins: minReceivedCoins.toFixed(),
-            slippageTolerance,
+            vendor,
           });
 
           setPerformedSwapData({

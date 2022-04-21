@@ -10,7 +10,6 @@ import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
-import { SWAP_DAPP_ADDRESS } from '../../../../constants';
 
 function Address({ base58 }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
@@ -289,8 +288,10 @@ export function HistoryItem({ tx, className }: Props) {
       if (
         (tx.dApp === '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u' &&
           tx.call.function === 'swap') ||
-        (tx.dApp === SWAP_DAPP_ADDRESS &&
-          (tx.call.function === 'testSeq' || tx.call.function === 'swap'))
+        (tx.dApp === '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw' &&
+          (tx.call.function === 'testSeq' || tx.call.function === 'swap')) ||
+        (tx.dApp === '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU' &&
+          tx.call.function === 'swapWithReferral')
       ) {
         tooltip = t('historyCard.swap');
 
