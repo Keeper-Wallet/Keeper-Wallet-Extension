@@ -1,9 +1,38 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SWAP_DAPP_ADDRESS } from '../constants';
+
+export type SwapAssetsCallArg =
+  | { type: 'integer'; value: BigNumber }
+  | { type: 'binary'; value: string }
+  | { type: 'string'; value: string }
+  | { type: 'boolean'; value: boolean }
+  | { type: 'list'; value: SwapAssetsCallArg[] };
+
+export enum SwapAssetsVendor {
+  Keeper = 'keeper',
+  Puzzle = 'puzzle',
+}
+
+export interface SwapAssetsParams {
+  args: SwapAssetsCallArg[];
+  feeCoins: string;
+  feeAssetId: string;
+  fromAssetId: string;
+  fromCoins: string;
+  vendor: SwapAssetsVendor;
+}
+
+export interface SwapAssetsResult {
+  transactionId: string;
+}
 
 export class SwapController {
+  private assetInfoController;
+  private networkController;
+  private preferencesController;
+  private walletController;
+
   constructor({
     assetInfoController,
     networkController,
@@ -17,14 +46,13 @@ export class SwapController {
   }
 
   async swapAssets({
+    args,
     feeCoins,
     feeAssetId,
     fromAssetId,
     fromCoins,
-    minReceivedCoins,
-    route,
-    slippageTolerance,
-  }) {
+    vendor,
+  }: SwapAssetsParams): Promise<SwapAssetsResult> {
     const [feeAssetInfo, fromAssetInfo] = await Promise.all([
       this.assetInfoController.assetInfo(feeAssetId),
       this.assetInfoController.assetInfo(fromAssetId),
@@ -34,44 +62,21 @@ export class SwapController {
       type: TRANSACTION_TYPE.INVOKE_SCRIPT,
       data: {
         timestamp: Date.now(),
-        dApp: SWAP_DAPP_ADDRESS,
+        dApp:
+          vendor === SwapAssetsVendor.Keeper
+            ? '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw'
+            : '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU',
         fee: new Money(new BigNumber(feeCoins), new Asset(feeAssetInfo)),
         payment: [
           new Money(new BigNumber(fromCoins), new Asset(fromAssetInfo)),
         ],
         call: {
-          function: 'swap',
-          args: [
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'string',
-                value: pool.dApp,
-              })),
-            },
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'string',
-                value: pool.toAssetId,
-              })),
-            },
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'integer',
-                value: pool.type === 'flat' ? pool.estimatedAmount : 0,
-              })),
-            },
-            {
-              type: 'integer',
-              value: slippageTolerance,
-            },
-            {
-              type: 'integer',
-              value: minReceivedCoins,
-            },
-          ],
+          function:
+            vendor === SwapAssetsVendor.Keeper ? 'swap' : 'swapWithReferral',
+          args:
+            vendor === SwapAssetsVendor.Keeper
+              ? args
+              : [...args, { type: 'string', value: 'keeper' }],
         },
       },
     };

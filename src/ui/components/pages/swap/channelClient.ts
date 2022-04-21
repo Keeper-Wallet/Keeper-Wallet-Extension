@@ -1,15 +1,9 @@
 import BigNumber from '@waves/bignumber';
 import { Asset } from '@waves/data-entities';
 import { base64Encode } from '@waves/ts-lib-crypto';
+import { SwapAssetsCallArg } from 'controllers/SwapController';
 import Long from 'long';
 import { proto } from './channel.proto.compiled';
-
-type CallArg =
-  | { type: 'integer'; value: BigNumber }
-  | { type: 'binary'; value: string }
-  | { type: 'string'; value: string }
-  | { type: 'boolean'; value: boolean }
-  | { type: 'list'; value: CallArg[] };
 
 type ExchangeChannelResult =
   | {
@@ -18,7 +12,7 @@ type ExchangeChannelResult =
     }
   | {
       type: 'data';
-      args: CallArg[];
+      args: SwapAssetsCallArg[];
       priceImpact: number;
       toAmountCoins: BigNumber;
       worstAmountCoins: BigNumber;
@@ -43,7 +37,7 @@ type Subscriber = (
   response?: ExchangeChannelResult
 ) => void;
 
-function convertArg(arg: proto.Response.Exchange.Argument): CallArg {
+function convertArg(arg: proto.Response.Exchange.Argument): SwapAssetsCallArg {
   switch (arg.value) {
     case 'integerValue':
       return {
