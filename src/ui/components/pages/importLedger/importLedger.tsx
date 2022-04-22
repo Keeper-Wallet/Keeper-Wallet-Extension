@@ -260,7 +260,7 @@ export function ImportLedger({ setTab }: Props) {
                 })
               );
 
-              setTab(PAGES.ACCOUNT_NAME);
+              setTab(PAGES.ACCOUNT_NAME_SEED);
             }}
           >
             <Trans i18nKey="importLedger.continueButton" />
