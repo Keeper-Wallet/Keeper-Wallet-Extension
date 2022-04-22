@@ -31,7 +31,7 @@ const Lang = ({ id, name, setSelected, selected }: LangProps) => {
       }}
     >
       <div className={`${styles.selectButton} fullwidth body1 left`}>
-        {t(`langsSettings.${id}`, { defaultValue: name })}
+        {name}
       </div>
       <div className={iconClass}></div>
     </div>

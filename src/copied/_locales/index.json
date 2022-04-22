@@ -7,5 +7,6 @@
   { "code": "vi", "name": "Tiếng Việt" },
   { "code": "th", "name": "ไทย" },
   { "code": "es", "name": "Español" },
-  { "code": "pt", "name": "Portugal" }
+  { "code": "pt", "name": "Portugal" },
+  { "code": "zh", "name": "汉语" }
 ]

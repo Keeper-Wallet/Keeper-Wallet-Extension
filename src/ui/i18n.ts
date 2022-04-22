@@ -60,6 +60,10 @@ export const LANGS = [
     id: 'pt',
     name: 'Portugal',
   },
+  {
+    id: 'zh',
+    name: '汉语',
+  },
 ];
 
 export default i18n;
