@@ -33,20 +33,24 @@ export const LANGS = [
     name: 'Русский',
   },
   {
-    id: 'ko',
-    name: '한국어',
-  },
-  {
-    id: 'zh',
-    name: '中文(简体)',
-  },
-  {
     id: 'tr',
     name: 'Türkçe',
   },
   {
-    id: 'hi',
-    name: 'हिन्दी',
+    id: 'id',
+    name: 'Bahasa Indonesia',
+  },
+  {
+    id: 'ja',
+    name: '日本語',
+  },
+  {
+    id: 'vi',
+    name: 'Tiếng Việt',
+  },
+  {
+    id: 'th',
+    name: 'ไทย',
   },
   {
     id: 'es',
@@ -55,10 +59,6 @@ export const LANGS = [
   {
     id: 'pt',
     name: 'Portugal',
-  },
-  {
-    id: 'pl',
-    name: 'Polsk',
   },
 ];
 

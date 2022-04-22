@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';

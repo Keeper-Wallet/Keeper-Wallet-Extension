@@ -1,4 +1,11 @@
 [
   { "code": "en", "name": "English" },
-  { "code": "es", "name": "Español" }
+  { "code": "ru", "name": "Русский" },
+  { "code": "tr", "name": "Türkçe" },
+  { "code": "id", "name": "Bahasa Indonesia" },
+  { "code": "ja", "name": "日本語" },
+  { "code": "vi", "name": "Tiếng Việt" },
+  { "code": "th", "name": "ไทย" },
+  { "code": "es", "name": "Español" },
+  { "code": "pt", "name": "Portugal" }
 ]
