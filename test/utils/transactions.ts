@@ -56,6 +56,17 @@ export const REISSUE = {
   },
 };
 
+export const REISSUE_WITH_MONEY_LIKE = {
+  type: TRANSACTION_TYPE.REISSUE,
+  data: {
+    amount: {
+      amount: 123456790,
+      assetId: '7sP5abE9nGRwZxkgaEXgkQDZ3ERBcm9PLHixaUE5SYoT',
+    },
+    reissuable: true,
+  },
+};
+
 export const BURN = {
   type: TRANSACTION_TYPE.BURN,
   data: {

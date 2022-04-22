@@ -34,6 +34,7 @@ import {
   MASS_TRANSFER_WITHOUT_ATTACHMENT,
   PACKAGE,
   REISSUE,
+  REISSUE_WITH_MONEY_LIKE,
   SET_ASSET_SCRIPT,
   SET_SCRIPT,
   SET_SCRIPT_WITHOUT_SCRIPT,
@@ -594,6 +595,46 @@ describe('Signature', function () {
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
             reissuable: REISSUE.data.reissuable,
+            chainId: 84,
+            fee: 500000,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
+    describe('Reissue with money-like', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-reissue-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: REISSUE_WITH_MONEY_LIKE.type,
+            version: 2,
+            senderPublicKey,
+            assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
+            quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
+            reissuable: REISSUE_WITH_MONEY_LIKE.data.reissuable,
             chainId: 84,
             fee: 500000,
           };

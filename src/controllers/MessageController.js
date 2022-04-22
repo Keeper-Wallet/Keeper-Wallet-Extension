@@ -849,7 +849,10 @@ export class MessageController extends EventEmitter {
         }
         break;
       case TRANSACTION_TYPE.REISSUE:
-        if (!this._isNumberLikePositive(tx.data.quantity)) {
+        if (
+          !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
+          !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
+        ) {
           throw new Error('quantity is not valid');
         }
         break;
