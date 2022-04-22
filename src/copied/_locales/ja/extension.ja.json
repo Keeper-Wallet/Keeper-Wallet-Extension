@@ -483,7 +483,7 @@
     "time_40m": "40分",
     "time_5m": "5分",
     "time_idle": "ブラウザータイムアウト",
-    "tooltipContent": "トロイの木馬の脆弱性から保護します。",
+    "tooltipContent": "トロイの木馬の脆弱性から保護します。"
   },
   "showQR": "QRコードを表示",
   "showScriptComponent": {
