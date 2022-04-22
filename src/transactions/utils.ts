@@ -75,8 +75,9 @@ interface SaReissue {
   data: {
     version?: number;
     senderPublicKey?: string;
+    amount: string | number | BigNumber | Money;
     assetId: string;
-    quantity: string | BigNumber | number;
+    quantity: string | number | BigNumber | Money;
     reissuable: boolean;
     chainId?: number;
     fee: Money;
@@ -355,18 +356,30 @@ export const convertFromSa = {
           proofs: input.data.proofs || [],
         } as any);
       }
-      case TRANSACTION_TYPE.REISSUE:
+      case TRANSACTION_TYPE.REISSUE: {
+        const quantity = input.data.quantity || input.data.amount;
+
+        let assetId = input.data.assetId;
+
+        if (!assetId && quantity instanceof Money) {
+          assetId = quantity.asset.id;
+        }
+
         return reissue({
           version: input.data.version || 2,
           senderPublicKey: input.data.senderPublicKey,
-          assetId: input.data.assetId,
-          quantity: new BigNumber(input.data.quantity),
+          assetId,
+          quantity:
+            quantity instanceof Money
+              ? quantity.getCoins()
+              : new BigNumber(quantity),
           reissuable: input.data.reissuable,
           chainId: input.data.chainId || defaultChainId,
           fee: input.data.fee.getCoins(),
           timestamp: input.data.timestamp,
           proofs: input.data.proofs || [],
         } as any);
+      }
       case TRANSACTION_TYPE.BURN:
         return burn({
           version: input.data.version || 2,
