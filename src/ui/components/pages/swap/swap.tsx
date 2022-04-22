@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
+import Background from 'ui/services/Background';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -139,6 +140,10 @@ export function Swap({ setTab }: Props) {
         feeAssetId,
         fromAssetId,
         fromCoins,
+        minReceivedCoins,
+        slippageTolerance,
+        toAssetId,
+        toCoins,
         vendor,
       }) => {
         setSwapErrorMessage(null);
@@ -157,6 +162,17 @@ export function Swap({ setTab }: Props) {
             feeCoins: fee.toCoins(),
             fromAssetId,
             fromCoins: fromCoins.toFixed(),
+            vendor,
+          });
+
+          Background.sendEvent('swapAssets', {
+            fromAssetId,
+            fromCoins: fromCoins.toFixed(),
+            minReceivedCoins: minReceivedCoins.toFixed(),
+            slippageTolerance: slippageTolerance.toNumber(),
+            status: 'success',
+            toAssetId,
+            toCoins: toCoins.toFixed(),
             vendor,
           });
 
@@ -211,6 +227,32 @@ export function Swap({ setTab }: Props) {
 
               setSwapErrorMessage(msg);
               setIsSwapInProgress(false);
+
+              match = msg.match(
+                /Swap result (\d+) is less then expected (\d+)/i
+              );
+
+              if (match) {
+                const actualAmountCoins = new BigNumber(match[1]);
+                const expectedAmountCoins = new BigNumber(match[2]);
+
+                capture = false;
+                Background.sendEvent('swapAssets', {
+                  actualAmountCoins: actualAmountCoins.toFixed(),
+                  expectedAmountCoins: expectedAmountCoins.toFixed(),
+                  expectedActualDelta: expectedAmountCoins
+                    .sub(actualAmountCoins)
+                    .toFixed(),
+                  fromAssetId,
+                  fromCoins: fromCoins.toFixed(),
+                  minReceivedCoins: minReceivedCoins.toFixed(),
+                  slippageTolerance: slippageTolerance.toNumber(),
+                  status: 'lessThanExpected',
+                  toAssetId,
+                  toCoins: toCoins.toFixed(),
+                  vendor,
+                });
+              }
 
               if (capture) {
                 Sentry.captureException(new Error(msg));

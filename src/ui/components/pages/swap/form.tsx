@@ -53,6 +53,10 @@ interface Props {
     feeAssetId: string;
     fromAssetId: string;
     fromCoins: BigNumber;
+    minReceivedCoins: BigNumber;
+    slippageTolerance: BigNumber;
+    toAssetId: string;
+    toCoins: BigNumber;
     vendor: SwapAssetsVendor;
   }) => void;
 }
@@ -415,6 +419,13 @@ export function SwapForm({
               fromCoins: Money.fromTokens(
                 fromAmountTokens,
                 fromAsset
+              ).getCoins(),
+              minReceivedCoins: minReceived.getCoins(),
+              slippageTolerance,
+              toAssetId,
+              toCoins: Money.fromTokens(
+                vendorExchangeInfo.toAmountTokens,
+                toAsset
               ).getCoins(),
               vendor: selectedExchangeVendor,
             });
