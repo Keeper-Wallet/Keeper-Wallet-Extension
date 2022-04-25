@@ -682,13 +682,18 @@ export class MessageController extends EventEmitter {
 
         result.data.data = { ...result.data.data, ...matcherFeeData };
         result.messageHash = getHash.order(makeBytes.order(convertedData));
-        result.json = stringify({
-          ...convertedData,
-          sender: address(
-            { publicKey: convertedData.senderPublicKey },
-            this.networkController.getNetworkCode().charCodeAt(0)
-          ),
-        });
+
+        result.json = stringify(
+          {
+            ...convertedData,
+            sender: address(
+              { publicKey: convertedData.senderPublicKey },
+              this.networkController.getNetworkCode().charCodeAt(0)
+            ),
+          },
+          null,
+          2
+        );
         break;
       }
       case 'transaction': {
@@ -724,13 +729,17 @@ export class MessageController extends EventEmitter {
           makeBytes.transaction(convertedData)
         );
 
-        result.json = stringify({
-          ...convertedData,
-          sender: address(
-            { publicKey: convertedData.senderPublicKey },
-            chainId
-          ),
-        });
+        result.json = stringify(
+          {
+            ...convertedData,
+            sender: address(
+              { publicKey: convertedData.senderPublicKey },
+              chainId
+            ),
+          },
+          null,
+          2
+        );
         break;
       }
       case 'cancelOrder':

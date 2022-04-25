@@ -1,6 +1,4 @@
-import { BigNumber } from '@waves/bignumber';
 import cn from 'classnames';
-import * as create from 'parse-json-bignumber';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import {
@@ -14,8 +12,6 @@ import {
 } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
 import * as styles from './txdetailtabs.styl';
-
-const { parse, stringify } = create({ BigNumber });
 
 interface Props {
   children?: React.ReactNode;
@@ -40,7 +36,7 @@ export function TxDetailTabs({ children }: Props) {
           <PlateCollapsable showExpand showCopy>
             <Highlight
               className={cn('json', 'body3', styles.code)}
-              data={stringify(parse(message.json), null, 2)}
+              data={message.json}
             />
           </PlateCollapsable>
         </TabPanel>
