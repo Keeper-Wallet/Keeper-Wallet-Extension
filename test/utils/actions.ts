@@ -391,8 +391,13 @@ export const Network = {
   switchTo: async function (this: mocha.Context, network: string) {
     await this.driver
       .wait(
-        until.elementLocated(
-          By.xpath("//i[contains(@class, '-network-networkIcon')]")
+        until.elementIsVisible(
+          this.driver.wait(
+            until.elementLocated(
+              By.xpath("//i[contains(@class, '-network-networkIcon')]")
+            ),
+            this.wait
+          )
         ),
         this.wait
       )
