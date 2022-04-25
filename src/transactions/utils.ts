@@ -28,8 +28,14 @@ import {
   validators,
   makeTxBytes,
 } from '@waves/waves-transactions';
+import { TTxParamsWithType } from '@waves/waves-transactions/dist/make-tx';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
 import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/requests/cancel-order';
+import {
+  TTransactionType,
+  WithSender,
+} from '@waves/waves-transactions/dist/transactions';
+import Long from 'long';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -319,42 +325,85 @@ interface NativeRequest {
   timestamp: number;
 }
 
+function createDeepConverter<TFrom, TTo>(
+  predicate: (value: unknown) => value is TFrom,
+  converter: (value: TFrom) => TTo
+) {
+  function deepConvert(value: unknown) {
+    if (predicate(value)) {
+      return converter(value);
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(deepConvert);
+    }
+
+    if (Object.prototype.toString.call(value) === '[object Object]') {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, value]) => [key, deepConvert(value)])
+      );
+    }
+
+    return value;
+  }
+
+  return deepConvert;
+}
+
+const convertBigNumberToLong = createDeepConverter(
+  BigNumber.isBigNumber,
+  value => Long.fromValue(value.toString())
+);
+
+const convertLongToBigNumber = createDeepConverter(
+  Long.isLong,
+  value => new BigNumber(value.toString())
+);
+
 export const convertFromSa = {
   transaction: (input: SaTransaction, defaultChainId: number) => {
     switch (input.type) {
       case TRANSACTION_TYPE.ISSUE:
-        return issue({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          name: input.data.name,
-          description: input.data.description,
-          quantity: new BigNumber(input.data.quantity),
-          script: input.data.script || null,
-          decimals: input.data.precision,
-          reissuable: input.data.reissuable,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          chainId: input.data.chainId || defaultChainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          issue(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              name: input.data.name,
+              description: input.data.description,
+              quantity: new BigNumber(input.data.quantity),
+              script: input.data.script || null,
+              decimals: input.data.precision,
+              reissuable: input.data.reissuable,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              chainId: input.data.chainId || defaultChainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       case TRANSACTION_TYPE.TRANSFER: {
         const chainId = input.data.chainId || defaultChainId;
 
-        return transfer({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          assetId: input.data.amount.asset.id,
-          recipient: processAliasOrAddress(input.data.recipient, chainId),
-          amount: input.data.amount.getCoins(),
-          attachment: input.data.attachment
-            ? base58Encode(stringToBytes(input.data.attachment))
-            : '',
-          fee: input.data.fee.getCoins(),
-          feeAssetId: input.data.fee.asset.id,
-          timestamp: input.data.timestamp,
-          chainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          transfer(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              assetId: input.data.amount.asset.id,
+              recipient: processAliasOrAddress(input.data.recipient, chainId),
+              amount: input.data.amount.getCoins(),
+              attachment: input.data.attachment
+                ? base58Encode(stringToBytes(input.data.attachment))
+                : '',
+              fee: input.data.fee.getCoins(),
+              feeAssetId: input.data.fee.asset.id,
+              timestamp: input.data.timestamp,
+              chainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       }
       case TRANSACTION_TYPE.REISSUE: {
         const quantity = input.data.quantity || input.data.amount;
@@ -365,188 +414,228 @@ export const convertFromSa = {
           assetId = quantity.asset.id;
         }
 
-        return reissue({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          assetId,
-          quantity:
-            quantity instanceof Money
-              ? quantity.getCoins()
-              : new BigNumber(quantity),
-          reissuable: input.data.reissuable,
-          chainId: input.data.chainId || defaultChainId,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          reissue(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              assetId,
+              quantity:
+                quantity instanceof Money
+                  ? quantity.getCoins()
+                  : new BigNumber(quantity),
+              reissuable: input.data.reissuable,
+              chainId: input.data.chainId || defaultChainId,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       }
       case TRANSACTION_TYPE.BURN:
-        return burn({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          assetId: input.data.assetId,
-          amount: new BigNumber(input.data.amount || input.data.quantity),
-          chainId: input.data.chainId || defaultChainId,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          burn(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              assetId: input.data.assetId,
+              amount: new BigNumber(input.data.amount || input.data.quantity),
+              chainId: input.data.chainId || defaultChainId,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       case TRANSACTION_TYPE.LEASE: {
         const chainId = input.data.chainId || defaultChainId;
 
-        return lease({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          amount:
-            input.data.amount instanceof Money
-              ? input.data.amount.getCoins()
-              : new BigNumber(input.data.amount),
-          recipient: processAliasOrAddress(input.data.recipient, chainId),
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-          chainId,
-        } as any);
+        return convertLongToBigNumber(
+          lease(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              amount:
+                input.data.amount instanceof Money
+                  ? input.data.amount.getCoins()
+                  : new BigNumber(input.data.amount),
+              recipient: processAliasOrAddress(input.data.recipient, chainId),
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+              chainId,
+            })
+          )
+        );
       }
       case TRANSACTION_TYPE.CANCEL_LEASE:
-        return cancelLease({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          leaseId: input.data.leaseId,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          chainId: input.data.chainId || defaultChainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          cancelLease(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              leaseId: input.data.leaseId,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              chainId: input.data.chainId || defaultChainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       case TRANSACTION_TYPE.ALIAS:
-        return alias({
-          version: input.data.version || 2,
-          senderPublicKey: input.data.senderPublicKey,
-          alias: input.data.alias,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          chainId: input.data.chainId || defaultChainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          alias(
+            convertBigNumberToLong({
+              version: input.data.version || 2,
+              senderPublicKey: input.data.senderPublicKey,
+              alias: input.data.alias,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              chainId: input.data.chainId || defaultChainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       case TRANSACTION_TYPE.MASS_TRANSFER: {
         const chainId = input.data.chainId || defaultChainId;
 
-        return massTransfer({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          assetId: input.data.totalAmount.asset.id,
-          transfers: input.data.transfers.map(transfer => ({
-            amount: new BigNumber(transfer.amount),
-            recipient: processAliasOrAddress(transfer.recipient, chainId),
-          })),
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          attachment: input.data.attachment
-            ? base58Encode(stringToBytes(input.data.attachment))
-            : '',
-          proofs: input.data.proofs || [],
-          chainId,
-        } as any);
+        return convertLongToBigNumber(
+          massTransfer(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              assetId: input.data.totalAmount.asset.id,
+              transfers: input.data.transfers.map(transfer => ({
+                amount: new BigNumber(transfer.amount),
+                recipient: processAliasOrAddress(transfer.recipient, chainId),
+              })),
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              attachment: input.data.attachment
+                ? base58Encode(stringToBytes(input.data.attachment))
+                : '',
+              proofs: input.data.proofs || [],
+              chainId,
+            })
+          )
+        );
       }
       case TRANSACTION_TYPE.DATA:
-        return data({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-          chainId: input.data.chainId || defaultChainId,
-          data: input.data.data.map(item =>
-            item.type === 'integer'
-              ? { ...item, value: new BigNumber(item.value) }
-              : item
-          ),
-        } as any);
+        return convertLongToBigNumber(
+          data(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+              chainId: input.data.chainId || defaultChainId,
+              data: input.data.data.map(item =>
+                item.type === 'integer'
+                  ? { ...item, value: new BigNumber(item.value) }
+                  : item
+              ),
+            })
+          )
+        );
       case TRANSACTION_TYPE.SET_SCRIPT:
-        return setScript({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          chainId: input.data.chainId || defaultChainId,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-          script: input.data.script || null,
-        } as any);
+        return convertLongToBigNumber(
+          setScript(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              chainId: input.data.chainId || defaultChainId,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+              script: input.data.script || null,
+            })
+          )
+        );
       case TRANSACTION_TYPE.SPONSORSHIP:
-        return sponsorship({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
-          assetId: input.data.minSponsoredAssetFee.asset.id,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          chainId: input.data.chainId || defaultChainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        return convertLongToBigNumber(
+          sponsorship(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
+              assetId: input.data.minSponsoredAssetFee.asset.id,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              chainId: input.data.chainId || defaultChainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
-        return setAssetScript({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          assetId: input.data.assetId,
-          chainId: input.data.chainId || defaultChainId,
-          fee: input.data.fee.getCoins(),
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-          script: input.data.script,
-        } as any);
+        return convertLongToBigNumber(
+          setAssetScript(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              assetId: input.data.assetId,
+              chainId: input.data.chainId || defaultChainId,
+              fee: input.data.fee.getCoins(),
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+              script: input.data.script,
+            })
+          )
+        );
       case TRANSACTION_TYPE.INVOKE_SCRIPT: {
         const chainId = input.data.chainId || defaultChainId;
 
-        return invokeScript({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          dApp: processAliasOrAddress(input.data.dApp, chainId),
-          call: input.data.call
-            ? {
-                ...input.data.call,
-                args: input.data.call.args.map(arg =>
-                  arg.type === 'integer'
-                    ? {
-                        ...arg,
-                        value: new BigNumber(arg.value),
-                      }
-                    : arg.type === 'list'
-                    ? {
-                        ...arg,
-                        value: arg.value.map(item =>
-                          item.type === 'integer'
-                            ? { ...item, value: new BigNumber(item.value) }
-                            : item
-                        ),
-                      }
-                    : arg
-                ),
-              }
-            : undefined,
-          payment: input.data.payment.map(payment => ({
-            amount: payment.getCoins(),
-            assetId: payment.asset.id,
-          })),
-          fee: input.data.fee.getCoins(),
-          feeAssetId: input.data.fee.asset.id,
-          timestamp: input.data.timestamp,
-          chainId,
-          proofs: input.data.proofs || [],
-        } as any);
+        function convertArg(arg: { type: string; value: any }) {
+          return arg.type === 'integer'
+            ? { ...arg, value: new BigNumber(arg.value) }
+            : arg.type === 'list'
+            ? { ...arg, value: arg.value.map(convertArg) }
+            : arg;
+        }
+
+        return convertLongToBigNumber(
+          invokeScript(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              dApp: processAliasOrAddress(input.data.dApp, chainId),
+              call: input.data.call
+                ? {
+                    ...input.data.call,
+                    args: input.data.call.args.map(convertArg),
+                  }
+                : undefined,
+              payment: input.data.payment.map(payment => ({
+                amount: payment.getCoins(),
+                assetId: payment.asset.id,
+              })),
+              fee: input.data.fee.getCoins(),
+              feeAssetId: input.data.fee.asset.id,
+              timestamp: input.data.timestamp,
+              chainId,
+              proofs: input.data.proofs || [],
+            })
+          )
+        );
       }
       case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
-        return updateAssetInfo({
-          version: input.data.version || 1,
-          senderPublicKey: input.data.senderPublicKey,
-          name: input.data.name,
-          description: input.data.description,
-          assetId: input.data.assetId,
-          fee: input.data.fee.getCoins().toNumber(),
-          feeAssetId: input.data.fee.asset.id,
-          timestamp: input.data.timestamp,
-          proofs: input.data.proofs || [],
-          chainId: input.data.chainId || defaultChainId,
-        } as any);
+        return convertLongToBigNumber(
+          updateAssetInfo(
+            convertBigNumberToLong({
+              version: input.data.version || 1,
+              senderPublicKey: input.data.senderPublicKey,
+              name: input.data.name,
+              description: input.data.description,
+              assetId: input.data.assetId,
+              fee: input.data.fee.getCoins().toNumber(),
+              feeAssetId: input.data.fee.asset.id,
+              timestamp: input.data.timestamp,
+              proofs: input.data.proofs || [],
+              chainId: input.data.chainId || defaultChainId,
+            })
+          )
+        );
       default:
         throw new Error(`Unexpected type: ${(input as any).type}`);
     }
@@ -593,7 +682,9 @@ export const convertFromSa = {
 };
 
 export const makeBytes = {
-  transaction: makeTxBytes,
+  transaction: <T extends TTransactionType>(
+    tx: TTxParamsWithType<T> & WithSender & { version: number }
+  ) => makeTxBytes<T>(convertBigNumberToLong(tx)),
   auth: serializeAuthData,
   request: (input: NativeRequest) =>
     concat(
