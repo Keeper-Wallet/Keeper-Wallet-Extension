@@ -5,12 +5,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
+import { Input } from 'ui/components/ui/input';
 import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
 
 const USERS_PER_PAGE = 4;
+const MAX_USER_ID = 2 ** 31 - 1;
+const MAX_PAGE = Math.floor(MAX_USER_ID / USERS_PER_PAGE);
 
 interface ArrowProps {
   direction: 'left' | 'right';
@@ -64,14 +67,64 @@ export function ImportLedger({ setTab }: Props) {
     string | React.ReactElement | null
   >(null);
   const [page, setPage] = React.useState(0);
-  const [ledgerUsers, setLedgerUsers] = React.useState<LedgerUser[]>([]);
+
+  const getUsersPromiseRef = React.useRef(Promise.resolve());
+  const [ledgerUsersPages, setLedgerUsersPages] = React.useState<
+    Record<number, LedgerUser[]>
+  >({});
 
   const [selectAccountError, setSelectAccountError] = React.useState<
     string | null
   >(null);
-  const [selectedUser, setSelectedUser] = React.useState<LedgerUser | null>(
+  const [selectedUserId, setSelectedUserId] = React.useState(0);
+
+  const selectedUser =
+    ledgerUsersPages[Math.floor(selectedUserId / USERS_PER_PAGE)]?.[
+      selectedUserId % USERS_PER_PAGE
+    ];
+
+  const [userIdInputValue, setUserIdInputValue] = React.useState(
+    String(selectedUserId)
+  );
+
+  React.useEffect(() => {
+    setUserIdInputValue(String(selectedUserId));
+    setPage(Math.floor(selectedUserId / USERS_PER_PAGE));
+  }, [selectedUserId]);
+
+  const [userIdInputError, setUserIdInputError] = React.useState<string | null>(
     null
   );
+
+  React.useEffect(() => {
+    if (!userIdInputValue) {
+      return;
+    }
+
+    const userIdFromInput = Number(userIdInputValue);
+
+    if (!isFinite(userIdFromInput)) {
+      setUserIdInputError(t('importLedger.userIdInputNumbersError'));
+      return;
+    }
+
+    if (userIdFromInput > MAX_USER_ID) {
+      setUserIdInputError(
+        t('importLedger.userIdInputMaxValueError', { maxUserId: MAX_USER_ID })
+      );
+      return;
+    }
+
+    setUserIdInputError(null);
+
+    const timeout = window.setTimeout(() => {
+      setSelectedUserId(userIdFromInput);
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [userIdInputValue]);
 
   const networkCode =
     customCodes[currentNetwork] ||
@@ -84,14 +137,13 @@ export function ImportLedger({ setTab }: Props) {
     await ledgerService.connectUsb(networkCode);
 
     if (ledgerService.status === LedgerServiceStatus.Ready) {
-      if (ledgerUsers.length === 0) {
+      if (ledgerUsersPages[0] == null) {
         const users = await ledgerService.ledger.getPaginationUsersData(
           0,
           USERS_PER_PAGE - 1
         );
 
-        setLedgerUsers(users);
-        setSelectedUser(users[0]);
+        setLedgerUsersPages({ 0: users });
       }
 
       setIsReady(true);
@@ -108,7 +160,7 @@ export function ImportLedger({ setTab }: Props) {
 
       setIsConnecting(false);
     }
-  }, [ledgerUsers, networkCode]);
+  }, [ledgerUsersPages, networkCode]);
 
   React.useEffect(() => {
     if (isReady) {
@@ -124,7 +176,7 @@ export function ImportLedger({ setTab }: Props) {
     };
   }, []);
 
-  const isCurPageLoaded = ledgerUsers.length >= (page + 1) * USERS_PER_PAGE;
+  const isCurPageLoaded = ledgerUsersPages[page] != null;
 
   React.useEffect(() => {
     if (!isReady || isCurPageLoaded) {
@@ -133,30 +185,32 @@ export function ImportLedger({ setTab }: Props) {
 
     setGetUsersError(null);
 
-    ledgerService.ledger
-      .getPaginationUsersData(page * USERS_PER_PAGE, USERS_PER_PAGE - 1)
-      .then(
-        users => {
-          setLedgerUsers(prevState => prevState.concat(users));
-        },
-        () => {
-          setGetUsersError(
-            <Trans
-              i18nKey="importLedger.couldNotGetUsersError"
-              components={{
-                retryButton: (
-                  <button
-                    className={styles.errorRetryButton}
-                    type="button"
-                    onClick={connectToLedger}
-                  />
-                ),
-              }}
-            />
-          );
-          setIsReady(false);
-        }
-      );
+    getUsersPromiseRef.current = getUsersPromiseRef.current.then(() =>
+      ledgerService.ledger
+        .getPaginationUsersData(page * USERS_PER_PAGE, USERS_PER_PAGE - 1)
+        .then(
+          users => {
+            setLedgerUsersPages(prevState => ({ ...prevState, [page]: users }));
+          },
+          () => {
+            setGetUsersError(
+              <Trans
+                i18nKey="importLedger.couldNotGetUsersError"
+                components={{
+                  retryButton: (
+                    <button
+                      className={styles.errorRetryButton}
+                      type="button"
+                      onClick={connectToLedger}
+                    />
+                  ),
+                }}
+              />
+            );
+            setIsReady(false);
+          }
+        )
+    );
   }, [connectToLedger, isCurPageLoaded, isReady, page]);
 
   return (
@@ -165,7 +219,7 @@ export function ImportLedger({ setTab }: Props) {
         <Trans i18nKey="importLedger.title" />
       </h2>
 
-      {ledgerUsers.length !== 0 && selectedUser != null ? (
+      {ledgerUsersPages[0] != null ? (
         <div>
           <p className={styles.instructions}>
             <Trans i18nKey="importLedger.selectAccountInstructions" />
@@ -175,15 +229,12 @@ export function ImportLedger({ setTab }: Props) {
             <div className={styles.avatarListItems}>
               {isCurPageLoaded ? (
                 <LedgerAvatarList
-                  items={ledgerUsers.slice(
-                    page * USERS_PER_PAGE,
-                    (page + 1) * USERS_PER_PAGE
-                  )}
-                  selected={selectedUser}
+                  selectedId={selectedUserId}
                   size={38}
-                  onSelect={user => {
+                  users={ledgerUsersPages[page]}
+                  onSelect={id => {
                     setSelectAccountError(null);
-                    setSelectedUser(user);
+                    setSelectedUserId(id);
                   }}
                 />
               ) : getUsersError ? (
@@ -201,6 +252,7 @@ export function ImportLedger({ setTab }: Props) {
                   styles.avatarListArrow,
                   styles.avatarListArrow_left
                 )}
+                disabled={!isCurPageLoaded}
                 type="button"
                 onClick={() => {
                   setPage(prevState => prevState - 1);
@@ -210,19 +262,21 @@ export function ImportLedger({ setTab }: Props) {
               </button>
             )}
 
-            <button
-              className={cn(
-                styles.avatarListArrow,
-                styles.avatarListArrow_right
-              )}
-              disabled={!isCurPageLoaded}
-              type="button"
-              onClick={() => {
-                setPage(prevState => prevState + 1);
-              }}
-            >
-              <Arrow direction="right" />
-            </button>
+            {page < MAX_PAGE && (
+              <button
+                className={cn(
+                  styles.avatarListArrow,
+                  styles.avatarListArrow_right
+                )}
+                disabled={!isCurPageLoaded}
+                type="button"
+                onClick={() => {
+                  setPage(prevState => prevState + 1);
+                }}
+              >
+                <Arrow direction="right" />
+              </button>
+            )}
           </div>
 
           <Error className={styles.error} show={!!selectAccountError}>
@@ -234,14 +288,25 @@ export function ImportLedger({ setTab }: Props) {
               <Trans i18nKey="importLedger.accountIdLabel" />
             </div>
 
-            <div>{selectedUser.id}</div>
+            <Input
+              value={userIdInputValue}
+              onBlur={() => {
+                setUserIdInputValue(String(selectedUserId));
+              }}
+              onChange={event => {
+                setUserIdInputValue(event.currentTarget.value);
+              }}
+            />
+
+            <Error show={userIdInputError != null}>{userIdInputError}</Error>
           </div>
 
           <div className={cn(styles.address, 'grey-line')}>
-            {selectedUser.address}
+            {selectedUser?.address}
           </div>
 
           <Button
+            disabled={!selectedUser}
             view="submit"
             onClick={() => {
               if (accounts.some(acc => acc.address === selectedUser.address)) {

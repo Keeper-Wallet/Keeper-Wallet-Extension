@@ -9,29 +9,24 @@ interface ListItem {
   id: number;
 }
 
-interface Props<T extends ListItem> {
-  items: T[];
-  selected: T;
+interface Props {
+  selectedId: number;
   size: number;
-  onSelect: (account: T) => void;
+  users: ListItem[];
+  onSelect: (id: number) => void;
 }
 
-export function LedgerAvatarList<T extends ListItem>({
-  items,
-  selected,
-  size,
-  onSelect,
-}: Props<T>) {
+export function LedgerAvatarList({ selectedId, size, users, onSelect }: Props) {
   return (
     <div className={styles.root}>
-      {items.map(item => (
+      {users.map(item => (
         <div
           key={item.address}
           className={cn(styles.item, {
-            [styles.item_selected]: selected.address === item.address,
+            [styles.item_selected]: selectedId === item.id,
           })}
           onClick={() => {
-            onSelect(item);
+            onSelect(item.id);
           }}
         >
           <Avatar address={item.address} size={size} />

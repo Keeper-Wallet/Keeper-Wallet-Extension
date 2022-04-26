@@ -313,6 +313,8 @@
     "connectInstructions": "Connect Ledger device and open Waves app",
     "continueButton": "Continue",
     "couldNotGetUsersError": "Could not get more users from ledger. Please ensure that ledger is connected, unlocked and the Waves app is open, then click <retryButton>Retry</retryButton>",
+    "userIdInputNumbersError": "Only numbers are allowed",
+    "userIdInputMaxValueError": "Account ID cannot be greater than {{ maxUserId }}",
     "selectAccountInstructions": "Choose your address",
     "title": "Import Ledger",
     "tryAgainButton": "Try Again"
