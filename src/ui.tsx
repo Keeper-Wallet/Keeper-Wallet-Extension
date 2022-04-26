@@ -50,6 +50,21 @@ async function startUi() {
 
   const updateState = createUpdateState(store);
 
+  const onChanged =
+    extension.storage.local.onChanged || extension.storage.onChanged;
+  onChanged.addListener(async changes => {
+    const stateChanges = await backgroundService.getState([
+      'initialized',
+      'locked',
+    ]);
+
+    for (const key in changes) {
+      stateChanges[key] = changes[key].newValue;
+    }
+
+    updateState(stateChanges);
+  });
+
   const emitterApi = {
     closePopupWindow: async () => {
       const popup = extension.extension
@@ -125,16 +140,4 @@ async function startUi() {
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
   window.addEventListener('beforeunload', () => background.identityClear());
-
-  const onChanged =
-    extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(async changes => {
-    let bgState = await backgroundService.getState();
-
-    for (const key in changes) {
-      bgState = { ...bgState, ...changes[key].newValue };
-    }
-
-    updateState(bgState);
-  });
 }

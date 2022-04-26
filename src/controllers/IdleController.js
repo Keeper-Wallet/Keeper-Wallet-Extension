@@ -4,7 +4,7 @@ import ObservableStore from 'obs-store';
 const IDLE_INTERVAL = 60;
 
 export class IdleController {
-  constructor({ initState, preferencesController, vaultController }) {
+  constructor({ localStore, preferencesController, vaultController }) {
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
     this.options = {
       type: 'idle',
@@ -15,8 +15,9 @@ export class IdleController {
     this.vaultController = vaultController;
     this.lastUpdateIdle = Date.now();
     this.store = new ObservableStore(
-      Object.assign({}, { lastUpdateIdle: this.lastUpdateIdle }, initState)
+      localStore.getInitState({ lastUpdateIdle: this.lastUpdateIdle })
     );
+    localStore.subscribe(this.store);
     this.start();
 
     extension.alarms.onAlarm.addListener(({ name }) => {

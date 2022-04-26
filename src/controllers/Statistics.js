@@ -11,11 +11,20 @@ export class StatisticsController {
   sended = Promise.resolve();
   _idle = 0;
 
-  constructor(store = {}, controllers) {
-    this.controllers = controllers;
-    const userId = store.userId || StatisticsController.createUserId();
+  constructor({ localStore, networkController }) {
+    const defaults = {
+      lastIdleKeeper: undefined,
+      lastInstallKeeper: undefined,
+      lastOpenKeeper: undefined,
+      userId: undefined,
+    };
+    const initState = localStore.getInitState(defaults);
+    const userId = initState.userId || StatisticsController.createUserId();
     Sentry.setUser({ id: userId });
-    this.store = new ObservableStore({ ...store, userId });
+    this.store = new ObservableStore({ ...initState, userId });
+    localStore.subscribe(this.store);
+
+    this.networkController = networkController;
     this.version = extension.runtime.getManifest().version;
     this.id = extension.runtime.id;
     this.browser = detect();
@@ -39,8 +48,8 @@ export class StatisticsController {
 
   addEvent(event_type, event_properties = {}) {
     const userId = this.store.getState().userId;
-    const network = this.controllers.network.getNetwork();
-    const networkCode = this.controllers.network.getNetworkCode(network);
+    const network = this.networkController.getNetwork();
+    const networkCode = this.networkController.getNetworkCode(network);
 
     const user_properties = {
       browser_name: this.browser.name,

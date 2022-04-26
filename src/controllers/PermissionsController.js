@@ -24,19 +24,20 @@ const findPermissionFabric = permission => item => {
 };
 
 export class PermissionsController {
-  constructor(options = {}) {
+  constructor({ localStore, remoteConfig, getSelectedAccount, identity }) {
     const defaults = {
       origins: {},
       blacklist: [],
       whitelist: [],
       inPending: {},
     };
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
 
-    this.remoteConfig = options.remoteConfig;
-    this.store = new ObservableStore({ ...defaults, ...options.initState });
+    this.remoteConfig = remoteConfig;
     this._updateByConfig();
-    this.getSelectedAccount = options.getSelectedAccount;
-    this.identity = options.identity;
+    this.getSelectedAccount = getSelectedAccount;
+    this.identity = identity;
   }
 
   getMessageIdAccess(origin) {

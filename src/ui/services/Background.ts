@@ -1,9 +1,9 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { Account } from 'accounts/types';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { SwapVendor } from 'swap/constants';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
+import { Account } from 'accounts/types';
 import { KEEPERWALLET_DEBUG } from '../../constants';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,11 +50,11 @@ class Background {
     this._connect = connect;
   }
 
-  async getState() {
+  async getState(params?: string[]) {
     try {
       await this.initPromise;
       await this._connect();
-      return await this.background.getState();
+      return await this.background.getState(params);
     } catch (err) {
       throw new Error(prepareErrorMessage(err));
     }

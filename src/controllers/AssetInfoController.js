@@ -162,7 +162,7 @@ function binarySearch(sortedArray, key) {
 }
 
 export class AssetInfoController {
-  constructor(options = {}) {
+  constructor({ localStore, getNode, getNetwork }) {
     const defaults = {
       assets: {
         mainnet: {
@@ -181,15 +181,18 @@ export class AssetInfoController {
       usdPrices: {},
       suspiciousAssets: [],
     };
+    const initState = localStore.getInitState(defaults);
+    this.store = new ObservableStore(initState);
+    localStore.subscribe(this.store);
 
-    this.getNode = options.getNode;
-    this.getNetwork = options.getNetwork;
-    this.store = new ObservableStore(
-      Object.assign({}, defaults, options.initState)
-    );
+    this.getNode = getNode;
+    this.getNetwork = getNetwork;
 
-    if (!options.initState) {
+    if (initState.suspiciousAssets.length === 0) {
       this.updateSuspiciousAssets();
+    }
+
+    if (Object.keys(initState.usdPrices).length === 0) {
       this.updateUsdPrices();
     }
 

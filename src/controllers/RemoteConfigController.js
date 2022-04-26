@@ -40,8 +40,9 @@ const extendValues = (defaultValues, newValues) => {
 };
 
 export class RemoteConfigController extends EventEmitter {
-  constructor(options = {}) {
+  constructor({ localStore }) {
     super();
+
     const defaults = {
       blacklist: [],
       whitelist: [],
@@ -56,10 +57,10 @@ export class RemoteConfigController extends EventEmitter {
       identityConfig: DEFAULT_IDENTITY_CONFIG,
       status: STATUS.PENDING,
     };
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
 
-    this.store = new ObservableStore({ ...defaults, ...options.initState });
     this._getConfig();
-
     this._getIgnoreErrorsConfig();
     this._fetchIdentityConfig();
 

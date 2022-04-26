@@ -90,7 +90,7 @@ class NotificationsComponent extends React.Component<Props, State> {
     }
 
     const origin = activeNotification[0].origin;
-    const perms = origins[origin];
+    const perms = origins[origin] || [];
     const useNotifications = perms.find(
       item => item && item.type === 'useNotifications'
     );

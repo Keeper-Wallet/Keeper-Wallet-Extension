@@ -108,7 +108,7 @@ describe('Messages', function () {
 
   it('When a message is received from a new resource, permission is requested to access', async function () {
     await sendMessageFromOrigin.call(this, CUSTOMLIST[0], false);
-
+    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
     await App.open.call(this);
     // permission request is shown
     expect(
@@ -124,10 +124,15 @@ describe('Messages', function () {
   it('When allowing access to messages - the message is instantly displayed', async function () {
     // expand permission settings
     await this.driver
-      .findElement(
-        By.xpath(
-          "//div[contains(@class, '-originAuth-collapsed')]//div[contains(@class, '-index-title')]"
-        )
+      .wait(
+        until.elementIsVisible(
+          this.driver.findElement(
+            By.xpath(
+              "//div[contains(@class, '-originAuth-collapsed')]//div[contains(@class, '-index-title')]"
+            )
+          )
+        ),
+        this.wait
       )
       .click();
 
@@ -161,7 +166,7 @@ describe('Messages', function () {
   const lastOrigin = CUSTOMLIST[1];
   it('When allowing access to an application, but denying messages - messages are not displayed', async function () {
     await sendMessageFromOrigin.call(this, lastOrigin, false);
-
+    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
     await App.open.call(this);
     // permission request is shown
     await this.driver.wait(

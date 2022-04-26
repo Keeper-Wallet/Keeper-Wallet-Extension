@@ -5,6 +5,7 @@ import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
   DEFAULT_PAGE_LOAD_DELAY,
+  SEND_UPDATE_DEBOUNCE_DELAY,
   DEFAULT_PASSWORD,
   WHITELIST,
 } from './utils/constants';
@@ -32,6 +33,7 @@ describe('Settings', function () {
           this.wait
         )
         .click();
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
     }
   }
 
@@ -221,18 +223,18 @@ describe('Settings', function () {
 
     const checkChangingAutoLimitsInResourceSettings = () => {
       describe('Changing auto-limits in resource settings', function () {
-        let resolutionTimeSelect: WebElement,
-          spendingLimitInput: WebElement,
-          saveBtn: WebElement;
-
         beforeEach(async function () {
           await this.driver
-            .findElement(
-              By.xpath(
-                "//div[contains(@class, '-list-permissionItem')]//button[contains(@class, '-list-settings')]"
-              )
+            .wait(
+              until.elementLocated(
+                By.xpath(
+                  "//div[contains(@class, '-list-permissionItem')]//button[contains(@class, '-list-settings')]"
+                )
+              ),
+              this.wait
             )
             .click();
+          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
           await this.driver.wait(
             until.elementIsVisible(
@@ -243,22 +245,20 @@ describe('Settings', function () {
             ),
             this.wait
           );
-
-          resolutionTimeSelect = this.driver.findElement(
-            By.xpath(
-              "//div[contains(@class, '-settings-selectTime')]" +
-                "//div[contains(@class, '-Select-module-trigger')]"
-            )
-          );
-          spendingLimitInput = this.driver.findElement(
-            By.xpath("//input[contains(@class, '-settings-amountInput')]")
-          );
-
-          saveBtn = this.driver.findElement(By.css('button#save'));
         });
 
         it('Enabling', async function () {
-          await resolutionTimeSelect.click();
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.xpath(
+                  "//div[contains(@class, '-settings-selectTime')]" +
+                    "//div[contains(@class, '-Select-module-trigger')]"
+                )
+              ),
+              this.wait
+            )
+            .click();
           await this.driver
             .wait(
               until.elementLocated(
@@ -270,10 +270,22 @@ describe('Settings', function () {
             )
             .click();
           await this.driver
-            .wait(until.elementIsEnabled(spendingLimitInput), this.wait)
+            .wait(
+              until.elementIsEnabled(
+                this.driver.findElement(
+                  By.xpath("//input[contains(@class, '-settings-amountInput')]")
+                )
+              ),
+              this.wait
+            )
             .sendKeys(SPENDING_LIMIT);
           await this.driver
-            .wait(until.elementIsEnabled(saveBtn), this.wait)
+            .wait(
+              until.elementIsEnabled(
+                this.driver.findElement(By.css('button#save'))
+              ),
+              this.wait
+            )
             .click();
           await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
           expect(
@@ -293,7 +305,17 @@ describe('Settings', function () {
         });
 
         it('Disabling', async function () {
-          await resolutionTimeSelect.click();
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.xpath(
+                  "//div[contains(@class, '-settings-selectTime')]" +
+                    "//div[contains(@class, '-Select-module-trigger')]"
+                )
+              ),
+              this.wait
+            )
+            .click();
           await this.driver
             .wait(
               until.elementLocated(
@@ -303,17 +325,29 @@ describe('Settings', function () {
             )
             .click();
           await this.driver
-            .wait(until.elementIsEnabled(saveBtn), this.wait)
+            .wait(
+              until.elementIsEnabled(
+                this.driver.findElement(By.css('button#save'))
+              ),
+              this.wait
+            )
             .click();
           await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
           expect(
-            await this.driver.findElements(
-              By.xpath(
-                "//div[contains(@class, '-list-permissionItem')]" +
-                  "//div[contains(@class, '-list-statusColor')]" +
-                  '//span'
+            await this.driver
+              .wait(
+                until.elementLocated(
+                  By.xpath("//div[contains(@class, '-list-permissionList')]")
+                ),
+                this.wait
               )
-            )
+              .findElements(
+                By.xpath(
+                  "//div[contains(@class, '-list-permissionItem')]" +
+                    "//div[contains(@class, '-list-statusColor')]" +
+                    '//span'
+                )
+              )
           ).length(0);
         });
       });
@@ -337,11 +371,18 @@ describe('Settings', function () {
       it('Default whitelisted services appears', async function () {
         for (const origin of WHITELIST) {
           expect(
-            await this.driver.findElements(
-              By.xpath(
-                `//div[contains(@class, '-list-permissionItem')]//div[text()='${origin}']`
+            await this.driver
+              .wait(
+                until.elementLocated(
+                  By.xpath("//div[contains(@class, '-list-permissionList')]")
+                ),
+                this.wait
               )
-            )
+              .findElements(
+                By.xpath(
+                  `//div[contains(@class, '-list-permissionItem')]//div[text()='${origin}']`
+                )
+              )
           ).length(1);
         }
       });
@@ -374,7 +415,8 @@ describe('Settings', function () {
 
         await this.driver.get(`https://${origin}`);
         await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
-        return await this.driver.executeScript(permissionRequest);
+        await this.driver.executeScript(permissionRequest);
+        await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
       }
 
       after(async function () {
@@ -629,16 +671,21 @@ describe('Settings', function () {
 
         it('After deletion, requests generate permission request', async function () {
           // here we have 2 origins, the first one is disabled, so we will delete it
-          const originEl: WebElement = await this.driver.findElement(
-            By.xpath("//div[contains(@class, '-list-permissionItem')]")
+          const originEl: WebElement = await this.driver.wait(
+            until.elementLocated(
+              By.xpath("//div[contains(@class, '-list-permissionItem')]")
+            ),
+            this.wait
           );
-
           const origin: string = await originEl
             .findElement(By.css('div'))
             .getText();
-          await originEl
-            .findElement(
-              By.xpath("//button[contains(@class, '-list-settings')]")
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.xpath("//button[contains(@class, '-list-settings')]")
+              ),
+              this.wait
             )
             .click();
 
@@ -651,7 +698,9 @@ describe('Settings', function () {
             ),
             this.wait
           );
-          this.driver.findElement(By.css('button#delete')).click();
+          await this.driver
+            .wait(until.elementLocated(By.css('button#delete')), this.wait)
+            .click();
           await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
           await publicStateFromOrigin.call(this, origin);
@@ -663,7 +712,10 @@ describe('Settings', function () {
             ),
             this.wait
           );
-          await this.driver.findElement(By.css('button#reject')).click();
+          await this.driver
+            .wait(until.elementLocated(By.css('button#reject')), this.wait)
+            .click();
+          await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
         });
       });
 
@@ -721,8 +773,6 @@ describe('Settings', function () {
 
   describe('Root', function () {
     describe('Auto-click protection', function () {
-      let toggleBtn: WebElement, statusSpan: WebElement, helpIcon: WebElement;
-
       before(async function () {
         await this.driver.wait(
           until.elementLocated(
@@ -730,20 +780,15 @@ describe('Settings', function () {
           ),
           this.wait
         );
-
-        toggleBtn = this.driver.findElement(
-          By.css('[data-testid="clickProtectionBtn"]')
-        );
-        statusSpan = this.driver.findElement(
-          By.css('[data-testid="clickProtectionStatus"] span')
-        );
-        helpIcon = this.driver.findElement(
-          By.css('[data-testid="clickProtectionIcon"]')
-        );
       });
 
       it('Can be enabled', async function () {
-        await toggleBtn.click();
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="clickProtectionBtn"]')),
+            this.wait
+          )
+          .click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
         await this.driver.wait(
@@ -754,15 +799,34 @@ describe('Settings', function () {
         );
 
         expect(
-          await this.driver.findElements(
-            By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
-          )
+          await this.driver
+            .wait(
+              until.elementLocated(By.css('[data-testid="clickProtection"]')),
+              this.wait
+            )
+            .findElements(
+              By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
+            )
         ).length(1);
-        expect(await statusSpan.getText()).matches(/enabled/i);
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="clickProtectionStatus"] span')
+              ),
+              this.wait
+            )
+            .getText()
+        ).matches(/enabled/i);
       });
 
       it('Can be disabled', async function () {
-        await toggleBtn.click();
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="clickProtectionBtn"]')),
+            this.wait
+          )
+          .click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
         await this.driver.wait(
@@ -773,15 +837,33 @@ describe('Settings', function () {
         );
 
         expect(
-          await this.driver.findElements(
-            By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
-          )
+          await this.driver
+            .wait(
+              until.elementLocated(By.css('[data-testid="clickProtection"]')),
+              this.wait
+            )
+            .findElements(
+              By.css('[data-testid="clickProtectionBtn"][data-teston="true"]')
+            )
         ).length(0);
-        expect(await statusSpan.getText()).matches(/disabled/i);
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="clickProtectionStatus"] span')
+              ),
+              this.wait
+            )
+            .getText()
+        ).matches(/disabled/i);
       });
 
       it('Display tooltip', async function () {
         const actions = this.driver.actions({ async: true });
+        const helpIcon = await this.driver.wait(
+          until.elementLocated(By.css('[data-testid="clickProtectionIcon"]')),
+          this.wait
+        );
         await actions.move({ origin: helpIcon }).perform();
         expect(
           this.driver.wait(
@@ -800,8 +882,6 @@ describe('Settings', function () {
     });
 
     describe('Suspicious assets protection', function () {
-      let toggleBtn: WebElement, statusSpan: WebElement, helpIcon: WebElement;
-
       before(async function () {
         await this.driver.wait(
           until.elementLocated(
@@ -809,20 +889,17 @@ describe('Settings', function () {
           ),
           this.wait
         );
-
-        toggleBtn = this.driver.findElement(
-          By.css('[data-testid="showSuspiciousAssetsBtn"]')
-        );
-        statusSpan = this.driver.findElement(
-          By.css('[data-testid="showSuspiciousAssetsStatus"] span')
-        );
-        helpIcon = this.driver.findElement(
-          By.css('[data-testid="showSuspiciousAssetsIcon"]')
-        );
       });
 
       it('Can be disabled', async function () {
-        await toggleBtn.click();
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.css('[data-testid="showSuspiciousAssetsBtn"]')
+            ),
+            this.wait
+          )
+          .click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
         await this.driver.wait(
@@ -833,17 +910,40 @@ describe('Settings', function () {
         );
 
         expect(
-          await this.driver.findElements(
-            By.css(
-              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="showSuspiciousAssets"]')
+              ),
+              this.wait
             )
-          )
+            .findElements(
+              By.css(
+                '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+              )
+            )
         ).length(0);
-        expect(await statusSpan.getText()).matches(/disabled/i);
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="showSuspiciousAssetsStatus"] span')
+              ),
+              this.wait
+            )
+            .getText()
+        ).matches(/disabled/i);
       });
 
       it('Can be enabled', async function () {
-        await toggleBtn.click();
+        await this.driver
+          .wait(
+            until.elementLocated(
+              By.css('[data-testid="showSuspiciousAssetsBtn"]')
+            ),
+            this.wait
+          )
+          .click();
         await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
         await this.driver.wait(
@@ -854,17 +954,39 @@ describe('Settings', function () {
         );
 
         expect(
-          await this.driver.findElements(
-            By.css(
-              '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="showSuspiciousAssets"]')
+              ),
+              this.wait
             )
-          )
+            .findElements(
+              By.css(
+                '[data-testid="showSuspiciousAssetsBtn"][data-teston="true"]'
+              )
+            )
         ).length(1);
-        expect(await statusSpan.getText()).matches(/enabled/i);
+        expect(
+          await this.driver
+            .wait(
+              until.elementLocated(
+                By.css('[data-testid="showSuspiciousAssetsStatus"] span')
+              ),
+              this.wait
+            )
+            .getText()
+        ).matches(/enabled/i);
       });
 
       it('Display tooltip', async function () {
         const actions = this.driver.actions({ async: true });
+        const helpIcon = this.driver.wait(
+          until.elementLocated(
+            By.css('[data-testid="showSuspiciousAssetsIcon"]')
+          ),
+          this.wait
+        );
         await actions.move({ origin: helpIcon }).perform();
         expect(
           this.driver.wait(

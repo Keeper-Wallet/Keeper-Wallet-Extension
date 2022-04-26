@@ -9,6 +9,7 @@ import { By, until, WebElement } from 'selenium-webdriver';
 import {
   DEFAULT_ANIMATION_DELAY,
   DEFAULT_SWITCH_NETWORK_DELAY,
+  STORAGE_SET_DEBOUNCE_DELAY,
   SERVICE_WORKER_INSTALLATION_DELAY,
   DEFAULT_PASSWORD,
 } from './constants';
@@ -134,6 +135,8 @@ export const App = {
         this.wait
       )
       .click();
+
+    await this.driver.sleep(STORAGE_SET_DEBOUNCE_DELAY);
   },
 
   decryptVault: async function (
@@ -144,8 +147,8 @@ export const App = {
       function (...args) {
         const cb = args[args.length - 1];
 
-        chrome.storage.local.get('WalletController', storage =>
-          cb(storage.WalletController.vault)
+        chrome.storage.local.get('WalletController', ({ WalletController }) =>
+          cb(WalletController.vault)
         );
       }
     );

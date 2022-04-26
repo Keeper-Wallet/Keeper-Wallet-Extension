@@ -1,12 +1,12 @@
 import ObservableStore from 'obs-store';
 
 export class UiStateController {
-  constructor(options = {}) {
+  constructor({ localStore }) {
     const defaults = {
       uiState: {},
     };
-    const initState = Object.assign({}, defaults, options.initState);
-    this.store = new ObservableStore(initState);
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
   }
 
   getUiState() {

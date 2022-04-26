@@ -1,12 +1,12 @@
 import * as ObservableStore from 'obs-store';
 import { WalletController } from './WalletController';
 import { IdentityController } from './IdentityController';
+import LocalStore from '../lib/localStore';
 
 type VaultState = { locked: boolean; initialized: boolean };
 
 type Options = {
-  initState: VaultState;
-  password?: string;
+  localStore: LocalStore;
   wallet: WalletController;
   identity: IdentityController;
 };
@@ -16,14 +16,15 @@ export class VaultController {
   private wallet: WalletController;
   private identity: IdentityController;
 
-  constructor(opts: Options) {
-    this.store = new ObservableStore(
-      Object.assign({}, { locked: null, initialized: null }, opts.initState, {
-        locked: !opts.password,
-      })
-    );
-    this.wallet = opts.wallet;
-    this.identity = opts.identity;
+  constructor({ localStore, wallet, identity }: Options) {
+    this.store = new ObservableStore({
+      ...localStore.getInitState({ locked: null, initialized: null }),
+      locked: !localStore.getInitSession().password,
+    });
+    localStore.subscribe(this.store);
+
+    this.wallet = wallet;
+    this.identity = identity;
   }
 
   private get locked(): boolean {

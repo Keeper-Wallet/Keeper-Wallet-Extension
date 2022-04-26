@@ -3,12 +3,10 @@ import ObservableStore from 'obs-store';
 const MAX_ITEMS = 200;
 
 export class TrashController {
-  constructor(options = {}) {
-    const defaults = {
-      data: [],
-    };
-    const initState = Object.assign({}, defaults, options.initState);
-    this.store = new ObservableStore(initState);
+  constructor({ localStore }) {
+    const defaults = { data: [] };
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
   }
 
   getData() {

@@ -1,50 +1,138 @@
-import { extension } from 'lib/extension';
+import * as pump from 'pump';
+import * as debounceStream from 'debounce-stream';
+import * as asStream from 'obs-store/lib/asStream';
 import * as Sentry from '@sentry/react';
+import log from 'loglevel';
+import { extension } from 'lib/extension';
+import { createStreamSink } from 'lib/createStreamSink';
 import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 
-const CURRENT_MIGRATION_VERSION = 0;
+const CURRENT_MIGRATION_VERSION = 1;
+
+const CONTROLLERS = [
+  'AssetInfoController',
+  'CurrentAccountController',
+  'IdentityController',
+  'IdleController',
+  'MessageController',
+  'NetworkController',
+  'NotificationsController',
+  'PermissionsController',
+  'PreferencesController',
+  'RemoteConfigController',
+  'StatisticsController',
+  'TrashController',
+  'UiStateController',
+  'VaultController',
+];
 
 export default class ExtensionStore {
-  async get() {
-    const result = await this._get();
+  private _state: Record<string, unknown>;
+  private _initState: Record<string, unknown>;
+  private _initSession: Record<string, unknown>;
 
-    if (isEmpty(result)) {
-      return undefined;
-    } else {
-      return result;
+  async create() {
+    await this._migrate();
+
+    this._state = { migrationVersion: CURRENT_MIGRATION_VERSION };
+    this._initState = await this.get();
+    this._initSession = await this.getSession();
+  }
+
+  getInitState(defaults?: Record<string, unknown>) {
+    if (!defaults) {
+      return this._initState;
     }
+
+    const defaultsInitState = Object.keys(defaults).reduce(
+      (acc, key) =>
+        Object.prototype.hasOwnProperty.call(this._initState, key)
+          ? { ...acc, [key]: this._initState[key] }
+          : acc,
+      {}
+    );
+    const initState = { ...defaults, ...defaultsInitState };
+    this._state = { ...this._state, ...initState };
+    return initState;
+  }
+
+  getInitSession() {
+    return this._initSession;
+  }
+
+  async clear() {
+    const storageState = extension.storage.local;
+
+    const keysToRemove = Object.keys(this._initState).reduce(
+      (acc, key) => (this._state[key] ? acc : [...acc, key]),
+      []
+    );
+    await this._remove(storageState, keysToRemove);
+  }
+
+  subscribe(store) {
+    pump(
+      asStream(store),
+      debounceStream(200),
+      createStreamSink(async state => {
+        if (!state) {
+          throw new Error('Updated state is missing');
+        }
+
+        try {
+          await this.set(
+            Object.entries(state).reduce(
+              (acc, [key, value]) => ({
+                ...acc,
+                [key]: value === undefined ? null : value,
+              }),
+              {}
+            )
+          );
+        } catch (err) {
+          // log error so we dont break the pipeline
+          log.error('error setting state in local store:', err);
+        }
+      }),
+      error => {
+        log.error('Persistence pipeline failed', error);
+      }
+    );
+  }
+
+  async get(keys?: string | string[]) {
+    const storageState = extension.storage.local;
+    return await this._get(storageState, keys);
+  }
+
+  async getSession(keys?: string | string[]) {
+    const storageState = extension.storage.session;
+
+    if (!storageState) return {};
+
+    return await this._get(storageState, keys);
   }
 
   async set(state: Record<string, unknown>) {
-    return this._set(state);
+    const storageState = extension.storage.local;
+    return this._set(storageState, state);
   }
 
-  async migrate() {
-    try {
-      const { migrationVersion } = await this._get();
-      const version = (migrationVersion as number) || 0;
+  async setSession(state: Record<string, unknown>) {
+    const storageState = extension.storage.session;
 
-      if (version > CURRENT_MIGRATION_VERSION) {
-        for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-          const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
-          if (reverseMigrate) {
-            await reverseMigrate.call(this);
-          }
-        }
-      }
+    if (!storageState) return;
 
-      await this._set({
-        migrationVersion: CURRENT_MIGRATION_VERSION,
-      });
-    } catch (err) {
-      Sentry.captureException(err);
-    }
+    return this._set(storageState, state);
   }
 
-  _get(): Promise<Record<string, unknown>> {
-    const local = extension.storage.local;
+  _get(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storageState: any,
+    keys?: string | string[]
+  ): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      local.get(null, result => {
+      storageState.get(keys, result => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -55,10 +143,10 @@ export default class ExtensionStore {
     });
   }
 
-  _set(obj: Record<string, unknown>): Promise<void> {
-    const local = extension.storage.local;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _set(storageState: any, state: Record<string, unknown>): Promise<void> {
     return new Promise((resolve, reject) => {
-      local.set(obj, () => {
+      storageState.set(state, () => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -68,8 +156,77 @@ export default class ExtensionStore {
       });
     });
   }
-}
 
-function isEmpty(obj: Record<string, unknown>) {
-  return Object.keys(obj).length === 0;
+  async _migrate() {
+    try {
+      const storageState = extension.storage.local;
+
+      const { migrationVersion } = await this._get(
+        storageState,
+        'migrationVersion'
+      );
+      const version = (migrationVersion as number) || 0;
+
+      if (version < CURRENT_MIGRATION_VERSION) {
+        const migrations = [this._migrateFlatState.bind(this)];
+        for (let i = version; i < CURRENT_MIGRATION_VERSION; i++) {
+          await migrations[i]();
+        }
+      } else if (version > CURRENT_MIGRATION_VERSION) {
+        for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
+          const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
+          if (reverseMigrate) {
+            await reverseMigrate.bind(this)();
+          }
+        }
+      }
+
+      await this._set(storageState, {
+        migrationVersion: CURRENT_MIGRATION_VERSION,
+      });
+    } catch (err) {
+      Sentry.captureException(err);
+    }
+  }
+
+  async _migrateFlatState() {
+    const storageState = extension.storage.local;
+
+    const state = await this._get(storageState);
+    const migrateFields = CONTROLLERS.filter(controller => state[controller]);
+
+    if (migrateFields.length === 0) {
+      return;
+    }
+
+    await this._set(
+      storageState,
+      migrateFields.reduce(
+        (acc, field) => ({
+          ...acc,
+          ...(state[field] as Record<string, unknown>),
+        }),
+        {}
+      )
+    );
+    await this._remove(storageState, migrateFields);
+  }
+
+  async _reverseMigrate() {
+    // do nothing
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _remove(storageState: any, keys: string | string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      storageState.remove(keys, () => {
+        const err = extension.runtime.lastError;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 }
