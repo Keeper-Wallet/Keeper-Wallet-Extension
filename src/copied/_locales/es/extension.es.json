@@ -1,6 +1,6 @@
 {
   "accountCard": {
-    "infoTooltip": "Información de la cuenta" 
+    "infoTooltip": "Información de la cuenta"
   },
   "accountInfo": {
     "address": "Tu dirección",
@@ -20,10 +20,10 @@
     "viewInExplorer": "Ver en el explorador"
   },
   "activeAccountCard": {
-    "swapButton": "Intercambio" 
+    "swapButton": "Intercambio"
   },
   "assetAmountInput": {
-    "maxButtonText": "Maximo" 
+    "maxButtonText": "Maximo"
   },
   "assetInfo": {
     "id": "ID",
@@ -124,7 +124,7 @@
   },
   "copyAddress": "Copiar dirección",
   "date": {
-    "today": "Hoy" 
+    "today": "Hoy"
   },
   "deleteAccount": {
     "attention": "¡Atención!",
@@ -310,7 +310,7 @@
   },
   "langsSettings": {
     "confirm": "Confirmar",
-    "title": "Cambiar el idioma" 
+    "title": "Cambiar el idioma"
   },
   "ledgerErrors": {
     "unknown": "No se pudo conectar al ledger. Inténtalo de nuevo",
@@ -434,7 +434,7 @@
     "expand": "Expandir"
   },
   "qrCode": {
-    "download": "Descargar código QR" 
+    "download": "Descargar código QR"
   },
   "send": {
     "amountInputLabel": "{{activo}} cantidad",
@@ -568,7 +568,7 @@
     "paymentsCount_plural": "{{contar}} Pagos",
     "paymentsNone": "Sin Pagos",
     "permission": {
-      "details": "Detalles del permiso" 
+      "details": "Detalles del permiso"
     },
     "price": "Precio",
     "publicKey": "Llave pública",
@@ -600,7 +600,7 @@
     "wavesAuthTimeStamp": "Marca de tiempo"
   },
   "ui": {
-    "logoTitle": "Mantenga seguras sus claves de Waves en línea" 
+    "logoTitle": "Mantenga seguras sus claves de Waves en línea"
   },
   "notifications": {
     "allowSending": "Permitir enviar mensajes",
@@ -611,7 +611,7 @@
     "messages": "Mensajes"
   },
   "wallet": {
-    "lease": "arrendado" 
+    "lease": "arrendado"
   },
   "welcome": {
     "getStarted": "Empezar",

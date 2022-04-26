@@ -1,6 +1,6 @@
 {
   "accountCard": {
-    "infoTooltip": "Informasi akun" 
+    "infoTooltip": "Informasi akun"
   },
   "accountInfo": {
     "address": "Address",
@@ -20,10 +20,10 @@
     "viewInExplorer": "Lihat di explorer"
   },
   "activeAccountCard": {
-    "swapButton": "Swap" 
+    "swapButton": "Swap"
   },
   "assetAmountInput": {
-    "maxButtonText": "Max" 
+    "maxButtonText": "Max"
   },
   "assetInfo": {
     "id": "ID",
@@ -124,7 +124,7 @@
   },
   "copyAddress": "Salin address",
   "date": {
-    "today": "Hari ini" 
+    "today": "Hari ini"
   },
   "deleteAccount": {
     "attention": "Perhatian!",
@@ -310,7 +310,7 @@
   },
   "langsSettings": {
     "confirm": "OK",
-    "title": "Ubah Bahasa" 
+    "title": "Ubah Bahasa"
   },
   "ledgerErrors": {
     "unknown": "Tidak dapat terhubung ke ledger. Silakan coba lagi",
@@ -434,7 +434,7 @@
     "expand": "Perbesar"
   },
   "qrCode": {
-    "download": "Download QR code" 
+    "download": "Download QR code"
   },
   "send": {
     "amountInputLabel": "{{asset}} jumlah",
@@ -568,7 +568,7 @@
     "paymentsCount_plural": "{{count}} Pembayaran",
     "paymentsNone": "Tidak Ada Pembayaran",
     "permission": {
-      "details": "Detail izin" 
+      "details": "Detail izin"
     },
     "price": "Hraga",
     "publicKey": "Public Key",
@@ -611,7 +611,7 @@
     "messages": "Pesan"
   },
   "wallet": {
-    "lease": "Disewakan" 
+    "lease": "Disewakan"
   },
   "welcome": {
     "getStarted": "Pendahuluan",
