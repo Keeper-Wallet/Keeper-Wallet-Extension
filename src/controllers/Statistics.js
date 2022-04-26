@@ -2,9 +2,10 @@ import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 import { libs } from '@waves/waves-transactions';
 import { statisticsApiKey } from '../../config.json';
-import extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
+import fetch from 'lib/fetch';
 
 export class StatisticsController {
   events = [];
@@ -21,6 +22,12 @@ export class StatisticsController {
     this.browser = detect();
     this.sendInstallEvent();
     this.sendIdleEvent();
+
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      if (name === 'idleEvent') {
+        this.sendIdleEvent();
+      }
+    });
   }
 
   static createUserId() {
@@ -155,9 +162,11 @@ export class StatisticsController {
 
   sendIdleEvent() {
     // sends `idleKeeper` event once per hour until browser is running
-    clearTimeout(this._idle);
+    extension.alarms.clear('idleEvent');
     this.addEventOnce('idleKeeper');
-    this._idle = setTimeout(() => this.sendIdleEvent(), 60 * 1000);
+    extension.alarms.create('idleEvent', {
+      delayInMinutes: 1,
+    });
   }
 
   sendOpenEvent() {

@@ -8,8 +8,8 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import * as ObservableStore from 'obs-store';
-import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import { Account, NetworkName } from 'accounts/types';
+import fetch from 'lib/fetch';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;
@@ -41,38 +41,6 @@ export type IdentityConfig = {
   };
 };
 
-function startsWith(source: string, target: string, flags = 'i'): boolean {
-  return !!source.match(new RegExp(`^${target}`, flags));
-}
-
-const fetch = window.fetch;
-window.fetch = (
-  endpoint: RequestInfo,
-  { headers = {}, ...options }: RequestInit = {}
-) => {
-  if (
-    typeof endpoint === 'string' &&
-    (startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.mainnet.cognito.endpoint) ||
-      startsWith(endpoint, DEFAULT_IDENTITY_CONFIG.testnet.cognito.endpoint))
-  ) {
-    return fetch(endpoint, {
-      ...options,
-      headers: { ...headers, 'X-Application': 'waveskeeper' },
-    }).then(async response => {
-      if (response.status === 403) {
-        const err = await response.json();
-        if ('type' in err && 'message' in err) {
-          err.__type = err.type;
-        }
-        response.json = async () => err;
-      }
-      return response;
-    });
-  }
-
-  return fetch(endpoint, { headers, ...options });
-};
-
 type IdentityState = {
   cognitoSessions: string;
 };
@@ -83,17 +51,27 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   public updateState: (partial: Partial<IdentityState>) => void;
   private memo = {};
   private password: string;
+  private _setSession: (session: Record<string, any>) => void;
 
-  constructor(initState: Partial<IdentityState>) {
+  constructor(
+    initState: Partial<IdentityState>,
+    initSession: Record<string, any>,
+    setSession: (session: Record<string, any>) => void
+  ) {
     super(initState || {});
+
+    this.memo = initSession.memo;
+
+    this.password = initSession.password;
+    this._setSession = setSession;
   }
 
   lock() {
-    this.password = undefined;
+    this._setPassword(null);
   }
 
   unlock(password: string) {
-    this.password = password;
+    this._setPassword(password);
   }
 
   getItem(key: string): string | null {
@@ -102,14 +80,17 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
 
   removeItem(key: string): void {
     delete this.memo[key];
+    this._updateMemo();
   }
 
   setItem(key: string, value: string): void {
     this.memo[key] = value;
+    this._updateMemo();
   }
 
   clear(): void {
     this.memo = {};
+    this._updateMemo();
   }
 
   purge(): void {
@@ -120,6 +101,7 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   restore(userId: string) {
     const cognitoSessions = this.decrypt();
     this.memo = cognitoSessions[userId] || {};
+    this._updateMemo();
   }
 
   persist(userId: string) {
@@ -128,6 +110,15 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     this.updateState({
       cognitoSessions: this.encrypt(cognitoSessions),
     });
+  }
+
+  private _updateMemo() {
+    this._setSession({ memo: this.memo });
+  }
+
+  private _setPassword(password?: string) {
+    this.password = password;
+    this._setSession({ password });
   }
 
   private encrypt(object): string {
@@ -155,6 +146,8 @@ interface Options {
   getSelectedAccount: () => Partial<Account>;
   getIdentityConfig: () => IdentityConfig;
   initState: IdentityState;
+  initSession: Record<string, any>;
+  setSession: (session: Record<string, any>) => void;
 }
 
 export interface IdentityApi {
@@ -176,7 +169,11 @@ export class IdentityController implements IdentityApi {
   store: IdentityStorage;
 
   constructor(opts: Options) {
-    this.store = new IdentityStorage(opts.initState);
+    this.store = new IdentityStorage(
+      opts.initState,
+      opts.initSession,
+      opts.setSession
+    );
 
     this.getNetwork = opts.getNetwork;
     this.getSelectedAccount = opts.getSelectedAccount;
