@@ -122,7 +122,7 @@ interface Props extends WithTranslation {
   hideScript?: boolean;
 }
 
-class WavesAuthInfoComponent extends React.PureComponent<Props> {
+class ShowScriptComponent extends React.PureComponent<Props> {
   readonly props;
   readonly state = {
     showAllScript: false,
@@ -225,4 +225,4 @@ class WavesAuthInfoComponent extends React.PureComponent<Props> {
   }
 }
 
-export const WavesAuthInfo = withTranslation()(WavesAuthInfoComponent);
+export const ShowScript = withTranslation()(ShowScriptComponent);

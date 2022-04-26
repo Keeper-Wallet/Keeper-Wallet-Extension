@@ -52,7 +52,6 @@
     "title": "Select a token"
   },
   "assets": {
-    "account": "Account",
     "changeName": "Account name changed",
     "copied": "Copied!",
     "deleteAccount": "Delete account",
@@ -328,8 +327,7 @@
     "enter": "Enter",
     "password": "Password",
     "passwordError": "Wrong password",
-    "passwordForgot": "I forgot password",
-    "passwordforgot": "I forgot password"
+    "passwordForgot": "I forgot password"
   },
   "mainnet": "mainnet",
   "messageList": {
@@ -351,11 +349,7 @@
     "copied": "Copied!",
     "matcher": "Matcher address",
     "network": "Network",
-    "networkPrefix": "You must specify 1 character",
-    "networkPrefixDescri[ption": "Network prefix",
     "node": "Node address",
-    "node_code": "Network Prefix",
-    "node_code_hint": "You must specify 1 character",
     "save": "Save",
     "savedModal": "Saved!",
     "setDefault": "Set Default",

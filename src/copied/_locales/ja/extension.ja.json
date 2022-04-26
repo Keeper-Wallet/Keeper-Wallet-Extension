@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "このアカウントはWaves.Exchangeアカウントを使用してインポートされたため、バックアップフレーズや秘密鍵をコピーする必要はありません。",
     "privKey": "秘密鍵",
     "pubKey": "公開鍵",
-    "seed": "バックアップフレーズ",
     "viewInExplorer": "エクスプローラーで確認"
   },
   "activeAccountCard": { "swapButton": "スワップ" },
@@ -47,17 +46,11 @@
     "title": "トークンを選択"
   },
   "assets": {
-    "account": "アカウント",
-    "accountCreationSuccessNotification": "アカウントが作成されました。",
-    "accountImportSuccessNotification": "アカウントが正常にインポートされました。",
-    "activatedModal": "アカウントが有効になりました。",
-    "addAccount": "アカウント追加",
     "changeName": "アカウント名が変更されました。",
     "copied": "コピーされました。",
     "deleteAccount": "アカウント削除",
     "inStorage": "その他のアカウント",
     "issuedBy": "{{ issuer }}に発行されました。",
-    "lastUpdate": "最終更新：",
     "selectAccountNotification": "有効なアカウントが変更されました。",
     "assets": "アセット",
     "nfts": "NFT",
@@ -130,11 +123,6 @@
     "delete": "アカウント削除",
     "warn": "アカウントを削除すると、元に戻せません。"
   },
-  "deleteUser": {
-    "attention": "注意",
-    "delete": "アカウント削除",
-    "warn": "アカウントを削除すると、資金へアクセスできなくなります。シードフレーズを必ずバックアップしてください。"
-  },
   "exportKeystore": {
     "cancelBtn": "キャンセル",
     "chooseAccountsDesc": "エクスポートするアカウントを選択してください。キーストアファイルに暗号化されてエクスポートされます。",
@@ -200,8 +188,7 @@
     "swap": "トークンスワップ",
     "transfer": "転送",
     "transferReceive": "次の転送",
-    "transferSelf": "自己転送",
-    "updateAssetInfo": "アセット情報を更新"
+    "transferSelf": "自己転送"
   },
   "historyFilters": {
     "all": "全て",
@@ -327,10 +314,9 @@
     "enter": "確定",
     "password": "パスワード",
     "passwordError": "正しくないパスワード",
-    "passwordForgot": "パスワードを忘れました。",
-    "passwordforgot": "パスワードを忘れました。",
-    "mainnet": "メインネット"
+    "passwordForgot": "パスワードを忘れました。"
   },
+  "mainnet": "メインネット",
   "messageList": {
     "clearAllMessages": "全てクリア",
     "messages": "メッセージ",
@@ -350,11 +336,7 @@
     "copied": "コピーしました",
     "matcher": "マッチャーアドレス",
     "network": "ネットワーク",
-    "networkPrefix": "1文字指定する必要があります。",
-    "networkPrefixDescri[ption": "ネットワーク接頭時",
     "node": "ノードアドレス",
-    "node_code": "ネットワーク接頭時",
-    "node_code_hint": "1文字指定する必要があります。",
     "save": "保存",
     "savedModal": "保存しました。",
     "setDefault": "デフォルトに設定",
@@ -392,13 +374,6 @@
     "select": "アドレスアバターを選択",
     "selectInfo": "アバターは唯一無二です。後で変更することはできません。"
   },
-  "originAuth": {
-    "allow": "許可",
-    "block": "ブロック",
-    "deny": "拒否",
-    "description": "Wavesアドレスへのアクセスを希望",
-    "title": "アクセス許可"
-  },
   "otherAccounts": {
     "addAccount": "アカウント追加",
     "noAccountsNote": "現在のネットワークに他のアカウントはありません。",
@@ -414,18 +389,20 @@
     "customList": "カスタムリスト",
     "whiteList": "ホワイトリスト"
   },
-  "permissionSettings:_modal": {
-    "amount": "使用限度額",
-    "cancel": "キャンセル",
-    "delete": "削除",
-    "description": "<1>{originName}</1>が自動的にトランザクションに署名することができます。",
-    "save": "保存",
-    "time": "解決時間",
-    "time15m": "15分間",
-    "time30m": "30分間",
-    "time60m": "1時間",
-    "timeOff": "自動署名しない",
-    "title": "許可内容"
+  "permissionSettings": {
+    "modal": {
+      "amount": "使用限度額",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "description": "<1>{originName}</1>が自動的にトランザクションに署名することができます。",
+      "save": "保存",
+      "time": "解決時間",
+      "time15m": "15分間",
+      "time30m": "30分間",
+      "time60m": "1時間",
+      "timeOff": "自動署名しない",
+      "title": "許可内容"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "承認済み",
@@ -433,7 +410,6 @@
     "empty": "ここにはありません。",
     "rejectedOrigin": "却下",
     "title": "アクセス権管理",
-    "button": { "delete": "削除", "disable": "禁止", "enable": "許可" },
     "notify": {
       "allowed": "許可されました。",
       "deleted": "削除されました。",
@@ -464,7 +440,6 @@
     "autoClick": "自動クリック防止",
     "autoClickDisable": "無効",
     "autoClickEnable": "有効",
-    "delete": "全てのアカウントを削除",
     "deleteAccounts": "アカウントを削除",
     "export": "アカウントをエクスポート",
     "langs": "言語切替",
@@ -494,7 +469,9 @@
     "key": "キー",
     "showAll": "全て表示",
     "type": "タイプ",
-    "value": "値",
+    "value": "値"
+  },
+  "sign": {
     "transactionConfirmed": "トランザクションが確定しました。",
     "transactionFailed": "トランザクションが拒否されました。",
     "transactionSend": "送信しました。",
@@ -578,7 +555,6 @@
     "paymentsCount_plural": "{{count}} 支払い",
     "paymentsNone": "支払いなし",
     "permission": { "details": "許可内容" },
-    "permissionsWarning": "アプリケーションはあなたのWavesアドレスにアクセスできますが、あなたのシードや秘密鍵が公開されることはありません。リダイレクトされたウェブサイトには、決してあなたのシードフレーズを入力しないでください。",
     "price": "価格",
     "publicKey": "公開鍵",
     "recipient": "受取人",

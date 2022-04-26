@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "Tài khoản này được đăng nhập bằng tài khoản Waves.exchange, nên không có cụm từ sao lưu để sao chép",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "seed": "Cụm từ sao lưu",
     "viewInExplorer": "Xem trên trình duyệt "
   },
   "activeAccountCard": { "swapButton": "Swap" },
@@ -47,17 +46,11 @@
     "title": "Chọn 1 token"
   },
   "assets": {
-    "account": "Tài khoản ",
-    "accountCreationSuccessNotification": "Đã tạo tài khoản",
-    "accountImportSuccessNotification": "Đã import tài khoản thành công",
-    "activatedModal": "Tài khoản đang hoạt động",
-    "addAccount": "Thêm tài khoản",
     "changeName": "Đã đổi tên tài khoản ",
     "copied": "Đã sao chép",
     "deleteAccount": "Xóa tài khoản",
     "inStorage": "Tài khoản khác",
     "issuedBy": "Phát hành bởi {{ người phát hành}}",
-    "lastUpdate": "Cập nhật mới nhất",
     "selectAccountNotification": "Hoạt động của tài khoản đã được thay đổi",
     "assets": "Tài sản",
     "nfts": "NFT",
@@ -130,11 +123,6 @@
     "delete": "Xóa tài khoản",
     "warn": "Xóa tài khoản sẽ dẫn đến mất mát không thể khôi phục được!"
   },
-  "deleteUser": {
-    "attention": "Chú ý!",
-    "delete": "Xóa tài khoản sẽ dẫn đến mất mát không thể khôi phục được!",
-    "warn": "Xóa tài khoản có thể dẫn đến mất quyền truy cập vào quỹ! Luôn đảm bảo rằng bạn đã sao lưu SEED của mình."
-  },
   "exportKeystore": {
     "cancelBtn": "Hủy ",
     "chooseAccountsDesc": "Chọn tài khoản bạn muốn export. Chúng sẽ được mã hóa và xuất thành tệp keystore",
@@ -200,8 +188,7 @@
     "swap": "Swap token",
     "transfer": "Chuyển ",
     "transferReceive": "Đang chuyển",
-    "transferSelf": "Tự chuyển",
-    "updateAssetInfo": "Cập nhật thông tin tài sản"
+    "transferSelf": "Tự chuyển"
   },
   "historyFilters": {
     "all": "Tất cả",
@@ -327,10 +314,9 @@
     "enter": "Enter",
     "password": "Mật khẩu",
     "passwordError": "Sai mật khẩu",
-    "passwordForgot": "Quên mật khẩu",
-    "passwordforgot": "Quên mật khẩu",
-    "mainnet": "mainnet"
+    "passwordForgot": "Quên mật khẩu"
   },
+  "mainnet": "mainnet",
   "messageList": {
     "clearAllMessages": "Xóa tất cả",
     "messages": "Tin nhắn",
@@ -350,11 +336,7 @@
     "copied": "Đã sao chép!",
     "matcher": "Địa chỉ đối sánh ",
     "network": "Mạng",
-    "networkPrefix": "Bạn phải chỉ định một ký tự",
-    "networkPrefixDescri[ption": "Tiền tố mạng",
     "node": "Địa chỉ node ",
-    "node_code": "Tiền tố mạng",
-    "node_code_hint": "Bạn phải chỉ định một ký tự",
     "save": "Lưu ",
     "savedModal": "Đã lưu!",
     "setDefault": "Đặt làm mặc định",
@@ -392,13 +374,6 @@
     "select": "Chọn ảnh đại diện tài khoản của bạn",
     "selectInfo": "Hình đại diện này là duy nhất. Bạn không thể thay đổi nó sau này."
   },
-  "originAuth": {
-    "allow": "Cho phép",
-    "block": "Chặn",
-    "deny": "Từ chối",
-    "description": "Muốn truy cập tài địa chỉ Waves của bạn",
-    "title": "Cho phép truy cập"
-  },
   "otherAccounts": {
     "addAccount": "Thêm tài khoản",
     "noAccountsNote": "Bạn không còn tài khoản khác trên mạng hiện tại",
@@ -414,18 +389,20 @@
     "customList": "Danh sách tùy chọn",
     "whiteList": "Danh sách trắng"
   },
-  "permissionSettings:_modal": {
-    "amount": "Giới hạn sử dụng",
-    "cancel": "Hủy",
-    "delete": "Xóa",
-    "description": "Điều này cho phép <1> {{originName}} </1> tự động ký các giao dịch thay mặt bạn.",
-    "save": "Lưu",
-    "time": "Thời gian giải quyết",
-    "time15m": "Khoảng 15 phút",
-    "time30m": "Khoảng 30 phút",
-    "time60m": "Khoảng 1 giờ",
-    "timeOff": "Không tự động ký",
-    "title": "Chi tiết quyền"
+  "permissionSettings": {
+    "modal": {
+      "amount": "Giới hạn sử dụng",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "description": "Điều này cho phép <1> {{originName}} </1> tự động ký các giao dịch thay mặt bạn.",
+      "save": "Lưu",
+      "time": "Thời gian giải quyết",
+      "time15m": "Khoảng 15 phút",
+      "time30m": "Khoảng 30 phút",
+      "time60m": "Khoảng 1 giờ",
+      "timeOff": "Không tự động ký",
+      "title": "Chi tiết quyền"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "Đã được phê duyệt",
@@ -433,11 +410,6 @@
     "empty": "Không có gì ở đây",
     "rejectedOrigin": "Đã bị từ chối",
     "title": "Quyền điều khiển",
-    "button": {
-      "delete": "Xóa",
-      "disable": "Không cho phép",
-      "enable": "Cho phép"
-    },
     "notify": {
       "allowed": "Đã cho phép",
       "deleted": "Đã xóa",
@@ -468,7 +440,6 @@
     "autoClick": "Bảo vệ tự động nhấp",
     "autoClickDisable": "Vô hiệu hóa",
     "autoClickEnable": "Kích hoạt",
-    "delete": "Xóa tất cả tài khoản",
     "deleteAccounts": "Xóa tài khoản",
     "export": "Nhập tài khoản ",
     "langs": "Thay đổi ngôn ngữ",
@@ -498,7 +469,9 @@
     "key": "Khóa",
     "showAll": "Hiển thị tất cả",
     "type": "Loại",
-    "value": "Giá trị",
+    "value": "Giá trị"
+  },
+  "sign": {
     "transactionConfirmed": "Giao dịch của bạn đã được xác nhận!",
     "transactionFailed": "Giao dịch của bạn bị từ chối!",
     "transactionSend": "Bạn đã gửi ",
@@ -582,7 +555,6 @@
     "paymentsCount_plural": "{{count}} Thanh toán",
     "paymentsNone": "Không thanh toán",
     "permission": { "details": "Chi tiết quyền" },
-    "permissionsWarning": "Ứng dụng sẽ có quyền truy cập vào địa chỉ Waves của bạn nhưng sẽ không để lộ SEED hoặc privte key của bạn. Không bao giờ nhập cụm từ bí mật của bạn (SEED) trên bất kỳ trang web nào mà bạn được chuyển hướng đến.",
     "price": "Giá",
     "publicKey": "Public key",
     "recipient": "Người nhận",

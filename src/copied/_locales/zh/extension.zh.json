@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "该账户通过Waves.Exchange账户导入，无可备份助记词或私钥",
     "privKey": "私钥",
     "pubKey": "公钥",
-    "seed": "备份助记词",
     "viewInExplorer": "在浏览器中查看"
   },
   "activeAccountCard": { "swapButton": "兑换" },
@@ -47,17 +46,11 @@
     "title": "选择代币"
   },
   "assets": {
-    "account": "账户",
-    "accountCreationSuccessNotification": "账户已创建",
-    "accountImportSuccessNotification": "账户导入成功",
-    "activatedModal": "激活账户",
-    "addAccount": "添加账户",
     "changeName": "账户名称已变更",
     "copied": "已复制",
     "deleteAccount": "已删除账户",
     "inStorage": "其他账户",
     "issuedBy": "由{{ issuer }}发行",
-    "lastUpdate": "最近更新：",
     "selectAccountNotification": "激活账户已变更",
     "assets": "资产",
     "nfts": "NFT",
@@ -130,11 +123,6 @@
     "delete": "删除账户",
     "warn": "删除账户将导致难以挽回的损失！"
   },
-  "deleteUser": {
-    "attention": "请注意！",
-    "delete": "删除账户",
-    "warn": "删除账户将导致难以挽回的资产损失！请确保您已经备份好种子助记词。"
-  },
   "exportKeystore": {
     "cancelBtn": "取消",
     "chooseAccountsDesc": "选择您想导出的账户，他们将被加密，并以密钥存储文件导出。",
@@ -200,8 +188,7 @@
     "swap": "代币兑换",
     "transfer": "转账",
     "transferReceive": "传入中转账",
-    "transferSelf": "自转",
-    "updateAssetInfo": "更新资产信息"
+    "transferSelf": "自转"
   },
   "historyFilters": {
     "all": "全部",
@@ -327,10 +314,9 @@
     "enter": "输入",
     "password": "密码",
     "passwordError": "密码错误",
-    "passwordForgot": "忘记密码",
-    "passwordforgot": "忘记密码",
-    "mainnet": "主网"
+    "passwordForgot": "忘记密码"
   },
+  "mainnet": "主网",
   "messageList": {
     "clearAllMessages": "清除全部",
     "messages": "信息",
@@ -350,11 +336,7 @@
     "copied": "已复制！",
     "matcher": "匹配器地址",
     "network": "网络",
-    "networkPrefix": "您必须指定1个字符",
-    "networkPrefixDescri[ption": "网络前缀",
     "node": "节点地址",
-    "node_code": "网络前缀",
-    "node_code_hint": "您必须指定1个字符",
     "save": "保存",
     "savedModal": "已保存！",
     "setDefault": "设置为默认",
@@ -392,13 +374,6 @@
     "select": "选择您的地址头像",
     "selectInfo": "该头像很独特，您之后将无法改变投向。"
   },
-  "originAuth": {
-    "allow": "允许",
-    "block": "禁止",
-    "deny": "拒绝",
-    "description": "想访问您的Waves地址",
-    "title": "允许访问"
-  },
   "otherAccounts": {
     "addAccount": "添加账户",
     "noAccountsNote": "在当前网络中，您没有其他账户",
@@ -411,18 +386,20 @@
     "scanPairing": "扫描匹配码"
   },
   "permission": { "customList": "自定义名单", "whiteList": "白名单" },
-  "permissionSettings:_modal": {
-    "amount": "花费限额",
-    "cancel": "取消",
-    "delete": "删除",
-    "description": "描述",
-    "save": "保存",
-    "time": "解决时间",
-    "time15m": "15分钟",
-    "time30m": "30分钟",
-    "time60m": "1小时",
-    "timeOff": "请勿自动签名",
-    "title": "权限详情"
+  "permissionSettings": {
+    "modal": {
+      "amount": "花费限额",
+      "cancel": "取消",
+      "delete": "删除",
+      "description": "描述",
+      "save": "保存",
+      "time": "解决时间",
+      "time15m": "15分钟",
+      "time30m": "30分钟",
+      "time60m": "1小时",
+      "timeOff": "请勿自动签名",
+      "title": "权限详情"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "已许可",
@@ -430,7 +407,6 @@
     "empty": "这里什么也没有...",
     "rejectedOrigin": "已拒绝",
     "title": "权限控制",
-    "button": { "delete": "删除", "disable": "不允许", "enable": "允许" },
     "notify": {
       "allowed": "已允许！",
       "deleted": "已删除！",
@@ -461,7 +437,6 @@
     "autoClick": "自动点击保护",
     "autoClickDisable": "关闭",
     "autoClickEnable": "开启",
-    "delete": "删除所有账户",
     "deleteAccounts": "删除多个账户",
     "export": "导出多个账户",
     "langs": "变更语言",
@@ -491,7 +466,9 @@
     "key": "私钥",
     "showAll": "显示全部",
     "type": "类型",
-    "value": "价值",
+    "value": "价值"
+  },
+  "sign": {
     "transactionConfirmed": "您的交易已被确认！",
     "transactionFailed": "您的交易已被拒绝！",
     "transactionSend": "您已发送",
@@ -575,7 +552,6 @@
     "paymentsCount_plural": "{{count}} 支付",
     "paymentsNone": "无支付",
     "permission": { "details": "权限详情" },
-    "permissionsWarning": "该应用有权限访问您的Waves地址，但并不会暴露您的助记词种子或私钥。请不要在任何时候在任何重定向的网站上输入您的助记词种子。",
     "price": "价格",
     "publicKey": "公钥",
     "recipient": "接收人",

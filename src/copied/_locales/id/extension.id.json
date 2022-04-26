@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "Informasi akun" },
+  "accountCard": {
+    "infoTooltip": "Informasi akun" 
+  },
   "accountInfo": {
     "address": "Address",
     "backUp": "Backup phrase",
@@ -15,11 +17,14 @@
     "emailNoBackupPhrase": "Akun ini diimpor menggunakan waves.exchange, jadi tidak ada Backup phrase untuk disalin",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "seed": "Backup phrase",
     "viewInExplorer": "Lihat di explorer"
   },
-  "activeAccountCard": { "swapButton": "Swap" },
-  "assetAmountInput": { "maxButtonText": "Max" },
+  "activeAccountCard": {
+    "swapButton": "Swap" 
+  },
+  "assetAmountInput": {
+    "maxButtonText": "Max" 
+  },
   "assetInfo": {
     "id": "ID",
     "name": "Nama",
@@ -47,17 +52,11 @@
     "title": "Pilih token"
   },
   "assets": {
-    "account": "Akun",
-    "accountCreationSuccessNotification": "Akun dibuat",
-    "accountImportSuccessNotification": "Sukses diimpor",
-    "activatedModal": "Akun telah aktif",
-    "addAccount": "Tambahkan akun",
     "changeName": "Nama dirubah",
     "copied": "Disalin!",
     "deleteAccount": "Hapus akun",
     "inStorage": "Akun lainnya",
     "issuedBy": "Dikeluarkan oleh {{ issuer }}",
-    "lastUpdate": "Pembaharuan Terakhir:",
     "selectAccountNotification": "Akun aktif berubah",
     "assets": "Asset",
     "nfts": "NFT",
@@ -124,16 +123,13 @@
     "wrongSeed": "Salah, coba lagi"
   },
   "copyAddress": "Salin address",
-  "date": { "today": "Hari ini" },
+  "date": {
+    "today": "Hari ini" 
+  },
   "deleteAccount": {
     "attention": "Perhatian!",
     "delete": "Hapus akun",
     "warn": "Menghapus akun akan menyebabkan kerugian yang tidak dapat diperbaiki!"
-  },
-  "deleteUser": {
-    "attention": "Perhatian!",
-    "delete": "Hapus akun",
-    "warn": "Menghapus akun dapat menyebabkan hilangnya akses ke dana yang tidak dapat diperbaiki! Selalu pastikan Anda telah mencadangkan SEED Anda."
   },
   "exportKeystore": {
     "cancelBtn": "Batalkan",
@@ -200,8 +196,7 @@
     "swap": "Token Swap",
     "transfer": "Transfer",
     "transferReceive": "Transfer masuk",
-    "transferSelf": "transfer sendiri",
-    "updateAssetInfo": "Perbarui Info Aset"
+    "transferSelf": "transfer sendiri"
   },
   "historyFilters": {
     "all": "Semua",
@@ -313,7 +308,10 @@
     "joinUs": "Join Komunitas Waves",
     "keepUp": "Keeper Wallet adalah cara teraman untuk berinteraksi dengan sumber daya web pihak ketiga dengan fungsionalitas terintegrasi Waves atau DApps. Menggunakan Keeper Wallet, Anda dapat menandatangani transaksi dan tetap aman dari situs berbahaya."
   },
-  "langsSettings": { "confirm": "OK", "title": "Ubah Bahasa" },
+  "langsSettings": {
+    "confirm": "OK",
+    "title": "Ubah Bahasa" 
+  },
   "ledgerErrors": {
     "unknown": "Tidak dapat terhubung ke ledger. Silakan coba lagi",
     "usedBySomeOtherApp": "Sepertinya ledger sudah digunakan oleh aplikasi lain. Tutup semua aplikasi yang mungkin menggunakan ledger dan coba lagi."
@@ -327,10 +325,9 @@
     "enter": "Masuk",
     "password": "Password",
     "passwordError": "Sandi salah",
-    "passwordForgot": "Lupa password?",
-    "passwordforgot": "Lupa password?",
-    "mainnet": "mainnet"
+    "passwordForgot": "Lupa password?"
   },
+  "mainnet": "mainnet",
   "messageList": {
     "clearAllMessages": "Hapus semua",
     "messages": "Pesan",
@@ -350,11 +347,7 @@
     "copied": "Disalin!",
     "matcher": "address pencocokan",
     "network": "Jaringn",
-    "networkPrefix": "Anda harus menentukan 1 karakter",
-    "networkPrefixDescri[ption": "Awalan jaringan",
     "node": "Node address",
-    "node_code": "Awalan jaringan",
-    "node_code_hint": "Anda harus menentukan 1 karakter",
     "save": "Simpan",
     "savedModal": "Disimpan!",
     "setDefault": "Set standar",
@@ -392,13 +385,6 @@
     "select": "Pilih address avatar",
     "selectInfo": "Avatar ini unik. Anda tidak dapat mengubahnya nanti."
   },
-  "originAuth": {
-    "allow": "Izinkan",
-    "block": "Blok",
-    "deny": "Larang",
-    "description": "ingin mengakses address Waves Anda",
-    "title": "Izinkan akses"
-  },
   "otherAccounts": {
     "addAccount": "Taambahkan akun",
     "noAccountsNote": "Anda tidak memiliki akun lain di jaringan saat ini",
@@ -414,18 +400,20 @@
     "customList": "Daftar kustom",
     "whiteList": "White list"
   },
-  "permissionSettings:_modal": {
-    "amount": "Batas pengeluaran",
-    "cancel": "Batal",
-    "delete": "Hapus",
-    "description": "Ini memungkinkan <1>{{originName}}</1> menandatangani transaksi atas nama Anda secara otomatis.",
-    "save": "Simpan",
-    "time": "Waktu resolusi",
-    "time15m": "Untuk 15 menit",
-    "time30m": "Selama 30 menit",
-    "time60m": "Selama 1 jam",
-    "timeOff": "Jangan secara otomatis sign",
-    "title": "Detail izin"
+  "permissionSettings": {
+    "modal": {
+      "amount": "Batas pengeluaran",
+      "cancel": "Batal",
+      "delete": "Hapus",
+      "description": "Ini memungkinkan <1>{{originName}}</1> menandatangani transaksi atas nama Anda secara otomatis.",
+      "save": "Simpan",
+      "time": "Waktu resolusi",
+      "time15m": "Untuk 15 menit",
+      "time30m": "Selama 30 menit",
+      "time60m": "Selama 1 jam",
+      "timeOff": "Jangan secara otomatis sign",
+      "title": "Detail izin"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "Disetujui",
@@ -433,11 +421,6 @@
     "empty": "Tidak ada disini…",
     "rejectedOrigin": "Ditolak",
     "title": "Kontrol izin",
-    "button": {
-      "delete": "Hpaus",
-      "disable": "tidak diizinkan",
-      "enable": "Mengizinkan"
-    },
     "notify": {
       "allowed": "Diizinkan!",
       "deleted": "Dihapus!",
@@ -450,7 +433,9 @@
     "collapse": "Collapse",
     "expand": "Perbesar"
   },
-  "qrCode": { "download": "Download QR code" },
+  "qrCode": {
+    "download": "Download QR code" 
+  },
   "send": {
     "amountInputLabel": "{{asset}} jumlah",
     "amountRequiredError": "Jumlah yang diperlukan",
@@ -468,7 +453,6 @@
     "autoClick": "Perlindungan klik otomatis",
     "autoClickDisable": "Dinonaktifkan",
     "autoClickEnable": "Aktif",
-    "delete": "Hapus semua akun",
     "deleteAccounts": "Hapus akun",
     "export": "Ekspor akun",
     "langs": "Ganti bahasa",
@@ -498,7 +482,9 @@
     "key": "Key",
     "showAll": "Semua",
     "type": "Tipe",
-    "value": "Value",
+    "value": "Value"
+  },
+  "sign": {
     "transactionConfirmed": "Transaksi Anda telah dikonfirmasi!",
     "transactionFailed": "Transaksi Anda ditolak!",
     "transactionSend": "Kamu telah mengirim",
@@ -581,8 +567,9 @@
     "paymentsCount": "{{count}} Pembayaran",
     "paymentsCount_plural": "{{count}} Pembayaran",
     "paymentsNone": "Tidak Ada Pembayaran",
-    "permission": { "details": "Detail izin" },
-    "permissionsWarning": "Aplikasi akan memiliki akses ke alamat Waves Anda tetapi tidak akan mengekspos SEED atau kunci pribadi Anda. Jangan pernah memasukkan frase rahasia Anda (SEED) di situs web mana pun yang Anda tuju.",
+    "permission": {
+      "details": "Detail izin" 
+    },
     "price": "Hraga",
     "publicKey": "Public Key",
     "recipient": "Penerima",
@@ -623,7 +610,9 @@
     "time": "Waktu",
     "messages": "Pesan"
   },
-  "wallet": { "lease": "Disewakan" },
+  "wallet": {
+    "lease": "Disewakan" 
+  },
   "welcome": {
     "getStarted": "Pendahuluan",
     "info": "Keeper Wallet adalah cara teraman untuk berinteraksi dengan sumber daya web pihak ketiga dengan fungsionalitas terintegrasi Waves atau DApps.",

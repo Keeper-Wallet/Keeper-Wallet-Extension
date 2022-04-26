@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "Bu hesap Waves.Exchange hesabı kullanılarak içe aktarıldı, dolayısıyla kopyalanacak yedekleme anahtarı veya özel anahtar yok",
     "privKey": "Özel anahtar",
     "pubKey": "Genel anahtar",
-    "seed": "Yedekleme anahtarı",
     "viewInExplorer": "Tarayıcı'da görüntüle"
   },
   "activeAccountCard": { "swapButton": "Takas et" },
@@ -47,17 +46,11 @@
     "title": "Bir token seçin"
   },
   "assets": {
-    "account": "Hesap",
-    "accountCreationSuccessNotification": "Hesap oluşturuldu",
-    "accountImportSuccessNotification": "Hesabı içe aktarma başarılı",
-    "activatedModal": "Hesap aktif olarak ayarlandı!",
-    "addAccount": "Hesap ekle",
     "changeName": "Hesap ismi değiştirildi",
     "copied": "Kopyalandı!",
     "deleteAccount": "Delete account",
     "inStorage": "Diğer hesaplar",
     "issuedBy": "{{ issuer }} tarafından ihraç edildi",
-    "lastUpdate": "Son Güncelleme:",
     "selectAccountNotification": "Geçerli hesap değişti",
     "assets": "Varlıklar",
     "nfts": "NFT",
@@ -130,11 +123,6 @@
     "delete": "Hesabı sil",
     "warn": "Bir hesap sildikten sonra geri alınamaz"
   },
-  "deleteUser": {
-    "attention": "Dikkat!",
-    "delete": "Hesabı sil",
-    "warn": "Herhangi bir hesabın silinmesi, fonlara olan erişimin geri alınamaz şekilde kaybolmasına neden olabilir! Her zaman \"ANAHTAR KELİMELER\"inizi yedeklediğinizden emin olun."
-  },
   "exportKeystore": {
     "cancelBtn": "İptal et",
     "chooseAccountsDesc": "Hangi hesapları dışa aktarmak istediğinizi seçin. Hesaplar şifrelenecekler ve bir Keystore dosyasına aktarılacaklar",
@@ -200,8 +188,7 @@
     "swap": "Token Takası",
     "transfer": "Transfer",
     "transferReceive": "Gelen Transfer",
-    "transferSelf": "Kendinize transfer",
-    "updateAssetInfo": "Varlık bilgilerini güncelle"
+    "transferSelf": "Kendinize transfer"
   },
   "historyFilters": {
     "all": "Tümü",
@@ -327,10 +314,9 @@
     "enter": "Giriş",
     "password": "Şifre",
     "passwordError": "Yanlış şifre",
-    "passwordForgot": "Şifremi unuttum",
-    "passwordforgot": "Şifremi unuttum",
-    "mainnet": "mainnet"
+    "passwordForgot": "Şifremi unuttum"
   },
+  "mainnet": "mainnet",
   "messageList": {
     "clearAllMessages": "Tümünü temizle",
     "messages": "Mesajlar",
@@ -350,11 +336,7 @@
     "copied": "Kopyalandı!",
     "matcher": "Eşleştirici adresi",
     "network": "Ağ",
-    "networkPrefix": "1 karakter belirtmelisiniz",
-    "networkPrefixDescri[ption": "Ağ öneki",
     "node": "Node adresi",
-    "node_code": "Ağ Öneki",
-    "node_code_hint": "1 karakter belirtmelisiniz",
     "save": "Kaydet",
     "savedModal": "Kayıt edildi!",
     "setDefault": "Varsayılanı ayarla",
@@ -392,13 +374,6 @@
     "select": "Adres avatarınızı seçin",
     "selectInfo": "Bu avatar eşsizdir. Daha sonrasında değiştiremezsiniz."
   },
-  "originAuth": {
-    "allow": "İzin ver",
-    "block": "Engelle",
-    "deny": "Reddet",
-    "description": "Waves Adresinize erişmek istiyor",
-    "title": "Erişime izin ver"
-  },
   "otherAccounts": {
     "addAccount": "Hesap ekle",
     "noAccountsNote": "Mevcuttaki ağda başka hesabınız yok",
@@ -411,18 +386,20 @@
     "scanPairing": "Eşleme Kodunu Tarayın"
   },
   "permission": { "customList": "Özel Liste", "whiteList": "Whitelist" },
-  "permissionSettings:_modal": {
-    "amount": "Harcama limiti",
-    "cancel": "İptal et",
-    "delete": "Sil",
-    "description": "Bu, <1>{{originName}}</1>'in işlemleri sizin adınıza otomatik olarak imzalamasına olanak tanır.",
-    "save": "Kaydet",
-    "time": "Çözünürlük süresi",
-    "time15m": "15 dakika",
-    "time30m": "30 dakika",
-    "time60m": "1 saat",
-    "timeOff": "Otomatik olarak imzalama",
-    "title": "İzin ayrıntıları"
+  "permissionSettings": {
+    "modal": {
+      "amount": "Harcama limiti",
+      "cancel": "İptal et",
+      "delete": "Sil",
+      "description": "Bu, <1>{{originName}}</1>'in işlemleri sizin adınıza otomatik olarak imzalamasına olanak tanır.",
+      "save": "Kaydet",
+      "time": "Çözünürlük süresi",
+      "time15m": "15 dakika",
+      "time30m": "30 dakika",
+      "time60m": "1 saat",
+      "timeOff": "Otomatik olarak imzalama",
+      "title": "İzin ayrıntıları"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "Onaylandı",
@@ -430,11 +407,6 @@
     "empty": "Burada hiçbir şey yok...",
     "rejectedOrigin": "Reddedildi",
     "title": "İzin kontrolü",
-    "button": {
-      "delete": "Sil",
-      "disable": "İzin verme",
-      "enable": "İzin ver"
-    },
     "notify": {
       "allowed": "İzin verildi!",
       "deleted": "Silindi!",
@@ -465,7 +437,6 @@
     "autoClick": "Otomatik tıklama koruması",
     "autoClickDisable": "Devre dışı",
     "autoClickEnable": "Etkin",
-    "delete": "Tüm hesapları sil",
     "deleteAccounts": "Hesapları sil",
     "export": "Hesapları dışa aktar",
     "langs": "Dili değiştir",
@@ -495,7 +466,9 @@
     "key": "Anahtar",
     "showAll": "Tümünü göster",
     "type": "Tür",
-    "value": "Değer",
+    "value": "Değer"
+  },
+  "sign": {
     "transactionConfirmed": "İşleminiz onaylandı!",
     "transactionFailed": "İşleminiz reddedildi!",
     "transactionSend": "Gönderdiniz",
@@ -579,7 +552,6 @@
     "paymentsCount_plural": "{{count}} Ödeme(ler)",
     "paymentsNone": "Ödeme yok",
     "permission": { "details": "İzin ayrıntıları" },
-    "permissionsWarning": "Uygulama, Waves adresinize erişebilir ancak ANAHTAR KELİMENİZE veya özel anahtarınıza erişemez. Yönlendirildiğiniz herhangi bir web sitesine asla gizli kelimelerinizi (ANAHTAR KELİME) girmeyin.",
     "price": "Fiyat",
     "publicKey": "Genel anahtar",
     "recipient": "Alıcı",

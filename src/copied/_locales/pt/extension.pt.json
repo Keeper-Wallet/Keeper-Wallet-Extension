@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "Esta conta foi importada usando a conta Waves.Exchange, portanto, não há frase de backup ou chave privada para copiar",
     "privKey": "Chave Privada",
     "pubKey": "Chave Pública",
-    "seed": "Frase de backup",
     "viewInExplorer": "Ver no Explorer"
   },
   "activeAccountCard": { "swapButton": "Converter" },
@@ -47,17 +46,11 @@
     "title": "Selecionar um token"
   },
   "assets": {
-    "account": "Conta",
-    "accountCreationSuccessNotification": "Conta criada",
-    "accountImportSuccessNotification": "Conta importada com sucesso",
-    "activatedModal": "Conta definida como ativa!",
-    "addAccount": "Adicionar conta",
     "changeName": "Nome da conta alterado",
     "copied": "Copiado!",
     "deleteAccount": "Excluir conta",
     "inStorage": "Outras contas",
     "issuedBy": "Emitido por {{ issuer }}",
-    "lastUpdate": "Última atualização:",
     "selectAccountNotification": "Conta ativa alterada",
     "assets": "Ativos",
     "nfts": "NFTs",
@@ -130,11 +123,6 @@
     "delete": "Excluir conta",
     "warn": "Excluir uma conta levará à sua perda irrecuperável!"
   },
-  "deleteUser": {
-    "attention": "Atenção!",
-    "delete": "Excluir conta",
-    "warn": "A exclusão de uma conta pode levar à perda irrecuperável do acesso aos fundos! Certifique-se sempre de fazer backup da sua SEED."
-  },
   "exportKeystore": {
     "cancelBtn": "Cancelar",
     "chooseAccountsDesc": "Selecione quais contas você deseja exportar. Elas serão criptografadas e exportadas para um arquivo Keystore",
@@ -200,8 +188,7 @@
     "swap": "Conversão de Token",
     "transfer": "Transferência",
     "transferReceive": "Transferência Recebida",
-    "transferSelf": "Autotransferência",
-    "updateAssetInfo": "Atualização de Informações do Ativo"
+    "transferSelf": "Autotransferência"
   },
   "historyFilters": {
     "all": "Todos",
@@ -327,10 +314,9 @@
     "enter": "Entrar",
     "password": "Senha",
     "passwordError": "Senha incorreta",
-    "passwordForgot": "Esqueci a senha",
-    "passwordforgot": "Esqueci a senha",
-    "mainnet": "mainnet"
+    "passwordForgot": "Esqueci a senha"
   },
+  "mainnet": "mainnet",
   "messageList": {
     "clearAllMessages": "Limpar tudo",
     "messages": "Mensagens",
@@ -350,11 +336,7 @@
     "copied": "Copiado!",
     "matcher": "Endereço do matcher",
     "network": "Rede",
-    "networkPrefix": "Você deve especificar 1 caractere",
-    "networkPrefixDescri[ption": "Prefixo da rede",
     "node": "Endereço do node",
-    "node_code": "Prefixo da Rede",
-    "node_code_hint": "Você deve especificar 1 caractere",
     "save": "Salvar",
     "savedModal": "Salvo!",
     "setDefault": "Configuração Padrão",
@@ -392,13 +374,6 @@
     "select": "Escolha o avatar do endereço",
     "selectInfo": "Esse avatar é único. Você não poderá alterá-lo depois."
   },
-  "originAuth": {
-    "allow": "Permitir",
-    "block": "Bloquear",
-    "deny": "Negar",
-    "description": "deseja acessar seu endereço Waves",
-    "title": "Permitir acesso"
-  },
   "otherAccounts": {
     "addAccount": "Adicionar Conta",
     "noAccountsNote": "Você não tem outras contas na rede atual",
@@ -414,18 +389,20 @@
     "customList": "Lista personalizada",
     "whiteList": "White List"
   },
-  "permissionSettings:_modal": {
-    "amount": "Limite de gastos",
-    "cancel": "Cancelar",
-    "delete": "Excluir",
-    "description": "Isso permite que <1>{{originName}}</1> assine transações automaticamente em seu nome.",
-    "save": "Salvar",
-    "time": "Tempo de resolução",
-    "time15m": "Por 15 minutos",
-    "time30m": "Por 30 minutos",
-    "time60m": "Por 1 hora",
-    "timeOff": "Não assinar automaticamente",
-    "title": "Detalhes da permissão"
+  "permissionSettings": {
+    "modal": {
+      "amount": "Limite de gastos",
+      "cancel": "Cancelar",
+      "delete": "Excluir",
+      "description": "Isso permite que <1>{{originName}}</1> assine transações automaticamente em seu nome.",
+      "save": "Salvar",
+      "time": "Tempo de resolução",
+      "time15m": "Por 15 minutos",
+      "time30m": "Por 30 minutos",
+      "time60m": "Por 1 hora",
+      "timeOff": "Não assinar automaticamente",
+      "title": "Detalhes da permissão"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "Aprovado",
@@ -433,11 +410,6 @@
     "empty": "Não há nada aqui...",
     "rejectedOrigin": "Rejeitado",
     "title": "Controle de permissões",
-    "button": {
-      "delete": "Excluir",
-      "disable": "Não permitir",
-      "enable": "Permitir"
-    },
     "notify": {
       "allowed": "Permitido!",
       "deleted": "Excluído!",
@@ -468,7 +440,6 @@
     "autoClick": "Proteção Auto-click",
     "autoClickDisable": "Desativado",
     "autoClickEnable": "Ativado",
-    "delete": "Excluir todas as contas",
     "deleteAccounts": "Excluir contas",
     "export": "Exportar contas",
     "langs": "Alterar o idioma",
@@ -498,7 +469,9 @@
     "key": "Chave",
     "showAll": "Mostrar tudo",
     "type": "Tipo",
-    "value": "Quantia",
+    "value": "Quantia"
+  },
+  "sign": {
     "transactionConfirmed": "Sua transação foi confirmada!",
     "transactionFailed": "Sua transação foi rejeitada!",
     "transactionSend": "Você enviou",
@@ -582,7 +555,6 @@
     "paymentsCount_plural": "{{count}} Pagamentos",
     "paymentsNone": "Sem Pagamentos",
     "permission": { "details": "Detalhes da permissão" },
-    "permissionsWarning": "O aplicativo terá acesso ao seu endereço Waves, mas não irá expor sua SEED ou chave privada. Nunca insira sua frase secreta (SEED) em nenhum site para o qual você seja redirecionado.",
     "price": "Preço",
     "publicKey": "Chave Pública",
     "recipient": "Destinatário",

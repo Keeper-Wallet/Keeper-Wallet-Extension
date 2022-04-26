@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "Información de la cuenta" },
+  "accountCard": {
+    "infoTooltip": "Información de la cuenta" 
+  },
   "accountInfo": {
     "address": "Tu dirección",
     "backUp": "Frase de recuperación",
@@ -15,11 +17,14 @@
     "emailNoBackupPhrase": "Esta cuenta se importó con la cuenta de Waves.Exchange, por lo que no hay una frase de respaldo ni una clave privada para copiar",
     "privKey": "Clave privada",
     "pubKey": "Clave publica",
-    "seed": "Frase de recuperación",
     "viewInExplorer": "Ver en el explorador"
   },
-  "activeAccountCard": { "swapButton": "Intercambio" },
-  "assetAmountInput": { "maxButtonText": "Maximo" },
+  "activeAccountCard": {
+    "swapButton": "Intercambio" 
+  },
+  "assetAmountInput": {
+    "maxButtonText": "Maximo" 
+  },
   "assetInfo": {
     "id": "ID",
     "name": "Nombre",
@@ -47,17 +52,11 @@
     "title": "Seleccionar un token"
   },
   "assets": {
-    "account": "Cuenta",
-    "accountCreationSuccessNotification": "Cuenta creada",
-    "accountImportSuccessNotification": "Importación de la cuenta realizado con exito",
-    "activatedModal": "Configuración de la cuenta activada",
-    "addAccount": "Añadir cuenta",
     "changeName": "Nombre de la cuenta cambiado",
     "copied": "Copiado!",
     "deleteAccount": "Eliminar cuenta",
     "inStorage": "Otras cuentas",
     "issuedBy": "Emitido por {{ emisor }}",
-    "lastUpdate": "Última actualización",
     "selectAccountNotification": "Cuenta activa cambiada",
     "assets": "Activos",
     "nfts": "NFTs",
@@ -124,16 +123,13 @@
     "wrongSeed": "Orden errado, intenta de nuevo"
   },
   "copyAddress": "Copiar dirección",
-  "date": { "today": "Hoy" },
+  "date": {
+    "today": "Hoy" 
+  },
   "deleteAccount": {
     "attention": "¡Atención!",
     "delete": "Eliminar cuenta",
     "warn": "¡Eliminar una cuenta conducirá a su pérdida irrecuperable!"
-  },
-  "deleteUser": {
-    "attention": "¡Atención!",
-    "delete": "Eliminar cuenta",
-    "warn": "¡Eliminar una cuenta puede conducir a una pérdida irrecuperable de acceso a los fondos! Siempre asegúrese de haber realizado una copia de seguridad de su SEED."
   },
   "exportKeystore": {
     "cancelBtn": "Cancelar",
@@ -200,8 +196,7 @@
     "swap": "Intercambio de tokens",
     "transfer": "Transferir",
     "transferReceive": "Transferencia entrante",
-    "transferSelf": "Autotransferencia",
-    "updateAssetInfo": "Actualizar información de activos"
+    "transferSelf": "Autotransferencia"
   },
   "historyFilters": {
     "all": "Todos",
@@ -313,7 +308,10 @@
     "joinUs": "Únase a la comunidad de Waves",
     "keepUp": "Keeper Wallet es la forma más segura de interactuar con recursos web de terceros con la funcionalidad integrada de Waves o DApps. Con Keeper Wallet, puede firmar transacciones y mantenerse a salvo de sitios maliciosos."
   },
-  "langsSettings": { "confirm": "Confirmar", "title": "Cambiar el idioma" },
+  "langsSettings": {
+    "confirm": "Confirmar",
+    "title": "Cambiar el idioma" 
+  },
   "ledgerErrors": {
     "unknown": "No se pudo conectar al ledger. Inténtalo de nuevo",
     "usedBySomeOtherApp": "Parece que el ledger ya está en uso en otra aplicación. Cierre todas las aplicaciones que puedan usar el ledger y vuelva a intentarlo."
@@ -327,10 +325,9 @@
     "enter": "Entrar",
     "password": "Contraseña",
     "passwordError": "Contraseña incorrecta",
-    "passwordForgot": "Olvidé la contraseña",
-    "passwordforgot": "Olvidé la contraseña",
-    "mainnet": "red principal"
+    "passwordForgot": "Olvidé la contraseña"
   },
+  "mainnet": "mainnet",
   "messageList": {
     "clearAllMessages": "Limpiar todo",
     "messages": "Mensajes",
@@ -350,11 +347,7 @@
     "copied": "¡Copiado!",
     "matcher": "Dirección del comparador",
     "network": "Red",
-    "networkPrefix": "Debes especificar 1 caracter",
-    "networkPrefixDescri[ption": "Prefijo de red",
     "node": "dirección de nodo",
-    "node_code": "Prefijo de red",
-    "node_code_hint": "Debes especificar 1 caracter",
     "save": "Guardar",
     "savedModal": "¡Guardado!",
     "setDefault": "Establecer predeterminado",
@@ -392,13 +385,6 @@
     "select": "Elige tu dirección avatar",
     "selectInfo": "Este avatar es único. No puedes cambiarlo más tarde."
   },
-  "originAuth": {
-    "allow": "Permitir",
-    "block": "Bloquear",
-    "deny": "Negar",
-    "description": "quiere acceder a su dirección de Waves",
-    "title": "Permitir el acceso"
-  },
   "otherAccounts": {
     "addAccount": "Añadir cuenta",
     "noAccountsNote": "No tienes otras cuentas en la red actual",
@@ -414,18 +400,20 @@
     "customList": "Lista personalizada",
     "whiteList": "lista blanca"
   },
-  "permissionSettings:_modal": {
-    "amount": "Límite de gastos",
-    "cancel": "Cancelar",
-    "delete": "Borrar",
-    "description": "Esto permite que <1>{{originName}}</1> firme automáticamente transacciones en su nombre.",
-    "save": "Guardar",
-    "time": "Tiempo de resolucion",
-    "time15m": "Durante 15 minutos",
-    "time30m": "Por 30 minutos",
-    "time60m": "Durante 1 hora",
-    "timeOff": "No firmar automáticamente",
-    "title": "Detalles del permiso"
+  "permissionSettings": {
+    "modal": {
+      "amount": "Límite de gastos",
+      "cancel": "Cancelar",
+      "delete": "Borrar",
+      "description": "Esto permite que <1>{{originName}}</1> firme automáticamente transacciones en su nombre.",
+      "save": "Guardar",
+      "time": "Tiempo de resolucion",
+      "time15m": "Durante 15 minutos",
+      "time30m": "Por 30 minutos",
+      "time60m": "Durante 1 hora",
+      "timeOff": "No firmar automáticamente",
+      "title": "Detalles del permiso"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "Aprobado",
@@ -433,11 +421,6 @@
     "empty": "Nada aquí…",
     "rejectedOrigin": "Rechazado",
     "title": "control de permisos",
-    "button": {
-      "delete": "Borrar",
-      "disable": "No permitir",
-      "enable": "Permitir"
-    },
     "notify": {
       "allowed": "¡Permitido!",
       "deleted": "¡Eliminado!",
@@ -450,7 +433,9 @@
     "collapse": "Colapsar",
     "expand": "Expandir"
   },
-  "qrCode": { "download": "Descargar código QR" },
+  "qrCode": {
+    "download": "Descargar código QR" 
+  },
   "send": {
     "amountInputLabel": "{{activo}} cantidad",
     "amountRequiredError": "Se requiere cantidad",
@@ -468,7 +453,6 @@
     "autoClick": "Protección contra clics automáticos",
     "autoClickDisable": "Desactivado",
     "autoClickEnable": "Activado",
-    "delete": "Eliminar todas las cuentas",
     "deleteAccounts": "Eliminar cuentas",
     "export": "Exportar cuentas",
     "langs": "Cambiar idioma",
@@ -498,7 +482,9 @@
     "key": "Llave",
     "showAll": "Mostrar todo",
     "type": "Tipo",
-    "value": "Valor",
+    "value": "Valor"
+  },
+  "sign": {
     "transactionConfirmed": "¡Tu transacción está confirmada!",
     "transactionFailed": "¡Su transacción ha sido rechazada!",
     "transactionSend": "Has enviado",
@@ -581,8 +567,9 @@
     "paymentsCount": "{{contar}} pago",
     "paymentsCount_plural": "{{contar}} Pagos",
     "paymentsNone": "Sin Pagos",
-    "permission": { "details": "Detalles del permiso" },
-    "permissionsWarning": "La aplicación tendrá acceso a su dirección de Waves pero no expondrá su SEED o clave privada. Nunca ingrese su frase secreta (SEED) en ningún sitio web al que sea redirigido.",
+    "permission": {
+      "details": "Detalles del permiso" 
+    },
     "price": "Precio",
     "publicKey": "Llave pública",
     "recipient": "Destinatario",
@@ -612,7 +599,9 @@
     "unknown": "Desconocido",
     "wavesAuthTimeStamp": "Marca de tiempo"
   },
-  "ui": { "logoTitle": "Mantenga seguras sus claves de Waves en línea" },
+  "ui": {
+    "logoTitle": "Mantenga seguras sus claves de Waves en línea" 
+  },
   "notifications": {
     "allowSending": "Permitir enviar mensajes",
     "toListBtn": "Notificaciones",
@@ -621,7 +610,9 @@
     "time": "Tiempo",
     "messages": "Mensajes"
   },
-  "wallet": { "lease": "arrendado" },
+  "wallet": {
+    "lease": "arrendado" 
+  },
   "welcome": {
     "getStarted": "Empezar",
     "info": "Keeper Wallet es la forma más segura de interactuar con recursos web de terceros con la funcionalidad integrada de Waves o DApps.",

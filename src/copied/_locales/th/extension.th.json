@@ -15,7 +15,6 @@
     "emailNoBackupPhrase": "บัญชีนี้ถูกนำเข้าโดยใช้บัญชี Waves.Exchange จึงไม่มี backup phrase หรือ private key ให้คัดลอก",
     "privKey": "Private key",
     "pubKey": "Public key",
-    "seed": "Backup phrase",
     "viewInExplorer": "ดูใน Explorer"
   },
   "activeAccountCard": { "swapButton": "swap" },
@@ -47,17 +46,11 @@
     "title": "เลือกโทเค็น"
   },
   "assets": {
-    "account": "บัญชี",
-    "accountCreationSuccessNotification": "สร้างบัญชี",
-    "accountImportSuccessNotification": "นำเข้าบัญชีสำเร็จ",
-    "activatedModal": "บัญชีที่ใช้งานอยู่!",
-    "addAccount": "เพิ่มบัญชี",
     "changeName": "เปลี่ยนชื่อบัญชี",
     "copied": "คัดลอก!",
     "deleteAccount": "ลบบัญชี",
     "inStorage": "บัญชีอื่นๆ",
     "issuedBy": "ออกโดย {{Issuer}}",
-    "lastUpdate": "การอัพเดตครั้งล่าสุด:",
     "selectAccountNotification": "มีการเปลี่ยนแปลงบัญชีที่ใช้งานอยู่",
     "assets": "สินทรัพย์",
     "nfts": "NFTs",
@@ -130,11 +123,6 @@
     "delete": "ลบบัญชี",
     "warn": "การลบบัญชีจะส่งผลให้เกิดการสูญเสียที่ไม่สามารถกู้คืนได้!"
   },
-  "deleteUser": {
-    "attention": "โปรดทราบ!",
-    "delete": "ลบบัญชี",
-    "warn": "การลบบัญชีอาจทำให้สูญเสียการเข้าถึงเงินทุนอย่างแก้ไขไม่ได้! ตรวจสอบให้แน่ใจว่าคุณได้สำรอง SEED ของคุณไว้เสมอ"
-  },
   "exportKeystore": {
     "cancelBtn": "ยกเลิก",
     "chooseAccountsDesc": "เลือกบัญชีที่คุณต้องการส่งออก มันจะถูกเข้ารหัสและส่งออกไปยังไฟล์ Keystore",
@@ -200,8 +188,7 @@
     "swap": "swapโทเค็น",
     "transfer": "โอน",
     "transferReceive": "การรับโอน",
-    "transferSelf": "การโอนด้วยตนเอง",
-    "updateAssetInfo": "อัปเดตข้อมูลสินทรัพย์"
+    "transferSelf": "การโอนด้วยตนเอง"
   },
   "historyFilters": {
     "all": "ทั้งหมด",
@@ -327,10 +314,9 @@
     "enter": "Enter",
     "password": "รหัสผ่าน",
     "passwordError": "รหัสผ่านผิด",
-    "passwordForgot": "ฉันลืมรหัสผ่าน",
-    "passwordforgot": "ฉันลืมรหัสผ่าน",
-    "mainnet": "Mainnet"
+    "passwordForgot": "ฉันลืมรหัสผ่าน"
   },
+  "mainnet": "Mainnet",
   "messageList": {
     "clearAllMessages": "ลบทั้งหมด",
     "messages": "ข้อความ",
@@ -350,11 +336,7 @@
     "copied": "คัดลอกแล้ว!",
     "matcher": "ที่อยู่ของ Matcher",
     "network": "เครือข่าย",
-    "networkPrefix": "คุณต้องระบุตัวอักษร 1 ตัว",
-    "networkPrefixDescri[ption": "Network prefix",
     "node": "ที่อยู่ node",
-    "node_code": "Network prefix",
-    "node_code_hint": "คุณต้องระบุตัวอักษร 1 ตัว",
     "save": "บันทึก",
     "savedModal": "บันทึกแล้ว!",
     "setDefault": "ตั้งค่าเริ่มต้น",
@@ -392,13 +374,6 @@
     "select": "เลือก Avatar สำหรับกระเป๋าของคุณ ",
     "selectInfo": "Avatar นี้มีเอกลักษณ์ คุณไม่สามารถเปลี่ยนได้ในภายหลัง"
   },
-  "originAuth": {
-    "allow": "อนุญาต",
-    "block": "บล็อก",
-    "deny": "ปฏิเสธ",
-    "description": "ต้องการเข้าถึงที่อยู่ Waves ของคุณ",
-    "title": "อนุญาตให้เข้าถึง"
-  },
   "otherAccounts": {
     "addAccount": "เพิ่มบัญชี",
     "noAccountsNote": "คุณไม่มีบัญชีอื่นๆ ในเครือข่ายปัจจุบัน",
@@ -414,18 +389,20 @@
     "customList": "รายการที่กำหนดเอง",
     "whiteList": "White list"
   },
-  "permissionSettings:_modal": {
-    "amount": "วงเงินใช้จ่าย",
-    "cancel": "ยกเลิก",
-    "delete": "ลบ",
-    "description": "นี่คือการอนุญาตให้ <1> {{onstronname}} </ 1> ลงนามในธุรกรรมในนามของคุณโดยอัตโนมัติ",
-    "save": "บันทึก",
-    "time": "เวลาแก้ปัญหา",
-    "time15m": "เป็นเวลา 15 นาที",
-    "time30m": "เป็นเวลา 30 นาที",
-    "time60m": "เป็นเวลา 1 ชั่วโมง",
-    "timeOff": "ไม่ลงนามโดยอัตโนมัติ",
-    "title": "รายละเอียดการอนุญาต"
+  "permissionSettings": {
+    "modal": {
+      "amount": "วงเงินใช้จ่าย",
+      "cancel": "ยกเลิก",
+      "delete": "ลบ",
+      "description": "นี่คือการอนุญาตให้ <1> {{onstronname}} </ 1> ลงนามในธุรกรรมในนามของคุณโดยอัตโนมัติ",
+      "save": "บันทึก",
+      "time": "เวลาแก้ปัญหา",
+      "time15m": "เป็นเวลา 15 นาที",
+      "time30m": "เป็นเวลา 30 นาที",
+      "time60m": "เป็นเวลา 1 ชั่วโมง",
+      "timeOff": "ไม่ลงนามโดยอัตโนมัติ",
+      "title": "รายละเอียดการอนุญาต"
+    }
   },
   "permissionsSettings": {
     "approvedOrigin": "ได้รับการอนุมัติแล้ว",
@@ -433,11 +410,6 @@
     "empty": "ไม่มีอะไรที่นี่ ...",
     "rejectedOrigin": "ถูกปฏิเสธ",
     "title": "การควบคุมการอนุญาต",
-    "button": {
-      "delete": "ลบ",
-      "disable": "ไม่อนุญาต",
-      "enable": "อนุญาต"
-    },
     "notify": {
       "allowed": "อนุญาตแล้ว!",
       "deleted": "ลบแล้ว!",
@@ -468,7 +440,6 @@
     "autoClick": "การป้องกันการคลิกอัตโนมัติ",
     "autoClickDisable": "ปิดใช้งาน",
     "autoClickEnable": "เปิดใช้งาน",
-    "delete": "ลบบัญชีทั้งหมด",
     "deleteAccounts": "ลบบัญชี",
     "export": "ส่งออกบัญชี",
     "langs": "เปลี่ยนภาษา",
@@ -498,7 +469,9 @@
     "key": "Key",
     "showAll": "แสดงทั้งหมด",
     "type": "Type",
-    "value": "ค่า",
+    "value": "ค่า"
+  },
+  "sign": {
     "transactionConfirmed": "ธุรกรรมของคุณได้รับการยืนยันแล้ว!",
     "transactionFailed": "การทำธุรกรรมของคุณถูกปฏิเสธ!",
     "transactionSend": "คุณได้ทำการส่งแล้ว",
@@ -582,7 +555,6 @@
     "paymentsCount_plural": "{{count}} การชำระเงิน",
     "paymentsNone": "ไม่มีการชำระเงิน",
     "permission": { "details": "รายละเอียดการอนุญาต" },
-    "permissionsWarning": "แอปพลิเคชันจะสามารถเข้าถึงที่อยู่ Waves ของคุณได้ แต่จะไม่เปิดเผย SEED หรือ private key, อย่าป้อน secret phrase (SEED) บนเว็บไซต์ใดๆ ที่คุณเปลี่ยนเส้นทางการเข้าถึง",
     "price": "ราคา",
     "publicKey": "Public Key",
     "recipient": "ผู้รับ",
