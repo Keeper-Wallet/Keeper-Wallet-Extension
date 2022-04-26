@@ -1,4 +1,6 @@
 import ObservableStore from 'obs-store';
+import { extension } from 'lib/extension';
+import fetch from 'lib/fetch';
 import {
   CONFIG_URL,
   DEFAULT_CONFIG,
@@ -61,6 +63,22 @@ export class RemoteConfigController extends EventEmitter {
 
     this._getIgnoreErrorsConfig();
     this._fetchIdentityConfig();
+
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      switch (name) {
+        case 'updateConfig':
+          this._getConfig();
+          break;
+        case 'updateIgnoreErrorsConfig':
+          this._getIgnoreErrorsConfig();
+          break;
+        case 'fetchIdentityConfig':
+          this._fetchIdentityConfig();
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   getPackConfig() {
@@ -175,12 +193,10 @@ export class RemoteConfigController extends EventEmitter {
       this.updateState({ status: STATUS.ERROR });
     }
 
-    clearTimeout(this._timer);
-
-    this._timer = setTimeout(
-      () => this._getConfig(),
-      DEFAULT_CONFIG.CONFIG.update_ms
-    );
+    extension.alarms.clear('updateConfig');
+    extension.alarms.create('updateConfig', {
+      delayInMinutes: DEFAULT_CONFIG.CONFIG.update_ms / 60 / 1000,
+    });
   }
 
   async _getIgnoreErrorsConfig() {
@@ -205,10 +221,9 @@ export class RemoteConfigController extends EventEmitter {
     } catch (err) {
       // ignore
     } finally {
-      setTimeout(
-        () => this._getIgnoreErrorsConfig(),
-        IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL
-      );
+      extension.alarms.create('updateIgnoreErrorsConfig', {
+        delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
+      });
     }
   }
 
@@ -270,10 +285,9 @@ export class RemoteConfigController extends EventEmitter {
       })
       .catch(() => undefined) // ignore
       .then(() =>
-        setTimeout(
-          () => this._fetchIdentityConfig(),
-          IDENTITY_CONFIG_UPDATE_INTERVAL
-        )
+        extension.alarms.create('fetchIdentityConfig', {
+          delayInMinutes: IDENTITY_CONFIG_UPDATE_INTERVAL,
+        })
       );
   }
 

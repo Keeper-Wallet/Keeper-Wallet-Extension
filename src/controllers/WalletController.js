@@ -21,7 +21,7 @@ export class WalletController extends EventEmitter {
   constructor(options = {}) {
     super();
     this.store = new ObservableStore(options.initState);
-    this.password = null;
+    this.password = options.initSession.password;
     this.wallets = [];
     this.assetInfo = options.assetInfo;
     this.getNetwork = options.getNetwork;
@@ -30,6 +30,9 @@ export class WalletController extends EventEmitter {
     this.ledger = options.ledger;
     this.trashControl = options.trash;
     this.identity = options.identity;
+    this._setSession = options.setSession;
+
+    this._restoreWallets(this.password);
   }
 
   // Public
@@ -64,13 +67,13 @@ export class WalletController extends EventEmitter {
   }
 
   lock() {
-    this.password = null;
+    this._setPassword(null);
     this.wallets = [];
   }
 
   unlock(password) {
     this._restoreWallets(password);
-    this.password = password;
+    this._setPassword(password);
     this._migrateWalletsNetwork();
   }
 
@@ -79,14 +82,14 @@ export class WalletController extends EventEmitter {
       throw new Error('Password is needed to init vault');
     }
     (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
-    this.password = password;
+    this._setPassword(password);
     this.wallets = [];
     this._saveWallets();
   }
 
   deleteVault() {
     (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
-    this.password = null;
+    this._setPassword(null);
     this.wallets = [];
     this.store.updateState({ vault: undefined });
   }
@@ -101,7 +104,7 @@ export class WalletController extends EventEmitter {
       throw new Error('Password is required');
     }
     this._restoreWallets(oldPassword);
-    this.password = newPassword;
+    this._setPassword(newPassword);
     this._saveWallets();
   }
 
@@ -333,7 +336,13 @@ export class WalletController extends EventEmitter {
   }
 
   _restoreWallets(password) {
-    const decryptedData = decrypt(this.store.getState().vault, password);
+    const vault = this.store.getState().vault;
+
+    if (!vault || !password) {
+      return;
+    }
+
+    const decryptedData = decrypt(vault, password);
     this.wallets = decryptedData.map(user => this._createWallet(user));
   }
 
@@ -351,5 +360,10 @@ export class WalletController extends EventEmitter {
     );
     if (!wallet) throw new Error(`Wallet not found for address ${address}`);
     return wallet;
+  }
+
+  _setPassword(password) {
+    this.password = password;
+    this._setSession({ password });
   }
 }

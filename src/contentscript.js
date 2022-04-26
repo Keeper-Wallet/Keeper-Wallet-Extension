@@ -1,5 +1,4 @@
-import extension from 'extensionizer';
-import pump from 'pump';
+import { extension } from 'lib/extension';
 import LocalMessageDuplexStream from 'post-message-stream';
 import PortStream from './lib/port-stream.js';
 
@@ -30,7 +29,7 @@ function injectBundle() {
     // container.insertBefore(script, container.children[0]);
 
     const script2 = document.createElement('script');
-    script2.src = extension.extension.getURL('inpage.js');
+    script2.src = extension.runtime.getURL('inpage.js');
     container.insertBefore(script2, container.children[0]);
 
     script2.onload = () => {
@@ -46,26 +45,30 @@ function setupConnection() {
     name: 'waves_keeper_content',
     target: 'waves_keeper_page',
   });
+  extension.storage.onChanged.addListener(() => {
+    pageStream.write({ name: 'updatePublicState' });
+  });
 
-  const pluginPort = extension.runtime.connect({ name: 'contentscript' });
-  const pluginStream = new PortStream(pluginPort);
+  const connect = () => {
+    const pluginPort = extension.runtime.connect({ name: 'contentscript' });
+    const pluginStream = new PortStream(pluginPort);
 
-  // forward communication plugin->inpage
-  pump(pageStream, pluginStream, pageStream, err =>
-    logStreamDisconnectWarning('Keeperwallet Contentscript Forwarding', err)
-  );
-}
+    pageStream.pipe(pluginStream).pipe(pageStream);
 
-/**
- * Error handler for page to plugin stream disconnections
- *
- * @param {string} remoteLabel Remote stream name
- * @param {Error} err Stream connection error
- */
-function logStreamDisconnectWarning(remoteLabel, err) {
-  let warningMsg = `KeeperwalletContentscript - lost connection to ${remoteLabel}`;
-  if (err) warningMsg += '\n' + err.stack;
-  console.warn(warningMsg);
+    const onDisconnect = port => {
+      port.onDisconnect.removeListener(onDisconnect);
+
+      pageStream.unpipe(pluginStream);
+      pluginStream.unpipe(pageStream);
+
+      pluginStream.destroy();
+      connect();
+    };
+
+    pluginPort.onDisconnect.addListener(onDisconnect);
+  };
+
+  connect();
 }
 
 function shouldInject() {

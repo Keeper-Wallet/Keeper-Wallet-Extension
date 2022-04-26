@@ -1,4 +1,4 @@
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 
 const allLocales = require('../copied/_locales/index.json');
 const existingLocaleCodes = allLocales.map(locale =>

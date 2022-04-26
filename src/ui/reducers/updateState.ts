@@ -141,6 +141,11 @@ export const assets = createSimpleReducer<Record<string, AssetDetail>>(
   ACTION.SET_ASSETS
 );
 
+export const usdPrices = createSimpleReducer<Record<string, string>>(
+  {},
+  ACTION.SET_USD_PRICES
+);
+
 export const backTabs = (
   state: unknown[] = [],
   { type, payload }: { type: string; payload: unknown }

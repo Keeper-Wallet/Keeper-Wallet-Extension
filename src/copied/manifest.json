@@ -2,7 +2,7 @@
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
   "version": "1.2.4",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "author": "support@waves.tech",
   "description": "__MSG_appDescription__",
   "commands": {
@@ -34,10 +34,24 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   },
-  "browser_action": {
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": ["contentscript.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "permissions": [
+    "alarms",
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "idle"
+  ],
+  "action": {
     "default_icon": {
       "16": "images/icon_16.png",
       "24": "images/icon_24.png",
@@ -53,14 +67,11 @@
     "default_title": "Keeper Wallet",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
+  "web_accessible_resources": [
     {
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": ["contentscript.js"],
-      "run_at": "document_start",
-      "all_frames": true
+      "resources": ["inpage.js"],
+      "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "idle"],
-  "web_accessible_resources": ["inpage.js"]
+  "content_security_policy": {}
 }

@@ -1,4 +1,4 @@
-import * as browser from 'extensionizer';
+import { extension } from 'lib/extension';
 
 type Tab = {
   active: boolean;
@@ -19,17 +19,17 @@ export class TabsManager {
 
     return new Promise((resolve, reject) => {
       try {
-        browser.tabs.get(currentTab?.id, tab => {
+        extension.tabs.get(currentTab?.id, tab => {
           if (!tab) {
             reject(new Error("Tab doesn't exists"));
           }
         });
-        browser.tabs.update(currentTab.id, tabProps, () => resolve());
+        extension.tabs.update(currentTab.id, tabProps, () => resolve());
       } catch (err) {
         reject(err);
       }
     }).catch(() =>
-      browser.tabs.create({ url: url }, tab => {
+      extension.tabs.create({ url: url }, tab => {
         this._tabs[key] = { ...tab, url };
       })
     );

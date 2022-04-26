@@ -145,7 +145,7 @@ export function AssetAmountInput({
                 {showUsdAmount && (
                   <UsdAmount
                     className={styles.usdAmount}
-                    asset={assets[asset.id]}
+                    id={asset.id}
                     tokens={tokens}
                   />
                 )}
@@ -156,7 +156,7 @@ export function AssetAmountInput({
                 {showUsdAmount && (
                   <UsdAmount
                     className={styles.usdResult}
-                    asset={assets[asset.id]}
+                    id={asset.id}
                     tokens={tokens}
                   />
                 )}
