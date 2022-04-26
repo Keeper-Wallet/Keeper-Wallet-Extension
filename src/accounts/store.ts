@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import * as reducers from 'ui/reducers/updateState';
 import * as middleware from 'ui/midleware';
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 const reducer = combineReducers({

@@ -4,7 +4,7 @@ import 'ui/styles/icons.styl';
 import 'ui/i18n';
 
 import * as Sentry from '@sentry/react';
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -49,12 +49,15 @@ async function startUi() {
 
   const updateState = createUpdateState(store);
 
-  const port = extension.runtime.connect({ name: 'ui' });
-  const connectionStream = new PortStream(port);
-
   const emitterApi = {
-    sendUpdate: async state => updateState(state),
-    closeEdgeNotificationWindow: async () => undefined,
+    closePopupWindow: async () => {
+      const popup = extension.extension
+        .getViews({ type: 'popup' })
+        .find(w => w.location.pathname === '/popup.html');
+      if (popup) {
+        popup.close();
+      }
+    },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
       const { selectedAccount } = store.getState();
 
@@ -62,18 +65,28 @@ async function startUi() {
     },
   };
 
-  const dnode = setupDnode(connectionStream, emitterApi, 'api');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const background = await new Promise<any>(resolve => {
-    dnode.once('remote', background => {
-      resolve(transformMethods(cbToPromise, background));
-    });
-  });
+  const connect = async () => {
+    const port = extension.runtime.connect();
 
-  if (KEEPERWALLET_DEBUG) {
+    port.onDisconnect.addListener(() => {
+      backgroundService.setConnect(async () => {
+        const newBackground = await connect();
+        backgroundService.init(newBackground);
+      });
+    });
+
+    const connectionStream = new PortStream(port);
+    const dnode = setupDnode(connectionStream, emitterApi, 'api');
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).background = background;
-  }
+    return await new Promise<any>(resolve => {
+      dnode.once('remote', background => {
+        resolve(transformMethods(cbToPromise, background));
+      });
+    });
+  };
+
+  const background = await connect();
 
   const [state, networks] = await Promise.all([
     background.getState(),
@@ -86,8 +99,21 @@ async function startUi() {
   Sentry.setTag('network', state.currentNetwork);
 
   backgroundService.init(background);
+
   document.addEventListener('mousemove', () => backgroundService.updateIdle());
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
+
+  const onChanged =
+    extension.storage.local.onChanged || extension.storage.onChanged;
+  onChanged.addListener(async changes => {
+    let bgState = await backgroundService.getState();
+
+    for (const key in changes) {
+      bgState = { ...bgState, ...changes[key].newValue };
+    }
+
+    updateState(bgState);
+  });
 }

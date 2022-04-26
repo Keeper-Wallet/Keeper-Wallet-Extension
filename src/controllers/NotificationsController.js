@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import { extension } from 'lib/extension';
 import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
@@ -27,6 +28,11 @@ export class NotificationsController extends EventEmitter {
     this.setNotificationPermissions = options.setNotificationPermissions;
 
     this.deleteAllByTime();
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      if (name === 'deleteMessages') {
+        this.deleteAllByTime();
+      }
+    });
   }
 
   /**
@@ -255,11 +261,9 @@ export class NotificationsController extends EventEmitter {
    * @private
    */
   _updateMessagesByTimeout() {
-    clearTimeout(this._updateTimer);
     const { update_messages_ms } = this.getMessagesConfig();
-    this._updateTimer = setTimeout(
-      () => this.deleteAllByTime(),
-      update_messages_ms
-    );
+    extension.alarms.create('deleteMessages', {
+      delayInMinutes: update_messages_ms / 1000 / 60,
+    });
   }
 }

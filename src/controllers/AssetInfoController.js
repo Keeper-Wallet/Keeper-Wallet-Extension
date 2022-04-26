@@ -1,3 +1,4 @@
+import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 
 const WAVES = {
@@ -15,11 +16,12 @@ const WAVES = {
 };
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
+const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
 const MAX_AGE = 60 * 60 * 1000;
 
 const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
-const MARKETDATA_POLL_INTERVAL = 10 * 60 * 1000;
+const MARKETDATA_PERIOD_IN_MINUTES = 10;
 
 const stablecoinAssetIds = new Set([
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
@@ -176,20 +178,40 @@ export class AssetInfoController {
           WAVES,
         },
       },
+      usdPrices: {},
+      suspiciousAssets: [],
     };
-    this.usdPrices = undefined;
-    this.suspiciousAssets = undefined;
-    this.suspiciousLastUpdated = 0;
 
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
-    this.updateSuspiciousAssets();
 
-    this.updateUsdPrices();
-    setInterval(this.updateUsdPrices.bind(this), MARKETDATA_POLL_INTERVAL);
+    if (!options.initState) {
+      this.updateSuspiciousAssets();
+      this.updateUsdPrices();
+    }
+
+    extension.alarms.create('updateSuspiciousAssets', {
+      periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
+    });
+    extension.alarms.create('updateUsdPrices', {
+      periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
+    });
+
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      switch (name) {
+        case 'updateSuspiciousAssets':
+          this.updateSuspiciousAssets();
+          break;
+        case 'updateUsdPrices':
+          this.updateUsdPrices();
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   addTickersForExistingAssets() {
@@ -227,24 +249,16 @@ export class AssetInfoController {
   }
 
   isSuspiciousAsset(assetId) {
-    const { assets } = this.store.getState();
+    const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
     const asset = assets[network][assetId] || {};
 
-    return network === 'mainnet' && this.suspiciousAssets
-      ? binarySearch(this.suspiciousAssets, assetId) > -1
+    return network === 'mainnet' && suspiciousAssets
+      ? binarySearch(suspiciousAssets, assetId) > -1
       : asset.isSuspicious;
   }
 
-  getUsdPrice(assetId) {
-    return this.getNetwork() === 'mainnet' && this.usdPrices
-      ? this.usdPrices[assetId]
-      : undefined;
-  }
-
   async assetInfo(assetId) {
-    await this.updateSuspiciousAssets();
-
     const { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -253,10 +267,7 @@ export class AssetInfoController {
       assetId == null ||
       assetId.toUpperCase() === 'WAVES'
     ) {
-      return {
-        ...assets[network]['WAVES'],
-        usdPrice: this.getUsdPrice('WAVES'),
-      };
+      return assets[network]['WAVES'];
     }
 
     const API_BASE = this.getNode();
@@ -292,7 +303,6 @@ export class AssetInfoController {
             issuer: assetInfo.issuer,
             isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
             lastUpdated: new Date().getTime(),
-            usdPrice: this.getUsdPrice(assetInfo.assetId),
           };
           assets[network] = assets[network] || {};
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
@@ -332,8 +342,6 @@ export class AssetInfoController {
    * @returns {Promise<void>}
    */
   async updateAssets(assetIds) {
-    await this.updateSuspiciousAssets();
-
     const { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -379,14 +387,9 @@ export class AssetInfoController {
               issuer: assetInfo.issuer,
               isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
               lastUpdated,
-              usdPrice: this.getUsdPrice(assetInfo.assetId),
             };
           }
         });
-        assets[network]['WAVES'] = {
-          ...assets[network]['WAVES'],
-          usdPrice: this.getUsdPrice('WAVES'),
-        };
         this.store.updateState({ assets });
         break;
       }
@@ -396,70 +399,54 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    const { assets } = this.store.getState();
+    const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
 
-    if (
-      !this.suspiciousAssets ||
-      (network === 'mainnet' &&
-        new Date() - new Date(this.suspiciousLastUpdated) > MAX_AGE)
-    ) {
+    if (!suspiciousAssets || network === 'mainnet') {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
 
       if (resp.ok) {
-        this.suspiciousAssets = (await resp.text()).split('\n').sort();
-        this.suspiciousLastUpdated = new Date().getTime();
+        const suspiciousAssets = (await resp.text()).split('\n').sort();
+
+        if (suspiciousAssets) {
+          Object.keys(assets['mainnet']).forEach(
+            assetId =>
+              (assets['mainnet'][assetId].isSuspicious =
+                binarySearch(suspiciousAssets, assetId) > -1)
+          );
+        }
+
+        this.store.updateState({ assets, suspiciousAssets });
       }
     }
-
-    if (this.suspiciousAssets) {
-      Object.keys(assets[network]).forEach(
-        assetId =>
-          (assets[network][assetId].isSuspicious =
-            binarySearch(this.suspiciousAssets, assetId) > -1)
-      );
-    }
-
-    this.store.updateState({ assets });
   }
 
   async updateUsdPrices() {
-    const { assets } = this.store.getState();
+    const { usdPrices } = this.store.getState();
     const network = this.getNetwork();
 
-    if (!this.usdPrices || network === 'mainnet') {
+    if (!usdPrices || network === 'mainnet') {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
 
       if (resp.ok) {
         const tickers = await resp.json();
-        this.usdPrices = tickers.reduce((acc, ticker) => {
+        const usdPrices = tickers.reduce((acc, ticker) => {
           if (
             !stablecoinAssetIds.has(ticker.amountAssetID) &&
             ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
           ) {
             acc[ticker.amountAssetID] = ticker['24h_close'];
-
-            const asset =
-              assets['mainnet'] && assets['mainnet'][ticker.amountAssetID];
-            if (asset) {
-              asset.usdPrice = ticker['24h_close'];
-            }
           }
 
           return acc;
         }, {});
 
         stablecoinAssetIds.forEach(ticker => {
-          this.usdPrices[ticker] = '1';
-
-          const asset = assets['mainnet'] && assets['mainnet'][ticker];
-          if (asset) {
-            asset.usdPrice = '1';
-          }
+          usdPrices[ticker] = '1';
         });
-      }
 
-      this.store.updateState({ assets });
+        this.store.updateState({ usdPrices });
+      }
     }
   }
 }

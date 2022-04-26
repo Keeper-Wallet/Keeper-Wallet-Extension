@@ -16,37 +16,12 @@ export type CodeDelivery = {
   destination: string;
 };
 
-export type MFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
-
-export type AuthChallenge =
-  | 'SMS_MFA'
-  | 'SOFTWARE_TOKEN_MFA'
-  | 'NEW_PASSWORD_REQUIRED'
-  | 'MFA_SETUP'
-  | 'CUSTOM_CHALLENGE';
-
-export type IdentityUser = {
-  address: string;
-  publicKey: string;
-  uuid: string; // cognito user identifier
-  username: string; // wx email
-};
-
-export type IdentityConfig = {
-  apiUrl: string;
-  cognito: {
-    userPoolId: string;
-    clientId: string;
-    endpoint: string;
-  };
-};
-
 function startsWith(source: string, target: string, flags = 'i'): boolean {
   return !!source.match(new RegExp(`^${target}`, flags));
 }
 
-const fetch = window.fetch;
-window.fetch = (
+const fetch = global.fetch;
+global.fetch = (
   endpoint: RequestInfo,
   { headers = {}, ...options }: RequestInit = {}
 ) => {
@@ -73,6 +48,31 @@ window.fetch = (
   return fetch(endpoint, { headers, ...options });
 };
 
+export type MFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+
+export type AuthChallenge =
+  | 'SMS_MFA'
+  | 'SOFTWARE_TOKEN_MFA'
+  | 'NEW_PASSWORD_REQUIRED'
+  | 'MFA_SETUP'
+  | 'CUSTOM_CHALLENGE';
+
+export type IdentityUser = {
+  address: string;
+  publicKey: string;
+  uuid: string; // cognito user identifier
+  username: string; // wx email
+};
+
+export type IdentityConfig = {
+  apiUrl: string;
+  cognito: {
+    userPoolId: string;
+    clientId: string;
+    endpoint: string;
+  };
+};
+
 type IdentityState = {
   cognitoSessions: string;
 };
@@ -83,17 +83,27 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   public updateState: (partial: Partial<IdentityState>) => void;
   private memo = {};
   private password: string;
+  private _setSession: (session: Record<string, unknown>) => void;
 
-  constructor(initState: Partial<IdentityState>) {
+  constructor(
+    initState: Partial<IdentityState>,
+    initSession: Record<string, unknown>,
+    setSession: (session: Record<string, unknown>) => void
+  ) {
     super(initState || {});
+
+    this.memo = initSession.memo;
+
+    this.password = initSession.password as string;
+    this._setSession = setSession;
   }
 
   lock() {
-    this.password = undefined;
+    this._setPassword(null);
   }
 
   unlock(password: string) {
-    this.password = password;
+    this._setPassword(password);
   }
 
   getItem(key: string): string | null {
@@ -102,14 +112,17 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
 
   removeItem(key: string): void {
     delete this.memo[key];
+    this._updateMemo();
   }
 
   setItem(key: string, value: string): void {
     this.memo[key] = value;
+    this._updateMemo();
   }
 
   clear(): void {
     this.memo = {};
+    this._updateMemo();
   }
 
   purge(): void {
@@ -120,6 +133,7 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   restore(userId: string) {
     const cognitoSessions = this.decrypt();
     this.memo = cognitoSessions[userId] || {};
+    this._updateMemo();
   }
 
   persist(userId: string) {
@@ -128,6 +142,15 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     this.updateState({
       cognitoSessions: this.encrypt(cognitoSessions),
     });
+  }
+
+  private _updateMemo() {
+    this._setSession({ memo: this.memo });
+  }
+
+  private _setPassword(password?: string) {
+    this.password = password;
+    this._setSession({ password });
   }
 
   private encrypt(object): string {
@@ -155,6 +178,8 @@ interface Options {
   getSelectedAccount: () => Partial<Account>;
   getIdentityConfig: () => IdentityConfig;
   initState: IdentityState;
+  initSession: Record<string, unknown>;
+  setSession: (session: Record<string, unknown>) => void;
 }
 
 export interface IdentityApi {
@@ -176,7 +201,11 @@ export class IdentityController implements IdentityApi {
   store: IdentityStorage;
 
   constructor(opts: Options) {
-    this.store = new IdentityStorage(opts.initState);
+    this.store = new IdentityStorage(
+      opts.initState,
+      opts.initSession,
+      opts.setSession
+    );
 
     this.getNetwork = opts.getNetwork;
     this.getSelectedAccount = opts.getSelectedAccount;

@@ -1,4 +1,5 @@
 import ObservableStore from 'obs-store';
+import { extension } from 'lib/extension';
 import { MSG_STATUSES } from '../constants';
 import uuid from 'uuid/v4';
 import log from 'loglevel';
@@ -66,6 +67,12 @@ export class MessageController extends EventEmitter {
     );
 
     this.rejectAllByTime();
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      if (name === 'rejectMessages') {
+        this.rejectAllByTime();
+      }
+    });
+
     this._updateBadge();
   }
 
@@ -313,12 +320,10 @@ export class MessageController extends EventEmitter {
   }
 
   _updateMessagesByTimeout() {
-    clearTimeout(this._updateTimer);
     const { update_messages_ms } = this.getMessagesConfig();
-    this._updateTimer = setTimeout(
-      () => this.rejectAllByTime(),
-      update_messages_ms
-    );
+    extension.alarms.create('rejectMessages', {
+      delayInMinutes: update_messages_ms / 1000 / 60,
+    });
   }
 
   _updateMessage(message) {

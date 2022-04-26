@@ -21,7 +21,9 @@ export function Bottom({ className, noChangeNetwork, hide }: Props) {
     !hide && (
       <div className={cn(styles.bottom, className)}>
         <Network noChangeNetwork={noChangeNetwork} />
-        <div className="version basic500">v {version}</div>
+        <div className="version basic500" data-testid="currentVersion">
+          v {version}
+        </div>
       </div>
     )
   );

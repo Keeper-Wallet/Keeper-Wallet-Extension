@@ -1,12 +1,10 @@
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import pump from 'pump';
-import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
-import debounce from 'debounce';
 import asStream from 'obs-store/lib/asStream';
-import extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
@@ -14,7 +12,6 @@ import { createStreamSink } from './lib/createStreamSink';
 import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import { ComposableObservableStore } from './lib/ComposableObservableStore';
-import { equals } from 'ramda';
 import LocalStore from './lib/localStore';
 import {
   AssetInfoController,
@@ -40,15 +37,12 @@ import {
   getMinimumFee,
 } from './controllers/CalculateFeeController';
 import { setupDnode } from './lib/dnode-util';
-import { WindowManager } from './lib/WindowManger';
+import { WindowManager } from './lib/WindowManager';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
 import { TabsManager } from 'lib/tabsManager';
 
-const version = extension.runtime.getManifest().version;
-
-const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
 const bgPromise = setupBackgroundService();
@@ -94,6 +88,25 @@ Sentry.init({
   },
 });
 
+extension.runtime.onConnect.addListener(async remotePort => {
+  const bgService = await bgPromise;
+  const portStream = new PortStream(remotePort);
+
+  if (remotePort.name === 'contentscript') {
+    const origin = new URL(remotePort.sender.url).hostname;
+    bgService.setupPageConnection(portStream, origin);
+  } else {
+    bgService.setupUiConnection(portStream);
+  }
+});
+
+extension.runtime.onConnectExternal.addListener(async remotePort => {
+  const bgService = await bgPromise;
+  const portStream = new PortStream(remotePort);
+  const origin = new URL(remotePort.sender.url).hostname;
+  bgService.setupPageConnection(portStream, origin);
+});
+
 extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
   const prevUiState = bgService.uiStateController.getUiState();
@@ -130,11 +143,17 @@ async function setupBackgroundService() {
   // Background service init
   const localStore = new LocalStore();
   await localStore.migrate();
-  const initState = await localStore.get();
+  const initState = (await localStore.get()) || {};
+  const initSession = (await localStore.getSession()) || {};
   const initLangCode = await getFirstLangCode();
+
   const backgroundService = new BackgroundService({
     initState,
+    initSession,
     initLangCode,
+    setSession: session => {
+      localStore.setSession(session);
+    },
   });
 
   // global access to service on debug
@@ -145,7 +164,7 @@ async function setupBackgroundService() {
   // setup state persistence
   pump(
     asStream(backgroundService.store),
-    debounceStream(1000),
+    debounceStream(200),
     createStreamSink(persistData),
     error => {
       log.error('Persistence pipeline failed', error);
@@ -164,13 +183,6 @@ async function setupBackgroundService() {
     }
   }
 
-  // connect to other contexts
-  extension.runtime.onConnect.addListener(connectRemote);
-
-  if (!isEdge) {
-    extension.runtime.onConnectExternal.addListener(connectExternal);
-  }
-
   const updateBadge = () => {
     const state = backgroundService.store.getFlatState();
     const { selectedAccount } = state;
@@ -181,8 +193,10 @@ async function setupBackgroundService() {
       );
     const msg = notifications.length + messages.length;
     const text = msg ? String(msg) : '';
-    extension.browserAction.setBadgeText({ text });
-    extension.browserAction.setBadgeBackgroundColor({ color: '#768FFF' });
+
+    const action = extension.action || extension.browserAction;
+    action.setBadgeText({ text });
+    action.setBadgeBackgroundColor({ color: '#768FFF' });
   };
 
   // update badge
@@ -201,12 +215,7 @@ async function setupBackgroundService() {
     windowManager.showWindow.bind(windowManager)
   );
   backgroundService.on('Close notification', () => {
-    if (isEdge) {
-      // Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
-      backgroundService.emit('closeEdgeNotificationWindow');
-    } else {
-      windowManager.closeWindow();
-    }
+    windowManager.closeWindow();
   });
   backgroundService.on('Resize notification', (width, height) => {
     windowManager.resizeWindow(width, height);
@@ -214,28 +223,9 @@ async function setupBackgroundService() {
   // Tabs manager
   const tabsManager = new TabsManager();
   backgroundService.on('Show tab', async (url, name) => {
-    await windowManager.closePopupWindow();
+    backgroundService.emit('closePopupWindow');
     return tabsManager.getOrCreate(url, name);
   });
-
-  backgroundService.idleController = new IdleController({ backgroundService });
-
-  // Connection handlers
-  function connectRemote(remotePort) {
-    const processName = remotePort.name;
-    if (processName === 'contentscript') {
-      connectExternal(remotePort);
-    } else {
-      const portStream = new PortStream(remotePort);
-      backgroundService.setupUiConnection(portStream, processName);
-    }
-  }
-
-  function connectExternal(remotePort) {
-    const portStream = new PortStream(remotePort);
-    const origin = url.parse(remotePort.sender.url).hostname;
-    backgroundService.setupPageConnection(portStream, origin);
-  }
 
   return backgroundService;
 }
@@ -245,7 +235,7 @@ class BackgroundService extends EventEmitter {
     super();
 
     // Observable state store
-    const initState = options.initState || {};
+    const initState = options.initState;
     this.store = new ComposableObservableStore();
 
     this.trash = new TrashController({
@@ -282,7 +272,7 @@ class BackgroundService extends EventEmitter {
     // Preferences. Contains accounts, available accounts, selected language etc.
     this.preferencesController = new PreferencesController({
       initState: initState.PreferencesController,
-      initLangCode: options.langCode,
+      initLangCode: options.initLangCode,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -304,6 +294,8 @@ class BackgroundService extends EventEmitter {
 
     this.identityController = new IdentityController({
       initState: initState.IdentityController,
+      initSession: options.initSession,
+      setSession: options.setSession,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -319,6 +311,8 @@ class BackgroundService extends EventEmitter {
     this.walletController = new WalletController({
       assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
       initState: initState.WalletController,
+      initSession: options.initSession,
+      setSession: options.setSession,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -358,6 +352,7 @@ class BackgroundService extends EventEmitter {
 
     this.vaultController = new VaultController({
       initState: initState.VaultController,
+      password: options.initSession.password,
       wallet: this.walletController,
       identity: this.identityController,
     });
@@ -491,6 +486,12 @@ class BackgroundService extends EventEmitter {
       walletController: this.walletController,
     });
 
+    this.idleController = new IdleController({
+      initState: initState.IdleController,
+      preferencesController: this.preferencesController,
+      vaultController: this.vaultController,
+    });
+
     // Single state composed from states of all controllers
     this.store.updateStructure({
       StatisticsController: this.statisticsController.store,
@@ -507,11 +508,8 @@ class BackgroundService extends EventEmitter {
       TrashController: this.trash.store,
       VaultController: this.vaultController.store,
       IdentityController: this.identityController.store,
+      IdleController: this.idleController.store,
     });
-
-    // Call send update, which is bound to ui EventEmitter, on every store update
-    this.sendUpdate = debounce(this._privateSendUpdate.bind(this), 200);
-    this.store.subscribe(this.sendUpdate.bind(this));
   }
 
   getState() {
@@ -1012,26 +1010,15 @@ class BackgroundService extends EventEmitter {
     const dnode = setupDnode(connectionStream, api, 'api');
 
     const remoteHandler = remote => {
-      // push updates to popup
-      const sendUpdate = remote.sendUpdate.bind(remote);
-      this.on('update', sendUpdate);
-
-      //Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
-      const closeEdgeNotificationWindow =
-        remote.closeEdgeNotificationWindow.bind(remote);
-      this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
-
       const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
-
       this.on('ledger:signRequest', ledgerSignRequest);
 
+      const closePopupWindow = remote.closePopupWindow.bind(remote);
+      this.on('closePopupWindow', closePopupWindow);
+
       dnode.on('end', () => {
-        this.removeListener('update', sendUpdate);
-        this.removeListener(
-          'closeEdgeNotificationWindow',
-          closeEdgeNotificationWindow
-        );
         this.removeListener('ledger:signRequest', ledgerSignRequest);
+        this.removeListener('closePopupWindow', closePopupWindow);
       });
 
       this.statisticsController.sendOpenEvent();
@@ -1041,40 +1028,8 @@ class BackgroundService extends EventEmitter {
   }
 
   setupPageConnection(connectionStream, origin) {
-    //ToDo: check origin
-
     const inpageApi = this.getInpageApi(origin);
-    const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-
-    const onRemoteHandler = remote => {
-      // push account change event to the page
-      const sendUpdate = remote.sendUpdate.bind(remote);
-
-      const updateHandler = function (state) {
-        const updatedPublicState = self._publicState(state, origin);
-        // If public state changed call remote with new public state
-        if (!equals(updatedPublicState, publicState)) {
-          publicState = updatedPublicState;
-          sendUpdate(publicState);
-        }
-      };
-
-      this.on('update', updateHandler);
-
-      dnode.on('end', () => {
-        this.removeListener('update', updateHandler);
-      });
-    };
-
-    // Select public state from app state
-    let publicState = this._publicState(this.getState(), origin);
-    dnode.on('remote', onRemoteHandler);
-  }
-
-  _privateSendUpdate() {
-    this.emit('update', this.getState());
+    setupDnode(connectionStream, inpageApi, 'inpageApi');
   }
 
   _getCurrentNetwork(account) {
@@ -1111,7 +1066,7 @@ class BackgroundService extends EventEmitter {
     }
 
     return {
-      version,
+      version: extension.runtime.getManifest().version,
       initialized: state.initialized,
       locked: state.locked,
       account,

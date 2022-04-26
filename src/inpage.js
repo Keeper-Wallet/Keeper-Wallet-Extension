@@ -1,5 +1,6 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
+import { setupDnode, transformMethods, cbToPromise } from './lib/dnode-util';
+import { equals } from 'ramda';
 import log from 'loglevel';
 import EventEmitter from 'events';
 
@@ -20,11 +21,13 @@ async function setupInpageApi() {
   let args = {};
   const wavesAppDef = createDeffer();
   const wavesApp = {};
+  const eventEmitter = new EventEmitter();
   const wavesApi = {
     initialPromise: wavesAppDef.promise,
+    on: eventEmitter.on.bind(eventEmitter),
   };
   const proxyApi = {
-    get(target, prop) {
+    get(_, prop) {
       if (wavesApi[prop]) {
         return wavesApi[prop];
       }
@@ -67,18 +70,16 @@ async function setupInpageApi() {
     target: 'waves_keeper_content',
   });
 
-  const eventEmitter = new EventEmitter();
-  const emitterApi = {
-    sendUpdate: async state => eventEmitter.emit('update', state),
-  };
-  const dnode = setupDnode(connectionStream, emitterApi, 'inpageApi');
+  const dnode = setupDnode(
+    connectionStream,
+    {},
+    'inpageApi',
+    'updatePublicState'
+  );
 
   const inpageApi = await new Promise(resolve => {
-    dnode.once('remote', inpageApi => {
-      const remoteWithPromises = transformMethods(cbToPromise, inpageApi);
-      // Add event emitter api to background object
-      remoteWithPromises.on = eventEmitter.on.bind(eventEmitter);
-      resolve(remoteWithPromises);
+    dnode.on('remote', inpageApi => {
+      resolve(transformMethods(cbToPromise, inpageApi));
     });
   });
 
@@ -95,6 +96,23 @@ async function setupInpageApi() {
   Object.assign(wavesApi, inpageApi);
   wavesAppDef.resolve(wavesApi);
   global.KeeperWallet = global.WavesKeeper = global.Waves = wavesApi;
+  let publicState = {};
+  connectionStream.on('data', async ({ name }) => {
+    if (name !== 'updatePublicState') {
+      return;
+    }
+
+    const isApproved = await wavesApi.resourceIsApproved();
+    if (!isApproved) {
+      return;
+    }
+
+    const updatedPublicState = await wavesApi.publicState();
+    if (!equals(updatedPublicState, publicState)) {
+      publicState = updatedPublicState;
+      eventEmitter.emit('update', updatedPublicState);
+    }
+  });
   setupClickInterceptor(inpageApi);
 }
 

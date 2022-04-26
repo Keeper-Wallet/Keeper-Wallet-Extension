@@ -114,6 +114,7 @@ export function SwapForm({
   const { t } = useTranslation();
 
   const assets = useAppSelector(state => state.assets);
+  const usdPrices = useAppSelector(state => state.usdPrices);
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
   );
@@ -670,7 +671,7 @@ export function SwapForm({
                     ? info.toAmountTokens.sub(nextInfo.toAmountTokens)
                     : null;
 
-                const toAssetDetail = assets[toAssetId];
+                const usdPrice = usdPrices[toAssetId];
 
                 return (
                   <button
@@ -708,7 +709,7 @@ export function SwapForm({
                         </div>
 
                         <UsdAmount
-                          asset={toAssetDetail}
+                          id={toAssetId}
                           className={styles.toAmountCardUsdAmount}
                           tokens={amountTokens}
                         />
@@ -734,17 +735,16 @@ export function SwapForm({
                               BigNumber.ROUND_MODE.ROUND_FLOOR
                             )}{' '}
                             {toAsset.displayName}
-                            {toAssetDetail.usdPrice &&
-                              toAssetDetail.usdPrice !== '1' && (
-                                <>
-                                  {' '}
-                                  (≈ $
-                                  {new BigNumber(toAssetDetail.usdPrice)
-                                    .mul(profitTokens)
-                                    .toFixed(2)}
-                                  )
-                                </>
-                              )}
+                            {usdPrice && usdPrice !== '1' && (
+                              <>
+                                {' '}
+                                (≈ $
+                                {new BigNumber(usdPrice)
+                                  .mul(profitTokens)
+                                  .toFixed(2)}
+                                )
+                              </>
+                            )}
                           </>
                         ) : (
                           t('swap.primaryLabel')
