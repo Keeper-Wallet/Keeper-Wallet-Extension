@@ -1,3 +1,5 @@
+import fetch from 'lib/fetch';
+
 export class TxInfoController {
   constructor(options = {}) {
     this.getNode = options.getNode;

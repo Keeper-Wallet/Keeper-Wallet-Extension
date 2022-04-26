@@ -1,4 +1,4 @@
-const extension = require('extensionizer');
+const { extension } = require('lib/extension');
 const log = require('loglevel');
 
 /**
@@ -10,8 +10,13 @@ module.exports = class ExtensionStore {
    */
   constructor() {
     this.isSupported = !!extension.storage.local;
+
     if (!this.isSupported) {
       log.error('Storage local API not available.');
+    }
+
+    if (!extension.storage.session) {
+      log.error('Storage session API not available.');
     }
   }
 
@@ -20,15 +25,27 @@ module.exports = class ExtensionStore {
    * @return {Promise<*>}
    */
   async get() {
-    if (!this.isSupported) return undefined;
-    const result = await this._get();
+    const storageState = extension.storage.local;
+
+    if (!storageState) return undefined;
+    const result = await this._get(storageState);
     // extension.storage.local always returns an obj
     // if the object is empty, treat it as undefined
-    if (isEmpty(result)) {
-      return undefined;
-    } else {
-      return result;
-    }
+    return isEmpty(result) ? undefined : result;
+  }
+
+  /**
+   * Returns all of the keys currently saved
+   * @return {Promise<*>}
+   */
+  async getSession() {
+    const storageState = extension.storage.session;
+
+    if (!storageState) return undefined;
+    const result = await this._get(storageState);
+    // extension.storage.local always returns an obj
+    // if the object is empty, treat it as undefined
+    return isEmpty(result) ? undefined : result;
   }
 
   /**
@@ -37,18 +54,33 @@ module.exports = class ExtensionStore {
    * @return {Promise<void>}
    */
   async set(state) {
-    return this._set(state);
+    const storageState = extension.storage.local;
+
+    if (!storageState) return;
+    return this._set(storageState, state);
+  }
+
+  /**
+   * Sets the key in local state
+   * @param {object} state - The state to set
+   * @return {Promise<void>}
+   */
+  async setSession(state) {
+    const storageState = extension.storage.session;
+
+    if (!storageState) return;
+    return this._set(storageState, state);
   }
 
   /**
    * Returns all of the keys currently saved
    * @private
+   * @param {object} storageState
    * @return {object} the key-value map from local storage
    */
-  _get() {
-    const local = extension.storage.local;
+  _get(storageState) {
     return new Promise((resolve, reject) => {
-      local.get(null, (/** @type {any} */ result) => {
+      storageState.get(null, (/** @type {any} */ result) => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -61,14 +93,14 @@ module.exports = class ExtensionStore {
 
   /**
    * Sets the key in local state
-   * @param {object} obj - The key to set
+   * @param {object} storageState
+   * @param {object} state - The key to set
    * @return {Promise<void>}
    * @private
    */
-  _set(obj) {
-    const local = extension.storage.local;
+  _set(storageState, state) {
     return new Promise((resolve, reject) => {
-      local.set(obj, () => {
+      storageState.set(state, () => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);

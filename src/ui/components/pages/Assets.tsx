@@ -35,6 +35,7 @@ export function Assets({ setTab }: Props) {
     )
   );
   const assets = useAppSelector(state => state.assets);
+  const usdPrices = useAppSelector(state => state.usdPrices);
   const balances = useAppSelector(state => state.balances);
   const notifications = useAppSelector(state => state.localState.notifications);
   const showUpdateInfo = useAppSelector(
@@ -76,12 +77,12 @@ export function Assets({ setTab }: Props) {
   const amountInUsd = balances[address]?.assets
     ? Object.entries(balances[address].assets).reduce(
         (acc, [id, { balance }]) => {
-          if (assets[id]?.usdPrice) {
+          if (usdPrices[id]) {
             const tokens = new Money(
               balance,
               new Asset(assets[id])
             ).getTokens();
-            acc = acc.add(new BigNumber(assets[id].usdPrice).mul(tokens));
+            acc = acc.add(new BigNumber(usdPrices[id]).mul(tokens));
           }
 
           return acc;

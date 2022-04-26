@@ -34,6 +34,7 @@ interface UpdateStateInput {
   origins?: unknown;
   selectedAccount?: { address?: string; network?: string };
   uiState?: unknown;
+  usdPrices: Record<string, string>;
 }
 
 export function createUpdateState(store: UiStore) {
@@ -57,6 +58,7 @@ export function createUpdateState(store: UiStore) {
       config = {},
       idleOptions = {},
       myNotifications = [],
+      usdPrices = {},
     } = state;
     const currentState = store.getState();
 
@@ -220,6 +222,13 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.SET_ASSETS,
         payload: assets[currentNetwork],
+      });
+    }
+
+    if (!equals(usdPrices, currentState.usdPrices)) {
+      store.dispatch({
+        type: ACTION.SET_USD_PRICES,
+        payload: usdPrices,
       });
     }
   };

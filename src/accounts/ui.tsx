@@ -4,7 +4,7 @@ import 'ui/styles/icons.styl';
 import 'ui/i18n';
 
 import * as Sentry from '@sentry/react';
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import log from 'loglevel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -49,11 +49,8 @@ async function startUi() {
 
   const updateState = createUpdateState(store);
 
-  const port = extension.runtime.connect({ name: 'ui' });
-  const connectionStream = new PortStream(port);
-
   const emitterApi = {
-    sendUpdate: async state => updateState(state),
+    closePopupWindow: async () => undefined,
     closeEdgeNotificationWindow: async () => undefined,
     ledgerSignRequest: async (request: LedgerSignRequest) => {
       const { selectedAccount } = store.getState();
@@ -62,12 +59,27 @@ async function startUi() {
     },
   };
 
-  const dnode = setupDnode(connectionStream, emitterApi, 'api');
-  const background = await new Promise<any>(resolve => {
-    dnode.once('remote', background => {
-      resolve(transformMethods(cbToPromise, background));
+  const connect = async () => {
+    const port = extension.runtime.connect();
+
+    port.onDisconnect.addListener(() => {
+      backgroundService.setConnect(async () => {
+        const newBackground = await connect();
+        backgroundService.init(newBackground);
+      });
     });
-  });
+
+    const connectionStream = new PortStream(port);
+    const dnode = setupDnode(connectionStream, emitterApi, 'api');
+
+    return await new Promise<any>(resolve => {
+      dnode.once('remote', background => {
+        resolve(transformMethods(cbToPromise, background));
+      });
+    });
+  };
+
+  const background = await connect();
 
   if (KEEPERWALLET_DEBUG) {
     (global as any).background = background;
@@ -84,8 +96,24 @@ async function startUi() {
   Sentry.setTag('network', state.currentNetwork);
 
   backgroundService.init(background);
+
   document.addEventListener('mousemove', () => backgroundService.updateIdle());
   document.addEventListener('keyup', () => backgroundService.updateIdle());
   document.addEventListener('mousedown', () => backgroundService.updateIdle());
   document.addEventListener('focus', () => backgroundService.updateIdle());
+
+  extension.storage.onChanged.addListener(async changes => {
+    const bgState = await backgroundService.getState();
+    const myNotifications =
+      await backgroundService.getGroupNotificationsByAccount(
+        state.selectedAccount
+      );
+    let newState = { ...bgState, myNotifications };
+
+    for (const key in changes) {
+      newState = { ...newState, ...changes[key].newValue };
+    }
+
+    updateState(newState);
+  });
 }

@@ -2,7 +2,7 @@ import { useSelector, TypedUseSelectorHook, useDispatch } from 'react-redux';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import * as reducers from './reducers/updateState';
 import * as middleware from './midleware';
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 
 if (KEEPERWALLET_DEBUG) {
