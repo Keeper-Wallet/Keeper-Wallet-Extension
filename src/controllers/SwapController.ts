@@ -73,10 +73,7 @@ export class SwapController {
         call: {
           function:
             vendor === SwapAssetsVendor.Keeper ? 'swap' : 'swapWithReferral',
-          args:
-            vendor === SwapAssetsVendor.Keeper
-              ? args
-              : [...args, { type: 'string', value: 'keeper' }],
+          args,
         },
       },
     };
