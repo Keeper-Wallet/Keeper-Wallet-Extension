@@ -27,7 +27,7 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
     const { message, assets, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
-    const functionName = (tx.call && tx.call.function) || 'Default';
+    const functionName = (tx.call && tx.call.function) || 'default';
     const amounts = getAmounts(tx).map(item => getMoney(item, assets));
     const hasPayment = !!(tx.payment && tx.payment.length);
 
