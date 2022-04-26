@@ -93,6 +93,14 @@ export const LEASE_WITH_ALIAS = {
   data: { recipient: 'bobby', amount: 123456790 },
 };
 
+export const LEASE_WITH_MONEY_LIKE = {
+  type: TRANSACTION_TYPE.LEASE,
+  data: {
+    recipient: '3N5HNJz5otiUavvoPrxMBrXBVv5HhYLdhiD',
+    amount: { assetId: 'WAVES', amount: 123456790 },
+  },
+};
+
 export const CANCEL_LEASE = {
   type: TRANSACTION_TYPE.CANCEL_LEASE,
   data: { leaseId: '6r2u8Bf3WTqJw4HQvPTsWs8Zak5PLwjzjjGU76nXph1u' },

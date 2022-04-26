@@ -106,7 +106,7 @@ interface SaLease {
   data: {
     version?: number;
     senderPublicKey?: string;
-    amount: string | BigNumber;
+    amount: string | BigNumber | Money;
     recipient: string;
     fee: Money;
     timestamp: number;
@@ -397,7 +397,10 @@ export const convertFromSa = {
         return lease({
           version: input.data.version || 2,
           senderPublicKey: input.data.senderPublicKey,
-          amount: new BigNumber(input.data.amount),
+          amount:
+            input.data.amount instanceof Money
+              ? input.data.amount.getCoins()
+              : new BigNumber(input.data.amount),
           recipient: processAliasOrAddress(input.data.recipient, chainId),
           fee: input.data.fee.getCoins(),
           timestamp: input.data.timestamp,
