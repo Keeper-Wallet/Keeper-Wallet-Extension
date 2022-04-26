@@ -27,7 +27,7 @@ export const DateFormat = ({
   return (
     <div className={className}>
       <span>
-        {new Intl.DateTimeFormat(i18n.language, options).format(date)}
+        {new Intl.DateTimeFormat(i18n.language, options).format(new Date(date))}
       </span>{' '}
       {showRaw ? <span className={styles.timestamp}>{date}</span> : undefined}
     </div>
