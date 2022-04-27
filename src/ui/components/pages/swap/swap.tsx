@@ -39,10 +39,10 @@ export function Swap({ setTab }: Props) {
 
   const initialFromAssetId = initialState.fromAssetId || 'WAVES';
 
-  const usdAssetId = getAssetIdByName(currentNetwork, 'USD');
+  const usdnAssetId = getAssetIdByName(currentNetwork, 'USDN');
 
   const initialToAssetId =
-    initialFromAssetId === usdAssetId ? 'WAVES' : usdAssetId;
+    initialFromAssetId === usdnAssetId ? 'WAVES' : usdnAssetId;
 
   const [isSwapInProgress, setIsSwapInProgress] = React.useState(false);
   const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
