@@ -51,11 +51,9 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
     });
   }
 
-  function submitSelectedAccounts() {
-    onSubmit(accounts.filter(({ address }) => selected.has(address)));
-  }
-
-  const [showWarningModal, setShowWarningModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(
+    !accounts.every(isAccountExportable)
+  );
 
   return (
     <form
@@ -63,11 +61,7 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
       onSubmit={event => {
         event.preventDefault();
 
-        if (accounts.every(isAccountExportable)) {
-          submitSelectedAccounts();
-        } else {
-          setShowWarningModal(true);
-        }
+        onSubmit(accounts.filter(({ address }) => selected.has(address)));
       }}
     >
       <h1 className={cn(styles.centered, 'margin1', 'title1')}>
@@ -193,18 +187,9 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
               view="submit"
               onClick={() => {
                 setShowWarningModal(false);
-                submitSelectedAccounts();
               }}
             >
               {t('exportKeystore.warningModalConfirmButton')}
-            </Button>
-
-            <Button
-              onClick={() => {
-                setShowWarningModal(false);
-              }}
-            >
-              {t('exportKeystore.warningModalCancelButton')}
             </Button>
 
             <Button
