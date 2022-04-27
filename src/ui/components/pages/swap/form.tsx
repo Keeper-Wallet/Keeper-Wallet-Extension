@@ -360,7 +360,7 @@ export function SwapForm({
 
   const sortedExchangeInfoEntries = (
     Object.entries(exchangeInfo) as Array<[SwapVendor, ExchangeInfoVendorState]>
-  ).sort(([aVendor, aInfo], [bVendor, bInfo]) => {
+  ).sort(([_aVendor, aInfo], [_bVendor, bInfo]) => {
     if (aInfo.type !== 'data' && bInfo.type !== 'data') {
       return 0;
     }
@@ -376,15 +376,7 @@ export function SwapForm({
     const aAmount = aInfo.toAmountTokens;
     const bAmount = bInfo.toAmountTokens;
 
-    return aAmount.gt(bAmount)
-      ? -1
-      : bAmount.gt(aAmount)
-      ? 1
-      : aVendor === SwapVendor.Keeper
-      ? -1
-      : bVendor === SwapVendor.Keeper
-      ? 1
-      : 0;
+    return aAmount.gt(bAmount) ? -1 : bAmount.gt(aAmount) ? 1 : 0;
   });
 
   return (
