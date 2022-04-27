@@ -95,6 +95,13 @@ export function Assets({ setTab }: Props) {
       <div className={styles.activeAccount}>
         <ActiveAccountCard
           account={activeAccount}
+          wavesBalance={
+            assets['WAVES'] &&
+            new Money(
+              balances[address]?.available || 0,
+              new Asset(assets['WAVES'])
+            )
+          }
           amountInUsd={amountInUsd}
           onCopy={() => {
             setShowCopy(true);

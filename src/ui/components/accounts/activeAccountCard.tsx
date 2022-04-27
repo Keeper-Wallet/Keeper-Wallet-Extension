@@ -1,17 +1,27 @@
 import * as React from 'react';
 import BigNumber from '@waves/bignumber';
+import { Money } from '@waves/data-entities';
 import { Trans } from 'react-i18next';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { Avatar } from '../ui/avatar/Avatar';
+import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
 import { Loader } from '../ui/loader';
 import { Account } from '../../../accounts/types';
 
+const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
+  amount !== null ? (
+    <p className={styles.accountAmount}>{`$${amount.toFixed(2)}`}</p>
+  ) : (
+    <Loader />
+  );
+
 interface Props {
   account: Account;
+  wavesBalance?: string | BigNumber | Money;
   amountInUsd: BigNumber | null;
   onClick: (account: Account) => void;
   onCopy: () => void;
@@ -22,6 +32,7 @@ interface Props {
 
 export function ActiveAccountCard({
   account,
+  wavesBalance,
   amountInUsd,
   onClick,
   onCopy,
@@ -30,6 +41,7 @@ export function ActiveAccountCard({
   onSwapClick,
 }: Props) {
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const isMainnet = currentNetwork === 'mainnet';
 
   return (
     <div className={styles.root} data-testid="activeAccountCard">
@@ -41,12 +53,15 @@ export function ActiveAccountCard({
             {account.name}
           </div>
 
-          {amountInUsd !== null ? (
-            <p className={styles.accountAmount}>{`$${amountInUsd.toFixed(
-              2
-            )}`}</p>
+          {isMainnet ? (
+            <UsdAmount amount={amountInUsd} />
           ) : (
-            <Loader />
+            <Balance
+              balance={wavesBalance}
+              isShortFormat={false}
+              showAsset
+              split
+            />
           )}
         </div>
 
@@ -71,7 +86,7 @@ export function ActiveAccountCard({
       />
 
       <div className={styles.controls}>
-        {currentNetwork === 'mainnet' && (
+        {isMainnet && (
           <button className={styles.button} onClick={onSwapClick}>
             <svg width="14" height="14" fill="currentColor">
               <path d="m11.56 4.01-1.266-1.268a.6.6 0 0 1 .848-.848l2.291 2.29a.6.6 0 0 1 0 .85l-2.29 2.29a.6.6 0 1 1-.85-.848l1.268-1.267H4.99a.6.6 0 0 1 0-1.2h6.57ZM2.44 9.99l1.266 1.268a.6.6 0 1 1-.848.848L.567 9.816a.6.6 0 0 1 0-.85l2.29-2.29a.6.6 0 1 1 .849.848L2.439 8.791h6.57a.6.6 0 0 1 0 1.2h-6.57Z" />
