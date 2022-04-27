@@ -9,18 +9,18 @@ export type SwapAssetsCallArg =
   | { type: 'boolean'; value: boolean }
   | { type: 'list'; value: SwapAssetsCallArg[] };
 
-export enum SwapAssetsVendor {
-  Keeper = 'keeper',
-  Puzzle = 'puzzle',
+export interface SwapAssetsInvokeParams {
+  dApp: string;
+  function: string;
+  args: SwapAssetsCallArg[];
 }
 
 export interface SwapAssetsParams {
-  args: SwapAssetsCallArg[];
   feeCoins: string;
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: string;
-  vendor: SwapAssetsVendor;
+  invoke: SwapAssetsInvokeParams;
 }
 
 export interface SwapAssetsResult {
@@ -46,12 +46,11 @@ export class SwapController {
   }
 
   async swapAssets({
-    args,
     feeCoins,
     feeAssetId,
     fromAssetId,
     fromCoins,
-    vendor,
+    invoke,
   }: SwapAssetsParams): Promise<SwapAssetsResult> {
     const [feeAssetInfo, fromAssetInfo] = await Promise.all([
       this.assetInfoController.assetInfo(feeAssetId),
@@ -62,18 +61,14 @@ export class SwapController {
       type: TRANSACTION_TYPE.INVOKE_SCRIPT,
       data: {
         timestamp: Date.now(),
-        dApp:
-          vendor === SwapAssetsVendor.Keeper
-            ? '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw'
-            : '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU',
+        dApp: invoke.dApp,
         fee: new Money(new BigNumber(feeCoins), new Asset(feeAssetInfo)),
         payment: [
           new Money(new BigNumber(fromCoins), new Asset(fromAssetInfo)),
         ],
         call: {
-          function:
-            vendor === SwapAssetsVendor.Keeper ? 'swap' : 'swapWithReferral',
-          args,
+          function: invoke.function,
+          args: invoke.args,
         },
       },
     };

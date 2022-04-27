@@ -1,7 +1,10 @@
 import BigNumber from '@waves/bignumber';
 import { Asset } from '@waves/data-entities';
 import { base64Encode } from '@waves/ts-lib-crypto';
-import { SwapAssetsCallArg } from 'controllers/SwapController';
+import {
+  SwapAssetsCallArg,
+  SwapAssetsInvokeParams,
+} from 'controllers/SwapController';
 import Long from 'long';
 import { proto } from './channel.proto.compiled';
 
@@ -12,10 +15,9 @@ type ExchangeChannelResult =
     }
   | {
       type: 'data';
-      args: SwapAssetsCallArg[];
+      invoke: SwapAssetsInvokeParams;
       priceImpact: number;
       toAmountCoins: BigNumber;
-      worstAmountCoins: BigNumber;
     };
 
 interface ExchangeInput {
@@ -37,7 +39,9 @@ type Subscriber = (
   response?: ExchangeChannelResult
 ) => void;
 
-function convertArg(arg: proto.Response.Exchange.Argument): SwapAssetsCallArg {
+function convertArg(
+  arg: proto.Response.Exchange.Transaction.Argument
+): SwapAssetsCallArg {
   switch (arg.value) {
     case 'integerValue':
       return {
@@ -62,7 +66,7 @@ function convertArg(arg: proto.Response.Exchange.Argument): SwapAssetsCallArg {
     case 'list':
       return {
         type: 'list',
-        value: arg.list.items.map(a => convertArg(a)),
+        value: arg.list.items.map(convertArg),
       };
     default:
       throw new Error(`Unexpected value of arg.value: ${arg.value}`);
@@ -111,12 +115,15 @@ export class ExchangeChannelClient {
         case 'data':
           this.subscriber(null, res.exchange.vendor, {
             type: 'data',
-            args: res.exchange.data.arguments.map(arg => convertArg(arg)),
+            invoke: {
+              dApp: res.exchange.data.transaction.dApp,
+              function: res.exchange.data.transaction.call.function,
+              args: res.exchange.data.transaction.call.arguments.map(
+                convertArg
+              ),
+            },
             priceImpact: res.exchange.data.priceImpact,
             toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
-            worstAmountCoins: new BigNumber(
-              String(res.exchange.data.worstAmount)
-            ),
           });
           break;
         case 'error':

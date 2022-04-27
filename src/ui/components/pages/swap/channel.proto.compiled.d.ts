@@ -736,210 +736,405 @@ export namespace proto {
                 public toJSON(): { [k: string]: any };
             }
 
-            /** Properties of an Argument. */
-            interface IArgument {
+            /** Properties of a Transaction. */
+            interface ITransaction {
 
-                /** Argument integerValue */
-                integerValue?: (Long|null);
+                /** Transaction dApp */
+                dApp?: (string|null);
 
-                /** Argument binaryValue */
-                binaryValue?: (Uint8Array|null);
-
-                /** Argument stringValue */
-                stringValue?: (string|null);
-
-                /** Argument booleanValue */
-                booleanValue?: (boolean|null);
-
-                /** Argument list */
-                list?: (proto.Response.Exchange.Argument.List|null);
+                /** Transaction call */
+                call?: (proto.Response.Exchange.Transaction.Call|null);
             }
 
-            /** Represents an Argument. */
-            class Argument implements IArgument {
+            /** Represents a Transaction. */
+            class Transaction implements ITransaction {
 
                 /**
-                 * Constructs a new Argument.
+                 * Constructs a new Transaction.
                  * @param [properties] Properties to set
                  */
-                constructor(properties?: proto.Response.Exchange.IArgument);
+                constructor(properties?: proto.Response.Exchange.ITransaction);
 
-                /** Argument integerValue. */
-                public integerValue?: (Long|null);
+                /** Transaction dApp. */
+                public dApp: string;
 
-                /** Argument binaryValue. */
-                public binaryValue?: (Uint8Array|null);
-
-                /** Argument stringValue. */
-                public stringValue?: (string|null);
-
-                /** Argument booleanValue. */
-                public booleanValue?: (boolean|null);
-
-                /** Argument list. */
-                public list?: (proto.Response.Exchange.Argument.List|null);
-
-                /** Argument value. */
-                public value?: ("integerValue"|"binaryValue"|"stringValue"|"booleanValue"|"list");
+                /** Transaction call. */
+                public call?: (proto.Response.Exchange.Transaction.Call|null);
 
                 /**
-                 * Creates a new Argument instance using the specified properties.
+                 * Creates a new Transaction instance using the specified properties.
                  * @param [properties] Properties to set
-                 * @returns Argument instance
+                 * @returns Transaction instance
                  */
-                public static create(properties?: proto.Response.Exchange.IArgument): proto.Response.Exchange.Argument;
+                public static create(properties?: proto.Response.Exchange.ITransaction): proto.Response.Exchange.Transaction;
 
                 /**
-                 * Encodes the specified Argument message. Does not implicitly {@link proto.Response.Exchange.Argument.verify|verify} messages.
-                 * @param message Argument message or plain object to encode
+                 * Encodes the specified Transaction message. Does not implicitly {@link proto.Response.Exchange.Transaction.verify|verify} messages.
+                 * @param message Transaction message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encode(message: proto.Response.Exchange.Argument, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encode(message: proto.Response.Exchange.Transaction, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Encodes the specified Argument message, length delimited. Does not implicitly {@link proto.Response.Exchange.Argument.verify|verify} messages.
-                 * @param message Argument message or plain object to encode
+                 * Encodes the specified Transaction message, length delimited. Does not implicitly {@link proto.Response.Exchange.Transaction.verify|verify} messages.
+                 * @param message Transaction message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encodeDelimited(message: proto.Response.Exchange.Argument, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encodeDelimited(message: proto.Response.Exchange.Transaction, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Decodes an Argument message from the specified reader or buffer.
+                 * Decodes a Transaction message from the specified reader or buffer.
                  * @param reader Reader or buffer to decode from
                  * @param [length] Message length if known beforehand
-                 * @returns Argument
+                 * @returns Transaction
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Argument;
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Transaction;
 
                 /**
-                 * Decodes an Argument message from the specified reader or buffer, length delimited.
+                 * Decodes a Transaction message from the specified reader or buffer, length delimited.
                  * @param reader Reader or buffer to decode from
-                 * @returns Argument
+                 * @returns Transaction
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Argument;
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Transaction;
 
                 /**
-                 * Verifies an Argument message.
+                 * Verifies a Transaction message.
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
                 public static verify(message: { [k: string]: any }): (string|null);
 
                 /**
-                 * Creates an Argument message from a plain object. Also converts values to their respective internal types.
+                 * Creates a Transaction message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
-                 * @returns Argument
+                 * @returns Transaction
                  */
-                public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Argument;
+                public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Transaction;
 
                 /**
-                 * Creates a plain object from an Argument message. Also converts values to other types if specified.
-                 * @param message Argument
+                 * Creates a plain object from a Transaction message. Also converts values to other types if specified.
+                 * @param message Transaction
                  * @param [options] Conversion options
                  * @returns Plain object
                  */
-                public static toObject(message: proto.Response.Exchange.Argument, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                public static toObject(message: proto.Response.Exchange.Transaction, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                 /**
-                 * Converts this Argument to JSON.
+                 * Converts this Transaction to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
             }
 
-            namespace Argument {
+            namespace Transaction {
 
-                /** Properties of a List. */
-                interface IList {
+                /** Properties of an Argument. */
+                interface IArgument {
 
-                    /** List items */
-                    items?: (proto.Response.Exchange.Argument[]|null);
+                    /** Argument integerValue */
+                    integerValue?: (Long|null);
+
+                    /** Argument binaryValue */
+                    binaryValue?: (Uint8Array|null);
+
+                    /** Argument stringValue */
+                    stringValue?: (string|null);
+
+                    /** Argument booleanValue */
+                    booleanValue?: (boolean|null);
+
+                    /** Argument list */
+                    list?: (proto.Response.Exchange.Transaction.Argument.List|null);
                 }
 
-                /** Represents a List. */
-                class List implements IList {
+                /** Represents an Argument. */
+                class Argument implements IArgument {
 
                     /**
-                     * Constructs a new List.
+                     * Constructs a new Argument.
                      * @param [properties] Properties to set
                      */
-                    constructor(properties?: proto.Response.Exchange.Argument.IList);
+                    constructor(properties?: proto.Response.Exchange.Transaction.IArgument);
 
-                    /** List items. */
-                    public items: proto.Response.Exchange.Argument[];
+                    /** Argument integerValue. */
+                    public integerValue?: (Long|null);
+
+                    /** Argument binaryValue. */
+                    public binaryValue?: (Uint8Array|null);
+
+                    /** Argument stringValue. */
+                    public stringValue?: (string|null);
+
+                    /** Argument booleanValue. */
+                    public booleanValue?: (boolean|null);
+
+                    /** Argument list. */
+                    public list?: (proto.Response.Exchange.Transaction.Argument.List|null);
+
+                    /** Argument value. */
+                    public value?: ("integerValue"|"binaryValue"|"stringValue"|"booleanValue"|"list");
 
                     /**
-                     * Creates a new List instance using the specified properties.
+                     * Creates a new Argument instance using the specified properties.
                      * @param [properties] Properties to set
-                     * @returns List instance
+                     * @returns Argument instance
                      */
-                    public static create(properties?: proto.Response.Exchange.Argument.IList): proto.Response.Exchange.Argument.List;
+                    public static create(properties?: proto.Response.Exchange.Transaction.IArgument): proto.Response.Exchange.Transaction.Argument;
 
                     /**
-                     * Encodes the specified List message. Does not implicitly {@link proto.Response.Exchange.Argument.List.verify|verify} messages.
-                     * @param message List message or plain object to encode
+                     * Encodes the specified Argument message. Does not implicitly {@link proto.Response.Exchange.Transaction.Argument.verify|verify} messages.
+                     * @param message Argument message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encode(message: proto.Response.Exchange.Argument.List, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encode(message: proto.Response.Exchange.Transaction.Argument, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Encodes the specified List message, length delimited. Does not implicitly {@link proto.Response.Exchange.Argument.List.verify|verify} messages.
-                     * @param message List message or plain object to encode
+                     * Encodes the specified Argument message, length delimited. Does not implicitly {@link proto.Response.Exchange.Transaction.Argument.verify|verify} messages.
+                     * @param message Argument message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encodeDelimited(message: proto.Response.Exchange.Argument.List, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encodeDelimited(message: proto.Response.Exchange.Transaction.Argument, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Decodes a List message from the specified reader or buffer.
+                     * Decodes an Argument message from the specified reader or buffer.
                      * @param reader Reader or buffer to decode from
                      * @param [length] Message length if known beforehand
-                     * @returns List
+                     * @returns Argument
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Argument.List;
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Transaction.Argument;
 
                     /**
-                     * Decodes a List message from the specified reader or buffer, length delimited.
+                     * Decodes an Argument message from the specified reader or buffer, length delimited.
                      * @param reader Reader or buffer to decode from
-                     * @returns List
+                     * @returns Argument
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Argument.List;
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Transaction.Argument;
 
                     /**
-                     * Verifies a List message.
+                     * Verifies an Argument message.
                      * @param message Plain object to verify
                      * @returns `null` if valid, otherwise the reason why it is not
                      */
                     public static verify(message: { [k: string]: any }): (string|null);
 
                     /**
-                     * Creates a List message from a plain object. Also converts values to their respective internal types.
+                     * Creates an Argument message from a plain object. Also converts values to their respective internal types.
                      * @param object Plain object
-                     * @returns List
+                     * @returns Argument
                      */
-                    public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Argument.List;
+                    public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Transaction.Argument;
 
                     /**
-                     * Creates a plain object from a List message. Also converts values to other types if specified.
-                     * @param message List
+                     * Creates a plain object from an Argument message. Also converts values to other types if specified.
+                     * @param message Argument
                      * @param [options] Conversion options
                      * @returns Plain object
                      */
-                    public static toObject(message: proto.Response.Exchange.Argument.List, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                    public static toObject(message: proto.Response.Exchange.Transaction.Argument, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                     /**
-                     * Converts this List to JSON.
+                     * Converts this Argument to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                namespace Argument {
+
+                    /** Properties of a List. */
+                    interface IList {
+
+                        /** List items */
+                        items?: (proto.Response.Exchange.Transaction.Argument[]|null);
+                    }
+
+                    /** Represents a List. */
+                    class List implements IList {
+
+                        /**
+                         * Constructs a new List.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: proto.Response.Exchange.Transaction.Argument.IList);
+
+                        /** List items. */
+                        public items: proto.Response.Exchange.Transaction.Argument[];
+
+                        /**
+                         * Creates a new List instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns List instance
+                         */
+                        public static create(properties?: proto.Response.Exchange.Transaction.Argument.IList): proto.Response.Exchange.Transaction.Argument.List;
+
+                        /**
+                         * Encodes the specified List message. Does not implicitly {@link proto.Response.Exchange.Transaction.Argument.List.verify|verify} messages.
+                         * @param message List message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: proto.Response.Exchange.Transaction.Argument.List, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified List message, length delimited. Does not implicitly {@link proto.Response.Exchange.Transaction.Argument.List.verify|verify} messages.
+                         * @param message List message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: proto.Response.Exchange.Transaction.Argument.List, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a List message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns List
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Transaction.Argument.List;
+
+                        /**
+                         * Decodes a List message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns List
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Transaction.Argument.List;
+
+                        /**
+                         * Verifies a List message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a List message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns List
+                         */
+                        public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Transaction.Argument.List;
+
+                        /**
+                         * Creates a plain object from a List message. Also converts values to other types if specified.
+                         * @param message List
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: proto.Response.Exchange.Transaction.Argument.List, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this List to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+                    }
+                }
+
+                /** Properties of a Call. */
+                interface ICall {
+
+                    /** Call function */
+                    "function"?: (string|null);
+
+                    /** Call arguments */
+                    "arguments"?: (proto.Response.Exchange.Transaction.Argument[]|null);
+                }
+
+                /** Represents a Call. */
+                class Call implements ICall {
+
+                    /**
+                     * Constructs a new Call.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: proto.Response.Exchange.Transaction.ICall);
+
+                    /** Call function. */
+                    public function: string;
+
+                    /** Call arguments. */
+                    public arguments: proto.Response.Exchange.Transaction.Argument[];
+
+                    /**
+                     * Creates a new Call instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns Call instance
+                     */
+                    public static create(properties?: proto.Response.Exchange.Transaction.ICall): proto.Response.Exchange.Transaction.Call;
+
+                    /**
+                     * Encodes the specified Call message. Does not implicitly {@link proto.Response.Exchange.Transaction.Call.verify|verify} messages.
+                     * @param message Call message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: proto.Response.Exchange.Transaction.Call, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified Call message, length delimited. Does not implicitly {@link proto.Response.Exchange.Transaction.Call.verify|verify} messages.
+                     * @param message Call message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: proto.Response.Exchange.Transaction.Call, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a Call message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns Call
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): proto.Response.Exchange.Transaction.Call;
+
+                    /**
+                     * Decodes a Call message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns Call
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): proto.Response.Exchange.Transaction.Call;
+
+                    /**
+                     * Verifies a Call message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a Call message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns Call
+                     */
+                    public static fromObject(object: { [k: string]: any }): proto.Response.Exchange.Transaction.Call;
+
+                    /**
+                     * Creates a plain object from a Call message. Also converts values to other types if specified.
+                     * @param message Call
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: proto.Response.Exchange.Transaction.Call, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this Call to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
@@ -961,8 +1156,8 @@ export namespace proto {
                 /** Data routes */
                 routes?: (proto.Response.Exchange.Route[]|null);
 
-                /** Data arguments */
-                "arguments"?: (proto.Response.Exchange.Argument[]|null);
+                /** Data transaction */
+                transaction?: (proto.Response.Exchange.Transaction|null);
             }
 
             /** Represents a Data. */
@@ -986,8 +1181,8 @@ export namespace proto {
                 /** Data routes. */
                 public routes: proto.Response.Exchange.Route[];
 
-                /** Data arguments. */
-                public arguments: proto.Response.Exchange.Argument[];
+                /** Data transaction. */
+                public transaction?: (proto.Response.Exchange.Transaction|null);
 
                 /**
                  * Creates a new Data instance using the specified properties.
