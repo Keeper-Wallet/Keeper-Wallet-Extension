@@ -40,8 +40,17 @@
 }
 
 .listItem_selected,
-.listItem:hover {
+.listItem:not(.listItem_disabled):hover {
   background: var(--color-basic100);
+}
+
+.listItem_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.listItemTooltipContent {
+  max-width: calc(100vw - 14px * 2);
 }
 
 .logo {

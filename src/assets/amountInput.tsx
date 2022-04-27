@@ -3,16 +3,15 @@ import { Money } from '@waves/data-entities';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
 import { BalanceAssets } from 'ui/reducers/updateState';
-import { AssetDetail } from 'ui/services/Background';
 import { useAppSelector } from 'ui/store';
 import * as styles from './amountInput.module.css';
-import { AssetSelect } from './assetSelect';
 import { useTranslation } from 'react-i18next';
+import { AssetSelect, AssetSelectOption } from './assetSelect';
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 
 interface Props {
   assetBalances: BalanceAssets;
-  assetOptions: AssetDetail[];
+  assetOptions: AssetSelectOption[];
   balance: Money;
   label: string;
   showUsdAmount?: boolean;

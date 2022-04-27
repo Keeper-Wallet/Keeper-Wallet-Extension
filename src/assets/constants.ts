@@ -93,8 +93,8 @@ export enum SwapVendor {
   Puzzle = 'puzzle',
 }
 
-const swappableAssetTickersByVendor: Record<SwapVendor, string[]> = {
-  [SwapVendor.Keeper]: [
+export const swappableAssetTickersByVendor: Record<SwapVendor, Set<string>> = {
+  [SwapVendor.Keeper]: new Set([
     'WAVES',
     'BAG',
     'BTC',
@@ -126,8 +126,8 @@ const swappableAssetTickersByVendor: Record<SwapVendor, string[]> = {
     'WEST',
     'WX',
     'XMR',
-  ],
-  [SwapVendor.Puzzle]: [
+  ]),
+  [SwapVendor.Puzzle]: new Set([
     'WAVES',
     'BNB',
     'BTC',
@@ -168,11 +168,15 @@ const swappableAssetTickersByVendor: Record<SwapVendor, string[]> = {
     'WCT',
     'WEST',
     'WX',
-  ],
+  ]),
 };
 
 const swappableAssetTickers = Array.from(
-  new Set(Object.values(swappableAssetTickersByVendor).flat())
+  new Set(
+    Object.values(swappableAssetTickersByVendor).flatMap(tickersSet =>
+      Array.from(tickersSet)
+    )
+  )
 );
 
 export const swappableAssetIds = {

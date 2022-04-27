@@ -4,8 +4,8 @@ import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
-import { AssetSelect } from 'assets/assetSelect';
-import { SwapVendor } from 'assets/constants';
+import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
+import { SwapVendor, swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 import { setUiState } from 'ui/actions/uiState';
@@ -379,6 +379,56 @@ export function SwapForm({
     return aAmount.gt(bAmount) ? -1 : bAmount.gt(aAmount) ? 1 : 0;
   });
 
+  const fromSwappableAssets = React.useMemo(() => {
+    const availableTickers = new Set(
+      Object.values(swappableAssetTickersByVendor)
+        .filter(tickersSet => tickersSet.has(toAsset.ticker))
+        .flatMap(tickersSet => Array.from(tickersSet))
+    );
+
+    return swappableAssets
+      .filter(asset => asset.id !== toAsset.id)
+      .map((asset): AssetSelectOption => {
+        const isAvailable = availableTickers.has(asset.ticker);
+
+        return {
+          ...asset,
+          disabled: !isAvailable,
+          disabledTooltip: isAvailable
+            ? undefined
+            : t('swap.notSwappablePairTooltip', {
+                assetTicker1: toAsset.ticker,
+                assetTicker2: asset.ticker,
+              }),
+        };
+      });
+  }, [swappableAssets, toAsset]);
+
+  const toSwappableAssets = React.useMemo(() => {
+    const availableTickers = new Set(
+      Object.values(swappableAssetTickersByVendor)
+        .filter(tickersSet => tickersSet.has(fromAsset.ticker))
+        .flatMap(tickersSet => Array.from(tickersSet))
+    );
+
+    return swappableAssets
+      .filter(asset => asset.id !== fromAsset.id)
+      .map((asset): AssetSelectOption => {
+        const isAvailable = availableTickers.has(asset.ticker);
+
+        return {
+          ...asset,
+          disabled: !isAvailable,
+          disabledTooltip: isAvailable
+            ? undefined
+            : t('swap.notSwappablePairTooltip', {
+                assetTicker1: fromAsset.ticker,
+                assetTicker2: asset.ticker,
+              }),
+        };
+      });
+  }, [fromAsset, swappableAssets]);
+
   return (
     <SwapLayout>
       <div className={styles.root}>
@@ -404,9 +454,7 @@ export function SwapForm({
         >
           <AssetAmountInput
             assetBalances={accountBalance.assets}
-            assetOptions={swappableAssets.filter(
-              asset => asset.id !== toAssetId
-            )}
+            assetOptions={fromSwappableAssets}
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
             showUsdAmount
@@ -489,9 +537,7 @@ export function SwapForm({
               <AssetSelect
                 assetBalances={accountBalance.assets}
                 network={currentNetwork}
-                options={swappableAssets.filter(
-                  asset => asset.id !== fromAssetId
-                )}
+                options={toSwappableAssets}
                 value={toAssetId}
                 onChange={newAssetId => {
                   setAssetIds(prevState => ({
@@ -595,7 +641,7 @@ export function SwapForm({
 
                     {profitTokens != null && !profitTokens.eq(0) && (
                       <div className={styles.toAmountCardBadge}>
-                        <Trans i18nKey="swap.profitLabel" />: +
+                        {t('swap.profitLabel')}: +
                         {profitTokens.toFixed(
                           toAsset.precision,
                           BigNumber.ROUND_MODE.ROUND_FLOOR
