@@ -598,6 +598,7 @@
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
     "notAvailable": "N/A",
+    "notSwappablePairTooltip": "Swap between {{ assetTicker1 }} and {{ assetTicker2 }} is not supported",
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "priceLabel": "Price",
     "profitLabel": "Profit",
