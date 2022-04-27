@@ -54,7 +54,10 @@ export function AssetSelectModal({
       const bIsZero = b.balance.getCoins().eq(0);
 
       if (aIsZero === bIsZero) {
-        return 0;
+        const aName = a.asset.ticker || a.asset.name;
+        const bName = b.asset.ticker || b.asset.name;
+
+        return aName.localeCompare(bName);
       }
 
       if (aIsZero) {
