@@ -51,7 +51,6 @@ async function startUi() {
 
   const emitterApi = {
     closePopupWindow: async () => undefined,
-    closeEdgeNotificationWindow: async () => undefined,
     ledgerSignRequest: async (request: LedgerSignRequest) => {
       const { selectedAccount } = store.getState();
 
