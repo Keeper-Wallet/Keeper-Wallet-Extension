@@ -650,7 +650,8 @@ export class MessageController extends EventEmitter {
             makeBytes.transaction(
               convertFromSa.transaction(
                 readyData,
-                this.networkController.getNetworkCode().charCodeAt(0)
+                this.networkController.getNetworkCode().charCodeAt(0),
+                message.account.type
               )
             )
           );
@@ -722,7 +723,8 @@ export class MessageController extends EventEmitter {
 
         const convertedData = convertFromSa.transaction(
           filledMessage.data,
-          chainId
+          chainId,
+          message.account.type
         );
 
         result.messageHash = getHash.transaction(
@@ -781,10 +783,11 @@ export class MessageController extends EventEmitter {
 
   async _getFee(message, signData) {
     const signableData = await this._transformData({ ...signData });
+    const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
     const fee = {
       coins: (
-        await this.getFee(signableData, message.account.address)
+        await this.getFee(signableData, chainId, message.account)
       ).toString(),
       assetId: 'WAVES',
     };

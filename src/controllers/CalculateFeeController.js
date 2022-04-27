@@ -75,7 +75,7 @@ function normalizeAssetId(assetId) {
   return assetId || WAVES_ID;
 }
 
-function getAssetIds(signData) {
+function getAssetIds(signData, chainId, accountType) {
   const hash = Object.create(null);
   hash[WAVES_ID] = true;
 
@@ -86,7 +86,11 @@ function getAssetIds(signData) {
     hash[normalizeAssetId(order.assetPair.amountAsset)] = true;
     hash[normalizeAssetId(order.assetPair.priceAsset)] = true;
   } else {
-    const transaction = convertFromSa.transaction(signData);
+    const transaction = convertFromSa.transaction(
+      signData,
+      chainId,
+      accountType
+    );
 
     hash[normalizeAssetId(transaction.feeAssetId)] = true;
 
@@ -236,15 +240,23 @@ function getOrderFee(
   );
 }
 
-function getFee(signData, config, hasScript, smartAssetIdList) {
+function getFee(
+  signData,
+  config,
+  hasScript,
+  smartAssetIdList,
+  chainId,
+  accountType
+) {
   const currentFee = currentFeeFactory(config);
-  const txData = convertFromSa.transaction(signData);
+  const txData = convertFromSa.transaction(signData, chainId, accountType);
   const bytes = makeBytes.transaction(txData);
   return currentFee(txData, bytes, hasScript, smartAssetIdList);
 }
 
 export const calculateFeeFabric =
-  (assetInfoController, networkController) => async (signData, address) => {
+  (assetInfoController, networkController) =>
+  async (signData, chainId, account) => {
     const { type } = signData;
 
     const feeConfig = await getCachingFeeConfig();
@@ -253,7 +265,7 @@ export const calculateFeeFabric =
       return Object.create(null);
     }
     const node = networkController.getNode();
-    const assetIds = getAssetIds(signData);
+    const assetIds = getAssetIds(signData, chainId, account.type);
     const assets = await Promise.all(
       assetIds.map(id => assetInfoController.assetInfo(id))
     );
@@ -277,6 +289,14 @@ export const calculateFeeFabric =
       );
     }
 
-    const extraFee = await isAccountHasExtraFee(address, node);
-    return getFee(signData, feeConfig, !!extraFee, smartAssets);
+    const extraFee = await isAccountHasExtraFee(account.address, node);
+
+    return getFee(
+      signData,
+      feeConfig,
+      !!extraFee,
+      smartAssets,
+      chainId,
+      account.type
+    );
   };

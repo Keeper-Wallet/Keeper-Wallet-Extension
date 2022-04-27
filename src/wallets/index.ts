@@ -98,7 +98,7 @@ export function getTxVersions(accountType: AccountType) {
         [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
         1000: [1],
         1001: [1],
-        1002: [1, 2, 3],
+        1002: [3, 2, 1],
         1003: [1],
       };
     default:
@@ -119,8 +119,8 @@ export function getTxVersions(accountType: AccountType) {
         [TRANSACTION_TYPE.UPDATE_ASSET_INFO]: [1],
         1000: [1],
         1001: [1],
-        1002: [1, 2, 3],
-        1003: [0, 1],
+        1002: [3, 2, 1],
+        1003: [1, 0],
       };
   }
 }

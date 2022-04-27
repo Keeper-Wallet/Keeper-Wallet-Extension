@@ -105,7 +105,8 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
 
     const result = convertFromSa.transaction(
       tx,
-      this.data.networkCode.charCodeAt(0)
+      this.data.networkCode.charCodeAt(0),
+      'ledger'
     );
 
     const feePrecision =

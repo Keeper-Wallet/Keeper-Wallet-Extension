@@ -35,7 +35,9 @@ import {
   TTransactionType,
   WithSender,
 } from '@waves/waves-transactions/dist/transactions';
+import { AccountType } from 'accounts/types';
 import Long from 'long';
+import { getTxVersions } from 'wallets';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -361,13 +363,19 @@ const convertLongToBigNumber = createDeepConverter(
 );
 
 export const convertFromSa = {
-  transaction: (input: SaTransaction, defaultChainId: number) => {
+  transaction: (
+    input: SaTransaction,
+    defaultChainId: number,
+    accountType: AccountType
+  ) => {
+    const fallbackVersion = getTxVersions(accountType)[input.type][0];
+
     switch (input.type) {
       case TRANSACTION_TYPE.ISSUE:
         return convertLongToBigNumber(
           issue(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               name: input.data.name,
               description: input.data.description,
@@ -388,7 +396,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           transfer(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               assetId: input.data.amount.asset.id,
               recipient: processAliasOrAddress(input.data.recipient, chainId),
@@ -417,7 +425,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           reissue(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               assetId,
               quantity:
@@ -437,7 +445,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           burn(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               assetId: input.data.assetId,
               amount: new BigNumber(input.data.amount || input.data.quantity),
@@ -454,7 +462,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           lease(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               amount:
                 input.data.amount instanceof Money
@@ -473,7 +481,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           cancelLease(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               leaseId: input.data.leaseId,
               fee: input.data.fee.getCoins(),
@@ -487,7 +495,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           alias(
             convertBigNumberToLong({
-              version: input.data.version || 2,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               alias: input.data.alias,
               fee: input.data.fee.getCoins(),
@@ -503,7 +511,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           massTransfer(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               assetId: input.data.totalAmount.asset.id,
               transfers: input.data.transfers.map(transfer => ({
@@ -525,7 +533,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           data(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               fee: input.data.fee.getCoins(),
               timestamp: input.data.timestamp,
@@ -543,7 +551,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           setScript(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               chainId: input.data.chainId || defaultChainId,
               fee: input.data.fee.getCoins(),
@@ -557,7 +565,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           sponsorship(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
               assetId: input.data.minSponsoredAssetFee.asset.id,
@@ -572,7 +580,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           setAssetScript(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               assetId: input.data.assetId,
               chainId: input.data.chainId || defaultChainId,
@@ -597,7 +605,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           invokeScript(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               dApp: processAliasOrAddress(input.data.dApp, chainId),
               call: input.data.call
@@ -623,7 +631,7 @@ export const convertFromSa = {
         return convertLongToBigNumber(
           updateAssetInfo(
             convertBigNumberToLong({
-              version: input.data.version || 1,
+              version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               name: input.data.name,
               description: input.data.description,

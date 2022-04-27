@@ -77,7 +77,8 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
   async signTx(tx: SaTransaction) {
     const result = convertFromSa.transaction(
       tx,
-      this.data.networkCode.charCodeAt(0)
+      this.data.networkCode.charCodeAt(0),
+      'encodedSeed'
     );
 
     result.proofs.push(this.signBytes(makeBytes.transaction(result)));
