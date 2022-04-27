@@ -193,7 +193,7 @@ module.exports = ({
     module: {
       rules: [
         {
-          test: /\.(png|jpg|svg|gif)$/,
+          test: /\.(png|jpe?g|svg|gif)$/,
           loader: 'url-loader?limit=1000&name=assets/img/[name].[ext]',
         },
 
