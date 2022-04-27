@@ -1,6 +1,5 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
-import { detect } from 'detect-browser';
 
 const IDLE_INTERVAL = 60;
 
@@ -63,26 +62,10 @@ export class IdleController {
   }
 
   _idleMode() {
-    const { name } = detect();
-    if (name === 'edge') {
-      this._msIdle();
-      return;
-    }
-
     if (this.options.type !== 'idle') {
       extension.idle.onStateChanged.removeListener(this._lock);
     } else {
       extension.idle.onStateChanged.addListener(this._lock);
-    }
-  }
-
-  _msIdle() {
-    if (this.options.type === 'idle') {
-      extension.idle.queryState(IDLE_INTERVAL, this._lock);
-      extension.alarms.clear('idle');
-      extension.alarms.create('idle', {
-        delayInMinutes: 0.167,
-      });
     }
   }
 

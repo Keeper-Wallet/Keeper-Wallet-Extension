@@ -6,7 +6,6 @@ import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
 import asStream from 'obs-store/lib/asStream';
 import { extension } from 'lib/extension';
-import { detect } from 'detect-browser';
 import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
 import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
@@ -103,12 +102,6 @@ extension.runtime.onConnect.addListener(async remotePort => {
 });
 
 extension.runtime.onConnectExternal.addListener(async remotePort => {
-  const { name } = detect();
-
-  if (name === 'edge') {
-    return;
-  }
-
   const bgService = await bgPromise;
   const portStream = new PortStream(remotePort);
   const origin = url.parse(remotePort.sender.url).hostname;
@@ -225,13 +218,7 @@ async function setupBackgroundService() {
     windowManager.showWindow.bind(windowManager)
   );
   backgroundService.on('Close notification', () => {
-    const { name } = detect();
-    if (name === 'edge') {
-      // Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
-      backgroundService.emit('closeEdgeNotificationWindow');
-    } else {
-      windowManager.closeWindow();
-    }
+    windowManager.closeWindow();
   });
   backgroundService.on('Resize notification', (width, height) => {
     windowManager.resizeWindow(width, height);
@@ -1028,11 +1015,6 @@ class BackgroundService extends EventEmitter {
     const dnode = setupDnode(connectionStream, api, 'api');
 
     const remoteHandler = remote => {
-      //Microsoft Edge doesn't support browser.windows.close api. We emit notification, so window will close itself
-      const closeEdgeNotificationWindow =
-        remote.closeEdgeNotificationWindow.bind(remote);
-      this.on('closeEdgeNotificationWindow', closeEdgeNotificationWindow);
-
       const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
       this.on('ledger:signRequest', ledgerSignRequest);
 
@@ -1040,10 +1022,6 @@ class BackgroundService extends EventEmitter {
       this.on('closePopupWindow', closePopupWindow);
 
       dnode.on('end', () => {
-        this.removeListener(
-          'closeEdgeNotificationWindow',
-          closeEdgeNotificationWindow
-        );
         this.removeListener('ledger:signRequest', ledgerSignRequest);
         this.removeListener('closePopupWindow', closePopupWindow);
       });

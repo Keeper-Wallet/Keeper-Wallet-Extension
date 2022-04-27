@@ -48,7 +48,6 @@
     "copy-to-clipboard": "^3.3.1",
     "debounce": "^1.2.1",
     "debounce-stream": "^2.0.0",
-    "detect-browser": "^5.3.0",
     "dnode": "^1.2.2",
     "events": "^3.3.0",
     "highlight.js": "^11.3.1",
