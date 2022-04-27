@@ -3,7 +3,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { swappableAssetIds } from 'assets/constants';
-import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
+import { convertToSponsoredAssetFee, getAssetIdByTicker } from 'assets/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateAssets } from 'ui/actions/assets';
@@ -39,7 +39,7 @@ export function Swap({ setTab }: Props) {
 
   const initialFromAssetId = initialState.fromAssetId || 'WAVES';
 
-  const usdnAssetId = getAssetIdByName(currentNetwork, 'USDN');
+  const usdnAssetId = getAssetIdByTicker(currentNetwork, 'USDN');
 
   const initialToAssetId =
     initialFromAssetId === usdnAssetId ? 'WAVES' : usdnAssetId;

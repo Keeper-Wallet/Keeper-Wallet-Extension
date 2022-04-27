@@ -21,11 +21,11 @@ export function getAssetLogo(network: string, assetId: string) {
   return assetLogosByNetwork[network]?.[assetId];
 }
 
-export function getAssetIdByName(
+export function getAssetIdByTicker(
   network: string,
-  assetName: string
+  ticker: string
 ): string | undefined {
-  return assetIds[network]?.[assetName];
+  return assetIds[network]?.[ticker];
 }
 
 export function isSwappableAsset(network: string, assetId: string) {
