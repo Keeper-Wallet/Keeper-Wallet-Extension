@@ -102,8 +102,9 @@ const assetTickers = {
   D4TPjtzpsDEJFS1pUAkvh1tJJJMNWGcSrds9sveBoQka: 'RACE',
   eWeMD5KNeuRaALCAb4uuJKtAvon2JcTyXQyoBMhuN2X: 'RUBN',
   EnBAWjayxUrwL7KMTBvRzcS5RqGYwFfLPD4tFVu4Mpj3: 'SCONEX',
-  '9sQutD5HnRvjM1uui5cVC4w9xkMPAfYEV8ymug3Mon2Y': 'SIGN',
   A2hcw6RV23Fc8Y8FNfV35Sq5QeS9Tgp6n8hbrESiRvXX: 'SHEG',
+  '9sQutD5HnRvjM1uui5cVC4w9xkMPAfYEV8ymug3Mon2Y': 'SIGN',
+  '8wUmN9Y15f3JR4KZfE81XLXpkdgwnqoBNG6NmocZpKQx': 'sNSBT',
   CE5cxMvz7865CyFZPFUmDiL4KRkYXP6b6oYgN3vmWdV5: 'STREET',
   DAGQvqQg4F5YTQCQ5JFaVJdZEVoTvecuw2W9ybL5P1hR: 'STREET',
   Ehie5xYpeN8op1Cctc6aGUrqx8jq3jtf1DSjXDbfm7aT: 'SWOP',
@@ -133,7 +134,6 @@ const assetTickers = {
   F2AKkA513k5yHEJkLsU6vWxCYYk811GpjLhwEv2WGwZ9: 'WXUSDNLP',
   '5WvPKSJXzVE2orvbkJ8wsQmmQKqTv9sGBPksV4adViw3': 'XMR',
   BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa: 'ZEC',
-  '8wUmN9Y15f3JR4KZfE81XLXpkdgwnqoBNG6NmocZpKQx': 'sNSBT',
 };
 
 function binarySearch(sortedArray, key) {
