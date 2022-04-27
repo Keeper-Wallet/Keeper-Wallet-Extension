@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
@@ -21,10 +20,7 @@ import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
-import {
-  SwapAssetsCallArg,
-  SwapAssetsVendor,
-} from 'controllers/SwapController';
+import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),
@@ -41,6 +37,13 @@ function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
 }
 
+export interface SwapParams {
+  feeAssetId: string;
+  fromAssetId: string;
+  fromCoins: BigNumber;
+  invoke: SwapAssetsInvokeParams;
+}
+
 interface Props {
   initialFromAssetId: string;
   initialToAssetId: string;
@@ -48,13 +51,7 @@ interface Props {
   swapErrorMessage: string;
   swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
-  onSwap: (data: {
-    args: SwapAssetsCallArg[];
-    feeAssetId: string;
-    fromAssetId: string;
-    fromCoins: BigNumber;
-    vendor: SwapAssetsVendor;
-  }) => void;
+  onSwap: (params: SwapParams) => void;
 }
 
 type ExchangeInfoVendorState =
@@ -67,11 +64,15 @@ type ExchangeInfoVendorState =
     }
   | {
       type: 'data';
-      args: SwapAssetsCallArg[];
+      invoke: SwapAssetsInvokeParams;
       priceImpact: number;
       toAmountTokens: BigNumber;
-      worstAmountTokens: BigNumber;
     };
+
+enum SwapAssetsVendor {
+  Keeper = 'keeper',
+  Puzzle = 'puzzle',
+}
 
 type ExchangeInfoState = {
   [K in SwapAssetsVendor]: ExchangeInfoVendorState;
@@ -242,14 +243,10 @@ export function SwapForm({
         } else {
           vendorState = {
             type: 'data',
-            args: response.args,
+            invoke: response.invoke,
             priceImpact: response.priceImpact,
             toAmountTokens: new Money(
               response.toAmountCoins,
-              toAsset
-            ).getTokens(),
-            worstAmountTokens: new Money(
-              response.worstAmountCoins,
               toAsset
             ).getTokens(),
           };
@@ -409,14 +406,13 @@ export function SwapForm({
             }
 
             onSwap({
-              args: vendorExchangeInfo.args,
               feeAssetId,
               fromAssetId,
               fromCoins: Money.fromTokens(
                 fromAmountTokens,
                 fromAsset
               ).getCoins(),
-              vendor: selectedExchangeVendor,
+              invoke: vendorExchangeInfo.invoke,
             });
           }}
         >

@@ -12,7 +12,7 @@ import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { PAGES } from 'ui/pageConfig';
 import background, { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { SwapForm } from './form';
+import { SwapForm, SwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
@@ -135,12 +135,11 @@ export function Swap({ setTab }: Props) {
   return (
     <SignWrapper
       onConfirm={async ({
-        args,
         feeAssetId,
         fromAssetId,
         fromCoins,
-        vendor,
-      }) => {
+        invoke,
+      }: SwapParams) => {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
 
@@ -152,12 +151,11 @@ export function Swap({ setTab }: Props) {
 
         try {
           const swapResult = await background.swapAssets({
-            args,
             feeAssetId,
             feeCoins: fee.toCoins(),
             fromAssetId,
             fromCoins: fromCoins.toFixed(),
-            vendor,
+            invoke,
           });
 
           setPerformedSwapData({
