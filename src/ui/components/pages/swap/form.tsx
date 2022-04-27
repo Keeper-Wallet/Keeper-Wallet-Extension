@@ -611,7 +611,7 @@ export function SwapForm({
                       </div>
                     )}
 
-                    {profitTokens != null && (
+                    {profitTokens != null && !profitTokens.eq(0) && (
                       <div className={styles.toAmountCardBadge}>
                         <Trans i18nKey="swap.profitLabel" />: +
                         {profitTokens.toFixed(
