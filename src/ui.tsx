@@ -57,12 +57,6 @@ async function startUi() {
         window.close();
       }
     },
-    // This method is used in Microsoft Edge browser
-    closeEdgeNotificationWindow: async () => {
-      if (isNotificationWindow) {
-        window.close();
-      }
-    },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
       const { selectedAccount } = store.getState();
 
