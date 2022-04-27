@@ -88,14 +88,50 @@ export const assetIds: {
   },
 };
 
-export const swappableAssetIds = {
-  mainnet: [
+export enum SwapVendor {
+  Keeper = 'keeper',
+  Puzzle = 'puzzle',
+}
+
+const swappableAssetTickersByVendor: Record<SwapVendor, string[]> = {
+  [SwapVendor.Keeper]: [
     'WAVES',
     'BAG',
+    'BTC',
+    'CRV',
+    'EAST',
+    'EGG',
+    'ENNO',
+    'ERG',
+    'ETH',
+    'EURN',
+    'FL',
+    'LTC',
+    'MUNA',
+    'NSBT',
+    'PUZZLE',
+    'RACE',
+    'SCONEX',
+    'SIGN',
+    'SWOP',
+    'TN',
+    'USDAP',
+    'USDC',
+    'USDCLP',
+    'USDLP',
+    'USDN',
+    'USDT',
+    'VIRES',
+    'WCT',
+    'WEST',
+    'WX',
+    'XMR',
+  ],
+  [SwapVendor.Puzzle]: [
+    'WAVES',
     'BNB',
     'BTC',
     'CGU',
-    'CRV',
     'DUXPLORER',
     'EAST',
     'EGG',
@@ -104,7 +140,6 @@ export const swappableAssetIds = {
     'EGGSEGGS',
     'ENDO',
     'ENNO',
-    'ERG',
     'ETH',
     'EURN',
     'FL',
@@ -120,26 +155,28 @@ export const swappableAssetIds = {
     'PESOLATINO',
     'PUZZLE',
     'RACE',
-    'SCONEX',
     'SHEG',
     'SIGN',
     'sNSBT',
     'STREET',
     'SWOP',
-    'TN',
     'TURTLE',
-    'USDAP',
     'USDC',
-    'USDCLP',
-    'USDLP',
     'USDN',
     'USDT',
     'VIRES',
     'WCT',
     'WEST',
     'WX',
-    'XMR',
-  ].map(assetName => assetIds.mainnet[assetName]),
+  ],
+};
+
+const swappableAssetTickers = Array.from(
+  new Set(Object.values(swappableAssetTickersByVendor).flat())
+);
+
+export const swappableAssetIds = {
+  mainnet: swappableAssetTickers.map(assetName => assetIds.mainnet[assetName]),
 };
 
 const logosByName = {

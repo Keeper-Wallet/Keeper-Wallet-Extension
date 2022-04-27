@@ -5,13 +5,16 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect } from 'assets/assetSelect';
+import { SwapVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
+import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -19,8 +22,6 @@ import { proto } from './channel.proto.compiled';
 import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
-import { UsdAmount } from 'ui/components/ui/UsdAmount';
-import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),
@@ -69,18 +70,13 @@ type ExchangeInfoVendorState =
       toAmountTokens: BigNumber;
     };
 
-enum SwapAssetsVendor {
-  Keeper = 'keeper',
-  Puzzle = 'puzzle',
-}
-
 type ExchangeInfoState = {
-  [K in SwapAssetsVendor]: ExchangeInfoVendorState;
+  [K in SwapVendor]: ExchangeInfoVendorState;
 };
 
 const exchangeInfoInitialState: ExchangeInfoState = {
-  [SwapAssetsVendor.Keeper]: { type: 'loading' },
-  [SwapAssetsVendor.Puzzle]: { type: 'loading' },
+  [SwapVendor.Keeper]: { type: 'loading' },
+  [SwapVendor.Puzzle]: { type: 'loading' },
 };
 
 export function SwapForm({
@@ -227,9 +223,9 @@ export function SwapForm({
 
         setExchangeChannelError(null);
 
-        const typedVendor = vendor as SwapAssetsVendor;
+        const typedVendor = vendor as SwapVendor;
 
-        if (!Object.values(SwapAssetsVendor).includes(typedVendor)) {
+        if (!Object.values(SwapVendor).includes(typedVendor)) {
           return;
         }
 
@@ -337,7 +333,7 @@ export function SwapForm({
   const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
   const [selectedExchangeVendor, setSelectedExchangeVendor] = React.useState(
-    SwapAssetsVendor.Keeper
+    SwapVendor.Keeper
   );
 
   const vendorExchangeInfo = exchangeInfo[selectedExchangeVendor];
@@ -363,9 +359,7 @@ export function SwapForm({
       : new BigNumber(vendorExchangeInfo.priceImpact);
 
   const sortedExchangeInfoEntries = (
-    Object.entries(exchangeInfo) as Array<
-      [SwapAssetsVendor, ExchangeInfoVendorState]
-    >
+    Object.entries(exchangeInfo) as Array<[SwapVendor, ExchangeInfoVendorState]>
   ).sort(([aVendor, aInfo], [bVendor, bInfo]) => {
     if (aInfo.type !== 'data' && bInfo.type !== 'data') {
       return 0;
@@ -386,9 +380,9 @@ export function SwapForm({
       ? -1
       : bAmount.gt(aAmount)
       ? 1
-      : aVendor === SwapAssetsVendor.Keeper
+      : aVendor === SwapVendor.Keeper
       ? -1
-      : bVendor === SwapAssetsVendor.Keeper
+      : bVendor === SwapVendor.Keeper
       ? 1
       : 0;
   });
@@ -519,7 +513,7 @@ export function SwapForm({
             <div className={styles.toAmountCards}>
               {(
                 Object.entries(exchangeInfo) as Array<
-                  [SwapAssetsVendor, ExchangeInfoVendorState]
+                  [SwapVendor, ExchangeInfoVendorState]
                 >
               ).map(([vendor, info]) => {
                 const amountTokens = new BigNumber(
