@@ -320,7 +320,6 @@ export class MessageController extends EventEmitter {
   }
 
   _updateMessagesByTimeout() {
-    extension.alarms.clear('rejectMessages');
     const { update_messages_ms } = this.getMessagesConfig();
     extension.alarms.create('rejectMessages', {
       delayInMinutes: update_messages_ms / 60 / 1000,

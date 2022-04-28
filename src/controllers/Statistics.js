@@ -162,7 +162,6 @@ export class StatisticsController {
 
   sendIdleEvent() {
     // sends `idleKeeper` event once per hour until browser is running
-    extension.alarms.clear('idleEvent');
     this.addEventOnce('idleKeeper');
     extension.alarms.create('idleEvent', {
       delayInMinutes: 1,

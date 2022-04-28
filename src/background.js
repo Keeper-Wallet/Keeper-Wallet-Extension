@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import pump from 'pump';
-import url from 'url';
 import EventEmitter from 'events';
 import debounceStream from 'debounce-stream';
 import asStream from 'obs-store/lib/asStream';
@@ -94,7 +93,7 @@ extension.runtime.onConnect.addListener(async remotePort => {
   const portStream = new PortStream(remotePort);
 
   if (remotePort.name === 'contentscript') {
-    const origin = url.parse(remotePort.sender.url).hostname;
+    const origin = new URL(remotePort.sender.url).hostname;
     bgService.setupPageConnection(portStream, origin);
   } else {
     bgService.setupUiConnection(portStream);
@@ -104,7 +103,7 @@ extension.runtime.onConnect.addListener(async remotePort => {
 extension.runtime.onConnectExternal.addListener(async remotePort => {
   const bgService = await bgPromise;
   const portStream = new PortStream(remotePort);
-  const origin = url.parse(remotePort.sender.url).hostname;
+  const origin = new URL(remotePort.sender.url).hostname;
   bgService.setupPageConnection(portStream, origin);
 });
 

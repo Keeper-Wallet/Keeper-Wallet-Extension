@@ -2,45 +2,20 @@ module.exports = version => {
   const conf = {
     chrome: {
       manifest: {
-        add: {
-          'background.service_worker': 'background.js',
-          permissions: [
-            'alarms',
-            'storage',
-            'unlimitedStorage',
-            'clipboardWrite',
-            'idle',
-          ],
-        },
+        add: {},
         remove: ['applications'],
       },
     },
     edge: {
       manifest: {
-        add: {
-          'background.service_worker': 'background.js',
-          permissions: [
-            'alarms',
-            'storage',
-            'unlimitedStorage',
-            'clipboardWrite',
-            'idle',
-          ],
-        },
-        remove: [],
+        add: {},
+        remove: ['applications'],
       },
     },
     firefox: {
       manifest: {
         add: {
           manifest_version: 2,
-          permissions: [
-            'alarms',
-            'storage',
-            'unlimitedStorage',
-            'clipboardWrite',
-            'idle',
-          ],
           browser_action: {
             default_icon: {
               16: 'images/icon_16.png',
@@ -80,9 +55,8 @@ module.exports = version => {
             'clipboardRead',
             'idle',
           ],
-          background: { service_worker: 'background.js' },
         },
-        remove: [],
+        remove: ['applications'],
       },
     },
   };
