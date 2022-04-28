@@ -43,6 +43,7 @@ import {
   TRANSFER,
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
+  LEASE_WITH_MONEY_LIKE,
 } from './utils/transactions';
 import {
   CANCEL_ORDER,
@@ -791,6 +792,45 @@ describe('Signature', function () {
             senderPublicKey,
             amount: LEASE_WITH_ALIAS.data.amount,
             recipient: 'alias:T:bobby',
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+    });
+
+    describe('Lease with money-like', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: LEASE_WITH_MONEY_LIKE.type,
+            version: 2,
+            senderPublicKey,
+            amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
+            recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
             fee: 500000,
             chainId: 84,
           };
