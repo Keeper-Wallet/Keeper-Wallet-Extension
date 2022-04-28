@@ -417,7 +417,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: ISSUE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             name: ISSUE.data.name,
             description: ISSUE.data.description,
@@ -462,7 +462,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: ISSUE_WITHOUT_SCRIPT.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             name: ISSUE_WITHOUT_SCRIPT.data.name,
             description: ISSUE_WITHOUT_SCRIPT.data.description,
@@ -493,9 +493,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Issue with protobuf serialization', function () {
+    describe('Issue with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(ISSUE, 3));
+        await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
       });
 
       checkAnyTransaction(
@@ -505,7 +505,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: ISSUE.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             name: ISSUE.data.name,
             description: ISSUE.data.description,
@@ -548,7 +548,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: TRANSFER.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: TRANSFER.data.amount.assetId,
             recipient: TRANSFER.data.recipient,
@@ -596,7 +596,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: TRANSFER_WITHOUT_ATTACHMENT.data.amount.assetId,
             recipient: 'alias:T:alice',
@@ -626,9 +626,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Transfer with protobuf serialization', function () {
+    describe('Transfer with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(TRANSFER, 3));
+        await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
       });
 
       checkAnyTransaction(
@@ -638,7 +638,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: TRANSFER.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             assetId: TRANSFER.data.amount.assetId,
             recipient: TRANSFER.data.recipient,
@@ -680,7 +680,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: REISSUE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
@@ -720,7 +720,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: REISSUE_WITH_MONEY_LIKE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: REISSUE_WITH_MONEY_LIKE.data.amount.assetId,
             quantity: REISSUE_WITH_MONEY_LIKE.data.amount.amount,
@@ -748,9 +748,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Reissue with protobuf serialization', function () {
+    describe('Reissue with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(REISSUE, 3));
+        await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
       });
 
       checkAnyTransaction(
@@ -760,7 +760,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: REISSUE.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             assetId: REISSUE.data.assetId,
             quantity: REISSUE.data.quantity,
@@ -800,7 +800,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: BURN.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: BURN.data.assetId,
             amount: BURN.data.amount,
@@ -839,7 +839,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: BURN_WITH_QUANTITY.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             assetId: BURN_WITH_QUANTITY.data.assetId,
             amount: BURN_WITH_QUANTITY.data.quantity,
@@ -866,9 +866,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Burn with protobuf serialization', function () {
+    describe('Burn with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(BURN, 3));
+        await performSignTransaction.call(this, setTxVersion(BURN, 2));
       });
 
       checkAnyTransaction(
@@ -878,7 +878,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: BURN.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             assetId: BURN.data.assetId,
             amount: BURN.data.amount,
@@ -917,7 +917,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: LEASE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             amount: LEASE.data.amount,
             recipient: LEASE.data.recipient,
@@ -956,7 +956,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: LEASE_WITH_ALIAS.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             amount: LEASE_WITH_ALIAS.data.amount,
             recipient: 'alias:T:bobby',
@@ -995,7 +995,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: LEASE_WITH_MONEY_LIKE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             amount: LEASE_WITH_MONEY_LIKE.data.amount.amount,
             recipient: LEASE_WITH_MONEY_LIKE.data.recipient,
@@ -1022,9 +1022,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Lease with protobuf serialization', function () {
+    describe('Lease with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(LEASE, 3));
+        await performSignTransaction.call(this, setTxVersion(LEASE, 2));
       });
 
       checkAnyTransaction(
@@ -1034,7 +1034,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: LEASE.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             amount: LEASE.data.amount,
             recipient: LEASE.data.recipient,
@@ -1073,7 +1073,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
-            version: 2,
+            version: 3,
             senderPublicKey,
             leaseId: CANCEL_LEASE.data.leaseId,
             fee: 500000,
@@ -1099,9 +1099,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Cancel lease with protobuf serialization', function () {
+    describe('Cancel lease with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(CANCEL_LEASE, 3));
+        await performSignTransaction.call(this, setTxVersion(CANCEL_LEASE, 2));
       });
 
       checkAnyTransaction(
@@ -1111,7 +1111,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: CANCEL_LEASE.type,
-            version: 3,
+            version: 2,
             senderPublicKey,
             leaseId: CANCEL_LEASE.data.leaseId,
             fee: 500000,
@@ -1149,6 +1149,47 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: ALIAS.type,
+            version: 3,
+            senderPublicKey,
+            alias: ALIAS.data.alias,
+            fee: 500000,
+            chainId: 84,
+          };
+
+          const bytes = makeTxBytes({
+            ...expectedApproveResult,
+            timestamp: parsedApproveResult.timestamp,
+          });
+
+          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
+
+          expect(
+            verifySignature(
+              senderPublicKey,
+              bytes,
+              parsedApproveResult.proofs[0]
+            )
+          ).to.be.true;
+        }
+      );
+      // TODO this checks should be into unittests
+      it('Minimum alias length');
+      it('Maximum alias length');
+    });
+
+    describe('Alias with legacy serialization', function () {
+      beforeEach(async function () {
+        await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
+      });
+
+      checkAnyTransaction(
+        By.xpath("//div[contains(@class, '-alias-transaction')]"),
+        approveResult => {
+          const parsedApproveResult = parse(approveResult);
+
+          const expectedApproveResult = {
+            type: ALIAS.type,
             version: 2,
             senderPublicKey,
             alias: ALIAS.data.alias,
@@ -1176,47 +1217,6 @@ describe('Signature', function () {
           ).to.be.true;
         }
       );
-      // TODO this checks should be into unittests
-      it('Minimum alias length');
-      it('Maximum alias length');
-    });
-
-    describe('Alias with protobuf serialization', function () {
-      beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(ALIAS, 3));
-      });
-
-      checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-alias-transaction')]"),
-        approveResult => {
-          const parsedApproveResult = parse(approveResult);
-
-          const expectedApproveResult = {
-            type: ALIAS.type,
-            version: 3,
-            senderPublicKey,
-            alias: ALIAS.data.alias,
-            fee: 500000,
-            chainId: 84,
-          };
-
-          const bytes = makeTxBytes({
-            ...expectedApproveResult,
-            timestamp: parsedApproveResult.timestamp,
-          });
-
-          expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
-          expect(parsedApproveResult.id).to.equal(base58Encode(blake2b(bytes)));
-
-          expect(
-            verifySignature(
-              senderPublicKey,
-              bytes,
-              parsedApproveResult.proofs[0]
-            )
-          ).to.be.true;
-        }
-      );
     });
 
     describe('MassTransfer', function () {
@@ -1231,7 +1231,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
@@ -1277,7 +1277,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: MASS_TRANSFER_WITHOUT_ATTACHMENT.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             assetId: MASS_TRANSFER_WITHOUT_ATTACHMENT.data.totalAmount.assetId,
             transfers: [
@@ -1308,9 +1308,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('MassTransfer with protobuf serialization', function () {
+    describe('MassTransfer with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(MASS_TRANSFER, 2));
+        await performSignTransaction.call(this, setTxVersion(MASS_TRANSFER, 1));
       });
 
       checkAnyTransaction(
@@ -1320,7 +1320,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: MASS_TRANSFER.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             assetId: MASS_TRANSFER.data.totalAmount.assetId,
             transfers: [
@@ -1363,7 +1363,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: DATA.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             fee: 500000,
             chainId: 84,
@@ -1389,9 +1389,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Data with protobuf serialization', function () {
+    describe('Data with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(DATA, 2));
+        await performSignTransaction.call(this, setTxVersion(DATA, 1));
       });
 
       checkAnyTransaction(
@@ -1401,7 +1401,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: DATA.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             fee: 500000,
             chainId: 84,
@@ -1439,7 +1439,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             chainId: 84,
             fee: 1400000,
@@ -1481,7 +1481,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SET_SCRIPT_WITHOUT_SCRIPT.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             chainId: 84,
             fee: 1400000,
@@ -1489,7 +1489,7 @@ describe('Signature', function () {
 
           const bytes = makeTxBytes({
             ...expectedApproveResult,
-            script: SET_SCRIPT_WITHOUT_SCRIPT.data.script,
+            script: null,
             timestamp: parsedApproveResult.timestamp,
           });
 
@@ -1508,9 +1508,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('SetScript with protobuf serialization', function () {
+    describe('SetScript with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 2));
+        await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
       });
 
       checkAnyTransaction(
@@ -1520,7 +1520,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SET_SCRIPT.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             chainId: 84,
             fee: 1400000,
@@ -1558,7 +1558,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
             assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -1600,7 +1600,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SPONSORSHIP_REMOVAL.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             minSponsoredAssetFee:
               SPONSORSHIP_REMOVAL.data.minSponsoredAssetFee.amount,
@@ -1628,9 +1628,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('Sponsorship with protobuf serialization', function () {
+    describe('Sponsorship with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 2));
+        await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
       });
 
       checkAnyTransaction(
@@ -1640,7 +1640,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SPONSORSHIP.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             minSponsoredAssetFee: SPONSORSHIP.data.minSponsoredAssetFee.amount,
             assetId: SPONSORSHIP.data.minSponsoredAssetFee.assetId,
@@ -1679,7 +1679,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             assetId: SET_ASSET_SCRIPT.data.assetId,
             chainId: 84,
@@ -1708,11 +1708,11 @@ describe('Signature', function () {
       it('Copying script to the clipboard');
     });
 
-    describe('SetAssetScript with protobuf serialization', function () {
+    describe('SetAssetScript with legacy serialization', function () {
       beforeEach(async function () {
         await performSignTransaction.call(
           this,
-          setTxVersion(SET_ASSET_SCRIPT, 2)
+          setTxVersion(SET_ASSET_SCRIPT, 1)
         );
       });
 
@@ -1723,7 +1723,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: SET_ASSET_SCRIPT.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             assetId: SET_ASSET_SCRIPT.data.assetId,
             chainId: 84,
@@ -1762,7 +1762,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             dApp: INVOKE_SCRIPT.data.dApp,
             call: INVOKE_SCRIPT.data.call,
@@ -1815,7 +1815,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT_WITHOUT_CALL.type,
-            version: 1,
+            version: 2,
             senderPublicKey,
             dApp: 'alias:T:chris',
             payment: INVOKE_SCRIPT_WITHOUT_CALL.data.payment,
@@ -1843,9 +1843,9 @@ describe('Signature', function () {
       );
     });
 
-    describe('InvokeScript with protobuf serialization', function () {
+    describe('InvokeScript with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(INVOKE_SCRIPT, 2));
+        await performSignTransaction.call(this, setTxVersion(INVOKE_SCRIPT, 1));
       });
 
       checkAnyTransaction(
@@ -1855,7 +1855,7 @@ describe('Signature', function () {
 
           const expectedApproveResult = {
             type: INVOKE_SCRIPT.type,
-            version: 2,
+            version: 1,
             senderPublicKey,
             dApp: INVOKE_SCRIPT.data.dApp,
             call: INVOKE_SCRIPT.data.call,
@@ -2145,7 +2145,7 @@ describe('Signature', function () {
 
         const expectedApproveResult0 = {
           type: ISSUE.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           name: ISSUE.data.name,
           description: ISSUE.data.description,
@@ -2177,7 +2177,7 @@ describe('Signature', function () {
 
         const expectedApproveResult1 = {
           type: TRANSFER.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           assetId: TRANSFER.data.amount.assetId,
           recipient: TRANSFER.data.recipient,
@@ -2208,7 +2208,7 @@ describe('Signature', function () {
 
         const expectedApproveResult2 = {
           type: REISSUE.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           assetId: REISSUE.data.assetId,
           quantity: REISSUE.data.quantity,
@@ -2237,7 +2237,7 @@ describe('Signature', function () {
 
         const expectedApproveResult3 = {
           type: BURN.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           assetId: BURN.data.assetId,
           amount: BURN.data.amount,
@@ -2265,7 +2265,7 @@ describe('Signature', function () {
 
         const expectedApproveResult4 = {
           type: LEASE.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           amount: LEASE.data.amount,
           recipient: LEASE.data.recipient,
@@ -2293,7 +2293,7 @@ describe('Signature', function () {
 
         const expectedApproveResult5 = {
           type: CANCEL_LEASE.type,
-          version: 2,
+          version: 3,
           senderPublicKey,
           leaseId: CANCEL_LEASE.data.leaseId,
           fee: 500000,
@@ -2320,7 +2320,7 @@ describe('Signature', function () {
 
         const expectedApproveResult6 = {
           type: INVOKE_SCRIPT.type,
-          version: 1,
+          version: 2,
           senderPublicKey,
           dApp: INVOKE_SCRIPT.data.dApp,
           call: INVOKE_SCRIPT.data.call,
