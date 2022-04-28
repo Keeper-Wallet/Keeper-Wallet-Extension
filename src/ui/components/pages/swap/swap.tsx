@@ -227,7 +227,7 @@ export function Swap({ setTab }: Props) {
                       }
 
                       if (/Request is rejected on ledger/i.test(errMessage)) {
-                        setSwapErrorMessage(errMessage);
+                        setSwapErrorMessage(t('swap.ledgerFailMessage'));
                         setIsSwapInProgress(false);
                         return;
                       }

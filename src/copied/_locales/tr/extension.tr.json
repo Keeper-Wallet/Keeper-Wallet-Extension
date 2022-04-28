@@ -391,7 +391,7 @@
       "amount": "Harcama limiti",
       "cancel": "İptal et",
       "delete": "Sil",
-      "description": "Bu, <1>{{originName}}</1>'in işlemleri sizin adınıza otomatik olarak imzalamasına olanak tanır.",
+      "description": "Bu, {{originName}}'in işlemleri sizin adınıza otomatik olarak imzalamasına olanak tanır.",
       "save": "Kaydet",
       "time": "Çözünürlük süresi",
       "time15m": "15 dakika",

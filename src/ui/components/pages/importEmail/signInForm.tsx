@@ -79,10 +79,26 @@ export function SignInForm({ className, userData, signIn }: Props) {
 
       try {
         await signIn(email, password);
-      } catch (e) {
+      } catch (err) {
+        let errMessage = err?.message;
+
+        switch (errMessage) {
+          case 'User does not exist.':
+            errMessage = t('importEmail.userDoesNotExist');
+            break;
+          case 'Incorrect username or password.':
+            errMessage = t('importEmail.incorrectUsernameOrPassword');
+            break;
+          case 'You have exceeded incorrect username or password limit. If you have any problems, please contact support https://support.waves.exchange/.':
+            errMessage = t('swap.incorrectUsernameOrPasswordLimit');
+            break;
+          default:
+            break;
+        }
+
         setErrors(prev => ({
           ...prev,
-          _form: e.message || JSON.stringify(e),
+          _form: errMessage,
         }));
       } finally {
         setPending(false);

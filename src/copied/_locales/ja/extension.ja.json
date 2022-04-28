@@ -394,7 +394,7 @@
       "amount": "使用限度額",
       "cancel": "キャンセル",
       "delete": "削除",
-      "description": "<1>{originName}</1>が自動的にトランザクションに署名することができます。",
+      "description": "{originName}が自動的にトランザクションに署名することができます。",
       "save": "保存",
       "time": "解決時間",
       "time15m": "15分間",

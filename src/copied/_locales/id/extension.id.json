@@ -405,7 +405,7 @@
       "amount": "Batas pengeluaran",
       "cancel": "Batal",
       "delete": "Hapus",
-      "description": "Ini memungkinkan <1>{{originName}}</1> menandatangani transaksi atas nama Anda secara otomatis.",
+      "description": "Ini memungkinkan {{originName}} menandatangani transaksi atas nama Anda secara otomatis.",
       "save": "Simpan",
       "time": "Waktu resolusi",
       "time15m": "Untuk 15 menit",

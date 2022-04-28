@@ -405,7 +405,7 @@
       "amount": "Límite de gastos",
       "cancel": "Cancelar",
       "delete": "Borrar",
-      "description": "Esto permite que <1>{{originName}}</1> firme automáticamente transacciones en su nombre.",
+      "description": "Esto permite que {{originName}} firme automáticamente transacciones en su nombre.",
       "save": "Guardar",
       "time": "Tiempo de resolucion",
       "time15m": "Durante 15 minutos",

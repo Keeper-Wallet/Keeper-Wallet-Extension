@@ -394,7 +394,7 @@
       "amount": "Limite de gastos",
       "cancel": "Cancelar",
       "delete": "Excluir",
-      "description": "Isso permite que <1>{{originName}}</1> assine transações automaticamente em seu nome.",
+      "description": "Isso permite que {{originName}} assine transações automaticamente em seu nome.",
       "save": "Salvar",
       "time": "Tempo de resolução",
       "time15m": "Por 15 minutos",

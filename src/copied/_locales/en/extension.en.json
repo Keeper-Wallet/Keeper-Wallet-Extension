@@ -158,6 +158,7 @@
     "continueMessage": "To continue, type this into the field below",
     "phrase": "DELETE ALL ACCOUNTS",
     "phraseError": "The phrase is entered incorrectly",
+    "placeholder": "Type here...",
     "resetConfirm": "Delete all",
     "resetCancel": "Cancel"
   },
@@ -253,6 +254,9 @@
     "verifyAccountTitle": "Verify Your Account",
     "verifyAccountDesc": "Please enter the 6-digit verification code received by {{destination}}",
     "incorrectCode": "Wrong code. Please, try again",
+    "userDoesNotExist": "User does not exist.",
+    "incorrectUsernameOrPassword": "Incorrect username or password.",
+    "incorrectUsernameOrPasswordLimit": "You have exceeded incorrect username or password limit. If you have any problems, please contact support https://support.waves.exchange/.",
     "alreadyExists": "Account already exists"
   },
   "importKeystore": {
@@ -311,7 +315,7 @@
     "keepUp": "Keeper Wallet — is the safest way to interact with third-party web resources with Waves-integrated functionality or DApps. Using Keeper Wallet, you can sign transactions and remain safe from malicious sites."
   },
   "langsSettings": {
-    "confirm": "Confirmar",
+    "confirm": "Confirm",
     "title": "Change the language"
   },
   "ledgerErrors": {
@@ -524,6 +528,7 @@
     "exchangeChannelInvalidAssetPairError": "Invalid asset pair selected",
     "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data. Please try again later",
     "failMessage": "Swap did not succeed, please try again",
+    "ledgerFailMessage": "Request is rejected on ledger",
     "fromInputLabel": "From {{asset}}",
     "gainBestPrice": "Best Price",
     "gainTooltip": "Profit of swapping through Keeper compared to other services",

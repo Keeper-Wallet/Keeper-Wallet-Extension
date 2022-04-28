@@ -1,19 +1,23 @@
 .content {
-  display: block;
-  position: relative;
-  margin: 84px 60px 0;
-  height: calc(100% - 180px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: auto;
+  padding: 20px 60px 32px;
+  word-break: break-word;
 }
 
 .importIcon {
   display: block;
+  flex-shrink: 0;
   margin: auto;
 }
 
 .successIcon {
-  width: 80px;
+  flex-shrink: 0;
   height: 80px;
-  margin: 0 auto;
+  margin: auto auto 0;
+  width: 80px;
 }
 
 .greyLine {
@@ -21,7 +25,5 @@
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+  margin: 20px 0 auto;
 }

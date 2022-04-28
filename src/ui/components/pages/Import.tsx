@@ -2,7 +2,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal } from '../ui';
 import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { FeatureUpdateInfo } from './FeatureUpdateInfo';
@@ -260,7 +260,11 @@ export function Import({ setTab }: Props) {
         tabMode === 'popup' && (
           <>
             <p className="body1 disabled500 font300 center margin-main-big-top margin-main-large">
-              {t('import.noAccounts', { currentNetwork })}
+              <Trans
+                i18nKey="import.noAccounts"
+                values={{ currentNetwork }}
+                t={t}
+              />
             </p>
             <Button
               data-testid="addAccountBtn"

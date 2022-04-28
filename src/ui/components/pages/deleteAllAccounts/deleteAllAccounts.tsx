@@ -29,13 +29,7 @@ export function DeleteAllAccounts({ onBack }) {
   }
 
   return (
-    <div
-      className={cn(
-        styles.content,
-        pageConf.menu.hasLogo && styles.subtractMenu
-      )}
-      data-testid="deleteAllAccounts"
-    >
+    <div className={styles.content} data-testid="deleteAllAccounts">
       <i className={cn('error-icon', styles.errorIcon)} />
 
       <h2 className="title1 margin1">{t('forgotPassword.attention')}</h2>
@@ -63,7 +57,7 @@ export function DeleteAllAccounts({ onBack }) {
           autoComplete="off"
           type="input"
           className="margin1"
-          placeholder="Type here..."
+          placeholder={t('forgotPassword.placeholder')}
           onInput={handleInput}
           onBlur={handleBlur}
           data-testid="confirmPhrase"

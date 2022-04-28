@@ -394,7 +394,7 @@
       "amount": "Giới hạn sử dụng",
       "cancel": "Hủy",
       "delete": "Xóa",
-      "description": "Điều này cho phép <1> {{originName}} </1> tự động ký các giao dịch thay mặt bạn.",
+      "description": "Điều này cho phép {{originName}} tự động ký các giao dịch thay mặt bạn.",
       "save": "Lưu",
       "time": "Thời gian giải quyết",
       "time15m": "Khoảng 15 phút",
