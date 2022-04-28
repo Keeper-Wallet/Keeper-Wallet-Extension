@@ -37,32 +37,8 @@ export const LANGS = [
     name: 'Türkçe',
   },
   {
-    id: 'id',
-    name: 'Bahasa Indonesia',
-  },
-  {
-    id: 'ja',
-    name: '日本語',
-  },
-  {
-    id: 'vi',
-    name: 'Tiếng Việt',
-  },
-  {
-    id: 'th',
-    name: 'ไทย',
-  },
-  {
-    id: 'es',
-    name: 'Español',
-  },
-  {
     id: 'pt',
     name: 'Portugal',
-  },
-  {
-    id: 'zh',
-    name: '汉语',
   },
 ];
 
