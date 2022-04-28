@@ -650,7 +650,8 @@ export class MessageController extends EventEmitter {
             makeBytes.transaction(
               convertFromSa.transaction(
                 readyData,
-                this.networkController.getNetworkCode().charCodeAt(0)
+                this.networkController.getNetworkCode().charCodeAt(0),
+                message.account.type
               )
             )
           );
@@ -682,13 +683,18 @@ export class MessageController extends EventEmitter {
 
         result.data.data = { ...result.data.data, ...matcherFeeData };
         result.messageHash = getHash.order(makeBytes.order(convertedData));
-        result.json = stringify({
-          ...convertedData,
-          sender: address(
-            { publicKey: convertedData.senderPublicKey },
-            this.networkController.getNetworkCode().charCodeAt(0)
-          ),
-        });
+
+        result.json = stringify(
+          {
+            ...convertedData,
+            sender: address(
+              { publicKey: convertedData.senderPublicKey },
+              this.networkController.getNetworkCode().charCodeAt(0)
+            ),
+          },
+          null,
+          2
+        );
         break;
       }
       case 'transaction': {
@@ -717,20 +723,25 @@ export class MessageController extends EventEmitter {
 
         const convertedData = convertFromSa.transaction(
           filledMessage.data,
-          chainId
+          chainId,
+          message.account.type
         );
 
         result.messageHash = getHash.transaction(
           makeBytes.transaction(convertedData)
         );
 
-        result.json = stringify({
-          ...convertedData,
-          sender: address(
-            { publicKey: convertedData.senderPublicKey },
-            chainId
-          ),
-        });
+        result.json = stringify(
+          {
+            ...convertedData,
+            sender: address(
+              { publicKey: convertedData.senderPublicKey },
+              chainId
+            ),
+          },
+          null,
+          2
+        );
         break;
       }
       case 'cancelOrder':
@@ -772,10 +783,11 @@ export class MessageController extends EventEmitter {
 
   async _getFee(message, signData) {
     const signableData = await this._transformData({ ...signData });
+    const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
     const fee = {
       coins: (
-        await this.getFee(signableData, message.account.address)
+        await this.getFee(signableData, chainId, message.account)
       ).toString(),
       assetId: 'WAVES',
     };

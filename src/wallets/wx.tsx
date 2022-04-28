@@ -102,7 +102,8 @@ export class WxWallet extends Wallet<WxWalletData> {
   async signTx(tx: SaTransaction): Promise<string> {
     const result = convertFromSa.transaction(
       tx,
-      this.data.networkCode.charCodeAt(0)
+      this.data.networkCode.charCodeAt(0),
+      'wx'
     );
 
     result.proofs.push(await this.signBytes(makeBytes.transaction(result)));
