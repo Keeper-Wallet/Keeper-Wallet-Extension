@@ -261,7 +261,6 @@ export class NotificationsController extends EventEmitter {
    * @private
    */
   _updateMessagesByTimeout() {
-    extension.alarms.clear('deleteMessages');
     const { update_messages_ms } = this.getMessagesConfig();
     extension.alarms.create('deleteMessages', {
       delayInMinutes: update_messages_ms / 60 / 1000,

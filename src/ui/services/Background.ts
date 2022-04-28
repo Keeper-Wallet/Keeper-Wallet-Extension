@@ -149,9 +149,13 @@ class Background {
   }
 
   async addWallet(data): Promise<Account> {
-    await this.initPromise;
-    await this._connect();
-    return await this.background.addWallet(data);
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.addWallet(data);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
   }
 
   async removeWallet(address, network): Promise<void> {

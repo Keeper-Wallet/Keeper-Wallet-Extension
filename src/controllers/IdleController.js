@@ -38,7 +38,6 @@ export class IdleController {
   }
 
   update() {
-    extension.alarms.clear('idle');
     this.lastUpdateIdle = Date.now();
     this.store.updateState({ lastUpdateIdle: this.lastUpdateIdle });
     this.start();
@@ -49,15 +48,13 @@ export class IdleController {
       return;
     }
 
-    extension.alarms.clear('idle');
-
     const time = Date.now() - this.lastUpdateIdle - this.options.interval;
     if (time > 0) {
       this._lock('locked');
     }
 
     extension.alarms.create('idle', {
-      delayInMinutes: 0.083,
+      delayInMinutes: 5 / 60,
     });
   }
 

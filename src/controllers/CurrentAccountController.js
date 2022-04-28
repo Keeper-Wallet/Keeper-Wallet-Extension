@@ -34,7 +34,6 @@ export class CurrentAccountController {
   }
 
   restartPolling() {
-    extension.alarms.clear('updateBalances');
     extension.alarms.create('updateBalances', {
       periodInMinutes: PERIOD_IN_MINUTES,
     });

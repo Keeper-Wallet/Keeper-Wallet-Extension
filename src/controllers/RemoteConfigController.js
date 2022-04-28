@@ -75,8 +75,6 @@ export class RemoteConfigController extends EventEmitter {
         case 'fetchIdentityConfig':
           this._fetchIdentityConfig();
           break;
-        default:
-          break;
       }
     });
   }
@@ -193,7 +191,6 @@ export class RemoteConfigController extends EventEmitter {
       this.updateState({ status: STATUS.ERROR });
     }
 
-    extension.alarms.clear('updateConfig');
     extension.alarms.create('updateConfig', {
       delayInMinutes: DEFAULT_CONFIG.CONFIG.update_ms / 60 / 1000,
     });
