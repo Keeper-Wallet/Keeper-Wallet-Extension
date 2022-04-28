@@ -3,7 +3,7 @@
   flex-direction: column;
   font-weight: 400;
   overflow: auto;
-  padding: 20px 40px 40px;
+  padding: 20px 40px 32px;
 }
 
 .error {
