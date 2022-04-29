@@ -251,6 +251,28 @@ export function Swap({ setTab }: Props) {
                 });
               }
 
+              match = msg.match(
+                /amount to receive is lower than expected one (\d+)/i
+              );
+
+              if (match) {
+                capture = false;
+
+                const expectedAmountCoins = new BigNumber(match[1]);
+
+                background.sendEvent('swapAssets', {
+                  expectedAmountCoins: expectedAmountCoins.toFixed(),
+                  fromAssetId,
+                  fromCoins: fromCoins.toFixed(),
+                  minReceivedCoins: minReceivedCoins.toFixed(),
+                  slippageTolerance: slippageTolerance.toNumber(),
+                  status: 'lessThanExpected',
+                  toAssetId,
+                  toCoins: toCoins.toFixed(),
+                  vendor,
+                });
+              }
+
               if (capture) {
                 Sentry.captureException(new Error(msg));
               }
