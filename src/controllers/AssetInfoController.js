@@ -370,16 +370,24 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    let { suspiciousAssets } = this.store.getState();
+    let { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
 
     if (!suspiciousAssets || network === 'mainnet') {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
 
       if (resp.ok) {
-        this.store.updateState({
-          suspiciousAssets: (await resp.text()).split('\n').sort(),
-        });
+        const suspiciousAssets = (await resp.text()).split('\n').sort()
+
+        if (suspiciousAssets) {
+          Object.keys(assets['mainnet']).forEach(
+            assetId =>
+              (assets['mainnet'][assetId].isSuspicious =
+                binarySearch(suspiciousAssets, assetId) > -1)
+          );
+        }
+
+        this.store.updateState({ assets, suspiciousAssets });
       }
     }
   }
