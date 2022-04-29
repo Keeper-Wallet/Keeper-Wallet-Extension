@@ -396,7 +396,7 @@ export class AssetInfoController {
     let { assets } = this.store.getState();
     const network = this.getNetwork();
 
-    if (network === 'mainnet') {
+    if (!this.usdPrices || network === 'mainnet') {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
 
       if (resp.ok) {
@@ -409,7 +409,7 @@ export class AssetInfoController {
             acc[ticker.amountAssetID] = ticker['24h_close'];
 
             const asset =
-              assets[network] && assets[network][ticker.amountAssetID];
+              assets['mainnet'] && assets['mainnet'][ticker.amountAssetID];
             if (asset) {
               asset.usdPrice = ticker['24h_close'];
             }
@@ -421,18 +421,14 @@ export class AssetInfoController {
         stablecoinAssetIds.forEach(ticker => {
           this.usdPrices[ticker] = '1';
 
-          const asset = assets[network] && assets[network][ticker];
+          const asset = assets['mainnet'] && assets['mainnet'][ticker];
           if (asset) {
             asset.usdPrice = '1';
           }
         });
       }
-    } else {
-      Object.keys(assets[network]).forEach(
-        assetId => (assets[network][assetId].usdPrice = undefined)
-      );
-    }
 
-    this.store.updateState({ assets });
+      this.store.updateState({ assets });
+    }
   }
 }
