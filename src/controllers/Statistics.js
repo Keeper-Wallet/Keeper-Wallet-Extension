@@ -67,10 +67,10 @@ export class StatisticsController {
 
   sendEvents() {
     this.sended = this.sended
-      .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
+      .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
       .then(() => {
         if (this.events.length === 0) {
-          return null;
+          return;
         }
 
         const events = this.events;
@@ -86,18 +86,41 @@ export class StatisticsController {
             api_key: statisticsApiKey,
             events: events,
           }),
-        }).catch(err => {
-          if (
-            err instanceof TypeError &&
-            /Failed to fetch|NetworkError when attempting to fetch resource/i.test(
-              err.message
-            )
-          ) {
-            return;
-          }
+        })
+          .then(response => {
+            if (response.ok) {
+              return;
+            }
 
-          Sentry.captureException(err);
-        });
+            if (response.status === 429) {
+              this.events.unshift(...events);
+              this.sendEvents();
+            } else {
+              return response.text().then(responseText => {
+                Sentry.withScope(scope => {
+                  scope.setExtra('responseText', responseText);
+
+                  Sentry.captureException(
+                    new Error(
+                      `Amplitude Error: ${response.status} ${response.statusText}`
+                    )
+                  );
+                });
+              });
+            }
+          })
+          .catch(err => {
+            if (
+              err instanceof TypeError &&
+              /Failed to fetch|NetworkError when attempting to fetch resource/i.test(
+                err.message
+              )
+            ) {
+              return;
+            }
+
+            Sentry.captureException(err);
+          });
       });
   }
 
