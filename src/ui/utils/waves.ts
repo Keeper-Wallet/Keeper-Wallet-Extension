@@ -1,6 +1,5 @@
 import { libs } from '@waves/waves-transactions';
 import { concat, identity, ifElse, isNil, pipe } from 'ramda';
-import fetch from 'lib/fetch';
 
 function networkByteFromAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);

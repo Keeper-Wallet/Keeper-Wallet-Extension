@@ -24,7 +24,6 @@ import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
 
 const isNotificationWindow = window.location.pathname === '/notification.html';
-const isPopupWindow = window.location.pathname === '/popup.html';
 
 initUiSentry({
   ignoreErrorContext: 'beforeSendPopup',

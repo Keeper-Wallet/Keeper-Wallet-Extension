@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
-import fetch from 'lib/fetch';
 
 export class NetworkController {
   constructor(options = {}) {

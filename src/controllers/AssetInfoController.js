@@ -1,6 +1,5 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
-import fetch from 'lib/fetch';
 
 const WAVES = {
   quantity: '10000000000000000',
