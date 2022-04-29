@@ -9,15 +9,16 @@ interface Props {
 }
 
 export function UsdAmount({ id, tokens, className }: Props) {
-  const usdPrices = useAppSelector(state => state.usdPrices);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
-  if (!isMainnet || !usdPrices[id] || usdPrices[id] === '1') {
+  if (!isMainnet) {
     return null;
   }
 
-  return (
+  const usdPrices = useAppSelector(state => state.usdPrices);
+
+  return !usdPrices[id] || usdPrices[id] === '1' ? null : (
     <p className={className}>{`≈ $${new BigNumber(usdPrices[id])
       .mul(tokens)
       .toFixed(2)}`}</p>
