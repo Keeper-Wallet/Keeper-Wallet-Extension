@@ -162,7 +162,7 @@ export class AssetInfoController {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      Object.assign({}, defaults, options.initState)
+      Object.assign({}, options.initState, defaults)
     );
     this.updateSuspiciousAssets();
 
