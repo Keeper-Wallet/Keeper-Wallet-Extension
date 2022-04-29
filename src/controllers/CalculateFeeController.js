@@ -4,7 +4,6 @@ import { libs } from '@waves/waves-transactions';
 import { path } from 'ramda';
 import { DEFAULT_FEE_CONFIG, DEFAULT_FEE_CONFIG_URL } from '../constants';
 import { convertFromSa, makeBytes } from '../transactions/utils';
-import fetch from 'lib/fetch';
 
 const CONFIG_EXPIRATION_TIME = 60 * 60 * 1000;
 
