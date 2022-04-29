@@ -142,16 +142,16 @@ export class AssetInfoController {
     const defaults = {
       assets: {
         mainnet: {
-          WAVES: { ...WAVES },
+          WAVES,
         },
         stagenet: {
-          WAVES: { ...WAVES },
+          WAVES,
         },
         testnet: {
-          WAVES: { ...WAVES },
+          WAVES,
         },
         custom: {
-          WAVES: { ...WAVES },
+          WAVES,
         },
       },
     };
@@ -190,18 +190,6 @@ export class AssetInfoController {
 
       this.store.updateState({ assets });
     }
-  }
-
-  clearUsdPrices() {
-    const { assets } = this.store.getState();
-
-    Object.values(assets).forEach(network => {
-      Object.values(network).filter(asset => {
-        asset.usdPrice = undefined;
-      });
-    });
-
-    this.store.updateState({ assets });
   }
 
   getWavesAsset() {
