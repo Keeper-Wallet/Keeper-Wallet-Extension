@@ -515,7 +515,13 @@ class BackgroundService extends EventEmitter {
   }
 
   getState() {
-    return this.store.getFlatState();
+    const state = this.store.getFlatState();
+    const { selectedAccount } = state;
+    const myNotifications =
+      this.notificationsController.getGroupNotificationsByAccount(
+        selectedAccount
+      );
+    return { ...state, myNotifications };
   }
 
   getApi() {
@@ -589,10 +595,6 @@ class BackgroundService extends EventEmitter {
         this.messageController
       ),
       // notifications
-      getGroupNotificationsByAccount: async selectedAccount =>
-        this.notificationsController.getGroupNotificationsByAccount(
-          selectedAccount
-        ),
       setReadNotification: async id =>
         this.notificationsController.setMessageStatus(
           id,

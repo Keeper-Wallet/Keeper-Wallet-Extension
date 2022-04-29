@@ -53,8 +53,11 @@ async function startUi() {
 
   const emitterApi = {
     closePopupWindow: async () => {
-      if (isPopupWindow) {
-        window.close();
+      const popup = extension.extension
+        .getViews({ type: 'popup' })
+        .find(w => w.location.pathname === '/popup.html');
+      if (popup) {
+        popup.close()
       }
     },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
@@ -126,17 +129,12 @@ async function startUi() {
   window.addEventListener('beforeunload', () => background.identityClear());
 
   extension.storage.onChanged.addListener(async changes => {
-    const bgState = await backgroundService.getState();
-    const myNotifications =
-      await backgroundService.getGroupNotificationsByAccount(
-        state.selectedAccount
-      );
-    let newState = { ...bgState, myNotifications };
+    let bgState = await backgroundService.getState();
 
     for (const key in changes) {
-      newState = { ...newState, ...changes[key].newValue };
+      bgState = { ...bgState, ...changes[key].newValue };
     }
 
-    updateState(newState);
+    updateState(bgState);
   });
 }

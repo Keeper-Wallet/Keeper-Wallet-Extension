@@ -362,18 +362,6 @@ class Background {
     }
   }
 
-  async getGroupNotificationsByAccount(selectedAccount): Promise<unknown[]> {
-    try {
-      await this.initPromise;
-      await this._connect();
-      return await this.background.getGroupNotificationsByAccount(
-        selectedAccount
-      );
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async setNetwork(network): Promise<void> {
     try {
       await this.initPromise;
