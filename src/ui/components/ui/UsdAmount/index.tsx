@@ -9,14 +9,14 @@ interface Props {
 }
 
 export function UsdAmount({ id, tokens, className }: Props) {
+  const usdPrices = useAppSelector(state => state.usdPrices);
+
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
-  if (!isMainnet) {
+  if (!usdPrices || !isMainnet) {
     return null;
   }
-
-  const usdPrices = useAppSelector(state => state.usdPrices);
 
   return !usdPrices[id] || usdPrices[id] === '1' ? null : (
     <p className={className}>{`≈ $${new BigNumber(usdPrices[id])

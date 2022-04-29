@@ -1,11 +1,10 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
-import fetch from 'lib/fetch';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 const MAX_NFT_ITEMS = 1000;
-const PERIOD_IN_MINUTES = 0.1;
+const PERIOD_IN_SECONDS = 10000;
 
 export class CurrentAccountController {
   constructor(options = {}) {
@@ -35,7 +34,7 @@ export class CurrentAccountController {
 
   restartPolling() {
     extension.alarms.create('updateBalances', {
-      periodInMinutes: PERIOD_IN_MINUTES,
+      periodInMinutes: PERIOD_IN_SECONDS / 60,
     });
   }
 

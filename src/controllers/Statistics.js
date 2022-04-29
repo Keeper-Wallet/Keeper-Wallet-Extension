@@ -5,7 +5,6 @@ import { statisticsApiKey } from '../../config.json';
 import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
-import fetch from 'lib/fetch';
 
 export class StatisticsController {
   events = [];

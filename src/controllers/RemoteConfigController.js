@@ -1,6 +1,5 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
-import fetch from 'lib/fetch';
 import {
   CONFIG_URL,
   DEFAULT_CONFIG,
@@ -192,7 +191,7 @@ export class RemoteConfigController extends EventEmitter {
     }
 
     extension.alarms.create('updateConfig', {
-      delayInMinutes: DEFAULT_CONFIG.CONFIG.update_ms / 60 / 1000,
+      delayInMinutes: DEFAULT_CONFIG.CONFIG.update_ms / 1000 / 60,
     });
   }
 
