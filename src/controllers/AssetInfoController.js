@@ -162,9 +162,8 @@ export class AssetInfoController {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      Object.assign({}, options.initState, defaults)
+      Object.assign({}, defaults, options.initState)
     );
-    console.log(options.initState);
     this.updateSuspiciousAssets();
 
     this.updateUsdPrices();
@@ -396,7 +395,6 @@ export class AssetInfoController {
   async updateUsdPrices() {
     let { assets } = this.store.getState();
     const network = this.getNetwork();
-    console.log(assets);
 
     if (!this.usdPrices || network === 'mainnet') {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
