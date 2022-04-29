@@ -56,7 +56,7 @@ async function startUi() {
         .getViews({ type: 'popup' })
         .find(w => w.location.pathname === '/popup.html');
       if (popup) {
-        popup.close()
+        popup.close();
       }
     },
     ledgerSignRequest: async (request: LedgerSignRequest) => {
