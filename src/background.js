@@ -108,6 +108,7 @@ extension.runtime.onInstalled.addListener(async details => {
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
+    bgService.assetInfoController.clearUsdPrices();
     bgService.vaultController.migrate();
 
     const storageContents = await new Promise(resolve =>

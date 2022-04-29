@@ -162,7 +162,7 @@ export class AssetInfoController {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      Object.assign({}, options.initState, defaults)
+      Object.assign({}, defaults, options.initState)
     );
     this.updateSuspiciousAssets();
 
@@ -190,6 +190,18 @@ export class AssetInfoController {
 
       this.store.updateState({ assets });
     }
+  }
+
+  clearUsdPrices() {
+    const { assets } = this.store.getState();
+
+    Object.values(assets).forEach(network => {
+      Object.values(network).filter(asset => {
+        asset.usdPrice = undefined;
+      });
+    });
+
+    this.store.updateState({ assets });
   }
 
   getWavesAsset() {
@@ -427,12 +439,8 @@ export class AssetInfoController {
           }
         });
       }
-    } else {
-      Object.keys(assets[network]).forEach(
-        assetId => (assets[network][assetId].usdPrice = undefined)
-      );
-    }
 
-    this.store.updateState({ assets });
+      this.store.updateState({ assets });
+    }
   }
 }
