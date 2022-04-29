@@ -376,7 +376,7 @@ export class AssetInfoController {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
 
       if (resp.ok) {
-        const suspiciousAssets = (await resp.text()).split('\n').sort()
+        const suspiciousAssets = (await resp.text()).split('\n').sort();
 
         if (suspiciousAssets) {
           Object.keys(assets['mainnet']).forEach(
