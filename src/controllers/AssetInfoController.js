@@ -142,16 +142,16 @@ export class AssetInfoController {
     const defaults = {
       assets: {
         mainnet: {
-          WAVES,
+          WAVES: { ...WAVES },
         },
         stagenet: {
-          WAVES,
+          WAVES: { ...WAVES },
         },
         testnet: {
-          WAVES,
+          WAVES: { ...WAVES },
         },
         custom: {
-          WAVES,
+          WAVES: { ...WAVES },
         },
       },
     };
@@ -162,8 +162,9 @@ export class AssetInfoController {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
     this.store = new ObservableStore(
-      Object.assign({}, defaults, options.initState)
+      Object.assign({}, options.initState, defaults)
     );
+    console.log(options.initState);
     this.updateSuspiciousAssets();
 
     this.updateUsdPrices();
@@ -395,8 +396,9 @@ export class AssetInfoController {
   async updateUsdPrices() {
     let { assets } = this.store.getState();
     const network = this.getNetwork();
+    console.log(assets);
 
-    if (network === 'mainnet') {
+    if (!this.usdPrices || network === 'mainnet') {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
 
       if (resp.ok) {
@@ -409,7 +411,7 @@ export class AssetInfoController {
             acc[ticker.amountAssetID] = ticker['24h_close'];
 
             const asset =
-              assets[network] && assets[network][ticker.amountAssetID];
+              assets['mainnet'] && assets['mainnet'][ticker.amountAssetID];
             if (asset) {
               asset.usdPrice = ticker['24h_close'];
             }
@@ -421,7 +423,7 @@ export class AssetInfoController {
         stablecoinAssetIds.forEach(ticker => {
           this.usdPrices[ticker] = '1';
 
-          const asset = assets[network] && assets[network][ticker];
+          const asset = assets['mainnet'] && assets['mainnet'][ticker];
           if (asset) {
             asset.usdPrice = '1';
           }
