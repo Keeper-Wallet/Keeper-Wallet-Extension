@@ -178,7 +178,9 @@ export function SwapForm({
     React.useState<ExchangeChannelClient | null>(null);
 
   React.useEffect(() => {
-    const client = new ExchangeChannelClient('ws://localhost:8765');
+    const client = new ExchangeChannelClient(
+      new URL('/v2', swapChannel).toString()
+    );
 
     setChannelClient(client);
 
