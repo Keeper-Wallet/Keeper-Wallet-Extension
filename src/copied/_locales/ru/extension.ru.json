@@ -77,14 +77,14 @@
     "saveBackup": "Сохранить фразу восстановления"
   },
   "bottom": {
-    "custom": "Пользовательская сеть",
-    "mainnet": "Мейннет",
     "network": {
       "edit": "Изменить",
       "disabled": "Во время этой операции нельзя изменить настройки сети"
     },
-    "testnet": "Тестовая сеть",
-    "stagenet": "Экспериментальная сеть"
+    "custom": "Custom",
+    "mainnet": "Mainnet",
+    "testnet": "Testnet",
+    "stagenet": "Stagenet"
   },
   "changeName": {
     "currentName": "Текущее имя аккаунта",
@@ -151,6 +151,7 @@
     "continueMessage": "Чтобы продолжить, введите следующее в поле ниже",
     "phrase": "УДАЛИТЬ ВСЕ АККАУНТЫ",
     "phraseError": "Фраза введена неверно",
+    "placeholder": "Введите сюда...",
     "resetConfirm": "Удалить все",
     "resetCancel": "Отмена"
   },
@@ -248,6 +249,9 @@
     "verifyAccountTitle": "Подтвердите свой аккаунт",
     "verifyAccountDesc": "Пожалуйста, введите 6-значный проверочный код, отправленный на {{destination}}.",
     "incorrectCode": "Неправильный код. Пожалуйста, попробуйте еще раз",
+    "userDoesNotExist": "Пользователь не существует.",
+    "incorrectUsernameOrPassword": "Неверное имя пользователя или пароль.",
+    "incorrectUsernameOrPasswordLimit": "Вы превысили лимит попыток ввода имени пользователя или пароля. Если у вас возникли какие-либо трудности, пожалуйста, свяжитесь со службой поддержки https://support.waves.exchange/.",
     "alreadyExists": "Аккаунт уже существует"
   },
   "importKeystore": {
@@ -514,6 +518,7 @@
     "exchangeChannelInvalidAssetPairError": "Пара активов выбрана неверно",
     "exchangeChannelUnknownError": "Не удалось получить сведения об обмене, возможно, вы видите устаревшие данные. Пожалуйста, повторите попытку позже",
     "failMessage": "Сделка не удалась, попробуйте еще раз",
+    "ledgerFailMessage": "Ledger отменил запрос",
     "fromInputLabel": "От {{asset}}",
     "gainBestPrice": "Лучшая цена",
     "gainTooltip": "Выгода обмена через Keeper по сравнению с другими сервисами",

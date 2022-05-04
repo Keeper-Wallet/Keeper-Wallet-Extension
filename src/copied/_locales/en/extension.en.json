@@ -83,12 +83,12 @@
     "saveBackup": "Save backup phrase"
   },
   "bottom": {
-    "custom": "Custom",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Edit",
       "disabled": "You cannot change the network settings during this operation"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },

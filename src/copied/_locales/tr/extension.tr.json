@@ -77,12 +77,12 @@
     "saveBackup": "Yedekleme anahtarını kaydet"
   },
   "bottom": {
-    "custom": "Özel",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Düzenle",
       "disabled": "Bu işlem sırasında ağ ayarlarını değiştiremezsiniz."
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "Devam etmek için bunu aşağıdaki alana yazın",
     "phrase": "TÜM HESAPLARI SİL",
     "phraseError": "Anahtar kelime yanlış girildi.",
+    "placeholder": "Buraya yazın...",
     "resetConfirm": "Hepsini sil",
     "resetCancel": "İptal et"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "Hesabınızı doğrulayın",
     "verifyAccountDesc": "Lütfen {{destination}} tarafına gönderilen 6 haneli doğrulama kodunu girin",
     "incorrectCode": "Yanlış kod. Lütfen tekrar deneyin",
+    "userDoesNotExist": "Kullanıcı bulunmamaktadır.",
+    "incorrectUsernameOrPassword": " Yanlış kullanıcı adı ya da şifre.",
+    "incorrectUsernameOrPasswordLimit": "Kullanıcı adını ya da şifreyi yanlış girme limitini aştınız. Herhangi bir sorununuz varsa, lütfen https://support.waves.exchange/ adresinden destek ile iletişime geçin.",
     "alreadyExists": "Bu hesap zaten mevcut"
   },
   "importKeystore": {
@@ -506,6 +510,7 @@
     "exchangeChannelInvalidAssetPairError": "Geçersiz varlık çifti seçildi",
     "exchangeChannelUnknownError": "Takas ayrıntılarına ulaşılamadı, eski veriler görebilirsiniz. Lütfen daha sonra tekrar deneyin",
     "failMessage": "Takas (işlemi) başarılı olmadı, lütfen tekrar deneyin",
+    "ledgerFailMessage": "İstek, Ledger üzerinde reddedildi",
     "fromInputLabel": "{{asset}} varlığından",
     "gainBestPrice": "En iyi fiyat",
     "gainTooltip": "Diğer hizmetlere kıyasla Keeper aracılığıyla takas işlemi gerçekleştirmenin kârlılığı",

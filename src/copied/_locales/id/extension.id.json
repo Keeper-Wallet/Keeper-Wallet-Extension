@@ -83,12 +83,12 @@
     "saveBackup": "Simpan backup phrase"
   },
   "bottom": {
-    "custom": "Ubah",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Edit",
       "disabled": "Anda tidak dapat mengubah pengaturan jaringan selama operasi ini"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -158,6 +158,7 @@
     "continueMessage": "Untuk melanjutkan, ketik ini ke dalam bidang di bawah ini",
     "phrase": "HAPUS SEMUA AKUN",
     "phraseError": "Frasa yang dimasukkan salah",
+    "placeholder": "Silakan masuk di sini.",
     "resetConfirm": "Hapus semua",
     "resetCancel": "Batalkan"
   },
@@ -253,6 +254,9 @@
     "verifyAccountTitle": "Verifikasi akun anda",
     "verifyAccountDesc": "Harap masukkan kode verifikasi 6 digit yang diterima oleh {{destination}}",
     "incorrectCode": "Salah kode. Tolong, coba lagi",
+    "userDoesNotExist": "Pengguna tidak ada.",
+    "incorrectUsernameOrPassword": "Nama pengguna atau kata sandi salah.",
+    "incorrectUsernameOrPasswordLimit": "beberapa kali anda telah membuat kesalahan dalam nama pengguna atau kata sandi Anda adalah https://support.waves.exchange/",
     "alreadyExists": "Akun sudah ada"
   },
   "importKeystore": {
@@ -522,6 +526,7 @@
     "exchangeChannelInvalidAssetPairError": "Pair aset yang dipilih tidak valid",
     "exchangeChannelUnknownError": "Gagal mendapatkan detail swap, Silakan coba lagi nanti",
     "failMessage": "Swap tidak berhasil, silakan coba lagi",
+    "ledgerFailMessage": "Permintaan itu ditolak oleh Ledger.",
     "fromInputLabel": "Dari {{asset}}",
     "gainBestPrice": "Harga terbaik",
     "gainTooltip": "Keuntungan swap melalui Keeper dibandingkan dengan layanan lain",

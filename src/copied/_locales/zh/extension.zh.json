@@ -77,12 +77,12 @@
     "saveBackup": "保存助记词"
   },
   "bottom": {
-    "custom": "自定义",
-    "mainnet": "主网",
     "network": {
       "edit": "编辑",
       "disabled": "在此操作中您无法改变网络设置"
     },
+    "custom": "自定义",
+    "mainnet": "主网",
     "testnet": "测试网",
     "stagenet": "阶段网"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "在以下区域中输入该内容以继续进行操作",
     "phrase": "删除所有账户",
     "phraseError": "助记词输入错误",
+    "placeholder": "在此处输入...",
     "resetConfirm": "删除所有",
     "resetCancel": "取消"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "验证账户",
     "verifyAccountDesc": "请输入{{destination}}收到的6位数字验证码",
     "incorrectCode": "验证码错误，请重新输入",
+    "userDoesNotExist": "该用户不存在。",
+    "incorrectUsernameOrPassword": "账户名或密码不正确。",
+    "incorrectUsernameOrPasswordLimit": "您输入的账户名或密码超过限制。如果您有任何问题，请联系Waves.Exchange客户支持：https://support.waves.exchange/",
     "alreadyExists": "账户已存在"
   },
   "importKeystore": {
@@ -506,6 +510,7 @@
     "exchangeChannelInvalidAssetPairError": "币对选择无效",
     "exchangeChannelUnknownError": "兑换详情获取失败，您可能看到的是陈旧数据，请稍后重试。",
     "failMessage": "兑换未成功，请重试",
+    "ledgerFailMessage": "请求已被Ledger拒绝。",
     "fromInputLabel": "从 {{asset}}",
     "gainBestPrice": "最优价格",
     "gainTooltip": "通过Keeper兑换与其他服务兑换之间的利润对比",

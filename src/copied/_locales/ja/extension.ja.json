@@ -77,12 +77,12 @@
     "saveBackup": "バックアップフレーズを保存"
   },
   "bottom": {
-    "custom": "カスタム",
-    "mainnet": "メインネット",
     "network": {
       "edit": "編集",
       "disabled": "この操作中にネットワーク設定を変更できません。"
     },
+    "custom": "カスタム",
+    "mainnet": "メインネット",
     "testnet": "テストネット",
     "stagenet": "ステージネット"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "続けて、下のフィールドに次のように入力します。",
     "phrase": "DELETE ALL ACCOUNTS",
     "phraseError": "入力したフレーズが間違っています。",
+    "placeholder": "ここに入力してください。",
     "resetConfirm": "すべて削除",
     "resetCancel": "キャンセル"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "アカウントを検証",
     "verifyAccountDesc": "{{destination}}で受信した6桁の認証コードを入力してください。",
     "incorrectCode": "認証コードが間違っています。再入力してください。",
+    "userDoesNotExist": "ユーザーが存在しません。",
+    "incorrectUsernameOrPassword": "ユーザー名またはパスワードが間違っています。",
+    "incorrectUsernameOrPasswordLimit": "ユーザ名またはパスワードを間違えた回数が上限を超えました。サポートまでご連絡ください。https://support.waves.exchange/",
     "alreadyExists": "アカウントは既に存在しています。"
   },
   "importKeystore": {
@@ -509,6 +513,7 @@
     "exchangeChannelInvalidAssetPairError": "無効なアセットペアです。",
     "exchangeChannelUnknownError": "スワップ詳細の取得に失敗しました。古いデータが表示されている可能性があります。時間をおいて再試行してください。",
     "failMessage": "スワップに失敗しました。再度試してください。",
+    "ledgerFailMessage": "リクエストはレッジャーに却下されました。",
     "fromInputLabel": "{{asset}}から",
     "gainBestPrice": "最良価格",
     "gainTooltip": "他のサービスと比較したKeeper経由のスワップ利益",

@@ -77,12 +77,12 @@
     "saveBackup": "Lưu cụm từ sao lưu"
   },
   "bottom": {
-    "custom": "Tùy chỉnh",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Sửa",
       "disabled": "Bạn không thể thay đổi cài đặt mạng trong quá trình hoạt động này"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "Để tiếp tục, nhập từ này vào ô bên dưới ",
     "phrase": "XÓA TẤT CẢ TÀI KHOẢN",
     "phraseError": "Cụm từ được nhập vào không đúng",
+    "placeholder": "Nhập tại đây",
     "resetConfirm": "Xóa tất cả  ",
     "resetCancel": "Hủy"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "Xác nhận tài khoản ",
     "verifyAccountDesc": "Vui lòng nhập mã xác minh gồm 6 chữ số mà {{destination}} nhận được",
     "incorrectCode": "Sai mã. Vui lòng thử lại ",
+    "userDoesNotExist": "Người dùng không tồn tại.",
+    "incorrectUsernameOrPassword": "Sai tên đăng nhập hoặc mật khẩu.",
+    "incorrectUsernameOrPasswordLimit": "Bạn đã vượt quá số lần nhập sai tên người dùng hoặc mật khẩu. Nếu bạn gặp bất kỳ sự cố nào, vui lòng liên hệ với bộ phận hỗ trợ https://support.waves.exchange/.",
     "alreadyExists": "Tài khoản đã tồn tại"
   },
   "importKeystore": {
@@ -509,6 +513,7 @@
     "exchangeChannelInvalidAssetPairError": "Cặp đã chọn không hợp lệ",
     "exchangeChannelUnknownError": "Không lấy được thông tin chi tiết về swap, bạn có thể thấy dữ liệu cũ. Vui lòng thử lại sau",
     "failMessage": "Swap không thành công, hãy thử lại",
+    "ledgerFailMessage": "Yêu cầu bị Leger từ chối",
     "fromInputLabel": "Từ {{asset}}",
     "gainBestPrice": "Giá tốt nhất",
     "gainTooltip": "Lợi nhuận của việc swap qua Keeper so với các dịch vụ khác",

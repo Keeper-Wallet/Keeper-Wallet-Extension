@@ -77,12 +77,12 @@
     "saveBackup": "บันทึก backup phrase"
   },
   "bottom": {
-    "custom": "กำหนดเอง",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "แก้ไข",
       "disabled": "คุณไม่สามารถเปลี่ยนการตั้งค่าเครือข่ายในระหว่างการดำเนินการนี้"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "พิมพ์สิ่งนี้ลงในช่องด้านล่าง เพื่อดำเนินการต่อ",
     "phrase": "ลบบัญชีทั้งหมด",
     "phraseError": "กลุ่มคำที่ป้อนไม่ถูกต้อง",
+    "placeholder": "พิมพ์ที่นี่...",
     "resetConfirm": "ลบทั้งหมด",
     "resetCancel": "ยกเลิก"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "ตรวจสอบบัญชีของคุณ",
     "verifyAccountDesc": "โปรดป้อนรหัสการตรวจสอบ 6 หลักที่ได้รับจาก {{destination}}",
     "incorrectCode": "รหัสผิด กรุณาลองอีกครั้ง",
+    "userDoesNotExist": "ไม่มีผู้ใช้",
+    "incorrectUsernameOrPassword": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+    "incorrectUsernameOrPasswordLimit": "คุณใช้ชื่อผู้ใช้หรือรหัสผ่านที่ไม่ถูกต้อง หากคุณมีปัญหาใดๆ โปรดติดต่อฝ่ายดูแล https://support.waves.exchange/",
     "alreadyExists": "มีบัญชีนี้อยู่แล้ว"
   },
   "importKeystore": {
@@ -509,6 +513,7 @@
     "exchangeChannelInvalidAssetPairError": "เลือกคู่สินทรัพย์ไม่ถูกต้อง",
     "exchangeChannelUnknownError": "ไม่สามารถรับรายละเอียดการแลกเปลี่ยนคุณอาจเห็นข้อมูลค้าง กรุณาลองใหม่อีกครั้งในภายหลัง",
     "failMessage": "Swap ไม่ประสบความสำเร็จ, โปรดลองอีกครั้ง",
+    "ledgerFailMessage": "คำขอถูกปฏิเสธใน ledger",
     "fromInputLabel": "จาก {{asset}}",
     "gainBestPrice": "ราคาที่ดีที่สุด",
     "gainTooltip": "กำไรจากการ swap ผ่าน keep เมื่อเทียบกับบริการอื่น ๆ",

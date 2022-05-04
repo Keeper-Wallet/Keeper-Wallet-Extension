@@ -77,12 +77,12 @@
     "saveBackup": "Salvar frase de backup"
   },
   "bottom": {
-    "custom": "Personalizar",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Editar",
       "disabled": "Você não pode alterar as configurações de rede durante esta operação"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -150,6 +150,7 @@
     "continueMessage": "Para continuar, digite isso no campo abaixo",
     "phrase": "EXCLUIR TODAS AS CONTAS",
     "phraseError": "A frase foi digitada incorretamente",
+    "placeholder": "Por favor, entre aqui.",
     "resetConfirm": "Excluir tudo",
     "resetCancel": "Cancelar"
   },
@@ -245,6 +246,9 @@
     "verifyAccountTitle": "Verificar sua conta",
     "verifyAccountDesc": "Insira o código de verificação de 6 dígitos recebido pelo {{destination}}",
     "incorrectCode": "Código errado. Por favor, tente novamente",
+    "userDoesNotExist": "Usuário não existe.",
+    "incorrectUsernameOrPassword": "O nome de usuário ou senha está incorreto.",
+    "incorrectUsernameOrPasswordLimit": "O número de vezes que você cometeu um erro em seu nome de usuário ou senha excedeu o limite. Entre em contato com o suporte. https://support.waves.exchange/",
     "alreadyExists": "Essa conta já existe"
   },
   "importKeystore": {
@@ -509,6 +513,7 @@
     "exchangeChannelInvalidAssetPairError": "Par de ativos selecionado inválido",
     "exchangeChannelUnknownError": "Erro ao obter detalhes da conversão, você pode ver dados desatualizados. Por favor, tente novamente mais tarde",
     "failMessage": "A conversão não foi bem-sucedida, tente novamente",
+    "ledgerFailMessage": "O pedido foi rejeitado pela Ledger.",
     "fromInputLabel": "De {{asset}}",
     "gainBestPrice": "Melhor Preço",
     "gainTooltip": "Lucro da conversão na Keeper, em comparação com outros serviços",

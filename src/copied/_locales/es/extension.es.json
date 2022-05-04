@@ -83,12 +83,12 @@
     "saveBackup": "Guardar frase de respaldo"
   },
   "bottom": {
-    "custom": "Personalizar",
-    "mainnet": "Mainnet",
     "network": {
       "edit": "Editar",
       "disabled": "No puede cambiar la configuración de red durante esta operación"
     },
+    "custom": "Custom",
+    "mainnet": "Mainnet",
     "testnet": "Testnet",
     "stagenet": "Stagenet"
   },
@@ -156,8 +156,9 @@
     "attentionMessage": "Para restablecer la contraseña, debe eliminar todas las cuentas de Keeper Wallet, establecer una nueva contraseña, importar cada una de sus cuentas nuevamente desde la frase inicial.",
     "warningMessage": "Si no ha guardado la frase inicial o la clave privada, no podrá recuperar el acceso a su cuenta.",
     "continueMessage": "Para continuar, escriba esto en el campo de abajo",
-    "phrase": "ลบบัญชีทั้งหมด",
+    "phrase": "EXCLUIR TODAS AS CONTAS",
     "phraseError": "La frase está mal ingresada",
+    "placeholder": "Escribe aquí…",
     "resetConfirm": "Eliminar todo",
     "resetCancel": "Cancelar"
   },
@@ -253,6 +254,9 @@
     "verifyAccountTitle": "Verifica tu cuenta",
     "verifyAccountDesc": "Ingrese el código de verificación de 6 dígitos recibido por {{destination}}",
     "incorrectCode": "Codigo erroneo. Inténtalo de nuevo",
+    "userDoesNotExist": "Usuario no existe.",
+    "incorrectUsernameOrPassword": "Nombre de usuario o contraseña incorrecta.",
+    "incorrectUsernameOrPasswordLimit": "Ha excedido el limite de nombre de usuario y contraseña incorrecta. Si tiene algún problema comuníquese con soporte https://support.waves.exchange/.",
     "alreadyExists": "la cuenta ya existe"
   },
   "importKeystore": {
@@ -522,6 +526,7 @@
     "exchangeChannelInvalidAssetPairError": "Par de activos no válido seleccionado",
     "exchangeChannelUnknownError": "No se pudieron obtener los detalles del intercambio, es posible que vea datos obsoletos. Por favor, inténtelo de nuevo más tarde",
     "failMessage": "El intercambio no se realizó correctamente, inténtalo de nuevo",
+    "ledgerFailMessage": "La solicitud es rechazada en el Ledger",
     "fromInputLabel": "De {{activo}}",
     "gainBestPrice": "Mejor precio",
     "gainTooltip": "Beneficio de intercambiar a través de Keeper en comparación con otros servicios",
