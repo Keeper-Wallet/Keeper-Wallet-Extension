@@ -121,7 +121,7 @@
   "deleteAccount": {
     "attention": "Dikkat!",
     "delete": "Hesabı sil",
-    "warn": "Bir hesap sildikten sonra geri alınamaz"
+    "warn": "Herhangi bir hesabın silinmesi, fonlara olan erişimin geri alınamaz şekilde kaybolmasına neden olabilir! Her zaman 'ANAHTAR KELİMELER' inizi yedeklediğinizden emin olun."
   },
   "exportKeystore": {
     "cancelBtn": "İptal et",

@@ -121,7 +121,7 @@
   "deleteAccount": {
     "attention": "Chú ý!",
     "delete": "Xóa tài khoản",
-    "warn": "Xóa tài khoản sẽ dẫn đến mất mát không thể khôi phục được!"
+    "warn": "Xóa tài khoản có thể dẫn đến mất quyền truy cập vào quỹ! Luôn đảm bảo rằng bạn đã sao lưu SEED của mình."
   },
   "exportKeystore": {
     "cancelBtn": "Hủy ",

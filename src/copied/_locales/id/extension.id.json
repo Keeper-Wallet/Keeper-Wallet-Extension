@@ -129,7 +129,7 @@
   "deleteAccount": {
     "attention": "Perhatian!",
     "delete": "Hapus akun",
-    "warn": "Menghapus akun akan menyebabkan kerugian yang tidak dapat diperbaiki!"
+    "warn": "Menghapus akun dapat menyebabkan hilangnya akses ke dana yang tidak dapat diperbaiki! Selalu pastikan Anda telah mencadangkan SEED Anda."
   },
   "exportKeystore": {
     "cancelBtn": "Batalkan",

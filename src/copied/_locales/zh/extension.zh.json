@@ -121,7 +121,7 @@
   "deleteAccount": {
     "attention": "请注意！",
     "delete": "删除账户",
-    "warn": "删除账户将导致难以挽回的损失！"
+    "warn": "删除账户将导致难以挽回的资产损失！请确保您已经备份好种子助记词。"
   },
   "exportKeystore": {
     "cancelBtn": "取消",

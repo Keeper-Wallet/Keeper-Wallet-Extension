@@ -26,6 +26,7 @@
   overflow: hidden;
   color: #9ba6b2;
   text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .selectableOverlay {

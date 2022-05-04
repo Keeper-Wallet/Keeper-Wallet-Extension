@@ -121,7 +121,7 @@
   "deleteAccount": {
     "attention": "Atenção!",
     "delete": "Excluir conta",
-    "warn": "Excluir uma conta levará à sua perda irrecuperável!"
+    "warn": "A exclusão de uma conta pode levar à perda irrecuperável do acesso aos fundos! Certifique-se sempre de fazer backup da sua SEED."
   },
   "exportKeystore": {
     "cancelBtn": "Cancelar",

@@ -129,7 +129,7 @@
   "deleteAccount": {
     "attention": "¡Atención!",
     "delete": "Eliminar cuenta",
-    "warn": "¡Eliminar una cuenta conducirá a su pérdida irrecuperable!"
+    "warn": "¡Eliminar una cuenta puede conducir a una pérdida irrecuperable de acceso a los fondos! Siempre asegúrese de haber realizado una copia de seguridad de su SEED."
   },
   "exportKeystore": {
     "cancelBtn": "Cancelar",
