@@ -2,6 +2,7 @@ import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
 import { App, CreateNewAccount } from './utils/actions';
+import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Password management', () => {
   const PASSWORD = {
@@ -26,13 +27,15 @@ describe('Password management', () => {
     before(async function () {
       await App.open.call(this);
 
-      tabKeeper = await this.driver.getWindowHandle();
+      const handles = await this.driver.getAllWindowHandles();
+      tabKeeper = handles[0];
+
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
         this.wait
       );
       for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper) {
+        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
           tabAccounts = handle;
           await this.driver.switchTo().window(tabAccounts);
           break;
@@ -266,9 +269,7 @@ describe('Password management', () => {
       expect(
         await this.driver
           .wait(
-            until.elementIsVisible(
-              this.driver.findElement(By.css('.modal.notification'))
-            ),
+            until.elementLocated(By.css('[data-testid="modalPassword"]')),
             this.wait
           )
           .getText()
@@ -341,6 +342,9 @@ describe('Password management', () => {
       loginInput = loginForm.findElement(By.css('input[type=password]'));
       await loginInput.sendKeys(PASSWORD.DEFAULT);
       await loginButton.click();
+
+      await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
+
       expect(
         await this.driver
           .findElement(

@@ -136,7 +136,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
           animation={Modal.ANIMATION.FLASH_SCALE}
           showModal={this.state.showChanged}
         >
-          <div className="modal notification">
+          <div className="modal notification" data-testid="modalPassword">
             <Trans i18nKey="changePassword.done">Password changed</Trans>
           </div>
         </Modal>

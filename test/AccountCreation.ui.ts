@@ -63,7 +63,9 @@ describe('Account creation', function () {
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
 
-    tabKeeper = await this.driver.getWindowHandle();
+    const handles = await this.driver.getAllWindowHandles();
+    tabKeeper = handles[0];
+
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -72,11 +74,11 @@ describe('Account creation', function () {
       .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
     await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      async () => (await this.driver.getAllWindowHandles()).length === 3,
       this.wait
     );
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper) {
+      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
         tabAccounts = handle;
         await this.driver.switchTo().window(tabAccounts);
         await this.driver.navigate().refresh();
@@ -126,18 +128,12 @@ describe('Account creation', function () {
       ).split(' ');
       await this.driver.findElement(By.css('button#continue')).click();
 
-      const writePills = this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-confirmBackup-writeSeed')]")
-        ),
-        this.wait
-      );
       for (const word of seed) {
-        await writePills
+        await this.driver
           .findElement(
             By.xpath(
-              "//div[not(contains(@class, '-pills-hidden'))]" +
-                `/div[contains(@class,'-pills-text')][text()='${word}']`
+              "//div[(contains(@class, '-pills-selectedPill-') and not(contains(@class, '-pills-hiddenPill')))]" +
+                `//div[contains(@class,'-pills-text')][text()='${word}']`
             )
           )
           .click();
@@ -158,11 +154,12 @@ describe('Account creation', function () {
         .findElement(By.css('[data-testid=continueBtn]'))
         .click();
 
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+        this.wait
+      );
+
       await this.driver
-        .wait(
-          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-          this.wait
-        )
         .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
         .click();
 
@@ -274,25 +271,20 @@ describe('Account creation', function () {
 
         describe('Confirm backup page', function () {
           let clearButton: WebElement;
-          const xpWriteSeed =
-              "//div[contains(@class, '-confirmBackup-writeSeed')]",
-            xpReadSeed = "//div[contains(@class, '-confirmBackup-readSeed')]",
-            xpVisiblePill =
-              "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]",
+          const xpWriteVisiblePill =
+              "//div[(contains(@class, '-pills-selectedPill-') and not(contains(@class, '-pills-hiddenPill')))]",
+            xpReadVisiblePill =
+              "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-selectedPill-')) and not(contains(@class, '-pills-hiddenPill')))]",
             PILLS_COUNT = 15;
 
           it('Filling in a seed in the wrong word order', async function () {
             // there is no Confirm button. An error message and a "Clear" button are displayed
             const wrongSeed = rightSeed.split(' ').reverse();
-            const seedPills = await this.driver.wait(
-              until.elementLocated(By.xpath(xpWriteSeed)),
-              this.wait
-            );
             for (const word of wrongSeed) {
-              await seedPills
+              await this.driver
                 .findElement(
                   By.xpath(
-                    "//div[not(contains(@class, '-pills-hidden'))]" +
+                    xpWriteVisiblePill +
                       `//div[contains(@class,'-pills-text')][text()='${word}']`
                   )
                 )
@@ -320,15 +312,10 @@ describe('Account creation', function () {
                 .isDisplayed()
             ).to.be.true;
             expect(
-              await this.driver.findElements(
-                By.xpath(xpReadSeed + xpVisiblePill)
-              )
+              await this.driver.findElements(By.xpath(xpReadVisiblePill))
             ).length(PILLS_COUNT);
-            expect(
-              await this.driver.findElements(
-                By.xpath(xpWriteSeed + xpVisiblePill)
-              )
-            ).to.be.empty;
+            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
+              .to.be.empty;
           });
 
           it('The "Clear" button resets a completely filled phrase', async function () {
@@ -346,21 +333,16 @@ describe('Account creation', function () {
                 By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
               )
             ).to.be.empty;
+            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
+              .to.be.empty;
             expect(
-              await this.driver.findElements(
-                By.xpath(xpReadSeed + xpVisiblePill)
-              )
-            ).to.be.empty;
-            expect(
-              await this.driver.findElements(
-                By.xpath(xpWriteSeed + xpVisiblePill)
-              )
+              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
             ).length(PILLS_COUNT);
           });
 
           it('The word can be reset by clicking (any, not only the last)', async function () {
             const writePills = await this.driver.wait(
-              until.elementsLocated(By.xpath(xpWriteSeed + xpVisiblePill)),
+              until.elementsLocated(By.xpath(xpWriteVisiblePill)),
               this.wait
             );
             for (const writePill of writePills) {
@@ -374,20 +356,15 @@ describe('Account creation', function () {
               this.wait
             );
             expect(
-              await this.driver.findElements(
-                By.xpath(xpReadSeed + xpVisiblePill)
-              )
+              await this.driver.findElements(By.xpath(xpReadVisiblePill))
             ).length(PILLS_COUNT);
-            expect(
-              await this.driver.findElements(
-                By.xpath(xpWriteSeed + xpVisiblePill)
-              )
-            ).to.be.empty;
+            expect(await this.driver.findElements(By.xpath(xpWriteVisiblePill)))
+              .to.be.empty;
 
             const readPills = await this.driver.findElements(
               By.xpath(
                 "//div[contains(@class, '-confirmBackup-readSeed')]" +
-                  "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hidden')))]"
+                  "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hiddenPill')))]"
               )
             );
             for (const readPill of readPills) {
@@ -395,29 +372,20 @@ describe('Account creation', function () {
               await this.driver.sleep(PILL_ANIMATION_DELAY);
             }
 
+            expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
+              .to.be.empty;
             expect(
-              await this.driver.findElements(
-                By.xpath(xpReadSeed + xpVisiblePill)
-              )
-            ).to.be.empty;
-            expect(
-              await this.driver.findElements(
-                By.xpath(xpWriteSeed + xpVisiblePill)
-              )
+              await this.driver.findElements(By.xpath(xpWriteVisiblePill))
             ).length(PILLS_COUNT);
           });
 
           it('Account name page opened while filling in the phrase in the correct order', async function () {
-            const writePills = this.driver.wait(
-              until.elementLocated(By.xpath(xpWriteSeed)),
-              this.wait
-            );
             for (const word of rightSeed.split(' ')) {
-              await writePills
+              await this.driver
                 .findElement(
                   By.xpath(
-                    "//div[not(contains(@class, '-pills-hidden'))]" +
-                      `/div[contains(@class,'-pills-text')][text()='${word}']`
+                    xpWriteVisiblePill +
+                      `//div[contains(@class,'-pills-text')][text()='${word}']`
                   )
                 )
                 .click();
@@ -475,13 +443,16 @@ describe('Account creation', function () {
             await accountNameInput.sendKeys(ACCOUNTS.ANY);
             await continueBtn.click();
 
-            const importSuccessForm = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            );
-            expect(importSuccessForm).not.to.be.throw;
+            expect(
+              await this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="importSuccessForm"]')
+                ),
+                this.wait
+              )
+            ).not.to.be.throw;
 
-            importSuccessForm
+            await this.driver
               .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
               .click();
 
@@ -556,13 +527,14 @@ describe('Account creation', function () {
         )
         .click();
 
-      const importSuccessForm = await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-        this.wait
-      );
-      expect(importSuccessForm).not.to.be.throw;
+      expect(
+        await this.driver.wait(
+          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+          this.wait
+        )
+      ).not.to.be.throw;
 
-      importSuccessForm
+      await this.driver
         .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
         .click();
 
@@ -724,13 +696,16 @@ describe('Account creation', function () {
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
-            const importSuccessForm = await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            );
-            expect(importSuccessForm).not.to.be.throw;
+            expect(
+              await this.driver.wait(
+                until.elementLocated(
+                  By.css('[data-testid="importSuccessForm"]')
+                ),
+                this.wait
+              )
+            ).not.to.be.throw;
 
-            importSuccessForm
+            await this.driver
               .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
               .click();
 
@@ -1002,13 +977,14 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          const importSuccessForm = await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-          expect(importSuccessForm).not.to.be.throw;
+          expect(
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            )
+          ).not.to.be.throw;
 
-          importSuccessForm
+          await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
             .click();
 
@@ -1116,13 +1092,14 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          const importSuccessForm = await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-          expect(importSuccessForm).not.to.be.throw;
+          expect(
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            )
+          ).not.to.be.throw;
 
-          importSuccessForm
+          await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
             .click();
 
@@ -1309,13 +1286,14 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          const importSuccessForm = await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-          expect(importSuccessForm).not.to.be.throw;
+          expect(
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            )
+          ).not.to.be.throw;
 
-          importSuccessForm
+          await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
             .click();
 
@@ -1394,13 +1372,14 @@ describe('Account creation', function () {
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
-          const importSuccessForm = await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          );
-          expect(importSuccessForm).not.to.be.throw;
+          expect(
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            )
+          ).not.to.be.throw;
 
-          importSuccessForm
+          await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
             .click();
 

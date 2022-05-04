@@ -8,9 +8,17 @@ import { App } from './actions';
 
 declare module 'mocha' {
   interface Context {
+    serviceWorkerTab: string;
     driver: WebDriver;
     extensionUrl: string;
+    extensionPanel: string;
     wait: number;
+  }
+}
+
+declare module 'selenium-webdriver' {
+  interface WebElement {
+    getShadowRoot: () => WebElement;
   }
 }
 
@@ -68,14 +76,14 @@ export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
 export const mochaHooks = () => ({
   async beforeAll(this: mocha.Context) {
     this.timeout(15 * 60 * 1000);
-    this.wait = 10 * 1000;
+    this.wait = 15 * 1000;
 
     this.driver = new Builder()
       .forBrowser('chrome')
       .usingServer(`http://localhost:4444/wd/hub`)
       .setChromeOptions(
         new chrome.Options().addArguments(
-          `--load-extension=/app/dist/chrome`,
+          '--load-extension=/app/dist/chrome',
           '--disable-dev-shm-usage'
         )
       )
@@ -91,12 +99,14 @@ export const mochaHooks = () => ({
       const [id, name] = ext.split(' : ');
       if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
         this.extensionUrl = `chrome-extension://${id}/popup.html`;
+        this.extensionPanel = `chrome://extensions/?id=${id}`;
         break;
       }
     }
 
     // this helps extension to be ready
     await this.driver.get('chrome://new-tab-page');
+    await App.openServiceWorkerTab.call(this);
     await App.open.call(this);
   },
 

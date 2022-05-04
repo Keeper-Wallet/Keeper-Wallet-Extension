@@ -1,7 +1,7 @@
 import { App, Assets } from '../test/utils/actions';
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
-import { DEFAULT_PASSWORD } from '../test/utils/constants';
+import { DEFAULT_PASSWORD } from './utils/constants';
 import * as mocha from 'mocha';
 
 describe('Tabs manipulation', function () {
@@ -21,17 +21,19 @@ describe('Tabs manipulation', function () {
 
     it('new "accounts" appears when opened "popup"', async function () {
       await App.open.call(this);
-      tabKeeper = await this.driver.getWindowHandle();
+
+      const handles = await this.driver.getAllWindowHandles();
+      tabKeeper = handles[0];
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;
 
       for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper) {
+        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
           tabAccounts = handle;
           await this.driver.switchTo().window(handle);
           await this.driver.navigate().refresh();
@@ -48,7 +50,7 @@ describe('Tabs manipulation', function () {
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;
@@ -135,17 +137,18 @@ describe('Tabs manipulation', function () {
         .findElement(By.css('[data-testid="addAccountBtn"]'))
         .click();
 
-      tabKeeper = await this.driver.getWindowHandle();
+      const handles = await this.driver.getAllWindowHandles();
+      tabKeeper = handles[0];
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;
 
       for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper) {
+        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
           tabAccounts = handle;
           await this.driver.switchTo().window(handle);
           await this.driver.navigate().refresh();
@@ -162,7 +165,7 @@ describe('Tabs manipulation', function () {
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;
@@ -265,7 +268,7 @@ describe('Tabs manipulation', function () {
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 1,
+          async () => (await this.driver.getAllWindowHandles()).length === 2,
           this.wait
         )
       ).not.to.be.throw;
@@ -278,7 +281,7 @@ describe('Tabs manipulation', function () {
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;
@@ -291,7 +294,7 @@ describe('Tabs manipulation', function () {
 
       expect(
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         )
       ).not.to.be.throw;

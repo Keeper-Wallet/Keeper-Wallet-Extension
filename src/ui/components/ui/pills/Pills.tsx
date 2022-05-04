@@ -12,22 +12,20 @@ export class Pills extends React.PureComponent {
     const { className, onSelect, animated, list, ...props } = this.props;
     const myClassName = cn(styles.pills, className);
     return (
-      <div className={myClassName}>
-        <TransitionGroup>
-          {list.map(item => (
-            <CSSTransition key={item.id} classNames="animated" timeout={200}>
-              <Pill
-                onSelect={this.onSelect.bind(null, item)}
-                text={item.text}
-                hidden={item.hidden}
-                selected={item.selected}
-                key={item.id}
-                {...props}
-              />
-            </CSSTransition>
-          ))}
-        </TransitionGroup>
-      </div>
+      <TransitionGroup className={myClassName}>
+        {list.map(item => (
+          <CSSTransition key={item.id} classNames="animated" timeout={200}>
+            <Pill
+              onSelect={this.onSelect.bind(null, item)}
+              text={item.text}
+              hidden={item.hidden}
+              selected={item.selected}
+              key={item.id}
+              {...props}
+            />
+          </CSSTransition>
+        ))}
+      </TransitionGroup>
     );
   }
 

@@ -68,7 +68,9 @@ describe('Signature', function () {
 
     await Network.switchToAndCheck.call(this, 'Testnet');
 
-    tabKeeper = await this.driver.getWindowHandle();
+    const handles = await this.driver.getAllWindowHandles();
+    tabKeeper = handles[0];
+
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -77,11 +79,11 @@ describe('Signature', function () {
       .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
     await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      async () => (await this.driver.getAllWindowHandles()).length === 3,
       this.wait
     );
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper) {
+      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
         await this.driver.switchTo().window(handle);
         await this.driver.navigate().refresh();
         break;
@@ -406,6 +408,10 @@ describe('Signature', function () {
     });
 
     describe('Issue', function () {
+      before(async function () {
+        await App.restartServiceWorker.call(this);
+      });
+
       beforeEach(async function () {
         await performSignTransaction.call(this, ISSUE);
       });
@@ -906,6 +912,10 @@ describe('Signature', function () {
     });
 
     describe('Lease', function () {
+      before(async function () {
+        await App.restartServiceWorker.call(this);
+      });
+
       beforeEach(async function () {
         await performSignTransaction.call(this, LEASE);
       });
@@ -1428,6 +1438,10 @@ describe('Signature', function () {
     });
 
     describe('SetScript', function () {
+      before(async function () {
+        await App.restartServiceWorker.call(this);
+      });
+
       beforeEach(async function () {
         await performSignTransaction.call(this, SET_SCRIPT);
       });
@@ -1927,6 +1941,10 @@ describe('Signature', function () {
   });
 
   describe('Order', function () {
+    before(async function () {
+      await App.restartServiceWorker.call(this);
+    });
+
     const createOrder = tx => {
       // @ts-ignore
       KeeperWallet.initialPromise

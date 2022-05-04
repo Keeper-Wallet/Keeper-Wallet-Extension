@@ -23,7 +23,7 @@ export class List extends React.PureComponent<IProps> {
 
     return (
       <div className={styles.permissionList}>
-        {originsNames.map(name => (
+        {originsNames.sort().map(name => (
           <ListItem
             key={name}
             originName={name}
