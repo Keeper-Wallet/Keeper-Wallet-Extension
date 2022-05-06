@@ -757,8 +757,6 @@ class BackgroundService extends EventEmitter {
           this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
         })
         .catch(e => {
-          switch (e.data) {
-          }
           if (e.data === MSG_STATUSES.REJECTED) {
             // user rejected single permission request
             this.permissionsController.setMessageIdAccess(origin, null);

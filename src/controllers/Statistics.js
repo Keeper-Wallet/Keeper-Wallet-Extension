@@ -141,7 +141,9 @@ export class StatisticsController {
           dApp: isDApp ? message.data.data.dApp : undefined,
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore errors
+    }
   }
 
   sendInstallEvent() {

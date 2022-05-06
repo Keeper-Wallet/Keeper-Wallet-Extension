@@ -115,7 +115,9 @@ function setupClickInterceptor(inpageApi) {
         e.preventDefault();
         e.stopPropagation();
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore errors
+    }
   });
 }
 

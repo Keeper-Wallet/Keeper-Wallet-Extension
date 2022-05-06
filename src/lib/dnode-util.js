@@ -40,7 +40,9 @@ export function cbToPromise(fn, context) {
 }
 
 export function promiseToCb(fn, context) {
-  const noop = () => {};
+  const noop = () => {
+    // noop
+  };
 
   return (...args) => {
     const lastArg = args[args.length - 1];
