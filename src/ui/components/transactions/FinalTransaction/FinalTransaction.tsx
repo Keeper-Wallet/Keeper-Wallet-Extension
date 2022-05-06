@@ -23,7 +23,7 @@ const Error = ({ approveError }) => {
   );
 };
 
-class FinalTransactionComponent extends React.PureComponent {
+class FinalTransactionComponent extends React.PureComponent<any> {
   readonly props: any;
 
   render() {
