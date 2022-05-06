@@ -88,7 +88,7 @@ export const TxFee = connect(
     };
   }
 
-  let options: FeeOption[] = [];
+  const options: FeeOption[] = [];
   if ('WAVES' in sponsoredBalance || initialFee.asset.id === 'WAVES') {
     options.push(getOption('WAVES'));
     sponsoredBalance = omit(['WAVES'], sponsoredBalance);

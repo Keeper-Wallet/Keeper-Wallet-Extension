@@ -57,7 +57,7 @@ class PlateCollapsableComponent extends React.PureComponent<
 
   componentDidMount() {
     this.resizeObserver = new ResizeObserver(entries => {
-      for (let entry of entries) {
+      for (const entry of entries) {
         this.setState({
           showExpand:
             this.props.showExpand &&

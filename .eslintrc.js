@@ -17,7 +17,9 @@ module.exports = {
 
   rules: {
     'no-useless-escape': 'off',
-    'prefer-const': 'off',
+    'prefer-const': ["error", {
+      "destructuring": "all",
+    }],
     'no-case-declarations': 'off',
     'no-extra-boolean-cast': 'off',
     '@typescript-eslint/no-empty-function': 'off',
