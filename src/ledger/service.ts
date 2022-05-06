@@ -190,9 +190,9 @@ class LedgerService {
       await this._signRequestPromise;
     } finally {
       this._signRequestPromise = this.sendSignRequest(selectedAccount, request);
-
-      return this._signRequestPromise;
     }
+
+    return this._signRequestPromise;
   }
 
   async disconnect(status = LedgerServiceStatus.Disconnected) {
