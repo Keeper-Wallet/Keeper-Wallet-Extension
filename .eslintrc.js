@@ -2,9 +2,23 @@ module.exports = {
   root: true,
   env: {
     es6: true,
+    browser: true,
+    node: true,
   },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  plugins: [
+    '@typescript-eslint',
+    'prettier',
+    'import',
+    // 'react',
+    // 'react-hooks',
+    // 'mocha',
+  ],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -20,6 +34,7 @@ module.exports = {
         destructuring: 'all',
       },
     ],
+    '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
   },
 };
