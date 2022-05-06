@@ -19,7 +19,10 @@ interface Props {
   initialFee: Money;
   assets: any;
   sponsoredBalance: BalanceAssets;
-  updateTransactionFee?: (id: string, fee: IMoneyLike) => {};
+  updateTransactionFee?: (
+    id: string,
+    fee: IMoneyLike
+  ) => Record<string, unknown>;
   message: any;
 }
 
