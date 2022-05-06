@@ -135,8 +135,8 @@ export const App = {
     password = DEFAULT_PASSWORD
   ) {
     const encryptedVault = await this.driver.executeAsyncScript<string>(
-      function () {
-        const cb = arguments[arguments.length - 1];
+      function (...args) {
+        const cb = args[args.length - 1];
 
         chrome.storage.local.get('WalletController', storage =>
           cb(storage.WalletController.vault)

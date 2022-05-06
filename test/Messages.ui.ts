@@ -14,8 +14,8 @@ describe('Messages', function () {
   const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
   let tabKeeper;
 
-  const sendMessage = () => {
-    const done = arguments[arguments.length - 1];
+  const sendMessage = (...args) => {
+    const done = args[args.length - 1];
 
     KeeperWallet.initialPromise.then(api => {
       api
