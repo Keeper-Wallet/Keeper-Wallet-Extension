@@ -129,7 +129,9 @@ class NetworkSettingsComponent extends React.PureComponent<
 
     Promise.all([nodeValidator, matcherValidator])
       .then(() => this.saveData())
-      .catch(() => {});
+      .catch(() => {
+        // ignore errors
+      });
   };
 
   private saveData() {
