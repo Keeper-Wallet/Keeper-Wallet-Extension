@@ -13,8 +13,8 @@
   },
   "scripts": {
     "dev": "webpack --watch",
-    "lint:eslint": "eslint --ext .ts,.tsx .",
-    "lint:eslint:fix": "eslint --fix --ext .ts,.tsx .",
+    "lint:eslint": "eslint --ext .ts,.tsx,.js .",
+    "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
     "typecheck": "tsc --noEmit",
