@@ -17,6 +17,7 @@ import {
   invokeScript,
   issue,
   lease,
+  makeTxBytes,
   massTransfer,
   order,
   reissue,
@@ -26,7 +27,6 @@ import {
   transfer,
   updateAssetInfo,
   validators,
-  makeTxBytes,
 } from '@waves/waves-transactions';
 import { TTxParamsWithType } from '@waves/waves-transactions/dist/make-tx';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
@@ -362,6 +362,14 @@ const convertLongToBigNumber = createDeepConverter(
   value => new BigNumber(value.toString())
 );
 
+function convertArg(arg: { type: string; value: any }) {
+  return arg.type === 'integer'
+    ? { ...arg, value: new BigNumber(arg.value) }
+    : arg.type === 'list'
+    ? { ...arg, value: arg.value.map(convertArg) }
+    : arg;
+}
+
 export const convertFromSa = {
   transaction: (
     input: SaTransaction,
@@ -593,14 +601,6 @@ export const convertFromSa = {
         );
       case TRANSACTION_TYPE.INVOKE_SCRIPT: {
         const chainId = input.data.chainId || defaultChainId;
-
-        function convertArg(arg: { type: string; value: any }) {
-          return arg.type === 'integer'
-            ? { ...arg, value: new BigNumber(arg.value) }
-            : arg.type === 'list'
-            ? { ...arg, value: arg.value.map(convertArg) }
-            : arg;
-        }
 
         return convertLongToBigNumber(
           invokeScript(

@@ -17,7 +17,6 @@ module.exports = {
 
   rules: {
     'no-useless-escape': 'off',
-    'no-inner-declarations': 'off',
     'prefer-const': 'off',
     'no-case-declarations': 'off',
     'no-extra-boolean-cast': 'off',
