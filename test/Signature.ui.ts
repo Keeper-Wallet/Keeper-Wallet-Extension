@@ -1948,7 +1948,7 @@ describe('Signature', function () {
         );
     };
 
-    async function performSignOrder(script: (tx: any) => {}, tx: any) {
+    async function performSignOrder(script: (tx: any) => void, tx: any) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(script, tx);
