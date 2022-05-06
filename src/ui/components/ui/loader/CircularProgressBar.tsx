@@ -22,7 +22,7 @@ export class CircularProgressbar extends React.PureComponent {
     });
   }
 
-  componentWillUpdate(nextProps: IProps): void {
+  UNSAFE_componentWillUpdate(nextProps: IProps): void {
     this.drawer.setValue((nextProps.percent % 100) / 100);
   }
 
@@ -32,7 +32,7 @@ export class CircularProgressbar extends React.PureComponent {
       width: this.props.size,
       height: this.props.size,
     };
-    return <canvas {...canvasProps} ref={this.getRef}></canvas>;
+    return <canvas {...canvasProps} ref={this.getRef} />;
   }
 }
 

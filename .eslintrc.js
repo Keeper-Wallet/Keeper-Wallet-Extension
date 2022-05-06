@@ -15,15 +15,23 @@ module.exports = {
     '@typescript-eslint',
     'prettier',
     'import',
-    // 'react',
+    'react',
     // 'react-hooks',
     // 'mocha',
   ],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    // 'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
+    'prettier',
   ],
 
   rules: {
@@ -36,5 +44,6 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-this-alias': 'warn',
+    'react/prop-types': 'warn',
   },
 };
