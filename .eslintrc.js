@@ -27,7 +27,6 @@ module.exports = {
   ],
 
   rules: {
-    'no-prototype-builtins': 'off',
     'prefer-const': [
       'error',
       {

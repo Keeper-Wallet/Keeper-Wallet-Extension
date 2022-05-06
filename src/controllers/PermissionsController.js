@@ -99,7 +99,7 @@ export class PermissionsController {
       return null;
     }
 
-    if (origins.hasOwnProperty(origin)) {
+    if (Object.prototype.hasOwnProperty.call(origins, origin)) {
       delete origins[origin];
     }
 
