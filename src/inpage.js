@@ -1,5 +1,5 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import { setupDnode, transformMethods, cbToPromise } from './lib/dnode-util';
+import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import log from 'loglevel';
 import EventEmitter from 'events';
 
@@ -20,7 +20,7 @@ async function setupInpageApi() {
   let args = {};
   const wavesAppDef = createDeffer();
   const wavesApp = {};
-  let wavesApi = {
+  const wavesApi = {
     initialPromise: wavesAppDef.promise,
   };
   const proxyApi = {
@@ -75,7 +75,7 @@ async function setupInpageApi() {
 
   const inpageApi = await new Promise(resolve => {
     dnode.once('remote', inpageApi => {
-      let remoteWithPromises = transformMethods(cbToPromise, inpageApi);
+      const remoteWithPromises = transformMethods(cbToPromise, inpageApi);
       // Add event emitter api to background object
       remoteWithPromises.on = eventEmitter.on.bind(eventEmitter);
       resolve(remoteWithPromises);

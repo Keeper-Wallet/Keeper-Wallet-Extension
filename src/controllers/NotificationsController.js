@@ -92,7 +92,7 @@ export class NotificationsController extends EventEmitter {
 
     const notification = this._generateMessage(data);
 
-    let notifications = this.store.getState().notifications;
+    const notifications = this.store.getState().notifications;
 
     this._deleteNotificationsByLimit(
       notifications,

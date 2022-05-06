@@ -56,19 +56,19 @@ export class NetworkController {
   }
 
   setCustomNode(url, network = 'mainnet') {
-    let { customNodes } = this.store.getState();
+    const { customNodes } = this.store.getState();
     customNodes[network] = url;
     this.store.updateState({ customNodes });
   }
 
   setCustomMatcher(url, network = 'mainnet') {
-    let { customMatchers } = this.store.getState();
+    const { customMatchers } = this.store.getState();
     customMatchers[network] = url;
     this.store.updateState({ customMatchers });
   }
 
   setCustomCode(code, network = 'mainnet') {
-    let { customCodes } = this.store.getState();
+    const { customCodes } = this.store.getState();
     customCodes[network] = code;
     this.store.updateState({ customCodes });
   }

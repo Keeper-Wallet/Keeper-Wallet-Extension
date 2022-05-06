@@ -86,7 +86,7 @@ export class MessageController extends EventEmitter {
       throw ERRORS.REQUEST_ERROR(messageData);
     }
 
-    let messages = this.store.getState().messages;
+    const messages = this.store.getState().messages;
 
     while (messages.length > this.getMessagesConfig().max_messages) {
       const oldest = messages
@@ -289,7 +289,7 @@ export class MessageController extends EventEmitter {
       MSG_STATUSES.PUBLISHED,
       MSG_STATUSES.FAILED,
     ];
-    let unusedMessages = [],
+    const unusedMessages = [],
       actualMessages = [];
 
     this.messages.messages.forEach(message => {
@@ -565,7 +565,7 @@ export class MessageController extends EventEmitter {
   }
 
   async _validateAndTransform(message) {
-    let result = { ...message };
+    const result = { ...message };
 
     if (message.data && message.data.successPath) {
       result.successPath = message.data.successPath;
@@ -798,7 +798,7 @@ export class MessageController extends EventEmitter {
   }
 
   _getMoneyLikeValue(moneyLike) {
-    for (let key of ['tokens', 'coins', 'amount']) {
+    for (const key of ['tokens', 'coins', 'amount']) {
       if (key in moneyLike) {
         return moneyLike[key];
       }

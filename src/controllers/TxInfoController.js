@@ -8,7 +8,7 @@ export class TxInfoController {
     const API_BASE = this.getNode();
     const url = new URL(`transactions/info/${txId}`, API_BASE).toString();
 
-    let resp = await fetch(url);
+    const resp = await fetch(url);
     switch (resp.status) {
       case 200:
         return resp

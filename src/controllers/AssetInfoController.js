@@ -141,7 +141,7 @@ function binarySearch(sortedArray, key) {
   let end = sortedArray.length - 1;
 
   while (start <= end) {
-    let middle = Math.floor((start + end) / 2);
+    const middle = Math.floor((start + end) / 2);
 
     if (sortedArray[middle] === key) {
       return middle;
@@ -260,10 +260,10 @@ export class AssetInfoController {
 
     const asset = assets[network] && assets[network][assetId];
     if (!asset || this.isMaxAgeExceeded(asset.lastUpdated)) {
-      let resp = await fetch(url);
+      const resp = await fetch(url);
       switch (resp.status) {
         case 200:
-          let assetInfo = await resp
+          const assetInfo = await resp
             .text()
             .then(text =>
               JSON.parse(
@@ -335,7 +335,7 @@ export class AssetInfoController {
       return;
     }
 
-    let resp = await fetch(
+    const resp = await fetch(
       new URL(`assets/details`, this.getNode()).toString(),
       {
         method: 'POST',
@@ -349,7 +349,7 @@ export class AssetInfoController {
 
     switch (resp.status) {
       case 200:
-        let assetInfos = await resp.json();
+        const assetInfos = await resp.json();
         const lastUpdated = new Date().getTime();
 
         assetInfos.forEach(assetInfo => {
@@ -389,7 +389,7 @@ export class AssetInfoController {
   }
 
   async updateSuspiciousAssets() {
-    let { assets } = this.store.getState();
+    const { assets } = this.store.getState();
     const network = this.getNetwork();
 
     if (
@@ -417,7 +417,7 @@ export class AssetInfoController {
   }
 
   async updateUsdPrices() {
-    let { assets } = this.store.getState();
+    const { assets } = this.store.getState();
     const network = this.getNetwork();
 
     if (!this.usdPrices || network === 'mainnet') {
