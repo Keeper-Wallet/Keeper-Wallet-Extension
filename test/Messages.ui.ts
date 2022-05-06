@@ -16,7 +16,7 @@ describe('Messages', function () {
 
   const sendMessage = () => {
     const done = arguments[arguments.length - 1];
-    // @ts-ignore
+
     KeeperWallet.initialPromise.then(api => {
       api
         .notification({ title: 'Hello!', message: 'World!' })
@@ -27,8 +27,8 @@ describe('Messages', function () {
 
   async function sendMessageFromOrigin(
     origin: string,
-    isWhitelisted: boolean = true,
-    reload: boolean = true
+    isWhitelisted = true,
+    reload = true
   ) {
     if (reload) {
       await this.driver.get(`https://${origin}`);

@@ -138,7 +138,6 @@ export const App = {
       function () {
         const cb = arguments[arguments.length - 1];
 
-        // @ts-ignore
         chrome.storage.local.get('WalletController', storage =>
           cb(storage.WalletController.vault)
         );

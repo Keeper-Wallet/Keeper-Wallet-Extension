@@ -3,6 +3,5 @@
 node_modules/
 dist/
 
-test/**/*.ts
 *.proto.compiled.d.ts
 *.proto.compiled.js

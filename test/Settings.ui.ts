@@ -354,15 +354,12 @@ describe('Settings', function () {
       async function publicStateFromOrigin(origin: string) {
         // this requests permission first
         const permissionRequest = () => {
-          // @ts-ignore
           KeeperWallet.initialPromise.then(api => {
             api.publicState().then(
               resolved => {
-                // @ts-ignore
                 window.result = resolved;
               },
               rejected => {
-                // @ts-ignore
                 window.result = rejected;
               }
             );
@@ -585,7 +582,6 @@ describe('Settings', function () {
 
           await publicStateFromOrigin.call(this, origin);
           const response = await this.driver.executeScript(() => {
-            // @ts-ignore
             return window.result;
           });
           expect(response).to.be.deep.equal({

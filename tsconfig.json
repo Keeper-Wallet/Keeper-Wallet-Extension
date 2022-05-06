@@ -11,6 +11,6 @@
     "pretty": true,
     "sourceMap": true,
     "target": "es6",
-    "types": ["long", "resize-observer-browser", "@waves/waveskeeper-types"]
+    "types": ["long", "resize-observer-browser", "@waves/waveskeeper-types", "chrome"]
   }
 }

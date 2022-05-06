@@ -6,6 +6,14 @@ import * as path from 'path';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { App } from './actions';
 
+declare global {
+  const KeeperWallet: WavesKeeper.TWavesKeeperApi;
+
+  interface Window {
+    result: any;
+  }
+}
+
 declare module 'mocha' {
   interface Context {
     driver: WebDriver;

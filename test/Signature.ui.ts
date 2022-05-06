@@ -39,8 +39,8 @@ import {
   SET_ASSET_SCRIPT,
   SET_SCRIPT,
   SET_SCRIPT_WITHOUT_SCRIPT,
-  SPONSORSHIP_REMOVAL,
   SPONSORSHIP,
+  SPONSORSHIP_REMOVAL,
   TRANSFER,
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
@@ -210,7 +210,7 @@ describe('Signature', function () {
   }
 
   describe('Permission request from origin', function () {
-    let authFormLocator = By.xpath(
+    const authFormLocator = By.xpath(
       "//div[contains(@class, '-originAuth-transaction')]"
     );
     const REJECT_FOREVER = 'Reject forever';
@@ -227,7 +227,6 @@ describe('Signature', function () {
         await this.driver.get(`http://${origin}`);
       }
       await this.driver.executeScript(() => {
-        // @ts-ignore
         KeeperWallet.initialPromise.then(api => {
           api.publicState();
         });
@@ -278,7 +277,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(() => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.auth({ data: 'generated auth data' }))
           .then(
@@ -334,7 +332,6 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (senderPublicKey, timestamp) => {
-          // @ts-ignore
           KeeperWallet.initialPromise
             .then(api =>
               api.signRequest({
@@ -379,7 +376,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(tx => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.signTransaction(tx))
           .then(
@@ -1928,7 +1924,6 @@ describe('Signature', function () {
 
   describe('Order', function () {
     const createOrder = tx => {
-      // @ts-ignore
       KeeperWallet.initialPromise
         .then(api => api.signOrder(tx))
         .then(
@@ -1941,7 +1936,6 @@ describe('Signature', function () {
         );
     };
     const cancelOrder = tx => {
-      // @ts-ignore
       KeeperWallet.initialPromise
         .then(api => api.signCancelOrder(tx))
         .then(
@@ -2107,7 +2101,6 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (tx, name) => {
-          // @ts-ignore
           KeeperWallet.initialPromise
             .then(api => api.signTransactionPackage(tx, name))
             .then(
@@ -2356,7 +2349,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(data => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.signCustomData(data))
           .then(
