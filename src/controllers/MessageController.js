@@ -747,6 +747,7 @@ export class MessageController extends EventEmitter {
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
+      /* eslint-disable-next-line no-fallthrough */
       case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
@@ -775,7 +776,7 @@ export class MessageController extends EventEmitter {
           throw new Error('Address and encryptedSeed are required for pairing');
         break;
       default:
-        throw new Error(`Incorrect type "${type}"`);
+        throw new Error(`Incorrect type "${message.type}"`);
     }
 
     return result;
