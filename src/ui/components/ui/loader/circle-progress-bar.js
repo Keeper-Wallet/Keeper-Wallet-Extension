@@ -183,7 +183,7 @@ export const CircleProgressBar = function (canvas, options) {
     var colorsCountByValue = self._options.maxColorsCountByValue;
     var maxColors = null;
     if (colorsCountByValue) {
-      Object.keys(colorsCountByValue).map(function (objectKey, index) {
+      Object.keys(colorsCountByValue).map(function (objectKey) {
         var maxColorsValue = colorsCountByValue[objectKey];
         if (!maxColors && value <= objectKey) {
           maxColors = maxColorsValue;
@@ -395,7 +395,7 @@ export const CircleProgressBar = function (canvas, options) {
 
     var delta = length - maxLength;
     var result = [];
-    array.forEach(function (element, index, array) {
+    array.forEach(function (element, index) {
       if (index == 0 || delta < index) {
         result.push(element);
       }

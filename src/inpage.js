@@ -48,7 +48,7 @@ async function setupInpageApi() {
       return cbs[prop];
     },
 
-    set(target, prop) {
+    set() {
       throw new Error('Not permitted');
     },
 

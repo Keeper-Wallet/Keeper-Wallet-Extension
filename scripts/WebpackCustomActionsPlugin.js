@@ -12,6 +12,7 @@ module.exports = class WebpackShellPlugin {
 
     compiler.hooks.beforeRun.tapPromise(
       'Custom actions on start',
+      /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
       (source, target, routesList) => {
         const promises = [];
         (options.onBuildStart || []).forEach(script =>

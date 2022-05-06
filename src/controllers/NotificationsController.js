@@ -156,7 +156,7 @@ export class NotificationsController extends EventEmitter {
     const time = Date.now();
     const { notifications } = this.store.getState();
     const toDelete = [];
-    notifications.forEach(({ id, timestamp, status }) => {
+    notifications.forEach(({ id, timestamp }) => {
       if (time - timestamp > message_expiration_ms) {
         toDelete.push(id);
       }

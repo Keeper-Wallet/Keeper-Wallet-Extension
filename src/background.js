@@ -9,7 +9,7 @@ import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
 import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
-import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
+import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
 import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
@@ -54,9 +54,11 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const bgPromise = setupBackgroundService();
 
 Sentry.init({
+  /* eslint-disable no-undef */
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,
+  /* eslint-enable no-undef */
   debug: KEEPERWALLET_DEBUG,
   autoSessionTracking: false,
   initialScope: {
