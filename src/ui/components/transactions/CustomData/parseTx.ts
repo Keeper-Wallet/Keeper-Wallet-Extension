@@ -1,15 +1,15 @@
 export const messageType = 'customData';
 export const txType = messageType;
 
-export function getAssetsId(tx?): Array<string> {
+export function getAssetsId(): Array<string> {
   return [];
 }
 
-export function getFee(tx?) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 

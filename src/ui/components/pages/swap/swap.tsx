@@ -89,7 +89,7 @@ export function Swap({ setTab }: Props) {
     const assetsToUpdate = Array.from(
       new Set(
         swappableAssetEntries
-          .filter(([_assetId, asset]) => asset == null)
+          .filter(([, asset]) => asset == null)
           .map(([assetId]) => assetId)
       )
     );
@@ -108,9 +108,7 @@ export function Swap({ setTab }: Props) {
     transactionId: string;
   } | null>(null);
 
-  const swappableAssets = swappableAssetEntries.map(
-    ([_assetId, asset]) => asset
-  );
+  const swappableAssets = swappableAssetEntries.map(([, asset]) => asset);
 
   if (
     wavesFeeCoins == null ||

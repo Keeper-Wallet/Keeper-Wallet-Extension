@@ -1,4 +1,4 @@
-import { NetworkName, Account } from 'accounts/types';
+import { Account, NetworkName } from 'accounts/types';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -81,7 +81,7 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
                 accounts.filter(acc => acc.network === network),
               ] as const
           )
-          .filter(([_, accounts]) => accounts.length !== 0)
+          .filter(([, accounts]) => accounts.length !== 0)
           .map(([network, accounts]) => (
             <div key={network} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>

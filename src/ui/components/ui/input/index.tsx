@@ -22,7 +22,7 @@ export class Input extends React.Component {
   }
 
   render() {
-    let { className, error, multiLine, inputRef, ...props } = this.props;
+    let { className, error, multiLine, ...props } = this.props;
 
     className = cn(styles.input, className, {
       [styles.error]: error,

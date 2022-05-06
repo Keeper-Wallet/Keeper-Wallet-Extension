@@ -46,10 +46,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
       return true;
     }
 
-    const isFirstError = NewAccountComponent._validateFirst(
-      firstValue,
-      secondValue
-    );
+    const isFirstError = NewAccountComponent._validateFirst(firstValue);
     const isSecondError = NewAccountComponent._validateSecond(
       firstValue,
       secondValue
@@ -58,7 +55,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     return isFirstError || isSecondError;
   }
 
-  static _validateFirst(firstValue, secondValue) {
+  static _validateFirst(firstValue) {
     if (!firstValue) {
       return null;
     }
@@ -238,10 +235,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
 
   _checkValues(firstValue, secondValue) {
     const { termsAccepted, conditionsAccepted } = this.state;
-    const firstError = NewAccountComponent._validateFirst(
-      firstValue,
-      secondValue
-    );
+    const firstError = NewAccountComponent._validateFirst(firstValue);
     const secondError = NewAccountComponent._validateSecond(
       firstValue,
       secondValue

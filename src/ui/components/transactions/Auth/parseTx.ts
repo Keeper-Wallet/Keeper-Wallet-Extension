@@ -1,15 +1,15 @@
 export const messageType = 'auth';
 export const txType = 'auth';
 
-export function getAssetsId(tx = null): Array<string> {
+export function getAssetsId(): Array<string> {
   return ['WAVES'];
 }
 
-export function getFee(tx = null) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 

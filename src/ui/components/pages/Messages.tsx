@@ -172,7 +172,7 @@ class MessagesComponent extends React.Component {
 
   selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
-  componentDidCatch(error, info) {
+  componentDidCatch() {
     this.reject();
   }
 

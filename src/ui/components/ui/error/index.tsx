@@ -53,10 +53,7 @@ export class Error extends React.PureComponent<Props> {
       children,
       className = '',
       errors,
-      hideByClick,
-      show,
       type,
-      onClick,
       ...otherProps
     } = this.props;
 

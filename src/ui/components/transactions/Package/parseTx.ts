@@ -26,7 +26,7 @@ export function getAssetsId(tx): Array<string> {
   return Array.from(assets);
 }
 
-export function getFee(tx = null) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
@@ -86,7 +86,7 @@ export function getPackageAmounts(tx = null, assets) {
   );
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 

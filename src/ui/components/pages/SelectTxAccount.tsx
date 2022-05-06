@@ -48,7 +48,7 @@ class SelectTxAccountComponent extends React.PureComponent {
     this.props.clearMessages();
     this.props.clearMessagesStatus();
     this.deleteNotifications();
-    this.props.updateActiveState(null);
+    this.props.updateActiveState();
     this.setState({ loading: true });
     this.props.closeNotificationWindow();
   };

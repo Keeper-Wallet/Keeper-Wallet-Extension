@@ -1,15 +1,15 @@
 export const messageType = 'cancel-order';
 export const txType = 'cancelOrder';
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(): Array<string> {
   return ['WAVES'];
 }
 
-export function getFee(tx) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 

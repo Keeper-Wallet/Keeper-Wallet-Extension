@@ -18,7 +18,7 @@ const DEFAULTS = {
   },
 };
 
-const QrCodeImage = ({ options, src, width, height, className, ...props }) => {
+const QrCodeImage = ({ options, src, className, ...props }) => {
   const isSvg = options.type === 'svg';
   const svgSource = !isSvg || !src ? null : { __html: src };
 

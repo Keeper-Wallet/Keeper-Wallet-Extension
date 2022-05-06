@@ -35,7 +35,7 @@ export function setActiveMessage(msg: any | null) {
   };
 }
 
-export function updateActiveState(state) {
+export function updateActiveState() {
   return {
     type: ACTION.MESSAGES.UPDATE_ACTIVE,
     payload: null,

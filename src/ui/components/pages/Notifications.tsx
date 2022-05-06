@@ -107,7 +107,7 @@ class NotificationsComponent extends React.Component<WithTranslation> {
 
   selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
-  componentDidCatch(error, info) {
+  componentDidCatch() {
     this.toListHandler();
   }
 

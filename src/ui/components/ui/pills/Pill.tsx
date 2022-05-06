@@ -4,15 +4,7 @@ import cn from 'classnames';
 
 const _onClick = cb => id => cb && cb(id);
 
-export function Pill({
-  id,
-  text,
-  selected,
-  hidden,
-  className,
-  onSelect,
-  ...props
-}) {
+export function Pill({ id, text, selected, hidden, className, onSelect }) {
   const newClassName = cn(styles.pill, className, {
     [styles.selectedPill]: selected,
     [styles.hiddenPill]: hidden,

@@ -31,7 +31,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
   };
 
   showSettingsHandler = (origin: string) => {
-    const [_, permissions] = Object.entries(this.props.origins).find(
+    const [, permissions] = Object.entries(this.props.origins).find(
       ([name]) => name === origin
     );
     const autoSign =
