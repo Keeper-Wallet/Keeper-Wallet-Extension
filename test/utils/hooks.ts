@@ -10,7 +10,8 @@ declare global {
   const KeeperWallet: WavesKeeper.TWavesKeeperApi;
 
   interface Window {
-    result: any;
+    result: unknown;
+    approveResult: any;
   }
 }
 

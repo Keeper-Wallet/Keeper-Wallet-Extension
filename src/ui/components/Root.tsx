@@ -5,6 +5,7 @@ import { addBackTab, loading, removeBackTab, setTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
+import { Account } from 'accounts/types';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
@@ -199,15 +200,15 @@ export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 interface IProps {
   locked: boolean;
   initialized: boolean;
-  accounts: Array<any>;
+  accounts: Array<Account>;
   setTab: (tab: string) => void;
   addBackTab: (tab: string) => void;
   removeBackTab: () => void;
   setLoading: (enable: boolean) => void;
   tab: string;
   backTabs: Array<string>;
-  messages: Array<any>;
-  notifications: Array<any>;
-  activePopup: { msg: any | null; notify: Array<any> | null } | null;
+  messages: Array<unknown>;
+  notifications: Array<unknown>;
+  activePopup: { msg: any | null; notify: Array<unknown> | null } | null;
   loading: boolean;
 }

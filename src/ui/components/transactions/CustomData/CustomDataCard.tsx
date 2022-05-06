@@ -4,9 +4,10 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
-  assets: any;
+  assets: Record<string, AssetDetail>;
   className?: string;
   collapsed: boolean;
   message: any;

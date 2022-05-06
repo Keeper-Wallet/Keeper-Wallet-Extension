@@ -135,7 +135,7 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     return seedUtils.encryptSeed(jsonObj, this.password);
   }
 
-  private decrypt(): any {
+  private decrypt(): Record<string, unknown> {
     const encryptedText = this.getState().cognitoSessions;
 
     try {
@@ -227,13 +227,14 @@ export class IdentityController implements IdentityApi {
     username: string,
     password: string
   ): Promise<
-    CognitoUser & Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+    CognitoUser &
+      Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
   > {
     this.clearSession();
 
     return new Promise<
       CognitoUser &
-        Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+        Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
     >((resolve, reject) => {
       if (!this.userPool) {
         return reject(new Error('No UserPool'));
@@ -425,7 +426,7 @@ export class IdentityController implements IdentityApi {
   private async refreshSession() {
     const meta = { 'custom:encryptionKey': this.seed.keyPair.publicKey };
 
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<unknown>((resolve, reject) => {
       if (!this.user) {
         return reject(new Error('Not authenticated'));
       }

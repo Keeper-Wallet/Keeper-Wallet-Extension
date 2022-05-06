@@ -3,6 +3,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
 import { TxIcon, TxInfo } from '../BaseTransaction';
+import { AssetDetail } from 'ui/services/Background';
 
 const MessageItem = ({ message, config, assets }) => {
   const Card = config.card;
@@ -16,7 +17,7 @@ const MessageItem = ({ message, config, assets }) => {
 
 interface IProps extends WithTranslation {
   message: any;
-  assets: any;
+  assets: Record<string, AssetDetail>;
   onToggle?: (isOpen: boolean) => void;
 }
 

@@ -36,7 +36,7 @@ const QrCodeImage = ({ options, src, className, ...props }) => {
 
 export class QRCode extends React.PureComponent {
   readonly props;
-  readonly state = {} as any;
+  readonly state = {} as State;
 
   render() {
     const state = this.state;
@@ -113,4 +113,20 @@ export class QRCode extends React.PureComponent {
       ...props,
     };
   }
+}
+
+interface State {
+  errorCorrectionLevel: string;
+  type: string;
+  quality: number;
+  margin: number;
+  scale: number;
+  width: number;
+  height: number;
+  dark: string;
+  light: string;
+  className: string;
+  hasChanged: boolean;
+  text: string;
+  src: string;
 }

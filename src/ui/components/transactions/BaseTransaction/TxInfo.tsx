@@ -4,6 +4,8 @@ import * as styles from '../../pages/styles/transactions.styl';
 import { useTranslation } from 'react-i18next';
 import { DateFormat } from '../../ui';
 import { TxFee } from './TxFee';
+import { AppState } from 'ui/store';
+import { AssetDetail } from 'ui/services/Background';
 
 export interface Balance {
   assets: BalanceAssets;
@@ -24,11 +26,11 @@ export interface BalanceAsset {
 
 interface Props {
   message: any;
-  assets: any;
+  assets: Record<string, AssetDetail>;
   sponsoredBalance?: BalanceAssets;
 }
 
-export const TxInfo = connect((store: any, ownProps?: any) => ({
+export const TxInfo = connect((store: AppState, ownProps?: any) => ({
   message: ownProps?.message || store.activePopup?.msg,
   assets: ownProps?.assets || store.assets,
 }))(function TxInfo({ message, sponsoredBalance }: Props) {

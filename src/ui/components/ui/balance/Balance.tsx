@@ -7,6 +7,7 @@ import { getAsset } from '../../../actions';
 import { AssetDetail } from 'ui/services/Background';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
+import { AppState } from 'ui/store';
 
 const SEPARATOR = '.';
 
@@ -116,6 +117,6 @@ const BalanceComponent = ({
   );
 };
 
-export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(
-  BalanceComponent
-);
+export const Balance = connect(({ assets }: AppState) => ({ assets }), {
+  getAsset,
+})(BalanceComponent);

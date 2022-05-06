@@ -37,7 +37,7 @@ export const Asset = connect(({ assets }: AppState) => ({ assets }), {
 
 interface IProps {
   assetId: string;
-  children?: any;
+  children?: React.ReactNode;
   className?: string;
   assets?: Record<string, AssetDetail>;
   getAsset: (id: string) => void;

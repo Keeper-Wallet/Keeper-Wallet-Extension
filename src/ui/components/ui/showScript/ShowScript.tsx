@@ -113,7 +113,7 @@ const DataNoKey = ({ data, getScriptRef }) => {
 
 interface Props extends WithTranslation {
   noKey?: boolean;
-  data?: Array<any>;
+  data?: Array<unknown>;
   isData?: boolean;
   script?: string;
   optional?: boolean;

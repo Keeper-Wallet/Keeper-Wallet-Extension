@@ -10,9 +10,9 @@ import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 
 type Props = {
-  onConfirm: (...args: any) => void;
+  onConfirm: (...args: unknown[]) => void;
   children: (renderProps: {
-    onPrepare: (...args: any) => void;
+    onPrepare: (...args: unknown[]) => void;
     pending: boolean;
   }) => React.ReactChild;
 };
@@ -28,7 +28,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
   const onReady = React.useCallback(() => onReadyHandler(), [onReadyHandler]);
 
   const onPrepare = React.useCallback(
-    (...args: any) => {
+    (...args: unknown[]) => {
       switch (account.type) {
         case 'wx':
           setPending(true);

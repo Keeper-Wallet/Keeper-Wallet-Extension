@@ -331,7 +331,7 @@ type TAutoAuth = {
   type: 'allowAutoSign';
   totalAmount: string;
   interval: number;
-  approved?: Array<any>;
+  approved?: Array<unknown>;
 };
 
 type TNotification = {

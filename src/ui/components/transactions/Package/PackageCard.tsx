@@ -3,15 +3,17 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { getPackageAmounts, getFees, messageType } from './parseTx';
+import { getFees, getPackageAmounts, messageType } from './parseTx';
 import { Balance } from '../../ui';
+import { AssetDetail } from 'ui/services/Background';
+import { Money } from '@waves/data-entities';
 
 const Fees = ({ fees }) => {
   const moneys = Object.values(fees);
 
   return (
     <div className="margin-main">
-      {moneys.map((fee: any) => {
+      {moneys.map((fee: Money) => {
         return (
           <div key={fee.asset.id}>
             <Balance balance={fee} isShortFormat={true} showAsset={true} />
@@ -23,7 +25,7 @@ const Fees = ({ fees }) => {
 };
 
 interface IProps extends WithTranslation {
-  assets: any;
+  assets: Record<string, AssetDetail>;
   className?: string;
   collapsed: boolean;
   message: any;

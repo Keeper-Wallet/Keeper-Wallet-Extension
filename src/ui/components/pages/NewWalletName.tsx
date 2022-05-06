@@ -87,10 +87,12 @@ export function NewWalletName({ setTab }) {
           <Input
             data-testid="newAccountNameInput"
             className="margin1"
-            onChange={e => setAccountName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setAccountName(e.target.value)
+            }
             value={accountName ?? ''}
-            maxLength="32"
-            disabled={existedAccount}
+            maxLength={32}
+            disabled={!!existedAccount}
             autoFocus
             error={error}
           />

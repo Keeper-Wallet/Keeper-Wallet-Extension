@@ -5,9 +5,15 @@ import { Button } from './Button';
 import { CONFIG } from '../../../appConfig';
 import cn from 'classnames';
 
+interface State {
+  pending?: boolean;
+  timerEnd?: Date;
+  percentage?: number;
+}
+
 export class ApproveBtn extends React.PureComponent {
   readonly props;
-  readonly state = {} as any;
+  readonly state = {} as State;
   updateInterval = () => this._updateInterval(Date.now());
   _timeout;
 

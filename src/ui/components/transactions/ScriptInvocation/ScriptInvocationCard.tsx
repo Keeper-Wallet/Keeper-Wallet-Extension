@@ -6,9 +6,10 @@ import cn from 'classnames';
 import { Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
-  assets: any;
+  assets: Record<string, AssetDetail>;
   className: string;
   collapsed: boolean;
   message: any;

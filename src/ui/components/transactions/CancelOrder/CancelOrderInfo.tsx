@@ -2,10 +2,11 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './cancelOrder.styl';
 import { DateFormat } from '../../ui';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
   message: any;
-  assets: any;
+  assets: Record<string, AssetDetail>;
 }
 
 class CancelOrderInfoComponent extends React.PureComponent<IProps> {

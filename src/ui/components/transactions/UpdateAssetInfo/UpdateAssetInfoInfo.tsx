@@ -4,10 +4,11 @@ import * as styles from './index.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
   message: any;
-  assets: any;
+  assets: Record<string, AssetDetail>;
 }
 
 class UpdateAssetInfoInfoComponent extends React.PureComponent<IProps> {

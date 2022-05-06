@@ -38,6 +38,7 @@ import {
 import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';
+import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -362,7 +363,7 @@ const convertLongToBigNumber = createDeepConverter(
   value => new BigNumber(value.toString())
 );
 
-function convertArg(arg: { type: string; value: any }) {
+function convertArg(arg: InvokeScriptCallArgument) {
   return arg.type === 'integer'
     ? { ...arg, value: new BigNumber(arg.value) }
     : arg.type === 'list'

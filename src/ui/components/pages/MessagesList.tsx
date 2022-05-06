@@ -16,6 +16,7 @@ import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
+import { AssetDetail } from 'ui/services/Background';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return messages.map(message => {
@@ -40,9 +41,9 @@ const Messages = ({ messages, assets, onSelect }: IProps) => {
 
 interface IProps {
   messages: any;
-  assets: any;
-  onSelect: (...args: any) => void;
-  onReject: (...args: any) => void;
+  assets: Record<string, AssetDetail>;
+  onSelect: (...args: unknown[]) => void;
+  onReject: (...args: unknown[]) => void;
 }
 
 const Notifications = ({ notifications, onShow, onDelete }) => {

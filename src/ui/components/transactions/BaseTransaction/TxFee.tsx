@@ -10,6 +10,8 @@ import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getFee } from './parseTx';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { omit } from 'ramda';
+import { AppState } from 'ui/store';
+import { AssetDetail } from 'ui/services/Background';
 
 const WAVES_MIN_FEE = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
 
@@ -17,7 +19,7 @@ interface Props {
   isEditable: boolean;
   fee: Money;
   initialFee: Money;
-  assets: any;
+  assets: Record<string, AssetDetail>;
   sponsoredBalance: BalanceAssets;
   updateTransactionFee?: (
     id: string,
@@ -34,7 +36,7 @@ type FeeOption = {
 };
 
 export const TxFee = connect(
-  (store: any, ownProps?: any) => {
+  (store: AppState, ownProps?: any) => {
     const message = ownProps?.message || store.activePopup?.msg;
     const assets = ownProps?.assets || store.assets;
 
@@ -82,7 +84,10 @@ export const TxFee = connect(
   message,
 }: Props) {
   function getOption(assetId: string): FeeOption {
-    const tokens = convertFee(initialFee, assets[assetId]).getTokens();
+    const tokens = convertFee(
+      initialFee,
+      new Asset(assets[assetId])
+    ).getTokens();
     return {
       id: assetId,
       value: tokens.toFixed(),

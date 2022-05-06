@@ -65,7 +65,7 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
 
 interface IProps extends React.ComponentProps<'div'> {
   scrollElement: HTMLElement;
-  titleElement: string | React.ReactElement<any>;
+  titleElement: string | React.ReactElement;
   onOpen?: () => void;
   onClose?: () => void;
 }

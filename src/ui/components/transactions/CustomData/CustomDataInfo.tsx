@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './customData.styl';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
   message: any;
-  assets: any;
+  assets: Record<string, AssetDetail>;
 }
 
 class CustomDataInfoComponent extends React.PureComponent<IProps> {

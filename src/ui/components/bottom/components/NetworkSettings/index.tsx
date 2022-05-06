@@ -184,8 +184,8 @@ interface INetworkSettings extends WithTranslation {
   networkCode: string;
   node: string;
   matcher: string;
-  onSave: (netConfig: INetworkData) => any;
-  onClose: () => any;
+  onSave: (netConfig: INetworkData) => void;
+  onClose: () => void;
 }
 
 interface INetworkData {

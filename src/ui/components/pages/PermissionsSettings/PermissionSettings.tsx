@@ -35,7 +35,7 @@ class PermissionsSettingsComponent extends React.PureComponent {
       ([name]) => name === origin
     );
     const autoSign =
-      ((permissions as any) || []).find(
+      ((permissions as unknown[]) || []).find(
         ({ type }) => type === 'allowAutoSign'
       ) || Object.create(null);
     const amount = new BigNumber(autoSign.totalAmount).div(10 ** 8);

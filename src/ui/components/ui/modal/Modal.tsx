@@ -57,7 +57,7 @@ export class Modal extends React.PureComponent {
 
 interface IProps {
   showModal?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   animation?: string;
   onClose?: () => void;
   onExited?: () => void;

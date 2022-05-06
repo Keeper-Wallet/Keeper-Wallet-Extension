@@ -7,6 +7,7 @@ import { Attachment, Balance, Ellipsis, PlateCollapsable } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
+import { AssetDetail } from 'ui/services/Background';
 
 const MIN_COUNT = 0;
 const ADDRESS_LENGTH = 35;
@@ -47,7 +48,7 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
 };
 
 interface IProps extends WithTranslation {
-  assets: any;
+  assets: Record<string, AssetDetail>;
   className: string;
   collapsed: boolean;
   message: any;

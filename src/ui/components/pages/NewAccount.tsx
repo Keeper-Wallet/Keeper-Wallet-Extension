@@ -5,10 +5,11 @@ import * as React from 'react';
 import { Button, Error, Input } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
+import { AppState } from 'ui/store';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store: AppState) {
   return {
     account: store.localState.newAccount,
   };

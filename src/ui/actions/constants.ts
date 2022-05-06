@@ -113,4 +113,4 @@ export const ACTION = {
   },
 } as const;
 
-export const createAction = type => (payload?: any) => ({ type, payload });
+export const createAction = type => (payload?: unknown) => ({ type, payload });

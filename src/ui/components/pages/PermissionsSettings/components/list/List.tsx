@@ -97,7 +97,7 @@ interface IAutoAuth {
   type: 'allowAutoSign';
   totalAmount: number;
   interval: number;
-  approved: Array<any>;
+  approved: Array<unknown>;
 }
 
 export const List = withTranslation()(ListComponent);

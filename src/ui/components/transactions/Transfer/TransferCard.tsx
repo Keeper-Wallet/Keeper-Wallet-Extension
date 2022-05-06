@@ -7,9 +7,10 @@ import { Attachment, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
-  assets: any;
+  assets: Record<string, AssetDetail>;
   className: string;
   collapsed: boolean;
   message: any;

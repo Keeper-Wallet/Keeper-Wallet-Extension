@@ -188,7 +188,7 @@ type TAutoAuth = {
   type: 'allowAutoSign';
   totalAmount: number;
   interval: number;
-  approved?: Array<any>;
+  approved?: Array<unknown>;
   showNotify?: boolean;
 };
 
