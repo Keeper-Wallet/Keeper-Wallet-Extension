@@ -818,25 +818,21 @@ class BackgroundService extends EventEmitter {
     const newNotification = data => {
       const { selectedAccount } = this.getState();
       const myData = { ...data };
-      try {
-        const result = this.notificationsController.newNotification({
-          address: selectedAccount.address,
-          message: myData.message,
-          origin: origin,
-          status: MSG_STATUSES.NEW_NOTIFICATION,
-          timestamp: Date.now(),
-          title: myData.title,
-          type: 'simple',
-        }).id;
+      const result = this.notificationsController.newNotification({
+        address: selectedAccount.address,
+        message: myData.message,
+        origin: origin,
+        status: MSG_STATUSES.NEW_NOTIFICATION,
+        timestamp: Date.now(),
+        title: myData.title,
+        type: 'simple',
+      }).id;
 
-        if (result) {
-          this.emit('Show notification');
-        }
-
-        return result;
-      } catch (e) {
-        throw e;
+      if (result) {
+        this.emit('Show notification');
       }
+
+      return result;
     };
 
     return {
