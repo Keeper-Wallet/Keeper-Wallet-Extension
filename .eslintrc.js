@@ -27,7 +27,6 @@ module.exports = {
   ],
 
   rules: {
-    'no-useless-escape': 'off',
     'no-prototype-builtins': 'off',
     'prefer-const': [
       'error',
@@ -35,6 +34,7 @@ module.exports = {
         destructuring: 'all',
       },
     ],
+    '@typescript-eslint/no-this-alias': 'warn',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
   },
