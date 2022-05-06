@@ -2,7 +2,7 @@ import * as React from 'react';
 import cn from 'classnames';
 import * as styles from './index.styl';
 
-export class Tabs extends React.PureComponent<IProps, IState> {
+export class Tabs extends React.PureComponent<IProps> {
   selectHandler = name => () => {
     if (this.props.currentTab !== name) {
       this.props.onSelectTab(name);
@@ -36,5 +36,3 @@ interface IProps extends React.ComponentProps<'div'> {
   className?: string;
   onSelectTab: (tab: string) => void;
 }
-
-interface IState {}
