@@ -28,6 +28,7 @@ module.exports = {
 
   rules: {
     'no-useless-escape': 'off',
+    'no-prototype-builtins': 'off',
     'prefer-const': [
       'error',
       {
