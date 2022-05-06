@@ -20,7 +20,6 @@ module.exports = {
     'prefer-const': ["error", {
       "destructuring": "all",
     }],
-    'no-case-declarations': 'off',
     'no-extra-boolean-cast': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/ban-types': 'off',
