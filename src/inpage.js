@@ -207,7 +207,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
         successPath: apiData.s || '/',
       });
       break;
-    case 'send':
+    case 'send': {
       const assetId = hash.split('?')[0].replace('#send/', '');
 
       if (!assetId || !apiData.amount) {
@@ -231,6 +231,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
         },
       });
       break;
+    }
   }
 
   return true;

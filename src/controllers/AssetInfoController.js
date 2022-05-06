@@ -262,7 +262,7 @@ export class AssetInfoController {
     if (!asset || this.isMaxAgeExceeded(asset.lastUpdated)) {
       const resp = await fetch(url);
       switch (resp.status) {
-        case 200:
+        case 200: {
           const assetInfo = await resp
             .text()
             .then(text =>
@@ -294,11 +294,13 @@ export class AssetInfoController {
           assets[network][assetId] = { ...assets[network][assetId], ...mapped };
           this.store.updateState({ assets });
           break;
-        case 400:
+        }
+        case 400: {
           const error = await resp.json();
           throw new Error(
             `Could not find info for asset with id: ${assetId}. ${error.message}`
           );
+        }
         default:
           throw new Error(await resp.text());
       }
@@ -348,7 +350,7 @@ export class AssetInfoController {
     );
 
     switch (resp.status) {
-      case 200:
+      case 200: {
         const assetInfos = await resp.json();
         const lastUpdated = new Date().getTime();
 
@@ -383,6 +385,7 @@ export class AssetInfoController {
         };
         this.store.updateState({ assets });
         break;
+      }
       default:
         throw new Error(await resp.text());
     }

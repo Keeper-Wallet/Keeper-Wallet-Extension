@@ -18,11 +18,12 @@ export class TxInfoController {
               text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
             )
           );
-      case 400:
+      case 400: {
         const error = await resp.json();
         throw new Error(
           `Could not find info for tx with id: ${txId}. ${error.message}`
         );
+      }
       default:
         throw new Error(await resp.text());
     }
