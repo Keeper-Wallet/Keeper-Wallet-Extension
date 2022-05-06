@@ -74,7 +74,9 @@ class NetworksSettingsComponent extends React.PureComponent {
       this.saveMatcher();
       this.saveCode();
       this.onSave();
-    } catch (e) {}
+    } catch (e) {
+      // ignore
+    }
     this.setState({ validateData: false });
   };
 

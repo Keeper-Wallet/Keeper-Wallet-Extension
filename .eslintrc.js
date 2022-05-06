@@ -34,7 +34,6 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
-    'no-empty': 'off',
     'no-useless-escape': 'off',
     'no-unsafe-finally': 'off',
     'no-inner-declarations': 'off',
