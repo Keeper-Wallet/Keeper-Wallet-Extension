@@ -48,7 +48,7 @@ const Data = ({ data, getScriptRef }) => {
                   title={String(item.value)}
                   className={styles.dataItemDataLast}
                 >
-                  {!!item.value ? item.value : 'Key Deletion'}
+                  {item.value ? item.value : 'Key Deletion'}
                 </td>
               </tr>
             </tbody>
@@ -82,7 +82,7 @@ const DataNoKey = ({ data, getScriptRef }) => {
             <tbody key={index}>
               <tr className={cn(styles.dataRow)}>
                 <td className={styles.dataItemData}>{item.type}</td>
-                {!!length ? (
+                {length ? (
                   <td title={itemValueJson} className={styles.dataItemDataLast}>
                     [
                     {itemValue.map((item, index) =>

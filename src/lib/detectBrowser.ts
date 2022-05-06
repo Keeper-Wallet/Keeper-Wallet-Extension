@@ -214,7 +214,7 @@ export function detect(
   | NodeInfo
   | ReactNativeInfo
   | null {
-  if (!!userAgent) {
+  if (userAgent) {
     return parseUserAgent(userAgent);
   }
 
