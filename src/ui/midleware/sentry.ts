@@ -5,6 +5,14 @@ import { AppState } from 'ui/store';
 
 export const sentryBreadcrumbs: Middleware<{}, AppState> =
   store => next => action => {
+    Sentry.addBreadcrumb({
+      type: 'info',
+      category: 'redux.action',
+      data: {
+        'action.type': action.type,
+      },
+    });
+
     switch (action.type) {
       case ACTION.CHANGE_TAB: {
         const fromTab = store.getState().tab;
