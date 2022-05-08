@@ -38,7 +38,6 @@ interface UpdateStateInput {
 
 export function createUpdateState(store: UiStore) {
   return (state: UpdateStateInput) => {
-    const actions = [];
     const {
       assets = {},
       accounts = [],
@@ -62,70 +61,70 @@ export function createUpdateState(store: UiStore) {
     const currentState = store.getState();
 
     if (state.networks && state.networks.length) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_NETWORKS,
         payload: state.networks,
       });
     }
 
     if (!equals(currentState.config, config)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.REMOTE_CONFIG.SET_CONFIG,
         payload: config,
       });
     }
 
     if (!equals(currentState.idleOptions, idleOptions)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
         payload: idleOptions,
       });
     }
 
     if (!equals(currentState.customNodes, customNodes)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_NODES,
         payload: customNodes,
       });
     }
 
     if (!equals(currentState.customCodes, customCodes)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_CODES,
         payload: customCodes,
       });
     }
 
     if (!equals(currentState.customMatcher, customMatchers)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_MATCHER,
         payload: customMatchers,
       });
     }
 
     if (currentLocale && currentLocale !== currentState.currentLocale) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_FROM_LNG,
         payload: currentLocale,
       });
     }
 
     if (!equals(uiState, currentState.uiState)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_UI_STATE,
         payload: uiState,
       });
     }
 
     if (currentNetwork !== currentState.currentNetwork) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
       });
     }
 
     if (!equals(origins, currentState.origins)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_ORIGINS,
         payload: origins,
       });
@@ -151,7 +150,7 @@ export function createUpdateState(store: UiStore) {
     };
 
     if (!equals(unapprovedMessages, currentState.messages)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_MESSAGES,
         payload: { unapprovedMessages, messages },
       });
@@ -160,7 +159,7 @@ export function createUpdateState(store: UiStore) {
     }
 
     if (!equals(currentState.notifications, myNotifications)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.NOTIFICATIONS.SET,
         payload: myNotifications,
       });
@@ -172,28 +171,28 @@ export function createUpdateState(store: UiStore) {
       toUpdateActiveNotify.messages !== currentState.messages ||
       toUpdateActiveNotify.notifications !== currentState.notifications
     ) {
-      actions.push({
+      store.dispatch({
         type: ACTION.MESSAGES.SET_ACTIVE_AUTO,
         payload: toUpdateActiveNotify,
       });
     }
 
     if (!equals(selectedAccount, currentState.selectedAccount)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
         payload: selectedAccount,
       });
     }
 
     if (!equals(currentNetworkAccounts, currentState.accounts)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_ACCOUNTS,
         payload: currentNetworkAccounts,
       });
     }
 
     if (!equals(accounts, currentState.allNetworksAccounts)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
         payload: accounts,
       });
@@ -204,26 +203,24 @@ export function createUpdateState(store: UiStore) {
       initialized !== currentState.state.initialized ||
       locked !== currentState.state.locked
     ) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_APP_STATE,
         payload: { initialized, locked },
       });
     }
 
     if (!equals(balances, currentState.balances)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.UPDATE_BALANCES,
         payload: balances,
       });
     }
 
     if (!equals(assets[currentNetwork], currentState.assets)) {
-      actions.push({
+      store.dispatch({
         type: ACTION.SET_ASSETS,
         payload: assets[currentNetwork],
       });
     }
-
-    actions.forEach(action => store.dispatch(action));
   };
 }
