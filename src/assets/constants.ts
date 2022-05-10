@@ -91,6 +91,7 @@ export const assetIds: {
 export enum SwapVendor {
   Keeper = 'keeper',
   Puzzle = 'puzzle',
+  Swopfi = 'swopfi',
 }
 
 export const swappableAssetTickersByVendor: Record<SwapVendor, Set<string>> = {
@@ -168,6 +169,39 @@ export const swappableAssetTickersByVendor: Record<SwapVendor, Set<string>> = {
     'WCT',
     'WEST',
     'WX',
+  ]),
+  [SwapVendor.Swopfi]: new Set([
+    'WAVES',
+    'BAG',
+    'BTC',
+    'CRV',
+    'EAST',
+    'EGG',
+    'ENNO',
+    'ERG',
+    'ETH',
+    'EURN',
+    'FL',
+    'LTC',
+    'MUNA',
+    'NSBT',
+    'PUZZLE',
+    'RACE',
+    'SCONEX',
+    'SIGN',
+    'SWOP',
+    'TN',
+    'USDAP',
+    'USDC',
+    'USDCLP',
+    'USDTLP',
+    'USDN',
+    'USDT',
+    'VIRES',
+    'WCT',
+    'WEST',
+    'WX',
+    'XMR',
   ]),
 };
 
