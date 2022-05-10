@@ -361,34 +361,32 @@ export function SwapForm({
       ? new BigNumber(0)
       : new BigNumber(vendorExchangeInfo.priceImpact);
 
-  const profitVendor = Object.keys(exchangeInfo).reduce<string>(
-    (currVendor, nextVendor) => {
-      const currAmount =
-        exchangeInfo[currVendor]?.type === 'data'
-          ? exchangeInfo[currVendor].toAmountTokens
-          : new BigNumber(0);
-      const nextAmount =
-        exchangeInfo[nextVendor]?.type === 'data'
-          ? exchangeInfo[nextVendor].toAmountTokens
-          : new BigNumber(0);
-      return nextAmount.gt(currAmount) ? nextVendor : currVendor;
-    },
-    null
-  );
+  const [nonProfitVendor, profitVendor] = (
+    Object.keys(exchangeInfo) as SwapVendor[]
+  ).reduce<[SwapVendor, SwapVendor]>(
+    ([nonProfit, profit], next) => {
+      const nonProfitInfo = exchangeInfo[nonProfit];
+      const minAmount =
+        nonProfitInfo?.type === 'data'
+          ? nonProfitInfo.toAmountTokens
+          : BigNumber.MAX_VALUE;
 
-  const nonProfitVendor = Object.keys(exchangeInfo).reduce<string>(
-    (currVendor, nextVendor) => {
-      const currAmount =
-        exchangeInfo[currVendor]?.type === 'data'
-          ? exchangeInfo[currVendor].toAmountTokens
-          : BigNumber.MAX_VALUE;
+      const profitInfo = exchangeInfo[profit];
+      const maxAmount =
+        profitInfo?.type === 'data'
+          ? profitInfo.toAmountTokens
+          : new BigNumber(0);
+
+      const nextInfo = exchangeInfo[next];
       const nextAmount =
-        exchangeInfo[nextVendor]?.type === 'data'
-          ? exchangeInfo[nextVendor].toAmountTokens
-          : BigNumber.MAX_VALUE;
-      return nextAmount.lt(currAmount) ? nextVendor : currVendor;
+        nextInfo?.type === 'data' ? nextInfo.toAmountTokens : null;
+
+      return [
+        (nextAmount || BigNumber.MAX_VALUE).lt(minAmount) ? next : nonProfit,
+        (nextAmount || new BigNumber(0)).gt(maxAmount) ? next : profit,
+      ];
     },
-    null
+    [null, null]
   );
 
   const fromSwappableAssets = React.useMemo(() => {
