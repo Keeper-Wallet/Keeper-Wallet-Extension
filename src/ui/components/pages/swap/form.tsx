@@ -361,26 +361,35 @@ export function SwapForm({
       ? new BigNumber(0)
       : new BigNumber(vendorExchangeInfo.priceImpact);
 
-  const sortedExchangeInfoEntries = (
-    Object.entries(exchangeInfo) as Array<[SwapVendor, ExchangeInfoVendorState]>
-  ).sort(([_aVendor, aInfo], [_bVendor, bInfo]) => {
-    if (aInfo.type !== 'data' && bInfo.type !== 'data') {
-      return 0;
-    }
+  const profitVendor = Object.keys(exchangeInfo).reduce<string>(
+    (currVendor, nextVendor) => {
+      const currAmount =
+        exchangeInfo[currVendor]?.type === 'data'
+          ? exchangeInfo[currVendor].toAmountTokens
+          : new BigNumber(0);
+      const nextAmount =
+        exchangeInfo[nextVendor]?.type === 'data'
+          ? exchangeInfo[nextVendor].toAmountTokens
+          : new BigNumber(0);
+      return nextAmount.gt(currAmount) ? nextVendor : currVendor;
+    },
+    null
+  );
 
-    if (aInfo.type !== 'data') {
-      return -1;
-    }
-
-    if (bInfo.type !== 'data') {
-      return 1;
-    }
-
-    const aAmount = aInfo.toAmountTokens;
-    const bAmount = bInfo.toAmountTokens;
-
-    return aAmount.gt(bAmount) ? -1 : bAmount.gt(aAmount) ? 1 : 0;
-  });
+  const nonProfitVendor = Object.keys(exchangeInfo).reduce<string>(
+    (currVendor, nextVendor) => {
+      const currAmount =
+        exchangeInfo[currVendor]?.type === 'data'
+          ? exchangeInfo[currVendor].toAmountTokens
+          : BigNumber.MAX_VALUE;
+      const nextAmount =
+        exchangeInfo[nextVendor]?.type === 'data'
+          ? exchangeInfo[nextVendor].toAmountTokens
+          : BigNumber.MAX_VALUE;
+      return nextAmount.lt(currAmount) ? nextVendor : currVendor;
+    },
+    null
+  );
 
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
@@ -581,14 +590,7 @@ export function SwapForm({
                   }
                 );
 
-                const sortedIndex = sortedExchangeInfoEntries.findIndex(
-                  ([entryVendor]) => entryVendor === vendor
-                );
-
-                const nextInfo =
-                  sortedIndex < sortedExchangeInfoEntries.length - 1
-                    ? sortedExchangeInfoEntries[sortedIndex + 1][1]
-                    : null;
+                const nextInfo = exchangeInfo[nonProfitVendor];
 
                 const profitTokens =
                   info.type === 'data' &&
@@ -642,27 +644,29 @@ export function SwapForm({
                       </div>
                     )}
 
-                    {profitTokens != null && !profitTokens.eq(0) && (
-                      <div className={styles.toAmountCardBadge}>
-                        <Trans i18nKey="swap.profitLabel" />: +
-                        {profitTokens.toFixed(
-                          toAsset.precision,
-                          BigNumber.ROUND_MODE.ROUND_FLOOR
-                        )}{' '}
-                        {toAsset.displayName}
-                        {toAssetDetail.usdPrice &&
-                          toAssetDetail.usdPrice !== '1' && (
-                            <>
-                              {' '}
-                              (≈ $
-                              {new BigNumber(toAssetDetail.usdPrice)
-                                .mul(profitTokens)
-                                .toFixed(2)}
-                              )
-                            </>
-                          )}
-                      </div>
-                    )}
+                    {vendor === profitVendor &&
+                      profitTokens != null &&
+                      !profitTokens.eq(0) && (
+                        <div className={styles.toAmountCardBadge}>
+                          <Trans i18nKey="swap.profitLabel" />: +
+                          {profitTokens.toFixed(
+                            toAsset.precision,
+                            BigNumber.ROUND_MODE.ROUND_FLOOR
+                          )}{' '}
+                          {toAsset.displayName}
+                          {toAssetDetail.usdPrice &&
+                            toAssetDetail.usdPrice !== '1' && (
+                              <>
+                                {' '}
+                                (≈ $
+                                {new BigNumber(toAssetDetail.usdPrice)
+                                  .mul(profitTokens)
+                                  .toFixed(2)}
+                                )
+                              </>
+                            )}
+                        </div>
+                      )}
                   </button>
                 );
               })}
