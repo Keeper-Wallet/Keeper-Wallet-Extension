@@ -261,6 +261,7 @@ export function SwapForm({
 
   React.useEffect(() => {
     setExchangeInfo(exchangeInfoInitialState);
+    setTouched(false);
     watchExchange();
   }, [watchExchange]);
 
@@ -310,6 +311,7 @@ export function SwapForm({
     if (newValue !== fromAmountValue) {
       setFromAmountValue(newValue);
       setExchangeInfo(exchangeInfoInitialState);
+      setTouched(false);
       scheduleWatchExchangeUpdate();
     }
   }
@@ -317,6 +319,7 @@ export function SwapForm({
   function setSlippageToleranceIndex(index: number) {
     dispatch(setUiState({ slippageToleranceIndex: index }));
     setExchangeInfo(exchangeInfoInitialState);
+    setTouched(false);
     scheduleWatchExchangeUpdate();
   }
 
@@ -338,6 +341,7 @@ export function SwapForm({
   const [selectedExchangeVendor, setSelectedExchangeVendor] = React.useState(
     SwapVendor.Keeper
   );
+  const [touched, setTouched] = React.useState(false);
 
   const vendorExchangeInfo = exchangeInfo[selectedExchangeVendor];
 
@@ -388,6 +392,12 @@ export function SwapForm({
     },
     [null, null]
   );
+
+  React.useEffect(() => {
+    if (!touched) {
+      setSelectedExchangeVendor(profitVendor || SwapVendor.Keeper);
+    }
+  }, [touched, nonProfitVendor, profitVendor]);
 
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
@@ -609,6 +619,7 @@ export function SwapForm({
                     })}
                     type="button"
                     onClick={() => {
+                      setTouched(true);
                       setSelectedExchangeVendor(vendor);
                     }}
                   >
