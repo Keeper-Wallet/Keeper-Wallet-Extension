@@ -124,7 +124,7 @@
 }
 
 .toAmountCardError {
-  color: var(--color-error400);
+  color: var(--color-basic500);
 }
 
 .toAmountCardBadge {
