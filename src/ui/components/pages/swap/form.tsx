@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
-import { SwapVendor, swappableAssetTickersByVendor } from 'assets/constants';
+import { swappableAssetTickersByVendor, SwapVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 import { setUiState } from 'ui/actions/uiState';
@@ -77,6 +77,7 @@ type ExchangeInfoState = {
 const exchangeInfoInitialState: ExchangeInfoState = {
   [SwapVendor.Keeper]: { type: 'loading' },
   [SwapVendor.Puzzle]: { type: 'loading' },
+  [SwapVendor.Swopfi]: { type: 'loading' },
 };
 
 export function SwapForm({
