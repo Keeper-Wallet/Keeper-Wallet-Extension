@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const ObservableStore = require('obs-store');
 
 /**

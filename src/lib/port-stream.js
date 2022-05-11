@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const Duplex = require('readable-stream').Duplex;
 const inherits = require('util').inherits;
 const noop = function () {

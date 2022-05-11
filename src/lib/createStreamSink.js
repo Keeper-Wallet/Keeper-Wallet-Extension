@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const WritableStream = require('readable-stream').Writable;
 
 export function createStreamSink(asyncWriteFn, _opts) {

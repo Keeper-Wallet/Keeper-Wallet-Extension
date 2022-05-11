@@ -19,6 +19,7 @@ describe('Others', function () {
   });
 
   it('The current version of the extension is displayed', async function () {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { version } = require('../package');
 
     expect(

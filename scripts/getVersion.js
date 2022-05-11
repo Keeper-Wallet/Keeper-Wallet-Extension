@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const package = require('../package');
 
 module.exports = () => {

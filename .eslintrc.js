@@ -33,6 +33,5 @@ module.exports = {
         destructuring: 'all',
       },
     ],
-    // '@typescript-eslint/no-var-requires': 'off',
   },
 };
