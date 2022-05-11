@@ -17,7 +17,7 @@
     "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",
-    "typecheck": "tsc --noEmit",
+    "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha",
     "dist": "NODE_ENV=production webpack"
