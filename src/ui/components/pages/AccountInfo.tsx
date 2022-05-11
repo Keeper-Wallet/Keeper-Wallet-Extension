@@ -8,6 +8,7 @@ import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
+import { BigNumber } from '@waves/bignumber';
 
 interface Props {
   selectedAccount: Account;
@@ -20,9 +21,20 @@ interface Props {
   setTab: (tab: string) => void;
 }
 
-class AccountInfoComponent extends React.Component<Props> {
+interface State {
+  balance: Money | string | BigNumber;
+  leaseBalance?: Money;
+  balances: unknown;
+  changeNameNotify?: boolean;
+  password: string;
+  passwordError?: boolean;
+  showPassword?: boolean;
+  showCopied?: boolean;
+}
+
+class AccountInfoComponent extends React.Component<Props, State> {
   readonly props;
-  readonly state = {} as any;
+  readonly state = {} as State;
   copiedTimer;
   deffer;
 
@@ -412,7 +424,7 @@ class AccountInfoComponent extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store) {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address
