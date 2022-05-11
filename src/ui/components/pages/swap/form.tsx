@@ -280,7 +280,7 @@ export function SwapForm({
         }));
       }
     );
-  }, [channelClient, fromAsset, toAsset, latestFromAmountValueRef]);
+  }, [channelClient, fromAsset, toAsset, latestFromAmountValueRef, t]);
 
   React.useEffect(() => {
     setExchangeInfo(exchangeInfoInitialState);

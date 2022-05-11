@@ -49,7 +49,7 @@ export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
         })
       );
     }
-  }, [accountName, accounts]);
+  }, [accountName, accounts, existedAccount, dispatch, t]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>

@@ -124,7 +124,7 @@ export function ImportLedger({ setTab }: Props) {
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [userIdInputValue]);
+  }, [userIdInputValue, t]);
 
   const networkCode =
     customCodes[currentNetwork] ||
@@ -160,7 +160,7 @@ export function ImportLedger({ setTab }: Props) {
 
       setIsConnecting(false);
     }
-  }, [ledgerUsersPages, networkCode]);
+  }, [ledgerUsersPages, networkCode, t]);
 
   React.useEffect(() => {
     if (isReady) {

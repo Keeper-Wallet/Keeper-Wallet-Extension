@@ -35,7 +35,7 @@ export function Swap({ setTab }: Props) {
 
   React.useEffect(() => {
     dispatch(resetSwapScreenInitialState());
-  }, []);
+  }, [dispatch]);
 
   const usdnAssetId = getAssetIdByTicker(currentNetwork, 'USDN');
 
@@ -97,7 +97,7 @@ export function Swap({ setTab }: Props) {
     if (assetsToUpdate.length !== 0) {
       dispatch(updateAssets(assetsToUpdate));
     }
-  }, [swappableAssetEntries]);
+  }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]

@@ -17,6 +17,7 @@ function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
   const manageFilters = fields.reduce<{
     [K in keyof T]?: [Pick<T, K>[K], Dispatch<SetStateAction<Pick<T, K>[K]>>];
   }>((manage, field) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     manage[field] = React.useState<Pick<T, F>[F]>(stateFilters[field]);
     return manage;
   }, {});
@@ -41,6 +42,7 @@ function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
     }
 
     dispatch(setUiState({ [name]: valueFilters }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueFilters, stateFilters, dispatch, setUiState]);
 
   return {

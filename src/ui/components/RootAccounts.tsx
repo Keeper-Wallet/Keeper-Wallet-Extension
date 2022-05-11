@@ -55,7 +55,7 @@ export function RootAccounts() {
 
   React.useEffect(() => {
     setTimeout(() => dispatch(loading(false)), 200);
-  }, []);
+  }, [dispatch]);
 
   const pageConf = PAGES_CONF[currentTab];
   const Component = pageConf.component;
@@ -67,14 +67,14 @@ export function RootAccounts() {
       dispatch(addBackTab(currentTab));
       dispatch(setTab(tab));
     },
-    [currentTab]
+    [currentTab, dispatch]
   );
 
   const onBack = React.useCallback(() => {
     const tab = backTabFromConf || backTabs[backTabs.length - 1] || PAGES.ROOT;
     dispatch(removeBackTab());
     dispatch(setTab(tab));
-  }, [backTabFromConf, backTabs]);
+  }, [backTabFromConf, backTabs, dispatch]);
 
   const onDelete = React.useCallback(() => {
     setTab(PAGES.DELETE_ACTIVE_ACCOUNT);

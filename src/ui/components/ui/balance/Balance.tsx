@@ -51,6 +51,7 @@ const BalanceComponent = ({
     if (!assets[assetId]) {
       getAsset(assetId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   switch (true) {

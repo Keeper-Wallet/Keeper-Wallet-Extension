@@ -34,6 +34,7 @@ export function SignWrapper({ onConfirm, children }: Props) {
           setPending(true);
 
           if (typeof onReadyHandler !== 'function') {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             onReadyHandler = () =>
               background.identityUpdate().then(() => {
                 onConfirm(...args);
