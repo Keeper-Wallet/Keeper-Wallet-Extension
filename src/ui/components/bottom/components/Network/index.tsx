@@ -20,8 +20,19 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 
 const key = key => `bottom.${key}`;
 
-const Networks = ({ isShow, onSelect, selectedNet, networks }) => {
+const Networks = ({
+  isShow,
+  onSelect,
+  selectedNet,
+  networks,
+}: {
+  isShow: boolean;
+  selectedNet: string;
+  networks: Array<{ name: string }>;
+  onSelect: (...args: unknown[]) => unknown;
+}) => {
   const { t } = useTranslation();
+
   const classNames = cn(styles.selectNetworks, { [styles.isShow]: isShow });
   const nets = networks.reduce(
     (acc, item) => ((acc[item.name] = item), acc),

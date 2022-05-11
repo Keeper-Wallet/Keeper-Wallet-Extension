@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthInfo } from './WavesAuthInfo';
-import { TxFooter, TxHeader } from '../BaseTransaction';
+import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
 
-export function WavesAuth(props) {
+export function WavesAuth(props: ComponentProps) {
   const { message, assets } = props;
 
   return (

@@ -5,7 +5,13 @@ import cn from 'classnames';
 import * as styles from './featureUpdateInfo.styl';
 import background from '../../../ui/services/Background';
 
-export function FeatureUpdateInfo({ onClose, onSubmit }) {
+export function FeatureUpdateInfo({
+  onClose,
+  onSubmit,
+}: {
+  onClose: (...args: unknown[]) => unknown;
+  onSubmit: (...args: unknown[]) => unknown;
+}) {
   const { t } = useTranslation();
 
   function preventDefault(func: () => void) {

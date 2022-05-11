@@ -1,7 +1,7 @@
 import * as styles from './permissionsSettings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import {
   allowOrigin,
   deleteOrigin,
@@ -14,7 +14,21 @@ import { Loader, Modal } from 'ui/components/ui';
 import { List, OriginSettings, Tabs } from './components';
 import { BigNumber } from '@waves/bignumber';
 
-class PermissionsSettingsComponent extends React.PureComponent {
+interface Props extends WithTranslation {
+  origins?: { [key: string]: Array<string | IAutoAuth> };
+  pending?: boolean;
+  allowed?: boolean;
+  disallowed?: boolean;
+  deleted?: boolean;
+
+  deleteOrigin?: (origin: string) => void;
+  allowOrigin?: (origin: string) => void;
+  disableOrigin?: (origin: string) => void;
+  setAutoOrigin?: (permissions: unknown) => void;
+  setShowNotification?: (permissions: unknown) => void;
+}
+
+class PermissionsSettingsComponent extends React.PureComponent<Props> {
   readonly state = {
     showSettings: false,
     originsList: 'customList',
@@ -156,3 +170,10 @@ export const PermissionsSettings = connect(
   mapStateToProps,
   actions
 )(withTranslation()(PermissionsSettingsComponent));
+
+export interface IAutoAuth {
+  type: 'allowAutoSign';
+  totalAmount: number;
+  interval: number;
+  approved: Array<unknown>;
+}

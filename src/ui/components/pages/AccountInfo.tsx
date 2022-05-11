@@ -3,13 +3,24 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
-import background from '../../services/Background';
+import background, { AssetDetail } from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
 
-class AccountInfoComponent extends React.Component {
+interface Props {
+  selectedAccount: Account;
+  assets: Record<string, AssetDetail>;
+  balances: unknown;
+  notifications: unknown[];
+  network: string;
+
+  getAsset: (assetId: string) => void;
+  setTab: (tab: string) => void;
+}
+
+class AccountInfoComponent extends React.Component<Props> {
   readonly props;
   readonly state = {} as any;
   copiedTimer;

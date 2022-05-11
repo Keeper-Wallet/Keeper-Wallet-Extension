@@ -1,26 +1,18 @@
 import * as styles from './customData.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { ShowScript } from '../../ui';
-import { AssetDetail } from 'ui/services/Background';
+import { EntryNoKey, EntryWithKey, ShowScript } from '../../ui';
 
-interface IProps extends WithTranslation {
-  assets: Record<string, AssetDetail>;
-  className?: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class CustomDataCardComponent extends React.PureComponent<IProps> {
+class CustomDataCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.dataTransactionCard, this.props.className, {
       [styles.dataCard_collapsed]: this.props.collapsed,
     });
 
     const { t, message } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const { data: dataToShow, binary } = data;
     return (
       <div className={className}>
@@ -39,7 +31,11 @@ class CustomDataCardComponent extends React.PureComponent<IProps> {
         <div className={`${styles.cardContent} marginTop1`}>
           <ShowScript
             className={styles.dataScript}
-            data={dataToShow || []}
+            data={
+              (dataToShow as unknown as
+                | Array<EntryWithKey>
+                | Array<EntryNoKey>) || []
+            }
             script={binary || ''}
             isData={!!dataToShow}
             optional={true}

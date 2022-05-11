@@ -18,8 +18,30 @@ import { Intro } from './Intro';
 import { FinalTransaction, getConfigByTransaction } from '../transactions';
 import { BalanceAssets } from '../transactions/BaseTransaction';
 import { DEFAULT_FEE_CONFIG } from '../../../constants';
+import { Account } from 'accounts/types';
+import { AssetDetail } from 'ui/services/Background';
 
-class MessagesComponent extends React.Component {
+interface Props {
+  autoClickProtection?: boolean;
+  balance: unknown;
+  selectedAccount: Account;
+  assets: Record<string, AssetDetail>;
+  activeMessage: unknown;
+  messages: unknown[];
+  notifications: unknown[];
+  transactionStatus: string;
+  getAsset: (assetId: string) => void;
+  setTab: (tab: string) => void;
+  setAutoOrigin: (permissions: unknown) => void;
+  setShowNotification: (permissions: unknown) => void;
+  closeNotificationWindow: () => void;
+  approve: (id: string) => void;
+  reject: (id: string) => void;
+  rejectForever: (id: string) => void;
+  clearMessagesStatus: (perform: boolean) => void;
+}
+
+class MessagesComponent extends React.Component<Props> {
   readonly state = {} as any;
   readonly props;
   hasApproved: boolean;

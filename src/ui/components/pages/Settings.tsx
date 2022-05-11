@@ -7,7 +7,15 @@ import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Tooltip } from '../ui/tooltip';
 
-class SettingsComponent extends React.Component {
+interface Props {
+  autoClickProtection?: boolean;
+  showSuspiciousAssets?: boolean;
+  setTab: (tab: string) => void;
+  lock: () => void;
+  setUiState: (payload: object) => void;
+}
+
+class SettingsComponent extends React.Component<Props> {
   readonly props;
   lock = () => {
     this.props.setTab(null);

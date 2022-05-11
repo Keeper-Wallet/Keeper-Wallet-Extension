@@ -1,7 +1,7 @@
 import * as styles from './createOrder.styl';
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { ComponentProps, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance, DateFormat } from '../../ui';
 import { getMoney } from '../../../utils/converters';
@@ -13,16 +13,8 @@ import {
   getPriceSign,
   messageType,
 } from './parseTx';
-import { AssetDetail } from 'ui/services/Background';
 
-interface IProps extends WithTranslation {
-  assets: Record<string, AssetDetail>;
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class CreateOrderCardComponent extends React.PureComponent<IProps> {
+class CreateOrderCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(
       styles.createOrderTransactionCard,
@@ -33,9 +25,9 @@ class CreateOrderCardComponent extends React.PureComponent<IProps> {
     );
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
-    const tx = { type: data.type, ...data.data };
-    const isSell = tx.orderType === 'sell';
+    const { data } = message;
+    const tx = { type: data?.type, ...data?.data };
+    const isSell = tx?.orderType === 'sell';
     const amount = getMoney(getAmount(tx), assets);
     const price = getMoney(getPrice(tx), assets);
 

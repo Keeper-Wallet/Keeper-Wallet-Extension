@@ -8,13 +8,23 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import { PAGES } from '../../pageConfig';
 import { Intro } from './Intro';
 import cn from 'classnames';
+import { Account } from 'accounts/types';
 
 const SIZE = {
   MIN: 200,
   MAX: 280,
 };
 
-class PairingAccountQrComponent extends React.PureComponent {
+interface Props {
+  selectedAccount: Account;
+  loading?: boolean;
+  seed?: string;
+
+  pairingGetData: (address: string) => void;
+  setTab: (tab: string) => void;
+}
+
+class PairingAccountQrComponent extends React.PureComponent<Props> {
   readonly state = { setBig: false };
   readonly props;
 
@@ -90,13 +100,13 @@ class PairingAccountQrComponent extends React.PureComponent {
                 href="https://play.google.com/store/apps/details?id=com.wavesplatform.wallet"
                 className="google-play-btn"
                 target="_blank"
-              ></a>
+              />
               <a
                 rel="noopener noreferrer"
                 href="https://itunes.apple.com/us/app/waves-wallet/id1233158971?mt=8"
                 className="apple-store-btn"
                 target="_blank"
-              ></a>
+              />
             </div>
           </div>
         </div>

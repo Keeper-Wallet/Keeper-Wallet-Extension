@@ -7,7 +7,14 @@ import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
 
-class SettingsGeneralComponent extends React.Component {
+interface Props {
+  idle: Record<string, unknown>;
+  idleOptions: { type: string; interval: unknown };
+  setTab: (tab: string) => void;
+  setIdle: (id: string) => void;
+}
+
+class SettingsGeneralComponent extends React.Component<Props> {
   readonly props;
   langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
   passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);

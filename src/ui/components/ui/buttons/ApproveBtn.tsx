@@ -8,10 +8,18 @@ import cn from 'classnames';
 interface State {
   pending?: boolean;
   timerEnd?: Date;
+  currentTime: Date;
   percentage?: number;
 }
 
-export class ApproveBtn extends React.PureComponent {
+interface Props {
+  disabled?: boolean;
+  loading?: boolean;
+  autoClickProtection?: boolean;
+  children: React.ReactNode;
+}
+
+export class ApproveBtn extends React.PureComponent<Props, State> {
   readonly props;
   readonly state = {} as State;
   updateInterval = () => this._updateInterval(Date.now());

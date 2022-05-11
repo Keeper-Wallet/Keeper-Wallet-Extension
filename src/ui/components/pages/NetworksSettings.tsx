@@ -6,7 +6,18 @@ import { Button, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 
-class NetworksSettingsComponent extends React.PureComponent {
+interface Props {
+  networks: unknown[];
+  currentNetwork: string;
+  customNodes: unknown;
+  customMatcher: unknown;
+
+  setCustomCode: (payload: unknown) => void;
+  setCustomNode: (payload: unknown) => void;
+  setCustomMatcher: (payload: unknown) => void;
+}
+
+class NetworksSettingsComponent extends React.PureComponent<Props> {
   readonly props;
   readonly state;
   _tCopy;

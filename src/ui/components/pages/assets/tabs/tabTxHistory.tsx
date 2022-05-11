@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
+import { CSSProperties } from 'react';
 import { WithId } from '@waves/waves-transactions/dist/transactions';
 import { useAppSelector } from 'ui/store';
 import {
@@ -13,7 +14,7 @@ import {
   MONTH,
   useTxHistoryFilter,
 } from './helpers';
-import { TRANSACTION_TYPE, Transaction } from '@waves/ts-types';
+import { Transaction, TRANSACTION_TYPE } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from 'controllers/CurrentAccountController';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
@@ -21,7 +22,20 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
 import { getTxHistoryLink } from 'ui/urls';
 
-const Row = ({ data, index, style }) => {
+const Row = ({
+  data,
+  index,
+  style,
+}: {
+  data: {
+    historyWithGroups: Array<Record<string, unknown>>;
+    hasMore: boolean;
+    hasFilters: boolean;
+    historyLink: string;
+  };
+  index: number;
+  style: CSSProperties;
+}) => {
   const { t } = useTranslation();
   const { historyWithGroups, hasMore, hasFilters, historyLink } = data;
   const historyOrGroup = historyWithGroups[index];

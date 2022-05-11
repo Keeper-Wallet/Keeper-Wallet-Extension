@@ -1,29 +1,21 @@
 import * as styles from './transfer.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
-import { AssetDetail } from 'ui/services/Background';
 
-interface IProps extends WithTranslation {
-  assets: Record<string, AssetDetail>;
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class TransferCardComponent extends React.PureComponent<IProps> {
+class TransferCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.transferTransactionCard, this.props.className, {
       [styles.transferCard_collapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
 

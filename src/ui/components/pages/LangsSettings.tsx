@@ -15,6 +15,7 @@ interface LangProps {
 
 const Lang = ({ id, name, setSelected, selected }: LangProps) => {
   const { t } = useTranslation();
+
   const className = cn(styles[id], styles.lang, {
     [styles.selected]: selected,
   });
@@ -33,7 +34,7 @@ const Lang = ({ id, name, setSelected, selected }: LangProps) => {
       <div className={`${styles.selectButton} fullwidth body1 left`}>
         {name}
       </div>
-      <div className={iconClass}></div>
+      <div className={iconClass} />
     </div>
   );
 };

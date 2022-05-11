@@ -7,8 +7,9 @@ import oauth from '../OriginAuth';
 import { isMe as isOrder } from '../CreateOrder/parseTx';
 import { TxHeader } from '../BaseTransaction';
 
-const Error = ({ approveError }) => {
+const Error = ({ approveError }: { approveError: { error: unknown } }) => {
   const { t } = useTranslation();
+
   return (
     <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
       <div

@@ -17,7 +17,14 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 
-const NotificationItem = ({ notification }) => {
+interface Notification {
+  origin: string;
+  title: string;
+  message: string;
+  timestamp: number;
+}
+
+const NotificationItem = ({ notification }: { notification: Notification }) => {
   const { t } = useTranslation();
   return (
     <div className={`margin-main-big`}>
@@ -43,7 +50,20 @@ const NotificationItem = ({ notification }) => {
   );
 };
 
-class NotificationsComponent extends React.Component<WithTranslation> {
+interface Props extends WithTranslation {
+  selectedAccount: Account;
+  origins: unknown;
+  activeNotification: Notification;
+  messages: unknown[];
+  notifications: Notification[];
+
+  setTab: (tab: string) => void;
+  closeNotificationWindow: () => void;
+  setShowNotification: (permissions: unknown) => void;
+  deleteNotifications: (ids: unknown[]) => void;
+}
+
+class NotificationsComponent extends React.Component<Props> {
   readonly state = {} as any;
   readonly props;
 

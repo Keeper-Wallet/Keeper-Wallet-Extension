@@ -11,7 +11,7 @@ import { AppState } from 'ui/store';
 
 const SEPARATOR = '.';
 
-const Loading = ({ children }) => (
+const Loading = ({ children }: { children: React.ReactNode }) => (
   <div>
     <Loader />
     {children}

@@ -5,7 +5,18 @@ import cn from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 export class Pills extends React.PureComponent {
-  props;
+  props: {
+    className?: string;
+    id?: number;
+    selected?: boolean;
+    list: Array<{
+      id: number;
+      text: string;
+      selected: boolean;
+      hidden: boolean;
+    }>;
+    onSelect: (...args: unknown[]) => unknown;
+  };
   onSelect = item => this._onSelect(item);
 
   render() {

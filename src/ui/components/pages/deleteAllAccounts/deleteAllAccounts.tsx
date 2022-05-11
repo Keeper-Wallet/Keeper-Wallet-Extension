@@ -7,7 +7,7 @@ import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { PAGES_CONF } from 'ui/pageConfig';
 
-export function DeleteAllAccounts({ onBack }) {
+export function DeleteAllAccounts({ onBack }: { onBack: () => void }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

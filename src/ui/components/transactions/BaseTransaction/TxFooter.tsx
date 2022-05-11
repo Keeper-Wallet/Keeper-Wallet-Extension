@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ApproveBtn, Button } from 'ui/components/ui';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction/index';
 
 export function TxFooter({
   message,
@@ -11,7 +12,7 @@ export function TxFooter({
   reject,
   hideApprove,
   autoClickProtection,
-}) {
+}: ComponentProps & { hideApprove?: boolean }) {
   const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 

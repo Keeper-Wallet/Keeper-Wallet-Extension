@@ -10,14 +10,32 @@ import { Copy } from '../copy';
 import { Button } from '../buttons';
 import { Modal } from '..';
 
-const ContentScript = ({ script, getScriptRef }) => (
+const ContentScript = ({
+  script,
+  getScriptRef,
+}: {
+  script: unknown;
+  getScriptRef: (...args: unknown[]) => unknown;
+}) => (
   <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>
     {script}
   </pre>
 );
 
-const Data = ({ data, getScriptRef }) => {
+export type EntryWithKey = {
+  key: string;
+  type: string;
+  value: any;
+};
+const Data = ({
+  data,
+  getScriptRef,
+}: {
+  data: Array<EntryWithKey>;
+  getScriptRef: (...args: unknown[]) => unknown;
+}) => {
   const { t } = useTranslation();
+
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
       <table className={cn(styles.data, styles.dataTable)}>
@@ -59,8 +77,20 @@ const Data = ({ data, getScriptRef }) => {
   );
 };
 
-const DataNoKey = ({ data, getScriptRef }) => {
+export type EntryNoKey = {
+  type: string;
+  value: any;
+};
+
+const DataNoKey = ({
+  data,
+  getScriptRef,
+}: {
+  data: Array<EntryNoKey>;
+  getScriptRef: (...args: unknown[]) => unknown;
+}) => {
   const { t } = useTranslation();
+
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
       <table className={cn(styles.data, styles.dataTable)}>
@@ -113,7 +143,7 @@ const DataNoKey = ({ data, getScriptRef }) => {
 
 interface Props extends WithTranslation {
   noKey?: boolean;
-  data?: Array<unknown>;
+  data?: object[];
   isData?: boolean;
   script?: string;
   optional?: boolean;
@@ -178,10 +208,16 @@ class ShowScriptComponent extends React.PureComponent<Props> {
               <ContentScript getScriptRef={this.getScriptRef} script={script} />
             )}
             {isData && !noKey && (
-              <Data data={data} getScriptRef={this.getScriptRef} />
+              <Data
+                data={data as Array<EntryWithKey>}
+                getScriptRef={this.getScriptRef}
+              />
             )}
             {isData && noKey && (
-              <DataNoKey data={data} getScriptRef={this.getScriptRef} />
+              <DataNoKey
+                data={data as EntryNoKey[]}
+                getScriptRef={this.getScriptRef}
+              />
             )}
             <div className="buttons-wrapper">
               {hasScript ? (

@@ -25,12 +25,12 @@ import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 import { Money } from '@waves/data-entities';
 
-interface Message {
+export interface ComponentConfig {
   card: ComponentType<{
     assets?: unknown;
     className?: string;
-    collapsed: boolean;
-    message: unknown;
+    collapsed?: boolean;
+    message?: unknown;
   }>;
   getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
   getAmounts?: (tx: unknown) => IMoneyLike[];
@@ -42,7 +42,7 @@ interface Message {
   type: unknown;
 }
 
-const MESSAGES: Message[] = [
+const MESSAGES: ComponentConfig[] = [
   auth,
   alias,
   originAuth,
@@ -69,6 +69,9 @@ const MESSAGES: Message[] = [
 
 export { FinalTransaction } from './FinalTransaction';
 
-export function getConfigByTransaction({ data: tx, type = null }): Message {
+export function getConfigByTransaction({
+  data: tx,
+  type = null,
+}): ComponentConfig {
   return MESSAGES.find(config => config.isMe(tx, type)) || unknown;
 }

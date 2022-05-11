@@ -14,8 +14,26 @@ import {
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
+import { Account } from 'accounts/types';
 
-class SelectTxAccountComponent extends React.PureComponent {
+interface Props {
+  selectAccount: Account;
+  activeMessage: unknown;
+  messages: unknown[];
+  activeNotification: unknown;
+  notifications: unknown[];
+
+  onBack: () => void;
+  setTab: (tab: string) => void;
+  updateActiveState: () => void;
+  clearMessages: () => void;
+  clearMessagesStatus: () => void;
+  deleteNotifications: (ids: unknown[]) => void;
+  closeNotificationWindow: () => void;
+  reject: (id: string) => void;
+}
+
+class SelectTxAccountComponent extends React.PureComponent<Props> {
   readonly state = { loading: false };
   readonly props;
 

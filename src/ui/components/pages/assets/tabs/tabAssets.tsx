@@ -13,8 +13,23 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import cn from 'classnames';
+import { AssetDetail } from 'ui/services/Background';
 
-const Row = ({ data, index, style }) => {
+const Row = ({
+  data,
+  index,
+  style,
+}: {
+  data: {
+    assetEntries: Array<[string, { balance: string | number | BigNumber }]>;
+    assets: Record<string, AssetDetail>;
+    onInfoClick: (assetId: string) => void;
+    onSendClick: (assetId: string) => void;
+    onSwapClick: (assetId: string) => void;
+  };
+  index;
+  style;
+}) => {
   const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
   const [assetId, { balance }] = assetEntries[index];
   return (

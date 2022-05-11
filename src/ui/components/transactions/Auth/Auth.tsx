@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
 import { ApproveBtn, Button } from '../../ui';
-import { TxHeader } from '../BaseTransaction';
+import { ComponentProps, TxHeader } from '../BaseTransaction';
 import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
 
-export function Auth(props) {
+export function Auth(props: ComponentProps) {
   const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 

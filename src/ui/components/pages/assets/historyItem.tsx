@@ -11,7 +11,7 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
 
-function Address({ base58 }) {
+function Address({ base58 }: { base58: string }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
 }
 

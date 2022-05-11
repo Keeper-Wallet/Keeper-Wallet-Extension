@@ -17,6 +17,7 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
 import { AssetDetail } from 'ui/services/Background';
+import { Account } from 'accounts/types';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return messages.map(message => {
@@ -66,7 +67,20 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
   });
 };
 
-class MessageListComponent extends React.Component {
+interface Props {
+  selectedAccount: Account;
+  messages: unknown[];
+  assets: Record<string, AssetDetail>;
+  notifications: unknown[];
+
+  getAsset: (assetId: string) => void;
+  setActiveMessage: (message: unknown) => void;
+  deleteNotifications: (ids: string[]) => void;
+  setActiveNotification: (notification: unknown) => void;
+  reject: (id: string) => void;
+}
+
+class MessageListComponent extends React.Component<Props> {
   readonly state = { loading: true };
   readonly props;
 

@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
-import { TxFooter, TxHeader } from '../BaseTransaction';
+import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
 
-export function CustomData(props) {
+export function CustomData(props: ComponentProps) {
   const { message, assets } = props;
 
   return (

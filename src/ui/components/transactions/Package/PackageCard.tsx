@@ -8,7 +8,7 @@ import { Balance } from '../../ui';
 import { AssetDetail } from 'ui/services/Background';
 import { Money } from '@waves/data-entities';
 
-const Fees = ({ fees }) => {
+const Fees = ({ fees }: { fees: Record<string, Money> }) => {
   const moneys = Object.values(fees);
 
   return (

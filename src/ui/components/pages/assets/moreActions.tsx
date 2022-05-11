@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './moreActions.module.css';
 import cn from 'classnames';
 
-export function MoreActions({ children }) {
+export function MoreActions({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -13,7 +13,7 @@ export function MoreActions({ children }) {
       {isExpanded &&
         React.Children.map(
           children,
-          child => child && React.cloneElement(child)
+          child => child && React.cloneElement(child as React.ReactElement)
         )}
 
       <button

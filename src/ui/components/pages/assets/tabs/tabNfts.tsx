@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { NftItem } from 'ui/components/pages/assets/nftItem';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
+import { CSSProperties } from 'react';
 import { useAppSelector } from 'ui/store';
 import { CARD_FULL_HEIGHT, FULL_GROUP_HEIGHT, useNftFilter } from './helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
@@ -11,8 +12,21 @@ import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
+import { Asset } from '@waves/data-entities';
 
-const Row = ({ data, index, style }) => {
+const Row = ({
+  data,
+  index,
+  style,
+}: {
+  data: {
+    nftWithGroups: Array<{ groupName: string } | Asset>;
+    onInfoClick: (assetId: string) => void;
+    onSendClick: (assetId: string) => void;
+  };
+  index: number;
+  style: CSSProperties;
+}) => {
   const { t } = useTranslation();
   const { nftWithGroups, onInfoClick, onSendClick } = data;
   const nftOrGroup = nftWithGroups[index];
@@ -41,7 +55,13 @@ const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
     } as AssetDetail)
 );
 
-export function TabNfts({ onInfoClick, onSendClick }) {
+export function TabNfts({
+  onInfoClick,
+  onSendClick,
+}: {
+  onInfoClick: (assetId: string) => void;
+  onSendClick: (assetId: string) => void;
+}) {
   const { t } = useTranslation();
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);

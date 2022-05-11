@@ -13,7 +13,7 @@ import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ setTab }) {
+export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

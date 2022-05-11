@@ -7,7 +7,13 @@ import { Button, Error, Input } from '../ui';
 import { login } from '../../actions';
 import { PAGES } from '../../pageConfig';
 
-class LoginComponent extends React.Component {
+interface Props {
+  error: unknown;
+  login: (password: string) => void;
+  setTab: (tab: string) => void;
+}
+
+class LoginComponent extends React.Component<Props> {
   inputEl: Input;
   state = {
     passwordError: false,

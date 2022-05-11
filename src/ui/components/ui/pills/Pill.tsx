@@ -4,7 +4,23 @@ import cn from 'classnames';
 
 const _onClick = cb => id => cb && cb(id);
 
-export function Pill({ id, text, selected, hidden, className, onSelect }) {
+interface Props {
+  className?: string;
+  id?: number;
+  text?: unknown;
+  hidden?: boolean;
+  selected?: boolean;
+  onSelect: (...args: unknown[]) => unknown;
+}
+
+export function Pill({
+  id,
+  text,
+  selected,
+  hidden,
+  className,
+  onSelect,
+}: Props) {
   const newClassName = cn(styles.pill, className, {
     [styles.selectedPill]: selected,
     [styles.hiddenPill]: hidden,

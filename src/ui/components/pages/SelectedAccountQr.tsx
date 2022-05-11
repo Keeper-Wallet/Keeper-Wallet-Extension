@@ -3,8 +3,13 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Button, QRCode } from '../ui';
+import { Account } from 'accounts/types';
 
-class QRCodeSelectedAccountComponent extends React.PureComponent {
+interface Props {
+  selectedAccount: Account;
+}
+
+class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
   readonly props;
   qrCode: QRCode;
   getQrRef = qr => (this.qrCode = qr);

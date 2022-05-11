@@ -2,10 +2,19 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
-import { TxIcon, TxInfo } from '../BaseTransaction';
+import { Message, TxIcon, TxInfo } from '../BaseTransaction';
 import { AssetDetail } from 'ui/services/Background';
+import { ComponentConfig } from 'ui/components/transactions/index';
 
-const MessageItem = ({ message, config, assets }) => {
+const MessageItem = ({
+  message,
+  config,
+  assets,
+}: {
+  message: Message;
+  config: ComponentConfig;
+  assets: Record<string, AssetDetail>;
+}) => {
   const Card = config.card;
   return (
     <div>

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
 import * as styles from './list.styl';
+import { IAutoAuth } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
 
 class ListComponent extends React.PureComponent<IProps> {
   render(): React.ReactNode {
@@ -11,7 +12,7 @@ class ListComponent extends React.PureComponent<IProps> {
     if (originsNames.length === 0) {
       return (
         <div className={styles.emptyBlock}>
-          <div className={styles.icon}></div>
+          <div className={styles.icon} />
           <div
             className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}
           >
@@ -91,13 +92,6 @@ interface IProps extends WithTranslation {
   showType: TTabTypes;
   showSettings: (origin: string) => void;
   toggleApprove: (origin: string, enable: boolean) => void;
-}
-
-interface IAutoAuth {
-  type: 'allowAutoSign';
-  totalAmount: number;
-  interval: number;
-  approved: Array<unknown>;
 }
 
 export const List = withTranslation()(ListComponent);

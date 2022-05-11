@@ -5,9 +5,14 @@ import { withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
 
-class DeleteActiveAccountComponent extends React.Component {
+interface Props {
+  deleteActiveAccount: (payload: unknown) => void;
+}
+
+class DeleteActiveAccountComponent extends React.Component<Props> {
   state = { disable: false };
   props;
+
   onClickHandler = () => {
     this.props.deleteActiveAccount(null);
     this.setState({ disable: false });
