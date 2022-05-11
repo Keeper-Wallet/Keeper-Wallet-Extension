@@ -42,10 +42,6 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
     });
   }
 
-  const dd = t('exportKeystore.chooseAccountsExportBtn', {
-    count: selected.size,
-  });
-
   return (
     <form
       className={styles.root}
