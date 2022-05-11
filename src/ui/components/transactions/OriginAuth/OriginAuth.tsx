@@ -1,6 +1,6 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
@@ -20,10 +20,10 @@ class OriginAuthComponent extends SignClass {
   getRef = el => this.setState({ el });
 
   render() {
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const title = (
       <span className={styles.collapsedTitle}>
-        <Trans i18nKey="permissionSettings.modal.title" />
+        {t('permissionSettings.modal.title')}
       </span>
     );
 
@@ -80,7 +80,7 @@ class OriginAuthComponent extends SignClass {
               type="button"
               view="warning"
             >
-              <Trans i18nKey="sign.reject" />
+              {t('sign.reject')}
             </Button>
             <Button
               id="rejectForever"
@@ -90,7 +90,7 @@ class OriginAuthComponent extends SignClass {
               view="danger"
               className={'custom'}
             >
-              <Trans i18nKey="sign.blacklist" />
+              {t('sign.blacklist')}
             </Button>
           </DropdownButton>
           <ApproveBtn
@@ -99,7 +99,7 @@ class OriginAuthComponent extends SignClass {
             type="submit"
             view="submit"
           >
-            <Trans i18nKey="sign.auth" />
+            {t('sign.auth')}
           </ApproveBtn>
         </div>
       </div>
@@ -113,4 +113,7 @@ const mapsToProps = state => ({
 
 const actions = {};
 
-export const OriginAuth = connect(mapsToProps, actions)(OriginAuthComponent);
+export const OriginAuth = connect(
+  mapsToProps,
+  actions
+)(withTranslation()(OriginAuthComponent));

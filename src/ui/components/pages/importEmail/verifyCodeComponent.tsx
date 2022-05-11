@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './verifyCodeComponent.module.css';
 import { Button, Error, Input } from '../../ui';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 type VerifyCodeComponentProps = {
   className: string;
@@ -18,6 +18,7 @@ export function VerifyCodeComponent({
   onPendingChange: onPending,
   isPending,
 }: VerifyCodeComponentProps) {
+  const { t } = useTranslation();
   const [isIncorrectCode, setIsIncorrectCode] = React.useState<boolean>(false);
   const refs = React.useMemo((): Array<React.RefObject<HTMLInputElement>> => {
     return new Array(codeLength).fill(undefined).map(() => React.createRef());
@@ -167,7 +168,7 @@ export function VerifyCodeComponent({
       </div>
       <div className={styles.codeErrorWrapper}>
         <Error show={!isPending && isIncorrectCode}>
-          <Trans i18nKey="importEmail.incorrectCode" />
+          {t('importEmail.incorrectCode')}
         </Error>
         {isPending && (
           <Button

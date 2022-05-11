@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
 import * as styles from './list.styl';
 
-export class List extends React.PureComponent<IProps> {
+class ListComponent extends React.PureComponent<IProps> {
   render(): React.ReactNode {
-    const { origins, showType, showSettings, toggleApprove } = this.props;
+    const { t, origins, showType, showSettings, toggleApprove } = this.props;
     const originsNames = Object.keys(getFilteredOrigins(origins, showType));
 
     if (originsNames.length === 0) {
@@ -15,7 +15,7 @@ export class List extends React.PureComponent<IProps> {
           <div
             className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}
           >
-            <Trans i18nKey="permissionsSettings.empty">Nothing Here...</Trans>
+            {t('permissionsSettings.empty')}
           </div>
         </div>
       );
@@ -28,7 +28,7 @@ export class List extends React.PureComponent<IProps> {
             key={name}
             originName={name}
             permissions={origins[name]}
-            permissionsText={this.getPermissionsText(origins[name])}
+            permissionsText={this.getPermissionsText(t, origins[name])}
             showSettings={showSettings}
             toggleApprove={toggleApprove}
           />
@@ -37,7 +37,7 @@ export class List extends React.PureComponent<IProps> {
     );
   }
 
-  getPermissionsText(perms) {
+  getPermissionsText(t, perms) {
     let hasApproved = false;
     let hasAuto = false;
 
@@ -52,17 +52,13 @@ export class List extends React.PureComponent<IProps> {
 
     return (
       <React.Fragment>
-        {hasApproved ? (
-          <Trans i18nKey="permissionsSettings.approvedOrigin">Approved</Trans>
-        ) : (
-          <Trans i18nKey="permissionsSettings.rejectedOrigin">Rejected</Trans>
+        {t(
+          hasApproved
+            ? 'permissionsSettings.approvedOrigin'
+            : 'permissionsSettings.rejectedOrigin'
         )}
         {hasAuto ? (
-          <span>
-            <Trans i18nKey="permissionsSettings.automaticOrigin">
-              + Automatic signing
-            </Trans>
-          </span>
+          <span>{t('permissionsSettings.automaticOrigin')}</span>
         ) : null}
       </React.Fragment>
     );
@@ -90,7 +86,7 @@ const getFilteredOrigins = (origins: any, attr: TTabTypes) => {
 
 type TTabTypes = 'customList' | 'whiteList' | 'blackList';
 
-interface IProps extends React.ComponentProps<'div'> {
+interface IProps extends WithTranslation {
   origins: { [key: string]: Array<string | IAutoAuth> };
   showType: TTabTypes;
   showSettings: (origin: string) => void;
@@ -103,3 +99,5 @@ interface IAutoAuth {
   interval: number;
   approved: Array<any>;
 }
+
+export const List = withTranslation()(ListComponent);

@@ -1,20 +1,20 @@
 import * as styles from './sponsorship.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAssetFee, SPONSOR_MODE } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class SponsorshipCard extends React.PureComponent<IProps> {
+class SponsorshipCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.sponsorshipTransactionCard,
@@ -24,7 +24,7 @@ export class SponsorshipCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, assets, collapsed } = this.props;
+    const { t, message, assets, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const assetFee = getMoney(getAssetFee(tx), assets);
@@ -43,13 +43,11 @@ export class SponsorshipCard extends React.PureComponent<IProps> {
             </div>
             <div>
               <div className="basic500 body3 margin-min">
-                <Trans
-                  i18nKey={
-                    isSetSponsored
-                      ? 'transactions.setSponsored'
-                      : 'transactions.clearSponsored'
-                  }
-                />
+                {t(
+                  isSetSponsored
+                    ? 'transactions.setSponsored'
+                    : 'transactions.clearSponsored'
+                )}
               </div>
               <h1 className="headline1">
                 {isSetSponsored ? (
@@ -68,10 +66,12 @@ export class SponsorshipCard extends React.PureComponent<IProps> {
         </div>
         {!collapsed && isSetSponsored && (
           <div className="tag1 basic500 margin-min margin-main-top">
-            <Trans i18nKey="transactions.amountPerTransaction" />
+            {t('transactions.amountPerTransaction')}
           </div>
         )}
       </>
     );
   }
 }
+
+export const SponsorshipCard = withTranslation()(SponsorshipCardComponent);

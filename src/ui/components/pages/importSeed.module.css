@@ -1,8 +1,11 @@
 .content {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  overflow: auto;
+  padding: 0 60px;
   position: relative;
-  margin: 84px 60px 0;
-  height: calc(100% - 180px);
 }
 
 .greyLine {

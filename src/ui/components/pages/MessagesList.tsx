@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import {
   approve,
   clearMessages,
@@ -121,7 +121,7 @@ class MessageListComponent extends React.Component {
       return <Intro />;
     }
 
-    const { messages, notifications, assets } = this.props;
+    const { t, messages, notifications, assets } = this.props;
     const hasNotifications = notifications.length > 0;
     const hasMessages = messages.length > 0;
 
@@ -132,9 +132,7 @@ class MessageListComponent extends React.Component {
             <span className={styles.messageListCounter}>
               {messages.length + notifications.length}
             </span>
-            <span className="headline3">
-              <Trans i18nKey="messageList.notifications">Notifications</Trans>
-            </span>
+            <span className="headline3">{t('messageList.notifications')}</span>
           </div>
         </div>
 
@@ -150,9 +148,7 @@ class MessageListComponent extends React.Component {
           {hasNotifications && (
             <React.Fragment>
               <div className="flex basic500">
-                <div>
-                  <Trans i18nKey="messageList.messages">Messages</Trans>
-                </div>
+                <div>{t('messageList.messages')}</div>
                 <Button
                   id="clearAllMessages"
                   type="button"
@@ -160,9 +156,7 @@ class MessageListComponent extends React.Component {
                   onClick={this.deleteAll}
                   className={`${styles.clearAllBtn} body3 basic500`}
                 >
-                  <Trans i18nKey="messageList.clearAllMessages">
-                    Clear all
-                  </Trans>
+                  {t('messageList.clearAllMessages')}
                 </Button>
               </div>
 
@@ -178,11 +172,7 @@ class MessageListComponent extends React.Component {
 
           {hasMessages && (
             <React.Fragment>
-              <div className="basic500">
-                <Trans i18nKey="messageList.pendingConfirm">
-                  Pending confirmation
-                </Trans>
-              </div>
+              <div className="basic500">{t('messageList.pendingConfirm')}</div>
 
               <div className={'basic-500 margin1'}>
                 <Messages
@@ -224,4 +214,4 @@ const actions = {
 export const MessageList = connect(
   mapStateToProps,
   actions
-)(MessageListComponent);
+)(withTranslation()(MessageListComponent));

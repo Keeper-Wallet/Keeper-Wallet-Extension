@@ -2,7 +2,7 @@ import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
 
@@ -59,14 +59,13 @@ class ChangeAccountNameComponent extends React.PureComponent {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.content}>
-        <h2 className={`title1 margin3 left`}>
-          <Trans i18nKey="changeName.title">Change name</Trans>
-        </h2>
+        <h2 className={`title1 margin3 left`}>{t('changeName.title')}</h2>
 
         <div className="tag1 basic500 input-title">
-          <Trans i18nKey="changeName.currentName">Current account name</Trans>
+          {t('changeName.currentName')}
         </div>
 
         <div id="currentAccountName" className="body1 font400 margin-main-big">
@@ -76,7 +75,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
         <div className="separator margin-main-big"> </div>
         <form onSubmit={this.onSubmit}>
           <div className="tag1 basic500 input-title">
-            <Trans i18nKey="changeName.newName">New account name</Trans>
+            {t('changeName.newName')}
           </div>
 
           <div className="margin-main-big relative">
@@ -99,7 +98,7 @@ class ChangeAccountNameComponent extends React.PureComponent {
             view="submit"
             disabled={!!this.state.errors.length || !this.state.newName}
           >
-            <Trans i18nKey="changeName.save">Save</Trans>
+            {t('changeName.save')}
           </Button>
         </form>
       </div>
@@ -138,4 +137,4 @@ const actions = {
 export const ChangeAccountName = connect(
   mapToProps,
   actions
-)(ChangeAccountNameComponent);
+)(withTranslation()(ChangeAccountNameComponent));

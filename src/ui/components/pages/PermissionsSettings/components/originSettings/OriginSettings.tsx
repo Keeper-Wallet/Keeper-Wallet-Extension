@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Button, Input, Select } from 'ui/components/ui';
@@ -190,20 +190,16 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
   render(): React.ReactNode {
     const inWhiteList = this.props.permissions.includes('whiteList');
+    const { t, originName } = this.props;
 
     const timeList = CONFIG.list.map(item => {
       return {
         id: item.id,
         value: item.value,
-        text: (
-          <Trans i18nKey={item.i18nKey} key={item.id}>
-            {item.text}
-          </Trans>
-        ),
+        text: t(item.i18nKey, { key: item.id }),
       };
     });
 
-    const { originName } = this.props;
     const totalAmount = this.state.totalAmount || '';
     const value = (this.state.interval ? totalAmount : '') || '';
 
@@ -211,35 +207,24 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
       <div className="modal cover">
         <div id="originSettings" className="modal-form">
           <h2 className={cn(styles.title)}>
-            <Trans i18nKey="permissionSettings.modal.title">
-              Permission details
-            </Trans>
+            {t('permissionSettings.modal.title')}
           </h2>
 
           <div className={styles.description}>
-            <Trans i18nKey="permissionSettings.modal.description">
-              This allows {{ originName }} to automatically sign transactions on
-              your behalf.
-            </Trans>
+            {t('permissionSettings.modal.description', { originName })}
           </div>
 
           <Select
             className={cn(styles.selectTime)}
             selectList={timeList}
             selected={this.state.selected}
-            description={
-              <Trans i18nKey="permissionSettings.modal.time">
-                Resolution time
-              </Trans>
-            }
+            description={t('permissionSettings.modal.time')}
             onSelectItem={this.selectTimeHandler}
           />
 
           <div className={cn(styles.amount)}>
             <div className="left input-title basic500 tag1">
-              <Trans i18nKey="permissionSettings.modal.amount">
-                Spending limit
-              </Trans>
+              {t('permissionSettings.modal.amount')}
             </div>
             <Input
               disabled={!this.state.interval}
@@ -259,9 +244,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
               onChange={this.canUseNotificationsHandler}
             />
             <label htmlFor="checkbox_noshow">
-              <Trans i18nKey="notifications.allowSending">
-                Allow sending messages
-              </Trans>
+              {t('notifications.allowSending')}
             </label>
           </div>
 
@@ -273,7 +256,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                 onClick={this.deleteHandler}
                 view="warning"
               >
-                <Trans i18nKey="permissionSettings.modal.delete">Delete</Trans>
+                {t('permissionSettings.modal.delete')}
               </Button>
 
               <Button
@@ -284,7 +267,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
                 disabled={!this.state.canSave}
                 onClick={this.saveHandler}
               >
-                <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+                {t('permissionSettings.modal.save')}
               </Button>
             </div>
           ) : (
@@ -296,7 +279,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
               disabled={!this.state.canSave}
               onClick={this.saveHandler}
             >
-              <Trans i18nKey="permissionSettings.modal.save">Save</Trans>
+              {t('permissionSettings.modal.save')}
             </Button>
           )}
 
@@ -307,7 +290,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
             view="transparent"
             onClick={this.props.onClose}
           >
-            <Trans i18nKey="permissionSettings.modal.cancel">Cancel</Trans>
+            {t('permissionSettings.modal.cancel')}
           </Button>
 
           <Button
@@ -322,9 +305,10 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
   }
 }
 
-export const OriginSettings = OriginSettingsComponent;
+export const OriginSettings = withTranslation()(OriginSettingsComponent);
 
-interface IProps extends React.ComponentProps<'div'> {
+interface IProps extends WithTranslation {
+  className?: string;
   origins: any;
   autoSign: TAutoAuth;
   originalAutoSign: TAutoAuth;

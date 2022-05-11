@@ -2,7 +2,7 @@ import * as libCrypto from '@waves/ts-lib-crypto';
 import { validators } from '@waves/waves-transactions';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { newAccountSelect, selectAccount } from '../../actions';
 import {
@@ -117,6 +117,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
       validationError = (
         <Trans
           i18nKey="importSeed.base58PrefixError"
+          t={t}
           components={{
             switchTab: base58PrefixErrorSwitchTabEl,
           }}
@@ -130,6 +131,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
       validationError = (
         <Trans
           i18nKey="importSeed.seedIsPublicOrPrivateKeyError"
+          t={t}
           components={{
             switchTab: (
               <InlineButton
@@ -176,6 +178,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
       validationError = (
         <Trans
           i18nKey="importSeed.base58PrefixError"
+          t={t}
           components={{
             switchTab: base58PrefixErrorSwitchTabEl,
           }}
@@ -208,9 +211,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
   return (
     <div className={styles.content}>
       <div>
-        <h2 className="title1 margin3 left">
-          <Trans i18nKey="importSeed.title" />
-        </h2>
+        <h2 className="title1 margin3 left">{t('importSeed.title')}</h2>
       </div>
 
       <form
@@ -271,17 +272,9 @@ export function ImportSeed({ isNew, setTab }: Props) {
           }}
         >
           <TabList>
-            <Tab>
-              <Trans i18nKey="importSeed.plainText" />
-            </Tab>
-
-            <Tab>
-              <Trans i18nKey="importSeed.encodedSeed" />
-            </Tab>
-
-            <Tab>
-              <Trans i18nKey="importSeed.privateKey" />
-            </Tab>
+            <Tab>{t('importSeed.plainText')}</Tab>
+            <Tab>{t('importSeed.encodedSeed')}</Tab>
+            <Tab>{t('importSeed.privateKey')}</Tab>
           </TabList>
 
           <TabPanels>
@@ -343,7 +336,7 @@ export function ImportSeed({ isNew, setTab }: Props) {
         </Error>
 
         <div className="tag1 basic500 input-title">
-          <Trans i18nKey="importSeed.address" />
+          {t('importSeed.address')}
         </div>
 
         <div className={cn(styles.greyLine, 'grey-line')} data-testid="address">
@@ -351,13 +344,11 @@ export function ImportSeed({ isNew, setTab }: Props) {
         </div>
 
         <Button data-testid="continueBtn" type="submit" view="submit">
-          <Trans
-            i18nKey={
-              existedAccount && showValidationError
-                ? 'importSeed.switchAccount'
-                : 'importSeed.importAccount'
-            }
-          />
+          {t(
+            existedAccount && showValidationError
+              ? 'importSeed.switchAccount'
+              : 'importSeed.importAccount'
+          )}
         </Button>
       </form>
     </div>

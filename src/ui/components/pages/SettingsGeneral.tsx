@@ -1,7 +1,7 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
@@ -15,32 +15,24 @@ class SettingsGeneralComponent extends React.Component {
   setIdle = id => this.props.setIdle(id);
 
   render() {
-    const { idle } = this.props;
+    const { t, idle } = this.props;
 
     const selectList = Object.entries(idle).map(([id, value]) => ({
       id,
       value,
-      text: (
-        <Trans i18nKey={`settings.time_${id}`} key={id}>
-          {id}
-        </Trans>
-      ),
+      text: t(`settings.time_${id}`, { defaultValue: id, key: id }),
     }));
 
     return (
       <div className={styles.content}>
         <div className={`${styles.title1} title1`}>
-          <Trans i18nKey="settings.general">General</Trans>
+          {t('settings.settingsGeneral')}
         </div>
 
         <div className={styles.settingsMenu}>
           <div className="margin-main-big">
             <Select
-              description={
-                <Trans i18nKey="settings.sessionTimeout">
-                  Session Timeout in
-                </Trans>
-              }
+              description={t('settings.sessionTimeout')}
               selectList={selectList as any}
               selected={this.props.idleOptions.type}
               onSelectItem={this.setIdle}
@@ -55,9 +47,7 @@ class SettingsGeneralComponent extends React.Component {
               className={styles.settingsBtn}
               onClick={this.passwordHandler}
             >
-              <div className="body1 left">
-                <Trans i18nKey="settings.password">Change password</Trans>
-              </div>
+              <div className="body1 left">{t('settings.password')}</div>
             </Button>
           </div>
         </div>
@@ -78,4 +68,4 @@ export const SettingsGeneral = connect(mapStateToProps, {
   lock,
   setUiState,
   setIdle,
-})(SettingsGeneralComponent);
+})(withTranslation()(SettingsGeneralComponent));

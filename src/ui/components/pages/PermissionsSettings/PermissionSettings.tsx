@@ -1,7 +1,7 @@
 import * as styles from './permissionsSettings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import {
   allowOrigin,
   deleteOrigin,
@@ -76,22 +76,17 @@ class PermissionsSettingsComponent extends React.PureComponent {
   };
 
   render() {
+    const { t, origins, pending, allowed, disallowed, deleted } = this.props;
     const tabs = ['customList', 'whiteList'].map(name => ({
-      item: (
-        <Trans key={name} i18nKey={`permission.${name}`}>
-          {name}
-        </Trans>
-      ),
+      item: t(`permission.${name}`),
       name,
     }));
     const className = cn(styles.content);
 
-    const { origins, pending, allowed, disallowed, deleted } = this.props;
-
     return (
       <div className={className}>
         <h2 className="title1 center margin-main-big">
-          <Trans i18nKey="permissionsSettings.title">Permissions control</Trans>
+          {t('permissionsSettings.title')}
         </h2>
 
         <Loader hide={!pending} />
@@ -132,21 +127,9 @@ class PermissionsSettingsComponent extends React.PureComponent {
           showModal={allowed || disallowed || deleted}
         >
           <div className="modal notification">
-            {allowed ? (
-              <Trans i18nKey="permissionsSettings.notify.allowed">
-                Allowed!
-              </Trans>
-            ) : null}
-            {disallowed ? (
-              <Trans i18nKey="permissionsSettings.notify.disallowed">
-                Disallowed!
-              </Trans>
-            ) : null}
-            {deleted ? (
-              <Trans i18nKey="permissionsSettings.notify.deleted">
-                Deleted!
-              </Trans>
-            ) : null}
+            {allowed ? t('permissionsSettings.notify.allowed') : null}
+            {disallowed ? t('permissionsSettings.notify.disallowed') : null}
+            {deleted ? t('permissionsSettings.notify.deleted') : null}
           </div>
         </Modal>
       </div>
@@ -172,4 +155,4 @@ const actions = {
 export const PermissionsSettings = connect(
   mapStateToProps,
   actions
-)(PermissionsSettingsComponent);
+)(withTranslation()(PermissionsSettingsComponent));

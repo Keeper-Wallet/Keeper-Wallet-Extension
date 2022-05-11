@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
@@ -39,6 +39,7 @@ const explorerBaseUrlsByNetwork = {
 };
 
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
+  const { t } = useTranslation();
   const assets = useAppSelector(state => state.assets);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const selectedAccount = useAppSelector(state => state.selectedAccount);
@@ -161,7 +162,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             <div className={cn(styles.statusIcon, 'tx-waiting-icon')} />
 
             <div className="margin-main-top margin-main-big headline2 center">
-              <Trans i18nKey="swap.statusInProgress" />
+              {t('swap.statusInProgress')}
             </div>
           </>
         ) : swapStatus === SwapStatus.Failed ? (
@@ -169,7 +170,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             <div className={cn(styles.statusIcon, 'tx-reject-icon')} />
 
             <div className="margin-main-top margin-main-big headline2 center">
-              <Trans i18nKey="swap.statusFailed" />
+              {t('swap.statusFailed')}
             </div>
           </>
         ) : (
@@ -177,7 +178,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
             <div className={cn(styles.statusIcon, 'tx-approve-icon')} />
 
             <div className="margin-main-top margin-main-big headline2 center">
-              <Trans i18nKey="swap.statusSucceeded" />
+              {t('swap.statusSucceeded')}
             </div>
           </>
         )}
@@ -208,14 +209,14 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Trans i18nKey="swap.viewTransaction" />
+              {t('swap.viewTransaction')}
             </a>
           </div>
         )}
       </div>
 
       <Button type="button" onClick={onClose}>
-        <Trans i18nKey="swap.closeBtnText" />
+        {t('swap.closeBtnText')}
       </Button>
     </div>
   );

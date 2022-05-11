@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { ledgerService, LedgerServiceStatus } from './service';
@@ -62,12 +62,10 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
           view="transparent"
         />
 
-        <h1 className={styles.title}>
-          <Trans i18nKey="ledgerConnectModal.title" />
-        </h1>
+        <h1 className={styles.title}>{t('ledgerConnectModal.title')}</h1>
 
         <p className={styles.instructions}>
-          <Trans i18nKey="ledgerConnectModal.instructions" />
+          {t('ledgerConnectModal.instructions')}
         </p>
 
         <Error className={styles.error} show>
@@ -82,7 +80,7 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
             view="submit"
             onClick={connectToLedger}
           >
-            <Trans i18nKey="ledgerConnectModal.tryAgainButton" />
+            {t('ledgerConnectModal.tryAgainButton')}
           </Button>
         )}
       </div>

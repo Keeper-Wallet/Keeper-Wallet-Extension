@@ -1,6 +1,10 @@
 import * as styles from './script.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import {
+  withTranslation,
+  WithTranslation,
+  useTranslation,
+} from 'react-i18next';
 import cn from 'classnames';
 import { Copy } from '../copy';
 import { Button } from '../buttons';
@@ -13,14 +17,21 @@ const ContentScript = ({ script, getScriptRef }) => (
 );
 
 const Data = ({ data, getScriptRef }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
       <table className={cn(styles.data, styles.dataTable)}>
         <thead>
           <tr className={cn('basic500', styles.headRow)}>
-            <td className={styles.dataItemData}>Key</td>
-            <td className={styles.dataItemData}>Type</td>
-            <td className={styles.dataItemData}>Value</td>
+            <td className={styles.dataItemData}>
+              {t('showScriptComponent.key')}
+            </td>
+            <td className={styles.dataItemData}>
+              {t('showScriptComponent.type')}
+            </td>
+            <td className={styles.dataItemData}>
+              {t('showScriptComponent.value')}
+            </td>
           </tr>
         </thead>
         {(data || []).map((item, index) => {
@@ -49,13 +60,18 @@ const Data = ({ data, getScriptRef }) => {
 };
 
 const DataNoKey = ({ data, getScriptRef }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.dataContainer} ref={getScriptRef}>
       <table className={cn(styles.data, styles.dataTable)}>
         <thead>
           <tr className={cn('basic500', styles.headRow)}>
-            <td className={styles.dataItemData}>Type</td>
-            <td className={styles.dataItemDataLast}>Value</td>
+            <td className={styles.dataItemData}>
+              {t('showScriptComponent.type')}
+            </td>
+            <td className={styles.dataItemDataLast}>
+              {t('showScriptComponent.value')}
+            </td>
           </tr>
         </thead>
         {(data || []).map((item, index) => {
@@ -95,17 +111,19 @@ const DataNoKey = ({ data, getScriptRef }) => {
   );
 };
 
-export class ShowScript extends React.PureComponent {
-  readonly props: {
-    noKey?: boolean;
-    data?: Array<any>;
-    isData?: boolean;
-    script?: string;
-    optional?: boolean;
-    showNotify?: boolean;
-    className?: string;
-    hideScript?: boolean;
-  };
+interface Props extends WithTranslation {
+  noKey?: boolean;
+  data?: Array<any>;
+  isData?: boolean;
+  script?: string;
+  optional?: boolean;
+  showNotify?: boolean;
+  className?: string;
+  hideScript?: boolean;
+}
+
+class ShowScriptComponent extends React.PureComponent<Props> {
+  readonly props;
   readonly state = {
     showAllScript: false,
     showCopied: false,
@@ -137,7 +155,7 @@ export class ShowScript extends React.PureComponent {
   }
 
   render() {
-    const { script, optional, data, isData, noKey } = this.props;
+    const { t, script, optional, data, isData, noKey } = this.props;
     const showAllClass = cn(this.props.className, {
       [styles.showAllScript]: this.state.showAllScript,
     });
@@ -169,21 +187,15 @@ export class ShowScript extends React.PureComponent {
               {hasScript ? (
                 <Copy text={toCopy} onCopy={this.onCopy}>
                   <Button type="button">
-                    <Trans i18nKey="showScriptComponent.copyCode">
-                      Copy code
-                    </Trans>
+                    {t('showScriptComponent.copyCode')}
                   </Button>
                 </Copy>
               ) : null}
               {this.state.showResizeBtn ? (
                 <Button type="button" onClick={this.toggleShowScript}>
-                  {!this.state.showAllScript ? (
-                    <Trans i18nKey="showScriptComponent.showAll">
-                      Show all
-                    </Trans>
-                  ) : (
-                    <Trans i18nKey="showScriptComponent.hide">Hide</Trans>
-                  )}
+                  {!this.state.showAllScript
+                    ? t('showScriptComponent.showAll')
+                    : t('showScriptComponent.hide')}
                 </Button>
               ) : null}
             </div>
@@ -193,7 +205,7 @@ export class ShowScript extends React.PureComponent {
               showModal={this.state.showCopied}
             >
               <div className="modal notification">
-                <Trans i18nKey="showScriptComponent.copied">Copied!</Trans>
+                {t('showScriptComponent.copied')}
               </div>
             </Modal>
           </div>
@@ -212,3 +224,5 @@ export class ShowScript extends React.PureComponent {
     this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
   }
 }
+
+export const ShowScript = withTranslation()(ShowScriptComponent);

@@ -3,7 +3,7 @@ import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Input } from 'ui/components/ui/input/index';
 import { BalanceAssets } from 'ui/reducers/updateState';
@@ -100,9 +100,7 @@ export function AssetSelectModal({
     <div className={cn('modal', 'cover', styles.root)}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
-            <Trans i18nKey="assetSelectModal.title" />
-          </h2>
+          <h2 className={styles.title}>{t('assetSelectModal.title')}</h2>
 
           <Input
             autoFocus

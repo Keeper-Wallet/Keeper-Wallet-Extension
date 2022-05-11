@@ -1,7 +1,7 @@
 import * as styles from './plate.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { Button } from '../buttons';
 import { Copy } from '../copy';
 import { Modal } from '../modal/Modal';
@@ -21,7 +21,7 @@ export const Plate = ({
   );
 };
 
-interface IPlateCollapsableProps {
+interface IPlateCollapsableProps extends WithTranslation {
   className?: string;
   showExpand?: boolean;
   showCopy?: boolean;
@@ -34,7 +34,7 @@ interface IPlateCollapsableState {
   isCopied: boolean;
 }
 
-export class PlateCollapsable extends React.PureComponent<
+class PlateCollapsableComponent extends React.PureComponent<
   IPlateCollapsableProps,
   IPlateCollapsableState
 > {
@@ -77,7 +77,7 @@ export class PlateCollapsable extends React.PureComponent<
 
   render() {
     const { showExpand, isExpanded, isCopied } = this.state;
-    const { className, children, showCopy } = this.props;
+    const { t, className, children, showCopy } = this.props;
     const classNames = cn(className, { [styles.expanded]: isExpanded });
     const textToCopy = (
       React.Children.only(children) as React.ReactElement<{ data: any }>
@@ -90,21 +90,15 @@ export class PlateCollapsable extends React.PureComponent<
         <div className="buttons-wrapper">
           {showCopy && (
             <Copy text={textToCopy} onCopy={this.onCopy}>
-              <Button type="button">
-                <Trans i18nKey="plateComponent.copy" />
-              </Button>
+              <Button type="button">{t('plateComponent.copy')}</Button>
             </Copy>
           )}
 
           {showExpand && (
             <Button onClick={this.toggleExpand} type="button">
-              <Trans
-                i18nKey={
-                  isExpanded
-                    ? 'plateComponent.collapse'
-                    : 'plateComponent.expand'
-                }
-              />
+              {t(
+                isExpanded ? 'plateComponent.collapse' : 'plateComponent.expand'
+              )}
             </Button>
           )}
         </div>
@@ -112,7 +106,7 @@ export class PlateCollapsable extends React.PureComponent<
         {showCopy && (
           <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={isCopied}>
             <div className="modal notification">
-              <Trans i18nKey="plateComponent.copied" />
+              {t('plateComponent.copied')}
             </div>
           </Modal>
         )}
@@ -120,3 +114,5 @@ export class PlateCollapsable extends React.PureComponent<
     );
   }
 }
+
+export const PlateCollapsable = withTranslation()(PlateCollapsableComponent);

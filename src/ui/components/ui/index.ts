@@ -10,7 +10,7 @@ export * from './pills';
 export * from './modal/Modal';
 export * from './qRCode/QrCode';
 export * from './loader';
-export * from './Date/FormatDate';
+export * from './Date/DateFormat';
 export * from './showScript/ShowScript';
 export * from './attachment/Attachment';
 export * from './CollapsedContent/CollapsedContent';

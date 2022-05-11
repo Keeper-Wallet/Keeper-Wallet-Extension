@@ -1,6 +1,6 @@
 import * as styles from './styles/selectTxAccount.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
 import {
@@ -58,6 +58,8 @@ class SelectTxAccountComponent extends React.PureComponent {
       return <Intro />;
     }
 
+    const { t } = this.props;
+
     return (
       <div className={styles.content}>
         <TransactionWallet
@@ -69,20 +71,15 @@ class SelectTxAccountComponent extends React.PureComponent {
         </TransactionWallet>
         <div className={styles.wrapper}>
           <div className="title1 margin-main-big">
-            <Trans i18nKey="sign.changeAccount">
-              Do you want to change your account?
-            </Trans>
+            {t('sign.changeAccount')}
           </div>
 
           <div className="margin-main-large body1">
-            <Trans i18nKey="sign.changeAccountInfo">
-              If you change account, we will cancel the current transaction.
-              After selecting a new active account, repeat the operation.
-            </Trans>
+            {t('sign.changeAccountInfo')}
           </div>
 
           <Button type="submit" view="submit" onClick={this.onClick}>
-            <Trans i18nKey="sign.switchAccount">Switch account</Trans>
+            {t('sign.switchAccount')}
           </Button>
         </div>
       </div>
@@ -112,4 +109,4 @@ const actions = {
 export const SelectTxAccount = connect(
   mapStateToProps,
   actions
-)(SelectTxAccountComponent);
+)(withTranslation()(SelectTxAccountComponent));

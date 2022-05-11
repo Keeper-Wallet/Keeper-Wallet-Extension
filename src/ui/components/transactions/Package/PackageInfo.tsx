@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
 import { TxIcon, TxInfo } from '../BaseTransaction';
@@ -14,13 +14,13 @@ const MessageItem = ({ message, config, assets }) => {
   );
 };
 
-interface IProps {
+interface IProps extends WithTranslation {
   message: any;
   assets: any;
   onToggle?: (isOpen: boolean) => void;
 }
 
-export class PackageInfo extends React.PureComponent<IProps> {
+class PackageInfoComponent extends React.PureComponent<IProps> {
   readonly state = { isOpened: false };
 
   toggleHandler = () => {
@@ -35,7 +35,7 @@ export class PackageInfo extends React.PureComponent<IProps> {
   }
 
   render() {
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { isOpened } = this.state;
     const { data = [] } = message;
     const txs = data.map(getTransactionData);
@@ -74,13 +74,11 @@ export class PackageInfo extends React.PureComponent<IProps> {
           </div>
           <div className={styles.button}>
             <span>
-              <Trans
-                i18nKey={
-                  isOpened
-                    ? 'transactions.hideTransactions'
-                    : 'transactions.showTransactions'
-                }
-              />
+              {t(
+                isOpened
+                  ? 'transactions.hideTransactions'
+                  : 'transactions.showTransactions'
+              )}
               <i className={isOpened ? styles.arrowUp : styles.arrowDown} />
             </span>
           </div>
@@ -89,3 +87,5 @@ export class PackageInfo extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const PackageInfo = withTranslation()(PackageInfoComponent);

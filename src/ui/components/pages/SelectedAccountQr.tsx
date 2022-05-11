@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Button, QRCode } from '../ui';
 
@@ -11,6 +11,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
   downloadHandler = () => this._download();
 
   render() {
+    const { t } = this.props;
     const address = this.props.selectedAccount.address;
     const name = this.props.selectedAccount.name;
     const isEdge =
@@ -39,9 +40,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
             className={`${styles.downloadQr}`}
             onClick={this.downloadHandler}
           >
-            <div>
-              <Trans i18nKey="qrCode.download">Download QR code</Trans>
-            </div>
+            <div>{t('qrCode.download')}</div>
           </Button>
         )}
       </div>
@@ -80,5 +79,5 @@ const mapStateToProps = function (store: any) {
 };
 
 export const QRCodeSelectedAccount = connect(mapStateToProps)(
-  QRCodeSelectedAccountComponent
+  withTranslation()(QRCodeSelectedAccountComponent)
 );

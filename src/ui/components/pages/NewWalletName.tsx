@@ -1,6 +1,6 @@
 import * as styles from './newWalletName.module.css';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   createAccount,
   newAccountName,
@@ -53,9 +53,7 @@ export function NewWalletName({ setTab }) {
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
-      <h2 className={`title1 margin1`}>
-        <Trans i18nKey="newAccountName.accountName" />
-      </h2>
+      <h2 className={`title1 margin1`}>{t('newAccountName.accountName')}</h2>
 
       <form
         onSubmit={e => {
@@ -102,12 +100,12 @@ export function NewWalletName({ setTab }) {
         </div>
 
         <div className={`basic500 tag1 margin2`}>
-          <Trans i18nKey="newAccountName.nameInfo" />
+          {t('newAccountName.nameInfo')}
         </div>
 
         <div className={styles.footer}>
           <div className={`tag1 basic500 input-title`}>
-            <Trans i18nKey="newAccountName.accountAddress" />
+            {t('newAccountName.accountAddress')}
           </div>
 
           <div className={`${styles.greyLine} grey-line`}>
@@ -117,7 +115,7 @@ export function NewWalletName({ setTab }) {
           {existedAccount ? (
             <>
               <Button className="margin2" type="submit">
-                <Trans i18nKey="newAccountName.switchAccount" />
+                {t('newAccountName.switchAccount')}
               </Button>
 
               <Button
@@ -125,7 +123,7 @@ export function NewWalletName({ setTab }) {
                 type="button"
                 onClick={() => dispatch(resetTab(PAGES.ROOT))}
               >
-                <Trans i18nKey="newAccountName.cancel" />
+                {t('newAccountName.cancel')}
               </Button>
             </>
           ) : (
@@ -137,7 +135,7 @@ export function NewWalletName({ setTab }) {
               view="submit"
               disabled={!accountName || !!error || pending}
             >
-              <Trans i18nKey="newAccountName.continue" />
+              {t('newAccountName.continue')}
             </Button>
           )}
         </div>

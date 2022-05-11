@@ -1,4 +1,4 @@
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export function AssetInfo({ asset, onCopy, onClose }: Props) {
+  const { t } = useTranslation();
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
@@ -21,9 +22,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
     <div className="modal cover">
       <div className="modal-form">
         <div className="margin-main">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.id" />
-          </div>
+          <div className="input-title basic500 tag1">{t('assetInfo.id')}</div>
           <div className="flex tag1">
             <Ellipsis text={asset.id} size={14} />
             <Copy text={asset.id}>
@@ -33,16 +32,14 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
         </div>
 
         <div className="margin-main">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.name" />
-          </div>
+          <div className="input-title basic500 tag1">{t('assetInfo.name')}</div>
           <div className="tag1">{asset.name}</div>
         </div>
 
         {asset.ticker && (
           <div className="margin-main">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="assetInfo.ticker" />
+              {t('assetInfo.ticker')}
             </div>
             <div className="tag1">{asset.ticker}</div>
           </div>
@@ -50,14 +47,14 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
 
         <div className="margin-main">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.precision" />
+            {t('assetInfo.precision')}
           </div>
           <div className="tag1">{asset.precision}</div>
         </div>
 
         <div className="margin-main">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.quantity" />
+            {t('assetInfo.quantity')}
           </div>
           <div className="tag1">
             <Balance balance={new Money(asset.quantity, new Asset(asset))} />
@@ -65,30 +62,24 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
         </div>
 
         <div className="margin-main">
-          <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.type" />
-          </div>
+          <div className="input-title basic500 tag1">{t('assetInfo.type')}</div>
           <div className="tag1">
-            <Trans
-              i18nKey={
-                asset.reissuable
-                  ? 'assetInfo.reissuable'
-                  : 'assetInfo.notReissuable'
-              }
-            />
+            {t(
+              asset.reissuable
+                ? 'assetInfo.reissuable'
+                : 'assetInfo.notReissuable'
+            )}
             ,&nbsp;
-            <Trans
-              i18nKey={
-                asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted'
-              }
-            />
+            {t(
+              asset.hasScript ? 'assetInfo.scripted' : 'assetInfo.notScripted'
+            )}
           </div>
         </div>
 
         {!!asset.minSponsoredFee && (
           <div className="margin-main">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="assetInfo.minSponsoredFee" />
+              {t('assetInfo.minSponsoredFee')}
             </div>
             <div className="tag1">{asset.minSponsoredFee}</div>
           </div>
@@ -97,7 +88,7 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
         {asset.sender && (
           <div className="margin-main">
             <div className="input-title basic500 tag1">
-              <Trans i18nKey="assetInfo.sender" />
+              {t('assetInfo.sender')}
             </div>
             <div className="flex tag1">
               <Ellipsis text={asset.sender} size={14} />
@@ -110,10 +101,10 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
 
         <div className="margin-main">
           <div className="input-title basic500 tag1">
-            <Trans i18nKey="assetInfo.timestamp" />
+            {t('assetInfo.timestamp')}
           </div>
           <div className="tag1">
-            <DateFormat value={asset.timestamp} />
+            <DateFormat date={asset.timestamp} />
           </div>
         </div>
 
@@ -125,13 +116,13 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
               href={getAssetDetailLink(networkCode, asset.originTransactionId)}
               target="_blank"
             >
-              <Trans i18nKey="assetInfo.viewDetailsInExplorer" />
+              {t('assetInfo.viewDetailsInExplorer')}
             </a>
           </div>
         )}
 
         <Button type="button" onClick={onClose}>
-          <Trans i18nKey="assetInfo.closeBtn" />
+          {t('assetInfo.closeBtn')}
         </Button>
 
         <Button

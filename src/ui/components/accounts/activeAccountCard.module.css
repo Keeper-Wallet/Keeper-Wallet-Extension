@@ -18,10 +18,11 @@
 }
 
 .accountName {
+  color: #9ba6b2;
   margin-bottom: 8px;
   overflow: hidden;
-  color: #9ba6b2;
   text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .accountAmount {

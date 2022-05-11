@@ -26,6 +26,9 @@
   font-family: Roboto;
   font-size: 14px;
   font-weight: 300;
+  overflow: hidden;
+  padding: 0 20px;
+  text-overflow: ellipsis;
 }
 
 .button:focus {

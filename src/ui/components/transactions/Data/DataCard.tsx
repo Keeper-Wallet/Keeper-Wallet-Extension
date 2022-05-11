@@ -1,25 +1,25 @@
 import * as styles from './data.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 import { ShowScript } from '../../ui';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class DataCard extends React.PureComponent<IProps> {
+class DataCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(styles.dataTransactionCard, this.props.className, {
       [styles.dataCard_collapsed]: this.props.collapsed,
     });
 
-    const { message } = this.props;
+    const { t, message } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     return (
@@ -30,10 +30,10 @@ export class DataCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.dataTransaction" />
+              {t('transactions.dataTransaction')}
             </div>
             <h1 className="headline1">
-              <Trans i18nKey="transactions.dataTransactionName" />
+              {t('transactions.dataTransactionName')}
             </h1>
           </div>
         </div>
@@ -52,3 +52,5 @@ export class DataCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const DataCard = withTranslation()(DataCardComponent);

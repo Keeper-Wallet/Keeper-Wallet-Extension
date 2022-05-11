@@ -1,19 +1,19 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class OriginAuthCard extends React.PureComponent<IProps> {
+class OriginAuthCardComponent extends React.PureComponent<IProps> {
   render() {
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { origin } = message;
     const className = cn(
       styles.originAuthTransactionCard,
@@ -34,7 +34,7 @@ export class OriginAuthCard extends React.PureComponent<IProps> {
                     {origin}
                   </div>
                   <h1 className="headline1">
-                    <Trans i18nKey="transactions.allowAccessTitle" />
+                    {t('transactions.allowAccessTitle')}
                   </h1>
                 </div>
               </div>
@@ -50,3 +50,5 @@ export class OriginAuthCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const OriginAuthCard = withTranslation()(OriginAuthCardComponent);

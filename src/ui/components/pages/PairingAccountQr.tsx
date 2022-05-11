@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './styles/pairingAccountQr.styl';
 import { QRCode } from '../ui';
 import { pairingGetData, pairingSetData } from '../../actions';
@@ -33,6 +33,7 @@ class PairingAccountQrComponent extends React.PureComponent {
       return <Intro />;
     }
 
+    const { t } = this.props;
     const seed = this.props.seed;
     const name = this.props.selectedAccount.name;
     const address = this.props.selectedAccount.address;
@@ -57,7 +58,7 @@ class PairingAccountQrComponent extends React.PureComponent {
           <h2
             className={cn('title1', 'margin3', 'margin-main-big', styles.title)}
           >
-            <Trans i18nKey="pairing.scanPairing">Scan Pairing Code</Trans>
+            {t('pairing.scanPairing')}
           </h2>
 
           <div
@@ -77,15 +78,10 @@ class PairingAccountQrComponent extends React.PureComponent {
 
           <div className={`fixed ${styles.pairingFooter}`}>
             <div className="margin-main-big body1 basic500">
-              <Trans i18nKey="pairing.scanInfo">
-                Scan the code below with your iPhone or Android device to pair
-                it with your account.
-              </Trans>
+              {t('pairing.scanInfo')}
             </div>
             <div className="margin-main body1 basic500">
-              <Trans i18nKey="pairing.appInfo">
-                Download our mobile applications below:
-              </Trans>
+              {t('pairing.appInfo')}
             </div>
 
             <div className="buttons-wrapper margin-main-large">
@@ -138,4 +134,4 @@ const actions = {
 export const PairingAccountQr = connect(
   mapStateToProps,
   actions
-)(PairingAccountQrComponent);
+)(withTranslation()(PairingAccountQrComponent));

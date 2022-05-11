@@ -1,7 +1,7 @@
 import * as styles from './auth.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const Icon = props => (
   <div className={props.small ? styles.authTxIconSmall : styles.authTxIcon}>
@@ -22,13 +22,13 @@ const Icon = props => (
   </div>
 );
 
-interface IProps {
+interface IProps extends WithTranslation {
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class AuthCard extends React.PureComponent<IProps> {
+class AuthCardComponent extends React.PureComponent<IProps> {
   readonly state = { canUseIcon: false, icon: null };
 
   componentDidMount(): void {
@@ -50,7 +50,7 @@ export class AuthCard extends React.PureComponent<IProps> {
 
   render() {
     const { canUseIcon, icon } = this.state;
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { data, origin } = message;
     const tx = { type: data.type, ...data.data };
     const { name } = tx;
@@ -72,7 +72,7 @@ export class AuthCard extends React.PureComponent<IProps> {
                     {name || origin}
                   </div>
                   <h1 className="headline1">
-                    <Trans i18nKey="transactions.allowAccessTitle" />
+                    {t('transactions.allowAccessTitle')}
                   </h1>
                 </div>
               </div>
@@ -90,3 +90,5 @@ export class AuthCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const AuthCard = withTranslation()(AuthCardComponent);

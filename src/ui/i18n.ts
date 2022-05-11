@@ -15,6 +15,9 @@ i18n
     backend: {
       loadPath: '/_locales/{{lng}}/{{ns}}.{{lng}}.json',
     },
+    react: {
+      useSuspense: false,
+    },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
@@ -30,32 +33,12 @@ export const LANGS = [
     name: 'Русский',
   },
   {
-    id: 'ko',
-    name: '한국어',
-  },
-  {
-    id: 'zh',
-    name: '中文(简体)',
-  },
-  {
     id: 'tr',
     name: 'Türkçe',
   },
   {
-    id: 'hi',
-    name: 'हिन्दी',
-  },
-  {
-    id: 'es',
-    name: 'Español',
-  },
-  {
     id: 'pt',
     name: 'Portugal',
-  },
-  {
-    id: 'pl',
-    name: 'Polsk',
   },
 ];
 

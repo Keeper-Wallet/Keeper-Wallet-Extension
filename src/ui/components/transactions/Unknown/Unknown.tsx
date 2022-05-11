@@ -1,6 +1,6 @@
 import * as styles from './unknown.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { UnknownCard } from './UnknownCard';
 import { UnknownInfo } from './UnknownInfo';
@@ -8,6 +8,7 @@ import { ApproveBtn, Button } from '../../ui';
 import { TxHeader } from '../BaseTransaction';
 
 export function Unknown(props) {
+  const { t } = useTranslation();
   const { message, assets } = props;
 
   return (
@@ -24,7 +25,7 @@ export function Unknown(props) {
 
       <div className={`${styles.txButtonsWrapper} buttons-wrapper`}>
         <Button id="reject" onClick={props.reject} type="button" view="warning">
-          <Trans i18nKey="sign.reject" />
+          {t('sign.reject')}
         </Button>
         <ApproveBtn
           id="approve"
@@ -32,7 +33,7 @@ export function Unknown(props) {
           type="submit"
           view="submit"
         >
-          <Trans i18nKey="sign.auth" />
+          {t('sign.auth')}
         </ApproveBtn>
       </div>
     </div>

@@ -1,26 +1,21 @@
 import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 
 export function BackUpSeed({ setTab }) {
+  const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(state => state.localState.newAccount);
 
   return (
     <div className={styles.content}>
-      <h2 className="title1 margin2">
-        <Trans i18nKey="backupSeed.saveBackup">Save backup phrase</Trans>
-      </h2>
+      <h2 className="title1 margin2">{t('backupSeed.saveBackup')}</h2>
 
       <div className="flex margin-main">
-        <div className="basic500 tag1">
-          <Trans i18nKey="backupSeed.backupCarefully">
-            Please carefully write down these 15 words or copy them
-          </Trans>
-        </div>
+        <div className="basic500 tag1">{t('backupSeed.backupCarefully')}</div>
         <Copy
           text={newAccount.seed}
           onCopy={() => {
@@ -37,9 +32,7 @@ export function BackUpSeed({ setTab }) {
       </div>
 
       <div className={`basic500 tag1 margin1 center ${styles.bottomText}`}>
-        <Trans i18nKey="backupSeed.confirmBackupInfo">
-          You will confirm this phrase on the next screen
-        </Trans>
+        {t('backupSeed.confirmBackupInfo')}
       </div>
 
       <Button
@@ -48,17 +41,15 @@ export function BackUpSeed({ setTab }) {
         type="submit"
         onClick={() => setTab(PAGES.CONFIRM_BACKUP)}
       >
-        <Trans i18nKey="backupSeed.continue">Continue</Trans>
+        {t('backupSeed.continue')}
       </Button>
 
       <Button id="cancelCreation" onClick={() => setTab(PAGES.ROOT)}>
-        <Trans i18nKey="backupSeed.cancel">Cancel creation</Trans>
+        {t('backupSeed.cancel')}
       </Button>
 
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
-        <div className="modal notification">
-          <Trans i18nKey="backupSeed.copied">Copied!</Trans>
-        </div>
+        <div className="modal notification">{t('backupSeed.copied')}</div>
       </Modal>
     </div>
   );

@@ -4,7 +4,7 @@ import { Balance, Ellipsis, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { useAppSelector } from '../../../store';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
@@ -372,7 +372,7 @@ export function HistoryItem({ tx, className }: Props) {
         {!!info && <div className={styles.historyInfo}>{info}</div>}
       </div>
 
-      <Tooltip content={<Trans i18nKey="historyCard.infoTooltip" />}>
+      <Tooltip content={t('historyCard.infoTooltip')}>
         {props => (
           <button
             className={styles.infoButton}

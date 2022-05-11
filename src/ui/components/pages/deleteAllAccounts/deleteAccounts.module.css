@@ -1,25 +1,24 @@
 .content {
   display: flex;
   flex-direction: column;
-  margin: 60px 40px;
   font-weight: 400;
-}
-
-.subtractMenu {
-  margin-top: 12px;
+  overflow: auto;
+  padding: 20px 40px 32px;
 }
 
 .error {
-  min-height: 1rem;
-  color: var(--color-error400);
   background: none;
   border-color: var(--color-error400);
+  color: var(--color-error400);
+  flex-shrink: 0;
+  min-height: 1rem;
 }
 
 .errorIcon {
-  width: 48px;
+  background-size: cover;
+  display: block;
+  flex-shrink: 0;
   height: 48px;
   margin: 0 auto 24px auto;
-  display: block;
-  background-size: cover;
+  width: 48px;
 }

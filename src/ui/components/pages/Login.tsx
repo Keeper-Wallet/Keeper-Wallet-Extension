@@ -1,6 +1,6 @@
 import * as styles from './styles/login.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
@@ -40,6 +40,7 @@ class LoginComponent extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.content}>
         <div className={styles.logoMargin}>
@@ -47,7 +48,7 @@ class LoginComponent extends React.Component {
         </div>
         <form onSubmit={this.onSubmit}>
           <div className={`left input-title basic500 tag1`}>
-            <Trans i18nKey="login.password">Password</Trans>
+            {t('login.password')}
           </div>
           <div className="margin-main-big relative">
             <Input
@@ -60,7 +61,7 @@ class LoginComponent extends React.Component {
               autoComplete="off"
             />
             <Error show={this.state.passwordError}>
-              <Trans i18nKey="login.passwordError">Wrong password</Trans>
+              {t('login.passwordError')}
             </Error>
           </div>
           <Button
@@ -70,12 +71,12 @@ class LoginComponent extends React.Component {
             className="margin4"
             disabled={!this.state.password}
           >
-            <Trans i18nKey="login.enter">Enter</Trans>
+            {t('login.enter')}
           </Button>
         </form>
         <div>
           <div className={styles.forgotLnk} onClick={this.forgotHandler}>
-            <Trans i18nKey="login.passwordForgot">I forgot password</Trans>
+            {t('login.passwordForgot')}
           </div>
         </div>
       </div>
@@ -103,4 +104,7 @@ const mapStateToProps = function ({ localState }) {
   };
 };
 
-export const Login = connect(mapStateToProps, actions)(LoginComponent);
+export const Login = connect(
+  mapStateToProps,
+  actions
+)(withTranslation()(LoginComponent));

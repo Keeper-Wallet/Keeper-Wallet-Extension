@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Input, Select } from 'ui/components/ui';
@@ -117,47 +117,35 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
   };
 
   render(): React.ReactNode {
+    const { t, originName } = this.props;
+
     const timeList = CONFIG.list.map(item => {
       return {
         id: item.id,
         value: item.value,
-        text: (
-          <Trans i18nKey={item.i18nKey} key={item.id}>
-            {item.text}
-          </Trans>
-        ),
+        text: t(item.i18nKey, { key: item.id }),
       };
     });
 
-    const { originName } = this.props;
     const className = cn(styles.settings, styles.inModal, this.props.className);
     const value = (this.state.interval ? this.state.totalAmount : '') || '';
     return (
       <div className={className}>
         <div className={styles.description}>
-          <Trans i18nKey="permissionSettings.modal.description">
-            This allows {{ originName }} to automatically sign transactions on
-            your behalf.
-          </Trans>
+          {t('permissionSettings.modal.description', { originName })}
         </div>
 
         <Select
           className={cn(styles.selectTime, styles.margin12)}
           selectList={timeList}
           selected={this.state.selected}
-          description={
-            <Trans i18nKey="permissionSettings.modal.time">
-              Resolution time
-            </Trans>
-          }
+          description={t('permissionSettings.modal.time')}
           onSelectItem={this.selectTimeHandler}
         />
 
         <div className={cn(styles.amount, styles.margin12)}>
           <div className="left input-title basic500 tag1">
-            <Trans i18nKey="permissionSettings.modal.amount">
-              Spending limit
-            </Trans>
+            {t('permissionSettings.modal.amount')}
           </div>
           <Input
             disabled={!this.state.interval}
@@ -177,9 +165,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
             onChange={this.changeShowNotifyHandler}
           />
           <label htmlFor="checkbox_noshow">
-            <Trans i18nKey="notifications.allowSending">
-              Allow sending messages
-            </Trans>
+            {t('notifications.allowSending')}
           </label>
         </div>
       </div>
@@ -187,9 +173,12 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
   }
 }
 
-export const ExtendedPermission = ExtendedPermissionsComponent;
+export const ExtendedPermission = withTranslation()(
+  ExtendedPermissionsComponent
+);
 
-interface IProps extends React.ComponentProps<'div'> {
+interface IProps extends WithTranslation {
+  className?: string;
   autoSign: TAutoAuth;
   showNotify: boolean;
   originName: string;

@@ -195,6 +195,7 @@ export function ImportLedger({ setTab }: Props) {
           () => {
             setGetUsersError(
               <Trans
+                t={t}
                 i18nKey="importLedger.couldNotGetUsersError"
                 components={{
                   retryButton: (
@@ -215,14 +216,12 @@ export function ImportLedger({ setTab }: Props) {
 
   return (
     <div className={styles.root}>
-      <h2 className={styles.title}>
-        <Trans i18nKey="importLedger.title" />
-      </h2>
+      <h2 className={styles.title}>{t('importLedger.title')}</h2>
 
       {ledgerUsersPages[0] != null ? (
         <div>
           <p className={styles.instructions}>
-            <Trans i18nKey="importLedger.selectAccountInstructions" />
+            {t('importLedger.selectAccountInstructions')}
           </p>
 
           <div className={styles.avatarList}>
@@ -242,7 +241,7 @@ export function ImportLedger({ setTab }: Props) {
                   {getUsersError}
                 </Error>
               ) : (
-                <Trans i18nKey="importLedger.avatarListLoading" />
+                t('importLedger.avatarListLoading')
               )}
             </div>
 
@@ -285,7 +284,7 @@ export function ImportLedger({ setTab }: Props) {
 
           <div className="margin2">
             <div className="tag1 basic500 input-title">
-              <Trans i18nKey="importLedger.accountIdLabel" />
+              {t('importLedger.accountIdLabel')}
             </div>
 
             <Input
@@ -328,13 +327,13 @@ export function ImportLedger({ setTab }: Props) {
               setTab(PAGES.ACCOUNT_NAME_SEED);
             }}
           >
-            <Trans i18nKey="importLedger.continueButton" />
+            {t('importLedger.continueButton')}
           </Button>
         </div>
       ) : (
         <div>
           <p className={styles.instructions}>
-            <Trans i18nKey="importLedger.connectInstructions" />
+            {t('importLedger.connectInstructions')}
           </p>
 
           <Error className={styles.error} show={!!connectionError}>
@@ -349,7 +348,7 @@ export function ImportLedger({ setTab }: Props) {
               view="submit"
               onClick={connectToLedger}
             >
-              <Trans i18nKey="importLedger.tryAgainButton" />
+              {t('importLedger.tryAgainButton')}
             </Button>
           )}
         </div>

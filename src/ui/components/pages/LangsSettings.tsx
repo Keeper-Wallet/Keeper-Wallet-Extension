@@ -1,12 +1,20 @@
-import * as styles from './styles/langsSettings.styl';
+import * as styles from './LangsSettings.module.css';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+import { withTranslation, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import { setLocale, setUiState } from '../../actions';
+import { setLocale } from '../../actions';
 import cn from 'classnames';
 
-const Lang = ({ id, name, onSelect, selected }) => {
+interface LangProps {
+  id: string;
+  name: string;
+  setSelected: (id: string) => void;
+  selected: boolean;
+}
+
+const Lang = ({ id, name, setSelected, selected }: LangProps) => {
+  const { t } = useTranslation();
   const className = cn(styles[id], styles.lang, {
     [styles.selected]: selected,
   });
@@ -16,82 +24,64 @@ const Lang = ({ id, name, onSelect, selected }) => {
   });
 
   return (
-    <div className={className}>
-      <div
-        className={`${styles.selectButton} fullwidth body1 left`}
-        onClick={onSelect}
-      >
-        <Trans i18nKey={`langsSettings.${id}`}>{name}</Trans>
+    <div
+      className={className}
+      onClick={() => {
+        setSelected(id);
+      }}
+    >
+      <div className={`${styles.selectButton} fullwidth body1 left`}>
+        {name}
       </div>
       <div className={iconClass}></div>
     </div>
   );
 };
 
-class LangsSettingsComponent extends React.PureComponent {
-  readonly props;
-  confirmHandler = () => {
-    this.props.setUiState({ selectedLangs: true });
-  };
+export const LangsSettings = () => {
+  const { t } = useTranslation();
 
-  render() {
-    const className = cn(styles.content, {
-      introLangList: !this.props.selectedLangs,
-    });
+  const dispatch = useAppDispatch();
+  const [langs, currentLocale] = useAppSelector(state => [
+    state.langs,
+    state.currentLocale,
+  ]);
 
-    return (
-      <div className={className}>
-        {this.props.hideTitle ? null : (
-          <h2 className="title1 margin-main-big">
-            <Trans i18nKey="langsSettings.title">Change the language</Trans>
-          </h2>
-        )}
-        <div className={styles.langsList}>
-          {this.props.langs.map(({ id, name }) => {
-            return (
-              <Lang
-                id={id}
-                key={id}
-                name={name}
-                onSelect={() => this.onSelect(id)}
-                selected={id === this.props.currentLocale}
-              />
-            );
-          })}
-        </div>
-        {!this.props.selectedLangs ? (
+  const [selected, setSelected] = React.useState(currentLocale);
+
+  return (
+    <div className={styles.content}>
+      <h2 className="title1 margin-main-big">{t('langsSettings.title')}</h2>
+      <div className={styles.langsList}>
+        {langs.map(({ id, name }) => {
+          return (
+            <Lang
+              id={id}
+              key={id}
+              name={name}
+              setSelected={setSelected}
+              selected={id === selected}
+            />
+          );
+        })}
+      </div>
+      {currentLocale !== selected && (
+        <div className={styles.langsConfirm}>
           <Button
-            className={styles.langsConfirm}
-            onClick={this.confirmHandler}
+            onClick={() => {
+              if (currentLocale === selected) {
+                return;
+              }
+
+              dispatch(setLocale(selected));
+            }}
             type="submit"
             view="submit"
           >
-            <Trans i18nKey="langsSettings.confirm">Confirm</Trans>
+            {t('langsSettings.confirm')}
           </Button>
-        ) : null}
-      </div>
-    );
-  }
-
-  onSelect(lang) {
-    this.props.setLocale(lang);
-  }
-}
-
-const mapStateToProps = function (store) {
-  return {
-    currentLocale: store.currentLocale,
-    langs: store.langs,
-    selectedLangs: store.uiState.selectedLangs,
-  };
+        </div>
+      )}
+    </div>
+  );
 };
-
-const actions = {
-  setUiState,
-  setLocale,
-};
-
-export const LangsSettings = connect(
-  mapStateToProps,
-  actions
-)(LangsSettingsComponent);

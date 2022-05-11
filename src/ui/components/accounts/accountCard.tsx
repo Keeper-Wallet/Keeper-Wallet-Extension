@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Avatar } from '../ui/avatar/Avatar';
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {
+  const { t } = useTranslation();
   return (
     <div className={styles.root} data-testid="accountCard">
       <div className={styles.accountInfo}>
@@ -43,7 +44,7 @@ export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {
         }}
       />
 
-      <Tooltip content={<Trans i18nKey="accountCard.infoTooltip" />}>
+      <Tooltip content={t('accountCard.infoTooltip')}>
         {props => (
           <button
             className={styles.infoButton}
