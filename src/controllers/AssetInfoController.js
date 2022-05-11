@@ -224,13 +224,19 @@ export class AssetInfoController {
     await this.updateSuspiciousAssets();
 
     const { assets } = this.store.getState();
-    if (assetId === '' || assetId == null || assetId.toUpperCase() === 'WAVES')
+    const network = this.getNetwork();
+
+    if (
+      assetId === '' ||
+      assetId == null ||
+      assetId.toUpperCase() === 'WAVES'
+    ) {
       return {
-        ...WAVES,
+        ...assets[network]['WAVES'],
         usdPrice: this.getUsdPrice('WAVES'),
       };
+    }
 
-    const network = this.getNetwork();
     const API_BASE = this.getNode();
     const url = new URL(`assets/details/${assetId}`, API_BASE).toString();
 
@@ -354,7 +360,7 @@ export class AssetInfoController {
           }
         });
         assets[network]['WAVES'] = {
-          ...WAVES,
+          ...assets[network]['WAVES'],
           usdPrice: this.getUsdPrice('WAVES'),
         };
         this.store.updateState({ assets });
