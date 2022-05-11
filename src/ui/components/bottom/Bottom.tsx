@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './bottom.styl';
+import * as styles from './bottom.module.css';
 import cn from 'classnames';
 import { Network } from './components';
 import { useAppSelector } from 'ui/store';
