@@ -4,7 +4,13 @@ import cn from 'classnames';
 import { Network } from './components';
 import { useAppSelector } from 'ui/store';
 
-export function Bottom({ className, noChangeNetwork, hide }) {
+interface Props {
+  className?: string;
+  noChangeNetwork?: boolean;
+  hide?: boolean;
+}
+
+export function Bottom({ className, noChangeNetwork, hide }: Props) {
   const version = useAppSelector(state => state.version);
   const isLocked = useAppSelector(
     state => state.state?.locked || !state.state?.initialized
