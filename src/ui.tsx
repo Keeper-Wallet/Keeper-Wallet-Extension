@@ -69,6 +69,7 @@ async function startUi() {
   };
 
   const dnode = setupDnode(connectionStream, emitterApi, 'api');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const background = await new Promise<any>(resolve => {
     dnode.once('remote', background => {
       resolve(transformMethods(cbToPromise, background));
@@ -77,6 +78,7 @@ async function startUi() {
 
   // global access to service on debug
   if (KEEPERWALLET_DEBUG) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).background = background;
   }
 

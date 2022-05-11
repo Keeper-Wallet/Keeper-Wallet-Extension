@@ -163,6 +163,7 @@ class LedgerService {
           );
           break;
         default:
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           throw new Error(`Unknown request type: "${(request as any).type}"`);
       }
 

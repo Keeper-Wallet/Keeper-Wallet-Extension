@@ -173,7 +173,7 @@ class RootComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store) {
   return {
     loading: store.localState.loading,
     locked: store.state && store.state.locked,
@@ -195,6 +195,7 @@ const actions = {
   removeBackTab,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 
 interface IProps {
@@ -209,6 +210,9 @@ interface IProps {
   backTabs: Array<string>;
   messages: Array<unknown>;
   notifications: Array<unknown>;
-  activePopup: { msg: any | null; notify: Array<unknown> | null } | null;
+  activePopup: {
+    msg: { type: string; data: { type: string } } | null;
+    notify: Array<unknown> | null;
+  } | null;
   loading: boolean;
 }

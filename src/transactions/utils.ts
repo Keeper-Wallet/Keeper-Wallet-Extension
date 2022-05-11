@@ -168,6 +168,9 @@ interface SaMassTransfer {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyValue = any;
+
 interface SaData {
   type: typeof TRANSACTION_TYPE.DATA;
   data: {
@@ -180,7 +183,7 @@ interface SaData {
     data: Array<{
       key: string;
       type: string;
-      value: any;
+      value: AnyValue;
     }>;
   };
 }
@@ -235,7 +238,7 @@ interface SaInvokeScript {
       function: string;
       args?: Array<{
         type: string;
-        value: any;
+        value: AnyValue;
       }>;
     } | null;
     payment: Money[];
@@ -646,6 +649,7 @@ export const convertFromSa = {
           )
         );
       default:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         throw new Error(`Unexpected type: ${(input as any).type}`);
     }
   },
@@ -682,7 +686,7 @@ export const convertFromSa = {
       senderPublicKey: input.data.senderPublicKey,
       proofs: input.data.proofs || [],
       matcherFeeAssetId: input.data.matcherFee.asset.id,
-    } as any),
+    } as never),
   cancelOrder: (input: SaCancelOrder) =>
     cancelOrder({
       orderId: input.data.id,

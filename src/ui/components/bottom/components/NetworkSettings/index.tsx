@@ -119,7 +119,7 @@ class NetworkSettingsComponent extends React.PureComponent<
 
   private changeHandler = (valueName, errorName) => event => {
     const { target } = event;
-    this.setState({ [valueName]: target.value, [errorName]: false } as any);
+    this.setState({ [valueName]: target.value, [errorName]: false } as unknown);
   };
 
   private saveHandler = () => {

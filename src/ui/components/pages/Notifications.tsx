@@ -18,8 +18,8 @@ import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 import { Message } from 'ui/components/transactions/BaseTransaction';
 
-interface Notification {
-  id: number;
+export interface Notification {
+  id: string;
   origin: string;
   title: string;
   message: string;
