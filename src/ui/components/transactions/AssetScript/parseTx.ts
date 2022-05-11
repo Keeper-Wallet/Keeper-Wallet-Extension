@@ -1,5 +1,4 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AnyTransaction } from 'ui/components/transactions/BaseTransaction';
 
 export const messageType = 'set-asset-script';
 export const txType = 'transaction';
@@ -20,6 +19,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: AnyTransaction, type: string) {
+export function isMe(tx, type: string) {
   return tx.type === TRANSACTION_TYPE.SET_ASSET_SCRIPT && type === txType;
 }

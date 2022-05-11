@@ -17,7 +17,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isMe(tx: any, type: string) {
+export function isMe(tx, type: string) {
   return tx.type === 1003 && (type === txType || type === 'request');
 }

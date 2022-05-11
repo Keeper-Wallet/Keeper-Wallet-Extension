@@ -54,7 +54,3 @@ export interface ComponentProps extends WithTranslation {
   rejectForever: (...args: unknown[]) => void;
   selectAccount: () => void;
 }
-
-export interface AnyTransaction {
-  type: number;
-}

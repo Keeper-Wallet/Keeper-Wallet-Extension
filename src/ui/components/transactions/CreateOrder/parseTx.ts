@@ -57,7 +57,6 @@ export function getPriceAmount(tx, assets) {
   return amount.convertTo(price.asset, price.getTokens());
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isMe(tx: any, type: string) {
+export function isMe(tx, type: string) {
   return tx.type === 1002 && type === txType;
 }

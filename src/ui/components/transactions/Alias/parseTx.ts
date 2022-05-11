@@ -1,5 +1,4 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SaTransaction } from 'transactions/utils';
 
 export const messageType = 'create-alias';
 export const txType = 'transaction';
@@ -19,6 +18,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: SaTransaction, type: string) {
+export function isMe(tx, type: string) {
   return tx.type === TRANSACTION_TYPE.ALIAS && type === txType;
 }
