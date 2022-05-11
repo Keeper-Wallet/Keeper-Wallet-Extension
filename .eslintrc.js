@@ -11,14 +11,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'prettier',
-    'import',
-    'react',
-    'react-hooks',
-    // 'mocha',
-  ],
+  plugins: ['@typescript-eslint', 'prettier', 'import', 'react', 'react-hooks'],
   settings: {
     react: {
       version: 'detect',
@@ -33,7 +26,6 @@ module.exports = {
     'plugin:prettier/recommended',
     'prettier',
   ],
-
   rules: {
     'prefer-const': [
       'error',
@@ -41,9 +33,6 @@ module.exports = {
         destructuring: 'all',
       },
     ],
-    '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-this-alias': 'warn',
-    'react/prop-types': 'warn',
+    // '@typescript-eslint/no-var-requires': 'off',
   },
 };
