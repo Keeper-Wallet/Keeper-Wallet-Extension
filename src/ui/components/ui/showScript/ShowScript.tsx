@@ -25,7 +25,7 @@ const ContentScript = ({
 export type EntryWithKey = {
   key: string;
   type: string;
-  value: any;
+  value: unknown;
 };
 const Data = ({
   data,
@@ -79,7 +79,7 @@ const Data = ({
 
 export type EntryNoKey = {
   type: string;
-  value: any;
+  value: unknown;
 };
 
 const DataNoKey = ({
@@ -115,7 +115,7 @@ const DataNoKey = ({
                 {length ? (
                   <td title={itemValueJson} className={styles.dataItemDataLast}>
                     [
-                    {itemValue.map((item, index) =>
+                    {(itemValue as unknown[]).map((item, index) =>
                       index === length - 1 ? (
                         <>
                           {JSON.stringify(item)}]<br />

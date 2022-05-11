@@ -1,17 +1,11 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
 
-interface IProps extends WithTranslation {
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class OriginAuthCardComponent extends React.PureComponent<IProps> {
+class OriginAuthCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const { t, message, collapsed } = this.props;
     const { origin } = message;

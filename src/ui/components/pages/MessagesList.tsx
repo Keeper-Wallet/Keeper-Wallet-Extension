@@ -18,30 +18,35 @@ import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
 import { AssetDetail } from 'ui/services/Background';
 import { Account } from 'accounts/types';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
-  return messages.map(message => {
-    try {
-      const config = getConfigByTransaction(message);
-      const Card = config.card;
-      return (
-        <div key={message.id} onClick={() => onSelect(message)}>
-          <Card
-            className={styles.cardItem}
-            message={message}
-            assets={assets}
-            collapsed={true}
-          />
-        </div>
-      );
-    } catch (e) {
-      return null;
-    }
-  });
+  return (
+    <>
+      {messages.map(message => {
+        try {
+          const config = getConfigByTransaction(message);
+          const Card = config.card;
+          return (
+            <div key={message.id} onClick={() => onSelect(message)}>
+              <Card
+                className={styles.cardItem}
+                message={message}
+                assets={assets}
+                collapsed={true}
+              />
+            </div>
+          );
+        } catch (e) {
+          return null;
+        }
+      })}
+    </>
+  );
 };
 
 interface IProps {
-  messages: any;
+  messages: Message[];
   assets: Record<string, AssetDetail>;
   onSelect: (...args: unknown[]) => void;
   onReject: (...args: unknown[]) => void;

@@ -41,7 +41,7 @@ class SettingsGeneralComponent extends React.Component<Props> {
             <Select
               description={t('settings.sessionTimeout')}
               fill
-              selectList={selectList as any}
+              selectList={selectList}
               selected={this.props.idleOptions.type}
               onSelectItem={this.setIdle}
             />

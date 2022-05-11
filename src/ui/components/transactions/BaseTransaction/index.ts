@@ -10,36 +10,20 @@ export * from './TxStatus';
 export * from './TxHeader';
 export * from './TxInfo';
 
-interface MessageDataData {
-  id: unknown;
-  icon: string;
-  name: unknown;
-
-  orderType?: 'sell' | 'buy';
-  expiration?: number;
-  matcherPublicKey: string;
-
-  dApp?: string;
-  call?: {
-    function: string;
-    args: Array<{ type: string; value: unknown }>;
-  };
-  payment: unknown[];
-
-  script?: string;
-
-  recipient?: string;
-  attachment?: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MessageDataData = any;
 
 export interface MessageData {
   type: number;
   data: MessageDataData;
   referrer?: string | URL;
   binary?: string;
+  timestamp?: number;
+  publicKey?: string;
 }
 
 export interface Message {
+  id?: string;
   type: string;
   data: MessageData;
   origin?: string;
@@ -47,16 +31,30 @@ export interface Message {
   messageHash?: string;
   lease?: unknown;
   broadcast?: boolean;
+  title?: string;
 }
 
 export interface ComponentProps extends WithTranslation {
   className?: string;
-  message: Message;
-  assets: Record<string, AssetDetail>;
+  txType: string;
   autoClickProtection?: boolean;
+  pending?: boolean;
   collapsed?: boolean;
+  txHash: string;
+  assets: Record<string, AssetDetail>;
   sponsoredBalance?: BalanceAssets;
+  message: Message;
+  selectedAccount: Account;
 
+  onClose: (...args: unknown[]) => void;
+  onNext: (...args: unknown[]) => void;
+  onList: (...args: unknown[]) => void;
   approve: (...args: unknown[]) => void;
   reject: (...args: unknown[]) => void;
+  rejectForever: (...args: unknown[]) => void;
+  selectAccount: () => void;
+}
+
+export interface AnyTransaction {
+  type: number;
 }

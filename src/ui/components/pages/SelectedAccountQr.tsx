@@ -70,7 +70,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store) {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address

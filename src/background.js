@@ -1046,6 +1046,7 @@ class BackgroundService extends EventEmitter {
 
     const inpageApi = this.getInpageApi(origin);
     const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
     const onRemoteHandler = remote => {

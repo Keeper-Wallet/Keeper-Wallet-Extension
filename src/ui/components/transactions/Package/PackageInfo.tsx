@@ -1,8 +1,14 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
-import { Message, TxIcon, TxInfo } from '../BaseTransaction';
+import {
+  ComponentProps,
+  Message,
+  MessageData,
+  TxIcon,
+  TxInfo,
+} from '../BaseTransaction';
 import { AssetDetail } from 'ui/services/Background';
 import { ComponentConfig } from 'ui/components/transactions/index';
 
@@ -24,13 +30,12 @@ const MessageItem = ({
   );
 };
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: Record<string, AssetDetail>;
-  onToggle?: (isOpen: boolean) => void;
-}
-
-class PackageInfoComponent extends React.PureComponent<IProps> {
+class PackageInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'> & {
+    message: Message & { data: MessageData[]; lease?: unknown };
+    onToggle?: (isOpen: boolean) => void;
+  }
+> {
   readonly state = { isOpened: false };
 
   toggleHandler = () => {
@@ -47,16 +52,15 @@ class PackageInfoComponent extends React.PureComponent<IProps> {
   render() {
     const { t, message, assets } = this.props;
     const { isOpened } = this.state;
-    const { data = [] } = message;
+    const { data = [] as MessageData[] } = message;
     const txs = data.map(getTransactionData);
     const hashes = message.messageHash;
     return (
       <div>
         {isOpened
-          ? txs.map(({ config, tx, lease }, index) => {
+          ? txs.map(({ config, tx }, index) => {
               const message = {
                 data: { ...tx, data: tx },
-                lease,
                 messageHash: hashes[index],
                 type: 'transaction',
               };

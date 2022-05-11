@@ -1,13 +1,12 @@
 import * as styles from './massTransfer.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance, Ellipsis, PlateCollapsable } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
-import { AssetDetail } from 'ui/services/Background';
 
 const MIN_COUNT = 0;
 const ADDRESS_LENGTH = 35;
@@ -47,14 +46,7 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
   });
 };
 
-interface IProps extends WithTranslation {
-  assets: Record<string, AssetDetail>;
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class MassTransferCardComponent extends React.PureComponent<IProps> {
+class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
   readonly state = Object.create(null);
 
   toggleShowRecipients = count => {
@@ -71,7 +63,7 @@ class MassTransferCardComponent extends React.PureComponent<IProps> {
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
 

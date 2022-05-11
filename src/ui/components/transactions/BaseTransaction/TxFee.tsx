@@ -12,21 +12,9 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { omit } from 'ramda';
 import { AppState } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction/index';
 
 const WAVES_MIN_FEE = DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee;
-
-interface Props {
-  isEditable: boolean;
-  fee: Money;
-  initialFee: Money;
-  assets: Record<string, AssetDetail>;
-  sponsoredBalance: BalanceAssets;
-  updateTransactionFee?: (
-    id: string,
-    fee: IMoneyLike
-  ) => Record<string, unknown>;
-  message: any;
-}
 
 type FeeOption = {
   id: string;
@@ -36,7 +24,12 @@ type FeeOption = {
 };
 
 export const TxFee = connect(
-  (store: AppState, ownProps?: any) => {
+  (
+    store: AppState,
+    ownProps?: Partial<
+      Pick<ComponentProps, 'message' | 'assets' | 'sponsoredBalance'>
+    >
+  ) => {
     const message = ownProps?.message || store.activePopup?.msg;
     const assets = ownProps?.assets || store.assets;
 
@@ -82,7 +75,15 @@ export const TxFee = connect(
   sponsoredBalance,
   updateTransactionFee,
   message,
-}: Props) {
+}: Partial<Pick<ComponentProps, 'message' | 'assets' | 'sponsoredBalance'>> & {
+  isEditable: boolean;
+  fee: Money;
+  initialFee: Money;
+  updateTransactionFee?: (
+    id: string,
+    fee: IMoneyLike
+  ) => Record<string, unknown>;
+}) {
   function getOption(assetId: string): FeeOption {
     const tokens = convertFee(
       initialFee,
@@ -132,15 +133,15 @@ export const TxFee = connect(
   );
 });
 
-function convertFee(from: Money, toAsset: Asset): Money {
+function convertFee(from: Money, toAsset: Asset | AssetDetail): Money {
   const isWaves = (assetId: string) => assetId === 'WAVES';
-  const minSponsoredFee = (asset: Asset) =>
+  const minSponsoredFee = (asset: Asset | AssetDetail) =>
     !isWaves(asset.id) ? asset.minSponsoredFee : WAVES_MIN_FEE;
   return new Money(
     new BigNumber(from.toCoins())
       .mul(new BigNumber(minSponsoredFee(toAsset)))
       .div(new BigNumber(minSponsoredFee(from.asset)))
       .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP),
-    toAsset
+    toAsset as Asset
   );
 }

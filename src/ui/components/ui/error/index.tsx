@@ -28,7 +28,7 @@ const Errors = ({
 interface Props {
   type?: string;
   show?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   className?: string;
   hideByClick?: boolean;
   onClick?: (...args) => void;

@@ -2,7 +2,10 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
 import * as styles from './list.styl';
-import { IAutoAuth } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
+import {
+  IAutoAuth,
+  TTabTypes,
+} from 'ui/components/pages/PermissionsSettings/PermissionSettings';
 
 class ListComponent extends React.PureComponent<IProps> {
   render(): React.ReactNode {
@@ -66,7 +69,10 @@ class ListComponent extends React.PureComponent<IProps> {
   }
 }
 
-const getFilteredOrigins = (origins: any, attr: TTabTypes) => {
+const getFilteredOrigins = (
+  origins: Record<string, Array<string | IAutoAuth>>,
+  attr: TTabTypes
+) => {
   return Object.keys(origins)
     .filter(name => {
       const permissions = origins[name] || [];
@@ -85,10 +91,8 @@ const getFilteredOrigins = (origins: any, attr: TTabTypes) => {
     }, Object.create(null));
 };
 
-type TTabTypes = 'customList' | 'whiteList' | 'blackList';
-
 interface IProps extends WithTranslation {
-  origins: { [key: string]: Array<string | IAutoAuth> };
+  origins: Record<string, Array<string | IAutoAuth>>;
   showType: TTabTypes;
   showSettings: (origin: string) => void;
   toggleApprove: (origin: string, enable: boolean) => void;

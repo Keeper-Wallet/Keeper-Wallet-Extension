@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { DateFormat } from '../../ui';
 import { TxFee } from './TxFee';
 import { AppState } from 'ui/store';
-import { AssetDetail } from 'ui/services/Background';
+import {
+  ComponentProps,
+  MessageData,
+} from 'ui/components/transactions/BaseTransaction/index';
 
 export interface Balance {
   assets: BalanceAssets;
@@ -24,18 +27,16 @@ export interface BalanceAsset {
   sponsorBalance: string;
 }
 
-interface Props {
-  message: any;
-  assets: Record<string, AssetDetail>;
-  sponsoredBalance?: BalanceAssets;
-}
+type Props = Partial<
+  Pick<ComponentProps, 'message' | 'assets' | 'sponsoredBalance'>
+>;
 
-export const TxInfo = connect((store: AppState, ownProps?: any) => ({
+export const TxInfo = connect((store: AppState, ownProps?: Props) => ({
   message: ownProps?.message || store.activePopup?.msg,
   assets: ownProps?.assets || store.assets,
 }))(function TxInfo({ message, sponsoredBalance }: Props) {
   const { t } = useTranslation();
-  const { messageHash, data = {} } = message;
+  const { messageHash, data = {} as MessageData } = message;
   const tx = { type: data.type, ...data.data };
 
   return (

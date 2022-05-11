@@ -28,6 +28,7 @@ export function getAmountSign() {
   return '-' as const;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isMe(tx: any, type: string) {
   return tx.type === TRANSACTION_TYPE.TRANSFER && type === txType;
 }

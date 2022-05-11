@@ -105,7 +105,7 @@ describe('Signature', function () {
 
   function checkAnyTransaction(
     txFormLocator: By,
-    checkApproveResult?: (approveResult: any) => void,
+    checkApproveResult?: (approveResult: unknown) => void,
     wait?: number
   ) {
     it('Is shown', async function () {
@@ -294,7 +294,7 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-auth-transaction')]"),
-      approveResult => {
+      (approveResult: string) => {
         const parsedApproveResult = JSON.parse(approveResult);
 
         const expectedApproveResult = {
@@ -360,7 +360,7 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-matcher-transaction')]"),
-      signature => {
+      (signature: string) => {
         const bytes = concat(
           serializePrimitives.BASE58_STRING(senderPublicKey),
           serializePrimitives.LONG(timestamp)
@@ -2143,10 +2143,14 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-package-transaction')]"),
-      approveResult => {
+      (approveResult: string[]) => {
         expect(approveResult).to.have.length(7);
 
-        const parsedApproveResult = approveResult.map(parse);
+        const parsedApproveResult = approveResult.map<{
+          id: string;
+          proofs: string[];
+          timestamp: number;
+        }>(parse);
 
         const expectedApproveResult0 = {
           type: ISSUE.type,
@@ -2393,7 +2397,7 @@ describe('Signature', function () {
 
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
-        approveResult => {
+        (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 
           const expectedApproveResult = {
@@ -2423,7 +2427,7 @@ describe('Signature', function () {
 
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
-        approveResult => {
+        (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 
           const expectedApproveResult = {

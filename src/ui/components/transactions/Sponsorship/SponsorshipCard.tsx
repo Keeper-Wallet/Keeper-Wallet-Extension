@@ -1,21 +1,13 @@
 import * as styles from './sponsorship.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAssetFee, SPONSOR_MODE } from './parseTx';
-import { AssetDetail } from 'ui/services/Background';
 
-interface IProps extends WithTranslation {
-  assets: Record<string, AssetDetail>;
-  className?: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class SponsorshipCardComponent extends React.PureComponent<IProps> {
+class SponsorshipCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(
       styles.sponsorshipTransactionCard,
@@ -26,7 +18,7 @@ class SponsorshipCardComponent extends React.PureComponent<IProps> {
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
     const assetFee = getMoney(getAssetFee(tx), assets);
     const isSetSponsored = assetFee.getTokens().gt(0);

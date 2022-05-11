@@ -24,6 +24,7 @@ import customData from './CustomData';
 import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 import { Money } from '@waves/data-entities';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 export interface ComponentConfig {
   card: ComponentType<{
@@ -38,8 +39,9 @@ export interface ComponentConfig {
   getAssetsId: (tx: unknown) => string[];
   getFee: (tx: unknown) => IMoneyLike;
   isMe: (tx: unknown, type: unknown) => boolean;
-  message: ComponentType<any>;
-  type: unknown;
+  message: ComponentType<ComponentProps>;
+  type: string;
+  messageType: string;
 }
 
 const MESSAGES: ComponentConfig[] = [

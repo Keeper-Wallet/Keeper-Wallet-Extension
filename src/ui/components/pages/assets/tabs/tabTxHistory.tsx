@@ -113,6 +113,7 @@ export function TabTxHistory() {
     listRef.current && listRef.current.resetAfterIndex(0);
   }, [txHistory]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flat = (stateChanges: any): any[] =>
     (stateChanges?.transfers ?? [])
       .concat(stateChanges?.issues ?? [])
@@ -129,6 +130,7 @@ export function TabTxHistory() {
         )
       );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasInvokeStateChanges = (stateChanges: any): boolean =>
     flat(stateChanges || {}).reduce(
       (hasItems, el) =>
@@ -145,6 +147,7 @@ export function TabTxHistory() {
       false
     );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasInvokeTransfers = (stateChanges: any): boolean =>
     flat(stateChanges).reduce(
       (hasTransfers, el) => hasTransfers || addressOrAlias.includes(el.address),
@@ -154,6 +157,7 @@ export function TabTxHistory() {
   const historyWithGroups = txHistory
     ? txHistory
         .slice(0, MAX_TX_HISTORY_ITEMS - 1)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((tx: any) => {
           const hasMassTransfers = (tx.transfers ?? []).reduce(
             (

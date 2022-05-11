@@ -16,6 +16,7 @@ function Address({ base58 }: { base58: string }) {
 }
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any;
   className?: string;
 }

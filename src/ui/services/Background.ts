@@ -4,12 +4,14 @@ import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
 import { Account } from 'accounts/types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
 }
 
 class Background {
   static instance: Background;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   background: any;
   initPromise: Promise<void>;
   updatedByUser = false;

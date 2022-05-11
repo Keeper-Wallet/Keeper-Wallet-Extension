@@ -30,6 +30,8 @@ export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
+type AnyMoney = IMoneyLike | BigNumber | Money | string | number;
+
 export function getFees(tx, assets) {
   if (!Array.isArray(tx)) {
     return {};
@@ -52,7 +54,7 @@ export function getFees(tx, assets) {
   }, Object.create(null));
 
   return Object.entries(fees).reduce((fees, [assetId, moneyLike]) => {
-    fees[assetId] = getMoney(moneyLike as any, assets);
+    fees[assetId] = getMoney(moneyLike as AnyMoney, assets);
     return fees;
   }, Object.create(null));
 }

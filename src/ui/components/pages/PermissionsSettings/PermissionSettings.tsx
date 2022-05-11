@@ -113,7 +113,7 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
 
         <List
           origins={this.props.origins}
-          showType={this.state.originsList as any}
+          showType={this.state.originsList as TTabTypes}
           showSettings={this.showSettingsHandler}
           toggleApprove={this.toggleApproveHandler}
         />
@@ -177,3 +177,5 @@ export interface IAutoAuth {
   interval: number;
   approved: Array<unknown>;
 }
+
+export type TTabTypes = 'customList' | 'whiteList' | 'blackList';

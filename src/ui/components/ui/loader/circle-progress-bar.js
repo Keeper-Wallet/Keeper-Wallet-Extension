@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /**
  * Circle Progress Bar
  * @param {Element} canvas

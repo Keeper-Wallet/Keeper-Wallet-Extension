@@ -4,7 +4,7 @@ import * as styles from './dropdownButton.styl';
 import { Button } from './Button';
 
 interface Props extends React.ComponentProps<'div'> {
-  children?: any;
+  children?: React.ReactElement[];
   placement?: 'top' | 'bottom';
 }
 

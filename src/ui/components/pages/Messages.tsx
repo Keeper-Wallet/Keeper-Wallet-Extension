@@ -15,8 +15,12 @@ import {
 import { PAGES } from '../../pageConfig';
 import { Money } from '@waves/data-entities';
 import { Intro } from './Intro';
-import { FinalTransaction, getConfigByTransaction } from '../transactions';
-import { BalanceAssets } from '../transactions/BaseTransaction';
+import {
+  ComponentConfig,
+  FinalTransaction,
+  getConfigByTransaction,
+} from '../transactions';
+import { BalanceAssets, Message } from '../transactions/BaseTransaction';
 import { DEFAULT_FEE_CONFIG } from '../../../constants';
 import { Account } from 'accounts/types';
 import { AssetDetail } from 'ui/services/Background';
@@ -41,8 +45,26 @@ interface Props {
   clearMessagesStatus: (perform: boolean) => void;
 }
 
-class MessagesComponent extends React.Component<Props> {
-  readonly state = {} as any;
+interface State {
+  transactionStatus: {
+    approveOk: boolean;
+    approveError: boolean;
+    rejectOk: boolean;
+  };
+  selectedAccount: Account;
+  activeMessage: Message;
+  config: ComponentConfig;
+  txHash: string;
+  sponsoredBalance: BalanceAssets;
+  assets: Record<string, AssetDetail>;
+  messages: Message[];
+  notifications: unknown[];
+  loading: boolean;
+  approvePending: boolean;
+}
+
+class MessagesComponent extends React.Component<Props, State> {
+  readonly state = {} as State;
   readonly props;
   hasApproved: boolean;
 

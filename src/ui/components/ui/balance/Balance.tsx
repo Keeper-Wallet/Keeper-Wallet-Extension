@@ -25,7 +25,7 @@ interface Props {
   showAsset?: boolean;
   showUsdAmount?: boolean;
   isShortFormat?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   addSign?: string;
   className?: string;
   assets?: Record<string, AssetDetail>;

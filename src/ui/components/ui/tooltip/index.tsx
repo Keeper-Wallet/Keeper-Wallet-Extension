@@ -9,11 +9,12 @@ import cn from 'classnames';
 interface Props {
   className?: string;
   children: (renderProps: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: React.MutableRefObject<any>;
     onMouseEnter: () => void;
     onMouseLeave: () => void;
   }) => React.ReactChild;
-  content: any;
+  content: React.ReactNode;
   placement?: Placement;
 }
 

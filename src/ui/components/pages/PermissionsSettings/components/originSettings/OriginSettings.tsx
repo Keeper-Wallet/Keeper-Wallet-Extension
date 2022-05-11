@@ -310,7 +310,7 @@ export const OriginSettings = withTranslation()(OriginSettingsComponent);
 
 interface IProps extends WithTranslation {
   className?: string;
-  origins: any;
+  origins: Record<string, unknown[]>;
   autoSign: TAutoAuth;
   originalAutoSign: TAutoAuth;
   permissions: Array<TPermission>;

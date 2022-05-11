@@ -1,17 +1,11 @@
 import * as styles from './alias.styl';
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { ComponentProps, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 
-interface IProps extends WithTranslation {
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class AliasCardComponent extends React.PureComponent<IProps> {
+class AliasCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.aliasTransactionCard, this.props.className, {
       [styles.aliasCard_collapsed]: this.props.collapsed,

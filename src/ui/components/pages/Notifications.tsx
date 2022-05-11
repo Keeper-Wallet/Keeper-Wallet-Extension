@@ -16,8 +16,10 @@ import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
 interface Notification {
+  id: number;
   origin: string;
   title: string;
   message: string;
@@ -63,8 +65,21 @@ interface Props extends WithTranslation {
   deleteNotifications: (ids: unknown[]) => void;
 }
 
-class NotificationsComponent extends React.Component<Props> {
-  readonly state = {} as any;
+interface State {
+  canShowNotify: boolean;
+  messages: Message[];
+  activeNotification: unknown[];
+  showToList: boolean;
+  origin: unknown;
+  hasMessages: boolean;
+  hasNotifications: boolean;
+  notifications: unknown[];
+  showClose: boolean;
+  loading: boolean;
+}
+
+class NotificationsComponent extends React.Component<Props, State> {
+  readonly state = {} as State;
   readonly props;
 
   static getDerivedStateFromProps(props) {
@@ -157,7 +172,7 @@ class NotificationsComponent extends React.Component<Props> {
         </div>
 
         <div className={styles.messageListScrollBox}>
-          {activeNotification.map(notification => (
+          {activeNotification.map((notification: Notification) => (
             <NotificationItem
               notification={notification}
               key={notification.id}

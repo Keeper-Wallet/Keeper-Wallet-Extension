@@ -11,7 +11,7 @@ declare global {
 
   interface Window {
     result: unknown;
-    approveResult: any;
+    approveResult: unknown;
   }
 }
 
