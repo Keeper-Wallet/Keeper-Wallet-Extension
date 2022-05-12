@@ -531,7 +531,7 @@
     "exchangeChannelConnectionError": "Could not connect to swap service. Please try again later",
     "exchangeChannelInvalidAssetPairError": "Asset pair is not available",
     "exchangeChannelUnavailableError": "Service is not responding",
-    "exchangeChannelUnknownError": "Failed to get swap details",
+    "exchangeChannelUnknownError": "Unavailable for this swap",
     "failMessage": "Swap did not succeed, please try again",
     "ledgerFailMessage": "Request is rejected on ledger",
     "fromInputLabel": "From",
