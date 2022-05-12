@@ -1,44 +1,28 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import * as styles from './bottom.styl';
+import * as styles from './bottom.module.css';
 import cn from 'classnames';
-import { loading, setNetwork } from '../../actions';
 import { Network } from './components';
+import { useAppSelector } from 'ui/store';
 
 interface Props {
   className?: string;
   noChangeNetwork?: boolean;
   hide?: boolean;
-  version: string;
-  locked: boolean;
-  initialized: boolean;
 }
 
-class BottomComponent extends React.Component<Props> {
-  render() {
-    const hideNet =
-      this.props.locked || !this.props.initialized || this.props.hide;
+export function Bottom({ className, noChangeNetwork, hide }: Props) {
+  const version = useAppSelector(state => state.version);
+  const isLocked = useAppSelector(
+    state => state.state?.locked || !state.state?.initialized
+  );
 
-    const className = cn(styles.bottom, this.props.className, {
-      [styles.hidden]: hideNet,
-    });
-
-    return (
-      <div className={className}>
-        <Network noChangeNetwork={this.props.noChangeNetwork} />
-
-        <div className="version basic500">v {this.props.version}</div>
+  return (
+    !isLocked &&
+    !hide && (
+      <div className={cn(styles.bottom, className)}>
+        <Network noChangeNetwork={noChangeNetwork} />
+        <div className="version basic500">v {version}</div>
       </div>
-    );
-  }
+    )
+  );
 }
-
-const mapStateToProps = ({ version, state }) => ({
-  version,
-  locked: state && state.locked,
-  initialized: state && state.initialized,
-});
-
-export const Bottom = connect(mapStateToProps, { setNetwork, loading })(
-  BottomComponent
-);
