@@ -148,6 +148,13 @@ module.exports = ({
 
   plugins.push(new WebpackCustomActions({ onBuildEnd: [getPlatforms] }));
 
+  plugins.push(
+    new webpack.NormalModuleReplacementPlugin(
+      /@sentry\/browser\/esm\/helpers.js/,
+      path.resolve(SOURCE_FOLDER, '_sentryHelpersReplacement.js')
+    )
+  );
+
   return {
     stats: 'errors-warnings',
     entry: {
