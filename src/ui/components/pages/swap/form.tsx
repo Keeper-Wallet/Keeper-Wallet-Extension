@@ -80,6 +80,21 @@ const exchangeInfoInitialState: ExchangeInfoState = {
   [SwapVendor.Swopfi]: { type: 'loading' },
 };
 
+const exchangeInfoErrorState: ExchangeInfoState = {
+  [SwapVendor.Keeper]: {
+    type: 'error',
+    code: proto.Response.Error.CODES.UNEXPECTED,
+  },
+  [SwapVendor.Puzzle]: {
+    type: 'error',
+    code: proto.Response.Error.CODES.UNEXPECTED,
+  },
+  [SwapVendor.Swopfi]: {
+    type: 'error',
+    code: proto.Response.Error.CODES.UNEXPECTED,
+  },
+};
+
 export function SwapForm({
   initialFromAssetId,
   initialToAssetId,
@@ -203,6 +218,12 @@ export function SwapForm({
   const watchExchange = React.useCallback(() => {
     let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
 
+    if (fromTokens.gt(maxTokens)) {
+      setExchangeInfo(exchangeInfoErrorState);
+      channelClient?.close();
+      return;
+    }
+
     if (fromTokens.eq(0)) {
       fromTokens = new BigNumber(1);
     }
@@ -257,7 +278,7 @@ export function SwapForm({
         }));
       }
     );
-  }, [channelClient, fromAsset, toAsset]);
+  }, [channelClient, fromAsset, toAsset, latestFromAmountValueRef]);
 
   React.useEffect(() => {
     setExchangeInfo(exchangeInfoInitialState);
