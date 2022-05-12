@@ -812,7 +812,7 @@ export function SwapForm({
                               {...props}
                             >
                               {priceImpact.toFixed(
-                                3,
+                                priceImpact.eq(100) ? 0 : 3,
                                 BigNumber.ROUND_MODE.ROUND_FLOOR
                               )}
                               %
