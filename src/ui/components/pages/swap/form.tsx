@@ -287,6 +287,13 @@ export function SwapForm({
       ? t('swap.insufficientFundsError')
       : null;
 
+  const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
+  const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
+    ? t('swap.maxAmountExceeded', {
+        maxAmount: maxTokens.toFixed(),
+      })
+    : null;
+
   const watchExchangeTimeoutRef = React.useRef<number | null>(null);
 
   function scheduleWatchExchangeUpdate() {
@@ -932,9 +939,13 @@ export function SwapForm({
       </div>
 
       <div className={styles.stickyBottomPanel}>
-        {(validationErrorMessage || swapErrorMessage) && (
+        {(maxAmountExceededErrorMessage ||
+          validationErrorMessage ||
+          swapErrorMessage) && (
           <div className={styles.stickyBottomPanelError}>
-            {validationErrorMessage || swapErrorMessage}
+            {maxAmountExceededErrorMessage ||
+              validationErrorMessage ||
+              swapErrorMessage}
           </div>
         )}
 
@@ -942,6 +953,7 @@ export function SwapForm({
           className="fullwidth"
           disabled={
             fromAmountTokens.eq(0) ||
+            maxAmountExceededErrorMessage != null ||
             validationErrorMessage != null ||
             vendorExchangeInfo.type !== 'data' ||
             isSwapInProgress

@@ -536,6 +536,7 @@
     "ledgerFailMessage": "Request is rejected on ledger",
     "fromInputLabel": "From",
     "insufficientFundsError": "Insufficient funds",
+    "maxAmountExceeded": "Amount must not exceed {{ maxAmount }}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
     "notAvailable": "N/A",
