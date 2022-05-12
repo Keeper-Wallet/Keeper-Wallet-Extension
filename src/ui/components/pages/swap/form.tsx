@@ -768,15 +768,16 @@ export function SwapForm({
                     {isPriceDirectionSwapped ? (
                       <span>
                         1 {toAsset.displayName} ≈{' '}
-                        {(fromAmountTokens.eq(0)
-                          ? new BigNumber(1)
-                          : fromAmountTokens
-                        )
-                          .div(vendorExchangeInfo.toAmountTokens)
-                          .toFixed(
-                            fromAsset.precision,
-                            BigNumber.ROUND_MODE.ROUND_FLOOR
-                          )}{' '}
+                        {(vendorExchangeInfo.toAmountTokens.eq(0)
+                          ? new BigNumber(0)
+                          : (fromAmountTokens.eq(0)
+                              ? new BigNumber(1)
+                              : fromAmountTokens
+                            ).div(vendorExchangeInfo.toAmountTokens)
+                        ).toFixed(
+                          fromAsset.precision,
+                          BigNumber.ROUND_MODE.ROUND_FLOOR
+                        )}{' '}
                         {fromAsset.displayName}
                       </span>
                     ) : (
