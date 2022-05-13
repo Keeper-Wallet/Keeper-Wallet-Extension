@@ -7,11 +7,11 @@ import { Account } from 'accounts/types';
 import { Message } from 'ui/components/transactions/BaseTransaction/index';
 
 const OriginWarning = ({ message }: { message: Message }) => {
+  const { t } = useTranslation();
+
   if (!message.origin && !message.account?.network) {
     return null;
   }
-
-  const { t } = useTranslation();
 
   return (
     <>

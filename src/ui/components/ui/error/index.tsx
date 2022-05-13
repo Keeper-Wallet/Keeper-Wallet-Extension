@@ -10,6 +10,8 @@ const Errors = ({
   errors: Array<{ key: string; msg: string }>;
   show: boolean;
 }) => {
+  const { t } = useTranslation();
+
   if (!show || !errors || !errors.length) {
     return null;
   }
@@ -17,7 +19,6 @@ const Errors = ({
   return (
     <>
       {errors.map(({ key, msg }) => {
-        const { t } = useTranslation();
         key = key.replace(/\s/g, '');
         return t(key, { defaultValue: msg, key });
       })}
