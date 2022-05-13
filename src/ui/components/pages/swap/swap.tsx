@@ -37,9 +37,9 @@ export function Swap({ setTab }: Props) {
     dispatch(resetSwapScreenInitialState());
   }, []);
 
-  const initialFromAssetId = initialState.fromAssetId || 'WAVES';
-
   const usdnAssetId = getAssetIdByTicker(currentNetwork, 'USDN');
+
+  const initialFromAssetId = initialState.fromAssetId || usdnAssetId;
 
   const initialToAssetId =
     initialFromAssetId === usdnAssetId ? 'WAVES' : usdnAssetId;
