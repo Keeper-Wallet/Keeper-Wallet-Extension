@@ -427,7 +427,7 @@ export function SwapForm({
     if (!touched) {
       setSelectedExchangeVendor(profitVendor || SwapVendor.Keeper);
     }
-  }, [touched, nonProfitVendor, profitVendor]);
+  }, [touched, nonProfitVendor, profitVendor, exchangeInfo]);
 
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
