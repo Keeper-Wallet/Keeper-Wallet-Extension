@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from 'ui/components/ui';
 import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
-import { useAppDispatch, useAppSelector } from 'ui/store';
-import { PAGES_CONF } from 'ui/pageConfig';
+import { useAppDispatch } from 'ui/store';
 
 export function DeleteAllAccounts({ onBack }: { onBack: () => void }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const pageConf = useAppSelector(state => PAGES_CONF[state.tab]);
   const [phrase, setPhrase] = React.useState(null);
   const [isBlur, setBlur] = React.useState(false);
 

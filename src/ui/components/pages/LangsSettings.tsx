@@ -1,7 +1,7 @@
 import * as styles from './LangsSettings.module.css';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { withTranslation, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { setLocale } from '../../actions';
 import cn from 'classnames';
@@ -14,8 +14,6 @@ interface LangProps {
 }
 
 const Lang = ({ id, name, setSelected, selected }: LangProps) => {
-  const { t } = useTranslation();
-
   const className = cn(styles[id], styles.lang, {
     [styles.selected]: selected,
   });

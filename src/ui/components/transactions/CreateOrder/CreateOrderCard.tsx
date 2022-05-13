@@ -1,6 +1,6 @@
 import * as styles from './createOrder.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { ComponentProps, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance, DateFormat } from '../../ui';

@@ -1,6 +1,6 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance, PlateCollapsable, ShowScript } from '../../ui';

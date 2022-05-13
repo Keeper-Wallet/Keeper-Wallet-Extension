@@ -11,7 +11,6 @@ import {
   buildTxTypeOptions,
   CARD_FULL_HEIGHT,
   FULL_GROUP_HEIGHT,
-  MONTH,
   useTxHistoryFilter,
 } from './helpers';
 import { Transaction, TRANSACTION_TYPE } from '@waves/ts-types';
