@@ -667,9 +667,9 @@ export function SwapForm({
                     {info.type === 'loading' ? (
                       <Loader />
                     ) : info.type === 'data' ? (
-                      <>
+                      <div className={styles.toAmountCardValue}>
                         <div
-                          className={styles.toAmountCardValue}
+                          className={styles.toAmountCardFormattedValue}
                           title={formattedValue}
                         >
                           {formattedValue}
@@ -680,7 +680,7 @@ export function SwapForm({
                           className={styles.toAmountCardUsdAmount}
                           tokens={amountTokens}
                         />
-                      </>
+                      </div>
                     ) : (
                       <div className={styles.toAmountCardError}>
                         {info.code ===

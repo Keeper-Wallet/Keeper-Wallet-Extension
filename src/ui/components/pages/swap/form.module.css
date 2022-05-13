@@ -3,7 +3,7 @@
   flex-direction: column;
   flex: 1 0 auto;
   position: relative;
-  padding: 14px;
+  padding: 12px 14px;
 }
 
 .swapDirectionBtnWrapper {
@@ -44,15 +44,13 @@
   display: flex;
   flex-direction: column;
   border: solid 1px var(--color-basic100);
-  padding: 14px;
+  padding: 12px;
   border-radius: 4px;
   background: #fff;
 }
 
 .toAmountHead {
-  margin-bottom: 4px;
   display: flex;
-  gap: 8px;
 }
 
 .toAmountLabel {
@@ -87,10 +85,10 @@
   position: relative;
   display: inline-flex;
   justify-content: space-between;
+  align-items: center;
   border: solid 1px var(--color-basic100);
-  padding: 16px 14px;
+  padding: 8px 14px;
   width: 100%;
-  line-height: 24px;
   border-radius: 5px;
   background: none;
   cursor: pointer;
@@ -105,14 +103,15 @@
 }
 
 .toAmountCardVendor {
-  position: relative;
-  display: inline-flex;
-  gap: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .toAmountCardVendorLogo {
   width: 24px;
   height: 24px;
+  margin: 4px 0;
 }
 
 .toAmountCardVendorLabel {
@@ -120,6 +119,12 @@
 }
 
 .toAmountCardValue {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.toAmountCardFormattedValue {
   font-size: 14px;
   overflow: hidden;
   white-space: nowrap;
@@ -127,9 +132,6 @@
 }
 
 .toAmountCardUsdAmount {
-  position: absolute;
-  right: 14px;
-  bottom: 2px;
   color: var(--color-basic500);
   font-size: 11px;
   font-weight: 500;
