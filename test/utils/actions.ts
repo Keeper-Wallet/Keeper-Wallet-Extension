@@ -168,7 +168,7 @@ export const App = {
     );
   },
   openServiceWorkerTab: async function (this: mocha.Context) {
-    await this.driver.switchTo().newWindow('extension');
+    await this.driver.switchTo().newWindow('tab');
     const extensionPanelHandle = await this.driver.getWindowHandle();
 
     await this.driver.get(this.extensionPanel);
@@ -204,7 +204,7 @@ export const App = {
   restartServiceWorker: async function (this: mocha.Context) {
     const currentHandle = await this.driver.getWindowHandle();
 
-    await this.driver.switchTo().newWindow('serviceworker');
+    await this.driver.switchTo().newWindow('tab');
     await this.driver.get('chrome://serviceworker-internals');
 
     const buttons = await this.driver.findElements(By.css('button.stop'));
