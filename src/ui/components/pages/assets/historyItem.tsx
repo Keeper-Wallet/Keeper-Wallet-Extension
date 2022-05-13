@@ -289,7 +289,7 @@ export function HistoryItem({ tx, className }: Props) {
         (tx.dApp === '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u' &&
           tx.call.function === 'swap') ||
         (tx.dApp === '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw' &&
-          (tx.call.function === 'testSeq' || tx.call.function === 'swap')) ||
+          ['testSeq', 'swap', 'swopfiSwap'].includes(tx.call.function)) ||
         (tx.dApp === '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU' &&
           tx.call.function === 'swapWithReferral')
       ) {
