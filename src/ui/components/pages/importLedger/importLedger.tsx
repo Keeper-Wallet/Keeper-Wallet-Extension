@@ -212,7 +212,7 @@ export function ImportLedger({ setTab }: Props) {
           }
         )
     );
-  }, [connectToLedger, isCurPageLoaded, isReady, page]);
+  }, [connectToLedger, isCurPageLoaded, isReady, page, t]);
 
   return (
     <div className={styles.root}>

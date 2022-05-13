@@ -104,7 +104,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         setPending(false);
       }
     },
-    [email, password, signIn]
+    [email, password, signIn, t]
   );
 
   return (
