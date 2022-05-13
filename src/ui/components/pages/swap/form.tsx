@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
-import { swappableAssetTickersByVendor, SwapVendor } from 'assets/constants';
+import { swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 import { setUiState } from 'ui/actions/uiState';
@@ -22,6 +22,8 @@ import { proto } from './channel.proto.compiled';
 import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
+import { SwapVendor } from 'vendors/constants';
+import { getSwapVendorLogo } from 'vendors/utils';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),
@@ -651,7 +653,16 @@ export function SwapForm({
                       setSelectedExchangeVendor(vendor);
                     }}
                   >
-                    <div className={styles.toAmountCardLabel}>{vendor}</div>
+                    <div className={styles.toAmountCardVendor}>
+                      <img
+                        src={getSwapVendorLogo(vendor)}
+                        className={styles.toAmountCardVendorLogo}
+                      />
+
+                      <div className={styles.toAmountCardVendorLabel}>
+                        {vendor}
+                      </div>
+                    </div>
 
                     {info.type === 'loading' ? (
                       <Loader />

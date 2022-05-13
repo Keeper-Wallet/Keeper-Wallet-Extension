@@ -1,3 +1,5 @@
+import { SwapVendor } from 'vendors/constants';
+
 export const assetIds: {
   custom: Record<string, string>;
   mainnet: Record<string, string>;
@@ -87,12 +89,6 @@ export const assetIds: {
     WAVES: 'WAVES',
   },
 };
-
-export enum SwapVendor {
-  Keeper = 'keeper',
-  Puzzle = 'puzzle',
-  Swopfi = 'swopfi',
-}
 
 export const swappableAssetTickersByVendor: Record<SwapVendor, Set<string>> = {
   [SwapVendor.Keeper]: new Set([

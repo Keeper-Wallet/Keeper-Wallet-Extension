@@ -90,6 +90,7 @@
   border: solid 1px var(--color-basic100);
   padding: 16px 14px;
   width: 100%;
+  line-height: 24px;
   border-radius: 5px;
   background: none;
   cursor: pointer;
@@ -103,7 +104,18 @@
   border-color: var(--color-submit400);
 }
 
-.toAmountCardLabel {
+.toAmountCardVendor {
+  position: relative;
+  display: inline-flex;
+  gap: 14px;
+}
+
+.toAmountCardVendorLogo {
+  width: 24px;
+  height: 24px;
+}
+
+.toAmountCardVendorLabel {
   font-weight: bold;
 }
 
