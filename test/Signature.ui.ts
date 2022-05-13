@@ -111,12 +111,10 @@ describe('Signature', function () {
     wait?: number
   ) {
     it('Is shown', async function () {
-      expect(
-        await this.driver.wait(
-          until.elementLocated(txFormLocator),
-          wait || this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementLocated(txFormLocator),
+        wait || this.wait
+      );
       await this.driver.wait(
         until.elementIsEnabled(
           this.driver.findElement(By.css('button#approve'))

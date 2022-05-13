@@ -380,12 +380,10 @@ describe('Password management', () => {
         await loginForm
           .findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]"))
           .click();
-        expect(
-          await this.driver.wait(
-            until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await this.driver.wait(
+          until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
+          this.wait
+        );
         expect(
           await this.driver
             .findElement(By.css('[data-testid="resetConfirm"]'))
@@ -405,14 +403,12 @@ describe('Password management', () => {
         ).not.to.be.empty;
 
         await performLogin.call(this, currentPassword);
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-assets-assets')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await this.driver.wait(
+          until.elementLocated(
+            By.xpath("//div[contains(@class, '-assets-assets')]")
+          ),
+          this.wait
+        );
         await performLogout.call(this);
       });
 

@@ -443,14 +443,10 @@ describe('Account creation', function () {
             await accountNameInput.sendKeys(ACCOUNTS.ANY);
             await continueBtn.click();
 
-            expect(
-              await this.driver.wait(
-                until.elementLocated(
-                  By.css('[data-testid="importSuccessForm"]')
-                ),
-                this.wait
-              )
-            ).not.to.be.throw;
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            );
 
             await this.driver
               .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -527,12 +523,10 @@ describe('Account creation', function () {
         )
         .click();
 
-      expect(
-        await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+        this.wait
+      );
 
       await this.driver
         .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -696,14 +690,10 @@ describe('Account creation', function () {
             expect(await continueBtn.isEnabled()).to.be.true;
             await continueBtn.click();
 
-            expect(
-              await this.driver.wait(
-                until.elementLocated(
-                  By.css('[data-testid="importSuccessForm"]')
-                ),
-                this.wait
-              )
-            ).not.to.be.throw;
+            await this.driver.wait(
+              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+              this.wait
+            );
 
             await this.driver
               .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -977,12 +967,10 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
 
           await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -1092,12 +1080,10 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
 
           await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -1286,12 +1272,10 @@ describe('Account creation', function () {
             .findElement(By.css('[data-testid="submitButton"]'))
             .click();
 
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
 
           await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))
@@ -1372,12 +1356,10 @@ describe('Account creation', function () {
 
           await this.driver.sleep(SEND_UPDATE_DEBOUNCE_DELAY);
 
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+            this.wait
+          );
 
           await this.driver
             .findElement(By.css('[data-testid="addAnotherAccountBtn"]'))

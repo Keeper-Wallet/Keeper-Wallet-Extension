@@ -279,12 +279,10 @@ describe('Account management', function () {
         });
 
         it('Clicking "Copy" displays the password entry form', async function () {
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('form#enterPassword')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('form#enterPassword')),
+            this.wait
+          );
           await this.driver
             .findElement(By.css('button#passwordCancel'))
             .click();
@@ -436,6 +434,7 @@ describe('Account management', function () {
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async function () {
         await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+
         expect(
           await this.driver.wait(
             until.elementLocated(

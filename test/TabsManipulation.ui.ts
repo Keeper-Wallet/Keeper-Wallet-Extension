@@ -25,12 +25,10 @@ describe('Tabs manipulation', function () {
       const handles = await this.driver.getAllWindowHandles();
       tabKeeper = handles[0];
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        this.wait
+      );
 
       for (const handle of await this.driver.getAllWindowHandles()) {
         if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
@@ -256,15 +254,13 @@ describe('Tabs manipulation', function () {
         'waves private node seed without waves tokens'
       );
 
-      expect(
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-            this.wait
-          )
-          .findElement(By.css('[data-testid="finishBtn"]'))
-          .click()
-      ).not.to.be.throw;
+      await this.driver
+        .wait(
+          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+          this.wait
+        )
+        .findElement(By.css('[data-testid="finishBtn"]'))
+        .click();
 
       expect(
         await this.driver.wait(

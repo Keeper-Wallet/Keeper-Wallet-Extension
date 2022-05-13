@@ -657,14 +657,12 @@ describe('Settings', function () {
           await publicStateFromOrigin.call(this, origin);
 
           await App.open.call(this);
-          expect(
-            await this.driver.wait(
-              until.elementLocated(
-                By.xpath("//div[contains(@class, '-originAuth-transaction')]")
-              ),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(
+              By.xpath("//div[contains(@class, '-originAuth-transaction')]")
+            ),
+            this.wait
+          );
           await this.driver.findElement(By.css('button#reject')).click();
         });
       });
