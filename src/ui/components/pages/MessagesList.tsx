@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import {
   approve,
   clearMessages,
@@ -72,7 +72,7 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
   });
 };
 
-interface Props {
+interface Props extends WithTranslation {
   selectedAccount: Account;
   messages: unknown[];
   assets: Record<string, AssetDetail>;

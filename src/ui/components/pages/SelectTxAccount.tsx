@@ -1,6 +1,6 @@
 import * as styles from './styles/selectTxAccount.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
 import {
@@ -16,7 +16,7 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
 import { Account } from 'accounts/types';
 
-interface Props {
+interface Props extends WithTranslation {
   selectAccount: Account;
   activeMessage: unknown;
   messages: unknown[];

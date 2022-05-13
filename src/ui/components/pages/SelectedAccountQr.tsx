@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Button, QRCode } from '../ui';
 import { Account } from 'accounts/types';
 
-interface Props {
+interface Props extends WithTranslation {
   selectedAccount: Account;
 }
 

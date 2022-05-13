@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/pairingAccountQr.styl';
 import { QRCode } from '../ui';
 import { pairingGetData, pairingSetData } from '../../actions';
@@ -15,7 +15,7 @@ const SIZE = {
   MAX: 280,
 };
 
-interface Props {
+interface Props extends WithTranslation {
   selectedAccount: Account;
   loading?: boolean;
   seed?: string;

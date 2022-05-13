@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
 import background, { AssetDetail } from '../../services/Background';
@@ -10,7 +10,7 @@ import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 
-interface Props {
+interface Props extends WithTranslation {
   selectedAccount: Account;
   assets: Record<string, AssetDetail>;
   balances: unknown;

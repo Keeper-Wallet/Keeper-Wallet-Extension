@@ -1,13 +1,13 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
 
-interface Props {
+interface Props extends WithTranslation {
   idle: Record<string, unknown>;
   idleOptions: { type: string; interval: unknown };
   setTab: (tab: string) => void;

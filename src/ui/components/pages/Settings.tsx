@@ -1,13 +1,13 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Tooltip } from '../ui/tooltip';
 
-interface Props {
+interface Props extends WithTranslation {
   autoClickProtection?: boolean;
   showSuspiciousAssets?: boolean;
   setTab: (tab: string) => void;
