@@ -80,6 +80,7 @@ describe('Account management', function () {
           this.wait
         )
         .click();
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
     });
