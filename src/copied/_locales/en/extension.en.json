@@ -543,6 +543,7 @@
     "notSwappablePairTooltip": "Swap between {{ assetTicker1 }} and {{ assetTicker2 }} is not supported",
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "priceLabel": "Price",
+    "primaryLabel": "Primary",
     "profitLabel": "Profit",
     "slippageToleranceModalTitle": "Slippage Tolerance",
     "slippageToleranceModalDescription": "Swap will be cancelled if the price changes unfavorably by more than this percentage",

@@ -420,12 +420,12 @@ export function SwapForm({
         (nextAmount || new BigNumber(0)).gt(maxAmount) ? next : profit,
       ];
     },
-    [null, null]
+    [null, SwapVendor.Keeper]
   );
 
   React.useEffect(() => {
     if (!touched) {
-      setSelectedExchangeVendor(profitVendor || SwapVendor.Keeper);
+      setSelectedExchangeVendor(profitVendor);
     }
   }, [touched, nonProfitVendor, profitVendor, exchangeInfo]);
 
@@ -692,29 +692,33 @@ export function SwapForm({
                       </div>
                     )}
 
-                    {vendor === profitVendor &&
-                      profitTokens != null &&
-                      !profitTokens.eq(0) && (
-                        <div className={styles.toAmountCardBadge}>
-                          {t('swap.profitLabel')}: +
-                          {profitTokens.toFixed(
-                            toAsset.precision,
-                            BigNumber.ROUND_MODE.ROUND_FLOOR
-                          )}{' '}
-                          {toAsset.displayName}
-                          {toAssetDetail.usdPrice &&
-                            toAssetDetail.usdPrice !== '1' && (
-                              <>
-                                {' '}
-                                (≈ $
-                                {new BigNumber(toAssetDetail.usdPrice)
-                                  .mul(profitTokens)
-                                  .toFixed(2)}
-                                )
-                              </>
-                            )}
-                        </div>
-                      )}
+                    {vendor === profitVendor && (
+                      <div className={styles.toAmountCardBadge}>
+                        {profitTokens != null && !profitTokens.eq(0) ? (
+                          <>
+                            {t('swap.profitLabel')}: +
+                            {profitTokens.toFixed(
+                              toAsset.precision,
+                              BigNumber.ROUND_MODE.ROUND_FLOOR
+                            )}{' '}
+                            {toAsset.displayName}
+                            {toAssetDetail.usdPrice &&
+                              toAssetDetail.usdPrice !== '1' && (
+                                <>
+                                  {' '}
+                                  (≈ $
+                                  {new BigNumber(toAssetDetail.usdPrice)
+                                    .mul(profitTokens)
+                                    .toFixed(2)}
+                                  )
+                                </>
+                              )}
+                          </>
+                        ) : (
+                          t('swap.primaryLabel')
+                        )}
+                      </div>
+                    )}
                   </button>
                 );
               })}
