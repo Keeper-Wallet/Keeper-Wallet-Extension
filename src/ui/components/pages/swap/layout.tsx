@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { SwapAccountInfoHeader } from './accountInfoHeader';
 import * as styles from './layout.module.css';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   children: React.ReactNode;
@@ -10,14 +10,13 @@ interface Props {
 
 export function SwapLayout({ children }: Props) {
   const selectedAccount = useAppSelector(state => state.selectedAccount);
+  const { t } = useTranslation();
 
   return (
     <div className={styles.root}>
       <div className={styles.wrapper}>
         <header className={styles.header}>
-          <h1 className={styles.title}>
-            <Trans i18nKey="swap.title" />
-          </h1>
+          <h1 className={styles.title}>{t('swap.title')}</h1>
 
           <SwapAccountInfoHeader account={selectedAccount} />
         </header>
