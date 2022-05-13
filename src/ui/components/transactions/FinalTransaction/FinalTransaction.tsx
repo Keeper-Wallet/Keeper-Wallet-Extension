@@ -1,8 +1,8 @@
 import * as styles from './final.styl';
 import * as React from 'react';
 import {
-  withTranslation,
   useTranslation,
+  withTranslation,
   WithTranslation,
 } from 'react-i18next';
 import { Button } from '../../ui';
@@ -32,7 +32,11 @@ const Error = ({ approveError }: { approveError: { error: unknown } }) => {
 };
 
 interface Props extends WithTranslation {
-  transactionStatus: string;
+  transactionStatus: {
+    approveOk: boolean;
+    approveError: boolean;
+    rejectOk: boolean;
+  };
   selectedAccount: Account;
   messages: Message[];
   notifications: unknown[];

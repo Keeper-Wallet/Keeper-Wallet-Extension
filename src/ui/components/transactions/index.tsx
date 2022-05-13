@@ -25,6 +25,7 @@ import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
 import { Money } from '@waves/data-entities';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
+import { WithTranslation } from 'react-i18next';
 
 export interface ComponentConfig {
   card: ComponentType<{
@@ -39,7 +40,7 @@ export interface ComponentConfig {
   getAssetsId: (tx: unknown) => string[];
   getFee: (tx: unknown) => IMoneyLike;
   isMe: (tx: unknown, type: unknown) => boolean;
-  message: ComponentType<ComponentProps>;
+  message: ComponentType<Omit<ComponentProps, keyof WithTranslation>>;
   type: string;
   messageType: string;
 }

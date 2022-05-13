@@ -2,9 +2,11 @@ import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation } from 'react-i18next';
-import { Message } from 'ui/components/transactions/BaseTransaction/index';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction/index';
 
-class OriginWarningComponent extends React.PureComponent<{ message: Message }> {
+class OriginWarningComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message'>
+> {
   render(): React.ReactNode {
     const { t, message } = this.props;
     const {

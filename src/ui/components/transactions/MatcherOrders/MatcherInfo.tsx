@@ -4,7 +4,7 @@ import * as styles from './matcher.styl';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 class MatcherInfoComponent extends React.PureComponent<
-  Pick<ComponentProps, 'message' | 'assets'>
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
 > {
   render() {
     const { t, message } = this.props;
