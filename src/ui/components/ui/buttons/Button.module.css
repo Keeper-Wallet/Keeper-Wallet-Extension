@@ -21,6 +21,10 @@
   border-radius: 0 4px 4px 0;
 }
 
+:global button.modal-close {
+  padding: 0;
+}
+
 .button {
   cursor: pointer;
   font-family: Roboto;
