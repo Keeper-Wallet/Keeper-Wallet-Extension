@@ -6,7 +6,10 @@ import { I18N_NAME_SPACE, KEEPERWALLET_DEBUG } from './appConfig';
 const backend = (
   resourcesToBackend as unknown as typeof resourcesToBackend.default
 )((lng, ns, clb) => {
-  import(`../copied/_locales/${lng}/${ns}.${lng}.json`)
+  import(
+    /* webpackMode: 'eager' */
+    `../copied/_locales/${lng}/${ns}.${lng}.json`
+  )
     .then(resources => clb(null, resources))
     .catch(err => clb(err, null));
 });
