@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { createNew, setTab } from '../../actions';
 import * as React from 'react';
 import { Button, Error, Input } from '../ui';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
@@ -14,7 +14,7 @@ const mapStateToProps = function (store: any) {
   };
 };
 
-interface INewAccountComponentProps {
+interface INewAccountComponentProps extends WithTranslation {
   createNew(pass: string): void;
 
   setTab(tab: string): void;
@@ -122,6 +122,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
   };
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.account}>
         <form
@@ -129,16 +130,12 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
           className={styles.content}
           onSubmit={this.onSubmit}
         >
-          <h2 className={`title1 margin3 left`}>
-            <Trans i18nKey="newAccount.protect">Protect Your Account</Trans>
-          </h2>
+          <h2 className={`title1 margin3 left`}>{t('newAccount.protect')}</h2>
 
           <div>
             <div className="margin1 relative">
               <div className={`basic500 tag1 left input-title`}>
-                <Trans i18nKey="newAccount.createPassword">
-                  Create a password
-                </Trans>
+                {t('newAccount.createPassword')}
               </div>
               <Input
                 id="first"
@@ -153,14 +150,12 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               />
 
               <Error show={this.state.firstError}>
-                <Trans i18nKey="newAccount.smallPass">Password is small</Trans>
+                {t('newAccount.smallPass')}
               </Error>
             </div>
             <div className="margin1 relative">
               <div className={`basic500 tag1 left input-title`}>
-                <Trans i18nKey="newAccount.confirmPassword">
-                  Confirm password
-                </Trans>
+                {t('newAccount.confirmPassword')}
               </div>
               <Input
                 id="second"
@@ -172,7 +167,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 autoComplete="off"
               />
               <Error show={this.state.secondError}>
-                <Trans i18nKey="newAccount.notMatch" />
+                {t('newAccount.notMatch')}
               </Error>
             </div>
           </div>
@@ -184,17 +179,13 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               onChange={this.handleTermsAcceptedChange}
             />
             <label htmlFor="termsAccepted">
-              <Trans i18nKey="newAccount.acceptTerms">
-                I have read and agree with the
-              </Trans>{' '}
+              {t('newAccount.acceptTerms')}{' '}
               <a
                 href="https://keeper-wallet.app/terms-of-use"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Trans i18nKey="newAccount.termsAndConditions">
-                  Terms and Conditions
-                </Trans>
+                {t('newAccount.termsAndConditions')}
               </a>
             </label>
           </div>
@@ -206,15 +197,13 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               onChange={this.handleonditionsAcceptedChange}
             />
             <label htmlFor="conditionsAccepted">
-              <Trans i18nKey="newAccount.acceptTerms">
-                I have read and agree with the
-              </Trans>{' '}
+              {t('newAccount.acceptTerms')}{' '}
               <a
                 href="https://keeper-wallet.app/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Trans i18nKey="newAccount.privacyPolicy">Privacy Policy</Trans>
+                {t('newAccount.privacyPolicy')}
               </a>
             </label>
           </div>
@@ -224,15 +213,10 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             view="submit"
             disabled={this.state.buttonDisabled}
           >
-            <Trans i18nKey="newAccount.create">Continue</Trans>
+            {t('newAccount.create')}
           </Button>
           <div className={`tag1 left basic500 marginTop3`}>
-            <Trans i18nKey="newAccount.passinfo">
-              The password you entered will be stored locally. If you change
-              device or lose your password, you will have to repeat the process
-              of adding accounts to Keeper Wallet. Waves does not store your
-              passwords.
-            </Trans>
+            {t('newAccount.passinfo')}
           </div>
         </form>
       </div>
@@ -277,5 +261,5 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
 }
 
 export const NewAccount = connect(mapStateToProps, { createNew, setTab })(
-  NewAccountComponent
+  withTranslation()(NewAccountComponent)
 );

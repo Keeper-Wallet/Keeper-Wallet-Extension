@@ -98,7 +98,10 @@ async function startUi() {
     await background.closeNotificationWindow();
   }
 
-  if (isNotificationWindow) {
+  if (
+    isNotificationWindow &&
+    !window.matchMedia('(display-mode: fullscreen)').matches
+  ) {
     background.resizeNotificationWindow(
       357 + window.outerWidth - window.innerWidth,
       600 + window.outerHeight - window.innerHeight

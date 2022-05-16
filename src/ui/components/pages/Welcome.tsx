@@ -1,7 +1,7 @@
 import * as styles from './styles/welcome.styl';
 import * as React from 'react';
 import { BigLogo } from '../head';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAppSelector } from 'ui/store';
@@ -12,6 +12,7 @@ interface Props {
 }
 
 export function Welcome({ setTab }: Props) {
+  const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
   React.useEffect(() => {
@@ -39,21 +40,11 @@ export function Welcome({ setTab }: Props) {
         }}
         className="margin-main-big"
       >
-        <Trans i18nKey="welcome.getStarted">Get Started</Trans>
+        {t('welcome.getStarted')}
       </Button>
       <div className="basic500 body3">
-        <div>
-          <Trans i18nKey="welcome.info">
-            Keeper Wallet — is the safest way to interact with third-party web
-            resources with Waves-integrated functionality or DApps.
-          </Trans>
-        </div>
-        <div>
-          <Trans i18nKey="welcome.info2">
-            Using Keeper Wallet, you can sign transactions and remain safe from
-            malicious sites.
-          </Trans>
-        </div>
+        <div>{t('welcome.info')}</div>
+        <div>{t('welcome.info2')}</div>
       </div>
     </div>
   );

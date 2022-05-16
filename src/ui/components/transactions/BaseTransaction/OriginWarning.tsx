@@ -1,11 +1,15 @@
 import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-export class OriginWarning extends React.PureComponent<{ message: any }> {
+interface Props extends WithTranslation {
+  message: any;
+}
+
+class OriginWarningComponent extends React.PureComponent<Props> {
   render(): React.ReactNode {
-    const { message } = this.props;
+    const { t, message } = this.props;
     const {
       account: { network },
     } = message;
@@ -19,11 +23,11 @@ export class OriginWarning extends React.PureComponent<{ message: any }> {
         <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
         <div className={cn(styles.originNetwork, 'flex')}>
           <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
-          <span className={styles.networkBottom}>
-            <Trans i18nKey={`bottom.${network}`} />
-          </span>
+          <span className={styles.networkBottom}>{t(`bottom.${network}`)}</span>
         </div>
       </React.Fragment>
     );
   }
 }
+
+export const OriginWarning = withTranslation()(OriginWarningComponent);

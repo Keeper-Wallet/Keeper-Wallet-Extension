@@ -1,7 +1,7 @@
 import * as styles from './chooseAccounts.styl';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui';
 import {
@@ -33,6 +33,7 @@ export function ImportKeystoreChooseAccounts({
   onSkip,
   onSubmit,
 }: Props) {
+  const { t } = useTranslation();
   const existingAccounts = new Set(allNetworksAccounts.map(acc => acc.address));
 
   const [selected, setSelected] = React.useState(
@@ -82,11 +83,11 @@ export function ImportKeystoreChooseAccounts({
       }}
     >
       <h2 className={cn(styles.centered, 'margin1', 'title1')}>
-        <Trans i18nKey="importKeystore.chooseAccountsTitle" />
+        {t('importKeystore.chooseAccountsTitle')}
       </h2>
 
       <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
-        <Trans i18nKey="importKeystore.chooseAccountsDesc" />
+        {t('importKeystore.chooseAccountsDesc')}
       </p>
 
       <div className={styles.accounts}>
@@ -165,12 +166,10 @@ export function ImportKeystoreChooseAccounts({
                                   'disabled500'
                                 )}
                               >
-                                <Trans
-                                  i18nKey="importKeystore.chooseAccountsExistingAccountNote"
-                                  values={{
-                                    existingName: existingAccount.name,
-                                  }}
-                                />
+                                {t(
+                                  'importKeystore.chooseAccountsExistingAccountNote',
+                                  { existingName: existingAccount.name }
+                                )}
                               </div>
                             )}
                           </div>
@@ -209,14 +208,13 @@ export function ImportKeystoreChooseAccounts({
               onSkip();
             }}
           >
-            <Trans i18nKey="importKeystore.chooseAccountsSkipBtn" />
+            {t('importKeystore.chooseAccountsSkipBtn')}
           </Button>
         ) : (
           <Button data-testid="submitButton" type="submit" view="submit">
-            <Trans
-              i18nKey="importKeystore.chooseAccountsImportBtn"
-              count={selected.size}
-            />
+            {t('importKeystore.chooseAccountsImportBtn', {
+              count: selected.size,
+            })}
           </Button>
         )}
       </div>

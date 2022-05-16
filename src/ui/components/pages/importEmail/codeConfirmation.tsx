@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { VerifyCodeComponent } from './verifyCodeComponent';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { CodeDelivery } from '../../../../controllers/IdentityController';
 
@@ -15,6 +15,7 @@ export function CodeConfirmation({
   codeDelivery,
   confirmCode,
 }: CodeConfirmationProps) {
+  const { t } = useTranslation();
   const [isPending, setIsPending] = React.useState<boolean>(false);
 
   const handleConfirmCode = React.useCallback(
@@ -35,10 +36,7 @@ export function CodeConfirmation({
   return (
     <form className={className}>
       <div className={cn('margin1', 'tag1', 'basic500', 'input-title')}>
-        <Trans
-          i18nKey="importEmail.verifyAccountDesc"
-          values={{ destination }}
-        />
+        {t('importEmail.verifyAccountDesc', { destination })}
       </div>
 
       <VerifyCodeComponent

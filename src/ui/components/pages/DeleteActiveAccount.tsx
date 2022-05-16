@@ -1,7 +1,7 @@
 import * as styles from './styles/deleteAccount.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
 
@@ -14,16 +14,11 @@ class DeleteActiveAccountComponent extends React.Component {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.content}>
-        <h2 className="title1 margin2">
-          <Trans i18nKey="deleteAccount.attention">Attention!</Trans>
-        </h2>
-        <div className="margin4 body1">
-          <Trans i18nKey="deleteAccount.warn">
-            Deleting an account will lead to its irretrievable loss!
-          </Trans>
-        </div>
+        <h2 className="title1 margin2">{t('deleteAccount.attention')}</h2>
+        <div className="margin4 body1">{t('deleteAccount.warn')}</div>
         <div>
           <Button
             id="deleteAccount"
@@ -32,7 +27,7 @@ class DeleteActiveAccountComponent extends React.Component {
             view="warning"
             disabled={this.state.disable}
           >
-            <Trans i18nKey="deleteAccount.delete">Delete account</Trans>
+            {t('deleteAccount.delete')}
           </Button>
         </div>
       </div>
@@ -51,4 +46,4 @@ const mapStateToProps = function () {
 export const DeleteActiveAccount = connect(
   mapStateToProps,
   actions
-)(DeleteActiveAccountComponent);
+)(withTranslation()(DeleteActiveAccountComponent));

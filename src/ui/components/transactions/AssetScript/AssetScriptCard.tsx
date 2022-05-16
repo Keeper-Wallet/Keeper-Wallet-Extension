@@ -1,19 +1,19 @@
 import * as styles from './assetScript.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 import { Asset, ShowScript } from '../../ui';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class AssetScriptCard extends React.PureComponent<IProps> {
+class AssetScriptCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.assetScriptTransactionCard,
@@ -23,7 +23,7 @@ export class AssetScriptCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, collapsed } = this.props;
+    const { t, message, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const script = tx.script;
@@ -36,7 +36,7 @@ export class AssetScriptCard extends React.PureComponent<IProps> {
             </div>
             <div>
               <div className="basic500 body3 margin-min">
-                <Trans i18nKey="transactions.assetScriptTransaction" />
+                {t('transactions.assetScriptTransaction')}
               </div>
               <h1 className="headline1">
                 <Asset assetId={tx.assetId} />
@@ -55,11 +55,11 @@ export class AssetScriptCard extends React.PureComponent<IProps> {
         {!collapsed ? (
           <>
             <div className="font600 tag1 basic500 margin-min margin-main-top">
-              <Trans i18nKey="transactions.assetScriptWarningHeader" />
+              {t('transactions.assetScriptWarningHeader')}
             </div>
 
             <div className="tag1 basic500 margin-main">
-              <Trans i18nKey="transactions.assetScriptWarningDescription" />
+              {t('transactions.assetScriptWarningDescription')}
             </div>
           </>
         ) : null}
@@ -67,3 +67,5 @@ export class AssetScriptCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const AssetScriptCard = withTranslation()(AssetScriptCardComponent);

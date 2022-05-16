@@ -1,36 +1,37 @@
 import * as React from 'react';
 import { Button } from '../ui';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import * as styles from './featureUpdateInfo.styl';
 import background from '../../../ui/services/Background';
 
 export function FeatureUpdateInfo({ onClose, onSubmit }) {
+  const { t } = useTranslation();
+
   function preventDefault(func: () => void) {
     return function (evt) {
       evt.preventDefault();
       func();
     };
   }
+
   return (
     <div className="modal cover">
       <form className="modal-form" onSubmit={preventDefault(onSubmit)}>
         <i className={`lock-icon ${styles.lockIcon}`} />
 
+        <p className={cn('margin1', 'body1')}>{t('featureUpdateInfo.intro')}</p>
+
         <p className={cn('margin1', 'body1')}>
-          <Trans i18nKey="featureUpdateInfo.intro" />
+          {t('featureUpdateInfo.recommendation')}
         </p>
 
         <p className={cn('margin1', 'body1')}>
-          <Trans i18nKey="featureUpdateInfo.recommendation" />
-        </p>
-
-        <p className={cn('margin1', 'body1')}>
-          <Trans i18nKey="featureUpdateInfo.keystoreInfo" />
+          {t('featureUpdateInfo.keystoreInfo')}
         </p>
 
         <p className={cn('margin-main-big', 'body1')}>
-          <Trans i18nKey="featureUpdateInfo.keystoreImport" />
+          {t('featureUpdateInfo.keystoreImport')}
         </p>
 
         <Button
@@ -40,7 +41,7 @@ export function FeatureUpdateInfo({ onClose, onSubmit }) {
             background.sendEvent('click', { id: 'featureUpdateInfo.backupBtn' })
           }
         >
-          <Trans i18nKey="featureUpdateInfo.backupBtn" />
+          {t('featureUpdateInfo.backupBtn')}
         </Button>
 
         <Button

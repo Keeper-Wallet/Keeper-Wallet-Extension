@@ -1,5 +1,3 @@
-@import '../../styles/colors.styl'
-
 .bottom {
   position: absolute;
   bottom: 0;
@@ -13,8 +11,5 @@
   z-index: 10;
   box-shadow: 0 -1px 4px 0 #00000019;
   height: 34px;
-  background: $basic50;
+  background: var(--color-basic50);
 }
-
-.hidden
-  display: none;

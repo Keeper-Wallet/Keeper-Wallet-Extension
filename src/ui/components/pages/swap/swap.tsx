@@ -5,7 +5,7 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { swappableAssetIds } from 'assets/constants';
 import { convertToSponsoredAssetFee, getAssetIdByName } from 'assets/utils';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
@@ -117,9 +117,7 @@ export function Swap({ setTab }: Props) {
     <div className={styles.root}>
       <div className={styles.wrapper}>
         <header className={styles.header}>
-          <h1 className={styles.title}>
-            <Trans i18nKey="swap.title" />
-          </h1>
+          <h1 className={styles.title}>{t('swap.title')}</h1>
         </header>
 
         {wavesFeeCoins == null ||
@@ -229,7 +227,7 @@ export function Swap({ setTab }: Props) {
                       }
 
                       if (/Request is rejected on ledger/i.test(errMessage)) {
-                        setSwapErrorMessage(errMessage);
+                        setSwapErrorMessage(t('swap.ledgerFailMessage'));
                         setIsSwapInProgress(false);
                         return;
                       }

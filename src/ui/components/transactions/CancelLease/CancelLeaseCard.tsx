@@ -1,20 +1,20 @@
 import * as styles from './cancelLease.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class CancelLeaseCard extends React.PureComponent<IProps> {
+class CancelLeaseCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.cancelLeaseTransactionCard,
@@ -24,7 +24,7 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { data = {} } = message;
 
     const tx = { type: data.type, ...data.data };
@@ -39,7 +39,7 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.leaseCancel" />
+              {t('transactions.leaseCancel')}
             </div>
             <h1 className="headline1">
               <Balance
@@ -56,7 +56,7 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
           <div className={styles.cardContent}>
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.recipient" />
+                {t('transactions.recipient')}
               </div>
               <div className={styles.txValue}>{recipient}</div>
             </div>
@@ -66,3 +66,5 @@ export class CancelLeaseCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const CancelLeaseCard = withTranslation()(CancelLeaseCardComponent);

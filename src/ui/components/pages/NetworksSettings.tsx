@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { setCustomCode, setCustomMatcher, setCustomNode } from '../../actions';
-import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
@@ -118,6 +118,7 @@ class NetworksSettingsComponent extends React.PureComponent {
   render() {
     const { nodeError, matcherError, validateData, showSetDefaultBtn } =
       this.state;
+    const { t } = this.props;
 
     const disableSave = nodeError || matcherError || validateData;
     const disableForm = validateData;
@@ -125,7 +126,7 @@ class NetworksSettingsComponent extends React.PureComponent {
     return (
       <div className={styles.networkTab}>
         <h2 className="title1 margin-main-big">
-          <Trans i18nKey="networksSettings.network">Network</Trans>
+          {t('networksSettings.network')}
         </h2>
 
         <div className="margin-main-big relative">
@@ -133,7 +134,7 @@ class NetworksSettingsComponent extends React.PureComponent {
             <Copy text={this.state.node} onCopy={this.copyHandler}>
               <i className={`copy-icon ${styles.copyIcon}`}> </i>
             </Copy>
-            <Trans i18nKey="networksSettings.node">Node address</Trans>
+            {t('networksSettings.node')}
           </label>
           <Input
             disable={disableForm ? 'true' : ''}
@@ -141,11 +142,7 @@ class NetworksSettingsComponent extends React.PureComponent {
             value={this.state.node}
             onChange={this.onInputHandler}
           />
-          <Error show={nodeError}>
-            <Trans i18nKey="networkSettings.nodeError">
-              Incorrect node address
-            </Trans>
-          </Error>
+          <Error show={nodeError}>{t('networkSettings.nodeError')}</Error>
         </div>
 
         <div className="margin-main-big relative">
@@ -156,7 +153,7 @@ class NetworksSettingsComponent extends React.PureComponent {
             <Copy text={this.state.matcher} onCopy={this.copyHandler}>
               <i className={`copy-icon ${styles.copyIcon}`}> </i>
             </Copy>
-            <Trans i18nKey="networksSettings.matcher">Matcher address</Trans>
+            {t('networksSettings.matcher')}
           </label>
           <Input
             disable={disableForm ? 'true' : ''}
@@ -164,11 +161,7 @@ class NetworksSettingsComponent extends React.PureComponent {
             value={this.state.matcher}
             onChange={this.onInputMatcherHandler}
           />
-          <Error show={matcherError}>
-            <Trans i18nKey="networkSettings.matcherError">
-              Incorrect matcher address
-            </Trans>
-          </Error>
+          <Error show={matcherError}>{t('networkSettings.matcherError')}</Error>
         </div>
 
         <div>
@@ -182,7 +175,7 @@ class NetworksSettingsComponent extends React.PureComponent {
             className="margin-main-big"
             onClick={this.onSaveNodeHandler}
           >
-            <Trans i18nKey="networksSettings.save">Save</Trans>
+            {t('networksSettings.save')}
           </Button>
         </div>
 
@@ -197,7 +190,7 @@ class NetworksSettingsComponent extends React.PureComponent {
               }
               onClick={this.saveDefault}
             >
-              <Trans i18nKey="networksSettings.setDefault">Set Default</Trans>
+              {t('networksSettings.setDefault')}
             </Button>
           ) : null}
         </div>
@@ -207,7 +200,7 @@ class NetworksSettingsComponent extends React.PureComponent {
           showModal={this.state.showCopied}
         >
           <div className="modal notification">
-            <Trans i18nKey="networksSettings.copied">Copied!</Trans>
+            {t('networksSettings.copied')}
           </div>
         </Modal>
 
@@ -216,7 +209,7 @@ class NetworksSettingsComponent extends React.PureComponent {
           showModal={this.state.showSaved}
         >
           <div className="modal notification">
-            <Trans i18nKey="networksSettings.savedModal">Saved!</Trans>
+            {t('networksSettings.savedModal')}
           </div>
         </Modal>
 
@@ -225,9 +218,7 @@ class NetworksSettingsComponent extends React.PureComponent {
           showModal={this.state.showSetDefault}
         >
           <div className="modal notification">
-            <Trans i18nKey="networksSettings.setDefaultModal">
-              Save default!
-            </Trans>
+            {t('networksSettings.setDefaultModal')}
           </div>
         </Modal>
       </div>
@@ -330,4 +321,4 @@ const actions = {
 export const NetworksSettings = connect(
   mapToProps,
   actions
-)(NetworksSettingsComponent);
+)(withTranslation()(NetworksSettingsComponent));

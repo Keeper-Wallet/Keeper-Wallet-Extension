@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Avatar, Button, Copy, Ellipsis, Modal } from '../ui';
 import cn from 'classnames';
 import * as styles from './wallet.styl';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Tooltip } from '../ui/tooltip';
 import { Account } from '../../../accounts/types';
 
@@ -16,6 +16,7 @@ export const TransactionWallet = ({
   children = null,
   type = 'small',
 }: ITransactionWalletProps) => {
+  const { t } = useTranslation();
   const [showCopied, setCopied] = React.useState(false);
   let copyTimeout;
   const onCopy = () => {
@@ -62,9 +63,7 @@ export const TransactionWallet = ({
           content={
             <>
               <Ellipsis text={account.address} />
-              <div>
-                <Trans i18nKey="accountInfo.copyToClipboard" />
-              </div>
+              <div>{t('accountInfo.copyToClipboard')}</div>
             </>
           }
           placement="top-start"
@@ -92,9 +91,7 @@ export const TransactionWallet = ({
       </div>
 
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopied}>
-        <div className="modal notification">
-          <Trans i18nKey="accountInfo.copied">Copied!</Trans>
-        </div>
+        <div className="modal notification">{t('accountInfo.copied')}</div>
       </Modal>
     </div>
   );

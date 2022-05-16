@@ -22,9 +22,7 @@ export function ExportAccounts({ onBack }: Props) {
   return (
     <>
       <ExportKeystoreChooseAccounts
-        accounts={allNetworksAccounts.filter(acc =>
-          ['seed', 'encodedSeed', 'privateKey'].includes(acc.type)
-        )}
+        accounts={allNetworksAccounts}
         onSubmit={selectedAccounts => {
           setAccountsToExport(selectedAccounts);
         }}

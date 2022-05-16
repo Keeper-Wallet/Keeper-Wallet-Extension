@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
 import { compareAccountsByLastUsed } from 'accounts/utils';
@@ -17,6 +17,7 @@ interface Props {
 }
 
 export function OtherAccountsPage({ setTab }: Props) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
   const activeAccount = useAppSelector(state =>
@@ -59,9 +60,7 @@ export function OtherAccountsPage({ setTab }: Props) {
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <h2 className={styles.title}>
-          <Trans i18nKey="otherAccounts.title" />
-        </h2>
+        <h2 className={styles.title}>{t('otherAccounts.title')}</h2>
       </header>
 
       <div className={styles.accounts}>
@@ -77,13 +76,11 @@ export function OtherAccountsPage({ setTab }: Props) {
 
         {otherAccounts.length === 0 ? (
           <p className={styles.noAccountsNote} data-testid="accountsNote">
-            <Trans
-              i18nKey={
-                !term
-                  ? 'otherAccounts.noAccountsNote'
-                  : 'otherAccounts.noAccountsFound'
-              }
-            />
+            {t(
+              !term
+                ? 'otherAccounts.noAccountsNote'
+                : 'otherAccounts.noAccountsFound'
+            )}
           </p>
         ) : (
           otherAccounts.map(account => (
@@ -116,7 +113,7 @@ export function OtherAccountsPage({ setTab }: Props) {
               dispatch(resetTab(PAGES.ROOT));
             }}
           >
-            <Trans i18nKey="otherAccounts.addAccount" />
+            {t('otherAccounts.addAccount')}
           </button>
         </div>
       </div>

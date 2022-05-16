@@ -2,7 +2,7 @@ import * as styles from './styles/assets.styl';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   getBalances,
   setActiveAccount,
@@ -27,6 +27,7 @@ interface Props {
 }
 
 export function Assets({ setTab }: Props) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const activeAccount = useAppSelector(state =>
@@ -128,15 +129,9 @@ export function Assets({ setTab }: Props) {
         }
       >
         <TabList className="flex body3">
-          <Tab className={styles.tabItem}>
-            <Trans i18nKey="assets.assets" />
-          </Tab>
-          <Tab className={styles.tabItem}>
-            <Trans i18nKey="assets.nfts" />
-          </Tab>
-          <Tab className={styles.tabItem}>
-            <Trans i18nKey="assets.history" />
-          </Tab>
+          <Tab className={styles.tabItem}>{t('assets.assets')}</Tab>
+          <Tab className={styles.tabItem}>{t('assets.nfts')}</Tab>
+          <Tab className={styles.tabItem}>{t('assets.history')}</Tab>
         </TabList>
         <TabPanels className={styles.tabPanels}>
           <TabAssets
@@ -168,9 +163,7 @@ export function Assets({ setTab }: Props) {
       </Tabs>
 
       <Modal animation={Modal.ANIMATION.FLASH_SCALE} showModal={showCopy}>
-        <div className="modal notification">
-          <Trans i18nKey="assets.copied" />
-        </div>
+        <div className="modal notification">{t('assets.copied')}</div>
       </Modal>
 
       <Modal
@@ -178,9 +171,7 @@ export function Assets({ setTab }: Props) {
         showModal={notifications.selected}
       >
         <div className="modal notification">
-          <div>
-            <Trans i18nKey="assets.selectAccountNotification" />
-          </div>
+          <div>{t('assets.selectAccountNotification')}</div>
         </div>
       </Modal>
 
@@ -189,9 +180,7 @@ export function Assets({ setTab }: Props) {
         showModal={notifications.deleted}
       >
         <div className="modal notification active-asset">
-          <div>
-            <Trans i18nKey="assets.deleteAccount" />
-          </div>
+          <div>{t('assets.deleteAccount')}</div>
         </div>
       </Modal>
 

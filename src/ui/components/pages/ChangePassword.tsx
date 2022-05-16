@@ -4,12 +4,12 @@ import { changePassword } from '../../actions';
 import * as React from 'react';
 import { Button, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-interface Props {
+interface Props extends WithTranslation {
   changePassword: (p1: string, p2: string) => void;
 }
 
@@ -42,16 +42,15 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div className={styles.newPassword}>
         <form className={styles.content} onSubmit={this.onSubmit}>
-          <h2 className="title1 margin2">
-            <Trans i18nKey="changePassword.changeTitle">Change password</Trans>
-          </h2>
+          <h2 className="title1 margin2">{t('changePassword.changeTitle')}</h2>
           <div>
             <div className="margin-main-big relative">
               <div className="basic500 tag1 input-title">
-                <Trans i18nKey="changePassword.oldPassword">Old password</Trans>
+                {t('changePassword.oldPassword')}
               </div>
               <Input
                 id="old"
@@ -64,22 +63,16 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 ref={this.getRef}
               />
               <Error show={!!(this.state.oldError || this.state.passwordError)}>
-                {this.state.oldError ? (
-                  <Trans i18nKey="changePassword.errorShortOld">
-                    Password can't be so short
-                  </Trans>
-                ) : null}
-                {this.state.passwordError ? (
-                  <Trans i18nKey="changePassword.errorWrongOld">
-                    Wrong password
-                  </Trans>
-                ) : null}
+                {this.state.oldError ? t('changePassword.errorShortOld') : null}
+                {this.state.passwordError
+                  ? t('changePassword.errorWrongOld')
+                  : null}
               </Error>
             </div>
 
             <div className="margin-main-big relative">
               <div className="basic500 tag1 input-title">
-                <Trans i18nKey="changePassword.newPassword">New password</Trans>
+                {t('changePassword.newPassword')}
               </div>
               <Input
                 id="first"
@@ -90,17 +83,13 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 error={!!this.state.firstError || this.state.oldEqualNewError}
               />
               <Error show={!!this.state.firstError}>
-                <Trans i18nKey="changePassword.errorShortNew">
-                  Password is too short
-                </Trans>
+                {t('changePassword.errorShortNew')}
               </Error>
             </div>
 
             <div className="margin-main-big relative">
               <div className="basic500 tag1 input-title">
-                <Trans i18nKey="changePassword.confirmPassword">
-                  Confirm password
-                </Trans>
+                {t('changePassword.confirmPassword')}
               </div>
               <Input
                 id="second"
@@ -113,14 +102,12 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
               <Error
                 show={!!this.state.secondError || this.state.oldEqualNewError}
               >
-                {this.state.oldEqualNewError ? (
-                  <Trans i18nKey="changePassword.equalPassword">
-                    Old password is equal new
-                  </Trans>
-                ) : null}
-                {this.state.secondError ? (
-                  <Trans i18nKey="changePassword.errorWrongConfirm" />
-                ) : null}
+                {this.state.oldEqualNewError
+                  ? t('changePassword.equalPassword')
+                  : null}
+                {this.state.secondError
+                  ? t('changePassword.errorWrongConfirm')
+                  : null}
               </Error>
             </div>
           </div>
@@ -129,7 +116,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
             view="submit"
             disabled={this.state.buttonDisabled}
           >
-            <Trans i18nKey="changePassword.create">Save</Trans>
+            {t('changePassword.create')}
           </Button>
         </form>
         <Modal
@@ -137,7 +124,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
           showModal={this.state.showChanged}
         >
           <div className="modal notification" data-testid="modalPassword">
-            <Trans i18nKey="changePassword.done">Password changed</Trans>
+            {t('changePassword.done')}
           </div>
         </Modal>
       </div>
@@ -284,5 +271,5 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
 }
 
 export const ChangePassword = connect(undefined, { changePassword })(
-  ChangePasswordComponent
+  withTranslation()(ChangePasswordComponent)
 );

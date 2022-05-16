@@ -4,7 +4,7 @@ import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';
 import { AssetLogo } from './assetLogo';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { favoriteAsset } from '../../../actions';
 import { Tooltip } from '../../ui/tooltip';
@@ -28,6 +28,7 @@ export function AssetItem({
   onSendClick,
   onSwapClick,
 }: Props) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const assets = useAppSelector(state => state.assets);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
@@ -99,7 +100,7 @@ export function AssetItem({
       {!isLoading && (
         <MoreActions>
           {assetId !== 'WAVES' && (
-            <Tooltip content={<Trans i18nKey="assetInfo.infoTooltip" />}>
+            <Tooltip content={t('assetInfo.infoTooltip')}>
               {props => (
                 <button
                   className={styles.infoBtn}
@@ -116,15 +117,11 @@ export function AssetItem({
             </Tooltip>
           )}
           <Tooltip
-            content={
-              <Trans
-                i18nKey={
-                  isFavorite
-                    ? 'assetInfo.favRemoveTooltip'
-                    : 'assetInfo.favAddTooltip'
-                }
-              />
-            }
+            content={t(
+              isFavorite
+                ? 'assetInfo.favRemoveTooltip'
+                : 'assetInfo.favAddTooltip'
+            )}
           >
             {props => (
               <button
@@ -151,7 +148,7 @@ export function AssetItem({
             )}
           </Tooltip>
 
-          <Tooltip content={<Trans i18nKey={'assetInfo.sendAssetTooltip'} />}>
+          <Tooltip content={t('assetInfo.sendAssetTooltip')}>
             {props => (
               <button
                 className={styles.sendBtn}
@@ -174,7 +171,7 @@ export function AssetItem({
 
           {currentNetwork === 'mainnet' &&
             isSwappableAsset(currentNetwork, assetId) && (
-              <Tooltip content={<Trans i18nKey="assetInfo.swapAssetTooltip" />}>
+              <Tooltip content={t('assetInfo.swapAssetTooltip')}>
                 {props => (
                   <button
                     className={styles.swapBtn}

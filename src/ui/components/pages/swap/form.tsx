@@ -2,7 +2,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelectModal } from 'assets/selectModal';
 import { convertToSponsoredAssetFee } from 'assets/utils';
@@ -420,11 +420,11 @@ export function SwapForm({
         {exchangeInfo == null || fromAmountTokens.eq(0) ? null : (
           <div className={styles.toAmountInputGainBadge}>
             {exchangeInfo.toAmountTokens.eq(exchangeInfo.worstAmountTokens) ? (
-              <Trans i18nKey="swap.gainBestPrice" />
+              t('swap.gainBestPrice')
             ) : (
               <Tooltip
                 className={styles.tooltipContent}
-                content={<Trans i18nKey="swap.gainTooltip" />}
+                content={t('swap.gainTooltip')}
               >
                 {props => (
                   <span {...props}>
@@ -459,11 +459,11 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.tooltipContent}
-              content={<Trans i18nKey="swap.slippageToleranceTooltip" />}
+              content={t('swap.slippageToleranceTooltip')}
             >
               {props => (
                 <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.slippageTolerance" />
+                  {t('swap.slippageTolerance')}
                 </span>
               )}
             </Tooltip>
@@ -502,11 +502,11 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.tooltipContent}
-              content={<Trans i18nKey="swap.minimumReceivedTooltip" />}
+              content={t('swap.minimumReceivedTooltip')}
             >
               {props => (
                 <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.minimumReceived" />
+                  {t('swap.minimumReceived')}
                 </span>
               )}
             </Tooltip>
@@ -530,9 +530,7 @@ export function SwapForm({
         </div>
 
         <div className={styles.summaryRow}>
-          <div className={styles.summaryLabel}>
-            <Trans i18nKey="swap.priceLabel" />
-          </div>
+          <div className={styles.summaryLabel}>{t('swap.priceLabel')}</div>
 
           <div className={styles.summaryValue}>
             {exchangeInfo == null ? (
@@ -601,7 +599,7 @@ export function SwapForm({
         type="submit"
         view="submit"
       >
-        <Trans i18nKey="swap.submitButtonText" />
+        {t('swap.submitButtonText')}
       </Button>
 
       {(validationErrorMessage || swapErrorMessage) && (
@@ -615,11 +613,11 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.tooltipContent}
-              content={<Trans i18nKey="swap.routeTooltip" />}
+              content={t('swap.routeTooltip')}
             >
               {props => (
                 <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.route" />
+                  {t('swap.route')}
                 </span>
               )}
             </Tooltip>
@@ -653,11 +651,11 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.tooltipContent}
-              content={<Trans i18nKey="swap.priceImpactTooltip" />}
+              content={t('swap.priceImpactTooltip')}
             >
               {props => (
                 <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.priceImpact" />
+                  {t('swap.priceImpact')}
                 </span>
               )}
             </Tooltip>
@@ -682,11 +680,11 @@ export function SwapForm({
           <div className={styles.summaryLabel}>
             <Tooltip
               className={styles.tooltipContent}
-              content={<Trans i18nKey="swap.transactionFeeTooltip" />}
+              content={t('swap.transactionFeeTooltip')}
             >
               {props => (
                 <span className={styles.summaryLabelTooltip} {...props}>
-                  <Trans i18nKey="swap.transactionFee" />
+                  {t('swap.transactionFee')}
                 </span>
               )}
             </Tooltip>

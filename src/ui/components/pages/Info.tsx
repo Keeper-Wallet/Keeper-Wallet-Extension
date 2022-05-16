@@ -1,22 +1,16 @@
 import * as styles from './styles/info.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { BigLogo } from '../head';
 
-export class Info extends React.Component {
+class InfoComponent extends React.Component<WithTranslation> {
   render() {
+    const { t } = this.props;
     return (
       <div className={`${styles.content} body1`}>
         <BigLogo className={`${styles.logoLeft} margin-main`} noTitle={true} />
 
-        <div className="margin-main basic500">
-          <Trans i18nKey="info.keepUp">
-            Keeper Wallet — is the safest way to interact with third-party web
-            resources with Waves-integrated functionality or DApps. Using Waves
-            Keeper, you can sign transactions and remain safe from malicious
-            sites.
-          </Trans>
-        </div>
+        <div className="margin-main basic500">{t('info.keepUp')}</div>
 
         <a
           rel="noopener noreferrer"
@@ -28,9 +22,7 @@ export class Info extends React.Component {
         </a>
 
         <div className={`${styles.social} margin-main`}>
-          <div className="margin-main basic500">
-            <Trans i18nKey="info.joinUs">Join the Waves Community</Trans>
-          </div>
+          <div className="margin-main basic500">{t('info.joinUs')}</div>
           <ul>
             <li className={styles.github}>
               <a
@@ -96,3 +88,5 @@ export class Info extends React.Component {
     );
   }
 }
+
+export const Info = withTranslation()(InfoComponent);

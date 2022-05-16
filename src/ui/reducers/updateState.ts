@@ -118,7 +118,7 @@ export const customCodes = createSimpleReducer<
   Partial<Record<NetworkName, string>>
 >({}, ACTION.UPDATE_CODES);
 export const customMatcher = createSimpleReducer({}, ACTION.UPDATE_MATCHER);
-export const langs = createSimpleReducer({}, ACTION.UPDATE_LANGS);
+export const langs = createSimpleReducer([], ACTION.UPDATE_LANGS);
 export const origins = createSimpleReducer({}, ACTION.UPDATE_ORIGINS);
 export const idleOptions = createSimpleReducer(
   {},

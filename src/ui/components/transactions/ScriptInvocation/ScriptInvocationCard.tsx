@@ -1,20 +1,20 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class ScriptInvocationCard extends React.PureComponent<IProps> {
+class ScriptInvocationCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(
       styles.scriptInvocationTransactionCard,
@@ -24,7 +24,7 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
       }
     );
 
-    const { message, assets, collapsed } = this.props;
+    const { t, message, assets, collapsed } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const functionName = (tx.call && tx.call.function) || 'default';
@@ -39,17 +39,15 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.scriptInvocation" />
+              {t('transactions.scriptInvocation')}
             </div>
             <h1 className="headline1">
-              <Trans
-                i18nKey={
-                  hasPayment
-                    ? 'transactions.paymentsCount'
-                    : 'transactions.paymentsNone'
-                }
-                values={{ count: tx.payment.length || 0 }}
-              />
+              {t(
+                hasPayment
+                  ? 'transactions.paymentsCount'
+                  : 'transactions.paymentsNone',
+                { count: tx.payment.length || 0 }
+              )}
             </h1>
           </div>
         </div>
@@ -57,21 +55,21 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
         <div className={styles.cardContent}>
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.dApp" />
+              {t('transactions.dApp')}
             </div>
             <div className={styles.txValue}>{tx.dApp}</div>
           </div>
 
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.scriptInvocationFunction" />
+              {t('transactions.scriptInvocationFunction')}
             </div>
             <div className={styles.txValue}>{functionName}</div>
           </div>
 
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.arguments" />
+              {t('transactions.arguments')}
             </div>
             <div className={styles.txValue}>
               <ShowScript
@@ -89,7 +87,7 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
           {hasPayment && (
             <div className={styles.txRow}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.payments" />
+                {t('transactions.payments')}
               </div>
               <div className={styles.txValue}>
                 <PlateCollapsable
@@ -118,3 +116,7 @@ export class ScriptInvocationCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const ScriptInvocationCard = withTranslation()(
+  ScriptInvocationCardComponent
+);

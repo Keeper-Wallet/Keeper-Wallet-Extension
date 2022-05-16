@@ -1,5 +1,5 @@
 import BigNumber from '@waves/bignumber';
-import { Asset, Money } from '@waves/data-entities';
+import { Money } from '@waves/data-entities';
 import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useIMask } from 'react-imask';
@@ -7,7 +7,7 @@ import { useAppSelector } from 'ui/store';
 import * as styles from './amountInput.module.css';
 import { getAssetLogo } from './utils';
 import { Loader } from 'ui/components/ui';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { UsdAmount } from '../ui/components/ui/UsdAmount';
 
 interface Props {
@@ -32,6 +32,7 @@ export function AssetAmountInput({
   onMaxClick,
 }: Props) {
   const assets = useAppSelector(state => state.assets);
+  const { t } = useTranslation();
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
   const logoSrc = getAssetLogo(network, asset.id);
@@ -170,7 +171,7 @@ export function AssetAmountInput({
               type="button"
               onClick={onMaxClick}
             >
-              <Trans i18nKey="assetAmountInput.maxButtonText" />
+              {t('assetAmountInput.maxButtonText')}
             </button>
           )}
         </div>

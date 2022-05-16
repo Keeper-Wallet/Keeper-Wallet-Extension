@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './importEmail.module.css';
 import cn from 'classnames';
 
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions';
@@ -57,11 +57,11 @@ export function ImportEmail({ setTab }: Props) {
   return (
     <div className={styles.root}>
       <h2 className={cn('margin1', 'title1')}>
-        <Trans i18nKey="importEmail.importEmailTitle" />
+        {t('importEmail.importEmailTitle')}
       </h2>
 
       <p className={cn(styles.centered, 'margin1', 'tag1', 'disabled500')}>
-        <Trans i18nKey="importEmail.importEmailDesc" />
+        {t('importEmail.importEmailDesc')}
       </p>
 
       <Login onSubmit={handleSubmit} onConfirm={handleConfirm} />

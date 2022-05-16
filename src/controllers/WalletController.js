@@ -150,18 +150,22 @@ export class WalletController extends EventEmitter {
   }
 
   updateNetworkCode(network, code) {
-    code = code || this.getNetworkCode(network);
-    const wallets = this.getWalletsByNetwork(network);
-    wallets.forEach(wallet => {
-      if (wallet.user.networkCode !== code) {
-        const seed = new seedUtils.Seed(wallet.user.seed, code);
-        wallet.user.network = network;
-        wallet.user.networkCode = code;
-        wallet.user.address = seed.address;
+    let changed = false;
+
+    this.wallets.forEach((wallet, index) => {
+      const account = wallet.getAccount();
+
+      if (account.network === network && account.networkCode !== code) {
+        changed = true;
+
+        this.wallets[index] = this._createWallet({
+          ...wallet.serialize(),
+          networkCode: code,
+        });
       }
     });
 
-    if (wallets.length) {
+    if (changed) {
       this._saveWallets();
     }
   }

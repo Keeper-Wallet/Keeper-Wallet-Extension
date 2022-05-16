@@ -1,6 +1,6 @@
 import * as styles from './transfer.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance } from '../../ui';
@@ -8,20 +8,20 @@ import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className: string;
   collapsed: boolean;
   message: any;
 }
 
-export class TransferCard extends React.PureComponent<IProps> {
+class TransferCardComponent extends React.PureComponent<IProps> {
   render() {
     const className = cn(styles.transferTransactionCard, this.props.className, {
       [styles.transferCard_collapsed]: this.props.collapsed,
     });
 
-    const { message, assets } = this.props;
+    const { t, message, assets } = this.props;
     const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
@@ -34,7 +34,7 @@ export class TransferCard extends React.PureComponent<IProps> {
           </div>
           <div>
             <div className="basic500 body3 margin-min">
-              <Trans i18nKey="transactions.transfer" />
+              {t('transactions.transfer')}
             </div>
             <h1 className="headline1">
               <Balance
@@ -52,7 +52,7 @@ export class TransferCard extends React.PureComponent<IProps> {
         <div className={styles.cardContent}>
           <div className={styles.txRow}>
             <div className="tx-title tag1 basic500">
-              <Trans i18nKey="transactions.recipient" />
+              {t('transactions.recipient')}
             </div>
             <div className={styles.txValue} data-testid="recipient">
               {tx.recipient}
@@ -62,7 +62,7 @@ export class TransferCard extends React.PureComponent<IProps> {
           {tx.attachment && tx.attachment.length ? (
             <div className={`${styles.txRow} ${styles.txRowDescription}`}>
               <div className="tx-title tag1 basic500">
-                <Trans i18nKey="transactions.attachment" />
+                {t('transactions.attachment')}
               </div>
               <Attachment
                 attachment={readAttachment(tx.attachment)}
@@ -76,3 +76,5 @@ export class TransferCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const TransferCard = withTranslation()(TransferCardComponent);

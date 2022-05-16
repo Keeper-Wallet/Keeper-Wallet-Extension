@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   Highlight,
   PlateCollapsable,
@@ -18,17 +18,14 @@ interface Props {
 }
 
 export function TxDetailTabs({ children }: Props) {
+  const { t } = useTranslation();
   const message = useAppSelector(state => state.activePopup?.msg);
 
   return (
     <Tabs>
       <TabList className="body3">
-        <Tab>
-          <Trans i18nKey="transactions.details" />
-        </Tab>
-        <Tab>
-          <Trans i18nKey="transactions.json" />
-        </Tab>
+        <Tab>{t('transactions.details')}</Tab>
+        <Tab>{t('transactions.json')}</Tab>
       </TabList>
       <TabPanels>
         <TabPanel>{children}</TabPanel>

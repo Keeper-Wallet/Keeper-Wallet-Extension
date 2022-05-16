@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { Button, Error, Input } from 'ui/components/ui';
 
 const key = key => `bottom.${key}`;
 
-export class NetworkSettings extends React.PureComponent<
+class NetworkSettingsComponent extends React.PureComponent<
   INetworkSettings,
   IState
 > {
@@ -30,6 +30,7 @@ export class NetworkSettings extends React.PureComponent<
   }
 
   render(): React.ReactNode {
+    const { t } = this.props;
     const { name } = this.state;
 
     return (
@@ -38,10 +39,8 @@ export class NetworkSettings extends React.PureComponent<
           <div>
             <i className="networkIconActive"> </i>
             <h2 className="headline2 margin-main-big">
-              <span className="capitalize">
-                <Trans i18nKey={key(name)}>{name}</Trans>
-              </span>{' '}
-              <Trans i18nKey="networkSettings.customNetwork">network</Trans>
+              <span className="capitalize">{t(key(name))}</span>{' '}
+              {t('networkSettings.customNetwork')}
             </h2>
           </div>
 
@@ -53,7 +52,7 @@ export class NetworkSettings extends React.PureComponent<
                 className="input-title basic500 tag1"
                 htmlFor="node_address"
               >
-                <Trans i18nKey="networksSettings.node">Node address</Trans>
+                {t('networksSettings.node')}
               </label>
               <Input
                 id="node_address"
@@ -61,15 +60,9 @@ export class NetworkSettings extends React.PureComponent<
                 onChange={this.changeHandler('node', 'nodeError')}
               />
               <Error show={this.state.nodeError}>
-                {this.state.node ? (
-                  <Trans i18nKey="networkSettings.nodeError">
-                    Incorrect node address
-                  </Trans>
-                ) : (
-                  <Trans i18nKey="networkSettings.nodeUrlEmpty">
-                    URL is required
-                  </Trans>
-                )}
+                {this.state.node
+                  ? t('networkSettings.nodeError')
+                  : t('networkSettings.nodeUrlEmpty')}
               </Error>
             </div>
 
@@ -78,9 +71,7 @@ export class NetworkSettings extends React.PureComponent<
                 className="input-title basic500 tag1"
                 htmlFor="matcher_address"
               >
-                <Trans i18nKey="networksSettings.matcher">
-                  Matcher address
-                </Trans>
+                {t('networksSettings.matcher')}
               </label>
               <Input
                 id="matcher_address"
@@ -88,9 +79,7 @@ export class NetworkSettings extends React.PureComponent<
                 onChange={this.changeHandler('matcher', 'matcherError')}
               />
               <Error show={this.state.matcherError}>
-                <Trans i18nKey="networkSettings.matcherError">
-                  Incorrect matcher address
-                </Trans>
+                {t('networkSettings.matcherError')}
               </Error>
             </div>
           </div>
@@ -103,9 +92,7 @@ export class NetworkSettings extends React.PureComponent<
               onClick={this.saveHandler}
               className="margin-main-big relative"
             >
-              <Trans i18nKey="networkSettings.saveAndApply">
-                Save and apply
-              </Trans>
+              {t('networkSettings.saveAndApply')}
             </Button>
 
             <div className="center">
@@ -114,7 +101,7 @@ export class NetworkSettings extends React.PureComponent<
                 type="button"
                 view="transparent"
               >
-                <Trans i18nKey="networkSettings.cancel">Cancel</Trans>
+                {t('networkSettings.cancel')}
               </Button>
             </div>
 
@@ -190,7 +177,7 @@ export class NetworkSettings extends React.PureComponent<
   }
 }
 
-interface INetworkSettings {
+interface INetworkSettings extends WithTranslation {
   name: string;
   networkCode: string;
   node: string;
@@ -212,3 +199,5 @@ interface IState extends INetworkSettings {
   validating: boolean;
   filledData: boolean;
 }
+
+export const NetworkSettings = withTranslation()(NetworkSettingsComponent);

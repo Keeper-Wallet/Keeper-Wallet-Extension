@@ -1,6 +1,6 @@
 import * as styles from './package.styl';
 import * as React from 'react';
-import { Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { getPackageAmounts, getFees, messageType } from './parseTx';
@@ -22,16 +22,16 @@ const Fees = ({ fees }) => {
   );
 };
 
-interface IProps {
+interface IProps extends WithTranslation {
   assets: any;
   className?: string;
   collapsed: boolean;
   message: any;
 }
 
-export class PackageCard extends React.PureComponent<IProps> {
+class PackageCardComponent extends React.PureComponent<IProps> {
   render() {
-    const { message, assets, collapsed, className } = this.props;
+    const { t, message, assets, collapsed, className } = this.props;
     const { data = {}, title = '' } = message;
     const tx = [...data];
     const fees = getFees(tx, assets);
@@ -53,14 +53,12 @@ export class PackageCard extends React.PureComponent<IProps> {
 
             <div>
               <div className="basic500 body3 margin-min">
-                {title && collapsed ? (
-                  title
-                ) : (
-                  <Trans i18nKey="transactions.packTransactionGroup" />
-                )}
+                {title && collapsed
+                  ? title
+                  : t('transactions.packTransactionGroup')}
               </div>
               <h1 className="headline1 margin-main">
-                {tx.length} <Trans i18nKey="transactions.packTransactions" />
+                {tx.length} {t('transactions.packTransactions')}
               </h1>
 
               <div className={styles.amounts}>
@@ -81,7 +79,7 @@ export class PackageCard extends React.PureComponent<IProps> {
 
           <div className={styles.origin}>
             <div className="basic500 body3 margin-min margin-main-top">
-              <Trans i18nKey="transactions.packTransactionsFees" />
+              {t('transactions.packTransactionsFees')}
             </div>
             <div className="margin-min">
               <Fees fees={fees} />
@@ -94,3 +92,5 @@ export class PackageCard extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const PackageCard = withTranslation()(PackageCardComponent);

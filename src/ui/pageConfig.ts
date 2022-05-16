@@ -39,7 +39,6 @@ import { ImportSuccess } from 'ui/components/pages/importSuccess';
 
 export const PAGES = {
   WELCOME: 'welcome',
-  CONDITIONS: 'conditions',
   LOGIN: 'login',
   NEW: 'new',
   IMPORT_POPUP: 'import_popup',

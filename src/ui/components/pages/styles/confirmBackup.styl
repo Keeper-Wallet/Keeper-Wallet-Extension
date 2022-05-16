@@ -1,10 +1,13 @@
 @import '../../../styles/colors.styl'
 
 .content
-  display: block;
-  position: relative;
-  margin: 84px 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   font-weight: 400;
+  justify-content: center;
+  overflow: auto;
+  position: relative;
 
   h2
     width: 240px;
@@ -19,7 +22,6 @@
 
 .writeSeed
   width: 100%;
-  height: 164px;
   padding: 26px;
   text-align: center;
   font-size: 12px;

@@ -1,10 +1,11 @@
-import * as styles from './chooseAccounts.styl';
+import { NetworkName, Account } from 'accounts/types';
 import cn from 'classnames';
 import * as React from 'react';
-import { Button } from 'ui/components/ui/buttons/Button';
-import { Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
-import { NetworkName, Account } from 'accounts/types';
+import { Button } from 'ui/components/ui/buttons/Button';
+import { Modal } from 'ui/components/ui/modal/Modal';
+import * as styles from './chooseAccounts.styl';
 
 const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
 
@@ -20,9 +21,18 @@ interface Props {
   onSubmit: (selectedAccounts: Account[]) => void;
 }
 
+function isAccountExportable(account: Account) {
+  return ['seed', 'encodedSeed', 'privateKey'].includes(account.type);
+}
+
 export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
+  const { t } = useTranslation();
+
   const [selected, setSelected] = React.useState(
-    () => new Set(accounts.map(({ address }) => address))
+    () =>
+      new Set(
+        accounts.filter(isAccountExportable).map(({ address }) => address)
+      )
   );
 
   function toggleSelected(accounts: Account[], isSelected: boolean) {
@@ -41,6 +51,10 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
     });
   }
 
+  const [showWarningModal, setShowWarningModal] = React.useState(
+    !accounts.every(isAccountExportable)
+  );
+
   return (
     <form
       className={styles.root}
@@ -51,11 +65,11 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
       }}
     >
       <h1 className={cn(styles.centered, 'margin1', 'title1')}>
-        <Trans i18nKey="exportKeystore.chooseAccountsTitle" />
+        {t('exportKeystore.chooseAccountsTitle')}
       </h1>
 
       <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
-        <Trans i18nKey="exportKeystore.chooseAccountsDesc" />
+        {t('exportKeystore.chooseAccountsDesc')}
       </p>
 
       <div className={styles.accounts}>
@@ -77,43 +91,68 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
                   {networkLabels[network]}
                 </h2>
 
-                <input
-                  checked={accounts.every(acc => selected.has(acc.address))}
-                  className={styles.checkbox}
-                  type="checkbox"
-                  onChange={event => {
-                    toggleSelected(accounts, event.currentTarget.checked);
-                  }}
-                />
+                {accounts.some(isAccountExportable) && (
+                  <input
+                    checked={accounts
+                      .filter(isAccountExportable)
+                      .every(acc => selected.has(acc.address))}
+                    className={styles.checkbox}
+                    type="checkbox"
+                    onChange={event => {
+                      toggleSelected(accounts, event.currentTarget.checked);
+                    }}
+                  />
+                )}
               </header>
 
               <ul className={styles.accountList}>
-                {accounts.map(account => (
-                  <li
-                    key={account.address}
-                    className={styles.accountListItem}
-                    title={account.address}
-                  >
-                    <div className={styles.accountInfo}>
-                      <Avatar size={40} address={account.address} />
+                {accounts.map(account => {
+                  const isExportable = isAccountExportable(account);
 
-                      <div className={styles.accountInfoText}>
-                        <div className={styles.accountName}>{account.name}</div>
+                  return (
+                    <li
+                      key={account.address}
+                      className={styles.accountListItem}
+                      title={account.address}
+                    >
+                      <div className={styles.accountInfo}>
+                        <Avatar
+                          size={40}
+                          address={account.address}
+                          type={account.type}
+                        />
+
+                        <div className={styles.accountInfoText}>
+                          <div className={styles.accountName}>
+                            {account.name}
+                          </div>
+
+                          {!isExportable && (
+                            <div className={styles.accountInfoNote}>
+                              {t('exportKeystore.exportNotSupported')}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <input
-                      checked={selected.has(account.address)}
-                      className={styles.checkbox}
-                      name="selected"
-                      type="checkbox"
-                      value={account.address}
-                      onChange={event => {
-                        toggleSelected([account], event.currentTarget.checked);
-                      }}
-                    />
-                  </li>
-                ))}
+                      {isExportable && (
+                        <input
+                          checked={selected.has(account.address)}
+                          className={styles.checkbox}
+                          name="selected"
+                          type="checkbox"
+                          value={account.address}
+                          onChange={event => {
+                            toggleSelected(
+                              [account],
+                              event.currentTarget.checked
+                            );
+                          }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -126,12 +165,44 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
           type="submit"
           view="submit"
         >
-          <Trans
-            i18nKey="exportKeystore.chooseAccountsExportBtn"
-            count={selected.size}
-          />
+          {t('exportKeystore.chooseAccountsExportBtn', {
+            count: selected.size,
+          })}
         </Button>
       </div>
+
+      <Modal animation={Modal.ANIMATION.FLASH} showModal={showWarningModal}>
+        <div className="modal cover">
+          <div className="modal-form">
+            <h2 className={cn('margin1', 'title1')}>
+              {t('exportKeystore.warningModalTitle')}
+            </h2>
+
+            <p className={cn('margin1', 'body1', 'disabled500')}>
+              {t('exportKeystore.warningModalDesc')}
+            </p>
+
+            <Button
+              className="margin1"
+              view="submit"
+              onClick={() => {
+                setShowWarningModal(false);
+              }}
+            >
+              {t('exportKeystore.warningModalConfirmButton')}
+            </Button>
+
+            <Button
+              className="modal-close"
+              onClick={() => {
+                setShowWarningModal(false);
+              }}
+              type="button"
+              view="transparent"
+            />
+          </div>
+        </div>
+      </Modal>
     </form>
   );
 }
