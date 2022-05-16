@@ -413,7 +413,9 @@ export function SwapForm({
 
       const nextInfo = exchangeInfo[next];
       const nextAmount =
-        nextInfo?.type === 'data' ? nextInfo.toAmountTokens : null;
+        nextInfo?.type === 'data' && fromAmountTokens.gt(0)
+          ? nextInfo.toAmountTokens
+          : null;
 
       return [
         (nextAmount || BigNumber.MAX_VALUE).lt(minAmount) ? next : nonProfit,
@@ -427,7 +429,7 @@ export function SwapForm({
     if (!touched) {
       setSelectedExchangeVendor(profitVendor);
     }
-  }, [touched, nonProfitVendor, profitVendor, exchangeInfo]);
+  }, [touched, exchangeInfo]);
 
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
