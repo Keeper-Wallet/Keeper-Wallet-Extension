@@ -43,4 +43,12 @@ module.exports = {
       { ignoreRestSiblings: true },
     ],
   },
+  overrides: [
+    {
+      files: ['src/lib/*.js', 'scripts/*.js', 'webpack.config.js', 'test/**/*'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 0,
+      },
+    },
+  ],
 };

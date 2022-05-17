@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import * as extension from 'extensionizer';
 
 const allLocales = require('../copied/_locales/index.json');

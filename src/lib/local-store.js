@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const extension = require('extensionizer');
 const log = require('loglevel');
 

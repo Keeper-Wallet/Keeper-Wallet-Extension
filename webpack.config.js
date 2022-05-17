@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const WebpackCustomActions = require('./scripts/WebpackCustomActionsPlugin');
 const clearDist = require('./scripts/clearDist');

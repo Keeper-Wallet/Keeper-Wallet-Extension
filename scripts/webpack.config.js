@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const FolderZip = require('folder-zip');
 const ncp = require('ncp').ncp;
 const path = require('path');
