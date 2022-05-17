@@ -27,8 +27,8 @@ const Row = ({
     onSendClick: (assetId: string) => void;
     onSwapClick: (assetId: string) => void;
   };
-  index;
-  style;
+  index: number;
+  style: React.CSSProperties;
 }) => {
   const { assetEntries, assets, onInfoClick, onSendClick, onSwapClick } = data;
   const [assetId, { balance }] = assetEntries[index];
