@@ -6,6 +6,7 @@ import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
 import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
@@ -173,14 +174,13 @@ class RootComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState) {
   return {
     loading: store.localState.loading,
     locked: store.state && store.state.locked,
     initialized: store.state && store.state.initialized,
     accounts: store.accounts || [],
     tab: store.tab || '',
-    tmpTab: store.tmpTab,
     backTabs: store.backTabs,
     messages: store.messages,
     notifications: store.notifications,

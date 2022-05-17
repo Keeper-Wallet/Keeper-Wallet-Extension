@@ -9,14 +9,16 @@ import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
+import { AppState } from 'ui/store';
+import { NotificationsState } from 'ui/reducers/localState';
+import { Account } from 'accounts/types';
 
 interface Props extends WithTranslation {
   selectedAccount: Account;
   assets: Record<string, AssetDetail>;
   balances: unknown;
-  notifications: unknown[];
+  notifications: NotificationsState;
   network: string;
-
   getAsset: (assetId: string) => void;
   setTab: (tab: string) => void;
 }
@@ -424,7 +426,7 @@ class AccountInfoComponent extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState) {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address

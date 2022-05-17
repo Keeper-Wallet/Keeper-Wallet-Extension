@@ -4,6 +4,7 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Button, QRCode } from '../ui';
 import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
 
 interface Props extends WithTranslation {
   selectedAccount: Account;
@@ -70,9 +71,9 @@ class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState) {
   const activeAccount = store.selectedAccount.address;
-  const selected = store.localState.assets.account
+  const selected = store.localState.assets?.account
     ? store.localState.assets.account.address
     : activeAccount;
   const selectedAccount = store.accounts.find(
