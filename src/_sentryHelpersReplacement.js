@@ -132,5 +132,6 @@ export function wrap(fn, options, before) {
  * Injects the Report Dialog script
  * @hidden
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export function injectReportDialog() {}
+export function injectReportDialog() {
+  // do nothing
+}
