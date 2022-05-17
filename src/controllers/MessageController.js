@@ -750,7 +750,7 @@ export class MessageController extends EventEmitter {
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
-      /* eslint-disable-next-line no-fallthrough */
+      // falls through
       case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
