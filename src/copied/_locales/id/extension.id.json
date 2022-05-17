@@ -537,7 +537,7 @@
     "notSwappablePairTooltip": " Pertukaranantara {{ assetTicker1 }} dan {{ assetTicker2 }} tidak didukung",
     "priceImpactTooltip": "Selisih antara harga exchanger dan perkiraan harga karena ukuran perdagangan.",
     "priceLabel": "Price",
-    "primaryLabel" : "Primer",
+    "primaryLabel": "Primer",
     "profitLabel": "Profit",
     "slippageToleranceModalTitle": "Slippage Tolerance",
     "slippageToleranceModalDescription": "Swap akan dibatalkan jika harga berubah lebih dari persentase ini",
