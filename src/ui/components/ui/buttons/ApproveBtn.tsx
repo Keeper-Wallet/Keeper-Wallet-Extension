@@ -8,20 +8,21 @@ import cn from 'classnames';
 interface State {
   pending?: boolean;
   timerEnd?: Date;
-  currentTime: Date;
+  currentTime?: Date;
   percentage?: number;
 }
 
-interface Props {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  id?: string;
+  view?: 'submit';
   disabled?: boolean;
   loading?: boolean;
   autoClickProtection?: boolean;
-  children: React.ReactNode;
 }
 
 export class ApproveBtn extends React.PureComponent<Props, State> {
-  readonly props;
-  readonly state = {} as State;
+  readonly state: State = {};
+
   updateInterval = () => this._updateInterval(Date.now());
   _timeout;
 

@@ -65,9 +65,8 @@ type QRCodeProps = {
   children?: React.ReactNode;
 };
 
-export class QRCode extends React.PureComponent {
-  readonly props: QRCodeProps;
-  readonly state = {} as State;
+export class QRCode extends React.PureComponent<QRCodeProps, State> {
+  readonly state: State = {};
 
   render() {
     const state = this.state;
@@ -147,17 +146,17 @@ export class QRCode extends React.PureComponent {
 }
 
 interface State {
-  errorCorrectionLevel: string;
-  type: string;
-  quality: number;
-  margin: number;
-  scale: number;
-  width: number;
-  height: number;
-  dark: string;
-  light: string;
-  className: string;
-  hasChanged: boolean;
-  text: string;
-  src: string;
+  errorCorrectionLevel?: string;
+  type?: string;
+  quality?: number;
+  margin?: number;
+  scale?: number;
+  width?: number;
+  height?: number;
+  dark?: string;
+  light?: string;
+  className?: string;
+  hasChanged?: boolean;
+  text?: string;
+  src?: string;
 }
