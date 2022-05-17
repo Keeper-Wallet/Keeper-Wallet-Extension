@@ -23,7 +23,7 @@
     "swapButton": "Swap"
   },
   "assetAmountInput": {
-    "maxButtonText": "Max"
+    "balanceLabel": "Saldo"
   },
   "assetInfo": {
     "id": "ID",
@@ -441,7 +441,7 @@
     "download": "Download QR code"
   },
   "send": {
-    "amountInputLabel": "{{asset}} jumlah",
+    "amountInputLabel": "Jumlah",
     "amountRequiredError": "Jumlah yang diperlukan",
     "attachmentInputLabel": "Lampiran ({{count}}/{{max}} byte)",
     "attachmentInputLabel_plural": "Lampiran ({{count}}/{{max}} byte)",
@@ -522,30 +522,31 @@
   "swap": {
     "amountToSendError": "Tidak dapat melakukan swap karena status dApp SwapFi. Silakan coba lagi atau sedikit tingkatkan toleransi selip jika memungkinkan",
     "closeBtnText": "Tutup",
-    "exchangeChannelConnectionError": "Tidak dapat terhubung ke layanan swap, Anda mungkin melihat data basi. Silakan coba lagi nanti",
-    "exchangeChannelInvalidAssetPairError": "Pair aset yang dipilih tidak valid",
-    "exchangeChannelUnknownError": "Gagal mendapatkan detail swap, Silakan coba lagi nanti",
+    "exchangeChannelConnectionError": "Tidak dapat terhubung ke layanan swap. Silakan coba lagi nanti",
+    "exchangeChannelInvalidAssetPairError": "Pasangan aset tidak tersedia",
+    "exchangeChannelUnavailableError": "Layanan tidak merespons",
+    "exchangeChannelUnknownError": "Tidak tersedia untuk pertukaran ini",
     "failMessage": "Swap tidak berhasil, silakan coba lagi",
     "ledgerFailMessage": "Permintaan itu ditolak oleh Ledger.",
-    "fromInputLabel": "Dari {{asset}}",
-    "gainBestPrice": "Harga terbaik",
-    "gainTooltip": "Keuntungan swap melalui Keeper dibandingkan dengan layanan lain",
+    "fromInputLabel": "Dari",
     "insufficientFundsError": "Dana tidak mencukupi",
+    "maxAmountExceeded ": "Jumlah tidak boleh melebihi {{ maxAmount }}",
     "minimumReceived": "Minimum Diterima",
     "minimumReceivedTooltip": "Jumlah minimum yang akan Anda terima, dengan mempertimbangkan toleransi selip",
-    "priceImpact": "Price Impact",
+    "notAvailable": "N/A",
+    "notSwappablePairTooltip": " Pertukaranantara {{ assetTicker1 }} dan {{ assetTicker2 }} tidak didukung",
     "priceImpactTooltip": "Selisih antara harga exchanger dan perkiraan harga karena ukuran perdagangan.",
     "priceLabel": "Price",
-    "route": "Route",
-    "routeTooltip": "Daftar aset yang terlibat dalam swap untuk aset target",
-    "slippageTolerance": "Toleransi Slip",
-    "slippageToleranceTooltip": "Swap akan dibatalkan jika harga berubah tidak menguntungkan lebih dari persentase ini",
+    "primaryLabel" : "Primer",
+    "profitLabel": "Profit",
+    "slippageToleranceModalTitle": "Slippage Tolerance",
+    "slippageToleranceModalDescription": "Swap akan dibatalkan jika harga berubah lebih dari persentase ini",
     "statusFailed": "Gagal",
     "statusInProgress": "Menunggu penyelesaian pertukaran...",
     "statusSucceeded": "Berhasil!",
     "submitButtonText": "Swap",
     "title": "Swap aset",
-    "toInputLabel": "Untuk {{asset}} (est.)",
+    "toInputLabel": "Kepada ( perkiraan)",
     "transactionFee": "Biaya transaksi",
     "transactionFeeTooltip": "Biaya jaringan untuk pemanggilan Smart contract",
     "viewTransaction": "Lihat transaksi"
