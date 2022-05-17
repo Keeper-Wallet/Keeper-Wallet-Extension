@@ -5,6 +5,11 @@ module.exports = {
     browser: true,
     node: true,
   },
+  globals: {
+    __SENTRY_DSN__: 'readonly',
+    __SENTRY_ENVIRONMENT__: 'readonly',
+    __SENTRY_RELEASE__: 'readonly',
+  },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {

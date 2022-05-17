@@ -54,11 +54,9 @@ log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 const bgPromise = setupBackgroundService();
 
 Sentry.init({
-  /* eslint-disable no-undef */
   dsn: __SENTRY_DSN__,
   environment: __SENTRY_ENVIRONMENT__,
   release: __SENTRY_RELEASE__,
-  /* eslint-enable no-undef */
   debug: KEEPERWALLET_DEBUG,
   autoSessionTracking: false,
   initialScope: {
