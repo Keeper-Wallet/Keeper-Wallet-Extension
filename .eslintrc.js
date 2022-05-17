@@ -33,5 +33,9 @@ module.exports = {
         destructuring: 'all',
       },
     ],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { ignoreRestSiblings: true },
+    ],
   },
 };

@@ -20,7 +20,7 @@ export class Pills extends React.PureComponent {
   onSelect = item => this._onSelect(item);
 
   render() {
-    const { className, list, ...props } = this.props;
+    const { className, onSelect, list, ...props } = this.props;
     const myClassName = cn(styles.pills, className);
     return (
       <div className={myClassName}>

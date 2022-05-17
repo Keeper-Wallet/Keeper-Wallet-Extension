@@ -42,7 +42,7 @@ export class Copy extends React.PureComponent<Props> {
   };
 
   render() {
-    const { children, ...props } = this.props;
+    const { text, onCopy, options, children, ...props } = this.props;
     const elem = React.Children.only(children);
 
     return React.cloneElement(elem, { ...props, onClick: this.onClick });

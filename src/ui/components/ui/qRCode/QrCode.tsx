@@ -23,11 +23,15 @@ type Options = typeof DEFAULTS;
 const QrCodeImage = ({
   options,
   src,
+  width,
+  height,
   className,
   ...props
 }: {
   options: Options;
   src: string;
+  width?: number;
+  height?: number;
   className?: string;
   children: React.ReactNode;
 }) => {

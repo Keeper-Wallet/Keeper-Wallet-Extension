@@ -35,7 +35,7 @@ export class ApproveBtn extends React.PureComponent<Props, State> {
 
   render() {
     const { pending } = this.state;
-    const { disabled, loading, ...restProps } = this.props;
+    const { autoClickProtection, disabled, loading, ...restProps } = this.props;
 
     const progressProps = {
       percent: this.state.percentage,
