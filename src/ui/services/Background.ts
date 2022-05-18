@@ -1,8 +1,9 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
+import { Account } from 'accounts/types';
 import { CognitoUser } from 'amazon-cognito-identity-js';
+import { SwapVendor } from 'swap/constants';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
-import { Account } from 'accounts/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prepareErrorMessage(err: any) {
@@ -394,6 +395,22 @@ class Background {
 
   async sendEvent(event: 'addWallet', properties: { type: string });
   async sendEvent(event: 'click', properties: { id: string });
+  async sendEvent(
+    event: 'swapAssets',
+    properties: {
+      actualAmountCoins?: string;
+      expectedAmountCoins?: string;
+      expectedActualDelta?: string;
+      fromAssetId: string;
+      fromCoins: string;
+      minReceivedCoins: string;
+      slippageTolerance: number;
+      status: 'success' | 'lessThanExpected';
+      toAssetId: string;
+      toCoins: string;
+      vendor: SwapVendor;
+    }
+  );
   async sendEvent(event: string, properties: Record<string, unknown> = {}) {
     try {
       await this.initPromise;

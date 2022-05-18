@@ -137,6 +137,11 @@ export function Swap({ setTab }: Props) {
         fromAssetId,
         fromCoins,
         invoke,
+        minReceivedCoins,
+        slippageTolerance,
+        toAssetId,
+        toCoins,
+        vendor,
       }: SwapParams) => {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
@@ -154,6 +159,17 @@ export function Swap({ setTab }: Props) {
             fromAssetId,
             fromCoins: fromCoins.toFixed(),
             invoke,
+          });
+
+          background.sendEvent('swapAssets', {
+            fromAssetId,
+            fromCoins: fromCoins.toFixed(),
+            minReceivedCoins: minReceivedCoins.toFixed(),
+            slippageTolerance: slippageTolerance.toNumber(),
+            status: 'success',
+            toAssetId,
+            toCoins: toCoins.toFixed(),
+            vendor,
           });
 
           setPerformedSwapData({
@@ -207,6 +223,55 @@ export function Swap({ setTab }: Props) {
 
               setSwapErrorMessage(msg);
               setIsSwapInProgress(false);
+
+              match = msg.match(
+                /Swap result (\d+) is less then expected (\d+)/i
+              );
+
+              if (match) {
+                capture = false;
+
+                const actualAmountCoins = new BigNumber(match[1]);
+                const expectedAmountCoins = new BigNumber(match[2]);
+
+                background.sendEvent('swapAssets', {
+                  actualAmountCoins: actualAmountCoins.toFixed(),
+                  expectedAmountCoins: expectedAmountCoins.toFixed(),
+                  expectedActualDelta: expectedAmountCoins
+                    .sub(actualAmountCoins)
+                    .toFixed(),
+                  fromAssetId,
+                  fromCoins: fromCoins.toFixed(),
+                  minReceivedCoins: minReceivedCoins.toFixed(),
+                  slippageTolerance: slippageTolerance.toNumber(),
+                  status: 'lessThanExpected',
+                  toAssetId,
+                  toCoins: toCoins.toFixed(),
+                  vendor,
+                });
+              }
+
+              match = msg.match(
+                /amount to receive is lower than expected one (\d+)/i
+              );
+
+              if (match) {
+                capture = false;
+
+                const expectedAmountCoins = new BigNumber(match[1]);
+
+                background.sendEvent('swapAssets', {
+                  expectedAmountCoins: expectedAmountCoins.toFixed(),
+                  fromAssetId,
+                  fromCoins: fromCoins.toFixed(),
+                  minReceivedCoins: minReceivedCoins.toFixed(),
+                  slippageTolerance: slippageTolerance.toNumber(),
+                  status: 'lessThanExpected',
+                  toAssetId,
+                  toCoins: toCoins.toFixed(),
+                  vendor,
+                });
+              }
 
               if (capture) {
                 Sentry.captureException(new Error(msg));
