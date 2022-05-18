@@ -1,10 +1,21 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
+import * as resourcesToBackend from 'i18next-resources-to-backend';
 import { I18N_NAME_SPACE, KEEPERWALLET_DEBUG } from './appConfig';
 
+const backend = (
+  resourcesToBackend as unknown as typeof resourcesToBackend.default
+)((lng, ns, clb) => {
+  import(
+    /* webpackMode: 'eager' */
+    `../copied/_locales/${lng}/${ns}.${lng}.json`
+  )
+    .then(resources => clb(null, resources))
+    .catch(err => clb(err, null));
+});
+
 i18n
-  .use(Backend)
+  .use(backend)
   .use(initReactI18next)
   .init({
     debug: KEEPERWALLET_DEBUG,
@@ -12,9 +23,6 @@ i18n
     fallbackLng: 'en',
     ns: [I18N_NAME_SPACE],
     defaultNS: I18N_NAME_SPACE,
-    backend: {
-      loadPath: '/_locales/{{lng}}/{{ns}}.{{lng}}.json',
-    },
     react: {
       useSuspense: false,
     },
