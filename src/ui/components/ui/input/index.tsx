@@ -2,8 +2,15 @@ import * as React from 'react';
 import * as styles from './input.styl';
 import cn from 'classnames';
 
-export class Input extends React.Component {
-  props: any;
+interface Props {
+  inputRef?: React.MutableRefObject<HTMLInputElement>;
+  className?: string;
+  error?: boolean;
+  multiLine?: boolean;
+}
+
+export class Input extends React.Component<Props> {
+  props;
 
   el: HTMLInputElement;
   getRef = element => {

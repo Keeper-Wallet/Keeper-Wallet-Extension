@@ -16,8 +16,17 @@ import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
-const NotificationItem = ({ notification }) => {
+export interface Notification {
+  id: string;
+  origin: string;
+  title: string;
+  message: string;
+  timestamp: number;
+}
+
+const NotificationItem = ({ notification }: { notification: Notification }) => {
   const { t } = useTranslation();
   return (
     <div className={`margin-main-big`}>
@@ -43,8 +52,34 @@ const NotificationItem = ({ notification }) => {
   );
 };
 
-class NotificationsComponent extends React.Component<WithTranslation> {
-  readonly state = {} as any;
+interface Props extends WithTranslation {
+  selectedAccount: Account;
+  origins: unknown;
+  activeNotification: Notification;
+  messages: unknown[];
+  notifications: Notification[];
+
+  setTab: (tab: string) => void;
+  closeNotificationWindow: () => void;
+  setShowNotification: (permissions: unknown) => void;
+  deleteNotifications: (ids: unknown[]) => void;
+}
+
+interface State {
+  canShowNotify: boolean;
+  messages: Message[];
+  activeNotification: unknown[];
+  showToList: boolean;
+  origin: unknown;
+  hasMessages: boolean;
+  hasNotifications: boolean;
+  notifications: unknown[];
+  showClose: boolean;
+  loading: boolean;
+}
+
+class NotificationsComponent extends React.Component<Props, State> {
+  readonly state = {} as State;
   readonly props;
 
   static getDerivedStateFromProps(props) {
@@ -107,7 +142,7 @@ class NotificationsComponent extends React.Component<WithTranslation> {
 
   selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
-  componentDidCatch(error, info) {
+  componentDidCatch() {
     this.toListHandler();
   }
 
@@ -137,7 +172,7 @@ class NotificationsComponent extends React.Component<WithTranslation> {
         </div>
 
         <div className={styles.messageListScrollBox}>
-          {activeNotification.map(notification => (
+          {activeNotification.map((notification: Notification) => (
             <NotificationItem
               notification={notification}
               key={notification.id}

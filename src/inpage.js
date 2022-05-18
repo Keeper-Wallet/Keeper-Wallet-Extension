@@ -1,5 +1,5 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import { setupDnode, transformMethods, cbToPromise } from './lib/dnode-util';
+import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import log from 'loglevel';
 import EventEmitter from 'events';
 
@@ -20,7 +20,7 @@ async function setupInpageApi() {
   let args = {};
   const wavesAppDef = createDeffer();
   const wavesApp = {};
-  let wavesApi = {
+  const wavesApi = {
     initialPromise: wavesAppDef.promise,
   };
   const proxyApi = {
@@ -48,7 +48,7 @@ async function setupInpageApi() {
       return cbs[prop];
     },
 
-    set(target, prop) {
+    set() {
       throw new Error('Not permitted');
     },
 
@@ -75,7 +75,7 @@ async function setupInpageApi() {
 
   const inpageApi = await new Promise(resolve => {
     dnode.once('remote', inpageApi => {
-      let remoteWithPromises = transformMethods(cbToPromise, inpageApi);
+      const remoteWithPromises = transformMethods(cbToPromise, inpageApi);
       // Add event emitter api to background object
       remoteWithPromises.on = eventEmitter.on.bind(eventEmitter);
       resolve(remoteWithPromises);
@@ -115,7 +115,9 @@ function setupClickInterceptor(inpageApi) {
         e.preventDefault();
         e.stopPropagation();
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore errors
+    }
   });
 }
 
@@ -205,7 +207,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
         successPath: apiData.s || '/',
       });
       break;
-    case 'send':
+    case 'send': {
       const assetId = hash.split('?')[0].replace('#send/', '');
 
       if (!assetId || !apiData.amount) {
@@ -229,6 +231,7 @@ function processPaymentAPILink({ type, hash }, inpageApi) {
         },
       });
       break;
+    }
   }
 
   return true;

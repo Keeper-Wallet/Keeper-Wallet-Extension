@@ -49,7 +49,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
           ? t('importEmail.emailRequired')
           : null,
     }));
-  }, [email]);
+  }, [email, t]);
 
   const handlePasswordChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +69,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
       passwordRequired:
         password.length === 0 ? t('importEmail.passwordRequired') : null,
     }));
-  }, [password.length]);
+  }, [password.length, t]);
 
   const handleSubmit = React.useCallback(
     async event => {
@@ -104,7 +104,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
         setPending(false);
       }
     },
-    [email, password, signIn]
+    [email, password, signIn, t]
   );
 
   return (

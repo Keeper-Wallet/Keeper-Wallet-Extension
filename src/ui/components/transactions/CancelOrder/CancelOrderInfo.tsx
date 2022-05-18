@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './cancelOrder.styl';
 import { DateFormat } from '../../ui';
+import {
+  ComponentProps,
+  MessageData,
+} from 'ui/components/transactions/BaseTransaction';
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: any;
-}
-
-class CancelOrderInfoComponent extends React.PureComponent<IProps> {
+class CancelOrderInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
+> {
   render() {
     const { t, message } = this.props;
-    const { messageHash, data = {} } = message;
+    const { messageHash, data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
 
     return (

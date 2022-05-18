@@ -86,7 +86,7 @@ export class MessageController extends EventEmitter {
       throw ERRORS.REQUEST_ERROR(messageData);
     }
 
-    let messages = this.store.getState().messages;
+    const messages = this.store.getState().messages;
 
     while (messages.length > this.getMessagesConfig().max_messages) {
       const oldest = messages
@@ -289,7 +289,7 @@ export class MessageController extends EventEmitter {
       MSG_STATUSES.PUBLISHED,
       MSG_STATUSES.FAILED,
     ];
-    let unusedMessages = [],
+    const unusedMessages = [],
       actualMessages = [];
 
     this.messages.messages.forEach(message => {
@@ -373,7 +373,7 @@ export class MessageController extends EventEmitter {
     }
 
     for (const key in data) {
-      if (!data.hasOwnProperty(key)) {
+      if (!Object.prototype.hasOwnProperty.call(data, key)) {
         continue;
       }
 
@@ -396,18 +396,21 @@ export class MessageController extends EventEmitter {
       const field = data[key];
 
       if (field && typeof field === 'object') {
-        if (field.hasOwnProperty('tokens') && field.hasOwnProperty('assetId')) {
+        if (
+          Object.prototype.hasOwnProperty.call(field, 'tokens') &&
+          Object.prototype.hasOwnProperty.call(field, 'assetId')
+        ) {
           const asset = await this.assetInfo(data[key].assetId);
           data[key] = Money.fromTokens(field.tokens, asset);
         } else if (
-          field.hasOwnProperty('coins') &&
-          field.hasOwnProperty('assetId')
+          Object.prototype.hasOwnProperty.call(field, 'coins') &&
+          Object.prototype.hasOwnProperty.call(field, 'assetId')
         ) {
           const asset = await this.assetInfo(data[key].assetId);
           data[key] = Money.fromCoins(field.coins, asset);
         } else if (
-          field.hasOwnProperty('amount') &&
-          field.hasOwnProperty('assetId') &&
+          Object.prototype.hasOwnProperty.call(field, 'amount') &&
+          Object.prototype.hasOwnProperty.call(field, 'assetId') &&
           Object.keys(field).length === 2
         ) {
           const asset = await this.assetInfo(data[key].assetId);
@@ -565,7 +568,7 @@ export class MessageController extends EventEmitter {
   }
 
   async _validateAndTransform(message) {
-    let result = { ...message };
+    const result = { ...message };
 
     if (message.data && message.data.successPath) {
       result.successPath = message.data.successPath;
@@ -747,6 +750,7 @@ export class MessageController extends EventEmitter {
       case 'cancelOrder':
         result.amountAsset = message.data.amountAsset;
         result.priceAsset = message.data.priceAsset;
+      // falls through
       case 'request': {
         const requestDefaults = {
           timestamp: Date.now(),
@@ -775,7 +779,7 @@ export class MessageController extends EventEmitter {
           throw new Error('Address and encryptedSeed are required for pairing');
         break;
       default:
-        throw new Error(`Incorrect type "${type}"`);
+        throw new Error(`Incorrect type "${message.type}"`);
     }
 
     return result;
@@ -798,7 +802,7 @@ export class MessageController extends EventEmitter {
   }
 
   _getMoneyLikeValue(moneyLike) {
-    for (let key of ['tokens', 'coins', 'amount']) {
+    for (const key of ['tokens', 'coins', 'amount']) {
       if (key in moneyLike) {
         return moneyLike[key];
       }

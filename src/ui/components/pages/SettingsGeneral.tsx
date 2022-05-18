@@ -1,13 +1,20 @@
 import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Select } from '../ui';
 import { lock, setIdle, setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import cn from 'classnames';
 
-class SettingsGeneralComponent extends React.Component {
+interface Props extends WithTranslation {
+  idle: Record<string, unknown>;
+  idleOptions: { type: string; interval: unknown };
+  setTab: (tab: string) => void;
+  setIdle: (id: string) => void;
+}
+
+class SettingsGeneralComponent extends React.Component<Props> {
   readonly props;
   langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
   passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
@@ -34,7 +41,7 @@ class SettingsGeneralComponent extends React.Component {
             <Select
               description={t('settings.sessionTimeout')}
               fill
-              selectList={selectList as any}
+              selectList={selectList}
               selected={this.props.idleOptions.type}
               onSelectItem={this.setIdle}
             />

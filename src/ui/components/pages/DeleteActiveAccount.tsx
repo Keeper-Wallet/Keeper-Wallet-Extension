@@ -1,13 +1,18 @@
 import * as styles from './styles/deleteAccount.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
 
-class DeleteActiveAccountComponent extends React.Component {
+interface Props extends WithTranslation {
+  deleteActiveAccount: (payload: unknown) => void;
+}
+
+class DeleteActiveAccountComponent extends React.Component<Props> {
   state = { disable: false };
   props;
+
   onClickHandler = () => {
     this.props.deleteActiveAccount(null);
     this.setState({ disable: false });

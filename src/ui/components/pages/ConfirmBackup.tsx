@@ -1,14 +1,20 @@
 import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Pills } from '../ui';
 import { AppState } from 'ui/store';
 import { PAGES } from 'ui/pageConfig';
+import { Account } from 'accounts/types';
 
 const SHUFFLE_COUNT = 500;
 
-class ConfirmBackupComponent extends React.Component {
+interface Props extends WithTranslation {
+  account: Account;
+  setTab: (tab: string) => void;
+}
+
+class ConfirmBackupComponent extends React.Component<Props> {
   props;
   state = {
     seed: null,

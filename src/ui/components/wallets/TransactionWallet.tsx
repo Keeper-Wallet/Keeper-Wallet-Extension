@@ -99,11 +99,11 @@ export const TransactionWallet = ({
 
 interface ITransactionWalletProps {
   className?: string;
-  onSelect?: (account: any) => void;
-  onActive?: (account: any) => void;
+  onSelect?: (account: Account) => void;
+  onActive?: (account: Account) => void;
   account: Account;
   active?: boolean;
   hideButton?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   type?: 'small' | 'clean';
 }

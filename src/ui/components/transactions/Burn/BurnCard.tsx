@@ -1,27 +1,20 @@
 import * as styles from './burn.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 
-interface IProps extends WithTranslation {
-  assets: any;
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class BurnCardComponent extends React.PureComponent<IProps> {
+class BurnCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.burnTransactionCard, this.props.className, {
       [styles.burnCard_collapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
 

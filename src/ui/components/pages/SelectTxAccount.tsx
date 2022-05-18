@@ -1,6 +1,6 @@
 import * as styles from './styles/selectTxAccount.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { connect } from 'react-redux';
 import {
@@ -14,8 +14,26 @@ import {
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
+import { Account } from 'accounts/types';
 
-class SelectTxAccountComponent extends React.PureComponent {
+interface Props extends WithTranslation {
+  selectAccount: Account;
+  activeMessage: unknown;
+  messages: unknown[];
+  activeNotification: unknown;
+  notifications: unknown[];
+
+  onBack: () => void;
+  setTab: (tab: string) => void;
+  updateActiveState: () => void;
+  clearMessages: () => void;
+  clearMessagesStatus: () => void;
+  deleteNotifications: (ids: unknown[]) => void;
+  closeNotificationWindow: () => void;
+  reject: (id: string) => void;
+}
+
+class SelectTxAccountComponent extends React.PureComponent<Props> {
   readonly state = { loading: false };
   readonly props;
 
@@ -48,7 +66,7 @@ class SelectTxAccountComponent extends React.PureComponent {
     this.props.clearMessages();
     this.props.clearMessagesStatus();
     this.deleteNotifications();
-    this.props.updateActiveState(null);
+    this.props.updateActiveState();
     this.setState({ loading: true });
     this.props.closeNotificationWindow();
   };

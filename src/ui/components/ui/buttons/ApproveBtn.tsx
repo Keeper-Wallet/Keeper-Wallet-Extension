@@ -5,9 +5,24 @@ import { Button } from './Button';
 import { CONFIG } from '../../../appConfig';
 import cn from 'classnames';
 
-export class ApproveBtn extends React.PureComponent {
-  readonly props;
-  readonly state = {} as any;
+interface State {
+  pending?: boolean;
+  timerEnd?: Date;
+  currentTime?: Date;
+  percentage?: number;
+}
+
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  id?: string;
+  view?: 'submit';
+  disabled?: boolean;
+  loading?: boolean;
+  autoClickProtection?: boolean;
+}
+
+export class ApproveBtn extends React.PureComponent<Props, State> {
+  readonly state: State = {};
+
   updateInterval = () => this._updateInterval(Date.now());
   _timeout;
 

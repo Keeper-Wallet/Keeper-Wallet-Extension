@@ -2,9 +2,15 @@ import * as styles from './transfer.styl';
 import * as React from 'react';
 
 import { TransferCard } from './TransferCard';
-import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import {
+  ComponentProps,
+  TxDetailTabs,
+  TxFooter,
+  TxHeader,
+  TxInfo,
+} from '../BaseTransaction';
 
-export function Transfer(props) {
+export function Transfer(props: ComponentProps) {
   const { sponsoredBalance } = props;
 
   return (

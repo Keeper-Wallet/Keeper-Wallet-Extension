@@ -99,7 +99,7 @@ export class PermissionsController {
       return null;
     }
 
-    if (origins.hasOwnProperty(origin)) {
+    if (Object.prototype.hasOwnProperty.call(origins, origin)) {
       delete origins[origin];
     }
 
@@ -344,8 +344,8 @@ const getTxAmount = tx => {
 };
 
 const getTxReceiveAmount = tx => {
-  let fee = { amount: null, assetId: null };
-  let amount = { amount: null, assetId: null };
+  const fee = { amount: null, assetId: null };
+  const amount = { amount: null, assetId: null };
 
   if (tx.data.fee) {
     fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
@@ -361,8 +361,8 @@ const getTxReceiveAmount = tx => {
 };
 
 const getTxMassReceiveAmount = tx => {
-  let fee = { amount: null, assetId: null };
-  let amount = { amount: null, assetId: null };
+  const fee = { amount: null, assetId: null };
+  const amount = { amount: null, assetId: null };
 
   if (tx.data.fee) {
     fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
@@ -378,8 +378,8 @@ const getTxMassReceiveAmount = tx => {
 };
 
 const getTxDataAmount = tx => {
-  let fee = { amount: null, assetId: null };
-  let amount = { amount: new BigNumber(0), assetId: 'WAVES' };
+  const fee = { amount: null, assetId: null };
+  const amount = { amount: new BigNumber(0), assetId: 'WAVES' };
 
   if (tx.data.fee) {
     fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);

@@ -1,12 +1,11 @@
 import {
   ACTION,
-  pendingOrigin,
   allowOriginDone,
   autoOriginDone,
-  disallowOriginDone,
   deleteOriginDone,
+  disallowOriginDone,
+  pendingOrigin,
 } from '../actions';
-import { MSG_STATUSES } from '../../constants';
 import background from '../services/Background';
 
 let _timer;

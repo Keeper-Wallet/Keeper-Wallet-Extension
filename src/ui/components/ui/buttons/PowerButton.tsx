@@ -22,8 +22,8 @@ export function PowerButton({
 
 interface IProps {
   className?: string;
-  onClick?: (...args: any) => any;
+  onClick?: (...args: unknown[]) => void;
   enabled?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   disabled?: boolean;
 }

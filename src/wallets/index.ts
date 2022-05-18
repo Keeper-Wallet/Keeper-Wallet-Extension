@@ -74,6 +74,7 @@ export function createWallet(
         getAssetInfo
       );
     default:
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       throw new Error(`Unsupported wallet type: "${(input as any).type}"`);
   }
 }

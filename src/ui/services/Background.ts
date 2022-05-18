@@ -4,12 +4,14 @@ import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
 import { Account } from 'accounts/types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prepareErrorMessage(err: any) {
   return err && err.message ? err.message : String(err);
 }
 
 class Background {
   static instance: Background;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   background: any;
   initPromise: Promise<void>;
   updatedByUser = false;
@@ -291,7 +293,7 @@ class Background {
     }
   }
 
-  async approve(messageId, address, network): Promise<any> {
+  async approve(messageId, address, network): Promise<unknown> {
     try {
       await this.initPromise;
       return await this.background.approve(messageId, address, network);
@@ -392,7 +394,7 @@ class Background {
 
   async sendEvent(event: 'addWallet', properties: { type: string });
   async sendEvent(event: 'click', properties: { id: string });
-  async sendEvent(event: string, properties: any = {}) {
+  async sendEvent(event: string, properties: Record<string, unknown> = {}) {
     try {
       await this.initPromise;
       return await this.background.sendEvent(event, properties);
@@ -495,7 +497,8 @@ class Background {
     username: string,
     password: string
   ): Promise<
-    CognitoUser & Partial<{ challengeName: AuthChallenge; challengeParam: any }>
+    CognitoUser &
+      Partial<{ challengeName: AuthChallenge; challengeParam: unknown }>
   > {
     try {
       await this.initPromise;

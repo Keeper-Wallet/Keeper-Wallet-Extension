@@ -5,11 +5,11 @@ import cn from 'classnames';
 export class CollapsedContent extends React.PureComponent<IProps, IState> {
   readonly state = { isShowed: false };
 
-  myRef: any;
+  myRef: React.RefObject<HTMLDivElement>;
 
   constructor(props) {
     super(props);
-    this.myRef = React.createRef();
+    this.myRef = React.createRef<HTMLDivElement>();
   }
 
   toggleHandler = () => {
@@ -65,7 +65,7 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
 
 interface IProps extends React.ComponentProps<'div'> {
   scrollElement: HTMLElement;
-  titleElement: string | React.ReactElement<any>;
+  titleElement: string | React.ReactElement;
   onOpen?: () => void;
   onClose?: () => void;
 }

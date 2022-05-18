@@ -11,11 +11,12 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
 
-function Address({ base58 }) {
+function Address({ base58 }: { base58: string }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
 }
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any;
   className?: string;
 }
@@ -50,7 +51,7 @@ export function HistoryItem({ tx, className }: Props) {
       );
       messageType = 'receive';
       break;
-    case TRANSACTION_TYPE.ISSUE:
+    case TRANSACTION_TYPE.ISSUE: {
       const decimals = tx.decimals || 0;
       const isNFT = !tx.reissuable && !decimals && tx.quantity == 1;
       tooltip = t('historyCard.issue');
@@ -68,6 +69,7 @@ export function HistoryItem({ tx, className }: Props) {
       messageType = 'issue';
 
       break;
+    }
     case TRANSACTION_TYPE.PAYMENT:
     case TRANSACTION_TYPE.TRANSFER:
       tooltip =
@@ -134,7 +136,7 @@ export function HistoryItem({ tx, className }: Props) {
       );
       messageType = 'burn';
       break;
-    case TRANSACTION_TYPE.EXCHANGE:
+    case TRANSACTION_TYPE.EXCHANGE: {
       const priceAssetId = tx.order1?.assetPair?.priceAsset || 'WAVES';
       const priceAsset = assets[priceAssetId];
 
@@ -169,6 +171,7 @@ export function HistoryItem({ tx, className }: Props) {
       info = <Balance split showAsset addSign="+" balance={assetAmount} />;
       messageType = 'create-order';
       break;
+    }
     case TRANSACTION_TYPE.LEASE:
       tooltip = t('historyCard.lease');
       label = <Address base58={tx.recipient} />;
@@ -215,7 +218,7 @@ export function HistoryItem({ tx, className }: Props) {
       info = tx.alias;
       messageType = 'create-alias';
       break;
-    case TRANSACTION_TYPE.MASS_TRANSFER:
+    case TRANSACTION_TYPE.MASS_TRANSFER: {
       tooltip = t('historyCard.massTransferReceive');
       label = <Address base58={tx.sender} />;
 
@@ -247,6 +250,7 @@ export function HistoryItem({ tx, className }: Props) {
 
       info = <Balance split showAsset addSign={addSign} balance={balance} />;
       break;
+    }
     case TRANSACTION_TYPE.DATA:
       tooltip = t('historyCard.dataTransaction');
       label = t('historyCard.dataTransactionEntry', { count: tx.data.length });

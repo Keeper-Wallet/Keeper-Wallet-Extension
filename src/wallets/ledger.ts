@@ -99,6 +99,7 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
       amountPrecision = payment[0]?.asset.precision || 0;
       amount2Precision = payment[1]?.asset.precision || 0;
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       amountPrecision = (tx.data as any).amount?.asset?.precision || 0;
       amount2Precision = 0;
     }

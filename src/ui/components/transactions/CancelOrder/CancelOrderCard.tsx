@@ -1,15 +1,16 @@
 import * as styles from './cancelOrder.styl';
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { Message, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
+import { AssetDetail } from 'ui/services/Background';
 
 interface IProps extends WithTranslation {
-  assets: any;
-  className: string;
-  collapsed: boolean;
-  message: any;
+  assets?: Record<string, AssetDetail>;
+  className?: string;
+  collapsed?: boolean;
+  message?: Message;
 }
 
 class CancelOrderCardComponent extends React.PureComponent<IProps> {

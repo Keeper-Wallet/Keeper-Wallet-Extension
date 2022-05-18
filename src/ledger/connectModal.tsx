@@ -37,7 +37,7 @@ export function LedgerConnectModal({ networkCode, onClose, onReady }: Props) {
 
       setIsConnecting(false);
     }
-  }, [onReady]);
+  }, [networkCode, onReady, t]);
 
   React.useEffect(() => {
     return () => {

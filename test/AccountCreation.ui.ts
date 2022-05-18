@@ -18,7 +18,9 @@ describe('Account creation', function () {
   this.timeout(60 * 1000);
 
   async function deleteEachAndSwitchToAccounts(this: mocha.Context) {
-    while (true) {
+    const repeat = true;
+
+    while (repeat) {
       await this.driver.wait(
         until.elementLocated(
           By.css('[data-testid="assetsForm"], [data-testid="importForm"]')
@@ -31,7 +33,7 @@ describe('Account creation', function () {
       );
 
       if (!activeAccountCards.length) {
-        break;
+        break; // the cycle
       }
 
       await activeAccountCards[0].click();

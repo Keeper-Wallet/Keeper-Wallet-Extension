@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './auth.styl';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: any;
-}
-
-class AuthInfoComponent extends React.PureComponent<IProps> {
+class AuthInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
+> {
   render() {
     const { t, message } = this.props;
     const { messageHash } = message;

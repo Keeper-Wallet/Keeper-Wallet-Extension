@@ -15,12 +15,56 @@ import {
 import { PAGES } from '../../pageConfig';
 import { Money } from '@waves/data-entities';
 import { Intro } from './Intro';
-import { FinalTransaction, getConfigByTransaction } from '../transactions';
-import { BalanceAssets } from '../transactions/BaseTransaction';
+import {
+  ComponentConfig,
+  FinalTransaction,
+  getConfigByTransaction,
+} from '../transactions';
+import { BalanceAssets, Message } from '../transactions/BaseTransaction';
 import { DEFAULT_FEE_CONFIG } from '../../../constants';
+import { Account } from 'accounts/types';
+import { AssetDetail } from 'ui/services/Background';
 
-class MessagesComponent extends React.Component {
-  readonly state = {} as any;
+interface Props {
+  autoClickProtection?: boolean;
+  balance: unknown;
+  selectedAccount: Account;
+  assets: Record<string, AssetDetail>;
+  activeMessage: unknown;
+  messages: unknown[];
+  notifications: unknown[];
+  transactionStatus: string;
+  getAsset: (assetId: string) => void;
+  setTab: (tab: string) => void;
+  setAutoOrigin: (permissions: unknown) => void;
+  setShowNotification: (permissions: unknown) => void;
+  closeNotificationWindow: () => void;
+  approve: (id: string) => void;
+  reject: (id: string) => void;
+  rejectForever: (id: string) => void;
+  clearMessagesStatus: (perform: boolean) => void;
+}
+
+interface State {
+  transactionStatus: {
+    approveOk: boolean;
+    approveError: boolean;
+    rejectOk: boolean;
+  };
+  selectedAccount: Account;
+  activeMessage: Message;
+  config: ComponentConfig;
+  txHash: string;
+  sponsoredBalance: BalanceAssets;
+  assets: Record<string, AssetDetail>;
+  messages: Message[];
+  notifications: unknown[];
+  loading: boolean;
+  approvePending: boolean;
+}
+
+class MessagesComponent extends React.Component<Props, State> {
+  readonly state = {} as State;
   readonly props;
   hasApproved: boolean;
 
@@ -172,7 +216,7 @@ class MessagesComponent extends React.Component {
 
   selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
-  componentDidCatch(error, info) {
+  componentDidCatch() {
     this.reject();
   }
 

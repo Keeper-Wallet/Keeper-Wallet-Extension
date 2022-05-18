@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './wavesAuth.styl';
 import { DateFormat } from '../../ui';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: any;
-}
-
-class WavesAuthInfoComponent extends React.PureComponent<IProps> {
+class WavesAuthInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
+> {
   render() {
     const { t, message } = this.props;
     const { messageHash, data } = message;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /**
  * Circle Progress Bar
  * @param {Element} canvas
@@ -183,7 +184,7 @@ export const CircleProgressBar = function (canvas, options) {
     var colorsCountByValue = self._options.maxColorsCountByValue;
     var maxColors = null;
     if (colorsCountByValue) {
-      Object.keys(colorsCountByValue).map(function (objectKey, index) {
+      Object.keys(colorsCountByValue).map(function (objectKey) {
         var maxColorsValue = colorsCountByValue[objectKey];
         if (!maxColors && value <= objectKey) {
           maxColors = maxColorsValue;
@@ -395,7 +396,7 @@ export const CircleProgressBar = function (canvas, options) {
 
     var delta = length - maxLength;
     var result = [];
-    array.forEach(function (element, index, array) {
+    array.forEach(function (element, index) {
       if (index == 0 || delta < index) {
         result.push(element);
       }
@@ -418,7 +419,7 @@ export const CircleProgressBar = function (canvas, options) {
     recursive = recursive || false;
 
     for (var attrName in source) {
-      if (source.hasOwnProperty(attrName)) {
+      if (Object.prototype.hasOwnProperty.call(source, attrName)) {
         var destVal = destination[attrName];
         var sourceVal = source[attrName];
         if (recursive && self.isObject(destVal) && self.isObject(sourceVal)) {

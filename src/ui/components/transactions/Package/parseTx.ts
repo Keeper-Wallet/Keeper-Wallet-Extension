@@ -26,9 +26,11 @@ export function getAssetsId(tx): Array<string> {
   return Array.from(assets);
 }
 
-export function getFee(tx = null) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
+
+type AnyMoney = IMoneyLike | BigNumber | Money | string | number;
 
 export function getFees(tx, assets) {
   if (!Array.isArray(tx)) {
@@ -52,7 +54,7 @@ export function getFees(tx, assets) {
   }, Object.create(null));
 
   return Object.entries(fees).reduce((fees, [assetId, moneyLike]) => {
-    fees[assetId] = getMoney(moneyLike as any, assets);
+    fees[assetId] = getMoney(moneyLike as AnyMoney, assets);
     return fees;
   }, Object.create(null));
 }
@@ -86,7 +88,7 @@ export function getPackageAmounts(tx = null, assets) {
   );
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
@@ -94,6 +96,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: any, type: string) {
+export function isMe(tx: unknown, type: string) {
   return type === txType;
 }

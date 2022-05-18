@@ -3,6 +3,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
+import { Notification } from 'ui/components/pages';
 
 class NotificationCardComponent extends React.PureComponent<INotification> {
   deleteHandler = event => {
@@ -40,7 +41,7 @@ class NotificationCardComponent extends React.PureComponent<INotification> {
         <div className={styles.groupBottom} />
         <div className={styles.groupEffect}>
           <div className={styles.cardHeader} onClick={this.showHandler}>
-            <div className={styles.messageTransactionIcon}></div>
+            <div className={styles.messageTransactionIcon} />
             <div className="grow">
               <div
                 className={`${styles.notififactionEllipsis} basic500 body3 margin-min`}
@@ -71,9 +72,9 @@ class NotificationCardComponent extends React.PureComponent<INotification> {
 interface INotification extends WithTranslation {
   collapsed?: boolean;
   className?: string;
-  deleteNotifications: (ids: [string]) => void;
+  deleteNotifications: (ids: string[]) => void;
   onShow?: (item) => void;
-  notifications?: any;
+  notifications?: Notification[];
 }
 
 export const NotificationCard = withTranslation()(NotificationCardComponent);

@@ -1,7 +1,19 @@
 import * as React from 'react';
 import * as copy from 'copy-to-clipboard';
 
-export class Copy extends React.PureComponent {
+interface Props {
+  text: string;
+  children: React.ReactNode;
+  options: {
+    debug?: boolean;
+    message?: string;
+    format?: string; // MIME type
+    onCopy?: (clipboardData: object) => void;
+  };
+  onCopy: (...args: unknown[]) => unknown;
+}
+
+export class Copy extends React.PureComponent<Props> {
   static defaultProps = {
     onCopy: undefined,
     options: { format: 'text/plain' },

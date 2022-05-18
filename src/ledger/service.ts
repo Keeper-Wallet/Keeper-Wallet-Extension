@@ -163,6 +163,7 @@ class LedgerService {
           );
           break;
         default:
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           throw new Error(`Unknown request type: "${(request as any).type}"`);
       }
 
@@ -190,9 +191,9 @@ class LedgerService {
       await this._signRequestPromise;
     } finally {
       this._signRequestPromise = this.sendSignRequest(selectedAccount, request);
-
-      return this._signRequestPromise;
     }
+
+    return this._signRequestPromise;
   }
 
   async disconnect(status = LedgerServiceStatus.Disconnected) {

@@ -2,20 +2,29 @@ import * as styles from './auth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
-const Icon = props => (
-  <div className={props.small ? styles.authTxIconSmall : styles.authTxIcon}>
-    {props.canUseIcon ? (
+const Icon = ({
+  icon,
+  canUseIcon,
+  small,
+}: {
+  icon: string;
+  canUseIcon?: boolean;
+  small?: boolean;
+}) => (
+  <div className={small ? styles.authTxIconSmall : styles.authTxIcon}>
+    {canUseIcon ? (
       <img
-        className={props.small ? styles.authTxIconSmall : styles.authTxIcon}
-        src={props.icon}
+        className={small ? styles.authTxIconSmall : styles.authTxIcon}
+        src={icon}
       />
     ) : (
       <div
         className={cn('signin-icon', {
-          [styles.authTxIcon]: !props.small,
-          [styles.authTxIconSmall]: props.small,
-          [styles.iconMargin]: !props.small,
+          [styles.authTxIcon]: !small,
+          [styles.authTxIconSmall]: small,
+          [styles.iconMargin]: !small,
         })}
       />
     )}
@@ -23,9 +32,9 @@ const Icon = props => (
 );
 
 interface IProps extends WithTranslation {
-  className: string;
-  collapsed: boolean;
-  message: any;
+  className?: string;
+  collapsed?: boolean;
+  message?: Message;
 }
 
 class AuthCardComponent extends React.PureComponent<IProps> {

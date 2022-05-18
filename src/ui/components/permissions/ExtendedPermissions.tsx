@@ -76,8 +76,6 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     };
   }
 
-  openHandler = () => {};
-
   changeHandler = (newInterval, newTotalAmount, showNotify) => {
     newTotalAmount = newInterval ? newTotalAmount : '';
     this.props.onChangePerms({
@@ -190,7 +188,7 @@ type TAutoAuth = {
   type: 'allowAutoSign';
   totalAmount: number;
   interval: number;
-  approved?: Array<any>;
+  approved?: Array<unknown>;
   showNotify?: boolean;
 };
 

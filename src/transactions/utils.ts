@@ -17,6 +17,7 @@ import {
   invokeScript,
   issue,
   lease,
+  makeTxBytes,
   massTransfer,
   order,
   reissue,
@@ -26,7 +27,6 @@ import {
   transfer,
   updateAssetInfo,
   validators,
-  makeTxBytes,
 } from '@waves/waves-transactions';
 import { TTxParamsWithType } from '@waves/waves-transactions/dist/make-tx';
 import { serializeAuthData } from '@waves/waves-transactions/dist/requests/auth';
@@ -38,6 +38,7 @@ import {
 import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';
+import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 
 function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient)
@@ -167,6 +168,9 @@ interface SaMassTransfer {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyValue = any;
+
 interface SaData {
   type: typeof TRANSACTION_TYPE.DATA;
   data: {
@@ -179,7 +183,7 @@ interface SaData {
     data: Array<{
       key: string;
       type: string;
-      value: any;
+      value: AnyValue;
     }>;
   };
 }
@@ -234,7 +238,7 @@ interface SaInvokeScript {
       function: string;
       args?: Array<{
         type: string;
-        value: any;
+        value: AnyValue;
       }>;
     } | null;
     payment: Money[];
@@ -361,6 +365,14 @@ const convertLongToBigNumber = createDeepConverter(
   Long.isLong,
   value => new BigNumber(value.toString())
 );
+
+function convertArg(arg: InvokeScriptCallArgument) {
+  return arg.type === 'integer'
+    ? { ...arg, value: new BigNumber(arg.value) }
+    : arg.type === 'list'
+    ? { ...arg, value: arg.value.map(convertArg) }
+    : arg;
+}
 
 export const convertFromSa = {
   transaction: (
@@ -594,14 +606,6 @@ export const convertFromSa = {
       case TRANSACTION_TYPE.INVOKE_SCRIPT: {
         const chainId = input.data.chainId || defaultChainId;
 
-        function convertArg(arg: { type: string; value: any }) {
-          return arg.type === 'integer'
-            ? { ...arg, value: new BigNumber(arg.value) }
-            : arg.type === 'list'
-            ? { ...arg, value: arg.value.map(convertArg) }
-            : arg;
-        }
-
         return convertLongToBigNumber(
           invokeScript(
             convertBigNumberToLong({
@@ -645,6 +649,7 @@ export const convertFromSa = {
           )
         );
       default:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         throw new Error(`Unexpected type: ${(input as any).type}`);
     }
   },
@@ -681,7 +686,7 @@ export const convertFromSa = {
       senderPublicKey: input.data.senderPublicKey,
       proofs: input.data.proofs || [],
       matcherFeeAssetId: input.data.matcherFee.asset.id,
-    } as any),
+    } as never),
   cancelOrder: (input: SaCancelOrder) =>
     cancelOrder({
       orderId: input.data.id,

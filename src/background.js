@@ -9,7 +9,7 @@ import asStream from 'obs-store/lib/asStream';
 import extension from 'extensionizer';
 import { v4 as uuidv4 } from 'uuid';
 import { ERRORS } from './lib/KeeperError';
-import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
+import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { createStreamSink } from './lib/createStreamSink';
 import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
@@ -755,8 +755,6 @@ class BackgroundService extends EventEmitter {
           this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
         })
         .catch(e => {
-          switch (e.data) {
-          }
           if (e.data === MSG_STATUSES.REJECTED) {
             // user rejected single permission request
             this.permissionsController.setMessageIdAccess(origin, null);
@@ -818,25 +816,21 @@ class BackgroundService extends EventEmitter {
     const newNotification = data => {
       const { selectedAccount } = this.getState();
       const myData = { ...data };
-      try {
-        const result = this.notificationsController.newNotification({
-          address: selectedAccount.address,
-          message: myData.message,
-          origin: origin,
-          status: MSG_STATUSES.NEW_NOTIFICATION,
-          timestamp: Date.now(),
-          title: myData.title,
-          type: 'simple',
-        }).id;
+      const result = this.notificationsController.newNotification({
+        address: selectedAccount.address,
+        message: myData.message,
+        origin: origin,
+        status: MSG_STATUSES.NEW_NOTIFICATION,
+        timestamp: Date.now(),
+        title: myData.title,
+        type: 'simple',
+      }).id;
 
-        if (result) {
-          this.emit('Show notification');
-        }
-
-        return result;
-      } catch (e) {
-        throw e;
+      if (result) {
+        this.emit('Show notification');
       }
+
+      return result;
     };
 
     return {
@@ -1050,6 +1044,7 @@ class BackgroundService extends EventEmitter {
 
     const inpageApi = this.getInpageApi(origin);
     const dnode = setupDnode(connectionStream, inpageApi, 'inpageApi');
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
     const onRemoteHandler = remote => {

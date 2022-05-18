@@ -56,19 +56,19 @@ export class NetworkController {
   }
 
   setCustomNode(url, network = 'mainnet') {
-    let { customNodes } = this.store.getState();
+    const { customNodes } = this.store.getState();
     customNodes[network] = url;
     this.store.updateState({ customNodes });
   }
 
   setCustomMatcher(url, network = 'mainnet') {
-    let { customMatchers } = this.store.getState();
+    const { customMatchers } = this.store.getState();
     customMatchers[network] = url;
     this.store.updateState({ customMatchers });
   }
 
   setCustomCode(code, network = 'mainnet') {
-    let { customCodes } = this.store.getState();
+    const { customCodes } = this.store.getState();
     customCodes[network] = code;
     this.store.updateState({ customCodes });
   }
@@ -132,7 +132,7 @@ export class NetworkController {
         }
         url = new URL('matcher/orderbook', API_BASE).toString();
         break;
-      case 'cancelOrder':
+      case 'cancelOrder': {
         const { amountAsset, priceAsset } = message;
         API_BASE = this.getMatcher();
         if (!API_BASE) {
@@ -143,6 +143,7 @@ export class NetworkController {
           API_BASE
         ).toString();
         break;
+      }
       default:
         throw new Error(`Unknown message type: ${type}`);
     }
@@ -158,9 +159,10 @@ export class NetworkController {
     switch (resp.status) {
       case 200:
         return await resp.text();
-      case 400:
+      case 400: {
         const error = await resp.json();
         throw new Error(error.message);
+      }
       default:
         throw new Error(await resp.text());
     }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import {
   approve,
   clearMessages,
@@ -16,33 +16,40 @@ import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
+import { AssetDetail } from 'ui/services/Background';
+import { Account } from 'accounts/types';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
-  return messages.map(message => {
-    try {
-      const config = getConfigByTransaction(message);
-      const Card = config.card;
-      return (
-        <div key={message.id} onClick={() => onSelect(message)}>
-          <Card
-            className={styles.cardItem}
-            message={message}
-            assets={assets}
-            collapsed={true}
-          />
-        </div>
-      );
-    } catch (e) {
-      return null;
-    }
-  });
+  return (
+    <>
+      {messages.map(message => {
+        try {
+          const config = getConfigByTransaction(message);
+          const Card = config.card;
+          return (
+            <div key={message.id} onClick={() => onSelect(message)}>
+              <Card
+                className={styles.cardItem}
+                message={message}
+                assets={assets}
+                collapsed={true}
+              />
+            </div>
+          );
+        } catch (e) {
+          return null;
+        }
+      })}
+    </>
+  );
 };
 
 interface IProps {
-  messages: any;
-  assets: any;
-  onSelect: (...args: any) => void;
-  onReject: (...args: any) => void;
+  messages: Message[];
+  assets: Record<string, AssetDetail>;
+  onSelect: (...args: unknown[]) => void;
+  onReject: (...args: unknown[]) => void;
 }
 
 const Notifications = ({ notifications, onShow, onDelete }) => {
@@ -65,7 +72,20 @@ const Notifications = ({ notifications, onShow, onDelete }) => {
   });
 };
 
-class MessageListComponent extends React.Component {
+interface Props extends WithTranslation {
+  selectedAccount: Account;
+  messages: unknown[];
+  assets: Record<string, AssetDetail>;
+  notifications: unknown[];
+
+  getAsset: (assetId: string) => void;
+  setActiveMessage: (message: unknown) => void;
+  deleteNotifications: (ids: string[]) => void;
+  setActiveNotification: (notification: unknown) => void;
+  reject: (id: string) => void;
+}
+
+class MessageListComponent extends React.Component<Props> {
   readonly state = { loading: true };
   readonly props;
 

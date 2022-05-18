@@ -18,7 +18,23 @@ const DEFAULTS = {
   },
 };
 
-const QrCodeImage = ({ options, src, width, height, className, ...props }) => {
+type Options = typeof DEFAULTS;
+
+const QrCodeImage = ({
+  options,
+  src,
+  width,
+  height,
+  className,
+  ...props
+}: {
+  options: Options;
+  src: string;
+  width?: number;
+  height?: number;
+  className?: string;
+  children: React.ReactNode;
+}) => {
   const isSvg = options.type === 'svg';
   const svgSource = !isSvg || !src ? null : { __html: src };
 
@@ -34,9 +50,23 @@ const QrCodeImage = ({ options, src, width, height, className, ...props }) => {
   );
 };
 
-export class QRCode extends React.PureComponent {
-  readonly props;
-  readonly state = {} as any;
+type QRCodeProps = {
+  errorCorrectionLevel?: string;
+  type?: string;
+  quality?: number;
+  margin?: number;
+  scale?: number;
+  width?: number;
+  height?: number;
+  dark?: string;
+  light?: string;
+  text?: string;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export class QRCode extends React.PureComponent<QRCodeProps, State> {
+  readonly state: State = {};
 
   render() {
     const state = this.state;
@@ -113,4 +143,20 @@ export class QRCode extends React.PureComponent {
       ...props,
     };
   }
+}
+
+interface State {
+  errorCorrectionLevel?: string;
+  type?: string;
+  quality?: number;
+  margin?: number;
+  scale?: number;
+  width?: number;
+  height?: number;
+  dark?: string;
+  light?: string;
+  className?: string;
+  hasChanged?: boolean;
+  text?: string;
+  src?: string;
 }

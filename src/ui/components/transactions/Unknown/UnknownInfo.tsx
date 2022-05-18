@@ -1,11 +1,9 @@
 import * as React from 'react';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
-interface IProps {
-  message: any;
-  assets: any;
-}
-
-export class UnknownInfo extends React.PureComponent<IProps> {
+export class UnknownInfo extends React.PureComponent<
+  Pick<ComponentProps, 'message' | 'assets'>
+> {
   render() {
     return <div />;
   }

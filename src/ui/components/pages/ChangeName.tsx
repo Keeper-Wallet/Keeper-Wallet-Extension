@@ -2,11 +2,20 @@ import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
+import { Account } from 'accounts/types';
 
-class ChangeAccountNameComponent extends React.PureComponent {
+interface Props extends WithTranslation {
+  account: Account;
+  accounts: Account[];
+
+  changeAccountName: (updateAccount: Account) => void;
+  onBack: () => void;
+}
+
+class ChangeAccountNameComponent extends React.PureComponent<Props> {
   readonly props;
   readonly state = { newName: '', error: false, errors: [] };
   inputEl: Input;

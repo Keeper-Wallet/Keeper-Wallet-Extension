@@ -5,6 +5,8 @@ import { addBackTab, loading, removeBackTab, setTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
+import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
@@ -172,14 +174,13 @@ class RootComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store: AppState) {
   return {
     loading: store.localState.loading,
     locked: store.state && store.state.locked,
     initialized: store.state && store.state.initialized,
     accounts: store.accounts || [],
     tab: store.tab || '',
-    tmpTab: store.tmpTab,
     backTabs: store.backTabs,
     messages: store.messages,
     notifications: store.notifications,
@@ -194,20 +195,24 @@ const actions = {
   removeBackTab,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 
 interface IProps {
   locked: boolean;
   initialized: boolean;
-  accounts: Array<any>;
+  accounts: Array<Account>;
   setTab: (tab: string) => void;
   addBackTab: (tab: string) => void;
   removeBackTab: () => void;
   setLoading: (enable: boolean) => void;
   tab: string;
   backTabs: Array<string>;
-  messages: Array<any>;
-  notifications: Array<any>;
-  activePopup: { msg: any | null; notify: Array<any> | null } | null;
+  messages: Array<unknown>;
+  notifications: Array<unknown>;
+  activePopup: {
+    msg: { type: string; data: { type: string } } | null;
+    notify: Array<unknown> | null;
+  } | null;
   loading: boolean;
 }

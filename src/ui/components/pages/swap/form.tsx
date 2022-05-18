@@ -217,6 +217,13 @@ export function SwapForm({
     string | null
   >(null);
 
+  const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
+  const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
+    ? t('swap.maxAmountExceeded', {
+        maxAmount: maxTokens.toFixed(),
+      })
+    : null;
+
   const watchExchange = React.useCallback(() => {
     let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
 
@@ -280,7 +287,14 @@ export function SwapForm({
         }));
       }
     );
-  }, [channelClient, fromAsset, toAsset, latestFromAmountValueRef]);
+  }, [
+    channelClient,
+    fromAsset,
+    toAsset,
+    maxTokens,
+    latestFromAmountValueRef,
+    t,
+  ]);
 
   React.useEffect(() => {
     setExchangeInfo(exchangeInfoInitialState);
@@ -309,13 +323,6 @@ export function SwapForm({
         .gt(fromAssetBalance.getTokens()))
       ? t('swap.insufficientFundsError')
       : null;
-
-  const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
-  const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
-    ? t('swap.maxAmountExceeded', {
-        maxAmount: maxTokens.toFixed(),
-      })
-    : null;
 
   const watchExchangeTimeoutRef = React.useRef<number | null>(null);
 
@@ -454,7 +461,7 @@ export function SwapForm({
               }),
         };
       });
-  }, [swappableAssets, toAsset]);
+  }, [swappableAssets, toAsset, t]);
 
   const toSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
@@ -479,7 +486,7 @@ export function SwapForm({
               }),
         };
       });
-  }, [fromAsset, swappableAssets]);
+  }, [fromAsset, swappableAssets, t]);
 
   return (
     <SwapLayout>

@@ -1,19 +1,20 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './createOrder.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
+import {
+  ComponentProps,
+  MessageData,
+} from 'ui/components/transactions/BaseTransaction';
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: any;
-}
-
-class CreateOrderInfoComponent extends React.PureComponent<IProps> {
+class CreateOrderInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
+> {
   render() {
     const { t, message, assets } = this.props;
-    const { messageHash, data = {} } = message;
+    const { messageHash, data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
 
     const fee = getMoney(getFee(tx), assets);

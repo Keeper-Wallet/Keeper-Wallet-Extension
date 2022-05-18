@@ -13,7 +13,7 @@ import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ setTab }) {
+export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -49,7 +49,7 @@ export function NewWalletName({ setTab }) {
         })
       );
     }
-  }, [accountName, accounts]);
+  }, [accountName, accounts, existedAccount, dispatch, t]);
 
   return (
     <div data-testid="newWalletNameForm" className={styles.content}>
@@ -87,10 +87,12 @@ export function NewWalletName({ setTab }) {
           <Input
             data-testid="newAccountNameInput"
             className="margin1"
-            onChange={e => setAccountName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setAccountName(e.target.value)
+            }
             value={accountName ?? ''}
-            maxLength="32"
-            disabled={existedAccount}
+            maxLength={32}
+            disabled={!!existedAccount}
             autoFocus
             error={error}
           />

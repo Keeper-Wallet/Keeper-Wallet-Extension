@@ -72,7 +72,7 @@ export function AssetAmountInput({
     return () => {
       input.removeEventListener('input', inputListener, false);
     };
-  }, []);
+  }, [mask.ref, mask.maskRef]);
 
   React.useEffect(() => {
     const input = mask.ref.current;
@@ -83,7 +83,7 @@ export function AssetAmountInput({
       maskInstance.updateValue();
       maskInstance.updateControl();
     }
-  }, [value]);
+  }, [value, mask.ref, mask.maskRef]);
 
   const bigNumberValue = new BigNumber(value || '0');
   const tokens = Money.fromTokens(bigNumberValue, asset).getTokens();

@@ -3,22 +3,33 @@ import * as styles from './error.styl';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-const Errors = ({ errors, show }) => {
+const Errors = ({
+  errors,
+  show,
+}: {
+  errors: Array<{ key: string; msg: string }>;
+  show: boolean;
+}) => {
+  const { t } = useTranslation();
+
   if (!show || !errors || !errors.length) {
     return null;
   }
 
-  return errors.map(({ key, msg }) => {
-    const { t } = useTranslation();
-    key = key.replace(/\s/g, '');
-    return t(key, { defaultValue: msg, key });
-  });
+  return (
+    <>
+      {errors.map(({ key, msg }) => {
+        key = key.replace(/\s/g, '');
+        return t(key, { defaultValue: msg, key });
+      })}
+    </>
+  );
 };
 
 interface Props {
   type?: string;
   show?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   className?: string;
   hideByClick?: boolean;
   onClick?: (...args) => void;
@@ -53,10 +64,7 @@ export class Error extends React.PureComponent<Props> {
       children,
       className = '',
       errors,
-      hideByClick,
-      show,
       type,
-      onClick,
       ...otherProps
     } = this.props;
 

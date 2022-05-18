@@ -93,7 +93,7 @@ export function ImportKeystoreChooseAccounts({
       <div className={styles.accounts}>
         {allNetworks
           .map(network => [network, profiles[network].accounts] as const)
-          .filter(([_, accounts]) => accounts.length !== 0)
+          .filter(([, accounts]) => accounts.length !== 0)
           .map(([network, accounts]) => {
             const newAccounts = accounts.filter(
               acc => !existingAccounts.has(acc.address)

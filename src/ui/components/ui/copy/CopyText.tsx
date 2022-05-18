@@ -76,7 +76,12 @@ interface IProps {
   onCopy?: (...args) => void;
 
   toggleText?: boolean;
-  copyOptions?: any;
+  copyOptions?: {
+    debug?: boolean;
+    message?: string;
+    format?: string; // MIME type
+    onCopy?: (clipboardData: object) => void;
+  };
   type?: string;
   showText?: boolean;
 

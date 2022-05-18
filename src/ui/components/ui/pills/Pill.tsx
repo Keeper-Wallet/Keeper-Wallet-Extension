@@ -4,6 +4,15 @@ import cn from 'classnames';
 
 const _onClick = cb => id => cb && cb(id);
 
+interface Props {
+  className?: string;
+  id?: number;
+  text?: unknown;
+  hidden?: boolean;
+  selected?: boolean;
+  onSelect: (...args: unknown[]) => unknown;
+}
+
 export function Pill({
   id,
   text,
@@ -11,8 +20,7 @@ export function Pill({
   hidden,
   className,
   onSelect,
-  ...props
-}) {
+}: Props) {
   const newClassName = cn(styles.pill, className, {
     [styles.selectedPill]: selected,
     [styles.hiddenPill]: hidden,

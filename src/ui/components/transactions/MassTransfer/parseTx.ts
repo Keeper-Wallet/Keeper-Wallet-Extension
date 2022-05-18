@@ -58,6 +58,6 @@ export function getAmountSign() {
   return '-' as const;
 }
 
-export function isMe(tx: any, type: string) {
+export function isMe(tx, type: string) {
   return tx.type === TRANSACTION_TYPE.MASS_TRANSFER && type === txType;
 }

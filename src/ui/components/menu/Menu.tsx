@@ -3,44 +3,70 @@ import * as styles from './menu.styl';
 import { HeadLogo } from '../head';
 import { PAGES } from '../../pageConfig';
 
-const Logo = ({ hasLogo }) => {
+const Logo = ({ hasLogo }: { hasLogo: boolean }) => {
   return !hasLogo ? null : <HeadLogo />;
 };
 
-const Settings = ({ hasSettings, leftClick, rightClick }) => {
+const Settings = ({
+  hasSettings,
+  leftClick,
+  rightClick,
+}: {
+  hasSettings: boolean;
+  leftClick: (event: React.MouseEvent<HTMLElement>) => void;
+  rightClick: (event: React.MouseEvent<HTMLElement>) => void;
+}) => {
   return !hasSettings ? null : (
     <div>
-      <div className={styles.settingsIcon} onClick={leftClick}></div>
-      <div className={styles.navigationIcon} onClick={rightClick}></div>
+      <div className={styles.settingsIcon} onClick={leftClick} />
+      <div className={styles.navigationIcon} onClick={rightClick} />
     </div>
   );
 };
 
-const Buttons = props => {
+const Buttons = ({
+  deleteAccount,
+  onDelete,
+}: {
+  deleteAccount: boolean;
+  onDelete: (event: React.MouseEvent<HTMLElement>) => void;
+}) => {
   return (
     <div>
-      {!props.deleteAccount ? null : (
+      {!deleteAccount ? null : (
         <div
           className={`${styles.deleteIcon} delete-icon`}
-          onClick={props.onDelete}
-        ></div>
+          onClick={onDelete}
+        />
       )}
     </div>
   );
 };
 
-const Back = ({ hasBack, onClick }) => {
+const Back = ({
+  hasBack,
+  onClick,
+}: {
+  hasBack: boolean;
+  onClick: (event: React.MouseEvent<HTMLElement>) => void;
+}) => {
   return hasBack ? (
     <div
       className={`${styles.arrowBackIcon} arrow-back-icon`}
       onClick={onClick}
-    ></div>
+    />
   ) : null;
 };
 
-const Close = ({ hasClose, onClick }) => {
+const Close = ({
+  hasClose,
+  onClick,
+}: {
+  hasClose: boolean;
+  onClick: (event: React.MouseEvent<HTMLElement>) => void;
+}) => {
   return hasClose ? (
-    <div className={`${styles.closeIcon} close-icon`} onClick={onClick}></div>
+    <div className={`${styles.closeIcon} close-icon`} onClick={onClick} />
   ) : null;
 };
 

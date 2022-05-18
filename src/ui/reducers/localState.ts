@@ -17,7 +17,7 @@ function newUser(state = {}, action) {
   return state;
 }
 
-function assets(state = {}, action) {
+function assets(state: { account?: Account } = {}, action) {
   switch (action.type) {
     case ACTION.SET_ACTIVE_ACCOUNT:
       return { ...state, account: action.payload };
@@ -41,9 +41,10 @@ function newAccount(
   action
 ) {
   switch (action.type) {
-    case ACTION.NEW_ACCOUNT_NAME:
+    case ACTION.NEW_ACCOUNT_NAME: {
       const name = action.payload != null ? action.payload : state.name;
       return { ...state, name };
+    }
     case ACTION.NEW_ACCOUNT_SELECT:
       return { ...state, ...action.payload };
   }
@@ -66,7 +67,7 @@ function loading(state = true, { type, payload }) {
   return state;
 }
 
-interface NotificationsState {
+export interface NotificationsState {
   accountCreationSuccess?: boolean;
   accountImportSuccess?: boolean;
   changeName?: boolean;

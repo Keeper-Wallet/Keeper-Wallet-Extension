@@ -142,8 +142,8 @@ describe('Others', function () {
       await amountInput.sendKeys('123123123.123');
 
       expect(
-        await this.driver.executeScript(function () {
-          return arguments[0].value;
+        await this.driver.executeScript(function (amountInput) {
+          return amountInput.value;
         }, amountInput)
       ).to.equal('123 123 123.123');
 

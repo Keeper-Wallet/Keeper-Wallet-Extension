@@ -27,32 +27,38 @@ export function ImportEmail({ setTab }: Props) {
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
 
-  const handleSubmit = React.useCallback(userData => {
-    if (
-      accounts.find(
-        account =>
-          account.type === 'wx' && account.username === userData.username
-      )
-    ) {
-      throw new Error(t('importEmail.alreadyExists'));
-    }
-  }, []);
+  const handleSubmit = React.useCallback(
+    userData => {
+      if (
+        accounts.find(
+          account =>
+            account.type === 'wx' && account.username === userData.username
+        )
+      ) {
+        throw new Error(t('importEmail.alreadyExists'));
+      }
+    },
+    [accounts, t]
+  );
 
-  const handleConfirm = React.useCallback(userData => {
-    dispatch(
-      newAccountSelect({
-        type: 'wx',
-        name: userData.name,
-        address: userData.address,
-        publicKey: userData.publicKey,
-        uuid: userData.uuid,
-        username: userData.username,
-        hasBackup: true,
-      })
-    );
+  const handleConfirm = React.useCallback(
+    userData => {
+      dispatch(
+        newAccountSelect({
+          type: 'wx',
+          name: userData.name,
+          address: userData.address,
+          publicKey: userData.publicKey,
+          uuid: userData.uuid,
+          username: userData.username,
+          hasBackup: true,
+        })
+      );
 
-    setTab(PAGES.ACCOUNT_NAME_SEED);
-  }, []);
+      setTab(PAGES.ACCOUNT_NAME_SEED);
+    },
+    [dispatch, setTab]
+  );
 
   return (
     <div className={styles.root}>

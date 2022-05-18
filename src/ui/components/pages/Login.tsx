@@ -1,13 +1,19 @@
 import * as styles from './styles/login.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions';
 import { PAGES } from '../../pageConfig';
 
-class LoginComponent extends React.Component {
+interface Props extends WithTranslation {
+  error: unknown;
+  login: (password: string) => void;
+  setTab: (tab: string) => void;
+}
+
+class LoginComponent extends React.Component<Props> {
   inputEl: Input;
   state = {
     passwordError: false,

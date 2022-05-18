@@ -35,7 +35,7 @@ export function Swap({ setTab }: Props) {
 
   React.useEffect(() => {
     dispatch(resetSwapScreenInitialState());
-  }, []);
+  }, [dispatch]);
 
   const usdnAssetId = getAssetIdByTicker(currentNetwork, 'USDN');
 
@@ -89,7 +89,7 @@ export function Swap({ setTab }: Props) {
     const assetsToUpdate = Array.from(
       new Set(
         swappableAssetEntries
-          .filter(([_assetId, asset]) => asset == null)
+          .filter(([, asset]) => asset == null)
           .map(([assetId]) => assetId)
       )
     );
@@ -97,7 +97,7 @@ export function Swap({ setTab }: Props) {
     if (assetsToUpdate.length !== 0) {
       dispatch(updateAssets(assetsToUpdate));
     }
-  }, [swappableAssetEntries]);
+  }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = useAppSelector(
     state => state.balances[state.selectedAccount.address]
@@ -108,9 +108,7 @@ export function Swap({ setTab }: Props) {
     transactionId: string;
   } | null>(null);
 
-  const swappableAssets = swappableAssetEntries.map(
-    ([_assetId, asset]) => asset
-  );
+  const swappableAssets = swappableAssetEntries.map(([, asset]) => asset);
 
   if (
     wavesFeeCoins == null ||

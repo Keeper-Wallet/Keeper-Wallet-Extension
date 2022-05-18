@@ -3,13 +3,15 @@ import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
+import { Account } from 'accounts/types';
+import { Message } from 'ui/components/transactions/BaseTransaction/index';
 
-const OriginWarning = ({ message }) => {
+const OriginWarning = ({ message }: { message: Message }) => {
+  const { t } = useTranslation();
+
   if (!message.origin && !message.account?.network) {
     return null;
   }
-
-  const { t } = useTranslation();
 
   return (
     <>
@@ -29,6 +31,11 @@ export function TxHeader({
   selectAccount,
   message,
   hideButton = false,
+}: {
+  selectedAccount?: Account;
+  message?: Message;
+  hideButton?: boolean;
+  selectAccount?: (account: Account) => void;
 }) {
   return (
     <div className={styles.txHeader}>

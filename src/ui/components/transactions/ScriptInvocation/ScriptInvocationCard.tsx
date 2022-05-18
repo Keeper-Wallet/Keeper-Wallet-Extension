@@ -1,20 +1,13 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { TxIcon } from '../BaseTransaction';
+import { withTranslation } from 'react-i18next';
+import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
 
-interface IProps extends WithTranslation {
-  assets: any;
-  className: string;
-  collapsed: boolean;
-  message: any;
-}
-
-class ScriptInvocationCardComponent extends React.PureComponent<IProps> {
+class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(
       styles.scriptInvocationTransactionCard,
@@ -25,7 +18,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<IProps> {
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} } = message;
+    const { data = {} as MessageData } = message;
     const tx = { type: data.type, ...data.data };
     const functionName = (tx.call && tx.call.function) || 'default';
     const amounts = getAmounts(tx).map(item => getMoney(item, assets));

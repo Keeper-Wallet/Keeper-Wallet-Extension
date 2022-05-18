@@ -3,7 +3,7 @@ import { ACTION } from '../actions/constants';
 import { Middleware } from 'redux';
 import { AppState } from 'ui/store';
 
-export const sentryBreadcrumbs: Middleware<{}, AppState> =
+export const sentryBreadcrumbs: Middleware<Record<string, unknown>, AppState> =
   store => next => action => {
     Sentry.addBreadcrumb({
       type: 'info',

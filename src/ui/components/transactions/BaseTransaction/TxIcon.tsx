@@ -6,15 +6,15 @@ export function TxIcon({
   small = null,
   className = '',
   children = null,
-  ...props
+}: {
+  txType: string;
+  small?: boolean;
+  className?: string;
+  children?: React.ReactNode;
 }) {
   className = cn(
     className,
     `${txType}-transaction-icon${small ? '-small' : ''}`
   );
-  return (
-    <div className={className} {...props}>
-      {children}
-    </div>
-  );
+  return <div className={className}>{children}</div>;
 }

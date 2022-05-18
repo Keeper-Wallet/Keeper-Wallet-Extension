@@ -151,6 +151,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
         window.clearTimeout(timeout);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccount.address, server, transactionId]);
 
   const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];

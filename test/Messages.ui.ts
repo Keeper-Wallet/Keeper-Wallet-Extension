@@ -14,9 +14,9 @@ describe('Messages', function () {
   const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
   let tabKeeper;
 
-  const sendMessage = () => {
-    const done = arguments[arguments.length - 1];
-    // @ts-ignore
+  const sendMessage = (...args) => {
+    const done = args[args.length - 1];
+
     KeeperWallet.initialPromise.then(api => {
       api
         .notification({ title: 'Hello!', message: 'World!' })
@@ -27,8 +27,8 @@ describe('Messages', function () {
 
   async function sendMessageFromOrigin(
     origin: string,
-    isWhitelisted: boolean = true,
-    reload: boolean = true
+    isWhitelisted = true,
+    reload = true
   ) {
     if (reload) {
       await this.driver.get(`https://${origin}`);

@@ -39,8 +39,8 @@ import {
   SET_ASSET_SCRIPT,
   SET_SCRIPT,
   SET_SCRIPT_WITHOUT_SCRIPT,
-  SPONSORSHIP_REMOVAL,
   SPONSORSHIP,
+  SPONSORSHIP_REMOVAL,
   TRANSFER,
   TRANSFER_WITHOUT_ATTACHMENT,
   UPDATE_ASSET_INFO,
@@ -105,7 +105,7 @@ describe('Signature', function () {
 
   function checkAnyTransaction(
     txFormLocator: By,
-    checkApproveResult?: (approveResult: any) => void,
+    checkApproveResult?: (approveResult: unknown) => void,
     wait?: number
   ) {
     it('Is shown', async function () {
@@ -198,8 +198,8 @@ describe('Signature', function () {
       );
 
       await this.driver.switchTo().window(tabOrigin);
-      const approveResult = await this.driver.executeScript(
-        () => (window as any).approveResult
+      const approveResult = await this.driver.executeScript<string>(
+        () => window.approveResult
       );
       await this.driver.switchTo().window(tabKeeper);
 
@@ -210,7 +210,7 @@ describe('Signature', function () {
   }
 
   describe('Permission request from origin', function () {
-    let authFormLocator = By.xpath(
+    const authFormLocator = By.xpath(
       "//div[contains(@class, '-originAuth-transaction')]"
     );
     const REJECT_FOREVER = 'Reject forever';
@@ -227,7 +227,6 @@ describe('Signature', function () {
         await this.driver.get(`http://${origin}`);
       }
       await this.driver.executeScript(() => {
-        // @ts-ignore
         KeeperWallet.initialPromise.then(api => {
           api.publicState();
         });
@@ -278,15 +277,14 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(() => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.auth({ data: 'generated auth data' }))
           .then(
             result => {
-              (window as any).approveResult = JSON.stringify(result);
+              window.approveResult = JSON.stringify(result);
             },
             () => {
-              (window as any).approveResult = null;
+              window.approveResult = null;
             }
           );
       });
@@ -296,7 +294,7 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-auth-transaction')]"),
-      approveResult => {
+      (approveResult: string) => {
         const parsedApproveResult = JSON.parse(approveResult);
 
         const expectedApproveResult = {
@@ -334,7 +332,6 @@ describe('Signature', function () {
 
       await this.driver.executeScript(
         (senderPublicKey, timestamp) => {
-          // @ts-ignore
           KeeperWallet.initialPromise
             .then(api =>
               api.signRequest({
@@ -347,10 +344,10 @@ describe('Signature', function () {
             )
             .then(
               result => {
-                (window as any).approveResult = result;
+                window.approveResult = result;
               },
               () => {
-                (window as any).approveResult = null;
+                window.approveResult = null;
               }
             );
         },
@@ -363,7 +360,7 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-matcher-transaction')]"),
-      signature => {
+      (signature: string) => {
         const bytes = concat(
           serializePrimitives.BASE58_STRING(senderPublicKey),
           serializePrimitives.LONG(timestamp)
@@ -375,19 +372,21 @@ describe('Signature', function () {
   });
 
   describe('Transactions', function () {
-    async function performSignTransaction(this: mocha.Context, tx: any) {
+    async function performSignTransaction(
+      this: mocha.Context,
+      tx: WavesKeeper.TSignTransactionData
+    ) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(tx => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.signTransaction(tx))
           .then(
             result => {
-              (window as any).approveResult = result;
+              window.approveResult = result;
             },
             () => {
-              (window as any).approveResult = null;
+              window.approveResult = null;
             }
           );
       }, tx);
@@ -395,7 +394,10 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabKeeper);
     }
 
-    function setTxVersion(tx: any, version: number) {
+    function setTxVersion(
+      tx: WavesKeeper.TSignTransactionData,
+      version: number
+    ) {
       return { ...tx, data: { ...tx.data, version } };
     }
 
@@ -1928,33 +1930,34 @@ describe('Signature', function () {
 
   describe('Order', function () {
     const createOrder = tx => {
-      // @ts-ignore
       KeeperWallet.initialPromise
         .then(api => api.signOrder(tx))
         .then(
           result => {
-            (window as any).approveResult = result;
+            window.approveResult = result;
           },
           () => {
-            (window as any).approveResult = null;
+            window.approveResult = null;
           }
         );
     };
     const cancelOrder = tx => {
-      // @ts-ignore
       KeeperWallet.initialPromise
         .then(api => api.signCancelOrder(tx))
         .then(
           result => {
-            (window as any).approveResult = result;
+            window.approveResult = result;
           },
           () => {
-            (window as any).approveResult = null;
+            window.approveResult = null;
           }
         );
     };
 
-    async function performSignOrder(script: (tx: any) => {}, tx: any) {
+    async function performSignOrder(
+      script: (tx: WavesKeeper.TSignTransactionData) => void,
+      tx: WavesKeeper.TSignTransactionData
+    ) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(script, tx);
@@ -2102,20 +2105,22 @@ describe('Signature', function () {
   });
 
   describe('Multiple transactions package', function () {
-    async function performSignTransactionPackage(tx: any[], name: string) {
+    async function performSignTransactionPackage(
+      tx: WavesKeeper.TSignTransactionData[],
+      name: string
+    ) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(
         (tx, name) => {
-          // @ts-ignore
           KeeperWallet.initialPromise
             .then(api => api.signTransactionPackage(tx, name))
             .then(
               result => {
-                (window as any).approveResult = result;
+                window.approveResult = result;
               },
               () => {
-                (window as any).approveResult = null;
+                window.approveResult = null;
               }
             );
         },
@@ -2138,10 +2143,14 @@ describe('Signature', function () {
 
     checkAnyTransaction(
       By.xpath("//div[contains(@class, '-package-transaction')]"),
-      approveResult => {
+      (approveResult: string[]) => {
         expect(approveResult).to.have.length(7);
 
-        const parsedApproveResult = approveResult.map(parse);
+        const parsedApproveResult = approveResult.map<{
+          id: string;
+          proofs: string[];
+          timestamp: number;
+        }>(parse);
 
         const expectedApproveResult0 = {
           type: ISSUE.type,
@@ -2352,19 +2361,22 @@ describe('Signature', function () {
   });
 
   describe('Custom data', function () {
-    async function performSignCustomData(data: any) {
+    async function performSignCustomData(
+      data:
+        | WavesKeeper.TSignCustomDataParamsV1
+        | WavesKeeper.TSignCustomDataParamsV2
+    ) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(data => {
-        // @ts-ignore
         KeeperWallet.initialPromise
           .then(api => api.signCustomData(data))
           .then(
             result => {
-              (window as any).approveResult = JSON.stringify(result);
+              window.approveResult = JSON.stringify(result);
             },
             () => {
-              (window as any).approveResult = null;
+              window.approveResult = null;
             }
           );
       }, data);
@@ -2385,7 +2397,7 @@ describe('Signature', function () {
 
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
-        approveResult => {
+        (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 
           const expectedApproveResult = {
@@ -2415,7 +2427,7 @@ describe('Signature', function () {
 
       checkAnyTransaction(
         By.xpath("//div[contains(@class, '-customData-transaction')]"),
-        approveResult => {
+        (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 
           const expectedApproveResult = {

@@ -20,7 +20,7 @@ export function Welcome({ setTab }: Props) {
       history.replaceState(history.state, null, window.location.pathname);
       setTab(PAGES.NEW);
     }
-  }, []);
+  }, [setTab]);
 
   return (
     <div className={`${styles.content}`}>

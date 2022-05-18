@@ -116,12 +116,10 @@ export class StatisticsController {
       'last' + eventType.charAt(0).toUpperCase() + eventType.slice(1);
     const state = this.store.getState();
     const dateNow = new Date();
-    const dateLast = !!state[storeKey]
-      ? new Date(state[storeKey])
-      : dateNow - ms;
+    const dateLast = state[storeKey] ? new Date(state[storeKey]) : dateNow - ms;
 
     if (dateNow - dateLast >= ms) {
-      let partial = {};
+      const partial = {};
       partial[storeKey] = dateNow.valueOf();
       this.addEvent(eventType);
       this.store.updateState(partial);
@@ -143,7 +141,9 @@ export class StatisticsController {
           dApp: isDApp ? message.data.data.dApp : undefined,
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore errors
+    }
   }
 
   sendInstallEvent() {

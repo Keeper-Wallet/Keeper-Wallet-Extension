@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import * as styles from './originAuth.styl';
+import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
-interface IProps extends WithTranslation {
-  message: any;
-  assets: any;
-}
-
-class OriginAuthInfoComponent extends React.PureComponent<IProps> {
+class OriginAuthInfoComponent extends React.PureComponent<
+  Pick<ComponentProps, 't' | 'message' | 'assets'>
+> {
   render() {
     const { t } = this.props;
     return (

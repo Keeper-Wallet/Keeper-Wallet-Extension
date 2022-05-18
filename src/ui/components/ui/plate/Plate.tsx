@@ -57,7 +57,7 @@ class PlateCollapsableComponent extends React.PureComponent<
 
   componentDidMount() {
     this.resizeObserver = new ResizeObserver(entries => {
-      for (let entry of entries) {
+      for (const entry of entries) {
         this.setState({
           showExpand:
             this.props.showExpand &&
@@ -80,7 +80,7 @@ class PlateCollapsableComponent extends React.PureComponent<
     const { t, className, children, showCopy } = this.props;
     const classNames = cn(className, { [styles.expanded]: isExpanded });
     const textToCopy = (
-      React.Children.only(children) as React.ReactElement<{ data: any }>
+      React.Children.only(children) as React.ReactElement<{ data: unknown }>
     ).props?.data;
 
     return (

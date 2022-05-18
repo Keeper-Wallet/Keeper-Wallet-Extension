@@ -1,9 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
-import { binary, serializePrimitives } from '@waves/marshall';
 import {
   address,
   base58Decode,
-  concat,
   privateKey,
   publicKey,
   signBytes,

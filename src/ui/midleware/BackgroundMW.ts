@@ -54,7 +54,7 @@ export const deleteNotifications = store => next => action => {
   });
 };
 
-export const setNotificationPerms = store => next => action => {
+export const setNotificationPerms = () => next => action => {
   if (action.type !== ACTION.NOTIFICATIONS.SET_PERMS) {
     return next(action);
   }
@@ -62,7 +62,7 @@ export const setNotificationPerms = store => next => action => {
   background.setNotificationPermissions(action.payload);
 };
 
-export const setIdle = store => next => action => {
+export const setIdle = () => next => action => {
   if (action.type !== ACTION.REMOTE_CONFIG.SET_IDLE) {
     return next(action);
   }
@@ -80,7 +80,7 @@ export const updateLang = store => next => action => {
   return next(action);
 };
 
-export const updateBalances = store => next => action => {
+export const updateBalances = () => next => action => {
   if (action.type === ACTION.GET_BALANCES) {
     background.updateBalances();
   }
@@ -125,7 +125,7 @@ export const deleteActiveAccount = store => next => action => {
   return next(action);
 };
 
-export const closeNotificationWindow = _ => next => action => {
+export const closeNotificationWindow = () => next => action => {
   if (action.type === ACTION.CLOSE_WINDOW) {
     background.closeNotificationWindow();
   }
@@ -135,7 +135,7 @@ export const closeNotificationWindow = _ => next => action => {
 export const deleteAccountMw = store => next => action => {
   if (action.type === ACTION.DELETE_ACCOUNT) {
     background.deleteVault().then(() => {
-      store.dispatch(updateActiveState(null));
+      store.dispatch(updateActiveState());
       store.dispatch(setTab(PAGES.ROOT));
     });
     return null;
@@ -183,7 +183,7 @@ export const changeNetwork = store => next => action => {
   return next(action);
 };
 
-export const getAsset = store => next => action => {
+export const getAsset = () => next => action => {
   if (action.type === ACTION.GET_ASSETS) {
     background.assetInfo(action.payload);
   }
@@ -199,7 +199,7 @@ export const updateAssets = () => next => action => {
   return next(action);
 };
 
-export const favoriteAsset = store => next => action => {
+export const favoriteAsset = () => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
     background.toggleAssetFavorite(action.payload);
   }
@@ -221,7 +221,7 @@ export const changeName = store => next => action => {
   return next(action);
 };
 
-export const setCustomNode = store => next => action => {
+export const setCustomNode = () => next => action => {
   if (ACTION.CHANGE_NODE === action.type) {
     const { node, network } = action.payload;
     background.setCustomNode(node, network);
@@ -231,7 +231,7 @@ export const setCustomNode = store => next => action => {
   return next(action);
 };
 
-export const setCustomCode = store => next => action => {
+export const setCustomCode = () => next => action => {
   if (ACTION.CHANGE_NETWORK_CODE === action.type) {
     const { code, network } = action.payload;
     background.setCustomCode(code, network);
@@ -241,7 +241,7 @@ export const setCustomCode = store => next => action => {
   return next(action);
 };
 
-export const setCustomMatcher = store => next => action => {
+export const setCustomMatcher = () => next => action => {
   if (ACTION.CHANGE_MATCHER === action.type) {
     const { matcher, network } = action.payload;
     background.setCustomMatcher(matcher, network);
@@ -251,7 +251,7 @@ export const setCustomMatcher = store => next => action => {
   return next(action);
 };
 
-export const lock = store => next => action => {
+export const lock = () => next => action => {
   if (action.type === ACTION.LOCK) {
     background.lock();
     return null;

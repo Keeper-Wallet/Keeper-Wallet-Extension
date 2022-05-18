@@ -1,22 +1,22 @@
 export const messageType = 'unknown';
 export const txType = null;
 
-export function getAssetsId(tx = null): Array<string> {
+export function getAssetsId(): Array<string> {
   return ['WAVES'];
 }
 
-export function getFee(tx = null) {
+export function getFee() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
-export function getAmount(tx = null) {
+export function getAmount() {
   return { coins: 0, assetId: 'WAVES' };
 }
 
-export function getAmountSign(tx = null) {
+export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: any, type: string) {
+export function isMe() {
   return true;
 }

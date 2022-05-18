@@ -49,8 +49,6 @@ const WKTConverterV1 = {
 };
 
 export const isKeeperTransactionData = (version, tx) => {
-  const v1 = 1;
-
   if (!tx || !tx.type || !tx.data) {
     throw ERRORS.INVALID_FORMAT();
   }

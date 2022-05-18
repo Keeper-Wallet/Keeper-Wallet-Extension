@@ -1,17 +1,42 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
-import background from '../../services/Background';
+import background, { AssetDetail } from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
 import { getAccountLink } from '../../urls';
+import { BigNumber } from '@waves/bignumber';
+import { AppState } from 'ui/store';
+import { NotificationsState } from 'ui/reducers/localState';
+import { Account } from 'accounts/types';
 
-class AccountInfoComponent extends React.Component {
+interface Props extends WithTranslation {
+  selectedAccount: Account;
+  assets: Record<string, AssetDetail>;
+  balances: unknown;
+  notifications: NotificationsState;
+  network: string;
+  getAsset: (assetId: string) => void;
+  setTab: (tab: string) => void;
+}
+
+interface State {
+  balance: Money | string | BigNumber;
+  leaseBalance?: Money;
+  balances: unknown;
+  changeNameNotify?: boolean;
+  password: string;
+  passwordError?: boolean;
+  showPassword?: boolean;
+  showCopied?: boolean;
+}
+
+class AccountInfoComponent extends React.Component<Props, State> {
   readonly props;
-  readonly state = {} as any;
+  readonly state = {} as State;
   copiedTimer;
   deffer;
 
@@ -401,7 +426,7 @@ class AccountInfoComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store: AppState) {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address

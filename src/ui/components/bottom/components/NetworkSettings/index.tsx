@@ -119,7 +119,7 @@ class NetworkSettingsComponent extends React.PureComponent<
 
   private changeHandler = (valueName, errorName) => event => {
     const { target } = event;
-    this.setState({ [valueName]: target.value, [errorName]: false } as any);
+    this.setState({ [valueName]: target.value, [errorName]: false } as unknown);
   };
 
   private saveHandler = () => {
@@ -129,7 +129,9 @@ class NetworkSettingsComponent extends React.PureComponent<
 
     Promise.all([nodeValidator, matcherValidator])
       .then(() => this.saveData())
-      .catch(() => {});
+      .catch(() => {
+        // ignore errors
+      });
   };
 
   private saveData() {
@@ -182,8 +184,8 @@ interface INetworkSettings extends WithTranslation {
   networkCode: string;
   node: string;
   matcher: string;
-  onSave: (netConfig: INetworkData) => any;
-  onClose: () => any;
+  onSave: (netConfig: INetworkData) => void;
+  onClose: () => void;
 }
 
 interface INetworkData {

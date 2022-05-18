@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
 import { Button, QRCode } from '../ui';
+import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
 
-class QRCodeSelectedAccountComponent extends React.PureComponent {
+interface Props extends WithTranslation {
+  selectedAccount: Account;
+}
+
+class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
   readonly props;
   qrCode: QRCode;
   getQrRef = qr => (this.qrCode = qr);
@@ -65,9 +71,9 @@ class QRCodeSelectedAccountComponent extends React.PureComponent {
   }
 }
 
-const mapStateToProps = function (store: any) {
+const mapStateToProps = function (store: AppState) {
   const activeAccount = store.selectedAccount.address;
-  const selected = store.localState.assets.account
+  const selected = store.localState.assets?.account
     ? store.localState.assets.account.address
     : activeAccount;
   const selectedAccount = store.accounts.find(

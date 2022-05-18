@@ -63,7 +63,8 @@ export function Assets({ setTab }: Props) {
     if (!balances[address]) {
       dispatch(getBalances());
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const onSelectHandler = account => {
     dispatch(setActiveAccount(account));

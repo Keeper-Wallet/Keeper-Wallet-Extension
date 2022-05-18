@@ -7,10 +7,11 @@ import { getAsset } from '../../../actions';
 import { AssetDetail } from 'ui/services/Background';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
+import { AppState } from 'ui/store';
 
 const SEPARATOR = '.';
 
-const Loading = ({ children }) => (
+const Loading = ({ children }: { children: React.ReactNode }) => (
   <div>
     <Loader />
     {children}
@@ -24,7 +25,7 @@ interface Props {
   showAsset?: boolean;
   showUsdAmount?: boolean;
   isShortFormat?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   addSign?: string;
   className?: string;
   assets?: Record<string, AssetDetail>;
@@ -50,6 +51,7 @@ const BalanceComponent = ({
     if (!assets[assetId]) {
       getAsset(assetId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   switch (true) {
@@ -116,6 +118,6 @@ const BalanceComponent = ({
   );
 };
 
-export const Balance = connect(({ assets }: any) => ({ assets }), { getAsset })(
-  BalanceComponent
-);
+export const Balance = connect(({ assets }: AppState) => ({ assets }), {
+  getAsset,
+})(BalanceComponent);

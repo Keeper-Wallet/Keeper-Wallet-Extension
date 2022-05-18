@@ -5,7 +5,7 @@ import { Button, Copy, Modal } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
 
-export function BackUpSeed({ setTab }) {
+export function BackUpSeed({ setTab }: { setTab: (tab: string) => void }) {
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
   const newAccount = useAccountsSelector(state => state.localState.newAccount);

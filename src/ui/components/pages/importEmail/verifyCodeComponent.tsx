@@ -79,7 +79,7 @@ export function VerifyCodeComponent({
 
       setValues(newValues);
     },
-    [refs, values]
+    [refs, values, codeLength]
   );
 
   const onFocus = React.useCallback((e: React.FocusEvent<HTMLInputElement>) => {

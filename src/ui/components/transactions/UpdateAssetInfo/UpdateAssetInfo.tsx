@@ -3,9 +3,14 @@ import * as React from 'react';
 
 import { UpdateAssetInfoCard } from './UpdateAssetInfoCard';
 import { UpdateAssetInfoInfo } from './UpdateAssetInfoInfo';
-import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import {
+  ComponentProps,
+  TxDetailTabs,
+  TxFooter,
+  TxHeader,
+} from '../BaseTransaction';
 
-export function UpdateAssetInfo(props) {
+export function UpdateAssetInfo(props: ComponentProps) {
   const { message, assets } = props;
 
   return (

@@ -1,14 +1,22 @@
 import * as styles from './final.styl';
 import * as React from 'react';
-import { withTranslation, useTranslation } from 'react-i18next';
+import {
+  useTranslation,
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
 import oauth from '../OriginAuth';
 import { isMe as isOrder } from '../CreateOrder/parseTx';
-import { TxHeader } from '../BaseTransaction';
+import { Message, TxHeader } from '../BaseTransaction';
+import { Account } from 'accounts/types';
+import { AssetDetail } from 'ui/services/Background';
+import { ComponentConfig } from 'ui/components/transactions/index';
 
-const Error = ({ approveError }) => {
+const Error = ({ approveError }: { approveError: { error: unknown } }) => {
   const { t } = useTranslation();
+
   return (
     <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
       <div
@@ -23,8 +31,25 @@ const Error = ({ approveError }) => {
   );
 };
 
-class FinalTransactionComponent extends React.PureComponent<any> {
-  readonly props: any;
+interface Props extends WithTranslation {
+  transactionStatus: {
+    approveOk: boolean;
+    approveError: boolean;
+    rejectOk: boolean;
+  };
+  selectedAccount: Account;
+  messages: Message[];
+  notifications: unknown[];
+  message: Message;
+  onClose: (...args: unknown[]) => void;
+  onNext: (...args: unknown[]) => void;
+  onList: (...args: unknown[]) => void;
+  assets: Record<string, AssetDetail>;
+  config: ComponentConfig;
+}
+
+class FinalTransactionComponent extends React.PureComponent<Props> {
+  readonly props;
 
   render() {
     const {
