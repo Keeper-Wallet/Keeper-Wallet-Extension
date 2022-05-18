@@ -1,167 +1,138 @@
-import * as React from 'react';
 import cn from 'classnames';
-import * as styles from './index.styl';
-
-export class Select<T> extends React.PureComponent<IProps<T>, IState<T>> {
-  private element: HTMLDivElement;
-
-  getRef = element => {
-    this.props.forwardRef && (this.props.forwardRef.current = element);
-    this.element = element;
-  };
-
-  selectHandler = (item: TSelectItem<T>) => {
-    this.setState({ showList: false });
-    this.props.onSelectItem(item.id, item.value);
-    this.removeClickOut();
-  };
-
-  clickHandler = () => {
-    const showList = this.state.showList;
-
-    if (!showList) {
-      this.setClickOut();
-    } else {
-      this.removeClickOut();
-    }
-
-    this.setState({ showList: !showList });
-  };
-
-  clickOutHandler = e => {
-    let el = e.target;
-
-    while (el) {
-      if (el === this.element) {
-        return null;
-      }
-
-      el = el.parentElement;
-    }
-
-    this.clickHandler();
-  };
-
-  componentWillUnmount(): void {
-    this.removeClickOut();
-  }
-
-  setClickOut = () => {
-    document.addEventListener('click', this.clickOutHandler, { capture: true });
-  };
-
-  removeClickOut = () => {
-    document.removeEventListener('click', this.clickOutHandler, {
-      capture: true,
-    });
-  };
-
-  constructor(props: IProps<T>) {
-    super(props);
-
-    this.state = {
-      showList: false,
-    };
-  }
-
-  render(): React.ReactNode {
-    const {
-      selected,
-      selectList = [],
-      className,
-      description,
-      onSelectItem,
-      forwardRef,
-      listPlacement = 'bottom',
-      ...restProps
-    } = this.props;
-
-    const { text } =
-      selectList.find(({ id }) => id === selected) || selectList[0];
-
-    return (
-      <div className={cn(styles.select, className)} ref={this.getRef}>
-        <Title text={description} />
-        <div
-          className={cn(styles.selectInput, 'cant-select')}
-          onClick={this.clickHandler}
-          {...restProps}
-        >
-          <div className={styles.listItemSelected}>{text}</div>
-        </div>
-        <List
-          isShow={this.state.showList}
-          list={selectList.filter(({ id }) => id !== selected)}
-          placement={listPlacement}
-          onSelect={this.selectHandler}
-        />
-      </div>
-    );
-  }
-}
-
-const Title = ({ text }) =>
-  text ? <div className="left input-title basic500 tag1">{text}</div> : null;
-
-function List<T>({
-  isShow,
-  list,
-  placement,
-  onSelect,
-}: {
-  isShow: boolean;
-  list: TSelectItem<T>[];
-  placement: ListPlacement;
-  onSelect: (item: TSelectItem<T>) => void;
-}) {
-  return (
-    isShow && (
-      <div
-        className={cn(
-          styles.list,
-          'cant-select',
-          {
-            bottom: styles.list_placement_bottom,
-            top: styles.list_placement_top,
-          }[placement]
-        )}
-      >
-        {list.map(item => (
-          <div
-            key={item.id}
-            className={styles.listItem}
-            onClick={() => onSelect(item)}
-          >
-            {item.text}
-          </div>
-        ))}
-      </div>
-    )
-  );
-}
+import * as React from 'react';
+import * as styles from './Select.module.css';
 
 type TText = string | React.ReactNode;
 
-type TSelectItem<T> = {
+interface SelectItem<T> {
   id: string | number;
   text: TText;
   value: T;
-};
-
-type ListPlacement = 'top' | 'bottom';
-
-interface IProps<T> {
-  className?: string;
-  forwardRef?: React.MutableRefObject<HTMLDivElement>;
-  selectList: Array<TSelectItem<T>>;
-  description?: TText;
-  listPlacement?: ListPlacement;
-  selected?: string | number;
-  onSelectItem?: (id: string | number, value: T) => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 }
 
-interface IState<T> {
-  showList: boolean;
+type ListPlacement = 'top' | 'bottom';
+type Theme = 'compact' | 'solid' | 'underlined';
+
+const themeClassNames: Record<Theme, string> = {
+  compact: styles.theme_compact,
+  solid: styles.theme_solid,
+  underlined: styles.theme_underlined,
+};
+
+interface Props<T> {
+  className?: string;
+  description?: TText;
+  fill?: boolean;
+  forwardRef?: React.MutableRefObject<HTMLDivElement>;
+  listPlacement?: ListPlacement;
+  selected?: string | number;
+  selectList: Array<SelectItem<T>>;
+  theme?: Theme;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onSelectItem: (id: string | number, value: T) => void;
+}
+
+export function Select<T>({
+  className,
+  description,
+  fill,
+  forwardRef,
+  listPlacement = 'bottom',
+  selected,
+  selectList,
+  theme = 'solid',
+  onSelectItem,
+  ...otherProps
+}: Props<T>) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    function handleDocumentClick(event: MouseEvent) {
+      if (
+        event.target instanceof HTMLElement &&
+        rootRef.current.contains(event.target)
+      ) {
+        return;
+      }
+
+      setIsOpen(false);
+    }
+
+    document.addEventListener('click', handleDocumentClick, {
+      capture: true,
+    });
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick, {
+        capture: true,
+      });
+    };
+  }, [isOpen]);
+
+  const getRef = React.useCallback(
+    (element: HTMLDivElement) => {
+      forwardRef && (forwardRef.current = element);
+      rootRef.current = element;
+    },
+    [forwardRef]
+  );
+
+  const selectedItem =
+    selectList.find(({ id }) => id === selected) || selectList[0];
+
+  return (
+    <div
+      className={cn(className, styles.root, themeClassNames[theme], {
+        [styles.root_fill]: fill,
+      })}
+      ref={getRef}
+    >
+      {description ? (
+        <div className="left input-title basic500 tag1">{description}</div>
+      ) : null}
+
+      <div
+        className={styles.trigger}
+        onClick={() => {
+          setIsOpen(prevState => !prevState);
+        }}
+        {...otherProps}
+      >
+        <div className={styles.triggerText}>{selectedItem.text}</div>
+      </div>
+
+      {isOpen && (
+        <div
+          className={cn(
+            styles.list,
+            {
+              bottom: styles.list_placement_bottom,
+              top: styles.list_placement_top,
+            }[listPlacement]
+          )}
+        >
+          {selectList
+            .filter(item => item.id !== selected)
+            .map(item => (
+              <div
+                key={item.id}
+                className={styles.item}
+                onClick={() => {
+                  setIsOpen(false);
+                  onSelectItem(item.id, item.value);
+                }}
+              >
+                {item.text}
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  );
 }

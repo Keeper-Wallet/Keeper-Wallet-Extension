@@ -116,8 +116,6 @@ export const DEFAULT_FEE_CONFIG = {
   },
 };
 
-export const SWAP_DAPP_ADDRESS = '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw';
-
 export const IGNORE_ERRORS_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';
 

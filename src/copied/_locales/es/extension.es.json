@@ -23,7 +23,7 @@
     "swapButton": "Intercambio"
   },
   "assetAmountInput": {
-    "maxButtonText": "Maximo"
+    "balanceLabel": "Saldo"
   },
   "assetInfo": {
     "id": "ID",
@@ -441,7 +441,7 @@
     "download": "Descargar código QR"
   },
   "send": {
-    "amountInputLabel": "{{activo}} cantidad",
+    "amountInputLabel": "Monto",
     "amountRequiredError": "Se requiere cantidad",
     "attachmentInputLabel": "Adjunto ({{count}}/{{max}} byte)",
     "attachmentInputLabel_plural": "Adjunto ({{count}}/{{max}} bytes)",
@@ -451,7 +451,7 @@
     "recipientInvalidError": "El valor del destinatario no es válido",
     "recipientRequiredError": "Se requiere destinatario",
     "submitButtonText": "Enviar",
-    "title": "Enviar {{ nombre }}"
+    "title": "Enviar {{ name }}"
   },
   "settings": {
     "autoClick": "Protección contra clics automáticos",
@@ -522,30 +522,31 @@
   "swap": {
     "amountToSendError": "No se pudo realizar el intercambio debido al estado de SwopFi dApp. Vuelva a intentarlo o aumente ligeramente la tolerancia al deslizamiento si es posible",
     "closeBtnText": "Cerrar",
-    "exchangeChannelConnectionError": "No se pudo conectar al servicio de intercambio, es posible que vea datos obsoletos. Por favor, inténtelo de nuevo más tarde",
-    "exchangeChannelInvalidAssetPairError": "Par de activos no válido seleccionado",
-    "exchangeChannelUnknownError": "No se pudieron obtener los detalles del intercambio, es posible que vea datos obsoletos. Por favor, inténtelo de nuevo más tarde",
+    "exchangeChannelConnectionError": "No se pudo conectar al servicio de intercambio. Por favor, inténtelo de nuevo más tarde",
+    "exchangeChannelInvalidAssetPairError": "El par de activos no está disponible",
+    "exchangeChannelUnavailableError": "El servicio no responde",
+    "exchangeChannelUnknownError": "No disponible para este intercambio",
     "failMessage": "El intercambio no se realizó correctamente, inténtalo de nuevo",
     "ledgerFailMessage": "La solicitud es rechazada en el Ledger",
-    "fromInputLabel": "De {{activo}}",
-    "gainBestPrice": "Mejor precio",
-    "gainTooltip": "Beneficio de intercambiar a través de Keeper en comparación con otros servicios",
+    "fromInputLabel": "Desde",
     "insufficientFundsError": "Fondos insuficientes",
+    "maxAmountExceeded": "La cantidad no debe exceder {{ maxAmount }}",
     "minimumReceived": "mínimo recibido",
     "minimumReceivedTooltip": "Cantidad mínima que recibirá, teniendo en cuenta la tolerancia al deslizamiento",
-    "priceImpact": "Impacto en el precio",
+    "notAvailable": "N/A",
+    "notSwappablePairTooltip": "No se admite el cambio entre {{ assetTicker1 }} y {{ assetTicker2 }}",
     "priceImpactTooltip": "La diferencia entre el precio de intercambio y el precio estimado debido al tamaño de la operación.",
     "priceLabel": "Precio",
-    "route": "Ruta",
-    "routeTooltip": "Lista de activos involucrados en el intercambio de activos de destino",
-    "slippageTolerance": "Tolerancia al deslizamiento",
-    "slippageToleranceTooltip": "El swap se cancelará si el precio cambia desfavorablemente en más de este porcentaje",
+    "primaryLabel": "Primario",
+    "profitLabel": "Ganancia",
+    "slippageToleranceModalTitle": "Tolerancia del Slippage",
+    "slippageToleranceModalDescription": "El intercambio se cancelará si el precio cambia desfavorablemente en más de este porcentaje",
     "statusFailed": "Intercambio fallido",
     "statusInProgress": "Esperando a que se complete el intercambio...",
     "statusSucceeded": "Intercambio exitoso",
     "submitButtonText": "Intercambio",
     "title": "Intercambiar activos",
-    "toInputLabel": "Hasta {{activo}} (est.)",
+    "toInputLabel": "Hasta (estimado)",
     "transactionFee": "Tarifa de transacción",
     "transactionFeeTooltip": "Tarifa de red para la invocación del contrato inteligente",
     "viewTransaction": "Ver transacción"

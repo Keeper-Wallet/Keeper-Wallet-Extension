@@ -137,6 +137,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
 
         <Select
           className={cn(styles.selectTime, styles.margin12)}
+          fill
           selectList={timeList}
           selected={this.state.selected}
           description={t('permissionSettings.modal.time')}

@@ -109,7 +109,7 @@ export const TxFee = connect(
         <Balance isShortFormat={true} balance={fee} showAsset={true} />
       ) : (
         <Select
-          className="fullwidth"
+          fill
           selectList={options}
           selected={fee.asset.id}
           onSelectItem={(id, tokens) =>

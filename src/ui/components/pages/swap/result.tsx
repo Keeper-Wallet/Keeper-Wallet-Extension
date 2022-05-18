@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
+import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
 
 interface Props {
@@ -155,69 +156,78 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
   const explorerBaseUrl = explorerBaseUrlsByNetwork[currentNetwork];
 
   return (
-    <div className={styles.root}>
-      <div className={styles.statusBox}>
-        {swapStatus === SwapStatus.Pending ? (
-          <>
-            <div className={cn(styles.statusIcon, 'tx-waiting-icon')} />
+    <SwapLayout>
+      <div className={styles.root}>
+        <div className={styles.content}>
+          <div className={styles.statusBox}>
+            {swapStatus === SwapStatus.Pending ? (
+              <>
+                <div className={cn(styles.statusIcon, 'tx-waiting-icon')} />
 
-            <div className="margin-main-top margin-main-big headline2 center">
-              {t('swap.statusInProgress')}
-            </div>
-          </>
-        ) : swapStatus === SwapStatus.Failed ? (
-          <>
-            <div className={cn(styles.statusIcon, 'tx-reject-icon')} />
+                <div className="margin-main-top margin-main-big headline2 center">
+                  {t('swap.statusInProgress')}
+                </div>
+              </>
+            ) : swapStatus === SwapStatus.Failed ? (
+              <>
+                <div className={cn(styles.statusIcon, 'tx-reject-icon')} />
 
-            <div className="margin-main-top margin-main-big headline2 center">
-              {t('swap.statusFailed')}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={cn(styles.statusIcon, 'tx-approve-icon')} />
+                <div className="margin-main-top margin-main-big headline2 center">
+                  {t('swap.statusFailed')}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={cn(styles.statusIcon, 'tx-approve-icon')} />
 
-            <div className="margin-main-top margin-main-big headline2 center">
-              {t('swap.statusSucceeded')}
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className={styles.main}>
-        <div className={styles.card}>
-          <div
-            className={cn(styles.cardIcon, 'create-order-transaction-icon')}
-          />
-
-          <div className={styles.cardText}>
-            <Balance addSign="-" split showAsset balance={fromMoney} />
-
-            {[SwapStatus.Pending, SwapStatus.Succeeded].includes(
-              swapStatus
-            ) && (
-              <Balance addSign="+" split showAsset balance={receivedMoney} />
+                <div className="margin-main-top margin-main-big headline2 center">
+                  {t('swap.statusSucceeded')}
+                </div>
+              </>
             )}
           </div>
-        </div>
 
-        {explorerBaseUrl && (
-          <div className="center margin-main-big-top">
-            <a
-              className="link black"
-              href={`https://${explorerBaseUrl}/tx/${transactionId}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {t('swap.viewTransaction')}
-            </a>
+          <div className={styles.main}>
+            <div className={styles.card}>
+              <div
+                className={cn(styles.cardIcon, 'create-order-transaction-icon')}
+              />
+
+              <div className={styles.cardText}>
+                <Balance addSign="-" split showAsset balance={fromMoney} />
+
+                {[SwapStatus.Pending, SwapStatus.Succeeded].includes(
+                  swapStatus
+                ) && (
+                  <Balance
+                    addSign="+"
+                    split
+                    showAsset
+                    balance={receivedMoney}
+                  />
+                )}
+              </div>
+            </div>
+
+            {explorerBaseUrl && (
+              <div className="center margin-main-big-top">
+                <a
+                  className="link black"
+                  href={`https://${explorerBaseUrl}/tx/${transactionId}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {t('swap.viewTransaction')}
+                </a>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <Button type="button" onClick={onClose}>
-        {t('swap.closeBtnText')}
-      </Button>
-    </div>
+          <Button type="button" onClick={onClose}>
+            {t('swap.closeBtnText')}
+          </Button>
+        </div>
+      </div>
+    </SwapLayout>
   );
 }

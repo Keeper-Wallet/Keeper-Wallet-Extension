@@ -1,7 +1,7 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
-import { ExchangePool } from 'ui/components/pages/swap/channelClient';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
+import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
 import { Account } from 'accounts/types';
 
 function prepareErrorMessage(err: any) {
@@ -410,15 +410,7 @@ class Background {
     }
   }
 
-  async swapAssets(params: {
-    feeCoins: string;
-    feeAssetId: string;
-    fromAssetId: string;
-    fromCoins: string;
-    minReceivedCoins: string;
-    route: ExchangePool[];
-    slippageTolerance: number;
-  }): Promise<{ transactionId: string }> {
+  async swapAssets(params: SwapAssetsParams): Promise<SwapAssetsResult> {
     try {
       await this.initPromise;
       return await this.background.swapAssets(params);

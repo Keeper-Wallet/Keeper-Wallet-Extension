@@ -1,9 +1,38 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SWAP_DAPP_ADDRESS } from '../constants';
+
+export type SwapAssetsCallArg =
+  | { type: 'integer'; value: BigNumber }
+  | { type: 'binary'; value: string }
+  | { type: 'string'; value: string }
+  | { type: 'boolean'; value: boolean }
+  | { type: 'list'; value: SwapAssetsCallArg[] };
+
+export interface SwapAssetsInvokeParams {
+  dApp: string;
+  function: string;
+  args: SwapAssetsCallArg[];
+}
+
+export interface SwapAssetsParams {
+  feeCoins: string;
+  feeAssetId: string;
+  fromAssetId: string;
+  fromCoins: string;
+  invoke: SwapAssetsInvokeParams;
+}
+
+export interface SwapAssetsResult {
+  transactionId: string;
+}
 
 export class SwapController {
+  private assetInfoController;
+  private networkController;
+  private preferencesController;
+  private walletController;
+
   constructor({
     assetInfoController,
     networkController,
@@ -21,10 +50,8 @@ export class SwapController {
     feeAssetId,
     fromAssetId,
     fromCoins,
-    minReceivedCoins,
-    route,
-    slippageTolerance,
-  }) {
+    invoke,
+  }: SwapAssetsParams): Promise<SwapAssetsResult> {
     const [feeAssetInfo, fromAssetInfo] = await Promise.all([
       this.assetInfoController.assetInfo(feeAssetId),
       this.assetInfoController.assetInfo(fromAssetId),
@@ -34,44 +61,14 @@ export class SwapController {
       type: TRANSACTION_TYPE.INVOKE_SCRIPT,
       data: {
         timestamp: Date.now(),
-        dApp: SWAP_DAPP_ADDRESS,
+        dApp: invoke.dApp,
         fee: new Money(new BigNumber(feeCoins), new Asset(feeAssetInfo)),
         payment: [
           new Money(new BigNumber(fromCoins), new Asset(fromAssetInfo)),
         ],
         call: {
-          function: 'swap',
-          args: [
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'string',
-                value: pool.dApp,
-              })),
-            },
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'string',
-                value: pool.toAssetId,
-              })),
-            },
-            {
-              type: 'list',
-              value: route.map(pool => ({
-                type: 'integer',
-                value: pool.type === 'flat' ? pool.estimatedAmount : 0,
-              })),
-            },
-            {
-              type: 'integer',
-              value: slippageTolerance,
-            },
-            {
-              type: 'integer',
-              value: minReceivedCoins,
-            },
-          ],
+          function: invoke.function,
+          args: invoke.args,
         },
       },
     };

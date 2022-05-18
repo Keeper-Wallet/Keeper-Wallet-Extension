@@ -1,27 +1,29 @@
 import BigNumber from '@waves/bignumber';
 import { Asset } from '@waves/data-entities';
+import { base64Encode } from '@waves/ts-lib-crypto';
+import {
+  SwapAssetsCallArg,
+  SwapAssetsInvokeParams,
+} from 'controllers/SwapController';
 import Long from 'long';
 import { proto } from './channel.proto.compiled';
 
-export interface ExchangePool {
-  dApp: string;
-  estimatedAmount: BigNumber;
-  fromAssetId: string;
-  toAssetId: string;
-  type: string;
-  vendor: string;
-}
-
-interface ExchangeResponse {
-  priceImpact: number;
-  route: ExchangePool[];
-  toAmountCoins: BigNumber;
-  worstAmountCoins: BigNumber;
-}
+type ExchangeChannelResult =
+  | {
+      type: 'error';
+      code: proto.Response.Error.CODES;
+    }
+  | {
+      type: 'data';
+      invoke: SwapAssetsInvokeParams;
+      priceImpact: number;
+      toAmountCoins: BigNumber;
+    };
 
 interface ExchangeInput {
   fromAmountCoins: BigNumber;
   fromAsset: Asset;
+  slippageTolerance: number;
   toAsset: Asset;
 }
 
@@ -29,33 +31,47 @@ interface ExchangeRequest extends ExchangeInput {
   id: string;
 }
 
-export enum ExchangeChannelErrorType {
-  ConnectionError = 'CONNECTION_ERROR',
-  ExchangeError = 'EXCHANGE_ERROR',
-}
-
-export enum ExchangeChannelErrorCode {
-  INVALID_ASSET_PAIR = 'INVALID_ASSET_PAIR',
-  UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
-}
-
-export class ExchangeChannelError {
-  type: ExchangeChannelErrorType;
-  code: string;
-
-  constructor(
-    type: ExchangeChannelErrorType,
-    code = ExchangeChannelErrorCode.UNEXPECTED_ERROR
-  ) {
-    this.type = type;
-    this.code = code;
-  }
-}
+class ExchangeChannelConnectionError {}
 
 type Subscriber = (
-  err: ExchangeChannelError | null,
-  response?: ExchangeResponse
+  err: ExchangeChannelConnectionError | null,
+  vendor?: string,
+  response?: ExchangeChannelResult
 ) => void;
+
+function convertArg(
+  arg: proto.Response.Exchange.Transaction.Argument
+): SwapAssetsCallArg {
+  switch (arg.value) {
+    case 'integerValue':
+      return {
+        type: 'integer',
+        value: new BigNumber(String(arg.integerValue)),
+      };
+    case 'binaryValue':
+      return {
+        type: 'binary',
+        value: `base64:${base64Encode(arg.binaryValue)}`,
+      };
+    case 'stringValue':
+      return {
+        type: 'string',
+        value: arg.stringValue,
+      };
+    case 'booleanValue':
+      return {
+        type: 'boolean',
+        value: arg.booleanValue,
+      };
+    case 'list':
+      return {
+        type: 'list',
+        value: arg.list.items.map(convertArg),
+      };
+    default:
+      throw new Error(`Unexpected value of arg.value: ${arg.value}`);
+  }
+}
 
 export class ExchangeChannelClient {
   private activeRequest: ExchangeRequest | null = null;
@@ -95,43 +111,31 @@ export class ExchangeChannelClient {
         return;
       }
 
-      if (res.exchange.result) {
-        const { amount, priceImpact, route, worstAmount } = res.exchange.result;
-
-        this.subscriber(null, {
-          priceImpact,
-          route: route.map(
-            ({
-              address,
-              estimatedAmount,
-              source,
-              target,
-              type,
-              vendor,
-            }): ExchangePool => ({
-              dApp: address,
-              estimatedAmount: new BigNumber(String(estimatedAmount)),
-              fromAssetId: source,
-              toAssetId: target,
-              type,
-              vendor,
-            })
-          ),
-          toAmountCoins: new BigNumber(String(amount)),
-          worstAmountCoins: new BigNumber(String(worstAmount)),
-        });
-      } else {
-        const errMsg = res.exchange.errors[0];
-
-        const code = Object.values(ExchangeChannelErrorCode).includes(
-          errMsg as ExchangeChannelErrorCode
-        )
-          ? (errMsg as ExchangeChannelErrorCode)
-          : undefined;
-
-        this.subscriber(
-          new ExchangeChannelError(ExchangeChannelErrorType.ExchangeError, code)
-        );
+      switch (res.exchange.result) {
+        case 'data':
+          this.subscriber(null, res.exchange.vendor, {
+            type: 'data',
+            invoke: {
+              dApp: res.exchange.data.transaction.dApp,
+              function: res.exchange.data.transaction.call.function,
+              args: res.exchange.data.transaction.call.arguments.map(
+                convertArg
+              ),
+            },
+            priceImpact: res.exchange.data.priceImpact,
+            toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+          });
+          break;
+        case 'error':
+          this.subscriber(null, res.exchange.vendor, {
+            type: 'error',
+            code: res.exchange.error.code,
+          });
+          break;
+        default:
+          throw new Error(
+            `Unexpected value of res.exchange.result: ${res.exchange.result}`
+          );
       }
     };
 
@@ -148,9 +152,7 @@ export class ExchangeChannelClient {
       }
 
       if (this.subscriber) {
-        this.subscriber(
-          new ExchangeChannelError(ExchangeChannelErrorType.ConnectionError)
-        );
+        this.subscriber(new ExchangeChannelConnectionError());
       }
 
       this.reconnectTimeout = window.setTimeout(() => {
@@ -161,13 +163,15 @@ export class ExchangeChannelClient {
 
   private send() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      const { fromAmountCoins, id, fromAsset, toAsset } = this.activeRequest;
+      const { fromAmountCoins, id, fromAsset, slippageTolerance, toAsset } =
+        this.activeRequest;
 
       const encoded = proto.Request.encode(
         proto.Request.create({
           exchange: proto.Request.Exchange.create({
             amount: Long.fromString(fromAmountCoins.toFixed()),
             id,
+            slippageTolerance,
             source: fromAsset.id,
             target: toAsset.id,
           }),

@@ -23,7 +23,7 @@
     "swapButton": "Swap"
   },
   "assetAmountInput": {
-    "maxButtonText": "Max"
+    "balanceLabel": "Balance"
   },
   "assetInfo": {
     "id": "ID",
@@ -447,7 +447,7 @@
     "download": "Download QR code"
   },
   "send": {
-    "amountInputLabel": "{{asset}} amount",
+    "amountInputLabel": "Amount",
     "amountRequiredError": "Amount is required",
     "attachmentInputLabel": "Attachment ({{count}}/{{max}} byte)",
     "attachmentInputLabel_plural": "Attachment ({{count}}/{{max}} bytes)",
@@ -528,30 +528,31 @@
   "swap": {
     "amountToSendError": "Could not perform swap due to SwopFi dApp state. Please try again or slightly increase slippage tolerance if possible",
     "closeBtnText": "Close",
-    "exchangeChannelConnectionError": "Could not connect to swap service, you may see stale data. Please try again later",
-    "exchangeChannelInvalidAssetPairError": "Invalid asset pair selected",
-    "exchangeChannelUnknownError": "Failed to get swap details, you may see stale data. Please try again later",
+    "exchangeChannelConnectionError": "Could not connect to swap service. Please try again later",
+    "exchangeChannelInvalidAssetPairError": "Asset pair is not available",
+    "exchangeChannelUnavailableError": "Service is not responding",
+    "exchangeChannelUnknownError": "Unavailable for this swap",
     "failMessage": "Swap did not succeed, please try again",
     "ledgerFailMessage": "Request is rejected on ledger",
-    "fromInputLabel": "From {{asset}}",
-    "gainBestPrice": "Best Price",
-    "gainTooltip": "Profit of swapping through Keeper compared to other services",
+    "fromInputLabel": "From",
     "insufficientFundsError": "Insufficient funds",
+    "maxAmountExceeded": "Amount must not exceed {{ maxAmount }}",
     "minimumReceived": "Minimum Received",
     "minimumReceivedTooltip": "Minimum amount you will receive, taking slippage tolerance into account",
-    "priceImpact": "Price Impact",
+    "notAvailable": "N/A",
+    "notSwappablePairTooltip": "Swap between {{ assetTicker1 }} and {{ assetTicker2 }} is not supported",
     "priceImpactTooltip": "The difference between the exchanger price and estimated price due to trade size.",
     "priceLabel": "Price",
-    "route": "Route",
-    "routeTooltip": "List of assets involved in swap for target asset",
-    "slippageTolerance": "Slippage Tolerance",
-    "slippageToleranceTooltip": "Swap will be cancelled if the price changes unfavorably by more than this percentage",
+    "primaryLabel": "Primary",
+    "profitLabel": "Profit",
+    "slippageToleranceModalTitle": "Slippage Tolerance",
+    "slippageToleranceModalDescription": "Swap will be cancelled if the price changes unfavorably by more than this percentage",
     "statusFailed": "Swap failed",
     "statusInProgress": "Waiting for swap completion...",
     "statusSucceeded": "Swap succeeded",
     "submitButtonText": "Swap",
     "title": "Swap assets",
-    "toInputLabel": "To {{asset}} (est.)",
+    "toInputLabel": "To (estimated)",
     "transactionFee": "Transaction Fee",
     "transactionFeeTooltip": "Network fee for the smart contract invocation",
     "viewTransaction": "View transaction"

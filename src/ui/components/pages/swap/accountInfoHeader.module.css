@@ -1,0 +1,14 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.accountName {
+  max-height: 2.4em;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  word-wrap: anywhere;
+}

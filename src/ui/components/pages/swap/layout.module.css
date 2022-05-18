@@ -1,0 +1,32 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 48px);
+  overflow: auto;
+  background: #f8f9fb;
+}
+
+.wrapper {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-basic100);
+  padding: 14px;
+  background: var(--color-white);
+}
+
+.title {
+  flex-shrink: 0;
+  font-size: 24px;
+  font-weight: normal;
+}
