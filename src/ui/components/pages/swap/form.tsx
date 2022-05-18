@@ -223,6 +223,12 @@ export function SwapForm({
   >(null);
 
   const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
+  const maxTokensRef = React.useRef(maxTokens);
+
+  React.useEffect(() => {
+    maxTokensRef.current = maxTokens;
+  }, [maxTokens]);
+
   const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
     ? t('swap.maxAmountExceeded', {
         maxAmount: maxTokens.toFixed(),
@@ -232,7 +238,7 @@ export function SwapForm({
   const watchExchange = React.useCallback(() => {
     let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
 
-    if (fromTokens.gt(maxTokens)) {
+    if (fromTokens.gt(maxTokensRef.current)) {
       setExchangeInfo(exchangeInfoErrorState);
       channelClient?.close();
       return;
@@ -296,8 +302,8 @@ export function SwapForm({
     channelClient,
     fromAsset,
     toAsset,
-    maxTokens,
     latestFromAmountValueRef,
+    maxTokensRef,
     t,
   ]);
 
