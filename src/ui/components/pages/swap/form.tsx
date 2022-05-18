@@ -22,8 +22,8 @@ import { proto } from './channel.proto.compiled';
 import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
-import { SwapVendor } from 'vendors/constants';
-import { getSwapVendorLogo } from 'vendors/utils';
+import { SwapVendor } from 'swap/constants';
+import { getSwapVendorLogo } from 'swap/utils';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [
   new BigNumber(0.1),

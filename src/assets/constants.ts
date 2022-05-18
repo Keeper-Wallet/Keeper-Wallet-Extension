@@ -1,4 +1,4 @@
-import { SwapVendor } from 'vendors/constants';
+import { SwapVendor } from 'swap/constants';
 
 export const assetIds: {
   custom: Record<string, string>;

@@ -1,4 +1,4 @@
-import { SwapVendor, swapVendorLogosByName } from 'vendors/constants';
+import { SwapVendor, swapVendorLogosByName } from 'swap/constants';
 
 export function getSwapVendorLogo(swapVendor: SwapVendor) {
   return swapVendorLogosByName[swapVendor];
