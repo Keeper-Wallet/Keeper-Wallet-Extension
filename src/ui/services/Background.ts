@@ -1,7 +1,7 @@
 import { IAssetInfo } from '@waves/data-entities/dist/entities/Asset';
 import { Account } from 'accounts/types';
 import { CognitoUser } from 'amazon-cognito-identity-js';
-import { SwapVendor } from 'assets/constants';
+import { SwapVendor } from 'swap/constants';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
 
