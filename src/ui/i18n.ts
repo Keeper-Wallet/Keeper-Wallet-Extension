@@ -19,7 +19,6 @@ i18n
   .use(initReactI18next)
   .init({
     debug: KEEPERWALLET_DEBUG,
-    lng: 'en',
     fallbackLng: 'en',
     ns: [I18N_NAME_SPACE],
     defaultNS: I18N_NAME_SPACE,
@@ -47,6 +46,30 @@ export const LANGS = [
   {
     id: 'pt',
     name: 'Portugal',
+  },
+  {
+    id: 'es',
+    name: 'Español',
+  },
+  {
+    id: 'id',
+    name: 'Bahasa Indonesia',
+  },
+  {
+    id: 'ja',
+    name: '日本語',
+  },
+  {
+    id: 'th',
+    name: 'ภาษาไทย',
+  },
+  {
+    id: 'vi',
+    name: 'tiếng Việt',
+  },
+  {
+    id: 'zh',
+    name: '中文',
   },
 ];
 

@@ -137,6 +137,10 @@
     "chooseAccountsExportBtn": "Ekspor {{count}} akun",
     "chooseAccountsExportBtn_plural": "Ekspor {{count}} akun",
     "chooseAccountsTitle": "Ekspor ke Keystore file",
+    "exportNotSupported": "Akun ini tidak dapat diekspor",
+    "warningModalTitle": "Attention",
+    "warningModalDesc": "dan akun email tidak dapat diekspor",
+    "warningModalConfirmButton": "Saya mengerti",
     "passwordError": "Sandi salah",
     "passwordLabel": "Password",
     "passwordVerifyDesc": "Silakan masukkan kata sandi Keeper Anda untuk mengonfirmasi bahwa itu benar-benar Anda",
@@ -197,7 +201,7 @@
     "swap": "Token Swap",
     "transfer": "Transfer",
     "transferReceive": "Transfer masuk",
-    "transferSelf": "transfer sendiri"
+    "transferSelf": "Transfer sendiri"
   },
   "historyFilters": {
     "all": "Semua",
@@ -284,6 +288,8 @@
     "connectInstructions": "Hubungkan perangkat Ledger dan buka aplikasi Waves",
     "continueButton": "Lanjutkan",
     "couldNotGetUsersError": "Tidak bisa mendapatkan lebih banyak pengguna dari buku besar. Harap pastikan bahwa buku besar terhubung, tidak terkunci dan aplikasi Waves terbuka, lalu klik <retryButton>Coba lagi</retryButton>",
+    "userIdInputNumbersError": "Hanya angka diperbolehkan",
+    "userIdInputMaxValueError": "ID Akun tidak boleh lebih dari {{ maxUserId }}",
     "selectAccountInstructions": "Pilih address Anda",
     "title": "Import Ledger",
     "tryAgainButton": "Coba lagi"
@@ -432,7 +438,7 @@
     }
   },
   "plateComponent": {
-    "copy": "salin",
+    "copy": "Salin",
     "copied": "Disalin!",
     "collapse": "Collapse",
     "expand": "Perbesar"
@@ -481,7 +487,7 @@
   "showScriptComponent": {
     "copied": "Disalin!",
     "copy": "Salin",
-    "copyCode": "salin kode",
+    "copyCode": "Salin kode",
     "hide": "Sembunyikan",
     "key": "Key",
     "showAll": "Semua",
@@ -530,7 +536,7 @@
     "ledgerFailMessage": "Permintaan itu ditolak oleh Ledger.",
     "fromInputLabel": "Dari",
     "insufficientFundsError": "Dana tidak mencukupi",
-    "maxAmountExceeded ": "Jumlah tidak boleh melebihi {{ maxAmount }}",
+    "maxAmountExceeded": "Jumlah tidak boleh melebihi {{ maxAmount }}",
     "minimumReceived": "Minimum Diterima",
     "minimumReceivedTooltip": "Jumlah minimum yang akan Anda terima, dengan mempertimbangkan toleransi selip",
     "notAvailable": "N/A",
