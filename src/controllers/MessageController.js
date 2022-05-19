@@ -181,9 +181,9 @@ export class MessageController extends EventEmitter {
     const message = this._getMessageById(id);
     message.account = account || message.account;
     if (!message.account)
-      return Promise.reject(
-        'Message has empty account filed and no address is provided'
-      );
+      return Promise.reject([
+        'Message has empty account filed and no address is provided',
+      ]);
 
     return new Promise((resolve, reject) => {
       this._fillSignableData(message)
@@ -201,8 +201,8 @@ export class MessageController extends EventEmitter {
           this._updateMessage(message);
           this.emit(`${message.id}:finished`, message);
           message.status === MSG_STATUSES.FAILED
-            ? reject(message.err.message)
-            : resolve(message.result);
+            ? reject([message.err.message])
+            : resolve([null, message]);
         });
     });
   }
