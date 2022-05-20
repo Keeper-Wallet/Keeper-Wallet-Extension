@@ -3,6 +3,10 @@
     "message": "Keeper Wallet",
     "description": "The name of the application"
   },
+  "appShortName": {
+    "message": "Keeper",
+    "description": "The short name of the application"
+  },
   "appDescription": {
     "message": "Keeper Wallet is your entry point to the Waves blockchain and Waves-powered web services",
     "description": "The description of the application"

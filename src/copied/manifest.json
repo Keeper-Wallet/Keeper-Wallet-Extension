@@ -1,6 +1,6 @@
 {
   "name": "__MSG_appName__",
-  "short_name": "__MSG_appName__",
+  "short_name": "__MSG_appShortName__",
   "version": "1.2.4",
   "manifest_version": 2,
   "author": "support@waves.tech",
