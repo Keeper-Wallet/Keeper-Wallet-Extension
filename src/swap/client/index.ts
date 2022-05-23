@@ -1,5 +1,4 @@
-import BigNumber from '@waves/bignumber';
-import { Asset } from '@waves/data-entities';
+import { BigNumber } from '@waves/bignumber';
 import { base64Encode } from '@waves/ts-lib-crypto';
 import Long from 'long';
 import * as protobuf from 'protobufjs/minimal';
@@ -37,11 +36,11 @@ type SwapClientResult =
     };
 
 interface SwapClientSubscribeParams {
-  fromAmountCoins: BigNumber;
-  fromAsset: Asset;
-  slippageTolerance: number;
-  toAsset: Asset;
   address: string;
+  fromAmountCoins: BigNumber;
+  fromAssetId: string;
+  slippageTolerance: number;
+  toAssetId: string;
 }
 
 interface SwapClientRequest extends SwapClientSubscribeParams {
@@ -176,23 +175,23 @@ export class SwapClient {
   private send() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       const {
+        address,
         fromAmountCoins,
         id,
-        fromAsset,
+        fromAssetId,
         slippageTolerance,
-        toAsset,
-        address,
+        toAssetId,
       } = this.activeRequest;
 
       const encoded = proto.Request.encode(
         proto.Request.create({
           exchange: proto.Request.Exchange.create({
+            address: address,
             amount: Long.fromString(fromAmountCoins.toFixed()),
             id,
             slippageTolerance,
-            source: fromAsset.id,
-            target: toAsset.id,
-            address: address,
+            source: fromAssetId,
+            target: toAssetId,
           }),
         })
       ).finish();

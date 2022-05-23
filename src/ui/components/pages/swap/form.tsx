@@ -249,11 +249,11 @@ export function SwapForm({
 
     return swapClient?.subscribe(
       {
-        fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
-        fromAsset,
-        slippageTolerance: latestSlippageTolerance.toNumber() * 10,
-        toAsset,
         address: accountAddress,
+        fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
+        fromAssetId: fromAsset.id,
+        slippageTolerance: latestSlippageTolerance.toNumber() * 10,
+        toAssetId: toAsset.id,
       },
       (err, vendor, response) => {
         if (err) {
