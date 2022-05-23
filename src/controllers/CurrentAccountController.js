@@ -69,10 +69,8 @@ export class CurrentAccountController {
     const data = await Promise.all(
       accounts.map(async account => {
         try {
-          let address = account.address; // todo rollback
+          const address = account.address;
           const isActiveAddress = address === activeAccount.address;
-          const prevAddress = address; // todo rollback
-          address = '3PAETTtuW7aSiyKtn9GuML3RgtV1xdq1mQW'; // todo rollback
 
           const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
             await Promise.all(
@@ -150,7 +148,7 @@ export class CurrentAccountController {
           const leasedOut = regular.sub(available);
 
           return [
-            prevAddress, // todo rollback
+            address,
             {
               ...(isActiveAddress
                 ? {
