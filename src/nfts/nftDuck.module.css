@@ -3,7 +3,7 @@
   height: 142px;
   flex-grow: 1;
   object-fit: cover;
-  background-position: 50%;
+  background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;

@@ -131,8 +131,9 @@ export function NftDuck({
   const backgroundColor = `#${duckColors[color]}`;
   const imageUrl = `https://wavesducks.com/api/v1/ducks/${genoType}.svg?color=${color}`;
 
-  const background =
-    genoType === 'WWWWLUCK' && `url("/ducks/pokras-background.svg")`;
+  const backgroundImage =
+    genoType === 'WWWWLUCK' &&
+    'url("https://wavesducks.com/ducks/pokras-background.svg")';
 
   return (
     <NftCard>
@@ -140,10 +141,10 @@ export function NftDuck({
         src={imageUrl}
         className={cn(styles.cover, isLoading && 'skeleton-glow')}
         style={{
-          background,
+          backgroundImage,
           backgroundColor,
         }}
-        onLoad={e => setLoading(e.currentTarget.complete)}
+        onLoad={() => setLoading(false)}
         onClick={() => onInfoClick(nft.id)}
       />
       <div className={styles.footer}>{duckName}</div>
