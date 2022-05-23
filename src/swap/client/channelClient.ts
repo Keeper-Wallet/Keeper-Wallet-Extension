@@ -12,10 +12,13 @@ import { proto } from './channel.proto.compiled';
 protobuf.util.Long = Long;
 protobuf.configure();
 
+export type ExchangeChannelErrorCode = proto.Response.Error.CODES;
+export const ExchangeChannelErrorCode = proto.Response.Error.CODES;
+
 type ExchangeChannelResult =
   | {
       type: 'error';
-      code: proto.Response.Error.CODES;
+      code: ExchangeChannelErrorCode;
     }
   | {
       type: 'data';

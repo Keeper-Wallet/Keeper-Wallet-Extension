@@ -8,8 +8,10 @@ import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import { SwapAssetsInvokeParams } from 'controllers/SwapController';
-import { proto } from 'swap/client/channel.proto.compiled';
-import { ExchangeChannelClient } from 'swap/client/channelClient';
+import {
+  ExchangeChannelClient,
+  ExchangeChannelErrorCode,
+} from 'swap/client/channelClient';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
@@ -68,7 +70,7 @@ type ExchangeInfoVendorState =
     }
   | {
       type: 'error';
-      code: proto.Response.Error.CODES;
+      code: ExchangeChannelErrorCode;
     }
   | {
       type: 'data';
@@ -90,15 +92,15 @@ const exchangeInfoInitialState: ExchangeInfoState = {
 const exchangeInfoErrorState: ExchangeInfoState = {
   [SwapVendor.Keeper]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: ExchangeChannelErrorCode.UNEXPECTED,
   },
   [SwapVendor.Puzzle]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: ExchangeChannelErrorCode.UNEXPECTED,
   },
   [SwapVendor.Swopfi]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: ExchangeChannelErrorCode.UNEXPECTED,
   },
 };
 
@@ -727,9 +729,9 @@ export function SwapForm({
                     ) : (
                       <div className={styles.toAmountCardError}>
                         {info.code ===
-                        proto.Response.Error.CODES.INVALID_ASSET_PAIR
+                        ExchangeChannelErrorCode.INVALID_ASSET_PAIR
                           ? t('swap.exchangeChannelInvalidAssetPairError')
-                          : info.code === proto.Response.Error.CODES.UNAVAILABLE
+                          : info.code === ExchangeChannelErrorCode.UNAVAILABLE
                           ? t('swap.exchangeChannelUnavailableError')
                           : t('swap.exchangeChannelUnknownError')}
                       </div>
