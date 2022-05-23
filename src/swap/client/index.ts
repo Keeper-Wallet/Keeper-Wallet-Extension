@@ -14,10 +14,13 @@ type SwapClientCallArg =
   | { type: 'boolean'; value: boolean }
   | { type: 'list'; value: SwapClientCallArg[] };
 
-export interface SwapClientInvokeParams {
+export interface SwapClientInvokeTransaction {
   dApp: string;
-  function: string;
-  args: SwapClientCallArg[];
+  call: {
+    function: string;
+    args: SwapClientCallArg[];
+  };
+  payment: Array<{ assetId: string | null; amount: string }>;
 }
 
 export type SwapClientErrorCode = proto.Response.Error.CODES;
@@ -30,9 +33,9 @@ export type SwapClientResponse =
     }
   | {
       type: 'data';
-      invoke: SwapClientInvokeParams;
       priceImpact: number;
       toAmountCoins: BigNumber;
+      tx: SwapClientInvokeTransaction;
     };
 
 interface SwapParams {
@@ -122,36 +125,42 @@ export class SwapClient {
         return;
       }
 
+      let response: SwapClientResponse;
+
       switch (res.exchange.result) {
         case 'data':
-          this.subscribers.forEach(subscriber => {
-            subscriber(null, res.exchange.vendor, {
-              type: 'data',
-              invoke: {
-                dApp: res.exchange.data.transaction.dApp,
+          response = {
+            type: 'data',
+            priceImpact: res.exchange.data.priceImpact,
+            toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+            tx: {
+              dApp: res.exchange.data.transaction.dApp,
+              call: {
                 function: res.exchange.data.transaction.call.function,
                 args: res.exchange.data.transaction.call.arguments.map(
                   convertArg
                 ),
               },
-              priceImpact: res.exchange.data.priceImpact,
-              toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
-            });
-          });
+              payment: [
+                {
+                  amount: this.activeRequest.fromAmountCoins.toString(),
+                  assetId: this.activeRequest.fromAssetId,
+                },
+              ],
+            },
+          };
           break;
         case 'error':
-          this.subscribers.forEach(subscriber => {
-            subscriber(null, res.exchange.vendor, {
-              type: 'error',
-              code: res.exchange.error.code,
-            });
-          });
+          response = {
+            type: 'error',
+            code: res.exchange.error.code,
+          };
           break;
-        default:
-          throw new Error(
-            `Unexpected value of res.exchange.result: ${res.exchange.result}`
-          );
       }
+
+      this.subscribers.forEach(subscriber => {
+        subscriber(null, res.exchange.vendor, response);
+      });
     };
 
     this.ws.onclose = () => {

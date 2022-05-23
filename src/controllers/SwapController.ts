@@ -1,14 +1,12 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SwapClientInvokeParams } from 'swap/client';
+import { SwapClientInvokeTransaction } from 'swap/client';
 
 export interface SwapAssetsParams {
   feeCoins: string;
   feeAssetId: string;
-  fromAssetId: string;
-  fromCoins: string;
-  invoke: SwapClientInvokeParams;
+  tx: SwapClientInvokeTransaction;
 }
 
 export interface SwapAssetsResult {
@@ -36,37 +34,36 @@ export class SwapController {
   async swapAssets({
     feeCoins,
     feeAssetId,
-    fromAssetId,
-    fromCoins,
-    invoke,
+    tx,
   }: SwapAssetsParams): Promise<SwapAssetsResult> {
-    const [feeAssetInfo, fromAssetInfo] = await Promise.all([
+    const [feeAssetInfo, ...paymentAssetInfos] = await Promise.all([
       this.assetInfoController.assetInfo(feeAssetId),
-      this.assetInfoController.assetInfo(fromAssetId),
+      ...tx.payment.map(payment =>
+        this.assetInfoController.assetInfo(payment.assetId)
+      ),
     ]);
-
-    const tx = {
-      type: TRANSACTION_TYPE.INVOKE_SCRIPT,
-      data: {
-        timestamp: Date.now(),
-        dApp: invoke.dApp,
-        fee: new Money(new BigNumber(feeCoins), new Asset(feeAssetInfo)),
-        payment: [
-          new Money(new BigNumber(fromCoins), new Asset(fromAssetInfo)),
-        ],
-        call: {
-          function: invoke.function,
-          args: invoke.args,
-        },
-      },
-    };
 
     const network = this.networkController.getNetwork();
     const selectedAccount = this.preferencesController.getSelectedAccount();
 
     const signedTx = await this.walletController.signTx(
       selectedAccount.address,
-      tx,
+      {
+        type: TRANSACTION_TYPE.INVOKE_SCRIPT,
+        data: {
+          dApp: tx.dApp,
+          call: tx.call,
+          payment: tx.payment.map(
+            (payment, index) =>
+              new Money(
+                new BigNumber(payment.amount),
+                new Asset(paymentAssetInfos[index])
+              )
+          ),
+          timestamp: Date.now(),
+          fee: new Money(new BigNumber(feeCoins), new Asset(feeAssetInfo)),
+        },
+      },
       network
     );
 

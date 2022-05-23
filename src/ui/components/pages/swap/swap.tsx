@@ -136,11 +136,11 @@ export function Swap({ setTab }: Props) {
         feeAssetId,
         fromAssetId,
         fromCoins,
-        invoke,
         minReceivedCoins,
         slippageTolerance,
         toAssetId,
         toCoins,
+        tx,
         vendor,
       }: SwapParams) => {
         setSwapErrorMessage(null);
@@ -156,9 +156,7 @@ export function Swap({ setTab }: Props) {
           const swapResult = await background.swapAssets({
             feeAssetId,
             feeCoins: fee.toCoins(),
-            fromAssetId,
-            fromCoins: fromCoins.toFixed(),
-            invoke,
+            tx,
           });
 
           background.sendEvent('swapAssets', {

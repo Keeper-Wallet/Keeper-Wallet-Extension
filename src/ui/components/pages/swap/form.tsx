@@ -10,7 +10,7 @@ import { convertToSponsoredAssetFee } from 'assets/utils';
 import {
   SwapClient,
   SwapClientErrorCode,
-  SwapClientInvokeParams,
+  SwapClientInvokeTransaction,
 } from 'swap/client';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -41,11 +41,11 @@ export interface SwapParams {
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: BigNumber;
-  invoke: SwapClientInvokeParams;
   minReceivedCoins: BigNumber;
   slippageTolerance: number;
   toAssetId: string;
   toCoins: BigNumber;
+  tx: SwapClientInvokeTransaction;
   vendor: SwapVendor;
 }
 
@@ -69,9 +69,9 @@ type ExchangeInfoVendorState =
     }
   | {
       type: 'data';
-      invoke: SwapClientInvokeParams;
       priceImpact: number;
       toAmountTokens: BigNumber;
+      tx: SwapClientInvokeTransaction;
     };
 
 type ExchangeInfoState = {
@@ -284,12 +284,12 @@ export function SwapForm({
       } else {
         vendorState = {
           type: 'data',
-          invoke: response.invoke,
           priceImpact: response.priceImpact,
           toAmountTokens: new Money(
             response.toAmountCoins,
             toAsset
           ).getTokens(),
+          tx: response.tx,
         };
       }
 
@@ -528,7 +528,6 @@ export function SwapForm({
                 fromAmountTokens,
                 fromAsset
               ).getCoins(),
-              invoke: vendorExchangeInfo.invoke,
               minReceivedCoins: minReceived.getCoins(),
               slippageTolerance,
               toAssetId,
@@ -536,6 +535,7 @@ export function SwapForm({
                 vendorExchangeInfo.toAmountTokens,
                 toAsset
               ).getCoins(),
+              tx: vendorExchangeInfo.tx,
               vendor: selectedExchangeVendor,
             });
           }}
