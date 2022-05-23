@@ -240,6 +240,10 @@ export function SwapForm({
       return;
     }
 
+    if (!swapClient) {
+      return;
+    }
+
     if (fromTokens.eq(0)) {
       fromTokens = new BigNumber(1);
     }
@@ -247,54 +251,53 @@ export function SwapForm({
     const latestSlippageTolerance =
       SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
 
-    return swapClient?.subscribe(
-      {
-        address: accountAddress,
-        fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
-        fromAssetId: fromAsset.id,
-        slippageTolerance: latestSlippageTolerance.toNumber() * 10,
-        toAssetId: toAsset.id,
-      },
-      (err, vendor, response) => {
-        if (err) {
-          setExchangeInfo(exchangeInfoInitialState);
-          setSwapClientError(t('swap.exchangeChannelConnectionError'));
-          return;
-        }
+    swapClient.setSwapParams({
+      address: accountAddress,
+      fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
+      fromAssetId: fromAsset.id,
+      slippageTolerance: latestSlippageTolerance.toNumber() * 10,
+      toAssetId: toAsset.id,
+    });
 
-        setSwapClientError(null);
-
-        const typedVendor = vendor as SwapVendor;
-
-        if (!Object.values(SwapVendor).includes(typedVendor)) {
-          return;
-        }
-
-        let vendorState: ExchangeInfoVendorState;
-
-        if (response.type === 'error') {
-          vendorState = {
-            type: 'error',
-            code: response.code,
-          };
-        } else {
-          vendorState = {
-            type: 'data',
-            invoke: response.invoke,
-            priceImpact: response.priceImpact,
-            toAmountTokens: new Money(
-              response.toAmountCoins,
-              toAsset
-            ).getTokens(),
-          };
-        }
-
-        setExchangeInfo(prevState => ({
-          ...prevState,
-          [typedVendor]: vendorState,
-        }));
+    return swapClient.subscribe((err, vendor, response) => {
+      if (err) {
+        setExchangeInfo(exchangeInfoInitialState);
+        setSwapClientError(t('swap.exchangeChannelConnectionError'));
+        return;
       }
-    );
+
+      setSwapClientError(null);
+
+      const typedVendor = vendor as SwapVendor;
+
+      if (!Object.values(SwapVendor).includes(typedVendor)) {
+        return;
+      }
+
+      let vendorState: ExchangeInfoVendorState;
+
+      if (response.type === 'error') {
+        vendorState = {
+          type: 'error',
+          code: response.code,
+        };
+      } else {
+        vendorState = {
+          type: 'data',
+          invoke: response.invoke,
+          priceImpact: response.priceImpact,
+          toAmountTokens: new Money(
+            response.toAmountCoins,
+            toAsset
+          ).getTokens(),
+        };
+      }
+
+      setExchangeInfo(prevState => ({
+        ...prevState,
+        [typedVendor]: vendorState,
+      }));
+    });
   }, [
     swapClient,
     fromAsset,

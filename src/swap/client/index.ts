@@ -35,7 +35,7 @@ type SwapClientResult =
       toAmountCoins: BigNumber;
     };
 
-interface SwapClientSubscribeParams {
+interface SwapParams {
   address: string;
   fromAmountCoins: BigNumber;
   fromAssetId: string;
@@ -43,7 +43,7 @@ interface SwapClientSubscribeParams {
   toAssetId: string;
 }
 
-interface SwapClientRequest extends SwapClientSubscribeParams {
+interface SwapClientRequest extends SwapParams {
   id: string;
 }
 
@@ -202,13 +202,15 @@ export class SwapClient {
     }
   }
 
-  subscribe(input: SwapClientSubscribeParams, subscriber: Subscriber) {
-    this.activeRequest = { ...input, id: String(this.nextId++) };
-    this.subscriber = subscriber;
+  setSwapParams(params: SwapParams) {
+    this.activeRequest = { ...params, id: String(this.nextId++) };
     this.send();
+  }
+
+  subscribe(subscriber: Subscriber) {
+    this.subscriber = subscriber;
 
     return () => {
-      this.activeRequest = null;
       this.subscriber = null;
     };
   }
