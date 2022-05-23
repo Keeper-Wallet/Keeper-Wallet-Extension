@@ -2,6 +2,7 @@
   width: 170px;
   height: 142px;
   flex-grow: 1;
+  object-fit: cover;
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
