@@ -6,7 +6,11 @@ import {
   SwapAssetsInvokeParams,
 } from 'controllers/SwapController';
 import Long from 'long';
+import * as protobuf from 'protobufjs/minimal';
 import { proto } from './channel.proto.compiled';
+
+protobuf.util.Long = Long;
+protobuf.configure();
 
 type ExchangeChannelResult =
   | {
