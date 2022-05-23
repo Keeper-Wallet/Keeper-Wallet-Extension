@@ -3,6 +3,7 @@ import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftDuck.module.css';
 import { NftCard } from './nftCard';
 import cn from 'classnames';
+import { Loader } from 'ui/components/ui';
 
 const duckColors = {
   B: 'ADD8E6',
@@ -147,7 +148,7 @@ export function NftDuck({
         onLoad={() => setLoading(false)}
         onClick={() => onInfoClick(nft.id)}
       />
-      <div className={styles.footer}>{duckName}</div>
+      <div className={styles.footer}>{duckName || <Loader />}</div>
     </NftCard>
   );
 }

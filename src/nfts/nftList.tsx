@@ -7,6 +7,14 @@ import { NftDuck } from 'nfts/nftDuck';
 import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
+import { NftSignArt } from 'nfts/nftSignArt';
+
+function getNftComponent(nft: AssetDetail) {
+  if (nft.issuer === '3PDBLdsUrcsiPxNbt8g2gQVoefKgzt3kJzV') {
+    return NftSignArt;
+  }
+  return NftDuck;
+}
 
 const Row = ({
   data,
@@ -23,17 +31,27 @@ const Row = ({
   style: CSSProperties;
 }) => {
   const { rows, len, onInfoClick, onSendClick } = data;
+
+  const leftIndex = 2 * index;
+  const LeftNft = getNftComponent(rows[leftIndex]);
+
+  const rightIndex = leftIndex + 1;
+  const RightNft = getNftComponent(rows[rightIndex]);
+
   return (
     <div style={style}>
       <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
-        <NftDuck
-          nft={rows[2 * index]}
+        <LeftNft
+          key={leftIndex}
+          nft={rows[leftIndex]}
           onInfoClick={onInfoClick}
           onSendClick={onSendClick}
         />
-        {rows[2 * index + 1] && (
-          <NftDuck
-            nft={rows[2 * index + 1]}
+
+        {rows[rightIndex] && (
+          <RightNft
+            key={rightIndex}
+            nft={rows[rightIndex]}
             onInfoClick={onInfoClick}
             onSendClick={onSendClick}
           />
