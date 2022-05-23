@@ -84,19 +84,14 @@ export class ExchangeChannelClient {
   private nextId = 1;
   private reconnectTimeout: number | null = null;
   private subscriber: Subscriber | null = null;
-  private url: string;
   private ws: WebSocket | null = null;
-
-  constructor(url: string) {
-    this.url = url;
-  }
 
   private connect() {
     if (this.ws) {
       return;
     }
 
-    this.ws = new WebSocket(this.url);
+    this.ws = new WebSocket('wss://keeper-swap.wvservices.com/v2');
     this.ws.binaryType = 'arraybuffer';
 
     this.ws.onopen = () => {

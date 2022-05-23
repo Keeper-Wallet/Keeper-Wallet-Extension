@@ -121,10 +121,6 @@ export function SwapForm({
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 
-  const swapChannel = useAppSelector(
-    state => state.config.network_config[state.currentNetwork].swapChannel
-  );
-
   const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
 
   const sponsoredAssetBalanceEntries = Object.entries(
@@ -200,16 +196,14 @@ export function SwapForm({
     React.useState<ExchangeChannelClient | null>(null);
 
   React.useEffect(() => {
-    const client = new ExchangeChannelClient(
-      new URL('/v2', swapChannel).toString()
-    );
+    const client = new ExchangeChannelClient();
 
     setChannelClient(client);
 
     return () => {
       client.close();
     };
-  }, [swapChannel]);
+  }, []);
 
   const latestFromAmountValueRef = React.useRef(fromAmountValue);
 

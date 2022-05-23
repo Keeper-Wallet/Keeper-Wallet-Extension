@@ -39,7 +39,6 @@ export const DEFAULT_CONFIG = {
       code: 'W',
       server: 'https://nodes-keeper.wavesnodes.com/',
       matcher: 'https://matcher.waves.exchange/',
-      swapChannel: 'wss://keeper-swap.wvservices.com/',
     },
     stagenet: {
       code: 'S',
