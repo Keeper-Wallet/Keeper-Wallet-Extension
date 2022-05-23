@@ -1,7 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { SwapClientInvokeParams } from 'swap/client/channelClient';
+import { SwapClientInvokeParams } from 'swap/client';
 
 export interface SwapAssetsParams {
   feeCoins: string;

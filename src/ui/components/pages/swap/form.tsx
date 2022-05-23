@@ -8,10 +8,10 @@ import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
 import {
-  ExchangeChannelClient,
-  ExchangeChannelErrorCode,
+  SwapClient,
+  SwapClientErrorCode,
   SwapClientInvokeParams,
-} from 'swap/client/channelClient';
+} from 'swap/client';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
@@ -70,7 +70,7 @@ type ExchangeInfoVendorState =
     }
   | {
       type: 'error';
-      code: ExchangeChannelErrorCode;
+      code: SwapClientErrorCode;
     }
   | {
       type: 'data';
@@ -92,15 +92,15 @@ const exchangeInfoInitialState: ExchangeInfoState = {
 const exchangeInfoErrorState: ExchangeInfoState = {
   [SwapVendor.Keeper]: {
     type: 'error',
-    code: ExchangeChannelErrorCode.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
   [SwapVendor.Puzzle]: {
     type: 'error',
-    code: ExchangeChannelErrorCode.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
   [SwapVendor.Swopfi]: {
     type: 'error',
-    code: ExchangeChannelErrorCode.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
 };
 
@@ -194,13 +194,12 @@ export function SwapForm({
     exchangeInfoInitialState
   );
 
-  const [channelClient, setChannelClient] =
-    React.useState<ExchangeChannelClient | null>(null);
+  const [swapClient, setSwapClient] = React.useState<SwapClient | null>(null);
 
   React.useEffect(() => {
-    const client = new ExchangeChannelClient();
+    const client = new SwapClient();
 
-    setChannelClient(client);
+    setSwapClient(client);
 
     return () => {
       client.close();
@@ -213,9 +212,9 @@ export function SwapForm({
     latestFromAmountValueRef.current = fromAmountValue;
   }, [fromAmountValue]);
 
-  const [exchangeChannelError, setExchangeChannelError] = React.useState<
-    string | null
-  >(null);
+  const [swapClientError, setSwapClientError] = React.useState<string | null>(
+    null
+  );
 
   const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
   const maxTokensRef = React.useRef(maxTokens);
@@ -237,7 +236,7 @@ export function SwapForm({
 
     if (fromTokens.gt(maxTokensRef.current)) {
       setExchangeInfo(exchangeInfoErrorState);
-      channelClient?.close();
+      swapClient?.close();
       return;
     }
 
@@ -248,7 +247,7 @@ export function SwapForm({
     const latestSlippageTolerance =
       SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
 
-    return channelClient?.exchange(
+    return swapClient?.subscribe(
       {
         fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
         fromAsset,
@@ -259,11 +258,11 @@ export function SwapForm({
       (err, vendor, response) => {
         if (err) {
           setExchangeInfo(exchangeInfoInitialState);
-          setExchangeChannelError(t('swap.exchangeChannelConnectionError'));
+          setSwapClientError(t('swap.exchangeChannelConnectionError'));
           return;
         }
 
-        setExchangeChannelError(null);
+        setSwapClientError(null);
 
         const typedVendor = vendor as SwapVendor;
 
@@ -297,7 +296,7 @@ export function SwapForm({
       }
     );
   }, [
-    channelClient,
+    swapClient,
     fromAsset,
     toAsset,
     latestFromAmountValueRef,
@@ -728,10 +727,9 @@ export function SwapForm({
                       </div>
                     ) : (
                       <div className={styles.toAmountCardError}>
-                        {info.code ===
-                        ExchangeChannelErrorCode.INVALID_ASSET_PAIR
+                        {info.code === SwapClientErrorCode.INVALID_ASSET_PAIR
                           ? t('swap.exchangeChannelInvalidAssetPairError')
-                          : info.code === ExchangeChannelErrorCode.UNAVAILABLE
+                          : info.code === SwapClientErrorCode.UNAVAILABLE
                           ? t('swap.exchangeChannelUnavailableError')
                           : t('swap.exchangeChannelUnknownError')}
                       </div>
@@ -769,8 +767,8 @@ export function SwapForm({
             </div>
           </div>
 
-          {exchangeChannelError && (
-            <div className={styles.error}>{exchangeChannelError}</div>
+          {swapClientError && (
+            <div className={styles.error}>{swapClientError}</div>
           )}
 
           <div className={styles.summary}>

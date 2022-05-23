@@ -3,7 +3,7 @@ import { Asset } from '@waves/data-entities';
 import { base64Encode } from '@waves/ts-lib-crypto';
 import Long from 'long';
 import * as protobuf from 'protobufjs/minimal';
-import { proto } from './channel.proto.compiled';
+import { proto } from './messages.proto.compiled';
 
 protobuf.util.Long = Long;
 protobuf.configure();
@@ -21,13 +21,13 @@ export interface SwapClientInvokeParams {
   args: SwapClientCallArg[];
 }
 
-export type ExchangeChannelErrorCode = proto.Response.Error.CODES;
-export const ExchangeChannelErrorCode = proto.Response.Error.CODES;
+export type SwapClientErrorCode = proto.Response.Error.CODES;
+export const SwapClientErrorCode = proto.Response.Error.CODES;
 
-type ExchangeChannelResult =
+type SwapClientResult =
   | {
       type: 'error';
-      code: ExchangeChannelErrorCode;
+      code: SwapClientErrorCode;
     }
   | {
       type: 'data';
@@ -36,7 +36,7 @@ type ExchangeChannelResult =
       toAmountCoins: BigNumber;
     };
 
-interface ExchangeInput {
+interface SwapClientSubscribeParams {
   fromAmountCoins: BigNumber;
   fromAsset: Asset;
   slippageTolerance: number;
@@ -44,16 +44,16 @@ interface ExchangeInput {
   address: string;
 }
 
-interface ExchangeRequest extends ExchangeInput {
+interface SwapClientRequest extends SwapClientSubscribeParams {
   id: string;
 }
 
-class ExchangeChannelConnectionError {}
+class SwapClientConnectionError {}
 
 type Subscriber = (
-  err: ExchangeChannelConnectionError | null,
+  err: SwapClientConnectionError | null,
   vendor?: string,
-  response?: ExchangeChannelResult
+  response?: SwapClientResult
 ) => void;
 
 function convertArg(
@@ -90,8 +90,8 @@ function convertArg(
   }
 }
 
-export class ExchangeChannelClient {
-  private activeRequest: ExchangeRequest | null = null;
+export class SwapClient {
+  private activeRequest: SwapClientRequest | null = null;
   private closedByUser = false;
   private nextId = 1;
   private reconnectTimeout: number | null = null;
@@ -164,7 +164,7 @@ export class ExchangeChannelClient {
       }
 
       if (this.subscriber) {
-        this.subscriber(new ExchangeChannelConnectionError());
+        this.subscriber(new SwapClientConnectionError());
       }
 
       this.reconnectTimeout = window.setTimeout(() => {
@@ -203,7 +203,7 @@ export class ExchangeChannelClient {
     }
   }
 
-  exchange(input: ExchangeInput, subscriber: Subscriber) {
+  subscribe(input: SwapClientSubscribeParams, subscriber: Subscriber) {
     this.activeRequest = { ...input, id: String(this.nextId++) };
     this.subscriber = subscriber;
     this.send();
