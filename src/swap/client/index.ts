@@ -197,7 +197,7 @@ export class SwapClient {
             address: address,
             amount: Long.fromString(fromAmountCoins.toFixed()),
             id,
-            slippageTolerance,
+            slippageTolerance: Math.round(slippageTolerance * 10),
             source: fromAssetId,
             target: toAssetId,
           }),

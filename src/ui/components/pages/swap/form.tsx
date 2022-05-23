@@ -27,12 +27,7 @@ import { SwapLayout } from './layout';
 import { SwapVendor } from 'swap/constants';
 import { getSwapVendorLogo } from 'swap/utils';
 
-const SLIPPAGE_TOLERANCE_OPTIONS = [
-  new BigNumber(0.1),
-  new BigNumber(0.5),
-  new BigNumber(1),
-  new BigNumber(3),
-];
+const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
 const KEEPER_FEE = new BigNumber(0.1);
 
@@ -48,7 +43,7 @@ export interface SwapParams {
   fromCoins: BigNumber;
   invoke: SwapClientInvokeParams;
   minReceivedCoins: BigNumber;
-  slippageTolerance: BigNumber;
+  slippageTolerance: number;
   toAssetId: string;
   toCoins: BigNumber;
   vendor: SwapVendor;
@@ -254,7 +249,7 @@ export function SwapForm({
       address: accountAddress,
       fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
       fromAssetId: fromAsset.id,
-      slippageTolerance: latestSlippageTolerance.toNumber() * 10,
+      slippageTolerance: latestSlippageTolerance,
       toAssetId: toAsset.id,
     });
   }, [accountAddress, fromAsset, swapClient, toAsset.id]);
