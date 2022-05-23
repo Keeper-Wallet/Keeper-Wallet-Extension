@@ -1,4 +1,3 @@
-import { BigNumber } from '@waves/bignumber';
 import { base64Encode } from '@waves/ts-lib-crypto';
 import Long from 'long';
 import * as protobuf from 'protobufjs/minimal';
@@ -8,7 +7,7 @@ protobuf.util.Long = Long;
 protobuf.configure();
 
 type SwapClientCallArg =
-  | { type: 'integer'; value: BigNumber }
+  | { type: 'integer'; value: string }
   | { type: 'binary'; value: string }
   | { type: 'string'; value: string }
   | { type: 'boolean'; value: boolean }
@@ -34,13 +33,13 @@ export type SwapClientResponse =
   | {
       type: 'data';
       priceImpact: number;
-      toAmountCoins: BigNumber;
+      toAmountCoins: string;
       tx: SwapClientInvokeTransaction;
     };
 
 interface SwapParams {
   address: string;
-  fromAmountCoins: BigNumber;
+  fromAmountCoins: string;
   fromAssetId: string;
   slippageTolerance: number;
   toAssetId: string;
@@ -65,7 +64,7 @@ function convertArg(
     case 'integerValue':
       return {
         type: 'integer',
-        value: new BigNumber(String(arg.integerValue)),
+        value: String(arg.integerValue),
       };
     case 'binaryValue':
       return {
@@ -132,7 +131,7 @@ export class SwapClient {
           response = {
             type: 'data',
             priceImpact: res.exchange.data.priceImpact,
-            toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+            toAmountCoins: String(res.exchange.data.amount),
             tx: {
               dApp: res.exchange.data.transaction.dApp,
               call: {
@@ -204,7 +203,7 @@ export class SwapClient {
         proto.Request.create({
           exchange: proto.Request.Exchange.create({
             address: address,
-            amount: Long.fromString(fromAmountCoins.toFixed()),
+            amount: Long.fromString(fromAmountCoins),
             id,
             slippageTolerance: Math.round(slippageTolerance * 10),
             source: fromAssetId,

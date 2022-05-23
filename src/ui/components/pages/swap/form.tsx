@@ -247,7 +247,7 @@ export function SwapForm({
 
     swapClient.setSwapParams({
       address: accountAddress,
-      fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
+      fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
       fromAssetId: fromAsset.id,
       slippageTolerance: latestSlippageTolerance,
       toAssetId: toAsset.id,
