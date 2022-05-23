@@ -1,26 +1,14 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-
-export type SwapAssetsCallArg =
-  | { type: 'integer'; value: BigNumber }
-  | { type: 'binary'; value: string }
-  | { type: 'string'; value: string }
-  | { type: 'boolean'; value: boolean }
-  | { type: 'list'; value: SwapAssetsCallArg[] };
-
-export interface SwapAssetsInvokeParams {
-  dApp: string;
-  function: string;
-  args: SwapAssetsCallArg[];
-}
+import { SwapClientInvokeParams } from 'swap/client/channelClient';
 
 export interface SwapAssetsParams {
   feeCoins: string;
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: string;
-  invoke: SwapAssetsInvokeParams;
+  invoke: SwapClientInvokeParams;
 }
 
 export interface SwapAssetsResult {

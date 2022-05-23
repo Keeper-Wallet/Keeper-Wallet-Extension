@@ -7,10 +7,10 @@ import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
-import { SwapAssetsInvokeParams } from 'controllers/SwapController';
 import {
   ExchangeChannelClient,
   ExchangeChannelErrorCode,
+  SwapClientInvokeParams,
 } from 'swap/client/channelClient';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
@@ -46,7 +46,7 @@ export interface SwapParams {
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: BigNumber;
-  invoke: SwapAssetsInvokeParams;
+  invoke: SwapClientInvokeParams;
   minReceivedCoins: BigNumber;
   slippageTolerance: BigNumber;
   toAssetId: string;
@@ -74,7 +74,7 @@ type ExchangeInfoVendorState =
     }
   | {
       type: 'data';
-      invoke: SwapAssetsInvokeParams;
+      invoke: SwapClientInvokeParams;
       priceImpact: number;
       toAmountTokens: BigNumber;
     };

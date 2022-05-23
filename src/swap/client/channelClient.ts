@@ -1,16 +1,25 @@
 import BigNumber from '@waves/bignumber';
 import { Asset } from '@waves/data-entities';
 import { base64Encode } from '@waves/ts-lib-crypto';
-import {
-  SwapAssetsCallArg,
-  SwapAssetsInvokeParams,
-} from 'controllers/SwapController';
 import Long from 'long';
 import * as protobuf from 'protobufjs/minimal';
 import { proto } from './channel.proto.compiled';
 
 protobuf.util.Long = Long;
 protobuf.configure();
+
+type SwapClientCallArg =
+  | { type: 'integer'; value: BigNumber }
+  | { type: 'binary'; value: string }
+  | { type: 'string'; value: string }
+  | { type: 'boolean'; value: boolean }
+  | { type: 'list'; value: SwapClientCallArg[] };
+
+export interface SwapClientInvokeParams {
+  dApp: string;
+  function: string;
+  args: SwapClientCallArg[];
+}
 
 export type ExchangeChannelErrorCode = proto.Response.Error.CODES;
 export const ExchangeChannelErrorCode = proto.Response.Error.CODES;
@@ -22,7 +31,7 @@ type ExchangeChannelResult =
     }
   | {
       type: 'data';
-      invoke: SwapAssetsInvokeParams;
+      invoke: SwapClientInvokeParams;
       priceImpact: number;
       toAmountCoins: BigNumber;
     };
@@ -49,7 +58,7 @@ type Subscriber = (
 
 function convertArg(
   arg: proto.Response.Exchange.Transaction.Argument
-): SwapAssetsCallArg {
+): SwapClientCallArg {
   switch (arg.value) {
     case 'integerValue':
       return {
