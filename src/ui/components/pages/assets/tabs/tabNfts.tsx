@@ -1,52 +1,15 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { useTranslation } from 'react-i18next';
-import { NftItem } from 'ui/components/pages/assets/nftItem';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { CSSProperties } from 'react';
 import { useAppSelector } from 'ui/store';
-import { CARD_FULL_HEIGHT, FULL_GROUP_HEIGHT, useNftFilter } from './helpers';
+import { useNftFilter } from './helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
-import { Asset } from '@waves/data-entities';
-
-const Row = ({
-  data,
-  index,
-  style,
-}: {
-  data: {
-    nftWithGroups: Array<{ groupName: string } | Asset>;
-    onInfoClick: (assetId: string) => void;
-    onSendClick: (assetId: string) => void;
-  };
-  index: number;
-  style: CSSProperties;
-}) => {
-  const { t } = useTranslation();
-  const { nftWithGroups, onInfoClick, onSendClick } = data;
-  const nftOrGroup = nftWithGroups[index];
-
-  return (
-    <div style={style}>
-      {'groupName' in nftOrGroup ? (
-        <div className={cn('basic500 margin-min', 'margin-min-top')}>
-          {t('assets.issuedBy', { issuer: nftOrGroup.groupName })}
-        </div>
-      ) : (
-        <NftItem
-          asset={nftOrGroup}
-          onInfoClick={onInfoClick}
-          onSendClick={onSendClick}
-        />
-      )}
-    </div>
-  );
-};
+import { NftsList } from 'nfts/nftsList';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -80,7 +43,7 @@ export function TabNfts({
     }
   }, [myNfts]);
 
-  const nftWithGroups = myNfts
+  const sortedNfts = myNfts
     ? myNfts
         .filter(
           nft =>
@@ -91,20 +54,6 @@ export function TabNfts({
           (a, b) =>
             (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
             (a.displayName ?? '').localeCompare(b.displayName ?? '')
-        )
-        .reduce<Array<AssetDetail | { groupName: string }>>(
-          (result, item, index, prevItems) => {
-            if (
-              item.issuer &&
-              (!prevItems[index - 1] ||
-                prevItems[index - 1].issuer !== item.issuer)
-            ) {
-              result.push({ groupName: item.issuer });
-            }
-            result.push(item);
-            return result;
-          },
-          []
         )
     : PLACEHOLDERS;
   return (
@@ -158,7 +107,7 @@ export function TabNfts({
           )}
         </Tooltip>
       </div>
-      {nftWithGroups.length === 0 ? (
+      {sortedNfts.length === 0 ? (
         <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
           {term || onlyMy ? (
             <>
@@ -172,33 +121,11 @@ export function TabNfts({
           )}
         </div>
       ) : (
-        <div className={styles.nftList}>
-          <AutoSizer>
-            {({ height, width }) => {
-              return (
-                <VariableSizeList
-                  ref={listRef}
-                  height={height}
-                  width={width}
-                  itemCount={nftWithGroups.length}
-                  itemSize={index =>
-                    'groupName' in nftWithGroups[index]
-                      ? FULL_GROUP_HEIGHT
-                      : CARD_FULL_HEIGHT
-                  }
-                  itemData={{ nftWithGroups, onInfoClick, onSendClick }}
-                  itemKey={(index, { nftWithGroups }) =>
-                    'groupName' in nftWithGroups[index]
-                      ? `g:${nftWithGroups[index].groupName}`
-                      : `a:${nftWithGroups[index].id}`
-                  }
-                >
-                  {Row}
-                </VariableSizeList>
-              );
-            }}
-          </AutoSizer>
-        </div>
+        <NftsList
+          sortedNfts={sortedNfts}
+          onInfoClick={onInfoClick}
+          onSendClick={onSendClick}
+        />
       )}
     </TabPanel>
   );

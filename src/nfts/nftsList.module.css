@@ -1,0 +1,29 @@
+.nftList {
+  flex-grow: 1;
+  margin-left: 14px;
+}
+
+.nftRow {
+  display: flex;
+  flex-basis: 50%;
+  gap: 8px;
+  margin-right: 8px;
+}
+
+.nftRow.noScroll {
+  margin-right: 14px;
+}
+
+.nftCard {
+  display: flex;
+  width: 170px;
+  height: 170px;
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  border-radius: 4px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
