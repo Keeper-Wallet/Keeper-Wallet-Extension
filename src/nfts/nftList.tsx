@@ -3,8 +3,8 @@ import { CSSProperties } from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { AssetDetail } from 'ui/services/Background';
-import { DuckNft } from 'nfts/duckNft';
-import * as styles from './nftsList.module.css';
+import { NftDuck } from 'nfts/nftDuck';
+import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 
@@ -26,13 +26,13 @@ const Row = ({
   return (
     <div style={style}>
       <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
-        <DuckNft
+        <NftDuck
           nft={rows[2 * index]}
           onInfoClick={onInfoClick}
           onSendClick={onSendClick}
         />
         {rows[2 * index + 1] && (
-          <DuckNft
+          <NftDuck
             nft={rows[2 * index + 1]}
             onInfoClick={onInfoClick}
             onSendClick={onSendClick}
@@ -43,7 +43,7 @@ const Row = ({
   );
 };
 
-export function NftsList({
+export function NftList({
   sortedNfts,
   onInfoClick,
   onSendClick,

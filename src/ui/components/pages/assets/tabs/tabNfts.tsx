@@ -9,7 +9,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
 import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
-import { NftsList } from 'nfts/nftsList';
+import { NftList } from 'nfts/nftList';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -121,7 +121,7 @@ export function TabNfts({
           )}
         </div>
       ) : (
-        <NftsList
+        <NftList
           sortedNfts={sortedNfts}
           onInfoClick={onInfoClick}
           onSendClick={onSendClick}
