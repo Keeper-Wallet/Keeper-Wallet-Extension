@@ -23,7 +23,7 @@ export interface SwapClientInvokeParams {
 export type SwapClientErrorCode = proto.Response.Error.CODES;
 export const SwapClientErrorCode = proto.Response.Error.CODES;
 
-type SwapClientResult =
+export type SwapClientResponse =
   | {
       type: 'error';
       code: SwapClientErrorCode;
@@ -47,12 +47,12 @@ interface SwapClientRequest extends SwapParams {
   id: string;
 }
 
-class SwapClientConnectionError {}
+export class SwapClientConnectionError {}
 
 type Subscriber = (
   err: SwapClientConnectionError | null,
   vendor?: string,
-  response?: SwapClientResult
+  response?: SwapClientResponse
 ) => void;
 
 function convertArg(
@@ -94,7 +94,7 @@ export class SwapClient {
   private closedByUser = false;
   private nextId = 1;
   private reconnectTimeout: number | null = null;
-  private subscriber: Subscriber | null = null;
+  private subscribers: Subscriber[] = [];
   private ws: WebSocket | null = null;
 
   private connect() {
@@ -112,7 +112,7 @@ export class SwapClient {
     };
 
     this.ws.onmessage = event => {
-      if (!this.activeRequest || !this.subscriber) {
+      if (!this.activeRequest) {
         return;
       }
 
@@ -124,23 +124,27 @@ export class SwapClient {
 
       switch (res.exchange.result) {
         case 'data':
-          this.subscriber(null, res.exchange.vendor, {
-            type: 'data',
-            invoke: {
-              dApp: res.exchange.data.transaction.dApp,
-              function: res.exchange.data.transaction.call.function,
-              args: res.exchange.data.transaction.call.arguments.map(
-                convertArg
-              ),
-            },
-            priceImpact: res.exchange.data.priceImpact,
-            toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+          this.subscribers.forEach(subscriber => {
+            subscriber(null, res.exchange.vendor, {
+              type: 'data',
+              invoke: {
+                dApp: res.exchange.data.transaction.dApp,
+                function: res.exchange.data.transaction.call.function,
+                args: res.exchange.data.transaction.call.arguments.map(
+                  convertArg
+                ),
+              },
+              priceImpact: res.exchange.data.priceImpact,
+              toAmountCoins: new BigNumber(String(res.exchange.data.amount)),
+            });
           });
           break;
         case 'error':
-          this.subscriber(null, res.exchange.vendor, {
-            type: 'error',
-            code: res.exchange.error.code,
+          this.subscribers.forEach(subscriber => {
+            subscriber(null, res.exchange.vendor, {
+              type: 'error',
+              code: res.exchange.error.code,
+            });
           });
           break;
         default:
@@ -162,9 +166,9 @@ export class SwapClient {
         return;
       }
 
-      if (this.subscriber) {
-        this.subscriber(new SwapClientConnectionError());
-      }
+      this.subscribers.forEach(subscriber => {
+        subscriber(new SwapClientConnectionError());
+      });
 
       this.reconnectTimeout = window.setTimeout(() => {
         this.connect();
@@ -173,7 +177,11 @@ export class SwapClient {
   }
 
   private send() {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (
+      this.ws &&
+      this.ws.readyState === WebSocket.OPEN &&
+      this.activeRequest
+    ) {
       const {
         address,
         fromAmountCoins,
@@ -208,10 +216,16 @@ export class SwapClient {
   }
 
   subscribe(subscriber: Subscriber) {
-    this.subscriber = subscriber;
+    if (this.subscribers.indexOf(subscriber) === -1) {
+      this.subscribers.push(subscriber);
+    }
 
     return () => {
-      this.subscriber = null;
+      const index = this.subscribers.indexOf(subscriber);
+
+      if (index !== -1) {
+        this.subscribers.splice(index, 1);
+      }
     };
   }
 
