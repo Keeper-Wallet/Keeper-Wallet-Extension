@@ -1,4 +1,4 @@
-.nftCard {
+.card {
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -9,4 +9,20 @@
   margin-bottom: 8px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.cover {
+  width: 170px;
+  height: 142px;
+  flex-grow: 1;
+  object-fit: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.footer {
+  padding: 8px;
+  line-height: 1em;
 }

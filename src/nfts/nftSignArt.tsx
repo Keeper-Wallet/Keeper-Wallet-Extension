@@ -1,9 +1,6 @@
 import { AssetDetail } from 'ui/services/Background';
 import * as React from 'react';
-import { NftCard } from 'nfts/nftCard';
-import cn from 'classnames';
-import * as styles from 'nfts/nftDuck.module.css';
-import { Loader } from 'ui/components/ui';
+import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
 
 const soldMask = /art_sold_(\d+)_of_(\d+)_(\w+)_(\w+)/i;
 
@@ -17,7 +14,6 @@ export function NftSignArt({
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  const [isLoading, setLoading] = React.useState(true);
   const [artwork, setArtwork] = React.useState<{
     name: string;
     description: string;
@@ -89,28 +85,14 @@ export function NftSignArt({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isVideo = artwork?.type.match(/ video\/\w+ /i);
-
   return (
     <NftCard>
-      {isVideo ? (
-        <video
-          autoPlay
-          loop
-          className={cn(styles.cover, isLoading && 'skeleton-glow')}
-        >
-          <source src={artwork.url} type="video/mp4" />
-        </video>
-      ) : (
-        <img
-          src={artwork && `https://ipfs.io/ipfs/${artwork?.cid}`}
-          className={cn(styles.cover, isLoading && 'skeleton-glow')}
-          onLoad={() => setLoading(false)}
-          onClick={() => onInfoClick(nft.id)}
-        />
-      )}
-
-      <div className={styles.footer}>{artwork?.name || <Loader />}</div>
+      <NftCover
+        src={artwork?.url}
+        isVideo={!!artwork?.cid.match(/\.mp4$/i)}
+        onClick={() => onInfoClick(nft.id)}
+      />
+      <NftFooter>{artwork?.name}</NftFooter>
     </NftCard>
   );
 }

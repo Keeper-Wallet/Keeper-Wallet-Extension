@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { AssetDetail } from 'ui/services/Background';
-import * as styles from 'nfts/ducks/duckCard.module.css';
-import { NftCard } from 'nfts/nftCard';
-import cn from 'classnames';
-import { Loader } from 'ui/components/ui';
+import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
 import { getNftInfo } from 'nfts/ducks/utils';
 
 export function DuckCard({
@@ -14,22 +11,17 @@ export function DuckCard({
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  const [isLoading, setLoading] = React.useState(true);
   const duck = getNftInfo(nft);
 
   return (
     <NftCard>
-      <img
+      <NftCover
         src={duck?.fgImage}
-        className={cn(styles.cover, isLoading && 'skeleton-glow')}
-        style={{
-          backgroundImage: duck?.bgImage,
-          backgroundColor: duck?.bgColor,
-        }}
-        onLoad={() => duck && setLoading(false)}
+        bgImage={duck?.bgImage}
+        bgColor={duck?.bgColor}
         onClick={() => onInfoClick(nft.id)}
       />
-      <div className={styles.footer}>{duck?.name || <Loader />}</div>
+      <NftFooter>{duck?.name}</NftFooter>
     </NftCard>
   );
 }
