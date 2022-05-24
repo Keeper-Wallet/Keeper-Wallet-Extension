@@ -1,11 +1,4 @@
-import * as React from 'react';
-import { AssetDetail } from 'ui/services/Background';
-import * as styles from './nftDuck.module.css';
-import { NftCard } from './nftCard';
-import cn from 'classnames';
-import { Loader } from 'ui/components/ui';
-
-const duckColors = {
+export const duckColors = {
   B: 'ADD8E6',
   R: 'FFA07A',
   Y: 'F8EE9D',
@@ -13,7 +6,7 @@ const duckColors = {
   U: 'CD6F86',
 };
 
-const duckGenerationNames = {
+export const duckGenerationNames = {
   H: 'Hero',
   I: 'Ideal',
   J: 'Jackpot',
@@ -25,7 +18,7 @@ const duckGenerationNames = {
   G: 'Genesis',
 };
 
-const Ducks = {
+export const duckNames = {
   AAAAAAAA: { name: 'Elon' },
   BBBBBBBB: { name: 'Satoshi' },
   CCCCCCCC: { name: 'Doge' },
@@ -101,54 +94,3 @@ const Ducks = {
   T: ['Xmax '],
   W: ['S', 'a', 's', 'h', 'a', 'g', 'o', 'd'],
 };
-
-function generateName(genotype: string): string {
-  const name = genotype
-    .split('')
-    .map((gene, index) => Ducks[gene]?.[index])
-    .join('')
-    .toLowerCase();
-  return name.charAt(0).toUpperCase() + name.substring(1, name.length);
-}
-
-export function NftDuck({
-  nft,
-  onInfoClick,
-}: {
-  nft: AssetDetail;
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
-}) {
-  const [isLoading, setLoading] = React.useState(true);
-
-  const [, genoType, generationColor] = nft.name.split('-');
-  // const generation = generationColor[0];
-  // const generationName = duckGenerationNames[generation] ?? generation;
-  const duckName = Ducks[genoType]
-    ? Ducks[genoType].name
-    : generateName(genoType);
-  const color = generationColor[1];
-
-  const backgroundColor = `#${duckColors[color]}`;
-  const imageUrl = `https://wavesducks.com/api/v1/ducks/${genoType}.svg?color=${color}`;
-
-  const backgroundImage =
-    genoType === 'WWWWLUCK' &&
-    'url("https://wavesducks.com/ducks/pokras-background.svg")';
-
-  return (
-    <NftCard>
-      <img
-        src={imageUrl}
-        className={cn(styles.cover, isLoading && 'skeleton-glow')}
-        style={{
-          backgroundImage,
-          backgroundColor,
-        }}
-        onLoad={() => setLoading(false)}
-        onClick={() => onInfoClick(nft.id)}
-      />
-      <div className={styles.footer}>{duckName || <Loader />}</div>
-    </NftCard>
-  );
-}

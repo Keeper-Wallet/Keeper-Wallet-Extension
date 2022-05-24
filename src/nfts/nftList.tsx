@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { AssetDetail } from 'ui/services/Background';
-import { NftDuck } from 'nfts/nftDuck';
+import { DuckCard } from 'nfts/ducks/duckCard';
 import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
@@ -13,7 +13,7 @@ function getNftComponent(nft: AssetDetail) {
   if (nft.issuer === '3PDBLdsUrcsiPxNbt8g2gQVoefKgzt3kJzV') {
     return NftSignArt;
   }
-  return NftDuck;
+  return DuckCard;
 }
 
 const Row = ({
