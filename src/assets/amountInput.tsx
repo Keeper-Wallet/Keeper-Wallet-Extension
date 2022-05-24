@@ -98,6 +98,7 @@ export function AssetAmountInput({
           <button
             className={styles.balanceValue}
             disabled={!onBalanceClick}
+            type="button"
             onClick={onBalanceClick}
           >
             {balance.getTokens().toFixed()}
