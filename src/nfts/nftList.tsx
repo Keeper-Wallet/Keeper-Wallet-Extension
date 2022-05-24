@@ -3,17 +3,27 @@ import { CSSProperties } from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { AssetDetail } from 'ui/services/Background';
-import { DuckCard } from 'nfts/ducks/duckCard';
 import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
-import { NftSignArt } from 'nfts/nftSignArt';
+import { signArtDApp } from 'nfts/signArt/constants';
+import { SignArtCard } from 'nfts/signArt/signArtCard';
+import { ducksDApps } from 'nfts/ducks/constants';
+import { DuckCard } from 'nfts/ducks/duckCard';
+import { UnknownCard } from 'nfts/unknown/unknownCard';
 
-function getNftComponent(nft: AssetDetail) {
-  if (nft.issuer === '3PDBLdsUrcsiPxNbt8g2gQVoefKgzt3kJzV') {
-    return NftSignArt;
+function getNftCard(nft: AssetDetail) {
+  if (!nft?.id) {
+    return;
   }
-  return DuckCard;
+  if (nft?.issuer === signArtDApp) {
+    return SignArtCard;
+  }
+  if (ducksDApps.includes(nft?.issuer)) {
+    return DuckCard;
+  }
+
+  return UnknownCard;
 }
 
 const Row = ({
@@ -33,10 +43,10 @@ const Row = ({
   const { rows, len, onInfoClick, onSendClick } = data;
 
   const leftIndex = 2 * index;
-  const LeftNft = getNftComponent(rows[leftIndex]);
+  const LeftNft = getNftCard(rows[leftIndex]);
 
   const rightIndex = leftIndex + 1;
-  const RightNft = getNftComponent(rows[rightIndex]);
+  const RightNft = getNftCard(rows[rightIndex]);
 
   return (
     <div style={style}>
