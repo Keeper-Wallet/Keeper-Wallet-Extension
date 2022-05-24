@@ -1,0 +1,6 @@
+export const signArtDApp = '3PDBLdsUrcsiPxNbt8g2gQVoefKgzt3kJzV';
+
+const nodeUrl = 'https://nodes-keeper.wavesnodes.com'; // todo getNetwork()
+export const signArtUrl = nodeUrl + `/addresses/data/${signArtDApp}`;
+
+export const soldMask = /art_sold_(\d+)_of_(\d+)_(\w+)_(\w+)/i;

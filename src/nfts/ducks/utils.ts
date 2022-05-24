@@ -2,6 +2,7 @@ import {
   duckColors,
   duckGenerationNames,
   duckNames,
+  ducksDApps,
 } from 'nfts/ducks/constants';
 import { AssetDetail } from 'ui/services/Background';
 
@@ -17,7 +18,7 @@ interface DuckInfo {
 }
 
 export function getNftInfo(nft: AssetDetail): DuckInfo | null {
-  if (!nft.id) {
+  if (!nft?.id || !ducksDApps.includes(nft?.issuer)) {
     return null;
   }
 

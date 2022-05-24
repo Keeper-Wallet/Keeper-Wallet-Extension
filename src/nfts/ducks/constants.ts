@@ -94,3 +94,8 @@ export const duckNames = {
   T: ['Xmax '],
   W: ['S', 'a', 's', 'h', 'a', 'g', 'o', 'd'],
 };
+
+export const ducksDApps = [
+  '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb',
+  '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv',
+];
