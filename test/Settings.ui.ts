@@ -243,7 +243,7 @@ describe('Settings', function () {
           resolutionTimeSelect = this.driver.findElement(
             By.xpath(
               "//div[contains(@class, '-settings-selectTime')]" +
-                "//div[contains(@class, '-index-selectInput')]"
+                "//div[contains(@class, '-Select-module-trigger')]"
             )
           );
           spendingLimitInput = this.driver.findElement(
@@ -258,7 +258,9 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem-')][last()]")
+                By.xpath(
+                  "//div[contains(@class, '-Select-module-item')][last()]"
+                )
               ),
               this.wait
             )
@@ -291,7 +293,7 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem-')]")
+                By.xpath("//div[contains(@class, '-Select-module-item')]")
               ),
               this.wait
             )
@@ -459,7 +461,7 @@ describe('Settings', function () {
             .findElement(
               By.xpath(
                 "//div[contains(@class, '-settings-selectTime')]" +
-                  "//div[contains(@class, '-index-selectInput')]"
+                  "//div[contains(@class, '-Select-module-trigger')]"
               )
             )
             .click();
@@ -467,7 +469,9 @@ describe('Settings', function () {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-index-listItem-')][last()]")
+                By.xpath(
+                  "//div[contains(@class, '-Select-module-item')][last()]"
+                )
               ),
               this.wait
             )

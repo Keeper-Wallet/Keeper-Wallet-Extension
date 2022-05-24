@@ -325,7 +325,7 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-index-selectInput')]")
+          By.xpath("//div[contains(@class, '-Select-module-trigger')]")
         ),
         this.wait
       )
@@ -335,7 +335,9 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath(`//div[contains(@class, '-index-listItem-')][${position}]`)
+          By.xpath(
+            `//div[contains(@class, '-Select-module-item')][${position}]`
+          )
         ),
         this.wait
       )
