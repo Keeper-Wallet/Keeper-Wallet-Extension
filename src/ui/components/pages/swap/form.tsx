@@ -11,7 +11,7 @@ import {
   SwapClient,
   SwapClientErrorCode,
   SwapClientInvokeTransaction,
-} from 'swap/client';
+} from '@keeper-wallet/swap-client';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
@@ -189,17 +189,7 @@ export function SwapForm({
     exchangeInfoInitialState
   );
 
-  const [swapClient, setSwapClient] = React.useState<SwapClient | null>(null);
-
-  React.useEffect(() => {
-    const client = new SwapClient();
-
-    setSwapClient(client);
-
-    return () => {
-      client.close();
-    };
-  }, []);
+  const [swapClient] = React.useState(() => new SwapClient());
 
   const latestFromAmountValueRef = React.useRef(fromAmountValue);
 
@@ -247,7 +237,7 @@ export function SwapForm({
 
     swapClient.setSwapParams({
       address: accountAddress,
-      fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
+      amountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
       fromAssetId: fromAsset.id,
       slippageTolerance: latestSlippageTolerance,
       toAssetId: toAsset.id,
@@ -259,44 +249,44 @@ export function SwapForm({
       return;
     }
 
-    const unsubscribe = swapClient.subscribe((err, vendor, response) => {
-      if (err) {
+    const unsubscribe = swapClient.subscribe({
+      onError: () => {
         setExchangeInfo(exchangeInfoInitialState);
         setSwapClientError(t('swap.exchangeChannelConnectionError'));
-        return;
-      }
+      },
+      onData: (vendor, response) => {
+        setSwapClientError(null);
 
-      setSwapClientError(null);
+        const typedVendor = vendor as SwapVendor;
 
-      const typedVendor = vendor as SwapVendor;
+        if (!Object.values(SwapVendor).includes(typedVendor)) {
+          return;
+        }
 
-      if (!Object.values(SwapVendor).includes(typedVendor)) {
-        return;
-      }
+        let vendorState: ExchangeInfoVendorState;
 
-      let vendorState: ExchangeInfoVendorState;
+        if (response.type === 'error') {
+          vendorState = {
+            type: 'error',
+            code: response.code,
+          };
+        } else {
+          vendorState = {
+            type: 'data',
+            priceImpact: response.priceImpact,
+            toAmountTokens: new Money(
+              response.amountCoins,
+              toAsset
+            ).getTokens(),
+            tx: response.tx,
+          };
+        }
 
-      if (response.type === 'error') {
-        vendorState = {
-          type: 'error',
-          code: response.code,
-        };
-      } else {
-        vendorState = {
-          type: 'data',
-          priceImpact: response.priceImpact,
-          toAmountTokens: new Money(
-            response.toAmountCoins,
-            toAsset
-          ).getTokens(),
-          tx: response.tx,
-        };
-      }
-
-      setExchangeInfo(prevState => ({
-        ...prevState,
-        [typedVendor]: vendorState,
-      }));
+        setExchangeInfo(prevState => ({
+          ...prevState,
+          [typedVendor]: vendorState,
+        }));
+      },
     });
 
     return unsubscribe;
