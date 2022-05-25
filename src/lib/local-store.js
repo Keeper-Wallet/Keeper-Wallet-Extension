@@ -1,6 +1,47 @@
 const extension = require('extensionizer');
 const log = require('loglevel');
 
+const CONTROLLERS_STATE = {
+  AssetInfoController: ['assets'],
+  CurrentAccountController: ['balances'],
+  IdentityController: ['cognitoSessions'],
+  IdleController: ['lastUpdateIdle'],
+  MessageController: ['messages'],
+  NetworkController: [
+    'currentNetwork',
+    'customNodes',
+    'customMatchers',
+    'customCodes',
+  ],
+  NotificationsController: ['notifications'],
+  PermissionsController: ['origins', 'blacklist', 'whitelist', 'inPending'],
+  PreferencesController: [
+    'currentLocale',
+    'idleOptions',
+    'accounts',
+    'currentNetworkAccounts',
+    'selectedAccount',
+  ],
+  RemoteConfigController: [
+    'blacklist',
+    'whitelist',
+    'config',
+    'ignoreErrorsConfig',
+    'identityConfig',
+    'status',
+  ],
+  StatisticsController: [
+    'lastIdleKeeper',
+    'lastInstallKeeper',
+    'lastOpenKeeper',
+    'userId',
+  ],
+  TrashController: ['data'],
+  UiStateController: ['uiState'],
+  VaultController: ['locked', 'initialized'],
+  WalletController: ['vault'],
+};
+
 /**
  * A wrapper around the extension's storage local API
  */
@@ -13,6 +54,34 @@ module.exports = class ExtensionStore {
     if (!this.isSupported) {
       log.error('Storage local API not available.');
     }
+  }
+
+  /**
+   * Returns all of the keys currently saved
+   * @return {Promise<*>}
+   */
+  async reverseMigrate() {
+    const state = await this._get();
+
+    if (!state.migrationVersion) {
+      return;
+    }
+
+    await this._set(
+      Object.entries(CONTROLLERS_STATE).reduce(
+        (acc, [controller, fields]) => ({
+          ...acc,
+          [controller]: fields.reduce(
+            (controllerAcc, field) => ({
+              ...controllerAcc,
+              [field]: state[field],
+            }),
+            {}
+          ),
+        }),
+        {}
+      )
+    );
   }
 
   /**
