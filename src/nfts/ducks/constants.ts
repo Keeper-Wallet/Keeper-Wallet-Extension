@@ -99,3 +99,5 @@ export const ducksDApps = [
   '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb',
   '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv',
 ];
+
+export const ducksApiUrl = 'https://wavesducks.com/api/v1/ducks/';

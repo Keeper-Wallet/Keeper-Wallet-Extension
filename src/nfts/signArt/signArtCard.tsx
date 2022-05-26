@@ -1,7 +1,8 @@
 import { AssetDetail } from 'ui/services/Background';
 import * as React from 'react';
 import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
-import { getNftInfo, SignArtInfo } from 'nfts/signArt/utils';
+import { fetchSignArt, SignArtInfo } from 'nfts/signArt/utils';
+import { ipfsUrl } from 'nfts/signArt/constants';
 
 const cache = {};
 
@@ -17,7 +18,7 @@ export function SignArtCard({
 
   React.useEffect(() => {
     if (!Object.hasOwnProperty.call(cache, nft.id)) {
-      cache[nft.id] = getNftInfo(nft);
+      cache[nft.id] = fetchSignArt(nft);
     }
 
     cache[nft.id].then(details => {
@@ -28,7 +29,7 @@ export function SignArtCard({
   return (
     <NftCard>
       <NftCover
-        src={signArt?.fgImage}
+        src={signArt && ipfsUrl + signArt.fgImage}
         isVideo={signArt?.isVideo}
         onClick={() => onInfoClick(nft.id)}
       />

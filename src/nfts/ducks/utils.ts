@@ -6,7 +6,8 @@ import {
 } from 'nfts/ducks/constants';
 import { AssetDetail } from 'ui/services/Background';
 
-interface DuckInfo {
+export interface DuckInfo {
+  id: string;
   genoType: string;
   generation: string;
   generationName: string;
@@ -17,7 +18,14 @@ interface DuckInfo {
   fgImage: string;
 }
 
-export function getNftInfo(nft: AssetDetail): DuckInfo | null {
+export async function fetchAllDucks(nfts: AssetDetail[]): Promise<DuckInfo[]> {
+  if (nfts.length === 0) {
+    return [];
+  }
+  return Promise.all(nfts.map(fetchDuck));
+}
+
+export async function fetchDuck(nft: AssetDetail): Promise<DuckInfo | null> {
   if (!nft?.id || !ducksDApps.includes(nft?.issuer)) {
     return null;
   }
@@ -33,9 +41,10 @@ export function getNftInfo(nft: AssetDetail): DuckInfo | null {
   const bgImage =
     genoType === 'WWWWLUCK' &&
     'url("https://wavesducks.com/ducks/pokras-background.svg")';
-  const fgImage = `https://wavesducks.com/api/v1/ducks/${genoType}.svg?color=${color}`;
+  const fgImage = `${genoType}.svg?color=${color}`;
 
   return {
+    id: nft.id,
     genoType,
     generation,
     generationName,

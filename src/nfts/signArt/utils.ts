@@ -1,7 +1,8 @@
 import { AssetDetail } from 'ui/services/Background';
-import { signArtDApp, signArtUrl, soldMask } from 'nfts/signArt/constants';
+import { signArtDApp, signArtUrl } from 'nfts/signArt/constants';
 
 export interface SignArtInfo {
+  id: string;
   name: string;
   description: string;
   type: string;
@@ -9,37 +10,40 @@ export interface SignArtInfo {
   fgImage: string;
 }
 
-export async function getNftInfo(
-  nft: AssetDetail
-): Promise<SignArtInfo | null> {
-  if (!nft?.id || nft?.issuer !== signArtDApp) {
-    return null;
+export const artworkInfoMask = /art_sold_\d+_of_\d+_(\w+)_(\w+)/i;
+
+export async function fetchAllSignArts(
+  nfts: AssetDetail[]
+): Promise<SignArtInfo[]> {
+  if (nfts.length === 0) {
+    return [];
   }
 
-  return fetch(
-    signArtUrl +
-      '?' +
-      new URLSearchParams({
-        key: `nft_${nft.id}`,
-      }).toString()
-  )
+  const nftIds = nfts.map(nft => nft.id);
+
+  return fetch(signArtUrl, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      keys: nftIds.map(id => `nft_${id}`),
+    }),
+  })
     .then(response =>
       response.ok
         ? response.json()
         : response.text().then(text => Promise.reject(new Error(text)))
     )
-    .then(entries => {
-      const value = entries && entries[0].value;
-      const [, num, total, artworkId, creator] = value.match(soldMask);
-
-      return {
-        num,
-        total,
-        artworkId,
-        creator,
-      };
-    })
-    .then(info =>
+    .then(entries =>
+      nftIds.map((id, index) => {
+        const value = entries && entries[index].value;
+        const [, artworkId, creator] = value.match(artworkInfoMask);
+        return { artworkId, creator };
+      })
+    )
+    .then(artworks =>
       fetch(signArtUrl, {
         method: 'POST',
         headers: {
@@ -47,12 +51,15 @@ export async function getNftInfo(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          keys: [
-            `art_name_${info.artworkId}_${info.creator}`,
-            `art_desc_${info.artworkId}_${info.creator}`,
-            `art_display_cid_${info.artworkId}_${info.creator}`,
-            `art_type_${info.artworkId}_${info.creator}`,
-          ],
+          keys: nftIds.flatMap((id, index) => {
+            const info = artworks[index];
+            return [
+              `art_name_${info.artworkId}_${info.creator}`,
+              `art_desc_${info.artworkId}_${info.creator}`,
+              `art_display_cid_${info.artworkId}_${info.creator}`,
+              `art_type_${info.artworkId}_${info.creator}`,
+            ];
+          }),
         }),
       })
     )
@@ -61,12 +68,32 @@ export async function getNftInfo(
         ? response.json()
         : response.text().then(text => Promise.reject(new Error(text)))
     )
-    .then(keys => ({
-      name: keys[0].value,
-      description: keys[1].value,
-      fgImage: `https://ipfs.io/ipfs/${keys[2]?.value}`,
-      type: keys[3].value,
-      isVideo: !!keys[2].value.match(/\.mp4$/i),
-      cid: keys[2].value,
-    }));
+    .then(artworksEntries =>
+      nftIds.map((id, index) => {
+        const entriesPerAsset = 4;
+        const artName = artworksEntries[entriesPerAsset * index];
+        const artDesc = artworksEntries[entriesPerAsset * index + 1];
+        const artDisplayCid = artworksEntries[entriesPerAsset * index + 2];
+        const artType = artworksEntries[entriesPerAsset * index + 3];
+
+        return {
+          id,
+          name: artName.value,
+          description: artDesc.value,
+          type: artType.value,
+          isVideo: !!artDisplayCid.value.match(/\.mp4$/i),
+          fgImage: `${artDisplayCid.value}`,
+        };
+      }, [])
+    );
+}
+
+export async function fetchSignArt(
+  nft: AssetDetail
+): Promise<SignArtInfo | null> {
+  if (!nft?.id || nft?.issuer !== signArtDApp) {
+    return null;
+  }
+
+  return fetchAllSignArts([nft]).then(details => details[0]);
 }
