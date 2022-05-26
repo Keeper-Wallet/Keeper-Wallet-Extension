@@ -95,6 +95,7 @@ const assetTickers = {
   '4kwKSf4Bx2Wq8YxKnVZBhcEHyXzEtJ2pw7ixfJgirwf2': 'MUNDO',
   '2x8vsNgrBgLq9GWpnTNSVXTGq3cMLSvWWepR8CX36fVZ': 'MUNDO',
   '5NmV5VAhkqormdwvaQjE54yPEkNwSRtcXxhLkJbVQqkN': 'NGNN',
+  H6CwbwXMRKRw6jb1dRUMVs2N6Sdg2wQcXPRaRkjZSjYU: 'NGNT',
   '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': 'NSBT',
   '5nk9JW8yRonyNBEwhChoksLxpBECVxbVLqaNuQs9EJn1': 'PESOLATINO',
   '5JQ8yUY4vnB19s4bXSGVYsNEyA9Bag6jbMtVEgFHvYM7': 'PESOLATINO',
