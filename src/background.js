@@ -129,6 +129,7 @@ extension.runtime.onInstalled.addListener(async details => {
 async function setupBackgroundService() {
   // Background service init
   const localStore = new LocalStore();
+  await localStore.migrate();
   const initState = await localStore.get();
   const initLangCode = await getFirstLangCode();
   const backgroundService = new BackgroundService({

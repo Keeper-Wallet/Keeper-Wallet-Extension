@@ -1,0 +1,20 @@
+name: Pull reverse migrations
+on: create
+
+jobs:
+  pull-reverse-migrations:
+    if: ${{ contains(github.ref, 'release-') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Pull reverse migrations
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          PREVIOUS_VERSION=$(git ls-remote --tags --refs origin | tail -n1 | cut -d/ -f3 | sed -e 's/^v//')
+          if [[ PREVIOUS_VERSION > VERSION ]]; then
+            git remote set-url origin ${{ secrets.ssh }}
+            git checkout tags/v$(PREVIOUS_VERSION) -- src/lib/reverseMigrations.ts
+            git add .
+            git commit -m "Pull reverse migrations"
+            git push
+          fi

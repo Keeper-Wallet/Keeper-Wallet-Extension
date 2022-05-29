@@ -1,5 +1,8 @@
 const extension = require('extensionizer');
 const log = require('loglevel');
+const { REVERSE_MIGRATIONS } = require('lib/reverseMigrations');
+
+const CURRENT_MIGRATION_VERSION = 0;
 
 /**
  * A wrapper around the extension's storage local API
@@ -38,6 +41,24 @@ module.exports = class ExtensionStore {
    */
   async set(state) {
     return this._set(state);
+  }
+
+  async migrate() {
+    const { migrationVersion } = await this._get();
+    const version = migrationVersion || 0;
+
+    await this._set({
+      migrationVersion: CURRENT_MIGRATION_VERSION,
+    });
+
+    if (version > CURRENT_MIGRATION_VERSION) {
+      for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
+        const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
+        if (reverseMigrate) {
+          await reverseMigrate(this);
+        }
+      }
+    }
   }
 
   /**
