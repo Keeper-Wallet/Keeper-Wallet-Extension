@@ -2,6 +2,8 @@ import { Account, NetworkName } from 'accounts/types';
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
 import { TransactionFromNode } from '@waves/ts-types';
+import { DuckInfo } from 'nfts/ducks/utils';
+import { SignArtInfo } from 'nfts/signArt/utils';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -148,6 +150,11 @@ export const usdPrices = createSimpleReducer<Record<string, string>>(
 export const addresses = createSimpleReducer<Record<string, string>>(
   {},
   ACTION.UPDATE_ADDRESSES
+);
+
+export const nfts = createSimpleReducer<Record<string, DuckInfo | SignArtInfo>>(
+  {},
+  ACTION.UPDATE_NFTS
 );
 
 export const backTabs = (

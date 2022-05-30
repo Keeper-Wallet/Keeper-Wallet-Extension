@@ -10,6 +10,7 @@ export class CurrentAccountController {
   constructor({
     localStore,
     assetInfoController,
+    nftInfoController,
     getNetworkConfig,
     getAccounts,
     getNetwork,
@@ -25,6 +26,7 @@ export class CurrentAccountController {
     localStore.subscribe(this.store);
 
     this.assetInfoController = assetInfoController;
+    this.nftInfoController = nftInfoController;
     this.getNetworkConfig = getNetworkConfig;
     this.getAccounts = getAccounts;
     this.getNetwork = getNetwork;
@@ -141,6 +143,7 @@ export class CurrentAccountController {
               );
 
             await this.assetInfoController.updateAssets(fetchAssetIds);
+            await this.nftInfoController.updateNfts(myNfts);
           }
 
           const available = new BigNumber(wavesBalances.available);

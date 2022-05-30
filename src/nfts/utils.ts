@@ -12,6 +12,7 @@ import {
 import { signArtDApp } from 'nfts/signArt/constants';
 import { ducksDApps } from 'nfts/ducks/constants';
 import { BigNumber } from '@waves/bignumber';
+import { NftDetails } from 'controllers/NftInfoController';
 
 type NftType = 'ducks' | 'sign-art' | 'unknown';
 
@@ -36,7 +37,7 @@ export function nftType(nft: AssetDetail): NftType {
 }
 
 export async function fetchNftInfo(
-  nft: AssetDetail
+  nft: NftDetails
 ): Promise<SignArtInfo | DuckInfo | null> {
   switch (this.nftType(nft)) {
     case 'ducks':
@@ -46,7 +47,9 @@ export async function fetchNftInfo(
   }
 }
 
-export async function fetchAllNfts(nfts: AssetDetail[]) {
+export async function fetchAllNfts(
+  nfts: NftDetails[]
+): Promise<Array<DuckInfo | SignArtInfo>> {
   const ducks = [];
   const signArts = [];
 

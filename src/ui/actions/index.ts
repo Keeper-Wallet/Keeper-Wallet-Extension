@@ -9,6 +9,7 @@ export * from './addresses';
 export * from './assets';
 export * from './account';
 export * from './menu';
+export * from './nfts';
 export * from './messages';
 export * from './pairing';
 export * from './permissions';

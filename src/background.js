@@ -15,6 +15,7 @@ import {
   IdleController,
   MessageController,
   NetworkController,
+  NftInfoController,
   NotificationsController,
   PERMISSIONS,
   PermissionsController,
@@ -339,6 +340,13 @@ class BackgroundService extends EventEmitter {
       getNode: this.networkController.getNode.bind(this.networkController),
     });
 
+    this.nftInfoController = new NftInfoController({
+      initState: initState.NftInfoController,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+    });
+
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
       localStore: this.localStore,
@@ -358,6 +366,7 @@ class BackgroundService extends EventEmitter {
       ),
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
       assetInfoController: this.assetInfoController,
+      nftInfoController: this.nftInfoController,
     });
 
     this.txinfoController = new TxInfoController({

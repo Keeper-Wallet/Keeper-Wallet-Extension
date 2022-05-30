@@ -1,8 +1,9 @@
-import { AssetDetail } from 'ui/services/Background';
 import { signArtDApp, signArtUrl } from 'nfts/signArt/constants';
+import { NftDetails } from 'controllers/NftInfoController';
 
 export interface SignArtInfo {
   id: string;
+  vendor: 'sign-art';
   name: string;
   description: string;
   type: string;
@@ -13,13 +14,13 @@ export interface SignArtInfo {
 export const artworkInfoMask = /art_sold_\d+_of_\d+_(\w+)_(\w+)/i;
 
 export async function fetchAllSignArts(
-  nfts: AssetDetail[]
+  nfts: NftDetails[]
 ): Promise<SignArtInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
 
-  const nftIds = nfts.map(nft => nft.id);
+  const nftIds = nfts.map(nft => nft.assetId);
 
   return fetch(signArtUrl, {
     method: 'POST',
@@ -78,20 +79,21 @@ export async function fetchAllSignArts(
 
         return {
           id,
+          vendor: 'sign-art',
           name: artName.value,
           description: artDesc.value,
           type: artType.value,
           isVideo: !!artDisplayCid.value.match(/\.mp4$/i),
-          fgImage: `${artDisplayCid.value}`,
+          fgImage: artDisplayCid.value,
         };
       }, [])
     );
 }
 
 export async function fetchSignArt(
-  nft: AssetDetail
+  nft: NftDetails
 ): Promise<SignArtInfo | null> {
-  if (!nft?.id || nft?.issuer !== signArtDApp) {
+  if (!nft?.assetId || nft?.issuer !== signArtDApp) {
     return null;
   }
 

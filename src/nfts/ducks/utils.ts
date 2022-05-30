@@ -4,10 +4,11 @@ import {
   duckNames,
   ducksDApps,
 } from 'nfts/ducks/constants';
-import { AssetDetail } from 'ui/services/Background';
+import { NftDetails } from 'controllers/NftInfoController';
 
 export interface DuckInfo {
   id: string;
+  vendor: 'ducks';
   genoType: string;
   generation: string;
   generationName: string;
@@ -18,24 +19,22 @@ export interface DuckInfo {
   fgImage: string;
 }
 
-export async function fetchAllDucks(nfts: AssetDetail[]): Promise<DuckInfo[]> {
+export async function fetchAllDucks(nfts: NftDetails[]): Promise<DuckInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
   return Promise.all(nfts.map(fetchDuck));
 }
 
-export async function fetchDuck(nft: AssetDetail): Promise<DuckInfo | null> {
-  if (!nft?.id || !ducksDApps.includes(nft?.issuer)) {
+export async function fetchDuck(nft: NftDetails): Promise<DuckInfo | null> {
+  if (!nft?.assetId || !ducksDApps.includes(nft?.issuer)) {
     return null;
   }
 
   const [, genoType, generationColor] = nft.name.split('-');
   const generation = generationColor[0];
-  const generationName = duckGenerationNames[generation] ?? generation;
-  const name = duckNames[genoType]
-    ? duckNames[genoType].name
-    : generateName(genoType);
+  const generationName = getGenerationName(generation);
+  const name = getName(genoType);
   const color = generationColor[1];
   const bgColor = color && `#${duckColors[color]}`;
   const bgImage =
@@ -44,7 +43,8 @@ export async function fetchDuck(nft: AssetDetail): Promise<DuckInfo | null> {
   const fgImage = `${genoType}.svg?color=${color}`;
 
   return {
-    id: nft.id,
+    id: nft.assetId,
+    vendor: 'ducks',
     genoType,
     generation,
     generationName,
@@ -54,6 +54,16 @@ export async function fetchDuck(nft: AssetDetail): Promise<DuckInfo | null> {
     bgImage,
     fgImage,
   };
+}
+
+function getGenerationName(generation: string): string {
+  return duckGenerationNames[generation] ?? generation;
+}
+
+function getName(genoType: string): string {
+  return duckNames[genoType]
+    ? duckNames[genoType].name
+    : generateName(genoType);
 }
 
 function generateName(genotype: string): string {

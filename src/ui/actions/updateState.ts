@@ -2,6 +2,8 @@ import { UiStore } from '../store';
 import { ACTION } from './constants';
 import { equals } from 'ramda';
 import { AssetDetail } from '../services/Background';
+import { DuckInfo } from 'nfts/ducks/utils';
+import { SignArtInfo } from 'nfts/signArt/utils';
 
 function getParam<S>(param: S, defaultParam: S) {
   if (param) {
@@ -19,6 +21,7 @@ interface Account {
 interface UpdateStateInput {
   addresses: Record<string, string>;
   assets: Record<string, Record<string, AssetDetail>>;
+  nfts: Record<string, Record<string, DuckInfo | SignArtInfo>>;
   accounts?: Account[];
   balances?: Record<
     string,
@@ -262,6 +265,14 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.UPDATE_ADDRESSES,
         payload: addresses,
+      });
+    }
+
+    const nfts = getParam(state.nfts, {});
+    if (nfts && !equals(nfts, currentState.nfts)) {
+      store.dispatch({
+        type: ACTION.UPDATE_NFTS,
+        payload: nfts,
       });
     }
   };
