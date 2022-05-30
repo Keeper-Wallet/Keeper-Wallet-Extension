@@ -40,7 +40,13 @@ export async function fetchDuck(nft: NftDetails): Promise<DuckInfo | null> {
   const bgImage =
     genoType === 'WWWWLUCK' &&
     'url("https://wavesducks.com/ducks/pokras-background.svg")';
-  const fgImage = `${genoType}.svg?color=${color}`;
+  const hasDruckGenes = genoType.indexOf('I') !== -1;
+  const druck = hasDruckGenes
+    ? assetIdAsFloat(nft.assetId) > 0.5
+      ? '1'
+      : '2'
+    : null;
+  const fgImage = `${genoType}.svg?color=${color}&druck=${druck}`;
 
   return {
     id: nft.assetId,
@@ -73,4 +79,14 @@ function generateName(genotype: string): string {
     .join('')
     .toLowerCase();
   return name.charAt(0).toUpperCase() + name.substring(1, name.length);
+}
+
+function assetIdAsFloat(assetId: string): number {
+  let i = 0;
+  let hash = 0;
+  if (!assetId) return 0;
+  while (i < assetId.length)
+    hash = (hash << 5) + hash + assetId.charCodeAt(i++);
+
+  return Math.abs(((hash * 10) % 0x7fffffff) / 0x7fffffff);
 }

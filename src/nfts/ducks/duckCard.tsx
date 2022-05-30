@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { AssetDetail } from 'ui/services/Background';
 import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
-import { DuckInfo, fetchDuck } from 'nfts/ducks/utils';
 import { ducksApiUrl } from 'nfts/ducks/constants';
+import { useAppSelector } from 'ui/store';
 
 export function DuckCard({
   nft,
@@ -12,21 +12,17 @@ export function DuckCard({
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  const [duck, setDuck] = React.useState<DuckInfo>();
-
-  React.useEffect(() => {
-    fetchDuck(nft).then(setDuck);
-  }, [nft]);
+  const nftInfo = useAppSelector(state => state.nfts[nft.id]);
 
   return (
     <NftCard>
       <NftCover
-        src={duck && ducksApiUrl + duck.fgImage}
-        bgImage={duck?.bgImage}
-        bgColor={duck?.bgColor}
+        src={nftInfo && ducksApiUrl + nftInfo.fgImage}
+        bgImage={nftInfo?.bgImage}
+        bgColor={nftInfo?.bgColor}
         onClick={() => onInfoClick(nft.id)}
       />
-      <NftFooter>{duck?.name}</NftFooter>
+      <NftFooter>{nftInfo?.name}</NftFooter>
     </NftCard>
   );
 }
