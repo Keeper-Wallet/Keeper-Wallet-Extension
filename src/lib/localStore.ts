@@ -1,4 +1,4 @@
-import extension from 'extensionizer';
+import * as extension from 'extensionizer';
 import log from 'loglevel';
 import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 
