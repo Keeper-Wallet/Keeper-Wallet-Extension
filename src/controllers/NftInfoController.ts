@@ -8,7 +8,7 @@ import { SignArtInfo } from 'nfts/signArt/utils';
 export type NftDetails = AssetDetail & { assetId: string };
 
 export class NftInfoController {
-  private store: ObservableStore<{
+  store: ObservableStore<{
     nfts: Record<string, DuckInfo | SignArtInfo>;
   }>;
   protected getNetwork: () => NetworkName;
@@ -48,6 +48,5 @@ export class NftInfoController {
     infoNfts.forEach(info => (storeNfts[info.id] = info));
 
     this.store.updateState({ nfts: storeNfts });
-    console.log(storeNfts);
   }
 }
