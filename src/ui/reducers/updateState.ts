@@ -4,6 +4,7 @@ import { AssetDetail } from '../services/Background';
 import { TransactionFromNode } from '@waves/ts-types';
 import { DuckInfo } from 'nfts/ducks/utils';
 import { SignArtInfo } from 'nfts/signArt/utils';
+import { BabyDuckInfo } from 'nfts/babyDucks/utils';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -152,10 +153,9 @@ export const addresses = createSimpleReducer<Record<string, string>>(
   ACTION.UPDATE_ADDRESSES
 );
 
-export const nfts = createSimpleReducer<Record<string, DuckInfo | SignArtInfo>>(
-  {},
-  ACTION.UPDATE_NFTS
-);
+export const nfts = createSimpleReducer<
+  Record<string, DuckInfo | BabyDuckInfo | SignArtInfo>
+>({}, ACTION.UPDATE_NFTS);
 
 export const backTabs = (
   state: unknown[] = [],

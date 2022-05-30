@@ -6,24 +6,23 @@ import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
-import { signArtDApp } from 'nfts/signArt/constants';
 import { SignArtCard } from 'nfts/signArt/signArtCard';
-import { ducksDApps } from 'nfts/ducks/constants';
 import { DuckCard } from 'nfts/ducks/duckCard';
 import { UnknownCard } from 'nfts/unknown/unknownCard';
+import { BabyDuckCard } from 'nfts/babyDucks/babyDuckCard';
+import { NFT, nftType } from 'nfts/utils';
 
 function getNftCard(nft: AssetDetail) {
-  if (!nft?.id) {
-    return;
+  switch (nftType(nft)) {
+    case NFT.Ducks:
+      return DuckCard;
+    case NFT.BabyDucks:
+      return BabyDuckCard;
+    case NFT.SignArt:
+      return SignArtCard;
+    default:
+      return UnknownCard;
   }
-  if (nft?.issuer === signArtDApp) {
-    return SignArtCard;
-  }
-  if (ducksDApps.includes(nft?.issuer)) {
-    return DuckCard;
-  }
-
-  return UnknownCard;
 }
 
 const Row = ({

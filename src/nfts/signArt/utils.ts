@@ -1,9 +1,10 @@
-import { signArtDApp, signArtUrl } from 'nfts/signArt/constants';
+import { signArtDApp, signArtData } from 'nfts/signArt/constants';
 import { NftDetails } from 'controllers/NftInfoController';
+import { NFT } from 'nfts/utils';
 
 export interface SignArtInfo {
   id: string;
-  vendor: 'sign-art';
+  vendor: NFT.SignArt;
   name: string;
   description: string;
   type: string;
@@ -22,7 +23,7 @@ export async function fetchAllSignArts(
 
   const nftIds = nfts.map(nft => nft.assetId);
 
-  return fetch(signArtUrl, {
+  return fetch(signArtData, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -45,7 +46,7 @@ export async function fetchAllSignArts(
       })
     )
     .then(artworks =>
-      fetch(signArtUrl, {
+      fetch(signArtData, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -79,7 +80,8 @@ export async function fetchAllSignArts(
 
         return {
           id,
-          vendor: 'sign-art',
+          vendor: NFT.SignArt,
+          creator: artName.key.match(/art_name_\w+_(\w+)/i)[1],
           name: artName.value,
           description: artDesc.value,
           type: artType.value,

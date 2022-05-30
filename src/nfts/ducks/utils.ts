@@ -5,10 +5,12 @@ import {
   ducksDApps,
 } from 'nfts/ducks/constants';
 import { NftDetails } from 'controllers/NftInfoController';
+import { NFT } from 'nfts/utils';
 
 export interface DuckInfo {
   id: string;
-  vendor: 'ducks';
+  vendor: NFT.Ducks;
+  creator: string;
   genoType: string;
   generation: string;
   generationName: string;
@@ -50,7 +52,8 @@ export async function fetchDuck(nft: NftDetails): Promise<DuckInfo | null> {
 
   return {
     id: nft.assetId,
-    vendor: 'ducks',
+    vendor: NFT.Ducks,
+    creator: nft.issuer,
     genoType,
     generation,
     generationName,
