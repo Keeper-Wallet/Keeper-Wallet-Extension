@@ -17,7 +17,7 @@ import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
 export enum NFT {
   Ducks = 'ducks',
   BabyDucks = 'baby-ducks',
-  DucksArtefact = 'ducks-artifact',
+  DucksArtefact = 'ducks-artefact',
   SignArt = 'sign-art',
   Unknown = 'unknown',
 }
