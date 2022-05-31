@@ -217,10 +217,6 @@ export function SwapForm({
   const accountAddress = useAppSelector(state => state.selectedAccount.address);
 
   const watchExchange = React.useCallback(() => {
-    if (!swapClient) {
-      return;
-    }
-
     let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
 
     if (fromTokens.gt(maxTokensRef.current)) {
@@ -245,11 +241,7 @@ export function SwapForm({
   }, [accountAddress, fromAsset, swapClient, toAsset.id]);
 
   React.useEffect(() => {
-    if (!swapClient) {
-      return;
-    }
-
-    const unsubscribe = swapClient.subscribe({
+    return swapClient.subscribe({
       onError: () => {
         setExchangeInfo(exchangeInfoInitialState);
         setSwapClientError(t('swap.exchangeChannelConnectionError'));
@@ -288,8 +280,6 @@ export function SwapForm({
         }));
       },
     });
-
-    return unsubscribe;
   }, [swapClient, t, toAsset]);
 
   React.useEffect(() => {
