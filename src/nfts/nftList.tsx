@@ -11,6 +11,7 @@ import { DuckCard } from 'nfts/ducks/duckCard';
 import { UnknownCard } from 'nfts/unknown/unknownCard';
 import { BabyDuckCard } from 'nfts/babyDucks/babyDuckCard';
 import { NFT, nftType } from 'nfts/utils';
+import { DucksArtefactCard } from 'nfts/duckArtifacts/ducksArtefactCard';
 
 function getNftCard(nft: AssetDetail) {
   switch (nftType(nft)) {
@@ -20,6 +21,8 @@ function getNftCard(nft: AssetDetail) {
       return BabyDuckCard;
     case NFT.SignArt:
       return SignArtCard;
+    case NFT.DucksArtefact:
+      return DucksArtefactCard;
     default:
       return UnknownCard;
   }
