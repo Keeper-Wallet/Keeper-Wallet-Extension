@@ -95,9 +95,11 @@ export const duckNames = {
   W: ['S', 'a', 's', 'h', 'a', 'g', 'o', 'd'],
 };
 
-export const ducksDApps = [
-  '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb',
-  '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv',
-];
+export const ducksDAppNames = {
+  '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb': 'Ducks Breeder',
+  '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv': 'Ducks Incubator',
+};
+
+export const ducksDApps = Object.keys(ducksDAppNames);
 
 export const ducksApiUrl = 'https://wavesducks.com/api/v1/ducks/';

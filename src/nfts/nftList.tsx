@@ -6,28 +6,8 @@ import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftList.module.css';
 import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
-import { SignArtCard } from 'nfts/signArt/signArtCard';
-import { DuckCard } from 'nfts/ducks/duckCard';
-import { UnknownCard } from 'nfts/unknown/unknownCard';
-import { BabyDuckCard } from 'nfts/babyDucks/babyDuckCard';
-import { NFT, nftType } from 'nfts/utils';
-import { DucksArtefactCard } from 'nfts/duckArtifacts/ducksArtefactCard';
 import { useAppSelector } from 'ui/store';
-
-function getNftCard(nft: AssetDetail) {
-  switch (nftType(nft)) {
-    case NFT.Ducks:
-      return DuckCard;
-    case NFT.BabyDucks:
-      return BabyDuckCard;
-    case NFT.SignArt:
-      return SignArtCard;
-    case NFT.DucksArtefact:
-      return DucksArtefactCard;
-    default:
-      return UnknownCard;
-  }
-}
+import { NftCard } from 'nfts/nftCard';
 
 const Row = ({
   data,
@@ -47,15 +27,12 @@ const Row = ({
   const { rows, mode, len, onInfoClick, onSendClick } = data;
 
   const leftIndex = 2 * index;
-  const LeftNft = getNftCard(rows[leftIndex]);
-
   const rightIndex = leftIndex + 1;
-  const RightNft = getNftCard(rows[rightIndex]);
 
   return (
     <div style={style}>
       <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
-        <LeftNft
+        <NftCard
           key={leftIndex}
           nft={rows[leftIndex]}
           mode={mode}
@@ -64,7 +41,7 @@ const Row = ({
         />
 
         {rows[rightIndex] && (
-          <RightNft
+          <NftCard
             mode={mode}
             key={rightIndex}
             nft={rows[rightIndex]}

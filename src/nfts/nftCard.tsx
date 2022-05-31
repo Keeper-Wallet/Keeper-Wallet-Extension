@@ -2,16 +2,13 @@ import * as styles from 'nfts/nftCard.module.css';
 import * as React from 'react';
 import cn from 'classnames';
 import { Loader } from 'ui/components/ui';
-
-export function NftCard({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <div className={cn(styles.card, className)}>{children}</div>;
-}
+import { useAppSelector } from 'ui/store';
+import { NFT, nftType } from 'nfts/utils';
+import { ducksArtefactApiUrl } from 'nfts/duckArtifacts/constants';
+import { AssetDetail } from 'ui/services/Background';
+import { ducksApiUrl, ducksDAppNames } from 'nfts/ducks/constants';
+import { babyDucksApiUrl } from 'nfts/babyDucks/constants';
+import { signArtApiUrl } from 'nfts/signArt/constants';
 
 export function NftCover({
   src,
@@ -52,4 +49,75 @@ export function NftCover({
 
 export function NftFooter({ children }: { children: React.ReactNode }) {
   return <div className={styles.footer}>{children ?? <Loader />}</div>;
+}
+
+export function NftTitle({ children }: { children: React.ReactNode }) {
+  return <div className={styles.title}>{children}</div>;
+}
+
+export function NftCard({
+  nft,
+  onInfoClick,
+  className,
+  mode = 'name',
+}: {
+  nft: AssetDetail;
+  mode: 'name' | 'creator';
+  className?: string;
+  onInfoClick: (assetId: string) => void;
+  onSendClick: (assetId: string) => void;
+}) {
+  const nfts = useAppSelector(state => state.nfts);
+  const nftInfo = Object.values(NFT).includes(nfts[nft.id]?.vendor)
+    ? nfts[nft.id]
+    : null;
+  const count =
+    mode === 'creator'
+      ? Object.values(nfts).filter(nft => nft.creator === nftInfo?.creator)
+          .length
+      : 0;
+
+  let apiUrl,
+    title,
+    isVideo = false;
+  switch (nftType(nft)) {
+    case NFT.Ducks:
+      apiUrl = ducksApiUrl;
+      title = ducksDAppNames[nft.issuer];
+      break;
+    case NFT.BabyDucks:
+      apiUrl = babyDucksApiUrl;
+      title = 'Baby Ducks';
+      break;
+    case NFT.SignArt:
+      apiUrl = signArtApiUrl;
+      isVideo = !!nftInfo.fgImage.match(/.mp4$/);
+      break;
+    case NFT.DucksArtefact:
+      apiUrl = ducksArtefactApiUrl;
+      title = 'Ducks Artefacts';
+  }
+
+  return (
+    <div className={cn(styles.card, className)}>
+      <NftCover
+        src={nftInfo && apiUrl + nftInfo.fgImage}
+        isVideo={isVideo}
+        onClick={() => onInfoClick(nft.id)}
+      />
+      <NftFooter>
+        {mode === 'name' && (
+          <div className={styles.title}>{nftInfo?.name || nft?.name}</div>
+        )}
+        {mode === 'creator' && (
+          <>
+            <div className={styles.title}>
+              {title || nftInfo?.creator || nft?.name}
+            </div>
+            <div>{count}</div>
+          </>
+        )}
+      </NftFooter>
+    </div>
+  );
 }
