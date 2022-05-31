@@ -225,6 +225,14 @@ export function SwapForm({
       onData: (vendor, response) => {
         setSwapClientError(null);
 
+        const fromTokens = new BigNumber(
+          latestFromAmountValueRef.current || '0'
+        );
+
+        if (fromTokens.gt(maxTokensRef.current)) {
+          return;
+        }
+
         const typedVendor = vendor as SwapVendor;
 
         if (!Object.values(SwapVendor).includes(typedVendor)) {
