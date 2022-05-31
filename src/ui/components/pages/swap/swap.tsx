@@ -12,7 +12,7 @@ import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { PAGES } from 'ui/pageConfig';
 import background, { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { SwapForm, SwapParams } from './form';
+import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
@@ -142,7 +142,7 @@ export function Swap({ setTab }: Props) {
         toCoins,
         tx,
         vendor,
-      }: SwapParams) => {
+      }: OnSwapParams) => {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
 

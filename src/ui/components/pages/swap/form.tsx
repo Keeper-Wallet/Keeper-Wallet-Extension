@@ -37,7 +37,7 @@ function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
 }
 
-export interface SwapParams {
+export interface OnSwapParams {
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: BigNumber;
@@ -56,7 +56,7 @@ interface Props {
   swapErrorMessage: string;
   swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
-  onSwap: (params: SwapParams) => void;
+  onSwap: (params: OnSwapParams) => void;
 }
 
 type ExchangeInfoVendorState =
@@ -216,30 +216,6 @@ export function SwapForm({
 
   const accountAddress = useAppSelector(state => state.selectedAccount.address);
 
-  const watchExchange = React.useCallback(() => {
-    let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
-
-    if (fromTokens.gt(maxTokensRef.current)) {
-      setExchangeInfo(exchangeInfoErrorState);
-      return;
-    }
-
-    if (fromTokens.eq(0)) {
-      fromTokens = new BigNumber(1);
-    }
-
-    const latestSlippageTolerance =
-      SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
-
-    swapClient.setSwapParams({
-      address: accountAddress,
-      amountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
-      fromAssetId: fromAsset.id,
-      slippageTolerance: latestSlippageTolerance,
-      toAssetId: toAsset.id,
-    });
-  }, [accountAddress, fromAsset, swapClient, toAsset.id]);
-
   React.useEffect(() => {
     return swapClient.subscribe({
       onError: () => {
@@ -282,17 +258,41 @@ export function SwapForm({
     });
   }, [swapClient, t, toAsset]);
 
+  const updateSwapParams = React.useCallback(() => {
+    let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
+
+    if (fromTokens.gt(maxTokensRef.current)) {
+      setExchangeInfo(exchangeInfoErrorState);
+      return;
+    }
+
+    if (fromTokens.eq(0)) {
+      fromTokens = new BigNumber(1);
+    }
+
+    const latestSlippageTolerance =
+      SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
+
+    swapClient.setSwapParams({
+      address: accountAddress,
+      amountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
+      fromAssetId: fromAsset.id,
+      slippageTolerance: latestSlippageTolerance,
+      toAssetId: toAsset.id,
+    });
+  }, [accountAddress, fromAsset, swapClient, toAsset.id]);
+
   React.useEffect(() => {
     setExchangeInfo(exchangeInfoInitialState);
     setTouched(false);
-    watchExchange();
-  }, [watchExchange]);
+    updateSwapParams();
+  }, [updateSwapParams]);
 
-  const watchExchangeRef = React.useRef(watchExchange);
+  const updateSwapParamsRef = React.useRef(updateSwapParams);
 
   React.useEffect(() => {
-    watchExchangeRef.current = watchExchange;
-  }, [watchExchange]);
+    updateSwapParamsRef.current = updateSwapParams;
+  }, [updateSwapParams]);
 
   const sponsoredAssetFee = accountBalance.assets[feeAssetId]
     ? convertToSponsoredAssetFee(
@@ -313,22 +313,22 @@ export function SwapForm({
       ? t('swap.insufficientFundsError')
       : null;
 
-  const watchExchangeTimeoutRef = React.useRef<number | null>(null);
+  const updateSwapParamsTimeoutRef = React.useRef<number | null>(null);
 
-  function scheduleWatchExchangeUpdate() {
-    if (watchExchangeTimeoutRef.current != null) {
-      window.clearTimeout(watchExchangeTimeoutRef.current);
+  function scheduleUpdateSwapParams() {
+    if (updateSwapParamsTimeoutRef.current != null) {
+      window.clearTimeout(updateSwapParamsTimeoutRef.current);
     }
 
-    watchExchangeTimeoutRef.current = window.setTimeout(() => {
-      watchExchangeRef.current();
+    updateSwapParamsTimeoutRef.current = window.setTimeout(() => {
+      updateSwapParamsRef.current();
     }, 500);
   }
 
   React.useEffect(() => {
     return () => {
-      if (watchExchangeTimeoutRef.current != null) {
-        window.clearTimeout(watchExchangeTimeoutRef.current);
+      if (updateSwapParamsTimeoutRef.current != null) {
+        window.clearTimeout(updateSwapParamsTimeoutRef.current);
       }
     };
   }, []);
@@ -338,7 +338,7 @@ export function SwapForm({
       setFromAmountValue(newValue);
       setExchangeInfo(exchangeInfoInitialState);
       setTouched(false);
-      scheduleWatchExchangeUpdate();
+      scheduleUpdateSwapParams();
     }
   }
 
@@ -346,7 +346,7 @@ export function SwapForm({
     dispatch(setUiState({ slippageToleranceIndex: index }));
     setExchangeInfo(exchangeInfoInitialState);
     setTouched(false);
-    scheduleWatchExchangeUpdate();
+    scheduleUpdateSwapParams();
   }
 
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
