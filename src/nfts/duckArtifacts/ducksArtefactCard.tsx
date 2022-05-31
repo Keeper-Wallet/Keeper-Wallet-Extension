@@ -7,6 +7,7 @@ import {
   ducksArtefactApiUrl,
   ducksArtefactsDApp,
 } from 'nfts/duckArtifacts/constants';
+import * as styles from 'nfts/nftList.module.css';
 
 export function DucksArtefactCard({
   nft,
@@ -34,11 +35,13 @@ export function DucksArtefactCard({
         onClick={() => onInfoClick(nft.id)}
       />
       <NftFooter>
-        {mode === 'name'
-          ? nftInfo?.name
-          : mode === 'creator'
-          ? `Ducks Artefacts ${count}`
-          : null}
+        {mode === 'name' && <div className={styles.title}>{nftInfo?.name}</div>}
+        {mode === 'creator' && (
+          <>
+            <div className={styles.title}>Ducks Artefacts</div>
+            <div>{count}</div>
+          </>
+        )}
       </NftFooter>
     </NftCard>
   );

@@ -4,6 +4,7 @@ import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
 import { ducksApiUrl } from 'nfts/ducks/constants';
 import { useAppSelector } from 'ui/store';
 import { NFT } from 'nfts/utils';
+import * as styles from 'nfts/nftList.module.css';
 
 export function DuckCard({
   nft,
@@ -32,11 +33,13 @@ export function DuckCard({
         onClick={() => onInfoClick(nft.id)}
       />
       <NftFooter>
-        {mode === 'name'
-          ? nftInfo?.name
-          : mode === 'creator'
-          ? `Ducks ${count}`
-          : null}
+        {mode === 'name' && <div className={styles.title}>{nftInfo?.name}</div>}
+        {mode === 'creator' && (
+          <>
+            <div className={styles.title}>Ducks</div>
+            <div>{count}</div>
+          </>
+        )}
       </NftFooter>
     </NftCard>
   );

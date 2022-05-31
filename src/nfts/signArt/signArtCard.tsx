@@ -4,6 +4,7 @@ import { NftCard, NftCover, NftFooter } from 'nfts/nftCard';
 import { ipfsUrl } from 'nfts/signArt/constants';
 import { useAppSelector } from 'ui/store';
 import { NFT } from 'nfts/utils';
+import * as styles from 'nfts/nftCard.module.css';
 
 export function SignArtCard({
   nft,
@@ -31,11 +32,13 @@ export function SignArtCard({
         onClick={() => onInfoClick(nft.id)}
       />
       <NftFooter>
-        {mode === 'name'
-          ? nftInfo?.name
-          : mode === 'creator'
-          ? `${nftInfo?.creator} ${count}`
-          : null}
+        {mode === 'name' && <div className={styles.title}>{nftInfo?.name}</div>}
+        {mode === 'creator' && (
+          <>
+            <div className={styles.title}>{nftInfo?.creator}</div>
+            <div>{count}</div>
+          </>
+        )}
       </NftFooter>
     </NftCard>
   );

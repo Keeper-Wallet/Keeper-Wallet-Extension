@@ -1,7 +1,8 @@
 .card {
   display: flex;
   flex-direction: column;
-  flex-basis: 50%;
+  width: 162px;
+  height: 162px;
   background: #fff;
   box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
   border-radius: 4px;
@@ -14,7 +15,7 @@
 
 .cover {
   width: 162px;
-  height: 142px;
+  height: 162px;
   flex-grow: 1;
   object-fit: cover;
   background-position: center center;
@@ -24,6 +25,22 @@
 }
 
 .footer {
-  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: calc(100% - 8px);
+  padding: 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
   line-height: 1em;
+  overflow: hidden;
+  color: var(--color-basic100);
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
