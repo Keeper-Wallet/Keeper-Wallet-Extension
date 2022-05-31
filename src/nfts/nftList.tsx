@@ -12,6 +12,7 @@ import { UnknownCard } from 'nfts/unknown/unknownCard';
 import { BabyDuckCard } from 'nfts/babyDucks/babyDuckCard';
 import { NFT, nftType } from 'nfts/utils';
 import { DucksArtefactCard } from 'nfts/duckArtifacts/ducksArtefactCard';
+import { useAppSelector } from 'ui/store';
 
 function getNftCard(nft: AssetDetail) {
   switch (nftType(nft)) {
@@ -35,6 +36,7 @@ const Row = ({
 }: {
   data: {
     rows: AssetDetail[];
+    mode: 'name' | 'creator';
     len: number;
     onInfoClick: (assetId: string) => void;
     onSendClick: (assetId: string) => void;
@@ -42,7 +44,7 @@ const Row = ({
   index: number;
   style: CSSProperties;
 }) => {
-  const { rows, len, onInfoClick, onSendClick } = data;
+  const { rows, mode, len, onInfoClick, onSendClick } = data;
 
   const leftIndex = 2 * index;
   const LeftNft = getNftCard(rows[leftIndex]);
@@ -56,12 +58,14 @@ const Row = ({
         <LeftNft
           key={leftIndex}
           nft={rows[leftIndex]}
+          mode={mode}
           onInfoClick={onInfoClick}
           onSendClick={onSendClick}
         />
 
         {rows[rightIndex] && (
           <RightNft
+            mode={mode}
             key={rightIndex}
             nft={rows[rightIndex]}
             onInfoClick={onInfoClick}
@@ -74,23 +78,16 @@ const Row = ({
 };
 
 export function NftList({
+  listRef,
   sortedNfts,
   onInfoClick,
   onSendClick,
 }: {
+  listRef: React.MutableRefObject<VariableSizeList>;
   sortedNfts: AssetDetail[];
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  // todo display all nfts sorted by issuer
-  const listRef = React.useRef<VariableSizeList>();
-
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [sortedNfts]);
-
   return (
     <div className={styles.nftList}>
       <AutoSizer>
@@ -104,6 +101,63 @@ export function NftList({
               itemCount={len}
               itemSize={() => nftCardFullHeight}
               itemData={{ rows: sortedNfts, len, onInfoClick, onSendClick }}
+              itemKey={(index, { rows }) => rows[index].id}
+            >
+              {Row}
+            </VariableSizeList>
+          );
+        }}
+      </AutoSizer>
+    </div>
+  );
+}
+
+export function NftGroups({
+  listRef,
+  sortedNfts,
+  onInfoClick,
+  onSendClick,
+}: {
+  listRef: React.MutableRefObject<VariableSizeList>;
+  sortedNfts: AssetDetail[];
+  onInfoClick: (assetId: string) => void;
+  onSendClick: (assetId: string) => void;
+}) {
+  const nfts = useAppSelector(state => state.nfts);
+
+  const creatorNfts = sortedNfts.reduce<AssetDetail[]>(
+    (creatorNfts, current) => {
+      if (
+        !creatorNfts.find(
+          nft => nfts[nft.id]?.creator === nfts[current.id]?.creator
+        )
+      ) {
+        creatorNfts.push(current);
+      }
+      return creatorNfts;
+    },
+    []
+  );
+
+  return (
+    <div className={styles.nftList}>
+      <AutoSizer>
+        {({ height, width }) => {
+          const len = Math.round(creatorNfts.length / 2);
+          return (
+            <VariableSizeList
+              ref={listRef}
+              height={height}
+              width={width}
+              itemCount={len}
+              itemSize={() => nftCardFullHeight}
+              itemData={{
+                rows: creatorNfts,
+                mode: 'creator',
+                len,
+                onInfoClick,
+                onSendClick,
+              }}
               itemKey={(index, { rows }) => rows[index].id}
             >
               {Row}

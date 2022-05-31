@@ -5,6 +5,7 @@ import { NFT } from 'nfts/utils';
 export interface SignArtInfo {
   id: string;
   vendor: NFT.SignArt;
+  creator: string;
   name: string;
   description: string;
   type: string;

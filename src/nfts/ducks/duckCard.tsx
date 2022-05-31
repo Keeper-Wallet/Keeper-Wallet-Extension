@@ -8,15 +8,20 @@ import { NFT } from 'nfts/utils';
 export function DuckCard({
   nft,
   onInfoClick,
+  mode = 'name',
 }: {
   nft: AssetDetail;
+  mode: 'name' | 'creator';
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  const nftInfo = useAppSelector(state => {
-    const info = state.nfts[nft.id];
-    return info?.vendor === NFT.Ducks ? info : null;
-  });
+  const nfts = useAppSelector(state => state.nfts);
+  const nftInfo = nfts[nft.id]?.vendor === NFT.Ducks ? nfts[nft.id] : null;
+  const count =
+    mode === 'creator'
+      ? Object.values(nfts).filter(nft => nft.creator === nftInfo?.creator)
+          .length
+      : 0;
 
   return (
     <NftCard>
@@ -26,7 +31,13 @@ export function DuckCard({
         bgColor={nftInfo?.bgColor}
         onClick={() => onInfoClick(nft.id)}
       />
-      <NftFooter>{nftInfo?.name}</NftFooter>
+      <NftFooter>
+        {mode === 'name'
+          ? nftInfo?.name
+          : mode === 'creator'
+          ? `Ducks ${count}`
+          : null}
+      </NftFooter>
     </NftCard>
   );
 }
