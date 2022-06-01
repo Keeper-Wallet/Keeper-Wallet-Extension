@@ -1,4 +1,4 @@
-import { signArtDApp, signArtData } from 'nfts/signArt/constants';
+import { signArtData } from 'nfts/signArt/constants';
 import { NftDetails } from 'controllers/NftInfoController';
 import { NFT } from 'nfts/utils';
 
@@ -9,7 +9,6 @@ export interface SignArtInfo {
   name: string;
   description: string;
   type: string;
-  isVideo?: boolean;
   fgImage: string;
 }
 
@@ -86,19 +85,8 @@ export async function fetchAllSignArts(
           name: artName.value,
           description: artDesc.value,
           type: artType.value,
-          isVideo: !!artDisplayCid.value.match(/\.mp4$/i),
           fgImage: artDisplayCid.value,
         };
       }, [])
     );
-}
-
-export async function fetchSignArt(
-  nft: NftDetails
-): Promise<SignArtInfo | null> {
-  if (!nft?.assetId || nft?.issuer !== signArtDApp) {
-    return null;
-  }
-
-  return fetchAllSignArts([nft]).then(details => details[0]);
 }
