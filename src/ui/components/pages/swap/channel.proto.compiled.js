@@ -1,5 +1,5 @@
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
-import * as $protobuf from "protobufjs/minimal";
+import * as $protobuf from 'protobufjs/minimal';
 
 // Common aliases
 const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
@@ -235,6 +235,7 @@ export const proto = $root.proto = (() => {
              * @property {string|null} [target] Exchange target
              * @property {Long|null} [amount] Exchange amount
              * @property {number|null} [slippageTolerance] Exchange slippageTolerance
+             * @property {string|null} [address] Exchange address
              */
 
             /**
@@ -293,6 +294,14 @@ export const proto = $root.proto = (() => {
             Exchange.prototype.slippageTolerance = 0;
 
             /**
+             * Exchange address.
+             * @member {string} address
+             * @memberof proto.Request.Exchange
+             * @instance
+             */
+            Exchange.prototype.address = "";
+
+            /**
              * Creates a new Exchange instance using the specified properties.
              * @function create
              * @memberof proto.Request.Exchange
@@ -326,6 +335,8 @@ export const proto = $root.proto = (() => {
                     writer.uint32(/* id 4, wireType 0 =*/32).int64(message.amount);
                 if (message.slippageTolerance != null && Object.hasOwnProperty.call(message, "slippageTolerance"))
                     writer.uint32(/* id 5, wireType 0 =*/40).int32(message.slippageTolerance);
+                if (message.address != null && Object.hasOwnProperty.call(message, "address"))
+                    writer.uint32(/* id 6, wireType 2 =*/50).string(message.address);
                 return writer;
             };
 
@@ -374,6 +385,9 @@ export const proto = $root.proto = (() => {
                         break;
                     case 5:
                         message.slippageTolerance = reader.int32();
+                        break;
+                    case 6:
+                        message.address = reader.string();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -425,6 +439,9 @@ export const proto = $root.proto = (() => {
                 if (message.slippageTolerance != null && message.hasOwnProperty("slippageTolerance"))
                     if (!$util.isInteger(message.slippageTolerance))
                         return "slippageTolerance: integer expected";
+                if (message.address != null && message.hasOwnProperty("address"))
+                    if (!$util.isString(message.address))
+                        return "address: string expected";
                 return null;
             };
 
@@ -457,6 +474,8 @@ export const proto = $root.proto = (() => {
                         message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
                 if (object.slippageTolerance != null)
                     message.slippageTolerance = object.slippageTolerance | 0;
+                if (object.address != null)
+                    message.address = String(object.address);
                 return message;
             };
 
@@ -483,6 +502,7 @@ export const proto = $root.proto = (() => {
                     } else
                         object.amount = options.longs === String ? "0" : 0;
                     object.slippageTolerance = 0;
+                    object.address = "";
                 }
                 if (message.id != null && message.hasOwnProperty("id"))
                     object.id = message.id;
@@ -497,6 +517,8 @@ export const proto = $root.proto = (() => {
                         object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
                 if (message.slippageTolerance != null && message.hasOwnProperty("slippageTolerance"))
                     object.slippageTolerance = message.slippageTolerance;
+                if (message.address != null && message.hasOwnProperty("address"))
+                    object.address = message.address;
                 return object;
             };
 

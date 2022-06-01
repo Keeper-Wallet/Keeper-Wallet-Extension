@@ -25,6 +25,7 @@ interface ExchangeInput {
   fromAsset: Asset;
   slippageTolerance: number;
   toAsset: Asset;
+  address: string;
 }
 
 interface ExchangeRequest extends ExchangeInput {
@@ -163,8 +164,14 @@ export class ExchangeChannelClient {
 
   private send() {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      const { fromAmountCoins, id, fromAsset, slippageTolerance, toAsset } =
-        this.activeRequest;
+      const {
+        fromAmountCoins,
+        id,
+        fromAsset,
+        slippageTolerance,
+        toAsset,
+        address,
+      } = this.activeRequest;
 
       const encoded = proto.Request.encode(
         proto.Request.create({
@@ -174,6 +181,7 @@ export class ExchangeChannelClient {
             slippageTolerance,
             source: fromAsset.id,
             target: toAsset.id,
+            address: address,
           }),
         })
       ).finish();

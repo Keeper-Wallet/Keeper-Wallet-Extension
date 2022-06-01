@@ -235,6 +235,8 @@ export function SwapForm({
       })
     : null;
 
+  const accountAddress = useAppSelector(state => state.selectedAccount.address);
+
   const watchExchange = React.useCallback(() => {
     let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
 
@@ -257,6 +259,7 @@ export function SwapForm({
         fromAsset,
         slippageTolerance: latestSlippageTolerance.toNumber() * 10,
         toAsset,
+        address: accountAddress,
       },
       (err, vendor, response) => {
         if (err) {
@@ -303,6 +306,7 @@ export function SwapForm({
     fromAsset,
     toAsset,
     latestFromAmountValueRef,
+    accountAddress,
     maxTokensRef,
     t,
   ]);
