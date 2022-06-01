@@ -7,7 +7,7 @@ import { nftType } from 'nfts/utils';
 import { ducksArtefactApiUrl } from 'nfts/duckArtifacts/constants';
 import { AssetDetail } from 'ui/services/Background';
 import { ducksApiUrl, ducksDAppNames } from 'nfts/ducks/constants';
-import { babyDucksApiUrl } from 'nfts/babyDucks/constants';
+import { ducklingsApiUrl } from 'nfts/ducklings/constants';
 import { signArtApiUrl } from 'nfts/signArt/constants';
 import { NftVendor } from 'nfts/index';
 
@@ -86,8 +86,8 @@ export function NftCard({
       apiUrl = ducksApiUrl;
       title = ducksDAppNames[nft.issuer];
       break;
-    case NftVendor.BabyDucks:
-      apiUrl = babyDucksApiUrl;
+    case NftVendor.Ducklings:
+      apiUrl = ducklingsApiUrl;
       title = 'Baby Ducks';
       break;
     case NftVendor.SignArt:

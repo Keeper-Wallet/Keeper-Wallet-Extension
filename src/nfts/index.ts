@@ -2,7 +2,7 @@ import { AssetDetail } from 'ui/services/Background';
 
 export enum NftVendor {
   Ducks = 'ducks',
-  BabyDucks = 'baby-ducks',
+  Ducklings = 'ducklings',
   DucksArtefact = 'ducks-artefact',
   SignArt = 'sign-art',
   Unknown = 'unknown',

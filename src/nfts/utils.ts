@@ -2,57 +2,42 @@ import { AssetDetail } from 'ui/services/Background';
 import { fetchAllSignArts, SignArtInfo } from 'nfts/signArt/utils';
 import { DuckInfo, fetchAllDucks } from 'nfts/ducks/utils';
 import {
-  BabyDuckInfo,
-  fetchAll as fetchAllBabyDucks,
-} from 'nfts/babyDucks/utils';
+  DucklingInfo,
+  fetchAll as fetchAllDucklings,
+} from 'nfts/ducklings/utils';
 
 import { signArtDApp } from 'nfts/signArt/constants';
 import { ducksDApps } from 'nfts/ducks/constants';
-import { BigNumber } from '@waves/bignumber';
-import { NftDetails } from 'controllers/NftInfoController';
-import { babyDucksDApp } from 'nfts/babyDucks/constants';
+import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
+import { NftDetails, NftVendor } from 'nfts/index';
 
-export enum NFT {
-  Ducks = 'ducks',
-  BabyDucks = 'baby-ducks',
-  DucksArtefact = 'ducks-artefact',
-  SignArt = 'sign-art',
-  Unknown = 'unknown',
-}
-
-export function isNFT({ quantity, precision, reissuable }: AssetDetail) {
-  const nftQuantity = new BigNumber(quantity).eq(1);
-  const nftPrecision = new BigNumber(precision || 0).eq(0);
-  return !reissuable && nftPrecision && nftQuantity;
-}
-
-export function nftType(nft: AssetDetail): NFT {
+export function nftType(nft: AssetDetail): NftVendor {
   if (!nft) {
     return null;
   }
   if (nft?.issuer === signArtDApp) {
-    return NFT.SignArt;
+    return NftVendor.SignArt;
   }
   if (ducksDApps.includes(nft?.issuer)) {
-    return NFT.Ducks;
+    return NftVendor.Ducks;
   }
 
-  if (nft?.issuer === babyDucksDApp) {
-    return NFT.BabyDucks;
+  if (nft?.issuer === ducklingsDApp) {
+    return NftVendor.Ducklings;
   }
 
   if (nft?.issuer === ducksArtefactsDApp) {
-    return NFT.DucksArtefact;
+    return NftVendor.DucksArtefact;
   }
 
-  return NFT.Unknown;
+  return NftVendor.Unknown;
 }
 
 export async function fetchAllNfts(
   nfts: NftDetails[]
-): Promise<Array<DuckInfo | BabyDuckInfo | SignArtInfo>> {
+): Promise<Array<DuckInfo | DucklingInfo | SignArtInfo>> {
   const ducks = [];
   const babyDucks = [];
   const ducksArtefacts = [];
@@ -60,16 +45,16 @@ export async function fetchAllNfts(
 
   for (const nft of nfts) {
     switch (this.nftType(nft)) {
-      case NFT.Ducks:
+      case NftVendor.Ducks:
         ducks.push(nft);
         break;
-      case NFT.BabyDucks:
+      case NftVendor.Ducklings:
         babyDucks.push(nft);
         break;
-      case NFT.DucksArtefact:
+      case NftVendor.DucksArtefact:
         ducksArtefacts.push(nft);
         break;
-      case NFT.SignArt:
+      case NftVendor.SignArt:
         signArts.push(nft);
         break;
     }
@@ -80,7 +65,7 @@ export async function fetchAllNfts(
       fetchAllSignArts(signArts).catch(() => []),
       fetchAllDucks(ducks).catch(() => []),
       fetchAllArtefacts(ducksArtefacts).catch(() => []),
-      fetchAllBabyDucks(babyDucks).catch(() => []),
+      fetchAllDucklings(babyDucks).catch(() => []),
     ])
   );
 }

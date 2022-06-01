@@ -1,26 +1,26 @@
 import {
-  babyDucksData,
   DucklingAdjectives,
   DucklingsDescription,
-} from 'nfts/babyDucks/constants';
+  ducklingsEntriesUrl,
+} from 'nfts/ducklings/constants';
 import { NftDetails, NftVendor } from 'nfts/index';
 
-export interface BabyDuckInfo {
+export interface DucklingInfo {
   id: string;
-  vendor: NftVendor.BabyDucks;
+  vendor: NftVendor.Ducklings;
   creator: string;
   name: string;
   fgImage: string;
 }
 
-export async function fetchAll(nfts: NftDetails[]): Promise<BabyDuckInfo[]> {
+export async function fetchAll(nfts: NftDetails[]): Promise<DucklingInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
 
   const nftIds = nfts.map(nft => nft.assetId);
 
-  return fetch(babyDucksData, {
+  return fetch(ducklingsEntriesUrl, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -47,7 +47,7 @@ export async function fetchAll(nfts: NftDetails[]): Promise<BabyDuckInfo[]> {
         return {
           id: nft.assetId,
           creator: nft.issuer,
-          vendor: NftVendor.BabyDucks,
+          vendor: NftVendor.Ducklings,
           name: `${capitalize(adj)} ${capitalize(name)}`,
           fgImage: `duckling-${fileIndex}.svg`,
         };
