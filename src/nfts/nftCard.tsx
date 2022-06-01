@@ -3,12 +3,8 @@ import * as React from 'react';
 import cn from 'classnames';
 import { Loader } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
-import { nftType } from 'nfts/utils';
-import { ducksArtefactApiUrl } from 'nfts/duckArtifacts/constants';
+import { createNft } from 'nfts/utils';
 import { AssetDetail } from 'ui/services/Background';
-import { ducksApiUrl, ducksDAppNames } from 'nfts/ducks/constants';
-import { ducklingsApiUrl } from 'nfts/ducklings/constants';
-import { signArtApiUrl } from 'nfts/signArt/constants';
 import { NftVendor } from 'nfts/index';
 
 export function NftCover({
@@ -69,52 +65,33 @@ export function NftCard({
   onSendClick: (assetId: string) => void;
 }) {
   const nfts = useAppSelector(state => state.nfts);
-  const nftInfo = Object.values(NftVendor).includes(nfts[nft.id]?.vendor)
+  const info = Object.values(NftVendor).includes(nfts[nft.id]?.vendor)
     ? nfts[nft.id]
     : null;
+
+  const nftDetails = createNft(nft, info);
+
   const count =
     mode === 'creator'
-      ? Object.values(nfts).filter(nft => nft.creator === nftInfo?.creator)
-          .length
+      ? Object.values(nfts).filter(
+          item => item?.creator === nftDetails?.creator
+        ).length
       : 0;
-
-  let apiUrl,
-    title,
-    isVideo = false;
-  switch (nftType(nft)) {
-    case NftVendor.Ducks:
-      apiUrl = ducksApiUrl;
-      title = ducksDAppNames[nft.issuer];
-      break;
-    case NftVendor.Ducklings:
-      apiUrl = ducklingsApiUrl;
-      title = 'Baby Ducks';
-      break;
-    case NftVendor.SignArt:
-      apiUrl = signArtApiUrl;
-      isVideo = !!nftInfo.fgImage.match(/.mp4$/);
-      break;
-    case NftVendor.DucksArtefact:
-      apiUrl = ducksArtefactApiUrl;
-      title = 'Ducks Artefacts';
-  }
 
   return (
     <div className={cn(styles.card, className)}>
       <NftCover
-        src={nftInfo && apiUrl + nftInfo.fgImage}
-        isVideo={isVideo}
-        onClick={() => onInfoClick(nft.id)}
+        src={nftDetails?.foreground}
+        isVideo={nftDetails?.isVideo}
+        onClick={() => onInfoClick(nftDetails?.id)}
       />
       <NftFooter>
         {mode === 'name' && (
-          <div className={styles.title}>{nftInfo?.name || nft?.name}</div>
+          <div className={styles.title}>{nftDetails?.name}</div>
         )}
         {mode === 'creator' && (
           <>
-            <div className={styles.title}>
-              {title || nftInfo?.creator || nft?.name}
-            </div>
+            <div className={styles.title}>{nftDetails?.displayCreator}</div>
             <div>{count}</div>
           </>
         )}

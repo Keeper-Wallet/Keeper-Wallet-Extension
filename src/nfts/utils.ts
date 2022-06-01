@@ -10,8 +10,17 @@ import { signArtDApp } from 'nfts/signArt/constants';
 import { ducksDApps } from 'nfts/ducks/constants';
 import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
-import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { NftDetails, NftVendor } from 'nfts/index';
+import {
+  DucksArtefactInfo,
+  fetchAll as fetchAllArtefacts,
+} from 'nfts/duckArtifacts/utils';
+import { BaseNft, NftDetails, NftVendor } from 'nfts/index';
+
+export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
+
+export function createNft(asset: AssetDetail, info: NftInfo) {
+  return new BaseNft(asset, info);
+}
 
 export function nftType(nft: AssetDetail): NftVendor {
   if (!nft) {
@@ -37,7 +46,7 @@ export function nftType(nft: AssetDetail): NftVendor {
 
 export async function fetchAllNfts(
   nfts: NftDetails[]
-): Promise<Array<DuckInfo | DucklingInfo | SignArtInfo>> {
+): Promise<Array<NftInfo>> {
   const ducks = [];
   const babyDucks = [];
   const ducksArtefacts = [];

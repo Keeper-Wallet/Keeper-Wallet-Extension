@@ -15,27 +15,24 @@ export interface BaseInfo {
   vendor: NftVendor;
   creator: string;
   name: string;
-  fgImage: string;
 }
 
-export abstract class AbcNftInfo<TypedInfo extends BaseInfo>
-  implements AssetDetail
-{
+export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   protected asset: AssetDetail;
-  protected info: TypedInfo;
+  protected info: TypedInfo | null;
 
-  protected constructor(asset: AssetDetail, info: TypedInfo | null) {
+  constructor(asset: AssetDetail, info: TypedInfo | null = null) {
     this.asset = asset;
     this.info = info;
   }
   get foreground(): string {
-    return this.info.fgImage;
+    return null;
   }
   get background(): CSSStyleDeclaration | null {
     return null;
   }
   get isVideo(): boolean {
-    return !!this.info.fgImage.match(/\.mp4$/);
+    return this.foreground ? !!this.foreground.match(/\.mp4$/) : false;
   }
   get id(): AssetDetail['id'] {
     return this.asset.id;
@@ -43,11 +40,20 @@ export abstract class AbcNftInfo<TypedInfo extends BaseInfo>
   get issuer(): AssetDetail['issuer'] {
     return this.asset.issuer;
   }
+  get displayCreator(): string {
+    return this.creator;
+  }
+  get creator(): TypedInfo['creator'] {
+    return this.info?.creator ?? this.asset.issuer;
+  }
+  get vendor(): TypedInfo['vendor'] {
+    return this.info?.vendor ?? NftVendor.Unknown;
+  }
   get originTransactionId(): AssetDetail['originTransactionId'] {
     return this.asset.originTransactionId;
   }
   get displayName(): AssetDetail['displayName'] {
-    return this.asset.displayName;
+    return this.info?.name ?? this.asset.displayName;
   }
   get name(): AssetDetail['name'] {
     return this.asset.name;
@@ -68,7 +74,7 @@ export abstract class AbcNftInfo<TypedInfo extends BaseInfo>
     return this.asset.sender;
   }
   get quantity(): AssetDetail['quantity'] {
-    return 1;
+    return this.asset.quantity;
   }
   get reissuable(): AssetDetail['reissuable'] {
     return false;

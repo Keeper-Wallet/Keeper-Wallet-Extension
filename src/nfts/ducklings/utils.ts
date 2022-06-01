@@ -3,14 +3,10 @@ import {
   DucklingsDescription,
   ducklingsEntriesUrl,
 } from 'nfts/ducklings/constants';
-import { NftDetails, NftVendor } from 'nfts/index';
+import { BaseInfo, NftDetails, NftVendor } from 'nfts/index';
 
-export interface DucklingInfo {
-  id: string;
+export interface DucklingInfo extends BaseInfo {
   vendor: NftVendor.Ducklings;
-  creator: string;
-  name: string;
-  fgImage: string;
 }
 
 export async function fetchAll(nfts: NftDetails[]): Promise<DucklingInfo[]> {
