@@ -11,10 +11,7 @@ export enum NftVendor {
 export type NftDetails = AssetDetail & { assetId: string };
 
 export interface BaseInfo {
-  id: string;
   vendor: NftVendor;
-  creator: string;
-  name: string;
 }
 
 export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
@@ -43,8 +40,8 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   get displayCreator(): string {
     return this.creator;
   }
-  get creator(): TypedInfo['creator'] {
-    return this.info?.creator ?? this.asset.issuer;
+  get creator(): string {
+    return this.asset.issuer;
   }
   get vendor(): TypedInfo['vendor'] {
     return this.info?.vendor ?? NftVendor.Unknown;
@@ -53,7 +50,7 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
     return this.asset.originTransactionId;
   }
   get displayName(): AssetDetail['displayName'] {
-    return this.info?.name ?? this.asset.displayName;
+    return this.asset.displayName;
   }
   get name(): AssetDetail['name'] {
     return this.asset.name;
