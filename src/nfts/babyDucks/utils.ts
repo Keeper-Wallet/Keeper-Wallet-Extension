@@ -3,7 +3,7 @@ import { NFT } from 'nfts/utils';
 import {
   babyDucksData,
   DucklingAdjectives,
-  DucklingNames,
+  DucklingsDescription,
 } from 'nfts/babyDucks/constants';
 
 export interface BabyDuckInfo {
@@ -71,7 +71,8 @@ export const getDucklingNameParts = (ducklingId: string) => {
   );
 
   const adj = DucklingAdjectives[adjNumber % DucklingAdjectives.length];
-  const name = DucklingNames[nameNumber % DucklingNames.length];
+  const ducklingNames = Object.keys(DucklingsDescription);
+  const name = ducklingNames[nameNumber % ducklingNames.length];
   return { adj, name };
 };
 
