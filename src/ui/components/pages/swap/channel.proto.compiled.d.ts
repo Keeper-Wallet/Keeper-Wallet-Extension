@@ -1,4 +1,5 @@
-import * as $protobuf from "protobufjs";
+import * as $protobuf from 'protobufjs';
+
 /** Namespace proto. */
 export namespace proto {
 
@@ -114,6 +115,9 @@ export namespace proto {
 
             /** Exchange slippageTolerance */
             slippageTolerance?: (number|null);
+
+            /** Exchange address */
+            address?: (string|null);
         }
 
         /** Represents an Exchange. */
@@ -139,6 +143,9 @@ export namespace proto {
 
             /** Exchange slippageTolerance. */
             public slippageTolerance: number;
+
+            /** Exchange address. */
+            public address: string;
 
             /**
              * Creates a new Exchange instance using the specified properties.
