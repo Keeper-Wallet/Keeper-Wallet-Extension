@@ -1,22 +1,11 @@
 import * as extension from 'extensionizer';
-import log from 'loglevel';
+import * as Sentry from '@sentry/react';
 import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 
 const CURRENT_MIGRATION_VERSION = 0;
 
 export default class ExtensionStore {
-  public isSupported: boolean;
-
-  constructor() {
-    this.isSupported = !!extension.storage.local;
-
-    if (!this.isSupported) {
-      log.error('Storage local API not available.');
-    }
-  }
-
   async get() {
-    if (!this.isSupported) return undefined;
     const result = await this._get();
 
     if (isEmpty(result)) {
@@ -31,20 +20,24 @@ export default class ExtensionStore {
   }
 
   async migrate() {
-    const { migrationVersion } = await this._get();
-    const version = (migrationVersion as number) || 0;
+    try {
+      const { migrationVersion } = await this._get();
+      const version = (migrationVersion as number) || 0;
 
-    await this._set({
-      migrationVersion: CURRENT_MIGRATION_VERSION,
-    });
-
-    if (version > CURRENT_MIGRATION_VERSION) {
-      for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-        const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
-        if (reverseMigrate) {
-          await reverseMigrate.bind(this)();
+      if (version > CURRENT_MIGRATION_VERSION) {
+        for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
+          const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
+          if (reverseMigrate) {
+            await reverseMigrate.call(this);
+          }
         }
       }
+
+      await this._set({
+        migrationVersion: CURRENT_MIGRATION_VERSION,
+      });
+    } catch (err) {
+      Sentry.captureException(err);
     }
   }
 

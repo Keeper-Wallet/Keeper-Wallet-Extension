@@ -156,13 +156,11 @@ async function setupBackgroundService() {
     if (!state) {
       throw new Error('Updated state is missing', state);
     }
-    if (localStore.isSupported) {
-      try {
-        await localStore.set(state);
-      } catch (err) {
-        // log error so we dont break the pipeline
-        log.error('error setting state in local store:', err);
-      }
+    try {
+      await localStore.set(state);
+    } catch (err) {
+      // log error so we dont break the pipeline
+      log.error('error setting state in local store:', err);
     }
   }
 
