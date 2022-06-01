@@ -1,11 +1,9 @@
 import * as ObservableStore from 'obs-store';
 import { NetworkName } from 'accounts/types';
-import { AssetDetail } from 'ui/services/Background';
 import { fetchAllNfts } from 'nfts/utils';
 import { DuckInfo } from 'nfts/ducks/utils';
 import { SignArtInfo } from 'nfts/signArt/utils';
-
-export type NftDetails = AssetDetail & { assetId: string };
+import { NftDetails } from 'nfts';
 
 export class NftInfoController {
   store: ObservableStore<{

@@ -1,10 +1,9 @@
-import { NftDetails } from 'controllers/NftInfoController';
-import { NFT } from 'nfts/utils';
 import { ArtefactNames } from 'nfts/duckArtifacts/constants';
+import { NftDetails, NftVendor } from 'nfts/index';
 
 export interface DucksArtefactInfo {
   id: string;
-  vendor: NFT.DucksArtefact;
+  vendor: NftVendor.DucksArtefact;
   creator: string;
   name: string;
   fgImage: string;
@@ -19,7 +18,7 @@ export async function fetchAll(
 
   return nfts.map(nft => ({
     id: nft.assetId,
-    vendor: NFT.DucksArtefact,
+    vendor: NftVendor.DucksArtefact,
     creator: nft.issuer,
     name:
       ArtefactNames[nft.name.toLowerCase().replace(/-/, '_')]?.title ||

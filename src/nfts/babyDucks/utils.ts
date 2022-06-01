@@ -1,14 +1,13 @@
-import { NftDetails } from 'controllers/NftInfoController';
-import { NFT } from 'nfts/utils';
 import {
   babyDucksData,
   DucklingAdjectives,
   DucklingsDescription,
 } from 'nfts/babyDucks/constants';
+import { NftDetails, NftVendor } from 'nfts/index';
 
 export interface BabyDuckInfo {
   id: string;
-  vendor: NFT.BabyDucks;
+  vendor: NftVendor.BabyDucks;
   creator: string;
   name: string;
   fgImage: string;
@@ -48,7 +47,7 @@ export async function fetchAll(nfts: NftDetails[]): Promise<BabyDuckInfo[]> {
         return {
           id: nft.assetId,
           creator: nft.issuer,
-          vendor: NFT.BabyDucks,
+          vendor: NftVendor.BabyDucks,
           name: `${capitalize(adj)} ${capitalize(name)}`,
           fgImage: `duckling-${fileIndex}.svg`,
         };

@@ -1,10 +1,9 @@
 import { signArtData } from 'nfts/signArt/constants';
-import { NftDetails } from 'controllers/NftInfoController';
-import { NFT } from 'nfts/utils';
+import { NftDetails, NftVendor } from 'nfts/index';
 
 export interface SignArtInfo {
   id: string;
-  vendor: NFT.SignArt;
+  vendor: NftVendor.SignArt;
   creator: string;
   name: string;
   description: string;
@@ -80,7 +79,7 @@ export async function fetchAllSignArts(
 
         return {
           id,
-          vendor: NFT.SignArt,
+          vendor: NftVendor.SignArt,
           creator: artName.key.match(/art_name_\w+_(\w+)/i)[1],
           name: artName.value,
           description: artDesc.value,

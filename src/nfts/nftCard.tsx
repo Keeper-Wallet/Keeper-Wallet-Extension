@@ -3,12 +3,13 @@ import * as React from 'react';
 import cn from 'classnames';
 import { Loader } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
-import { NFT, nftType } from 'nfts/utils';
+import { nftType } from 'nfts/utils';
 import { ducksArtefactApiUrl } from 'nfts/duckArtifacts/constants';
 import { AssetDetail } from 'ui/services/Background';
 import { ducksApiUrl, ducksDAppNames } from 'nfts/ducks/constants';
 import { babyDucksApiUrl } from 'nfts/babyDucks/constants';
 import { signArtApiUrl } from 'nfts/signArt/constants';
+import { NftVendor } from 'nfts/index';
 
 export function NftCover({
   src,
@@ -68,7 +69,7 @@ export function NftCard({
   onSendClick: (assetId: string) => void;
 }) {
   const nfts = useAppSelector(state => state.nfts);
-  const nftInfo = Object.values(NFT).includes(nfts[nft.id]?.vendor)
+  const nftInfo = Object.values(NftVendor).includes(nfts[nft.id]?.vendor)
     ? nfts[nft.id]
     : null;
   const count =
@@ -81,19 +82,19 @@ export function NftCard({
     title,
     isVideo = false;
   switch (nftType(nft)) {
-    case NFT.Ducks:
+    case NftVendor.Ducks:
       apiUrl = ducksApiUrl;
       title = ducksDAppNames[nft.issuer];
       break;
-    case NFT.BabyDucks:
+    case NftVendor.BabyDucks:
       apiUrl = babyDucksApiUrl;
       title = 'Baby Ducks';
       break;
-    case NFT.SignArt:
+    case NftVendor.SignArt:
       apiUrl = signArtApiUrl;
       isVideo = !!nftInfo.fgImage.match(/.mp4$/);
       break;
-    case NFT.DucksArtefact:
+    case NftVendor.DucksArtefact:
       apiUrl = ducksArtefactApiUrl;
       title = 'Ducks Artefacts';
   }
