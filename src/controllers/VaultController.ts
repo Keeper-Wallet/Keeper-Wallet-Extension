@@ -90,6 +90,7 @@ export class VaultController {
 
   migrate() {
     const state = this.wallet.store.getState();
+
     if (state.initialized != null) {
       this.store.updateState({
         initialized: state.initialized,
@@ -98,6 +99,10 @@ export class VaultController {
       delete state.locked;
       delete state.initialized;
       this.wallet.store.putState(state);
+    }
+
+    if (state.vault) {
+      this.store.updateState({ initialized: true });
     }
   }
 }
