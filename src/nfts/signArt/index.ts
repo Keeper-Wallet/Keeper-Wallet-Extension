@@ -4,6 +4,7 @@ import { signArtApiUrl } from 'nfts/signArt/constants';
 export interface SignArtInfo extends BaseInfo {
   vendor: NftVendor.SignArt;
   creator: string;
+  userName: string;
   name: string;
   description: string;
   cid: string;
@@ -15,8 +16,7 @@ export class SignArt extends BaseNft<SignArtInfo> {
   }
 
   get displayCreator(): string {
-    // todo: fetch creator name from contract
-    return super.displayCreator;
+    return this.info.userName || super.displayCreator;
   }
 
   get displayName(): string {
