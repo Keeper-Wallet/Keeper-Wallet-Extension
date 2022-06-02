@@ -71,7 +71,9 @@ export function NftCard({
         onClick={() => onInfoClick(nft?.id)}
       />
       <NftFooter>
-        {mode === 'name' && <div className={styles.title}>{nft?.name}</div>}
+        {mode === 'name' && (
+          <div className={styles.title}>{nft?.displayName}</div>
+        )}
         {mode === 'creator' && (
           <>
             <div className={styles.title}>{nft?.displayCreator}</div>
