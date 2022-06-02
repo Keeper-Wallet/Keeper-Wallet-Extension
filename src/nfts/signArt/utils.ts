@@ -1,21 +1,10 @@
 import { signArtData } from 'nfts/signArt/constants';
 import { NftDetails, NftVendor } from 'nfts/index';
-
-export interface SignArtInfo {
-  id: string;
-  vendor: NftVendor.SignArt;
-  creator: string;
-  name: string;
-  description: string;
-  type: string;
-  fgImage: string;
-}
+import { SignArtInfo } from 'nfts/signArt/index';
 
 export const artworkInfoMask = /art_sold_\d+_of_\d+_(\w+)_(\w+)/i;
 
-export async function fetchAllSignArts(
-  nfts: NftDetails[]
-): Promise<SignArtInfo[]> {
+export async function fetchAll(nfts: NftDetails[]): Promise<SignArtInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
@@ -75,7 +64,6 @@ export async function fetchAllSignArts(
         const artName = artworksEntries[entriesPerAsset * index];
         const artDesc = artworksEntries[entriesPerAsset * index + 1];
         const artDisplayCid = artworksEntries[entriesPerAsset * index + 2];
-        const artType = artworksEntries[entriesPerAsset * index + 3];
 
         return {
           id,
@@ -83,8 +71,7 @@ export async function fetchAllSignArts(
           creator: artName.key.match(/art_name_\w+_(\w+)/i)[1],
           name: artName.value,
           description: artDesc.value,
-          type: artType.value,
-          fgImage: artDisplayCid.value,
+          cid: artDisplayCid.value,
         };
       }, [])
     );

@@ -3,7 +3,7 @@ import { ACTION } from './constants';
 import { equals } from 'ramda';
 import { AssetDetail } from '../services/Background';
 import { DuckInfo } from 'nfts/ducks/utils';
-import { SignArtInfo } from 'nfts/signArt/utils';
+import { SignArtInfo } from 'nfts/signArt';
 
 function getParam<S>(param: S, defaultParam: S) {
   if (param) {
