@@ -2,10 +2,7 @@ import * as styles from 'nfts/nftCard.module.css';
 import * as React from 'react';
 import cn from 'classnames';
 import { Loader } from 'ui/components/ui';
-import { useAppSelector } from 'ui/store';
-import { createNft } from 'nfts/utils';
-import { AssetDetail } from 'ui/services/Background';
-import { NftVendor } from 'nfts/index';
+import { Nft } from 'nfts/utils';
 
 export function NftCover({
   src,
@@ -54,44 +51,30 @@ export function NftTitle({ children }: { children: React.ReactNode }) {
 
 export function NftCard({
   nft,
-  onInfoClick,
-  className,
+  count = 0,
   mode = 'name',
+  className,
+  onInfoClick,
 }: {
-  nft: AssetDetail;
-  mode: 'name' | 'creator';
+  nft: Nft;
+  count?: number;
+  mode?: 'name' | 'creator';
   className?: string;
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
-  const nfts = useAppSelector(state => state.nfts);
-  const info = Object.values(NftVendor).includes(nfts[nft.id]?.vendor)
-    ? nfts[nft.id]
-    : null;
-
-  const nftDetails = createNft(nft, info);
-
-  const count =
-    mode === 'creator'
-      ? Object.values(nfts).filter(
-          item => item?.creator === nftDetails?.creator
-        ).length
-      : 0;
-
   return (
     <div className={cn(styles.card, className)}>
       <NftCover
-        src={nftDetails?.foreground}
-        isVideo={nftDetails?.isVideo}
-        onClick={() => onInfoClick(nftDetails?.id)}
+        src={nft?.foreground}
+        isVideo={nft?.isVideo}
+        onClick={() => onInfoClick(nft?.id)}
       />
       <NftFooter>
-        {mode === 'name' && (
-          <div className={styles.title}>{nftDetails?.name}</div>
-        )}
+        {mode === 'name' && <div className={styles.title}>{nft?.name}</div>}
         {mode === 'creator' && (
           <>
-            <div className={styles.title}>{nftDetails?.displayCreator}</div>
+            <div className={styles.title}>{nft?.displayCreator}</div>
             <div>{count}</div>
           </>
         )}
