@@ -8,8 +8,7 @@ import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { NftCard } from 'nfts/nftCard';
-import { createNft } from 'nfts/utils';
-import { BaseNft } from 'nfts/index';
+import { createNft, Nft } from 'nfts/utils';
 
 const Row = ({
   data,
@@ -17,7 +16,8 @@ const Row = ({
   style,
 }: {
   data: {
-    rows: AssetDetail[];
+    rows: Nft[];
+    counts: Record<string, number>;
     mode: 'name' | 'creator';
     len: number;
     onInfoClick: (assetId: string) => void;
@@ -26,27 +26,34 @@ const Row = ({
   index: number;
   style: CSSProperties;
 }) => {
-  const { rows, mode, len, onInfoClick, onSendClick } = data;
+  const { rows, counts = {}, mode, len, onInfoClick, onSendClick } = data;
 
   const leftIndex = 2 * index;
+  const leftNft = rows[leftIndex];
+  const leftCount = counts[leftNft.creator] || 0;
+
   const rightIndex = leftIndex + 1;
+  const rightNft = rows[rightIndex];
+  const rightCount = counts[rightNft.creator] || 0;
 
   return (
     <div style={style}>
       <div className={cn(styles.nftRow, len === 1 && styles.noScroll)}>
         <NftCard
           key={leftIndex}
-          nft={rows[leftIndex]}
+          nft={leftNft}
+          count={leftCount}
           mode={mode}
           onInfoClick={onInfoClick}
           onSendClick={onSendClick}
         />
 
-        {rows[rightIndex] && (
+        {rightNft && (
           <NftCard
-            mode={mode}
             key={rightIndex}
-            nft={rows[rightIndex]}
+            nft={rightNft}
+            count={rightCount}
+            mode={mode}
             onInfoClick={onInfoClick}
             onSendClick={onSendClick}
           />
@@ -109,16 +116,23 @@ export function NftGroups({
     [nfts]
   );
 
-  const creatorNfts = sortedNfts.reduce<BaseNft<any>[]>(
-    (creatorNfts, current) => {
+  const [creatorNfts, creatorCounts] = sortedNfts.reduce<
+    [Nft[], Record<string, number>]
+  >(
+    ([creatorNfts, creatorCounts], current) => {
       const currentDetails = getNftDetails(current);
-
-      if (!creatorNfts.find(nft => nft?.creator === currentDetails?.creator)) {
-        creatorNfts.push(currentDetails);
+      const creator = currentDetails.creator;
+      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
+        creatorCounts[creator] += 1;
+        return [creatorNfts, creatorCounts];
       }
-      return creatorNfts;
+
+      creatorCounts[creator] = 1;
+      creatorNfts.push(currentDetails);
+
+      return [creatorNfts, creatorCounts];
     },
-    []
+    [[], {}]
   );
 
   return (
@@ -135,6 +149,7 @@ export function NftGroups({
               itemSize={() => nftCardFullHeight}
               itemData={{
                 rows: creatorNfts,
+                counts: creatorCounts,
                 mode: 'creator',
                 len,
                 onInfoClick,

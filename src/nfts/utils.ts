@@ -16,9 +16,11 @@ import { Duckling, DucklingInfo } from 'nfts/ducklings';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
+export type Nft = ReturnType<typeof createNft>;
+
 export function createNft(asset: AssetDetail, info: NftInfo) {
   if (!asset) {
-    return new BaseNft(asset, info);
+    return null;
   }
 
   switch (info?.vendor) {
