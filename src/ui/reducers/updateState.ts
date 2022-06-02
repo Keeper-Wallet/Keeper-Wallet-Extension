@@ -2,7 +2,7 @@ import { Account, NetworkName } from 'accounts/types';
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
 import { TransactionFromNode } from '@waves/ts-types';
-import { NftInfo } from 'nfts/utils';
+import { NftInfo } from 'nfts';
 
 export * from './localState';
 export * from './remoteConfig';

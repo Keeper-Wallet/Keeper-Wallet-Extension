@@ -9,6 +9,7 @@ import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { NftCard } from 'nfts/nftCard';
 import { createNft, Nft } from 'nfts/utils';
+import { DisplayMode } from 'nfts/index';
 
 const Row = ({
   data,
@@ -18,7 +19,7 @@ const Row = ({
   data: {
     rows: Nft[];
     counts: Record<string, number>;
-    mode: 'name' | 'creator';
+    mode: DisplayMode;
     len: number;
     onInfoClick: (assetId: string) => void;
     onSendClick: (assetId: string) => void;
@@ -64,48 +65,15 @@ const Row = ({
 };
 
 export function NftList({
-  listRef,
+  mode,
   sortedNfts,
+  listRef,
   onInfoClick,
   onSendClick,
 }: {
-  listRef: React.MutableRefObject<VariableSizeList>;
+  mode: DisplayMode;
   sortedNfts: AssetDetail[];
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
-}) {
-  return (
-    <div className={styles.nftList}>
-      <AutoSizer>
-        {({ height, width }) => {
-          const len = Math.round(sortedNfts.length / 2);
-          return (
-            <VariableSizeList
-              ref={listRef}
-              height={height}
-              width={width}
-              itemCount={len}
-              itemSize={() => nftCardFullHeight}
-              itemData={{ rows: sortedNfts, len, onInfoClick, onSendClick }}
-              itemKey={(index, { rows }) => rows[index].id}
-            >
-              {Row}
-            </VariableSizeList>
-          );
-        }}
-      </AutoSizer>
-    </div>
-  );
-}
-
-export function NftGroups({
-  listRef,
-  sortedNfts,
-  onInfoClick,
-  onSendClick,
-}: {
   listRef: React.MutableRefObject<VariableSizeList>;
-  sortedNfts: AssetDetail[];
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
@@ -116,24 +84,31 @@ export function NftGroups({
     [nfts]
   );
 
-  const [creatorNfts, creatorCounts] = sortedNfts.reduce<
-    [Nft[], Record<string, number>]
-  >(
-    ([creatorNfts, creatorCounts], current) => {
-      const currentDetails = getNftDetails(current);
-      const creator = currentDetails.creator;
-      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
-        creatorCounts[creator] += 1;
+  let creatorNfts, creatorCounts;
+
+  if (mode == DisplayMode.Creator) {
+    [creatorNfts, creatorCounts] = sortedNfts.reduce<
+      [Nft[], Record<string, number>]
+    >(
+      ([creatorNfts, creatorCounts], current) => {
+        const currentDetails = getNftDetails(current);
+        const creator = currentDetails.creator;
+        if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
+          creatorCounts[creator] += 1;
+          return [creatorNfts, creatorCounts];
+        }
+
+        creatorCounts[creator] = 1;
+        creatorNfts.push(currentDetails);
+
         return [creatorNfts, creatorCounts];
-      }
-
-      creatorCounts[creator] = 1;
-      creatorNfts.push(currentDetails);
-
-      return [creatorNfts, creatorCounts];
-    },
-    [[], {}]
-  );
+      },
+      [[], {}]
+    );
+  } else if (mode === DisplayMode.Name) {
+    creatorNfts = sortedNfts.map(getNftDetails);
+    creatorCounts = {};
+  }
 
   return (
     <div className={styles.nftList}>
@@ -150,7 +125,7 @@ export function NftGroups({
               itemData={{
                 rows: creatorNfts,
                 counts: creatorCounts,
-                mode: 'creator',
+                mode,
                 len,
                 onInfoClick,
                 onSendClick,

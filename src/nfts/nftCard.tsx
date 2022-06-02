@@ -3,39 +3,31 @@ import * as React from 'react';
 import cn from 'classnames';
 import { Loader } from 'ui/components/ui';
 import { Nft } from 'nfts/utils';
+import { DisplayMode } from 'nfts/index';
 
 export function NftCover({
-  src,
-  isVideo,
-  bgImage,
-  bgColor,
+  nft,
   onClick,
 }: {
-  src: string;
-  isVideo?: boolean;
-  bgImage?: string;
-  bgColor?: string;
+  nft: Nft;
   onClick?: (e: React.MouseEvent) => void;
 }) {
   const [isLoading, setLoading] = React.useState(true);
 
-  return isVideo ? (
+  return nft?.isVideo ? (
     <video
       autoPlay
       loop
       className={cn(styles.cover, isLoading && 'skeleton-glow')}
     >
-      <source src={src} type="video/mp4" />
+      <source src={nft?.foreground} type="video/mp4" />
     </video>
   ) : (
     <img
-      src={src}
+      src={nft?.foreground}
       className={cn(styles.cover, isLoading && 'skeleton-glow')}
-      style={{
-        backgroundImage: bgImage,
-        backgroundColor: bgColor,
-      }}
-      onLoad={() => src && setLoading(false)}
+      style={nft?.background}
+      onLoad={() => nft?.foreground && setLoading(false)}
       onClick={onClick}
     />
   );
@@ -52,29 +44,25 @@ export function NftTitle({ children }: { children: React.ReactNode }) {
 export function NftCard({
   nft,
   count = 0,
-  mode = 'name',
+  mode,
   className,
   onInfoClick,
 }: {
   nft: Nft;
   count?: number;
-  mode?: 'name' | 'creator';
+  mode?: DisplayMode;
   className?: string;
   onInfoClick: (assetId: string) => void;
   onSendClick: (assetId: string) => void;
 }) {
   return (
     <div className={cn(styles.card, className)}>
-      <NftCover
-        src={nft?.foreground}
-        isVideo={nft?.isVideo}
-        onClick={() => onInfoClick(nft?.id)}
-      />
+      <NftCover nft={nft} onClick={() => onInfoClick(nft?.id)} />
       <NftFooter>
-        {mode === 'name' && (
+        {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft?.displayName}</div>
         )}
-        {mode === 'creator' && (
+        {mode === DisplayMode.Creator && (
           <>
             <div className={styles.title}>{nft?.displayCreator}</div>
             <div>{count}</div>

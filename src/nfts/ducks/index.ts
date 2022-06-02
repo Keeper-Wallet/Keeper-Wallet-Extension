@@ -10,6 +10,7 @@ import {
   ducksDAppIncubator,
 } from 'nfts/ducks/constants';
 import { AssetDetail } from 'ui/services/Background';
+import * as React from 'react';
 
 export class Duck extends BaseNft<DuckInfo> {
   protected genoType: string;
@@ -62,7 +63,7 @@ export class Duck extends BaseNft<DuckInfo> {
     );
   }
 
-  get background(): Partial<CSSStyleDeclaration> {
+  get background(): React.CSSProperties {
     return {
       backgroundImage:
         this.genoType === 'WWWWLUCK' &&

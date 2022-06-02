@@ -1,6 +1,6 @@
 import { AssetDetail } from 'ui/services/Background';
 import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
-import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
+import { fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
 import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
 
 import { signArtDApp } from 'nfts/signArt/constants';
@@ -8,14 +8,12 @@ import { ducksDApps } from 'nfts/ducks/constants';
 import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { NftDetails, NftVendor } from 'nfts/index';
-import { Duckling, DucklingInfo } from 'nfts/ducklings';
+import { NftDetails, NftInfo, NftVendor } from 'nfts/index';
+import { Duckling } from 'nfts/ducklings';
 import { Duck } from 'nfts/ducks';
-import { SignArt, SignArtInfo } from 'nfts/signArt';
-import { DucksArtefact, DucksArtefactInfo } from 'nfts/duckArtifacts';
+import { SignArt } from 'nfts/signArt';
+import { DucksArtefact } from 'nfts/duckArtifacts';
 import { Unknown } from 'nfts/unknown';
-
-export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
 export type Nft = ReturnType<typeof createNft>;
 

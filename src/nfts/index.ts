@@ -1,4 +1,16 @@
 import { AssetDetail } from 'ui/services/Background';
+import * as React from 'react';
+import { DuckInfo } from 'nfts/ducks/utils';
+import { DucklingInfo } from 'nfts/ducklings';
+import { DucksArtefactInfo } from 'nfts/duckArtifacts';
+import { SignArtInfo } from 'nfts/signArt';
+
+export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
+
+export enum DisplayMode {
+  Name,
+  Creator,
+}
 
 export enum NftVendor {
   Ducks = 'ducks',
@@ -26,7 +38,7 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   get foreground(): string {
     return null;
   }
-  get background(): Partial<CSSStyleDeclaration> | null {
+  get background(): React.CSSProperties | null {
     return null;
   }
   get isVideo(): boolean {
