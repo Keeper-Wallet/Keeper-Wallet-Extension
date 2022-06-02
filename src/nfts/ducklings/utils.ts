@@ -30,6 +30,7 @@ export async function fetchAll(nfts: NftDetails[]): Promise<DucklingInfo[]> {
         const growthLevel = level > 0 ? level / 1e14 : 0;
 
         return {
+          id,
           vendor: NftVendor.Ducklings,
           growthLevel,
         };

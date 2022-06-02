@@ -1,4 +1,5 @@
 import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
+import { capitalize } from 'nfts/utils';
 import {
   DucklingAdjectives,
   ducklingsApiUrl,
@@ -41,12 +42,4 @@ export class Duckling extends BaseNft<DucklingInfo> {
     fileIndex = fileIndex < 4 ? fileIndex : 3;
     return ducklingsApiUrl + `duckling-${fileIndex}.svg`;
   }
-}
-
-function capitalize(str: string): string {
-  if (!str) {
-    return str;
-  }
-
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

@@ -11,6 +11,7 @@ export enum NftVendor {
 export type NftDetails = AssetDetail & { assetId: string };
 
 export interface BaseInfo {
+  id: string;
   vendor: NftVendor;
 }
 
@@ -25,7 +26,7 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   get foreground(): string {
     return null;
   }
-  get background(): CSSStyleDeclaration | null {
+  get background(): Partial<CSSStyleDeclaration> | null {
     return null;
   }
   get isVideo(): boolean {

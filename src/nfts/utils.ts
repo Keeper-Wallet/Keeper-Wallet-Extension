@@ -13,6 +13,7 @@ import {
 } from 'nfts/duckArtifacts/utils';
 import { BaseNft, NftDetails, NftVendor } from 'nfts/index';
 import { Duckling, DucklingInfo } from 'nfts/ducklings';
+import { Duck } from 'nfts/ducks';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
@@ -26,6 +27,8 @@ export function createNft(asset: AssetDetail, info: NftInfo) {
   switch (info?.vendor) {
     case NftVendor.Ducklings:
       return new Duckling(asset, info);
+    case NftVendor.Ducks:
+      return new Duck(asset, info);
     default:
       return new BaseNft(asset);
   }
@@ -86,4 +89,12 @@ export async function fetchAllNfts(
       fetchAllDucklings(babyDucks).catch(() => []),
     ])
   );
+}
+
+export function capitalize(str: string): string {
+  if (!str) {
+    return str;
+  }
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
