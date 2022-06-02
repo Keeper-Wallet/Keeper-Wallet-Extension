@@ -8,6 +8,8 @@ import { nftCardFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { NftCard } from 'nfts/nftCard';
+import { createNft } from 'nfts/utils';
+import { BaseNft } from 'nfts/index';
 
 const Row = ({
   data,
@@ -102,14 +104,17 @@ export function NftGroups({
 }) {
   const nfts = useAppSelector(state => state.nfts);
 
-  const creatorNfts = sortedNfts.reduce<AssetDetail[]>(
+  const getNftDetails = React.useCallback(
+    nft => createNft(nft, nfts[nft.id]),
+    [nfts]
+  );
+
+  const creatorNfts = sortedNfts.reduce<BaseNft<any>[]>(
     (creatorNfts, current) => {
-      if (
-        !creatorNfts.find(
-          nft => nfts[nft.id]?.creator === nfts[current.id]?.creator
-        )
-      ) {
-        creatorNfts.push(current);
+      const currentDetails = getNftDetails(current);
+
+      if (!creatorNfts.find(nft => nft?.creator === currentDetails?.creator)) {
+        creatorNfts.push(currentDetails);
       }
       return creatorNfts;
     },
