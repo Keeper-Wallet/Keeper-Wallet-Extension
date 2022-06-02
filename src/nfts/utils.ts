@@ -8,11 +8,12 @@ import { ducksDApps } from 'nfts/ducks/constants';
 import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { BaseNft, NftDetails, NftVendor } from 'nfts/index';
+import { NftDetails, NftVendor } from 'nfts/index';
 import { Duckling, DucklingInfo } from 'nfts/ducklings';
 import { Duck } from 'nfts/ducks';
 import { SignArt, SignArtInfo } from 'nfts/signArt';
 import { DucksArtefact, DucksArtefactInfo } from 'nfts/duckArtifacts';
+import { Unknown } from 'nfts/unknown';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
@@ -33,7 +34,7 @@ export function createNft(asset: AssetDetail, info: NftInfo) {
     case NftVendor.SignArt:
       return new SignArt(asset, info);
     default:
-      return new BaseNft(asset);
+      return new Unknown(asset);
   }
 }
 
