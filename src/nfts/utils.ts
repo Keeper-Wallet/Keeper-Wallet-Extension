@@ -8,7 +8,7 @@ import { ducksDApps } from 'nfts/ducks/constants';
 import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { NftDetails, NftInfo, NftVendor } from 'nfts/index';
+import { BaseNft, NftDetails, NftInfo, NftVendor } from 'nfts/index';
 import { Duckling } from 'nfts/ducklings';
 import { Duck } from 'nfts/ducks';
 import { SignArt } from 'nfts/signArt';
@@ -17,7 +17,10 @@ import { Unknown } from 'nfts/unknown';
 
 export type Nft = ReturnType<typeof createNft>;
 
-export function createNft(asset: AssetDetail, info: NftInfo) {
+export function createNft(
+  asset: AssetDetail,
+  info: NftInfo | { id: string; vendor: NftVendor.Unknown }
+) {
   if (!asset) {
     return null;
   }
@@ -31,8 +34,10 @@ export function createNft(asset: AssetDetail, info: NftInfo) {
       return new DucksArtefact(asset, info);
     case NftVendor.SignArt:
       return new SignArt(asset, info);
-    default:
+    case NftVendor.Unknown:
       return new Unknown(asset);
+    default:
+      return new BaseNft(asset);
   }
 }
 
@@ -65,6 +70,7 @@ export async function fetchAllNfts(
   const babyDucks = [];
   const ducksArtefacts = [];
   const signArts = [];
+  const unknown = [];
 
   for (const nft of nfts) {
     switch (this.nftType(nft)) {
@@ -80,6 +86,9 @@ export async function fetchAllNfts(
       case NftVendor.SignArt:
         signArts.push(nft);
         break;
+      default:
+        unknown.push(nft);
+        break;
     }
   }
 
@@ -89,6 +98,7 @@ export async function fetchAllNfts(
       fetchAllDucks(ducks).catch(() => []),
       fetchAllArtefacts(ducksArtefacts).catch(() => []),
       fetchAllDucklings(babyDucks).catch(() => []),
+      unknown.map(nft => ({ id: nft.assetId, vendor: NftVendor.Unknown })),
     ])
   );
 }
