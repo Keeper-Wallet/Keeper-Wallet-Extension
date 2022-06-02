@@ -4,7 +4,7 @@ import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftList.module.css';
-import { nftCardFullHeight } from 'nfts/constants';
+import { nftRowFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 import { useAppSelector } from 'ui/store';
 import { NftCard } from 'nfts/nftCard';
@@ -121,7 +121,7 @@ export function NftList({
               height={height}
               width={width}
               itemCount={len}
-              itemSize={() => nftCardFullHeight}
+              itemSize={() => nftRowFullHeight}
               itemData={{
                 rows: creatorNfts,
                 counts: creatorCounts,

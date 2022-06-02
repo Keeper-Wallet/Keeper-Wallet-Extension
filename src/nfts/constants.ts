@@ -1,4 +1,4 @@
-const nftCardHeight = 170;
-const nftCardMarginBottom = 8;
+const nftRowHeight = 162;
+const nftRowMarginBottom = 8;
 
-export const nftCardFullHeight = nftCardHeight + nftCardMarginBottom;
+export const nftRowFullHeight = nftRowHeight + nftRowMarginBottom;
