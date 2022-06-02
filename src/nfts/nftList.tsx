@@ -30,11 +30,11 @@ const Row = ({
 
   const leftIndex = 2 * index;
   const leftNft = rows[leftIndex];
-  const leftCount = counts[leftNft.creator] || 0;
+  const leftCount = counts[leftNft?.creator] || 0;
 
   const rightIndex = leftIndex + 1;
   const rightNft = rows[rightIndex];
-  const rightCount = counts[rightNft.creator] || 0;
+  const rightCount = counts[rightNft?.creator] || 0;
 
   return (
     <div style={style}>
