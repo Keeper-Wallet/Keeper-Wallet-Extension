@@ -1,6 +1,6 @@
 import { AssetDetail } from 'ui/services/Background';
 import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
-import { DuckInfo, fetchAllDucks } from 'nfts/ducks/utils';
+import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
 import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
 
 import { signArtDApp } from 'nfts/signArt/constants';

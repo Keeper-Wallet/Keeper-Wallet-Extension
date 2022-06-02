@@ -4,7 +4,7 @@ export interface DuckInfo extends BaseInfo {
   vendor: NftVendor.Ducks;
 }
 
-export async function fetchAllDucks(nfts: NftDetails[]): Promise<DuckInfo[]> {
+export async function fetchAll(nfts: NftDetails[]): Promise<DuckInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
