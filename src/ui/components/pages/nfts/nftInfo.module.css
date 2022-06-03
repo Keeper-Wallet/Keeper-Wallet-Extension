@@ -3,17 +3,18 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  padding: 14px 24px;
+  background: var(--color-basic50);
 }
 
 .header {
-  padding: 0 0 14px;
+  padding: 14px 24px;
 }
 
 .content {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 0 24px 70px;
 }
 
 .cover {
@@ -30,4 +31,15 @@
 
 .title {
   color: var(--color-basic500);
+}
+
+.stickyBottomPanel {
+  position: sticky;
+  display: flex;
+  gap: 14px;
+  z-index: 1;
+  bottom: 0;
+  border-top: 1px solid #edf0f4;
+  padding: 14px;
+  background: #fff;
 }

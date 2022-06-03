@@ -4,14 +4,26 @@ import { NftHeader } from 'ui/components/pages/nfts/nftHeader';
 import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
-import { useAppSelector } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import { createNft } from 'nfts/utils';
+import { Button } from 'ui/components/ui';
+import { PAGES } from 'ui/pageConfig';
+import { AssetDetail } from 'ui/services/Background';
+import { setUiState } from 'ui/actions';
 
-export function NftInfo({ setTab }: { setTab: (newTab: string) => void }) {
+export function NftInfo({
+  setTab,
+  onBack,
+}: {
+  setTab: (newTab: string) => void;
+  onBack: () => void;
+}) {
   const { t } = useTranslation();
 
   const nfts = useAppSelector(state => state.nfts);
+  const dispatch = useAppDispatch();
 
+  // todo remove mocks
   const asset = {
     id: 'DkZ387c4MtKySzQha3z9hpjuQbKwTPRXG24WhypW86uo',
     issueHeight: 2821226,
@@ -30,7 +42,10 @@ export function NftInfo({ setTab }: { setTab: (newTab: string) => void }) {
 
   const nft = createNft(asset as any, nfts[asset.id]);
 
-  console.log(nft);
+  const setCurrentAsset = React.useCallback(
+    (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
+    [dispatch]
+  );
 
   return (
     <div className={styles.root}>
@@ -48,8 +63,10 @@ export function NftInfo({ setTab }: { setTab: (newTab: string) => void }) {
           </a>
         </div>
 
-        <div className={cn(styles.title, 'basic500', 'margin1')}>Creator</div>
-        <div className="body1 margin1">
+        <div className={cn(styles.title, 'basic500', 'margin1')}>
+          {t('nftInfo.creator')}
+        </div>
+        <div className="body1 margin2">
           <a rel="noopener noreferrer" href="#" className="link clean">
             {nft.displayCreator}
           </a>
@@ -58,11 +75,25 @@ export function NftInfo({ setTab }: { setTab: (newTab: string) => void }) {
         {nft?.description && (
           <>
             <div className={cn(styles.title, 'basic500', 'margin1')}>
-              {t('transactions.description')}
+              {t('nftInfo.description')}
             </div>
-            <div className="body1 margin1">{nft.description}</div>
+            <div className="body1 margin2">{nft.description}</div>
           </>
         )}
+      </div>
+
+      <div className={styles.stickyBottomPanel}>
+        <Button onClick={() => onBack()}>{t('nftInfo.backBtn')}</Button>
+        <Button
+          type="submit"
+          view="submit"
+          onClick={() => {
+            setCurrentAsset(nft);
+            setTab(PAGES.SEND);
+          }}
+        >
+          {t('nftInfo.sendBtn')}
+        </Button>
       </div>
     </div>
   );

@@ -453,6 +453,12 @@
     "select": "Choose your address avatar",
     "selectInfo": "This avatar is unique. You cannot change it later."
   },
+  "nftInfo": {
+    "creator": "Creator",
+    "description": "Description",
+    "sendBtn": "Send",
+    "backBtn": "Back"
+  },
   "otherAccounts": {
     "addAccount": "Add account",
     "noAccountsNote": "You have no other accounts in the current network",
