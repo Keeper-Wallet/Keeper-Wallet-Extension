@@ -56,6 +56,10 @@ export class Duck extends BaseNft<DuckInfo> {
     return `${capitalize(generationName)} ${capitalize(name)}`;
   }
 
+  get description(): string {
+    return null;
+  }
+
   get foreground(): string {
     return (
       ducksApiUrl +

@@ -14,15 +14,16 @@
 }
 
 .cover {
-  width: 162px;
-  height: 162px;
-  margin-top: -20px;
   flex-grow: 1;
   object-fit: cover;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+}
+
+.withTitle {
+  margin-top: -20px;
 }
 
 .footer {
