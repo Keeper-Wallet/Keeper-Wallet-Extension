@@ -5,7 +5,7 @@ import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { createNft } from 'nfts/utils';
+import { Nft } from 'nfts/utils';
 import { Button } from 'ui/components/ui';
 import { PAGES } from 'ui/pageConfig';
 import { AssetDetail } from 'ui/services/Background';
@@ -40,7 +40,7 @@ export function NftInfo({
     originTransactionId: 'DAsaD6cafmyPHMbbWhbvxb2kBrPSxd4myGYYiKwUL4Xm',
   };
 
-  const nft = createNft(asset as any, nfts[asset.id]);
+  const nft = useAppSelector(state => state.uiState?.currentAsset) as Nft;
 
   const setCurrentAsset = React.useCallback(
     (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
@@ -83,7 +83,14 @@ export function NftInfo({
       </div>
 
       <div className={styles.stickyBottomPanel}>
-        <Button onClick={() => onBack()}>{t('nftInfo.backBtn')}</Button>
+        <Button
+          onClick={() => {
+            setCurrentAsset(null);
+            onBack();
+          }}
+        >
+          {t('nftInfo.backBtn')}
+        </Button>
         <Button
           type="submit"
           view="submit"

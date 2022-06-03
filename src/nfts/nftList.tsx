@@ -6,9 +6,8 @@ import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftList.module.css';
 import { nftRowFullHeight } from 'nfts/constants';
 import cn from 'classnames';
-import { useAppSelector } from 'ui/store';
 import { NftCard } from 'nfts/nftCard';
-import { createNft, Nft } from 'nfts/utils';
+import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
 
 const Row = ({
@@ -21,13 +20,12 @@ const Row = ({
     counts: Record<string, number>;
     mode: DisplayMode;
     len: number;
-    onInfoClick: (assetId: string) => void;
-    onSendClick: (assetId: string) => void;
+    onClick: (asset: Nft) => void;
   };
   index: number;
   style: CSSProperties;
 }) => {
-  const { rows, counts = {}, mode, len, onInfoClick, onSendClick } = data;
+  const { rows, counts = {}, mode, len, onClick } = data;
 
   const leftIndex = 2 * index;
   const leftNft = rows[leftIndex];
@@ -45,8 +43,7 @@ const Row = ({
           nft={leftNft}
           count={leftCount}
           mode={mode}
-          onInfoClick={onInfoClick}
-          onSendClick={onSendClick}
+          onClick={() => onClick(leftNft)}
         />
 
         {rightNft && (
@@ -55,8 +52,7 @@ const Row = ({
             nft={rightNft}
             count={rightCount}
             mode={mode}
-            onInfoClick={onInfoClick}
-            onSendClick={onSendClick}
+            onClick={() => onClick(rightNft)}
           />
         )}
       </div>
@@ -66,55 +62,22 @@ const Row = ({
 
 export function NftList({
   mode,
-  sortedNfts,
+  nfts,
+  counters = {},
   listRef,
-  onInfoClick,
-  onSendClick,
+  onClick,
 }: {
   mode: DisplayMode;
-  sortedNfts: AssetDetail[];
+  nfts: AssetDetail[];
+  counters?: Record<string, number>;
   listRef: React.MutableRefObject<VariableSizeList>;
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
+  onClick: (asset: Nft) => void;
 }) {
-  const nfts = useAppSelector(state => state.nfts);
-
-  const getNftDetails = React.useCallback(
-    nft => createNft(nft, nfts[nft.id]),
-    [nfts]
-  );
-
-  let creatorNfts, creatorCounts;
-
-  if (mode == DisplayMode.Creator) {
-    [creatorNfts, creatorCounts] = sortedNfts.reduce<
-      [Nft[], Record<string, number>]
-    >(
-      ([creatorNfts, creatorCounts], current) => {
-        const currentDetails = getNftDetails(current);
-        const creator = currentDetails.creator;
-        if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
-          creatorCounts[creator] += 1;
-          return [creatorNfts, creatorCounts];
-        }
-
-        creatorCounts[creator] = 1;
-        creatorNfts.push(currentDetails);
-
-        return [creatorNfts, creatorCounts];
-      },
-      [[], {}]
-    );
-  } else if (mode === DisplayMode.Name) {
-    creatorNfts = sortedNfts.map(getNftDetails);
-    creatorCounts = {};
-  }
-
   return (
     <div className={styles.nftList}>
       <AutoSizer>
         {({ height, width }) => {
-          const len = Math.round(creatorNfts.length / 2);
+          const len = Math.round(nfts.length / 2);
           return (
             <VariableSizeList
               ref={listRef}
@@ -123,12 +86,11 @@ export function NftList({
               itemCount={len}
               itemSize={() => nftRowFullHeight}
               itemData={{
-                rows: creatorNfts,
-                counts: creatorCounts,
+                rows: nfts,
+                counts: counters,
                 mode,
                 len,
-                onInfoClick,
-                onSendClick,
+                onClick,
               }}
               itemKey={(index, { rows }) => rows[index].id}
             >

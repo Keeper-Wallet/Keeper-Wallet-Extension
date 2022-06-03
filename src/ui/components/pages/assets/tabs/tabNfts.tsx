@@ -11,6 +11,7 @@ import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import { PAGES } from 'ui/pageConfig';
 import { setTab } from 'ui/actions';
+import { createNft, Nft } from 'nfts/utils';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -19,21 +20,18 @@ const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
     } as AssetDetail)
 );
 
-export function TabNfts({
-  onInfoClick,
-  onSendClick,
-}: {
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
-}) {
+export function TabNfts() {
   const { t } = useTranslation();
+
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  const nfts = useAppSelector(state => state.nfts);
 
   const dispatch = useAppDispatch();
 
   const {
     term: [term, setTerm],
+    creator: [creator, setCreator],
     clearFilters,
   } = useNftFilter();
 
@@ -52,6 +50,39 @@ export function TabNfts({
           (a.displayName ?? '').localeCompare(b.displayName ?? '')
       )
     : PLACEHOLDERS;
+
+  const getNftDetails = React.useCallback(
+    nft => createNft(nft, nfts[nft.id]),
+    [nfts]
+  );
+
+  const [creatorNfts, creatorCounts] = sortedNfts.reduce<
+    [Nft[], Record<string, number>]
+  >(
+    ([creatorNfts, creatorCounts], current) => {
+      const currentDetails = getNftDetails(current);
+      const creator = currentDetails.creator;
+      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
+        creatorCounts[creator] += 1;
+        return [creatorNfts, creatorCounts];
+      }
+
+      creatorCounts[creator] = 1;
+      creatorNfts.push(currentDetails);
+
+      return [creatorNfts, creatorCounts];
+    },
+    [[], {}]
+  );
+
+  const [selectedCreator, setSelectedCreator] = React.useState<boolean>();
+
+  React.useEffect(() => {
+    if (creator && selectedCreator) {
+      dispatch(setTab(PAGES.NFT_COLLECTION));
+    }
+  }, [creator, selectedCreator, dispatch]);
+
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
@@ -84,9 +115,12 @@ export function TabNfts({
         <NftList
           mode={DisplayMode.Creator}
           listRef={listRef}
-          sortedNfts={sortedNfts}
-          onInfoClick={() => dispatch(setTab(PAGES.NFT_COLLECTION))}
-          onSendClick={onSendClick}
+          nfts={creatorNfts}
+          counters={creatorCounts}
+          onClick={(asset: Nft) => {
+            setCreator(asset.creator);
+            setSelectedCreator(true);
+          }}
         />
       )}
     </TabPanel>

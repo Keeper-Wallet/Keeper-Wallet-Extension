@@ -149,16 +149,7 @@ export function Assets({ setTab }: Props) {
               setTab(PAGES.SWAP);
             }}
           />
-          <TabNfts
-            onInfoClick={assetId => {
-              setCurrentAsset(assets[assetId]);
-              setShowAsset(true);
-            }}
-            onSendClick={assetId => {
-              setCurrentAsset(assets[assetId]);
-              setTab(PAGES.SEND);
-            }}
-          />
+          <TabNfts />
           <TabTxHistory />
         </TabPanels>
       </Tabs>

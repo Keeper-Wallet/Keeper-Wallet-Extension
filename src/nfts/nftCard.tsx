@@ -50,21 +50,20 @@ export function NftCard({
   count = 0,
   mode,
   className,
-  onInfoClick,
+  onClick,
 }: {
   nft: Nft;
   count?: number;
   mode?: DisplayMode;
   className?: string;
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
+  onClick: (asset: Nft) => void;
 }) {
   return (
     <div className={cn(styles.card, className)}>
       <NftCover
         className={styles.withTitle}
         nft={nft}
-        onClick={() => onInfoClick(nft?.id)}
+        onClick={() => onClick(nft)}
       />
       <NftFooter>
         {mode === DisplayMode.Name && (

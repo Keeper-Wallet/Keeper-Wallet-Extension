@@ -62,7 +62,10 @@ export function useAssetFilter() {
 }
 
 export function useNftFilter() {
-  return useFilter<NftFilters, keyof NftFilters>('nftFilters', ['term']);
+  return useFilter<NftFilters, keyof NftFilters>('nftFilters', [
+    'term',
+    'creator',
+  ]);
 }
 
 export function useTxHistoryFilter() {
