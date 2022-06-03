@@ -11,7 +11,7 @@
 
 .searchInput {
   height: 32px;
-  padding: 0 32px 0 32px;
+  padding: 0 32px;
   background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
     8px;
   border: none;
@@ -35,6 +35,7 @@
   right: 0;
   width: 32px;
   height: 32px;
+  padding: 0;
   color: var(--color-basic200);
   background: none;
 }
