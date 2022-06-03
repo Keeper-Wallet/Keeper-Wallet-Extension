@@ -1,9 +1,8 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
-import { icontains } from 'ui/components/pages/assets/helpers';
 import { useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { useAppSelector } from 'ui/store';
+import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useNftFilter } from './helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
@@ -11,6 +10,8 @@ import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
+import { PAGES } from 'ui/pageConfig';
+import { setTab } from 'ui/actions';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -30,6 +31,8 @@ export function TabNfts({
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
 
+  const dispatch = useAppDispatch();
+
   const {
     term: [term, setTerm],
     onlyMy: [onlyMy, setOnlyMy],
@@ -46,11 +49,11 @@ export function TabNfts({
 
   const sortedNfts = myNfts
     ? myNfts
-        .filter(
-          nft =>
-            (!onlyMy || nft.issuer === address) &&
-            (!term || nft.id === term || icontains(nft.displayName, term))
-        )
+        // .filter(
+        //   nft =>
+        //     (!onlyMy || nft.issuer === address) &&
+        //     (!term || nft.id === term || icontains(nft.displayName, term))
+        // )
         .sort(
           (a, b) =>
             (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
@@ -123,10 +126,10 @@ export function TabNfts({
         </div>
       ) : (
         <NftList
-          mode={DisplayMode.Name}
+          mode={onlyMy ? DisplayMode.Creator : DisplayMode.Name}
           listRef={listRef}
           sortedNfts={sortedNfts}
-          onInfoClick={onInfoClick}
+          onInfoClick={() => dispatch(setTab(PAGES.NFT_COLLECTION))}
           onSendClick={onSendClick}
         />
       )}
