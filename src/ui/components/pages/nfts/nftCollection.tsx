@@ -7,6 +7,9 @@ import * as styles from './nftCollection.module.css';
 import { SearchInput } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
+import { useNftFilter } from 'ui/components/pages/assets/tabs/helpers';
+import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -20,12 +23,16 @@ export function NftCollection({
 }: {
   setTab: (newTab: string) => void;
 }) {
+  const { t } = useTranslation();
   const listRef = React.useRef<VariableSizeList>();
 
   const address = useAppSelector(state => state.selectedAccount.address);
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
 
-  const [term, setTerm] = React.useState<string>('');
+  const {
+    term: [term, setTerm],
+    clearFilters,
+  } = useNftFilter();
 
   React.useEffect(() => {
     if (listRef.current) {
@@ -54,18 +61,39 @@ export function NftCollection({
             autoFocus
             className={styles.searchInput}
             value={term ?? ''}
-            onInput={e => setTerm(e.target.value)}
-            onClear={() => setTerm('')}
+            onInput={e => {
+              listRef.current && listRef.current.resetAfterIndex(0);
+              setTerm(e.target.value);
+            }}
+            onClear={() => {
+              listRef.current && listRef.current.resetAfterIndex(0);
+              setTerm('');
+            }}
           />
         </div>
 
-        <NftList
-          mode={DisplayMode.Name}
-          listRef={listRef}
-          sortedNfts={sortedNfts}
-          onInfoClick={() => setTab(PAGES.NFT_INFO)}
-          onSendClick={() => void 0}
-        />
+        {sortedNfts.length === 0 ? (
+          <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
+            {term ? (
+              <>
+                <div className="margin-min">{t('assets.notFoundNFTs')}</div>
+                <p className="blue link" onClick={() => clearFilters()}>
+                  {t('assets.resetFilters')}
+                </p>
+              </>
+            ) : (
+              t('assets.emptyNFTs')
+            )}
+          </div>
+        ) : (
+          <NftList
+            mode={DisplayMode.Name}
+            listRef={listRef}
+            sortedNfts={sortedNfts}
+            onInfoClick={() => setTab(PAGES.NFT_INFO)}
+            onSendClick={() => void 0}
+          />
+        )}
       </div>
     </div>
   );
