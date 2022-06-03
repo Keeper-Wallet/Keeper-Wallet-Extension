@@ -56,7 +56,7 @@ export function NftCollection({
         creator={'@VeryLongCreatorName'}
       />
 
-      <div className={styles.scrollable}>
+      <div className={styles.content}>
         <div className={styles.filterContainer}>
           <SearchInput
             autoFocus

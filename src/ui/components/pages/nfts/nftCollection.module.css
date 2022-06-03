@@ -5,7 +5,7 @@
   overflow: hidden;
 }
 
-.scrollable {
+.content {
   display: flex;
   flex-direction: column;
   height: 100%;
