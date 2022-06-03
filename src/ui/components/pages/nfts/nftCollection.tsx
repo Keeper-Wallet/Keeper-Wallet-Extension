@@ -10,6 +10,7 @@ import { AssetDetail } from 'ui/services/Background';
 import { useNftFilter } from 'ui/components/pages/assets/tabs/helpers';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
+import { NftHeader } from 'ui/components/pages/nfts/nftHeader';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -50,10 +51,10 @@ export function NftCollection({
 
   return (
     <div className={styles.root}>
-      <div className={styles.header}>
-        <div className={styles.title}>Nft collection name</div>
-        <div className={styles.creator}>@CollectionAuthor</div>
-      </div>
+      <NftHeader
+        title={'Nft collection name is very long so we should ellipsis this'}
+        creator={'@VeryLongCreatorName'}
+      />
 
       <div className={styles.scrollable}>
         <div className={styles.filterContainer}>

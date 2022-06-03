@@ -5,33 +5,6 @@
   overflow: hidden;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 14px 14px 0;
-}
-
-.title {
-  font-style: normal;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 21px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.creator {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
-  color: var(--color-basic500);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .scrollable {
   display: flex;
   flex-direction: column;
