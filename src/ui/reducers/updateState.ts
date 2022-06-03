@@ -29,7 +29,6 @@ export type AssetFilters = {
 };
 export type NftFilters = {
   term?: string;
-  onlyMy?: boolean;
 };
 export type TxHistoryFilters = {
   term?: string;

@@ -143,7 +143,6 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
               >
                 <path
                   fill="var(--color-submit-400)"
-                  // fill={onlyMy ? 'var(--color-submit400)' : 'var(--color-basic500)'}
                   fillOpacity=".01"
                   d="M0 0h14v14H0z"
                 />
