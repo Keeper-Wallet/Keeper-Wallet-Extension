@@ -15,7 +15,7 @@ import { getFirstLangCode } from './lib/get-first-lang-code';
 import PortStream from './lib/port-stream.js';
 import { ComposableObservableStore } from './lib/ComposableObservableStore';
 import { equals } from 'ramda';
-import LocalStore from './lib/local-store';
+import LocalStore from './lib/localStore';
 import {
   AssetInfoController,
   CurrentAccountController,
@@ -129,6 +129,7 @@ extension.runtime.onInstalled.addListener(async details => {
 async function setupBackgroundService() {
   // Background service init
   const localStore = new LocalStore();
+  await localStore.migrate();
   const initState = await localStore.get();
   const initLangCode = await getFirstLangCode();
   const backgroundService = new BackgroundService({
@@ -155,13 +156,11 @@ async function setupBackgroundService() {
     if (!state) {
       throw new Error('Updated state is missing', state);
     }
-    if (localStore.isSupported) {
-      try {
-        await localStore.set(state);
-      } catch (err) {
-        // log error so we dont break the pipeline
-        log.error('error setting state in local store:', err);
-      }
+    try {
+      await localStore.set(state);
+    } catch (err) {
+      // log error so we dont break the pipeline
+      log.error('error setting state in local store:', err);
     }
   }
 

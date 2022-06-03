@@ -1,0 +1,23 @@
+name: Pull reverse migrations
+on: create
+
+jobs:
+  pull-reverse-migrations:
+    if: ${{ contains(github.ref, 'rollback-release-') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract branch name
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extractBranch
+
+      - name: Pull reverse migrations
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git fetch origin master
+          git checkout origin/master -- src/lib/reverseMigrations.ts
+          git add src/lib/reverseMigrations.ts
+          git commit -m "Pull reverse migrations"
+          git push origin HEAD:${{ steps.extractBranch.outputs.branch }}
