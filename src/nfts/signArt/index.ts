@@ -16,15 +16,19 @@ export class SignArt extends BaseNft<SignArtInfo> {
   }
 
   get displayCreator(): string {
-    return this.info.userName || super.displayCreator;
+    return this.info.userName ? `@${this.info.userName}` : super.displayCreator;
+  }
+
+  get creatorUrl(): string {
+    return `https://mainnet.sign-art.app/user/${this.creator}`;
   }
 
   get displayName(): string {
-    return this.info.name;
+    return this.info.name || super.displayName;
   }
 
   get description(): string {
-    return this.info.description;
+    return this.info.description || super.description;
   }
 
   get foreground(): string {
