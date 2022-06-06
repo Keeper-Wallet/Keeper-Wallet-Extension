@@ -20,6 +20,10 @@ export class DucksArtefact extends BaseNft<DucksArtefactInfo> {
     );
   }
 
+  get marketplaceUrl(): string {
+    return `https://wavesducks.com/item/${this.id}`;
+  }
+
   get foreground(): string {
     return ducksArtefactApiUrl + `${this.asset.name}.svg`;
   }

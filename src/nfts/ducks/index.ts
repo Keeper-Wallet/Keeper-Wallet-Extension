@@ -32,7 +32,7 @@ export class Duck extends BaseNft<DuckInfo> {
       : null;
   }
 
-  get displayCreator() {
+  get displayCreator(): string {
     switch (this.creator) {
       case ducksDAppBreeder:
         return 'Ducks Breeder';
@@ -41,7 +41,7 @@ export class Duck extends BaseNft<DuckInfo> {
     }
   }
 
-  get displayName() {
+  get displayName(): string {
     const name = duckNames[this.genoType]
       ? duckNames[this.genoType].name
       : this.genoType
@@ -54,6 +54,10 @@ export class Duck extends BaseNft<DuckInfo> {
     const generationName = duckGenerationNames[generation] ?? generation;
 
     return `${capitalize(generationName)} ${capitalize(name)}`;
+  }
+
+  get marketplaceUrl(): string {
+    return `https://wavesducks.com/duck/${this.id}`;
   }
 
   get description(): string {

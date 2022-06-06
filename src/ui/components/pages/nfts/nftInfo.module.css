@@ -7,7 +7,21 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 14px 24px;
+}
+
+.title {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .content {
@@ -27,10 +41,6 @@
   justify-content: space-between;
   line-height: 14px;
   padding: 24px 0;
-}
-
-.title {
-  color: var(--color-basic500);
 }
 
 .stickyBottomPanel {

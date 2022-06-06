@@ -7,6 +7,7 @@ export interface SignArtInfo extends BaseInfo {
   userName: string;
   name: string;
   description: string;
+  artworkId: string;
   cid: string;
 }
 
@@ -21,6 +22,10 @@ export class SignArt extends BaseNft<SignArtInfo> {
 
   get creatorUrl(): string {
     return `https://mainnet.sign-art.app/user/${this.creator}`;
+  }
+
+  get marketplaceUrl(): string {
+    return `https://mainnet.sign-art.app/user/${this.creator}/artwork/${this.info.artworkId}`;
   }
 
   get displayName(): string {

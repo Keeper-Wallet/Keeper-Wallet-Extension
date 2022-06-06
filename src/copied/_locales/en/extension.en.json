@@ -461,7 +461,9 @@
     "creatorUrlTooltip": "Visit author's page",
     "description": "Description",
     "sendBtn": "Send",
-    "backBtn": "Back"
+    "backBtn": "Back",
+    "viewInExplorer": "View details in Explorer",
+    "viewOnMarketplace": "View on marketplace"
   },
   "otherAccounts": {
     "addAccount": "Add account",

@@ -12,11 +12,11 @@ export interface DucklingInfo extends BaseInfo {
 }
 
 export class Duckling extends BaseNft<DucklingInfo> {
-  get displayCreator() {
+  get displayCreator(): string {
     return 'Ducklings';
   }
 
-  get displayName() {
+  get displayName(): string {
     const indexes = [16, 10, 1, 9, 9, 7];
     const indexes2 = [10, 4, 2, 0, 2, 1];
 
@@ -35,6 +35,10 @@ export class Duckling extends BaseNft<DucklingInfo> {
     const name = ducklingNames[nameNumber % ducklingNames.length];
 
     return `${capitalize(adj)} ${capitalize(name)}`;
+  }
+
+  get marketplaceUrl(): string {
+    return `https://wavesducks.com/duckling/${this.id}`;
   }
 
   get foreground() {

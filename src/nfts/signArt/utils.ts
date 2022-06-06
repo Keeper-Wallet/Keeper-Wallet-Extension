@@ -83,14 +83,17 @@ export async function fetchAll(nfts: NftDetails[]): Promise<SignArtInfo[]> {
         const artDesc = artworksEntries[entriesPerAsset * index + 1];
         const artDisplayCid = artworksEntries[entriesPerAsset * index + 2];
         const userName = userNameEntries[index];
+        const [, artworkId, creator] =
+          artName.key.match(/art_name_(\w+)_(\w+)/i);
 
         return {
           id,
           vendor: NftVendor.SignArt,
-          creator: userName.key.match(/user_name_(\w+)/i)[1],
+          creator,
           userName: userName.value,
           name: artName.value,
           description: artDesc.value,
+          artworkId,
           cid: artDisplayCid.value,
         };
       }, [])
