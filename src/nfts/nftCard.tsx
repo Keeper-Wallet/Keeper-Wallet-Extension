@@ -5,15 +5,7 @@ import { Loader } from 'ui/components/ui';
 import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
 
-export function NftCover({
-  className,
-  nft,
-  onClick,
-}: {
-  className?: string;
-  nft: Nft;
-  onClick?: (e: React.MouseEvent) => void;
-}) {
+export function NftCover({ className, nft }: { className?: string; nft: Nft }) {
   const [isLoading, setLoading] = React.useState(true);
 
   return nft?.isVideo ? (
@@ -22,7 +14,6 @@ export function NftCover({
       loop
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
       onLoad={() => nft?.foreground && setLoading(false)}
-      onClick={onClick}
     >
       <source src={nft?.foreground} type="video/mp4" />
     </video>
@@ -32,7 +23,6 @@ export function NftCover({
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
       style={nft?.background}
       onLoad={() => nft?.foreground && setLoading(false)}
-      onClick={onClick}
     />
   );
 }
@@ -59,12 +49,8 @@ export function NftCard({
   onClick: (asset: Nft) => void;
 }) {
   return (
-    <div className={cn(styles.card, className)}>
-      <NftCover
-        className={styles.withTitle}
-        nft={nft}
-        onClick={() => onClick(nft)}
-      />
+    <div className={cn(styles.card, className)} onClick={() => onClick(nft)}>
+      <NftCover className={styles.withTitle} nft={nft} />
       <NftFooter>
         {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft?.displayName}</div>
