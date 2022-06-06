@@ -65,6 +65,7 @@ export class CurrentAccountController {
 
     if (this.isLocked() || accounts.length < 1) return;
 
+    const oldBalances = this.store.getState().balances;
     const data = await Promise.all(
       accounts.map(async account => {
         try {
@@ -149,9 +150,6 @@ export class CurrentAccountController {
           return [
             address,
             {
-              available: available.toString(),
-              leasedOut: leasedOut.toString(),
-              network: currentNetwork,
               ...(isActiveAddress
                 ? {
                     aliases: aliases,
@@ -192,7 +190,10 @@ export class CurrentAccountController {
                       issuer: nft.issuer,
                     })),
                   }
-                : undefined),
+                : oldBalances[address]),
+              available: available.toString(),
+              leasedOut: leasedOut.toString(),
+              network: currentNetwork,
             },
           ];
         } catch (e) {
@@ -201,7 +202,6 @@ export class CurrentAccountController {
       })
     );
 
-    const oldBalances = this.store.getState().balances;
     this.store.updateState({
       balances: Object.assign(
         {},
