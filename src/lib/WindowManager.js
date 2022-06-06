@@ -1,4 +1,4 @@
-import extension from 'extensionizer';
+import { extension } from 'lib/extension';
 
 const height = 622;
 const width = 357;
@@ -22,6 +22,7 @@ export class WindowManager {
           {
             url: 'notification.html',
             type: 'popup',
+            focused: true,
             width,
             height,
           },
@@ -61,12 +62,5 @@ export class WindowManager {
       window =>
         window.type === 'popup' && window.id === this._notificationWindowId
     );
-  }
-
-  async closePopupWindow() {
-    const popup = extension.extension
-      .getViews({ type: 'popup' })
-      .find(w => w.location.pathname === '/popup.html');
-    return popup && popup.close();
   }
 }

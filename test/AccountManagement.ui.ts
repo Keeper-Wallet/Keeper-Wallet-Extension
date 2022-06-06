@@ -21,7 +21,9 @@ describe('Account management', function () {
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
 
-    tabKeeper = await this.driver.getWindowHandle();
+    const handles = await this.driver.getAllWindowHandles();
+    tabKeeper = handles[0];
+
     await this.driver
       .wait(
         until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -30,11 +32,11 @@ describe('Account management', function () {
       .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
     await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      async () => (await this.driver.getAllWindowHandles()).length === 3,
       this.wait
     );
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper) {
+      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
         tabAccounts = handle;
         await this.driver.switchTo().window(tabAccounts);
         await this.driver.navigate().refresh();
@@ -78,6 +80,7 @@ describe('Account management', function () {
           this.wait
         )
         .click();
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
     });
@@ -169,8 +172,13 @@ describe('Account management', function () {
         await searchInput.sendKeys(/*r*/ 'ic' /*h*/);
         expect(
           await this.driver
-            .findElement(
-              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            .wait(
+              until.elementLocated(
+                By.css(
+                  '[data-testid="accountCard"] [data-testid="accountName"]'
+                )
+              ),
+              this.wait
             )
             .getText()
         ).to.be.equal('rich');
@@ -180,8 +188,13 @@ describe('Account management', function () {
         await searchInput.sendKeys('3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1');
         expect(
           await this.driver
-            .findElement(
-              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            .wait(
+              until.elementLocated(
+                By.css(
+                  '[data-testid="accountCard"] [data-testid="accountName"]'
+                )
+              ),
+              this.wait
             )
             .getText()
         ).to.be.equal('rich');
@@ -193,8 +206,13 @@ describe('Account management', function () {
         );
         expect(
           await this.driver
-            .findElement(
-              By.css('[data-testid="accountCard"] [data-testid="accountName"]')
+            .wait(
+              until.elementLocated(
+                By.css(
+                  '[data-testid="accountCard"] [data-testid="accountName"]'
+                )
+              ),
+              this.wait
             )
             .getText()
         ).to.be.equal('rich');
@@ -262,12 +280,10 @@ describe('Account management', function () {
         });
 
         it('Clicking "Copy" displays the password entry form', async function () {
-          expect(
-            await this.driver.wait(
-              until.elementLocated(By.css('form#enterPassword')),
-              this.wait
-            )
-          ).not.to.be.throw;
+          await this.driver.wait(
+            until.elementLocated(By.css('form#enterPassword')),
+            this.wait
+          );
           await this.driver
             .findElement(By.css('button#passwordCancel'))
             .click();
@@ -419,6 +435,7 @@ describe('Account management', function () {
 
       it('Click "Back" on the account deletion confirmation screen - the account is not deleted', async function () {
         await this.driver.findElement(By.css('div.arrow-back-icon')).click();
+
         expect(
           await this.driver.wait(
             until.elementLocated(
@@ -548,6 +565,7 @@ describe('Account management', function () {
           this.wait
         )
         .click();
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('second');
 
@@ -566,6 +584,7 @@ describe('Account management', function () {
           this.wait
         )
         .click();
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('fourth');
 

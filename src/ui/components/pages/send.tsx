@@ -22,6 +22,7 @@ export function Send() {
     state => state.balances[state.selectedAccount.address]
   );
   const assetBalances = accountBalance?.assets;
+  const assets = useAppSelector(state => state.assets);
   const currentAsset = useAppSelector(state => state.uiState?.currentAsset);
   const isNft =
     currentAsset &&
@@ -29,18 +30,18 @@ export function Send() {
     currentAsset.quantity == 1 &&
     !currentAsset.reissuable;
 
-  const assets = useAppSelector(state => state.assets);
-
   React.useEffect(() => {
     if (!assetBalances) {
       dispatch(getBalances());
     }
   }, [assetBalances, dispatch]);
 
-  const currentBalance = Money.fromCoins(
-    !isNft ? assetBalances[currentAsset.id || 'WAVES']?.balance : 1,
-    new Asset(currentAsset)
-  );
+  const currentBalance = currentAsset
+    ? Money.fromCoins(
+        !isNft ? assetBalances[currentAsset.id]?.balance : 1,
+        new Asset(currentAsset)
+      )
+    : null;
 
   const [isTriedToSubmit, setIsTriedToSubmit] = React.useState(false);
 
@@ -57,7 +58,7 @@ export function Send() {
 
   const [amountValue, setAmountValue] = React.useState(isNft ? '1' : '');
   const amountError =
-    !amountValue || Number(amountValue) == 0
+    !currentBalance || !amountValue || Number(amountValue) == 0
       ? t('send.amountRequiredError')
       : !currentBalance.getTokens().gte(amountValue)
       ? t('send.insufficientFundsError')
@@ -104,7 +105,11 @@ export function Send() {
       <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            {t('send.title', { name: currentAsset?.displayName })}
+            {!currentAsset ? (
+              <Loader />
+            ) : (
+              t('send.title', { name: currentAsset.displayName })
+            )}
           </h1>
         </header>
 

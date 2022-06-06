@@ -35,7 +35,8 @@ describe('Network management', function () {
 
       it('Imported testnet account starts with 3N or 3M', async function () {
         // save popup and accounts refs
-        tabKeeper = await this.driver.getWindowHandle();
+        const handles = await this.driver.getAllWindowHandles();
+        tabKeeper = handles[0];
         await this.driver
           .wait(
             until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -44,11 +45,11 @@ describe('Network management', function () {
           .findElement(By.css('[data-testid="addAccountBtn"]'))
           .click();
         await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
+          async () => (await this.driver.getAllWindowHandles()).length === 3,
           this.wait
         );
         for (const handle of await this.driver.getAllWindowHandles()) {
-          if (handle !== tabKeeper) {
+          if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
             await this.driver.switchTo().window(handle);
             await this.driver.navigate().refresh();
             break;

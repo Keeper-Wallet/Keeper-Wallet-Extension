@@ -6,7 +6,12 @@
 import { seedUtils } from '@waves/waves-transactions';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
-import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './constants';
+import {
+  DEFAULT_ANIMATION_DELAY,
+  DEFAULT_SWITCH_NETWORK_DELAY,
+  SERVICE_WORKER_INSTALLATION_DELAY,
+  DEFAULT_PASSWORD,
+} from './constants';
 import { expect } from 'chai';
 
 interface VaultEntry {
@@ -26,18 +31,19 @@ export const App = {
   ) {
     await App.open.call(this);
 
-    const tabKeeper = await this.driver.getWindowHandle();
+    const [tabKeeper] = await this.driver.getAllWindowHandles();
     await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 2,
+      async () => (await this.driver.getAllWindowHandles()).length === 3,
       this.wait
     );
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper) {
+      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
         await this.driver.switchTo().window(handle);
         await this.driver.navigate().refresh();
         break;
       }
     }
+
     await this.driver
       .wait(
         until.elementIsVisible(
@@ -160,9 +166,57 @@ export const App = {
       this.wait
     );
   },
+  openServiceWorkerTab: async function (this: mocha.Context) {
+    await this.driver.switchTo().newWindow('tab');
+    const extensionPanelHandle = await this.driver.getWindowHandle();
+
+    await this.driver.get(this.extensionPanel);
+
+    const extensionsManager = await (
+      await this.driver.findElement(By.css('extensions-manager'))
+    ).getShadowRoot();
+
+    const extensionsToolbar = await (
+      await extensionsManager.findElement(By.css('extensions-toolbar'))
+    ).getShadowRoot();
+    const devMode = await extensionsToolbar.findElement(By.id('devMode'));
+    const isDevMode = await devMode.getAttribute('checked');
+    if (!isDevMode) {
+      await devMode.click();
+    }
+
+    const extensionsDetailView = await (
+      await extensionsManager.findElement(By.css('extensions-detail-view'))
+    ).getShadowRoot();
+    const bg = await extensionsDetailView.findElements(
+      By.css('a.inspectable-view')
+    );
+    await bg[bg.length - 1].click();
+
+    const handles = await this.driver.getAllWindowHandles();
+    this.serviceWorkerTab = handles[handles.length - 1];
+
+    await this.driver.switchTo().window(extensionPanelHandle);
+    await this.driver.close();
+    await this.driver.switchTo().window(handles[0]);
+  },
+  restartServiceWorker: async function (this: mocha.Context) {
+    const currentHandle = await this.driver.getWindowHandle();
+
+    await this.driver.switchTo().newWindow('tab');
+    await this.driver.get('chrome://serviceworker-internals');
+
+    const buttons = await this.driver.findElements(By.css('button.stop'));
+    await buttons[buttons.length - 1].click();
+
+    await this.driver.sleep(SERVICE_WORKER_INSTALLATION_DELAY);
+
+    await this.driver.close();
+    await this.driver.switchTo().window(currentHandle);
+  },
   closeBgTabs: async function (this: mocha.Context, foreground: string) {
     for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== foreground) {
+      if (handle !== foreground && handle !== this.serviceWorkerTab) {
         await this.driver.switchTo().window(handle);
         await this.driver.close();
       }
@@ -173,16 +227,22 @@ export const App = {
 
 export const Assets = {
   addAccount: async function (this: mocha.Context) {
+    await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
+
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="otherAccountsButton"]')),
+        until.elementIsVisible(
+          this.driver.findElement(By.css('[data-testid="otherAccountsButton"]'))
+        ),
         this.wait
       )
       .click();
 
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="addAccountButton"]')),
+        until.elementIsVisible(
+          this.driver.findElement(By.css('[data-testid="addAccountButton"]'))
+        ),
         this.wait
       )
       .click();
@@ -390,6 +450,8 @@ export const Settings = {
 
 export const Network = {
   switchTo: async function (this: mocha.Context, network: string) {
+    await this.driver.sleep(DEFAULT_SWITCH_NETWORK_DELAY);
+
     await this.driver
       .wait(
         until.elementIsVisible(

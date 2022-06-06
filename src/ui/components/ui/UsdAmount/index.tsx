@@ -1,24 +1,25 @@
 import * as React from 'react';
 import BigNumber from '@waves/bignumber';
 import { useAppSelector } from 'ui/store';
-import { AssetDetail } from 'ui/services/Background';
 
 interface Props {
-  asset?: AssetDetail;
+  id: string;
   tokens: BigNumber;
   className?: string;
 }
 
-export function UsdAmount({ asset, tokens, className }: Props) {
+export function UsdAmount({ id, tokens, className }: Props) {
+  const usdPrices = useAppSelector(state => state.usdPrices);
+
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const isMainnet = currentNetwork === 'mainnet';
 
-  if (!isMainnet || !asset?.usdPrice || asset.usdPrice === '1') {
+  if (!usdPrices || !isMainnet) {
     return null;
   }
 
-  return (
-    <p className={className}>{`≈ $${new BigNumber(asset.usdPrice)
+  return !usdPrices[id] || usdPrices[id] === '1' ? null : (
+    <p className={className}>{`≈ $${new BigNumber(usdPrices[id])
       .mul(tokens)
       .toFixed(2)}`}</p>
   );

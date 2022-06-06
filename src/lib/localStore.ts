@@ -1,4 +1,4 @@
-import * as extension from 'extensionizer';
+import { extension } from 'lib/extension';
 import * as Sentry from '@sentry/react';
 import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 

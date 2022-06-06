@@ -1,9 +1,10 @@
+import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 const MAX_NFT_ITEMS = 1000;
-const POLL_INTERVAL = 10000;
+const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {
   constructor(options = {}) {
@@ -22,13 +23,19 @@ export class CurrentAccountController {
     this.store = new ObservableStore(
       Object.assign({}, defaults, options.initState)
     );
-    this.poller = undefined;
+
+    extension.alarms.onAlarm.addListener(({ name }) => {
+      if (name === 'updateBalances') {
+        this.updateBalances();
+      }
+    });
     this.restartPolling();
   }
 
   restartPolling() {
-    clearInterval(this.poller);
-    this.poller = setInterval(this.updateBalances.bind(this), POLL_INTERVAL);
+    extension.alarms.create('updateBalances', {
+      periodInMinutes: PERIOD_IN_SECONDS / 60,
+    });
   }
 
   getByUrl(url) {

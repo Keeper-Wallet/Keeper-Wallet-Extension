@@ -6,6 +6,7 @@ type VaultState = { locked: boolean; initialized: boolean };
 
 type Options = {
   initState: VaultState;
+  password?: string;
   wallet: WalletController;
   identity: IdentityController;
 };
@@ -14,12 +15,11 @@ export class VaultController {
   store: ObservableStore<VaultState>;
   private wallet: WalletController;
   private identity: IdentityController;
-  private password: string;
 
   constructor(opts: Options) {
     this.store = new ObservableStore(
       Object.assign({}, { locked: null, initialized: null }, opts.initState, {
-        locked: true,
+        locked: !opts.password,
       })
     );
     this.wallet = opts.wallet;
@@ -50,7 +50,6 @@ export class VaultController {
     this.wallet.initVault(password);
     this.identity.initVault(password);
 
-    this.password = password;
     this.locked = false;
     this.initialized = true;
   }
@@ -59,7 +58,6 @@ export class VaultController {
     this.wallet.lock();
     this.identity.lock();
 
-    this.password = null;
     this.locked = true;
   }
 
@@ -67,7 +65,6 @@ export class VaultController {
     this.wallet.unlock(password);
     this.identity.unlock(password);
 
-    this.password = password;
     this.locked = false;
   }
 
@@ -75,7 +72,6 @@ export class VaultController {
     this.wallet.deleteVault();
     this.identity.deleteVault();
 
-    this.password = null;
     this.locked = true;
     this.initialized = false;
   }

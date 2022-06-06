@@ -32,7 +32,6 @@ export function AssetAmountInput({
   onBalanceClick,
   onChange,
 }: Props) {
-  const assets = useAppSelector(state => state.assets);
   const { t } = useTranslation();
   const network = useAppSelector(state => state.currentNetwork);
   const asset = balance.asset;
@@ -128,7 +127,7 @@ export function AssetAmountInput({
         {showUsdAmount && (
           <UsdAmount
             className={styles.usdAmount}
-            asset={assets[asset.id]}
+            id={asset.id}
             tokens={tokens}
           />
         )}

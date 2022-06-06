@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
 import { App, CreateNewAccount, Network, Settings } from './utils/actions';
+import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Others', function () {
   this.timeout(60 * 1000);
@@ -19,16 +20,14 @@ describe('Others', function () {
   });
 
   it('The current version of the extension is displayed', async function () {
-    const { version } = require('../package');
+    const { version } = require('../package.json');
+
+    await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
 
     expect(
       await this.driver
         .wait(
-          until.elementLocated(
-            By.xpath(
-              "//div[contains(@class, '-bottom-bottom')]//div[contains(@class, 'version')]"
-            )
-          ),
+          until.elementLocated(By.css('[data-testid="currentVersion"]')),
           this.wait
         )
         .getText()
@@ -52,7 +51,8 @@ describe('Others', function () {
       await Network.switchToAndCheck.call(this, 'Testnet');
 
       // save popup and accounts refs
-      tabKeeper = await this.driver.getWindowHandle();
+      const handles = await this.driver.getAllWindowHandles();
+      tabKeeper = handles[0];
       await this.driver
         .wait(
           until.elementLocated(By.css('[data-testid="importForm"]')),
@@ -61,11 +61,11 @@ describe('Others', function () {
         .findElement(By.css('[data-testid="addAccountBtn"]'))
         .click();
       await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
         this.wait
       );
       for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper) {
+        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
           await this.driver.switchTo().window(handle);
           await this.driver.navigate().refresh();
           break;
@@ -104,6 +104,8 @@ describe('Others', function () {
           this.wait
         )
         .click();
+
+      await this.driver.sleep(DEFAULT_PAGE_LOAD_DELAY);
     });
 
     afterEach(async function () {
@@ -151,33 +153,46 @@ describe('Others', function () {
       await amountInput.sendKeys('0.123');
 
       await this.driver
-        .findElement(By.css('[data-testid="attachmentInput"]'))
+        .wait(
+          until.elementLocated(By.css('[data-testid="attachmentInput"]')),
+          this.wait
+        )
         .sendKeys('This is an attachment');
 
-      const submitButton = await this.driver.findElement(
-        By.css('[data-testid="submitButton"]')
+      const submitButton = await this.driver.wait(
+        until.elementIsVisible(
+          this.driver.findElement(By.css('[data-testid="submitButton"]'))
+        ),
+        this.wait
       );
-
       await submitButton.click();
 
       expect(await submitButton.isEnabled()).to.equal(false);
 
-      const transferAmount = await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="transferAmount"]')),
-        this.wait
-      );
-
-      expect(await transferAmount.getText()).to.equal('-0.12300000 WAVES');
+      expect(
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="transferAmount"]')),
+            this.wait
+          )
+          .getText()
+      ).to.equal('-0.12300000 WAVES');
 
       expect(
         await this.driver
-          .findElement(By.css('[data-testid="recipient"]'))
+          .wait(
+            until.elementLocated(By.css('[data-testid="recipient"]')),
+            this.wait
+          )
           .getText()
       ).to.equal('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
 
       expect(
         await this.driver
-          .findElement(By.css('[data-testid="attachmentContent"]'))
+          .wait(
+            until.elementLocated(By.css('[data-testid="attachmentContent"]')),
+            this.wait
+          )
           .getText()
       ).to.equal('This is an attachment');
     });
@@ -198,29 +213,44 @@ describe('Others', function () {
         .sendKeys('0.87654321');
 
       await this.driver
-        .findElement(By.css('[data-testid="attachmentInput"]'))
+        .wait(
+          until.elementLocated(By.css('[data-testid="attachmentInput"]')),
+          this.wait
+        )
         .sendKeys('This is an attachment');
 
-      await this.driver
-        .findElement(By.css('[data-testid="submitButton"]'))
-        .click();
-
-      const transferAmount = await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="transferAmount"]')),
+      const submitButton = await this.driver.wait(
+        until.elementIsVisible(
+          this.driver.findElement(By.css('[data-testid="submitButton"]'))
+        ),
         this.wait
       );
-
-      expect(await transferAmount.getText()).to.equal('-0.87654321 WAVES');
+      await submitButton.click();
 
       expect(
         await this.driver
-          .findElement(By.css('[data-testid="recipient"]'))
+          .wait(
+            until.elementLocated(By.css('[data-testid="transferAmount"]')),
+            this.wait
+          )
+          .getText()
+      ).to.equal('-0.87654321 WAVES');
+
+      expect(
+        await this.driver
+          .wait(
+            until.elementLocated(By.css('[data-testid="recipient"]')),
+            this.wait
+          )
           .getText()
       ).to.equal('an_alias');
 
       expect(
         await this.driver
-          .findElement(By.css('[data-testid="attachmentContent"]'))
+          .wait(
+            until.elementLocated(By.css('[data-testid="attachmentContent"]')),
+            this.wait
+          )
           .getText()
       ).to.equal('This is an attachment');
     });
