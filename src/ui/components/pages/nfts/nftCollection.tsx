@@ -4,7 +4,7 @@ import * as React from 'react';
 import { VariableSizeList } from 'react-window';
 import { PAGES } from 'ui/pageConfig';
 import * as styles from './nftCollection.module.css';
-import { SearchInput } from 'ui/components/ui';
+import { Button, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
 import cn from 'classnames';
@@ -23,8 +23,10 @@ const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
 
 export function NftCollection({
   setTab,
+  onBack,
 }: {
   setTab: (newTab: string) => void;
+  onBack: () => void;
 }) {
   const { t } = useTranslation();
   const listRef = React.useRef<VariableSizeList>();
@@ -133,6 +135,18 @@ export function NftCollection({
             }}
           />
         )}
+
+        <div className={styles.stickyBottomPanel}>
+          <Button
+            className="fullwidth"
+            onClick={() => {
+              setCurrentAsset(null);
+              onBack();
+            }}
+          >
+            {t('nftCollection.backToNftBtn')}
+          </Button>
+        </div>
       </div>
     </div>
   );

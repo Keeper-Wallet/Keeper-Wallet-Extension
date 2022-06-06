@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 14px 14px 0;
+  padding: 14px 14px 6px;
 }
 
 .title {
@@ -44,4 +44,15 @@
 
 .filterContainer button {
   width: auto;
+}
+
+.stickyBottomPanel {
+  position: sticky;
+  display: flex;
+  gap: 14px;
+  z-index: 1;
+  bottom: 0;
+  border-top: 1px solid #edf0f4;
+  padding: 14px;
+  background: #fff;
 }
