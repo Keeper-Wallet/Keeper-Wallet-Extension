@@ -1,7 +1,7 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
 import { MSG_STATUSES } from '../constants';
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
 import { Asset, Money } from '@waves/data-entities';
@@ -23,48 +23,61 @@ const { stringify } = create({ BigNumber });
 // msg statuses: unapproved, signed, published, rejected, failed
 
 export class MessageController extends EventEmitter {
-  constructor(options = {}) {
+  constructor({
+    localStore,
+    signTx,
+    signOrder,
+    signCancelOrder,
+    signWavesAuth,
+    signCustomData,
+    auth,
+    signRequest,
+    assetInfoController,
+    networkController,
+    getMatcherPublicKey,
+    getMessagesConfig,
+    getPackConfig,
+    txInfo,
+    setPermission,
+    canAutoApprove,
+  }) {
     super();
+
     const defaults = {
       messages: [],
     };
-
-    this.messages = Object.assign({}, defaults, options.initState);
+    this.messages = localStore.getInitState(defaults);
     this.store = new ObservableStore(this.messages);
+    localStore.subscribe(this.store);
 
     // Signing methods from WalletController
-    this.signTx = options.signTx;
-    this.signOrder = options.signOrder;
-    this.signCancelOrder = options.signCancelOrder;
-    this.signWavesAuth = options.signWavesAuth;
-    this.signCustomData = options.signCustomData;
-    this.auth = options.auth;
-    this.signRequest = options.signRequest;
+    this.signTx = signTx;
+    this.signOrder = signOrder;
+    this.signCancelOrder = signCancelOrder;
+    this.signWavesAuth = signWavesAuth;
+    this.signCustomData = signCustomData;
+    this.auth = auth;
+    this.signRequest = signRequest;
 
     // Broadcast and getMatcherPublicKey method from NetworkController
-    this.broadcast = messages => options.networkController.broadcast(messages);
-    this.getMatcherPublicKey = options.getMatcherPublicKey;
-    this.networkController = options.networkController;
+    this.broadcast = messages => networkController.broadcast(messages);
+    this.getMatcherPublicKey = getMatcherPublicKey;
+    this.networkController = networkController;
 
-    this.getMessagesConfig = options.getMessagesConfig;
-    this.getPackConfig = options.getPackConfig;
+    this.getMessagesConfig = getMessagesConfig;
+    this.getPackConfig = getPackConfig;
 
     // Get assetInfo method from AssetInfoController
-    this.assetInfo = options.assetInfoController.assetInfo.bind(
-      options.assetInfoController
-    );
-    this.assetInfoController = options.assetInfoController;
+    this.assetInfo = assetInfoController.assetInfo.bind(assetInfoController);
+    this.assetInfoController = assetInfoController;
     //tx by txId
-    this.txInfo = options.txInfo;
+    this.txInfo = txInfo;
 
     // permissions
-    this.setPermission = options.setPermission;
-    this.canAutoApprove = options.canAutoApprove;
+    this.setPermission = setPermission;
+    this.canAutoApprove = canAutoApprove;
 
-    this.getFee = calculateFeeFabric(
-      options.assetInfoController,
-      options.networkController
-    );
+    this.getFee = calculateFeeFabric(assetInfoController, networkController);
 
     this.rejectAllByTime();
     extension.alarms.onAlarm.addListener(({ name }) => {
@@ -564,7 +577,7 @@ export class MessageController extends EventEmitter {
 
     const message = {
       ...messageData,
-      id: uuid(),
+      id: uuidv4(),
       timestamp: Date.now(),
       ext_uuid: options && options.uid,
       status: MSG_STATUSES.UNAPPROVED,

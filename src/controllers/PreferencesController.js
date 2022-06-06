@@ -4,21 +4,21 @@ import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
 
 export class PreferencesController extends EventEmitter {
-  constructor(options = {}) {
+  constructor({ localStore, initLangCode, getNetwork, getNetworkConfig }) {
     super();
 
     const defaults = {
-      currentLocale: options.initLangCode || 'en',
+      currentLocale: initLangCode || 'en',
       idleOptions: { type: 'idle', interval: 0 },
       accounts: [],
       currentNetworkAccounts: [],
       selectedAccount: undefined,
     };
-    this.getNetworkConfig = options.getNetworkConfig;
-    const initState = Object.assign({}, defaults, options.initState);
-    this.store = new ObservableStore(initState);
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
 
-    this.getNetwork = options.getNetwork;
+    this.getNetworkConfig = getNetworkConfig;
+    this.getNetwork = getNetwork;
   }
 
   getSelectedAccount() {

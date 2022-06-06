@@ -79,7 +79,7 @@ export function Assets({ setTab }: Props) {
   const amountInUsd = balances[address]?.assets
     ? Object.entries(balances[address].assets).reduce(
         (acc, [id, { balance }]) => {
-          if (usdPrices[id]) {
+          if (assets[id] && usdPrices[id]) {
             const tokens = new Money(
               balance,
               new Asset(assets[id])

@@ -7,22 +7,31 @@ const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {
-  constructor(options = {}) {
+  constructor({
+    localStore,
+    assetInfoController,
+    getNetworkConfig,
+    getAccounts,
+    getNetwork,
+    getNode,
+    getCode,
+    getSelectedAccount,
+    isLocked,
+  }) {
     const defaults = {
       balances: {},
     };
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
 
-    this.assetInfoController = options.assetInfoController;
-    this.getNetworkConfig = options.getNetworkConfig;
-    this.getAccounts = options.getAccounts;
-    this.getNetwork = options.getNetwork;
-    this.getNode = options.getNode;
-    this.getCode = options.getCode;
-    this.getSelectedAccount = options.getSelectedAccount;
-    this.isLocked = options.isLocked;
-    this.store = new ObservableStore(
-      Object.assign({}, defaults, options.initState)
-    );
+    this.assetInfoController = assetInfoController;
+    this.getNetworkConfig = getNetworkConfig;
+    this.getAccounts = getAccounts;
+    this.getNetwork = getNetwork;
+    this.getNode = getNode;
+    this.getCode = getCode;
+    this.getSelectedAccount = getSelectedAccount;
+    this.isLocked = isLocked;
 
     extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateBalances') {

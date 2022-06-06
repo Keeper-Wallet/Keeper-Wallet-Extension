@@ -3,6 +3,14 @@ import { ACTION } from './constants';
 import { equals } from 'ramda';
 import { AssetDetail } from '../services/Background';
 
+function getParam<S>(param: S, defaultParam: S) {
+  if (param) {
+    return param;
+  }
+
+  return param === null ? defaultParam : undefined;
+}
+
 interface Account {
   address: string;
   network: string;
@@ -32,34 +40,13 @@ interface UpdateStateInput {
   networks?: unknown[];
   myNotifications?: unknown[];
   origins?: unknown;
-  selectedAccount?: { address?: string; network?: string };
+  selectedAccount?: { address?: string; network?: string } | null;
   uiState?: unknown;
   usdPrices: Record<string, string>;
 }
 
 export function createUpdateState(store: UiStore) {
   return (state: UpdateStateInput) => {
-    const {
-      assets = {},
-      accounts = [],
-      currentLocale,
-      currentNetworkAccounts = [],
-      selectedAccount = {},
-      initialized,
-      locked,
-      currentNetwork = '',
-      messages = [],
-      balances = [],
-      uiState = {},
-      customNodes = {},
-      customCodes = {},
-      customMatchers = {},
-      origins = {},
-      config = {},
-      idleOptions = {},
-      myNotifications = [],
-      usdPrices = {},
-    } = state;
     const currentState = store.getState();
 
     if (state.networks && state.networks.length) {
@@ -69,63 +56,77 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    if (!equals(currentState.config, config)) {
+    const config = getParam(state.config, {});
+    if (config && !equals(currentState.config, config)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.SET_CONFIG,
         payload: config,
       });
     }
 
-    if (!equals(currentState.idleOptions, idleOptions)) {
+    const idleOptions = getParam(state.idleOptions, {});
+    if (idleOptions && !equals(currentState.idleOptions, idleOptions)) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.UPDATE_IDLE,
         payload: idleOptions,
       });
     }
 
-    if (!equals(currentState.customNodes, customNodes)) {
+    const customNodes = getParam(state.customNodes, {});
+    if (customNodes && !equals(currentState.customNodes, customNodes)) {
       store.dispatch({
         type: ACTION.UPDATE_NODES,
         payload: customNodes,
       });
     }
 
-    if (!equals(currentState.customCodes, customCodes)) {
+    const customCodes = getParam(state.customCodes, {});
+    if (customCodes && !equals(currentState.customCodes, customCodes)) {
       store.dispatch({
         type: ACTION.UPDATE_CODES,
         payload: customCodes,
       });
     }
 
-    if (!equals(currentState.customMatcher, customMatchers)) {
+    const customMatchers = getParam(state.customMatchers, {});
+    if (customMatchers && !equals(currentState.customMatcher, customMatchers)) {
       store.dispatch({
         type: ACTION.UPDATE_MATCHER,
         payload: customMatchers,
       });
     }
 
-    if (currentLocale && currentLocale !== currentState.currentLocale) {
+    if (
+      state.currentLocale &&
+      state.currentLocale !== currentState.currentLocale
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_FROM_LNG,
-        payload: currentLocale,
+        payload: state.currentLocale,
       });
     }
 
-    if (!equals(uiState, currentState.uiState)) {
+    const uiState = getParam(state.uiState, {});
+    if (uiState && !equals(uiState, currentState.uiState)) {
       store.dispatch({
         type: ACTION.UPDATE_UI_STATE,
         payload: uiState,
       });
     }
 
-    if (currentNetwork !== currentState.currentNetwork) {
+    const currentNetwork = getParam(state.currentNetwork, '');
+    if (
+      currentNetwork !== undefined &&
+      currentNetwork !== currentState.currentNetwork
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
       });
     }
 
-    if (!equals(origins, currentState.origins)) {
+    const origins = getParam(state.origins, {});
+    if (origins && !equals(origins, currentState.origins)) {
       store.dispatch({
         type: ACTION.UPDATE_ORIGINS,
         payload: origins,
@@ -134,24 +135,29 @@ export function createUpdateState(store: UiStore) {
 
     function isMyMessages(msg) {
       try {
+        const account = state.selectedAccount || currentState.selectedAccount;
         return (
           msg.status === 'unapproved' &&
-          msg.account.address === selectedAccount.address &&
-          msg.account.network === selectedAccount.network
+          msg.account.address === account?.address &&
+          msg.account.network === account?.network
         );
       } catch (e) {
         return false;
       }
     }
 
-    const unapprovedMessages = messages.filter(isMyMessages);
+    const messages = getParam(state.messages, []);
+    const unapprovedMessages = messages?.filter(isMyMessages);
     const toUpdateActiveNotify = {
       allMessages: messages,
       messages: currentState.messages,
       notifications: currentState.notifications,
     };
 
-    if (!equals(unapprovedMessages, currentState.messages)) {
+    if (
+      unapprovedMessages &&
+      !equals(unapprovedMessages, currentState.messages)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_MESSAGES,
         payload: { unapprovedMessages, messages },
@@ -160,7 +166,11 @@ export function createUpdateState(store: UiStore) {
       toUpdateActiveNotify.messages = unapprovedMessages;
     }
 
-    if (!equals(currentState.notifications, myNotifications)) {
+    const myNotifications = getParam(state.myNotifications, []);
+    if (
+      myNotifications &&
+      !equals(currentState.notifications, myNotifications)
+    ) {
       store.dispatch({
         type: ACTION.NOTIFICATIONS.SET,
         payload: myNotifications,
@@ -170,8 +180,9 @@ export function createUpdateState(store: UiStore) {
     }
 
     if (
-      toUpdateActiveNotify.messages !== currentState.messages ||
-      toUpdateActiveNotify.notifications !== currentState.notifications
+      messages &&
+      (toUpdateActiveNotify.messages !== currentState.messages ||
+        toUpdateActiveNotify.notifications !== currentState.notifications)
     ) {
       store.dispatch({
         type: ACTION.MESSAGES.SET_ACTIVE_AUTO,
@@ -179,21 +190,30 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    if (!equals(selectedAccount, currentState.selectedAccount)) {
+    const selectedAccount = getParam(state.selectedAccount, {});
+    if (
+      selectedAccount &&
+      !equals(selectedAccount, currentState.selectedAccount)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_SELECTED_ACCOUNT,
         payload: selectedAccount,
       });
     }
 
-    if (!equals(currentNetworkAccounts, currentState.accounts)) {
+    const currentNetworkAccounts = getParam(state.currentNetworkAccounts, []);
+    if (
+      currentNetworkAccounts &&
+      !equals(currentNetworkAccounts, currentState.accounts)
+    ) {
       store.dispatch({
         type: ACTION.UPDATE_ACCOUNTS,
         payload: currentNetworkAccounts,
       });
     }
 
-    if (!equals(accounts, currentState.allNetworksAccounts)) {
+    const accounts = getParam(state.accounts, []);
+    if (accounts && !equals(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
         payload: accounts,
@@ -202,26 +222,37 @@ export function createUpdateState(store: UiStore) {
 
     if (
       !currentState.state ||
-      initialized !== currentState.state.initialized ||
-      locked !== currentState.state.locked
+      state.initialized !== currentState.state.initialized ||
+      state.locked !== currentState.state.locked
     ) {
       store.dispatch({
         type: ACTION.UPDATE_APP_STATE,
-        payload: { initialized, locked },
+        payload: { initialized: state.initialized, locked: state.locked },
       });
     }
 
-    if (!equals(balances, currentState.balances)) {
+    const balances = getParam(state.balances, {});
+    if (balances && !equals(balances, currentState.balances)) {
       store.dispatch({
         type: ACTION.UPDATE_BALANCES,
         payload: balances,
       });
     }
 
-    if (!equals(assets[currentNetwork], currentState.assets)) {
+    const assets = getParam(state.assets, {});
+    const network = state.currentNetwork || currentState.currentNetwork;
+    if (assets && !equals(assets[network], currentState.assets)) {
       store.dispatch({
         type: ACTION.SET_ASSETS,
-        payload: assets[currentNetwork],
+        payload: assets[network],
+      });
+    }
+
+    const usdPrices = getParam(state.usdPrices, {});
+    if (usdPrices && !equals(usdPrices, currentState.usdPrices)) {
+      store.dispatch({
+        type: ACTION.SET_USD_PRICES,
+        payload: usdPrices,
       });
     }
 

@@ -8,6 +8,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import * as ObservableStore from 'obs-store';
+import LocalStore from '../lib/localStore';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import { Account, NetworkName } from 'accounts/types';
 
@@ -90,10 +91,9 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     initSession: Record<string, unknown>,
     setSession: (session: Record<string, unknown>) => void
   ) {
-    super(initState || {});
+    super(initState);
 
     this.memo = initSession.memo;
-
     this.password = initSession.password as string;
     this._setSession = setSession;
   }
@@ -126,7 +126,7 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   }
 
   purge(): void {
-    this.putState({});
+    this.updateState({ cognitoSessions: undefined });
     this.clear();
   }
 
@@ -174,12 +174,10 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
 }
 
 interface Options {
+  localStore: LocalStore;
   getNetwork: () => NetworkName;
   getSelectedAccount: () => Partial<Account>;
   getIdentityConfig: () => IdentityConfig;
-  initState: IdentityState;
-  initSession: Record<string, unknown>;
-  setSession: (session: Record<string, unknown>) => void;
 }
 
 export interface IdentityApi {
@@ -200,16 +198,22 @@ export class IdentityController implements IdentityApi {
   private identity: IdentityUser | undefined = undefined;
   store: IdentityStorage;
 
-  constructor(opts: Options) {
+  constructor({
+    localStore,
+    getNetwork,
+    getSelectedAccount,
+    getIdentityConfig,
+  }: Options) {
     this.store = new IdentityStorage(
-      opts.initState,
-      opts.initSession,
-      opts.setSession
+      localStore.getInitState({ cognitoSessions: undefined }),
+      localStore.getInitSession(),
+      localStore.setSession.bind(localStore)
     );
+    localStore.subscribe(this.store);
 
-    this.getNetwork = opts.getNetwork;
-    this.getSelectedAccount = opts.getSelectedAccount;
-    this.getIdentityConfig = opts.getIdentityConfig;
+    this.getNetwork = getNetwork;
+    this.getSelectedAccount = getSelectedAccount;
+    this.getIdentityConfig = getIdentityConfig;
 
     this.configure();
   }

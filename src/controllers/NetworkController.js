@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 
 export class NetworkController {
-  constructor(options = {}) {
+  constructor({ localStore, getNetworkConfig, getNetworks }) {
     const defaults = {
       currentNetwork: 'mainnet',
       customNodes: {
@@ -24,9 +24,9 @@ export class NetworkController {
         custom: null,
       },
     };
+    this.store = new ObservableStore(localStore.getInitState(defaults));
+    localStore.subscribe(this.store);
 
-    const { initState, getNetworkConfig, getNetworks } = options;
-    this.store = new ObservableStore({ ...defaults, ...initState });
     this.configApi = { getNetworkConfig, getNetworks };
     Sentry.setTag('network', this.store.getState().currentNetwork);
   }

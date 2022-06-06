@@ -147,7 +147,10 @@ class SettingsComponent extends React.Component<Props> {
             </Tooltip>
           </div>
 
-          <div className={`${styles.showSuspiciousAssets} tag1`}>
+          <div
+            className={`${styles.showSuspiciousAssets} tag1`}
+            data-testid="showSuspiciousAssets"
+          >
             <PowerButton
               onClick={() =>
                 this.props.setUiState({

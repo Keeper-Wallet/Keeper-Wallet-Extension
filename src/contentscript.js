@@ -45,6 +45,7 @@ function setupConnection() {
     name: 'waves_keeper_content',
     target: 'waves_keeper_page',
   });
+
   const onChanged =
     extension.storage.local.onChanged || extension.storage.onChanged;
   onChanged.addListener(() => {

@@ -1,18 +1,13 @@
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
-import pump from 'pump';
 import EventEmitter from 'events';
-import debounceStream from 'debounce-stream';
-import asStream from 'obs-store/lib/asStream';
-import { extension } from 'lib/extension';
 import { v4 as uuidv4 } from 'uuid';
-import { ERRORS } from './lib/KeeperError';
-import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
-import { createStreamSink } from './lib/createStreamSink';
-import { getFirstLangCode } from './lib/get-first-lang-code';
-import PortStream from './lib/port-stream.js';
-import { ComposableObservableStore } from './lib/ComposableObservableStore';
-import LocalStore from './lib/localStore';
+import { extension } from 'lib/extension';
+import { ERRORS } from 'lib/KeeperError';
+import PortStream from 'lib/port-stream.js';
+import LocalStore from 'lib/localStore';
+import { getFirstLangCode } from 'lib/get-first-lang-code';
+import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
 import {
   AssetInfoController,
   CurrentAccountController,
@@ -123,69 +118,23 @@ extension.runtime.onInstalled.addListener(async details => {
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
 
-    const storageContents = await new Promise(resolve =>
-      extension.storage.local.get(resolve)
-    );
-
-    const keysToRemove = new Set(Object.keys(storageContents));
-
-    bgService.store.getKeys().forEach(storeKey => {
-      keysToRemove.delete(storeKey);
-    });
-
-    await new Promise(resolve =>
-      extension.storage.local.remove(Array.from(keysToRemove), resolve)
-    );
+    await bgService.localStore.clear();
   }
 });
 
 async function setupBackgroundService() {
-  // Background service init
   const localStore = new LocalStore();
-  await localStore.migrate();
-  const initState = (await localStore.get()) || {};
-  const initSession = (await localStore.getSession()) || {};
+  await localStore.create();
   const initLangCode = await getFirstLangCode();
-
-  const backgroundService = new BackgroundService({
-    initState,
-    initSession,
-    initLangCode,
-    setSession: session => {
-      localStore.setSession(session);
-    },
-  });
+  const backgroundService = new BackgroundService({ localStore, initLangCode });
 
   // global access to service on debug
   if (KEEPERWALLET_DEBUG) {
     global.background = backgroundService;
   }
 
-  // setup state persistence
-  pump(
-    asStream(backgroundService.store),
-    debounceStream(200),
-    createStreamSink(persistData),
-    error => {
-      log.error('Persistence pipeline failed', error);
-    }
-  );
-
-  async function persistData(state) {
-    if (!state) {
-      throw new Error('Updated state is missing', state);
-    }
-    try {
-      await localStore.set(state);
-    } catch (err) {
-      // log error so we dont break the pipeline
-      log.error('error setting state in local store:', err);
-    }
-  }
-
-  const updateBadge = () => {
-    const state = backgroundService.store.getFlatState();
-    const { selectedAccount } = state;
+  const updateBadge = async () => {
+    const { selectedAccount } = await backgroundService.localStore.get();
     const messages = backgroundService.messageController.getUnapproved();
     const notifications =
       backgroundService.notificationsController.getGroupNotificationsByAccount(
@@ -202,7 +151,7 @@ async function setupBackgroundService() {
   // update badge
   backgroundService.messageController.on('Update badge', updateBadge);
   backgroundService.notificationsController.on('Update badge', updateBadge);
-  updateBadge();
+  await updateBadge();
   // open new tab
   backgroundService.messageController.on('Open new tab', url => {
     extension.tabs.create({ url });
@@ -231,20 +180,18 @@ async function setupBackgroundService() {
 }
 
 class BackgroundService extends EventEmitter {
-  constructor(options = {}) {
+  constructor({ localStore, initLangCode }) {
     super();
 
-    // Observable state store
-    const initState = options.initState;
-    this.store = new ComposableObservableStore();
-
-    this.trash = new TrashController({
-      initState: initState.TrashController,
-    });
+    this.localStore = localStore;
 
     // Controllers
+    this.trash = new TrashController({
+      localStore: this.localStore,
+    });
+
     this.remoteConfigController = new RemoteConfigController({
-      initState: initState.RemoteConfigController,
+      localStore: this.localStore,
     });
 
     this.remoteConfigController.on('identityConfigChanged', () => {
@@ -253,7 +200,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.permissionsController = new PermissionsController({
-      initState: initState.PermissionsController,
+      localStore: this.localStore,
       remoteConfig: this.remoteConfigController,
       getSelectedAccount: () => this.preferencesController.getSelectedAccount(),
       identity: {
@@ -264,15 +211,15 @@ class BackgroundService extends EventEmitter {
 
     // Network. Works with blockchain
     this.networkController = new NetworkController({
-      initState: initState.NetworkController,
+      localStore: this.localStore,
       getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetworks: () => this.remoteConfigController.getNetworks(),
     });
 
     // Preferences. Contains accounts, available accounts, selected language etc.
     this.preferencesController = new PreferencesController({
-      initState: initState.PreferencesController,
-      initLangCode: options.initLangCode,
+      localStore: this.localStore,
+      initLangCode,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -289,13 +236,11 @@ class BackgroundService extends EventEmitter {
 
     // Ui State. Provides storage for ui application
     this.uiStateController = new UiStateController({
-      initState: initState.UiStateController,
+      localStore: this.localStore,
     });
 
     this.identityController = new IdentityController({
-      initState: initState.IdentityController,
-      initSession: options.initSession,
-      setSession: options.setSession,
+      localStore: this.localStore,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -309,10 +254,8 @@ class BackgroundService extends EventEmitter {
 
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
+      localStore: this.localStore,
       assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
-      initState: initState.WalletController,
-      initSession: options.initSession,
-      setSession: options.setSession,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -351,8 +294,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.vaultController = new VaultController({
-      initState: initState.VaultController,
-      password: options.initSession.password,
+      localStore: this.localStore,
       wallet: this.walletController,
       identity: this.identityController,
     });
@@ -389,7 +331,7 @@ class BackgroundService extends EventEmitter {
 
     // AssetInfo. Provides information about assets
     this.assetInfoController = new AssetInfoController({
-      initState: initState.AssetInfoController,
+      localStore: this.localStore,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -398,7 +340,7 @@ class BackgroundService extends EventEmitter {
 
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
-      initState: initState.CurrentAccountController,
+      localStore: this.localStore,
       getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
@@ -428,7 +370,7 @@ class BackgroundService extends EventEmitter {
     // Delegates different signing to walletController, broadcast and getMatcherPublicKey to networkController,
     // assetInfo for assetInfoController
     this.messageController = new MessageController({
-      initState: initState.MessageController,
+      localStore: this.localStore,
       signTx: this.walletController.signTx.bind(this.walletController),
       signOrder: this.walletController.signOrder.bind(this.walletController),
       signCancelOrder: this.walletController.signCancelOrder.bind(
@@ -459,7 +401,7 @@ class BackgroundService extends EventEmitter {
 
     // Notifications
     this.notificationsController = new NotificationsController({
-      initState: initState.NotificationsController,
+      localStore: this.localStore,
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       canShowNotification: (...args) =>
         this.permissionsController.canUseNotification(...args),
@@ -472,12 +414,10 @@ class BackgroundService extends EventEmitter {
     });
 
     //Statistics
-    this.statisticsController = new StatisticsController(
-      initState.StatisticsController,
-      {
-        network: this.networkController,
-      }
-    );
+    this.statisticsController = new StatisticsController({
+      localStore: this.localStore,
+      networkController: this.networkController,
+    });
 
     this.swapController = new SwapController({
       assetInfoController: this.assetInfoController,
@@ -487,38 +427,21 @@ class BackgroundService extends EventEmitter {
     });
 
     this.idleController = new IdleController({
-      initState: initState.IdleController,
+      localStore: this.localStore,
       preferencesController: this.preferencesController,
       vaultController: this.vaultController,
     });
-
-    // Single state composed from states of all controllers
-    this.store.updateStructure({
-      StatisticsController: this.statisticsController.store,
-      PreferencesController: this.preferencesController.store,
-      WalletController: this.walletController.store,
-      NetworkController: this.networkController.store,
-      MessageController: this.messageController.store,
-      CurrentAccountController: this.currentAccountController.store,
-      PermissionsController: this.permissionsController.store,
-      UiStateController: this.uiStateController.store,
-      AssetInfoController: this.assetInfoController.store,
-      RemoteConfigController: this.remoteConfigController.store,
-      NotificationsController: this.notificationsController.store,
-      TrashController: this.trash.store,
-      VaultController: this.vaultController.store,
-      IdentityController: this.identityController.store,
-      IdleController: this.idleController.store,
-    });
   }
 
-  getState() {
-    const state = this.store.getFlatState();
-    const { selectedAccount } = state;
+  async getState(params) {
+    const state = await this.localStore.get(params);
+
+    const { selectedAccount } = await this.localStore.get(['selectedAccount']);
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
         selectedAccount
       );
+
     return { ...state, myNotifications };
   }
 
@@ -528,7 +451,7 @@ class BackgroundService extends EventEmitter {
     // RPC API object. Only async functions allowed
     return {
       // state
-      getState: async () => this.getState(),
+      getState: async params => await this.getState(params),
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }) => {
         const config = this.remoteConfigController.getIdleConfig();
@@ -703,7 +626,7 @@ class BackgroundService extends EventEmitter {
   }
 
   async validatePermission(origin) {
-    const { selectedAccount } = this.getState();
+    const { selectedAccount } = await this.getState(['selectedAccount']);
 
     if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
 
@@ -778,7 +701,7 @@ class BackgroundService extends EventEmitter {
         await this.validatePermission(origin);
       }
 
-      const { selectedAccount } = this.getState();
+      const { selectedAccount } = await this.getState(['selectedAccount']);
 
       const { noSign, ...result } = await this.messageController.newMessage({
         data,
@@ -812,8 +735,8 @@ class BackgroundService extends EventEmitter {
   getInpageApi(origin) {
     const newMessage = this.getNewMessageFn(origin);
 
-    const newNotification = data => {
-      const { selectedAccount } = this.getState();
+    const newNotification = async data => {
+      const { selectedAccount } = await this.getState(['selectedAccount']);
       const myData = { ...data };
       const result = this.notificationsController.newNotification({
         address: selectedAccount.address,
@@ -883,8 +806,10 @@ class BackgroundService extends EventEmitter {
       },
       verifyCustomData: async data => verifyCustomData(data),
       notification: async data => {
-        const state = this.getState();
-        const { selectedAccount, initialized } = state;
+        const { selectedAccount, initialized } = await this.getState([
+          'selectedAccount',
+          'initialized',
+        ]);
 
         if (!selectedAccount) {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -897,8 +822,10 @@ class BackgroundService extends EventEmitter {
       //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
       publicState: async () => {
-        const state = this.getState();
-        const { selectedAccount, initialized } = state;
+        const { selectedAccount, initialized } = await this.getState([
+          'selectedAccount',
+          'initialized',
+        ]);
 
         if (!selectedAccount) {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -906,7 +833,7 @@ class BackgroundService extends EventEmitter {
 
         await this.validatePermission(origin);
 
-        return this._publicState(this.getState(), origin);
+        return this._publicState(await this.getState(), origin);
       },
 
       resourceIsApproved: async () => {
@@ -924,8 +851,10 @@ class BackgroundService extends EventEmitter {
       },
 
       getKEK: async (publicKey, prefix) => {
-        const state = this.getState();
-        const { selectedAccount, initialized } = state;
+        const { selectedAccount, initialized } = await this.getState([
+          'selectedAccount',
+          'initialized',
+        ]);
 
         if (!selectedAccount) {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -950,8 +879,10 @@ class BackgroundService extends EventEmitter {
       },
 
       encryptMessage: async (message, publicKey, prefix) => {
-        const state = this.getState();
-        const { selectedAccount, initialized } = state;
+        const { selectedAccount, initialized } = await this.getState([
+          'selectedAccount',
+          'initialized',
+        ]);
 
         if (!selectedAccount) {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();
@@ -977,8 +908,10 @@ class BackgroundService extends EventEmitter {
       },
 
       decryptMessage: async (message, publicKey, prefix) => {
-        const state = this.getState();
-        const { selectedAccount, initialized } = state;
+        const { selectedAccount, initialized } = await this.getState([
+          'selectedAccount',
+          'initialized',
+        ]);
 
         if (!selectedAccount) {
           throw !initialized ? ERRORS.INIT_KEEPER() : ERRORS.EMPTY_KEEPER();

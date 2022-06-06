@@ -1,31 +1,30 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
 import { MSG_STATUSES } from '../constants';
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
 import { ERRORS } from '../lib/KeeperError';
 
 export class NotificationsController extends EventEmitter {
-  /**
-   * @param options
-   * @param options.initState
-   * @param {[]} options.initState.notifications
-   * @param {function} options.getMessagesConfig
-   * @param {function} options.canShowNotification
-   * @param options
-   */
-  constructor(options) {
+  constructor({
+    localStore,
+    getMessagesConfig,
+    canShowNotification,
+    setNotificationPermissions,
+  }) {
     super();
+
     const defaults = {
       notifications: [],
     };
-    const storeData = Object.assign({}, defaults, options.initState);
-    this.notifications = storeData;
-    this.store = new ObservableStore(storeData);
-    this.getMessagesConfig = options.getMessagesConfig;
-    this.canShowNotification = options.canShowNotification;
-    this.setNotificationPermissions = options.setNotificationPermissions;
+    this.notifications = localStore.getInitState(defaults);
+    this.store = new ObservableStore(this.notifications);
+    localStore.subscribe(this.store);
+
+    this.getMessagesConfig = getMessagesConfig;
+    this.canShowNotification = canShowNotification;
+    this.setNotificationPermissions = setNotificationPermissions;
 
     this.deleteAllByTime();
     extension.alarms.onAlarm.addListener(({ name }) => {
@@ -210,7 +209,7 @@ export class NotificationsController extends EventEmitter {
       origin,
       address,
       message,
-      id: uuid(),
+      id: uuidv4(),
       timestamp: timestamp || Date.now(),
       status: MSG_STATUSES.NEW_NOTIFICATION,
     };

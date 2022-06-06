@@ -18,19 +18,35 @@ function decrypt(ciphertext, password) {
 }
 
 export class WalletController extends EventEmitter {
-  constructor(options = {}) {
+  constructor({
+    localStore,
+    assetInfo,
+    getNetwork,
+    getNetworks,
+    getNetworkCode,
+    ledger,
+    trash,
+    identity,
+  }) {
     super();
-    this.store = new ObservableStore(options.initState);
-    this.password = options.initSession.password;
+
+    const initState = localStore.getInitState();
+    this.store = new ObservableStore({
+      WalletController: initState.WalletController || { vault: undefined },
+    });
+    localStore.subscribe(this.store);
+
+    this.password = localStore.getInitSession().password;
+    this._setSession = localStore.setSession.bind(localStore);
+
     this.wallets = [];
-    this.assetInfo = options.assetInfo;
-    this.getNetwork = options.getNetwork;
-    this.getNetworks = options.getNetworks;
-    this.getNetworkCode = options.getNetworkCode;
-    this.ledger = options.ledger;
-    this.trashControl = options.trash;
-    this.identity = options.identity;
-    this._setSession = options.setSession;
+    this.assetInfo = assetInfo;
+    this.getNetwork = getNetwork;
+    this.getNetworks = getNetworks;
+    this.getNetworkCode = getNetworkCode;
+    this.ledger = ledger;
+    this.trashControl = trash;
+    this.identity = identity;
 
     this._restoreWallets(this.password);
   }
@@ -91,7 +107,7 @@ export class WalletController extends EventEmitter {
     (this.wallets || []).forEach(wallet => this._walletToTrash(wallet));
     this._setPassword(null);
     this.wallets = [];
-    this.store.updateState({ vault: undefined });
+    this.store.updateState({ WalletController: { vault: undefined } });
   }
 
   newPassword(oldPassword, newPassword) {
@@ -336,11 +352,13 @@ export class WalletController extends EventEmitter {
 
   _saveWallets() {
     const walletsData = this.wallets.map(wallet => wallet.serialize());
-    this.store.updateState({ vault: encrypt(walletsData, this.password) });
+    this.store.updateState({
+      WalletController: { vault: encrypt(walletsData, this.password) },
+    });
   }
 
   _restoreWallets(password) {
-    const vault = this.store.getState().vault;
+    const vault = this.store.getState().WalletController.vault;
 
     if (!vault || !password) {
       return;

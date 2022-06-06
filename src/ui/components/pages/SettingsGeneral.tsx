@@ -24,11 +24,13 @@ class SettingsGeneralComponent extends React.Component<Props> {
   render() {
     const { t, idle } = this.props;
 
-    const selectList = Object.entries(idle).map(([id, value]) => ({
-      id,
-      value,
-      text: t(`settings.time_${id}`, { defaultValue: id, key: id }),
-    }));
+    const selectList = Object.entries<number>(idle)
+      .sort(([, a], [, b]) => a - b)
+      .map(([id, value]) => ({
+        id,
+        value,
+        text: t(`settings.time_${id}`, { defaultValue: id, key: id }),
+      }));
 
     return (
       <div className={styles.content}>

@@ -36,6 +36,7 @@ module.exports = version => {
           'background.scripts': ['background.js'],
         },
         remove: [
+          'manifest_version',
           'background.service_worker',
           'action',
           'content_security_policy',
