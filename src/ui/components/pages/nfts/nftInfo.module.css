@@ -28,7 +28,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 0 24px 70px;
+  padding: 0 24px;
+  overflow: auto;
 }
 
 .cover {

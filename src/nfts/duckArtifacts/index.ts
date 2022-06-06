@@ -9,19 +9,24 @@ export interface DucksArtefactInfo extends BaseInfo {
 }
 
 export class DucksArtefact extends BaseNft<DucksArtefactInfo> {
+  private get name_(): string {
+    return this.asset.name.toLowerCase().replace(/-/, '_');
+  }
+
   get displayCreator(): string {
     return 'Ducks Artefacts';
   }
 
   get displayName(): string {
-    return (
-      ArtefactNames[this.asset.name.toLowerCase().replace(/-/, '_')]?.title ||
-      this.asset.name
-    );
+    return ArtefactNames[this.name_]?.title || this.asset.name;
   }
 
   get marketplaceUrl(): string {
     return `https://wavesducks.com/item/${this.id}`;
+  }
+
+  get description(): string {
+    return ArtefactNames[this.name_]?.description;
   }
 
   get foreground(): string {

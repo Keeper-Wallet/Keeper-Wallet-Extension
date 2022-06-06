@@ -234,7 +234,7 @@ export const DucklingsDescription = {
     'Gertrude Elion - American biochemist, pharmacologist and the 1988 recipient of the Nobel Prize in Medicine.',
   ellis:
     'James Henry Ellis - British engineer and cryptographer employed by the GCHQ. Best known for conceiving for the first time, the idea of public-key cryptography.',
-  engelbart: 'Douglas Engelbart gave the mother of all demos:.',
+  engelbart: 'Douglas Engelbart gave the mother of all demos.',
   euclid: 'Euclid invented geometry.',
   euler: 'Leonhard Euler invented large parts of modern mathematics.',
   faraday:
@@ -246,7 +246,7 @@ export const DucklingsDescription = {
   feynman:
     'Richard Feynman was a key contributor to quantum mechanics and particle physics.',
   franklin:
-    "Benjamin Franklin is famous for his experiments in electricity and the invention of the lightning rod.' target='_blank'>Wikipedia</a>",
+    'Benjamin Franklin is famous for his experiments in electricity and the invention of the lightning rod.',
   gagarin:
     'Yuri Alekseyevich Gagarin - Soviet pilot and cosmonaut, best known as the first human to journey into outer space.',
   galileo:
@@ -378,12 +378,12 @@ export const DucklingsDescription = {
     'James Clerk Maxwell - Scottish physicist, best known for his formulation of electromagnetic theory.',
   mayer:
     'Maria Mayer - American theoretical physicist and Nobel laureate in Physics for proposing the nuclear shell model of the atomic nucleus.',
-  mccarthy: 'John McCarthy invented LISP:.',
+  mccarthy: 'John McCarthy invented LISP.',
   mcclintock:
     'Barbara McClintock - a distinguished American cytogeneticist, 1983 Nobel Laureate in Physiology or Medicine for discovering transposons.',
   mclaren:
     'Anne Laura Dorinthea McLaren - British developmental biologist whose work helped lead to human in-vitro fertilisation.',
-  mclean: 'Malcolm McLean invented the modern shipping container:.',
+  mclean: 'Malcolm McLean invented the modern shipping container.',
   mcnulty: 'Kay McNulty - one of the original programmers of the ENIAC.',
   mendel: 'Gregor Johann Mendel - Czech scientist and founder of genetics.',
   mendeleev:

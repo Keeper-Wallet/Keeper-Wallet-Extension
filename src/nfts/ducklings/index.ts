@@ -12,33 +12,40 @@ export interface DucklingInfo extends BaseInfo {
 }
 
 export class Duckling extends BaseNft<DucklingInfo> {
-  get displayCreator(): string {
-    return 'Ducklings';
-  }
-
-  get displayName(): string {
+  private get adj(): string {
     const indexes = [16, 10, 1, 9, 9, 7];
-    const indexes2 = [10, 4, 2, 0, 2, 1];
-
     const adjNumber = indexes.reduce(
       (acc, index) => acc + this.id.charCodeAt(index),
       0
     );
 
+    return DucklingAdjectives[adjNumber % DucklingAdjectives.length];
+  }
+
+  private get name_(): string {
+    const indexes2 = [10, 4, 2, 0, 2, 1];
     const nameNumber = indexes2.reduce(
       (acc, index) => acc + this.id.charCodeAt(index),
       0
     );
-
-    const adj = DucklingAdjectives[adjNumber % DucklingAdjectives.length];
     const ducklingNames = Object.keys(DucklingsDescription);
-    const name = ducklingNames[nameNumber % ducklingNames.length];
+    return ducklingNames[nameNumber % ducklingNames.length];
+  }
 
-    return `${capitalize(adj)} ${capitalize(name)}`;
+  get displayCreator(): string {
+    return 'Ducklings';
+  }
+
+  get displayName(): string {
+    return `${capitalize(this.adj)} ${capitalize(this.name_)}`;
   }
 
   get marketplaceUrl(): string {
     return `https://wavesducks.com/duckling/${this.id}`;
+  }
+
+  get description(): string {
+    return DucklingsDescription[this.name_];
   }
 
   get foreground() {
