@@ -7,12 +7,12 @@ import * as styles from './nftCollection.module.css';
 import { SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
-import { useNftFilter } from 'ui/components/pages/assets/tabs/helpers';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { NftHeader } from 'ui/components/pages/nfts/nftHeader';
 import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
+import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -40,11 +40,12 @@ export function NftCollection({
     (asset: AssetDetail | Nft) => dispatch(setUiState({ currentAsset: asset })),
   ];
 
-  const {
-    term: [term, setTerm],
-    creator: [creator],
-    clearFilters,
-  } = useNftFilter();
+  const [filters, setFilters] = useUiState('nftFilters');
+  const [term, setTerm] = [
+    filters?.term,
+    value => setFilters({ ...filters, term: value }),
+  ];
+  const creator = filters?.creator;
 
   React.useEffect(() => {
     if (listRef.current) {
@@ -90,7 +91,7 @@ export function NftCollection({
             {term ? (
               <>
                 <div className="margin-min">{t('assets.notFoundNFTs')}</div>
-                <p className="blue link" onClick={() => clearFilters()}>
+                <p className="blue link" onClick={() => setTerm('')}>
                   {t('assets.resetFilters')}
                 </p>
               </>
