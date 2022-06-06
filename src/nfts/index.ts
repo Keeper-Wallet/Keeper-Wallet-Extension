@@ -56,6 +56,9 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   get creator(): string {
     return this.asset.issuer;
   }
+  get creatorUrl(): string {
+    return `https://wavesexplorer.com/address/${this.creator}`;
+  }
   get vendor(): TypedInfo['vendor'] {
     return this.info?.vendor ?? NftVendor.Unknown;
   }

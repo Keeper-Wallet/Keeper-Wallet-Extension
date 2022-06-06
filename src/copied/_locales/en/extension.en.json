@@ -455,6 +455,7 @@
   },
   "nftInfo": {
     "creator": "Creator",
+    "creatorUrlTooltip": "Visit author's page",
     "description": "Description",
     "sendBtn": "Send",
     "backBtn": "Back"
