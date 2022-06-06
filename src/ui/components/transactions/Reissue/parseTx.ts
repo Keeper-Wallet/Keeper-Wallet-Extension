@@ -19,9 +19,17 @@ export function getAssetsId(tx): Array<string> {
 export { getFee } from '../BaseTransaction/parseTx';
 
 export function getAmount(tx = null) {
-  return typeof tx.quantity === 'object'
-    ? tx.quantity
-    : { coins: tx.quantity, assetId: tx.assetId };
+  if (tx.quantity) {
+    tx.amount = tx.quantity;
+  }
+
+  if (typeof tx.amount === 'object') {
+    const { amount, coins, tokens, assetId } = tx.amount;
+
+    return { coins: coins ?? amount, tokens, assetId: tx.assetId || assetId };
+  }
+
+  return { coins: tx.amount, assetId: tx.assetId || 'WAVES' };
 }
 
 export function getAmountSign() {
