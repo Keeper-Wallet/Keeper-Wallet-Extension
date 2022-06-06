@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { useNftFilter } from './helpers';
+import { useUiState } from './helpers';
 import { VariableSizeList } from 'react-window';
 import cn from 'classnames';
 import { AssetDetail } from 'ui/services/Background';
@@ -29,11 +29,15 @@ export function TabNfts() {
 
   const dispatch = useAppDispatch();
 
-  const {
-    term: [term, setTerm],
-    creator: [creator, setCreator],
-    clearFilters,
-  } = useNftFilter();
+  const [filters, setFilters] = useUiState('nftFilters');
+  const [term, setTerm] = [
+    filters?.term,
+    value => setFilters({ ...filters, term: value }),
+  ];
+  const [creator, setCreator] = [
+    filters?.creator,
+    value => setFilters({ ...filters, creator: value }),
+  ];
 
   const listRef = React.useRef<VariableSizeList>();
 
@@ -103,7 +107,7 @@ export function TabNfts() {
           {term ? (
             <>
               <div className="margin-min">{t('assets.notFoundNFTs')}</div>
-              <p className="blue link" onClick={() => clearFilters()}>
+              <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
             </>
