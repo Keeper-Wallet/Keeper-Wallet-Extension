@@ -255,12 +255,5 @@ export function createUpdateState(store: UiStore) {
         payload: usdPrices,
       });
     }
-
-    if (!equals(usdPrices, currentState.usdPrices)) {
-      store.dispatch({
-        type: ACTION.SET_USD_PRICES,
-        payload: usdPrices,
-      });
-    }
   };
 }
