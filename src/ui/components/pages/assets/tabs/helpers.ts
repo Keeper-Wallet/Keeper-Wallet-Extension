@@ -1,14 +1,8 @@
 import { useAppDispatch, useAppSelector } from '../../../../store';
 import { setUiState } from '../../../../actions';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import {
-  AssetFilters,
-  NftFilters,
-  TxHistoryFilters,
-  UiState,
-} from '../../../../reducers/updateState';
+import { UiState } from '../../../../reducers/updateState';
 import * as React from 'react';
-import { Dispatch, SetStateAction } from 'react';
 import { AssetDetail } from '../../../../services/Background';
 import { equals } from 'ramda';
 
@@ -28,71 +22,6 @@ export function useUiState<T extends keyof UiState>(
       }
     },
   ];
-}
-
-function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
-  const dispatch = useAppDispatch();
-  const stateFilters: T = useAppSelector(state => state.uiState[name] || {});
-
-  const manageFilters = fields.reduce<{
-    [K in keyof T]?: [Pick<T, K>[K], Dispatch<SetStateAction<Pick<T, K>[K]>>];
-  }>((manage, field) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    manage[field] = React.useState<Pick<T, F>[F]>(stateFilters[field]);
-    return manage;
-  }, {});
-
-  const valueFilters = fields.reduce<{ [K in F]?: Pick<T, K>[K] }>(
-    (newFilters, field) => {
-      newFilters[field] = manageFilters[field][0];
-      return newFilters;
-    },
-    {}
-  );
-
-  React.useEffect(() => {
-    if (
-      fields.reduce(
-        (isEqualEachFilter, field) =>
-          isEqualEachFilter && valueFilters[field] == stateFilters[field],
-        true
-      )
-    ) {
-      return;
-    }
-
-    dispatch(setUiState({ [name]: valueFilters }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valueFilters, stateFilters, dispatch, setUiState]);
-
-  return {
-    ...manageFilters,
-    clearFilters: () => {
-      fields.forEach(field => manageFilters[field][1](null));
-    },
-  };
-}
-
-export function useAssetFilter() {
-  return useFilter<AssetFilters, keyof AssetFilters>('assetFilters', [
-    'term',
-    'onlyMy',
-    'onlyFavorites',
-  ]);
-}
-
-export function useNftFilter() {
-  return useFilter<NftFilters, keyof NftFilters>('nftFilters', [
-    'term',
-    'creator',
-  ]);
-}
-
-export function useTxHistoryFilter() {
-  return useFilter<TxHistoryFilters, keyof TxHistoryFilters>(
-    'txHistoryFilters',
-    ['term', 'type', 'onlyIncoming', 'onlyOutgoing']
-  );
 }
 
 export function sortAssetEntries<T>(
