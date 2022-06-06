@@ -7,7 +7,7 @@ import { BigNumber } from '@waves/bignumber';
 import * as React from 'react';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
-import { CARD_FULL_HEIGHT, sortAssetEntries, useAssetFilter } from './helpers';
+import { CARD_FULL_HEIGHT, sortAssetEntries, useUiState } from './helpers';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from 'ui/reducers/updateState';
@@ -74,12 +74,19 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
   const address = useAppSelector(state => state.selectedAccount.address);
   const myAssets = useAppSelector(state => state.balances[address]?.assets);
 
-  const {
-    term: [term, setTerm],
-    onlyMy: [onlyMy, setOnlyMy],
-    onlyFavorites: [onlyFav, setOnlyFav],
-    clearFilters,
-  } = useAssetFilter();
+  const [filters, setFilters] = useUiState('assetFilters');
+  const [term, setTerm] = [
+    filters?.term,
+    value => setFilters({ ...filters, term: value }),
+  ];
+  const [onlyMy, setOnlyMy] = [
+    filters?.onlyMy,
+    value => setFilters({ ...filters, onlyMy: value }),
+  ];
+  const [onlyFav, setOnlyFav] = [
+    filters?.onlyMy,
+    value => setFilters({ ...filters, onlyFavorites: value }),
+  ];
 
   const assetEntries = myAssets
     ? sortAssetEntries(
@@ -165,7 +172,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
           {term || onlyMy || onlyFav ? (
             <>
               <div className="margin-min">{t('assets.notFoundAssets')}</div>
-              <p className="blue link" onClick={() => clearFilters()}>
+              <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
             </>
