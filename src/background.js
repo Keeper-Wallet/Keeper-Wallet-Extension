@@ -26,6 +26,7 @@ import {
   UiStateController,
   WalletController,
 } from './controllers';
+import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
 import {
   getExtraFee,
@@ -366,6 +367,10 @@ class BackgroundService extends EventEmitter {
       getNode: this.networkController.getNode.bind(this.networkController),
     });
 
+    this.addressBookController = new AddressBookController({
+      localStore: this.localStore,
+    });
+
     // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
     // Delegates different signing to walletController, broadcast and getMatcherPublicKey to networkController,
     // assetInfo for assetInfoController
@@ -549,6 +554,13 @@ class BackgroundService extends EventEmitter {
       toggleAssetFavorite: this.assetInfoController.toggleAssetFavorite.bind(
         this.assetInfoController
       ),
+      // addresses
+      setAddress: async (address, name) =>
+        this.addressBookController.setAddress(address, name),
+      setAddresses: async addresses =>
+        this.addressBookController.setAddresses(addresses),
+      removeAddress: async address =>
+        this.addressBookController.removeAddress(address),
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
       resizeNotificationWindow: async (width, height) =>

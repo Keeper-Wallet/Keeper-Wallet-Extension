@@ -18,6 +18,32 @@
     "viewInExplorer": "エクスプローラーで確認"
   },
   "activeAccountCard": { "swapButton": "スワップ" },
+  "address": {
+    "add": "新しいアドレス",
+    "addButton": "新規追加",
+    "addTooltip": "アドレス帳にアドレスを追加する",
+    "added": "アドレスが追加されました",
+    "addressAlreadyExist": "アドレスが既に存在します",
+    "addressInvalidError": "アドレスの値が無効です",
+    "cancel": "キャンセル",
+    "copied": "コピーしました。",
+    "delete": "アドレス削除",
+    "deleteDescription": "アドレス帳からこのアドレスを削除しますか？この操作は元には戻せません。",
+    "edit": "アドレス編集",
+    "edited": "アドレスが変更されました",
+    "emptyDescription": "転送や履歴表示時に素早くアクセスできるよう受信者の名前とアドレスを追加",
+    "emptyTitle": "まだ登録されていません",
+    "name": "名前",
+    "nameAlreadyExist": "名前が既に存在しています",
+    "nameInvalidError": "名前値が無効です",
+    "save": "アドレスを保存",
+    "saveChanges": "変更を保存",
+    "select": "アドレスを選択",
+    "subtitle": "アドレス",
+    "title": "アドレス帳",
+    "wallets": "自分のウォレット",
+    "warningAlias": "受信者はエイリアスアカウントを持っているため、アドレス帳に登録されているユーザーではないので注意してください。"
+  },
   "assetAmountInput": {
     "balanceLabel": "残高"
   },

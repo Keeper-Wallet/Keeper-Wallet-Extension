@@ -146,6 +146,11 @@ export const usdPrices = createSimpleReducer<Record<string, string>>(
   ACTION.SET_USD_PRICES
 );
 
+export const addresses = createSimpleReducer<Record<string, string>>(
+  {},
+  ACTION.UPDATE_ADDRESSES
+);
+
 export const backTabs = (
   state: unknown[] = [],
   { type, payload }: { type: string; payload: unknown }

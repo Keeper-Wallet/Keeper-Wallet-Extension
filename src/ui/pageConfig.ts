@@ -1,5 +1,6 @@
 import {
   AccountInfo,
+  AddressBook,
   Assets,
   BackUpSeed,
   ChangeAccountName,
@@ -48,6 +49,7 @@ export const PAGES = {
   NEW_ACCOUNT_BACK: 'new_account_back',
   ACCOUNT_NAME: 'account_name',
   ACCOUNT_NAME_SEED: 'account_name_seed',
+  ADDRESS_BOOK: 'address_book',
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',
   IMPORT_DEBUG: 'import_debug',
@@ -404,6 +406,17 @@ export const PAGES_CONF = {
   },
   [PAGES.GENERAL_SETTINGS]: {
     component: SettingsGeneral,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
+    },
+  },
+  [PAGES.ADDRESS_BOOK]: {
+    component: AddressBook,
     bottom: {
       hide: true,
     },

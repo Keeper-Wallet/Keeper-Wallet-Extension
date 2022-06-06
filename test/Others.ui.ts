@@ -185,7 +185,7 @@ describe('Others', function () {
             this.wait
           )
           .getText()
-      ).to.equal('3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW');
+      ).to.equal('rich\n3MsX9C2M...yxZMg4cW');
 
       expect(
         await this.driver
@@ -203,7 +203,7 @@ describe('Others', function () {
           until.elementLocated(By.css('[data-testid="recipientInput"]')),
           this.wait
         )
-        .sendKeys('an_alias');
+        .sendKeys('alias:T:an_alias');
 
       await this.driver
         .wait(
@@ -243,7 +243,7 @@ describe('Others', function () {
             this.wait
           )
           .getText()
-      ).to.equal('an_alias');
+      ).to.equal('alias:T:an_alias');
 
       expect(
         await this.driver

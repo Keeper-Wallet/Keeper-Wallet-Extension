@@ -1,20 +1,15 @@
 import * as React from 'react';
 import * as styles from './moreActions.module.css';
-import cn from 'classnames';
 
 export function MoreActions({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
     <div
-      className={cn(styles.moreActions, isExpanded && styles.expanded)}
+      className={styles.moreActions}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {isExpanded &&
-        React.Children.map(
-          children,
-          child => child && React.cloneElement(child as React.ReactElement)
-        )}
+      {isExpanded && <div className={styles.content}>{children}</div>}
 
       <button
         className={styles.moreBtn}

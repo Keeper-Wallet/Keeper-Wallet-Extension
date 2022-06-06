@@ -8,11 +8,17 @@ interface Props extends React.HTMLProps<HTMLInputElement> {
   onClear?: () => void;
 }
 
-export function SearchInput({ value, onInput, onClear, ...restProps }: Props) {
+export function SearchInput({
+  className,
+  value,
+  onInput,
+  onClear,
+  ...restProps
+}: Props) {
   const inputRef = React.createRef<HTMLInputElement>();
 
   return (
-    <div className={styles.searchInputWrapper}>
+    <div className={`${styles.searchInputWrapper} ${className}`}>
       <Input
         {...restProps}
         ref={inputRef}

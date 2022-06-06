@@ -435,6 +435,36 @@ class Background {
     }
   }
 
+  async setAddress(address: string, name: string): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.setAddress(address, name);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async setAddresses(addresses: Record<string, string>): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.setAddresses(addresses);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async removeAddress(address: string): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.removeAddress(address);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async toggleAssetFavorite(assetId: string): Promise<void> {
     try {
       await this.initPromise;

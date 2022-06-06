@@ -5,6 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
+import { AddressInput } from '../ui/Address/Input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances, setUiState } from 'ui/actions';
@@ -50,7 +51,7 @@ export function Send() {
     ? t('send.recipientRequiredError')
     : !(
         validators.isValidAddress(recipientValue, chainId) ||
-        validators.isValidAliasName(recipientValue)
+        validators.isValidAlias(recipientValue)
       )
     ? t('send.recipientInvalidError')
     : null;
@@ -119,15 +120,14 @@ export function Send() {
           </div>
 
           <div className="margin-main-big">
-            <Input
-              autoComplete="off"
-              autoFocus
+            <AddressInput
               data-testid="recipientInput"
               error={showRecipientError}
-              spellCheck={false}
-              value={recipientValue}
               onChange={event => {
                 setRecipientValue(event.currentTarget.value);
+              }}
+              onSuggest={value => {
+                setRecipientValue(value);
               }}
             />
 

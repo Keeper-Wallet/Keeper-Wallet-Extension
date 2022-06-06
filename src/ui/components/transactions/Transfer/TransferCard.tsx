@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Attachment, Balance } from '../../ui';
+import { AddressRecipient } from '../../ui/Address/Recipient';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
@@ -47,8 +48,12 @@ class TransferCardComponent extends React.PureComponent<ComponentProps> {
             <div className="tx-title tag1 basic500">
               {t('transactions.recipient')}
             </div>
-            <div className={styles.txValue} data-testid="recipient">
-              {tx.recipient}
+            <div className={styles.txValue}>
+              <AddressRecipient
+                recipient={tx.recipient}
+                chainId={tx.chainId}
+                testid="recipient"
+              />
             </div>
           </div>
 

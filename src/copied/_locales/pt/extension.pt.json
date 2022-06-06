@@ -18,6 +18,32 @@
     "viewInExplorer": "Ver no Explorer"
   },
   "activeAccountCard": { "swapButton": "Converter" },
+  "address": {
+    "add": "Novo endereço",
+    "addButton": "Adicionar novo",
+    "addTooltip": "Adicionar um endereço aos seus contatos",
+    "added": "Endereço adicionado",
+    "addressAlreadyExist": "O endereço já existe",
+    "addressInvalidError": "Endereço inválido",
+    "cancel": "Cancelae",
+    "copied": "Copiado!",
+    "delete": "Deletar endereço",
+    "deleteDescription": "Tem certeza de que deseja excluir este endereço de seus contatos? Esta ação é irreversível.",
+    "edit": "Editar endereço",
+    "edited": "Endereço editado",
+    "emptyDescription": "Adicione o nome e endereço do destinatário para acesso rápido à transferência e visualização no histórico",
+    "emptyTitle": "Ninguém aqui ainda",
+    "name": "Nome",
+    "nameAlreadyExist": "O nome já existe",
+    "nameInvalidError": "Nome inválido",
+    "save": "Salvar endereço",
+    "saveChanges": "Salvar mudanças",
+    "select": "Escolha seu endereço",
+    "subtitle": "Endereço",
+    "title": "Contatos",
+    "wallets": "Minhas carteiras",
+    "warningAlias": "Cuidado, o destinatário tem uma conta Alias, não é um usuário dos seus contatos"
+  },
   "assetAmountInput": {
     "balanceLabel": "Saldo"
   },

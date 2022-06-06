@@ -40,8 +40,9 @@ import Long from 'long';
 import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 
-function processAliasOrAddress(recipient: string, chainId: number) {
-  return validators.isValidAddress(recipient)
+export function processAliasOrAddress(recipient: string, chainId: number) {
+  return validators.isValidAddress(recipient) ||
+    validators.isValidAlias(recipient)
     ? recipient
     : `alias:${String.fromCharCode(chainId)}:${recipient}`;
 }

@@ -29,6 +29,7 @@ class SettingsComponent extends React.Component<Props> {
   deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
   pairingHandler = () => this.props.setTab(PAGES.PAIRING);
   settingsGeneral = () => this.props.setTab(PAGES.GENERAL_SETTINGS);
+  addressesHandler = () => this.props.setTab(PAGES.ADDRESS_BOOK);
   toggleAutoLockHandler = () => {
     this.props.setUiState({
       autoClickProtection: !this.props.autoClickProtection,
@@ -43,6 +44,18 @@ class SettingsComponent extends React.Component<Props> {
           {t('settings.settings')}
         </div>
         <div className={styles.settingsMenu}>
+          <div className={`${styles.settingsMenuItem} ${styles.addresses}`}>
+            <Button
+              id="settingsAddresses"
+              type="button"
+              view="transparent"
+              className={styles.settingsBtn}
+              onClick={this.addressesHandler}
+            >
+              <div className="body1 left">{t('address.title')}</div>
+            </Button>
+          </div>
+
           <div className={`${styles.settingsMenuItem} ${styles.general}`}>
             <Button
               id="settingsGeneral"

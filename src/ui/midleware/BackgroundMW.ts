@@ -199,6 +199,32 @@ export const updateAssets = () => next => action => {
   return next(action);
 };
 
+export const setAddress = () => next => action => {
+  if (action.type === ACTION.SET_ADDRESS) {
+    const { address, name } = action.payload;
+    background.setAddress(address, name);
+  }
+
+  return next(action);
+};
+
+export const setAddresses = () => next => action => {
+  if (action.type === ACTION.SET_ADDRESSES) {
+    background.setAddresses(action.payload);
+  }
+
+  return next(action);
+};
+
+export const removeAddress = () => next => action => {
+  if (action.type === ACTION.REMOVE_ADDRESS) {
+    const { address } = action.payload;
+    background.removeAddress(address);
+  }
+
+  return next(action);
+};
+
 export const favoriteAsset = () => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
     background.toggleAssetFavorite(action.payload);

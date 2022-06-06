@@ -1,0 +1,40 @@
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 284px;
+  padding: 24px;
+  background: var(--color-white);
+  border-radius: 2px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.subtitle {
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.error {
+  margin-bottom: 20px;
+}
+
+.button {
+  width: auto;
+  margin: 36px auto 0;
+  padding: 0 36px;
+}

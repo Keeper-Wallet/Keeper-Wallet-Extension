@@ -5,6 +5,7 @@ import { NetworkName, KeystoreProfiles } from 'accounts/types';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
+import { setAddresses } from 'ui/actions';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 
@@ -53,32 +54,33 @@ type ExchangeKeystoreAccount = {
 
 interface EncryptedKeystore {
   type: WalletTypes;
-  decrypt: (password: string) => KeystoreProfiles;
+  decrypt: (password: string) => [KeystoreProfiles, Record<string, string>];
 }
 
 function parseKeystore(json: string): EncryptedKeystore | null {
   try {
-    const obj = JSON.parse(json);
+    const { profiles, addresses, data } = JSON.parse(json);
 
-    if (obj.profiles) {
-      const { profiles } = obj;
-
+    if (profiles) {
       if (typeof profiles === 'string') {
         return {
           type: WalletTypes.Keystore,
           decrypt: password => {
             try {
-              return JSON.parse(
-                seedUtils.decryptSeed(atob(profiles), password)
-              );
+              return [
+                JSON.parse(seedUtils.decryptSeed(atob(profiles), password)),
+                addresses && typeof addresses === 'string'
+                  ? JSON.parse(seedUtils.decryptSeed(atob(addresses), password))
+                  : {},
+              ];
             } catch (err) {
               return null;
             }
           },
         };
       }
-    } else if (obj.data) {
-      const { encryptionRounds, saveUsers } = JSON.parse(atob(obj.data));
+    } else if (data) {
+      const { encryptionRounds, saveUsers } = JSON.parse(atob(data));
 
       if (
         typeof saveUsers === 'string' &&
@@ -121,7 +123,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                   });
                 });
 
-              return profiles;
+              return [profiles, {}];
             } catch (err) {
               return null;
             }
@@ -136,18 +138,22 @@ function parseKeystore(json: string): EncryptedKeystore | null {
   }
 }
 
+const suffixRe = /\((\d+)\)$/;
+
 interface Props {
   setTab: (newTab: string) => void;
 }
 
 export function ImportKeystore({ setTab }: Props) {
   const dispatch = useAppDispatch();
+  const addresses = useAppSelector(state => state.addresses);
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
   );
   const { t } = useTranslation();
   const [error, setError] = React.useState<string | null>(null);
   const [profiles, setProfiles] = React.useState<KeystoreProfiles | null>(null);
+  const [keystoreAddresses, setKeystoreAddresses] = React.useState({});
   const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
 
   if (profiles == null) {
@@ -166,14 +172,12 @@ export function ImportKeystore({ setTab }: Props) {
               return;
             }
 
-            const newProfiles = keystore.decrypt(password);
+            const [newProfiles, newAddresses] = keystore.decrypt(password);
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
               return;
             }
-
-            const suffixRe = /\((\d+)\)$/;
 
             Object.entries(newProfiles).forEach(([network, profile]) => {
               const currentNetworkAccounts = allNetworksAccounts.filter(
@@ -211,6 +215,7 @@ export function ImportKeystore({ setTab }: Props) {
             });
             setWalletType(keystore.type);
             setProfiles(newProfiles);
+            setKeystoreAddresses(newAddresses);
           } catch (err) {
             setError(t('importKeystore.errorUnexpected'));
           }
@@ -227,6 +232,37 @@ export function ImportKeystore({ setTab }: Props) {
         setTab('');
       }}
       onSubmit={selectedAccounts => {
+        dispatch(
+          setAddresses(
+            Object.entries<string>(keystoreAddresses).reduce(
+              (acc, [keystoreAddress, keystoreName]) => {
+                let sameName = Object.values(addresses || {}).find(
+                  name => keystoreName === name
+                );
+
+                while (sameName) {
+                  const suffixMatch = keystoreName.match(suffixRe);
+
+                  if (suffixMatch) {
+                    keystoreName = keystoreName.replace(
+                      suffixRe,
+                      `(${Number(suffixMatch[1]) + 1})`
+                    );
+                  } else {
+                    keystoreName += ' (1)';
+                  }
+
+                  sameName = Object.values<string>(keystoreAddresses).find(
+                    name => keystoreName === name
+                  );
+                }
+
+                return { ...acc, [keystoreAddress]: keystoreName };
+              },
+              {}
+            )
+          )
+        );
         dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({

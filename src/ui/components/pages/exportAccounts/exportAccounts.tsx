@@ -11,6 +11,7 @@ interface Props {
 }
 
 export function ExportAccounts({ onBack }: Props) {
+  const addresses = useAppSelector(state => state.addresses);
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
   );
@@ -113,6 +114,9 @@ export function ExportAccounts({ onBack }: Props) {
             const json = JSON.stringify({
               profiles: btoa(
                 seedUtils.encryptSeed(JSON.stringify(profiles), password)
+              ),
+              addresses: btoa(
+                seedUtils.encryptSeed(JSON.stringify(addresses), password)
               ),
             });
 

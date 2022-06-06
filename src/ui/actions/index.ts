@@ -5,6 +5,7 @@ export * from './localState';
 export * from './network';
 export * from './balances';
 export * from './user';
+export * from './addresses';
 export * from './assets';
 export * from './account';
 export * from './menu';
