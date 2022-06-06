@@ -20,7 +20,7 @@ import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
-import { AssetDetail } from 'ui/services/Background';
+import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
 interface Props {
   setTab: (newTab: string) => void;
@@ -42,20 +42,13 @@ export function Assets({ setTab }: Props) {
   const showUpdateInfo = useAppSelector(
     state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
   );
-  const activeTab = useAppSelector(state => state.uiState?.assetsTab);
+
+  const [activeTab, setActiveTab] = useUiState('assetsTab');
 
   const [showAsset, setShowAsset] = useState(false);
   const [showCopy, setShowCopy] = React.useState(false);
 
-  const [currentAsset, setCurrentAsset] = [
-    useAppSelector(state => state.uiState?.currentAsset),
-    (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
-  ];
-
-  const [currentTab, setCurrentTab] = [
-    useAppSelector(state => state.uiState?.assetsTab || 0),
-    (tabIndex: number) => dispatch(setUiState({ assetsTab: tabIndex })),
-  ];
+  const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
 
   const address = activeAccount && activeAccount.address;
 
@@ -123,12 +116,7 @@ export function Assets({ setTab }: Props) {
         />
       </div>
 
-      <Tabs
-        activeTab={activeTab}
-        onTabChange={activeIndex =>
-          activeIndex !== currentTab && setCurrentTab(activeIndex)
-        }
-      >
+      <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
         <TabList className="flex body3">
           <Tab className={styles.tabItem}>{t('assets.assets')}</Tab>
           <Tab className={styles.tabItem}>{t('assets.nfts')}</Tab>

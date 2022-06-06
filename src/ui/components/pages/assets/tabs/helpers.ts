@@ -5,10 +5,30 @@ import {
   AssetFilters,
   NftFilters,
   TxHistoryFilters,
+  UiState,
 } from '../../../../reducers/updateState';
 import * as React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import { AssetDetail } from '../../../../services/Background';
+import { equals } from 'ramda';
+
+export function useUiState<T extends keyof UiState>(
+  key: T
+): [UiState[T], (newState: UiState[T]) => void] {
+  const dispatch = useAppDispatch();
+  const initialValue = useAppSelector(state => state.uiState[key]);
+  const [state, setState] = React.useState(initialValue);
+  return [
+    state,
+    newState => {
+      setState(newState);
+
+      if (!equals(newState, state)) {
+        dispatch(setUiState({ [key]: newState }));
+      }
+    },
+  ];
+}
 
 function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
   const dispatch = useAppDispatch();
