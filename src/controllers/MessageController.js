@@ -678,6 +678,7 @@ export class MessageController extends EventEmitter {
           );
           ids.push(id);
           readyData.id = id;
+          readyData.data.amount = readyData.data.amount.toJSON();
           if (txParams.type === 9 && txParams.data.leaseId) {
             readyData.data.lease = await this.txInfo(txParams.data.leaseId);
           }
