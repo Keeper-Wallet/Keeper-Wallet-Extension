@@ -1,16 +1,28 @@
 import { extension } from 'lib/extension';
+import ObservableStore from 'obs-store';
 
 const height = 622;
 const width = 357;
 
 export class WindowManager {
-  _notificationWindowId;
-  _inShowMode;
+  constructor({ localStore }) {
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        notificationWindowId: undefined,
+        inShowMode: undefined,
+      })
+    );
+    localStore.subscribe(this.store);
+  }
+
   async showWindow() {
-    if (this._inShowMode) {
+    const { inShowMode } = this.store.getState();
+
+    if (inShowMode) {
       return null;
     }
-    this._inShowMode = true;
+
+    this.store.updateState({ inShowMode: true });
     const notificationWindow = await this._getNotificationWindow();
 
     if (notificationWindow) {
@@ -27,13 +39,14 @@ export class WindowManager {
             height,
           },
           window => {
-            this._notificationWindowId = window.id;
+            this.store.updateState({ notificationWindowId: window.id });
             resolve();
           }
         );
       });
     }
-    this._inShowMode = false;
+
+    this.store.updateState({ inShowMode: false });
   }
 
   async resizeWindow(width, height) {
@@ -57,10 +70,11 @@ export class WindowManager {
       })
     );
 
+    const { notificationWindowId } = this.store.getState();
+
     // find our ui window
     return windows.find(
-      window =>
-        window.type === 'popup' && window.id === this._notificationWindowId
+      window => window.type === 'popup' && window.id === notificationWindowId
     );
   }
 }
