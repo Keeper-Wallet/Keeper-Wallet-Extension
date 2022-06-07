@@ -42,10 +42,9 @@ export function TabNfts() {
     [nfts, currentAddress]
   );
 
-  const sortedNfts =
-    sortAndFilterNfts(myNfts.map(getNftDetails), {
-      term,
-    }) || PLACEHOLDERS;
+  const sortedNfts = myNfts
+    ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
+    : PLACEHOLDERS;
 
   React.useEffect(() => {
     if (listRef.current) {

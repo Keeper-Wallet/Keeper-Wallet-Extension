@@ -11,7 +11,10 @@ import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
-import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
+import {
+  sortAndFilterNfts,
+  useUiState,
+} from 'ui/components/pages/assets/tabs/helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink } from 'ui/urls';
 
@@ -59,7 +62,7 @@ export function NftCollection({
   );
 
   const creatorNfts = myNfts
-    ? myNfts.map(getNftDetails).filter(nft => nft.creator === creator)
+    ? sortAndFilterNfts(myNfts.map(getNftDetails), { term, creator })
     : PLACEHOLDERS;
 
   React.useEffect(() => {
