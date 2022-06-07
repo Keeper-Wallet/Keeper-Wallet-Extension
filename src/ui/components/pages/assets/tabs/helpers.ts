@@ -6,7 +6,7 @@ import * as React from 'react';
 import { AssetDetail } from '../../../../services/Background';
 import { equals } from 'ramda';
 import { Nft } from 'nfts/utils';
-import { NftVendor, NftVendorKeys } from 'nfts';
+import { NftVendorKeys } from 'nfts';
 
 export function useUiState<T extends keyof UiState>(
   key: T
@@ -54,10 +54,9 @@ export function sortAndFilterNfts<T extends Nft>(
   filters: {
     term?: string;
     creator?: string;
-    currentAddress?: string;
   }
 ) {
-  const { creator, term, currentAddress } = filters;
+  const { creator, term } = filters;
 
   if (creator) {
     nfts = nfts.filter(nft => nft.creator === creator);
@@ -74,18 +73,7 @@ export function sortAndFilterNfts<T extends Nft>(
   }
 
   return nfts.sort((a, b) => {
-    const diff =
-      NftVendorKeys.indexOf(a.vendor) - NftVendorKeys.indexOf(b.vendor);
-
-    if (a.vendor == NftVendor.Unknown && a.creator === currentAddress) {
-      return -1;
-    }
-
-    if (b.vendor == NftVendor.Unknown && b.creator === currentAddress) {
-      return 1;
-    }
-
-    return diff;
+    return NftVendorKeys.indexOf(a.vendor) - NftVendorKeys.indexOf(b.vendor);
   });
 }
 

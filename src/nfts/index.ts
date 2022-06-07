@@ -13,6 +13,7 @@ export enum DisplayMode {
 }
 
 export enum NftVendor {
+  My = 'my',
   Ducks = 'ducks',
   Ducklings = 'ducklings',
   DucksArtefact = 'ducks-artefact',

@@ -38,14 +38,13 @@ export function TabNfts() {
   const listRef = React.useRef<VariableSizeList>();
 
   const getNftDetails = React.useCallback(
-    nft => createNft(nft, nfts[nft.id]),
-    [nfts]
+    nft => createNft(nft, nfts[nft.id], currentAddress),
+    [nfts, currentAddress]
   );
 
   const sortedNfts =
     sortAndFilterNfts(myNfts.map(getNftDetails), {
       term,
-      currentAddress,
     }) || PLACEHOLDERS;
 
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 import { AssetDetail } from 'ui/services/Background';
 import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
-import { fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
+import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
 import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
 
 import { signArtDApp } from 'nfts/signArt/constants';
@@ -9,33 +9,38 @@ import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
 import { BaseNft, NftDetails, NftInfo, NftVendor } from 'nfts/index';
-import { Duckling } from 'nfts/ducklings';
+import { Duckling, DucklingInfo } from 'nfts/ducklings';
 import { Duck } from 'nfts/ducks';
-import { SignArt } from 'nfts/signArt';
+import { SignArt, SignArtInfo } from 'nfts/signArt';
 import { DucksArtefact } from 'nfts/duckArtifacts';
-import { Unknown } from 'nfts/unknown';
+import { MyNFT, Unknown } from 'nfts/unknown';
 
 export type Nft = ReturnType<typeof createNft>;
 
 export function createNft(
   asset: AssetDetail,
-  info: NftInfo | { id: string; vendor: NftVendor.Unknown }
+  info: NftInfo | { id: string; vendor: NftVendor.Unknown },
+  currentAccount?: string
 ) {
   if (!asset) {
     return null;
   }
 
-  switch (info?.vendor) {
+  switch (nftType(asset)) {
     case NftVendor.Ducklings:
-      return new Duckling(asset, info);
+      return new Duckling(asset, info as DucklingInfo);
     case NftVendor.Ducks:
-      return new Duck(asset, info);
+      return new Duck(asset, info as DuckInfo);
     case NftVendor.DucksArtefact:
-      return new DucksArtefact(asset, info);
+      return new DucksArtefact(asset, info as DucksArtefact);
     case NftVendor.SignArt:
-      return new SignArt(asset, info);
-    case NftVendor.Unknown:
+      return new SignArt(asset, info as SignArtInfo);
+    case NftVendor.Unknown: {
+      if (asset.issuer === currentAccount) {
+        return new MyNFT(asset);
+      }
       return new Unknown(asset);
+    }
     default:
       return new BaseNft(asset);
   }
@@ -45,21 +50,18 @@ export function nftType(nft: AssetDetail): NftVendor {
   if (!nft) {
     return null;
   }
-  if (nft?.issuer === signArtDApp) {
+  if (nft.issuer === signArtDApp) {
     return NftVendor.SignArt;
   }
-  if (ducksDApps.includes(nft?.issuer)) {
+  if (ducksDApps.includes(nft.issuer)) {
     return NftVendor.Ducks;
   }
-
-  if (nft?.issuer === ducklingsDApp) {
+  if (nft.issuer === ducklingsDApp) {
     return NftVendor.Ducklings;
   }
-
-  if (nft?.issuer === ducksArtefactsDApp) {
+  if (nft.issuer === ducksArtefactsDApp) {
     return NftVendor.DucksArtefact;
   }
-
   return NftVendor.Unknown;
 }
 
