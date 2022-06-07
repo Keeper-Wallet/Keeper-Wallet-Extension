@@ -5,6 +5,7 @@ import {
   ducklingsApiUrl,
   DucklingsDescription,
 } from 'nfts/ducklings/constants';
+import * as React from 'react';
 
 export interface DucklingInfo extends BaseInfo {
   vendor: NftVendor.Ducklings;
@@ -46,6 +47,10 @@ export class Duckling extends BaseNft<DucklingInfo> {
 
   get description(): string {
     return DucklingsDescription[this.name_];
+  }
+
+  get background(): React.CSSProperties {
+    return { backgroundColor: '#f0e7d5' };
   }
 
   get foreground() {

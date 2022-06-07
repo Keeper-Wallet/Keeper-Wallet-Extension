@@ -3,6 +3,7 @@ import {
   ArtefactNames,
   ducksArtefactApiUrl,
 } from 'nfts/duckArtifacts/constants';
+import * as React from 'react';
 
 export interface DucksArtefactInfo extends BaseInfo {
   vendor: NftVendor.DucksArtefact;
@@ -27,6 +28,10 @@ export class DucksArtefact extends BaseNft<DucksArtefactInfo> {
 
   get description(): string {
     return ArtefactNames[this.name_]?.description;
+  }
+
+  get background(): React.CSSProperties {
+    return { backgroundColor: '#e6d4ef' };
   }
 
   get foreground(): string {
