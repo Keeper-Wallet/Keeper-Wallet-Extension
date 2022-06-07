@@ -1,23 +1,40 @@
 import { extension } from 'lib/extension';
+import LocalStore from 'lib/localStore';
+import * as ObservableStore from 'obs-store';
 
-type Tab = {
+interface Tab {
   active: boolean;
   id: number;
   url: string;
   autoDiscardable: boolean;
-};
+}
+
+interface State {
+  tabs: { [tabName: string]: Tab };
+}
+
+interface Options {
+  localStore: LocalStore;
+}
 
 export class TabsManager {
-  private _tabs: { [tabName: string]: Tab } = {};
+  store: ObservableStore<State>;
+
+  constructor({ localStore }: Options) {
+    this.store = new ObservableStore(localStore.getInitState({ tabs: {} }));
+    localStore.subscribe(this.store);
+  }
 
   async getOrCreate(url: string, key: string) {
-    const currentTab = this._tabs[key];
+    const { tabs } = this.store.getState();
+
+    const currentTab = tabs[key];
     const tabProps = { active: true } as Tab;
     if (url != currentTab?.url) {
       tabProps.url = url;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       try {
         extension.tabs.get(currentTab?.id, tab => {
           if (!tab) {
@@ -30,7 +47,7 @@ export class TabsManager {
       }
     }).catch(() =>
       extension.tabs.create({ url: url }, tab => {
-        this._tabs[key] = { ...tab, url };
+        this.store.updateState({ tabs: { ...tabs, [key]: { ...tab, url } } });
       })
     );
   }
