@@ -31,8 +31,9 @@ export function NftInfo({
     [dispatch]
   );
 
-  const creatorUrl = nft.creatorUrl || getAccountLink(networkCode, nft.creator);
-  const nftUrl = getAssetDetailLink(networkCode, nft.id);
+  const creatorUrl =
+    nft && (nft.creatorUrl || getAccountLink(networkCode, nft.creator));
+  const nftUrl = nft && getAssetDetailLink(networkCode, nft.id);
 
   return (
     <div className={styles.root}>
