@@ -9,6 +9,7 @@ import { PAGES } from 'ui/pageConfig';
 import { AssetDetail } from 'ui/services/Background';
 import { setUiState } from 'ui/actions';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { getAccountLink, getAssetDetailLink } from 'ui/urls';
 
 export function NftInfo({
   setTab,
@@ -18,33 +19,20 @@ export function NftInfo({
   onBack: () => void;
 }) {
   const { t } = useTranslation();
-
-  const nfts = useAppSelector(state => state.nfts);
   const dispatch = useAppDispatch();
 
-  // todo remove mocks
-  const asset = {
-    id: 'DkZ387c4MtKySzQha3z9hpjuQbKwTPRXG24WhypW86uo',
-    issueHeight: 2821226,
-    issueTimestamp: 1634830900884,
-    issuer: '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv',
-    issuerPublicKey: 'EBHsV7TQYm4qS2V7iZXEXwcbUdEYQyCSLEdY2AMvLPns',
-    name: 'DUCK-WWWWLUCK-JU',
-    description: '{"genotype": "DUCK-WWWWLUCK-JU", "crossbreeding": true}',
-    decimals: 0,
-    reissuable: false,
-    quantity: 1,
-    scripted: false,
-    minSponsoredAssetFee: null,
-    originTransactionId: 'DAsaD6cafmyPHMbbWhbvxb2kBrPSxd4myGYYiKwUL4Xm',
-  };
-
+  const networkCode = useAppSelector(
+    state => state.selectedAccount.networkCode
+  );
   const nft = useAppSelector(state => state.uiState?.currentAsset) as Nft;
 
   const setCurrentAsset = React.useCallback(
     (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
     [dispatch]
   );
+
+  const creatorUrl = nft.creatorUrl || getAccountLink(networkCode, nft.creator);
+  const nftUrl = getAssetDetailLink(networkCode, nft.id);
 
   return (
     <div className={styles.root}>
@@ -59,7 +47,7 @@ export function NftInfo({
           <a
             rel="noopener noreferrer"
             target="_blank"
-            href={`https://wavesexplorer.com/assets/${nft.id}`}
+            href={nftUrl}
             className="link blue clean"
           >
             {t('nftInfo.viewInExplorer')}
@@ -86,7 +74,7 @@ export function NftInfo({
                   rel="noopener noreferrer"
                   className="link"
                   target="_blank"
-                  href={nft.creatorUrl}
+                  href={creatorUrl}
                   {...props}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16">

@@ -13,6 +13,7 @@ import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { getAccountLink } from 'ui/urls';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
   key =>
@@ -32,6 +33,9 @@ export function NftCollection({
   const listRef = React.useRef<VariableSizeList>();
 
   const address = useAppSelector(state => state.selectedAccount.address);
+  const networkCode = useAppSelector(
+    state => state.selectedAccount.networkCode
+  );
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
@@ -66,6 +70,10 @@ export function NftCollection({
 
   const creatorRef = React.useRef(creatorNfts[0] as Nft);
 
+  const creatorUrl =
+    creatorRef.current.creatorUrl ||
+    getAccountLink(networkCode, creatorRef.current.creator);
+
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -77,7 +85,7 @@ export function NftCollection({
                 rel="noopener noreferrer"
                 className="link"
                 target="_blank"
-                href={creatorRef.current.creatorUrl}
+                href={creatorUrl}
                 {...props}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16">

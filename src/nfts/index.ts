@@ -60,7 +60,7 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
     return this.asset.issuer;
   }
   get creatorUrl(): string {
-    return `https://wavesexplorer.com/address/${this.creator}`;
+    return null;
   }
   get marketplaceUrl(): string {
     return null;
