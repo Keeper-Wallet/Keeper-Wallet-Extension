@@ -1,7 +1,7 @@
 import * as styles from 'nfts/nftCard.module.css';
 import * as React from 'react';
 import cn from 'classnames';
-import { Loader } from 'ui/components/ui';
+import { Ellipsis, Loader } from 'ui/components/ui';
 import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
 
@@ -57,7 +57,13 @@ export function NftCard({
         )}
         {mode === DisplayMode.Creator && (
           <>
-            <div className={styles.title}>{nft?.displayCreator}</div>
+            <div className={styles.title}>
+              {nft?.creator === nft?.displayCreator ? (
+                <Ellipsis text={nft?.creator} size={6} />
+              ) : (
+                nft?.displayCreator
+              )}
+            </div>
             <div>{count}</div>
           </>
         )}
