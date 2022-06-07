@@ -4,7 +4,7 @@ import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Nft } from 'nfts/utils';
-import { Button } from 'ui/components/ui';
+import { Button, Ellipsis } from 'ui/components/ui';
 import { PAGES } from 'ui/pageConfig';
 import { AssetDetail } from 'ui/services/Background';
 import { setUiState } from 'ui/actions';
@@ -66,7 +66,13 @@ export function NftInfo({
 
         <div className="basic500 margin1">{t('nftInfo.creator')}</div>
         <div className="body1 margin2 flex">
-          <div>{nft.displayCreator}</div>
+          <div>
+            {nft?.creator === nft?.displayCreator ? (
+              <Ellipsis text={nft?.creator} size={16} />
+            ) : (
+              nft?.displayCreator
+            )}
+          </div>
           <div>
             <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
               {props => (

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { VariableSizeList } from 'react-window';
 import { PAGES } from 'ui/pageConfig';
 import * as styles from './nftCollection.module.css';
-import { Button, SearchInput } from 'ui/components/ui';
+import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
 import cn from 'classnames';
@@ -77,7 +77,14 @@ export function NftCollection({
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <div className={styles.title}>{creatorRef.current?.displayCreator}</div>
+        <div className={styles.title}>
+          {creatorRef.current?.creator ===
+          creatorRef.current?.displayCreator ? (
+            <Ellipsis text={creatorRef.current?.creator} size={12} />
+          ) : (
+            creatorRef.current?.displayCreator
+          )}
+        </div>
         <div className={styles.creator}>
           <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
             {props => (
