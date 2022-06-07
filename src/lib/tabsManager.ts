@@ -34,16 +34,14 @@ export class TabsManager {
       tabProps.url = url;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       try {
         extension.tabs.get(currentTab?.id, tab => {
           if (!tab) {
             reject(new Error("Tab doesn't exists"));
           }
         });
-        extension.tabs.update(currentTab.id, tabProps, () =>
-          resolve(undefined)
-        );
+        extension.tabs.update(currentTab.id, tabProps, () => resolve());
       } catch (err) {
         reject(err);
       }
