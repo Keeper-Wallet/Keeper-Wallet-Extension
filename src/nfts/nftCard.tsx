@@ -44,12 +44,15 @@ export function NftCard({
   className?: string;
   onClick: (asset: Nft) => void;
 }) {
+  const isPlaceholder = !nft?.displayCreator;
+
   return (
-    <div className={cn(styles.card, className)} onClick={() => onClick(nft)}>
+    <div
+      className={cn(styles.card, className)}
+      onClick={() => !isPlaceholder && onClick(nft)}
+    >
       <NftCover className={styles.withTitle} nft={nft} />
-      <div
-        className={cn(styles.footer, !nft?.displayCreator && 'skeleton-glow')}
-      >
+      <div className={cn(styles.footer, isPlaceholder && 'skeleton-glow')}>
         {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft?.displayName}</div>
         )}
