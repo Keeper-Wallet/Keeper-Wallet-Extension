@@ -15,6 +15,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
     ({
       id: `${key}`,
+      creator: `${key}`,
     } as Nft)
 );
 

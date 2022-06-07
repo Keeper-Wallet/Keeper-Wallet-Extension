@@ -1,7 +1,7 @@
 import * as styles from 'nfts/nftCard.module.css';
 import * as React from 'react';
 import cn from 'classnames';
-import { Ellipsis, Loader } from 'ui/components/ui';
+import { Ellipsis } from 'ui/components/ui';
 import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
 
@@ -27,10 +27,6 @@ export function NftCover({ className, nft }: { className?: string; nft: Nft }) {
   );
 }
 
-export function NftFooter({ children }: { children: React.ReactNode }) {
-  return <div className={styles.footer}>{children ?? <Loader />}</div>;
-}
-
 export function NftTitle({ children }: { children: React.ReactNode }) {
   return <div className={styles.title}>{children}</div>;
 }
@@ -51,7 +47,9 @@ export function NftCard({
   return (
     <div className={cn(styles.card, className)} onClick={() => onClick(nft)}>
       <NftCover className={styles.withTitle} nft={nft} />
-      <NftFooter>
+      <div
+        className={cn(styles.footer, !nft?.displayCreator && 'skeleton-glow')}
+      >
         {mode === DisplayMode.Name && (
           <div className={styles.title}>{nft?.displayName}</div>
         )}
@@ -67,7 +65,7 @@ export function NftCard({
             <div>{count}</div>
           </>
         )}
-      </NftFooter>
+      </div>
     </div>
   );
 }

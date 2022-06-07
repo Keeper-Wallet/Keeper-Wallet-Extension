@@ -16,11 +16,12 @@ import {
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink } from 'ui/urls';
 
-const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
+const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
     ({
       id: `${key}`,
-    } as AssetDetail)
+      creator: `${key}`,
+    } as Nft)
 );
 
 export function NftCollection({
