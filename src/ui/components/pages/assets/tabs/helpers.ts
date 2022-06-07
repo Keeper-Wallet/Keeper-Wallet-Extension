@@ -5,6 +5,8 @@ import { UiState } from '../../../../reducers/updateState';
 import * as React from 'react';
 import { AssetDetail } from '../../../../services/Background';
 import { equals } from 'ramda';
+import { Nft } from 'nfts/utils';
+import { NftVendor, NftVendorKeys } from 'nfts';
 
 export function useUiState<T extends keyof UiState>(
   key: T
@@ -45,6 +47,46 @@ export function sortAssetEntries<T>(
               assets[b].displayName ?? ''
             )))
     );
+}
+
+export function sortAndFilterNfts<T extends Nft>(
+  nfts: T[],
+  filters: {
+    term?: string;
+    creator?: string;
+    currentAddress?: string;
+  }
+) {
+  const { creator, term, currentAddress } = filters;
+
+  if (creator) {
+    nfts = nfts.filter(nft => nft.creator === creator);
+  }
+
+  if (term) {
+    nfts = nfts.filter(
+      nft =>
+        nft.id.toLowerCase() === term.toLowerCase() ||
+        nft.creator.toLowerCase() === term.toLowerCase() ||
+        nft.displayCreator.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
+        nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1
+    );
+  }
+
+  return nfts.sort((a, b) => {
+    const diff =
+      NftVendorKeys.indexOf(a.vendor) - NftVendorKeys.indexOf(b.vendor);
+
+    if (a.vendor == NftVendor.Unknown && a.creator === currentAddress) {
+      return -1;
+    }
+
+    if (b.vendor == NftVendor.Unknown && b.creator === currentAddress) {
+      return 1;
+    }
+
+    return diff;
+  });
 }
 
 export const MONTH = [

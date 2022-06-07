@@ -20,6 +20,8 @@ export enum NftVendor {
   Unknown = 'unknown',
 }
 
+export const NftVendorKeys = Object.values(NftVendor);
+
 export type NftDetails = AssetDetail & { assetId: string };
 
 export interface BaseInfo {

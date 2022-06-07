@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { sortAndFilterNft, useUiState } from './helpers';
+import { sortAndFilterNfts, useUiState } from './helpers';
 import { VariableSizeList } from 'react-window';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
@@ -12,18 +12,18 @@ import { PAGES } from 'ui/pageConfig';
 import { setTab } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
 
-const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
+const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
     ({
       id: `${key}`,
-    } as AssetDetail)
+    } as Nft)
 );
 
 export function TabNfts() {
   const { t } = useTranslation();
 
-  const address = useAppSelector(state => state.selectedAccount.address);
-  const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const myNfts = useAppSelector(state => state.balances[currentAddress]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const dispatch = useAppDispatch();
@@ -37,38 +37,35 @@ export function TabNfts() {
 
   const listRef = React.useRef<VariableSizeList>();
 
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [myNfts]);
-
-  const sortedNfts = myNfts
-    ? myNfts.sort(
-        (a, b) =>
-          (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
-          (a.displayName ?? '').localeCompare(b.displayName ?? '')
-      )
-    : PLACEHOLDERS;
-
   const getNftDetails = React.useCallback(
     nft => createNft(nft, nfts[nft.id]),
     [nfts]
   );
 
+  const sortedNfts =
+    sortAndFilterNfts(myNfts.map(getNftDetails), {
+      term,
+      currentAddress,
+    }) || PLACEHOLDERS;
+
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [sortedNfts]);
+
   const [creatorNfts, creatorCounts] = sortedNfts.reduce<
     [Nft[], Record<string, number>]
   >(
     ([creatorNfts, creatorCounts], current) => {
-      const currentDetails = getNftDetails(current);
-      const creator = currentDetails.creator;
+      const creator = current.creator;
       if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
         creatorCounts[creator] += 1;
         return [creatorNfts, creatorCounts];
       }
 
       creatorCounts[creator] = 1;
-      creatorNfts.push(currentDetails);
+      creatorNfts.push(current);
 
       return [creatorNfts, creatorCounts];
     },

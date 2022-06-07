@@ -49,12 +49,6 @@ export function NftCollection({
   ];
   const creator = filters?.creator;
 
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [myNfts]);
-
   const getNftDetails = React.useCallback(
     nft => createNft(nft, nfts[nft.id]),
     [nfts]
@@ -63,6 +57,12 @@ export function NftCollection({
   const creatorNfts = myNfts
     ? myNfts.map(getNftDetails).filter(nft => nft.creator === creator)
     : PLACEHOLDERS;
+
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0);
+    }
+  }, [creatorNfts]);
 
   const creatorRef = React.useRef(creatorNfts[0] as Nft);
 
