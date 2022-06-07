@@ -1,6 +1,6 @@
 import { extension } from 'lib/extension';
 import LocalStore from 'lib/localStore';
-import ObservableStore from 'obs-store';
+import * as ObservableStore from 'obs-store';
 
 interface Tab {
   active: boolean;
@@ -21,6 +21,7 @@ export class TabsManager {
   store: ObservableStore<State>;
 
   constructor({ localStore }: Options) {
+    console.log(localStore);
     this.store = new ObservableStore(localStore.getInitState({ tabs: {} }));
     localStore.subscribe(this.store);
   }
