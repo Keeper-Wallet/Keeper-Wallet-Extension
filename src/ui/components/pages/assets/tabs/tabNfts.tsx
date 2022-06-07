@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { useUiState } from './helpers';
+import { sortAndFilterNft, useUiState } from './helpers';
 import { VariableSizeList } from 'react-window';
 import cn from 'classnames';
-import { AssetDetail } from 'ui/services/Background';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import { PAGES } from 'ui/pageConfig';
@@ -34,10 +33,7 @@ export function TabNfts() {
     filters?.term,
     value => setFilters({ ...filters, term: value }),
   ];
-  const [creator, setCreator] = [
-    filters?.creator,
-    value => setFilters({ ...filters, creator: value }),
-  ];
+  const setCreator = value => setFilters({ ...filters, creator: value });
 
   const listRef = React.useRef<VariableSizeList>();
 
@@ -79,14 +75,6 @@ export function TabNfts() {
     [[], {}]
   );
 
-  const [selectedCreator, setSelectedCreator] = React.useState<boolean>();
-
-  React.useEffect(() => {
-    if (creator && selectedCreator) {
-      dispatch(setTab(PAGES.NFT_COLLECTION));
-    }
-  }, [creator, selectedCreator, dispatch]);
-
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
@@ -123,7 +111,7 @@ export function TabNfts() {
           counters={creatorCounts}
           onClick={(asset: Nft) => {
             setCreator(asset.creator);
-            setSelectedCreator(true);
+            dispatch(setTab(PAGES.NFT_COLLECTION));
           }}
         />
       )}
