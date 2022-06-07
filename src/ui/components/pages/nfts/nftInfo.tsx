@@ -53,7 +53,7 @@ export function NftInfo({
       </div>
 
       <div className={styles.content}>
-        <NftCover className={styles.cover} nft={nft} onClick={() => void 0} />
+        <NftCover className={styles.cover} nft={nft} />
 
         <div className={styles.links}>
           <a
