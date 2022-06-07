@@ -21,7 +21,6 @@ export class TabsManager {
   store: ObservableStore<State>;
 
   constructor({ localStore }: Options) {
-    console.log(localStore);
     this.store = new ObservableStore(localStore.getInitState({ tabs: {} }));
     localStore.subscribe(this.store);
   }
@@ -50,7 +49,7 @@ export class TabsManager {
       }
     }).catch(() =>
       extension.tabs.create({ url: url }, tab => {
-        this.store.updateState({ tabs: { [key]: { ...tab, url } } });
+        this.store.updateState({ tabs: { ...tabs, [key]: { ...tab, url } } });
       })
     );
   }
