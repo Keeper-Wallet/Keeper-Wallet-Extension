@@ -170,7 +170,7 @@ async function setupBackgroundService() {
     windowManager.resizeWindow(width, height);
   });
   // Tabs manager
-  const tabsManager = new TabsManager();
+  const tabsManager = new TabsManager({ localStore });
   backgroundService.on('Show tab', async (url, name) => {
     backgroundService.emit('closePopupWindow');
     return tabsManager.getOrCreate(url, name);
