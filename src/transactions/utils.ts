@@ -453,14 +453,25 @@ export const convertFromSa = {
           )
         );
       }
-      case TRANSACTION_TYPE.BURN:
+      case TRANSACTION_TYPE.BURN: {
+        const quantity = input.data.quantity || input.data.amount;
+
+        let assetId = input.data.assetId;
+
+        if (!assetId && quantity instanceof Money) {
+          assetId = quantity.asset.id;
+        }
+
         return convertLongToBigNumber(
           burn(
             convertBigNumberToLong({
               version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
-              assetId: input.data.assetId,
-              amount: new BigNumber(input.data.amount || input.data.quantity),
+              assetId,
+              amount:
+                quantity instanceof Money
+                  ? quantity.getCoins()
+                  : new BigNumber(quantity),
               chainId: input.data.chainId || defaultChainId,
               fee: input.data.fee.getCoins(),
               timestamp: input.data.timestamp,
@@ -468,6 +479,7 @@ export const convertFromSa = {
             })
           )
         );
+      }
       case TRANSACTION_TYPE.LEASE: {
         const chainId = input.data.chainId || defaultChainId;
 
