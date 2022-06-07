@@ -32,11 +32,11 @@ export function NftCollection({
   const { t } = useTranslation();
   const listRef = React.useRef<VariableSizeList>();
 
-  const address = useAppSelector(state => state.selectedAccount.address);
+  const currentAddress = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  const myNfts = useAppSelector(state => state.balances[currentAddress]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const dispatch = useAppDispatch();
@@ -54,8 +54,8 @@ export function NftCollection({
   const creator = filters?.creator;
 
   const getNftDetails = React.useCallback(
-    nft => createNft(nft, nfts[nft.id]),
-    [nfts]
+    nft => createNft(nft, nfts[nft.id], currentAddress),
+    [nfts, currentAddress]
   );
 
   const creatorNfts = myNfts
