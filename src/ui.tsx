@@ -56,6 +56,7 @@ async function startUi() {
     const stateChanges = await backgroundService.getState([
       'initialized',
       'locked',
+      'assets',
     ]);
 
     for (const key in changes) {
