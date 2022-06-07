@@ -64,13 +64,11 @@ export function NftList({
   mode,
   nfts,
   counters = {},
-  listRef,
   onClick,
 }: {
   mode: DisplayMode;
   nfts: AssetDetail[];
   counters?: Record<string, number>;
-  listRef: React.MutableRefObject<VariableSizeList>;
   onClick: (asset: Nft) => void;
 }) {
   return (
@@ -80,7 +78,6 @@ export function NftList({
           const len = Math.round(nfts.length / 2);
           return (
             <VariableSizeList
-              ref={listRef}
               height={height}
               width={width}
               itemCount={len}

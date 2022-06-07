@@ -1,13 +1,11 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
-import { VariableSizeList } from 'react-window';
 import { PAGES } from 'ui/pageConfig';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetDetail } from 'ui/services/Background';
-import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
@@ -33,7 +31,6 @@ export function NftCollection({
   onBack: () => void;
 }) {
   const { t } = useTranslation();
-  const listRef = React.useRef<VariableSizeList>();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
@@ -64,12 +61,6 @@ export function NftCollection({
   const creatorNfts = myNfts
     ? sortAndFilterNfts(myNfts.map(getNftDetails), { term, creator })
     : PLACEHOLDERS;
-
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [creatorNfts]);
 
   const creatorRef = React.useRef(creatorNfts[0] as Nft);
 
@@ -118,19 +109,13 @@ export function NftCollection({
             autoFocus
             className={styles.searchInput}
             value={term ?? ''}
-            onInput={e => {
-              listRef.current && listRef.current.resetAfterIndex(0);
-              setTerm(e.target.value);
-            }}
-            onClear={() => {
-              listRef.current && listRef.current.resetAfterIndex(0);
-              setTerm('');
-            }}
+            onInput={e => setTerm(e.target.value)}
+            onClear={() => setTerm('')}
           />
         </div>
 
         {creatorNfts.length === 0 ? (
-          <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
+          <div className="basic500 center margin-min-top grow">
             {term ? (
               <>
                 <div className="margin-min">{t('assets.notFoundNFTs')}</div>
@@ -145,7 +130,6 @@ export function NftCollection({
         ) : (
           <NftList
             mode={DisplayMode.Name}
-            listRef={listRef}
             nfts={creatorNfts}
             onClick={(asset: Nft) => {
               setCurrentAsset(asset);

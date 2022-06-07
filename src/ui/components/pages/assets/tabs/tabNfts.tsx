@@ -4,7 +4,6 @@ import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { sortAndFilterNfts, useUiState } from './helpers';
-import { VariableSizeList } from 'react-window';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
@@ -35,8 +34,6 @@ export function TabNfts() {
   ];
   const setCreator = value => setFilters({ ...filters, creator: value });
 
-  const listRef = React.useRef<VariableSizeList>();
-
   const getNftDetails = React.useCallback(
     nft => createNft(nft, nfts[nft.id], currentAddress),
     [nfts, currentAddress]
@@ -45,12 +42,6 @@ export function TabNfts() {
   const sortedNfts = myNfts
     ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
     : PLACEHOLDERS;
-
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [sortedNfts]);
 
   const [creatorNfts, creatorCounts] = sortedNfts.reduce<
     [Nft[], Record<string, number>]
@@ -75,14 +66,8 @@ export function TabNfts() {
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => {
-            listRef.current && listRef.current.resetAfterIndex(0);
-            setTerm(e.target.value);
-          }}
-          onClear={() => {
-            listRef.current && listRef.current.resetAfterIndex(0);
-            setTerm('');
-          }}
+          onInput={e => setTerm(e.target.value)}
+          onClear={() => setTerm('')}
         />
       </div>
       {sortedNfts.length === 0 ? (
@@ -101,7 +86,6 @@ export function TabNfts() {
       ) : (
         <NftList
           mode={DisplayMode.Creator}
-          listRef={listRef}
           nfts={creatorNfts}
           counters={creatorCounts}
           onClick={(asset: Nft) => {
