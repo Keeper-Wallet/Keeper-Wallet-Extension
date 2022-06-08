@@ -8,7 +8,7 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
 import * as styles from './chooseItems.styl';
 
-const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
+const allNetworks: NetworkName[] = Object.values(NetworkName);
 
 const networkLabels: Record<NetworkName, string> = {
   custom: 'Custom',

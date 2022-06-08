@@ -11,7 +11,7 @@ import {
   NetworkName,
 } from 'accounts/types';
 
-const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
+const allNetworks: NetworkName[] = Object.values(NetworkName);
 
 const networkLabels: Record<NetworkName, string> = {
   custom: 'Custom',

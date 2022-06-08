@@ -86,9 +86,9 @@ export const networks = createSimpleReducer<
 >([], ACTION.UPDATE_NETWORKS);
 
 export const currentNetwork = createSimpleReducer<
-  'custom' | 'mainnet' | 'stagenet' | 'testnet',
+  NetworkName,
   typeof ACTION.UPDATE_CURRENT_NETWORK
->('mainnet', ACTION.UPDATE_CURRENT_NETWORK);
+>(NetworkName.Mainnet, ACTION.UPDATE_CURRENT_NETWORK);
 
 export interface AssetBalance {
   balance: string;
