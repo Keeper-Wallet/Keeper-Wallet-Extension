@@ -26,34 +26,33 @@
 }
 
 .button {
+  border-radius: 4px;
   cursor: pointer;
   font-family: Roboto;
   font-size: 14px;
   font-weight: 300;
+  height: 40px;
   overflow: hidden;
   padding: 0 20px;
+  text-align: center;
   text-overflow: ellipsis;
+  transition: all 0.3s;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .button:focus {
   outline: none;
 }
 
-.button:not(.transparent):not(.custom) {
-  border-radius: 4px;
-  display: block;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.button:not(.transparent):not(.custom):not(.submitTiny) {
-  height: 40px;
-  text-align: center;
-  width: 100%;
-}
-
 .custom {
+  border-radius: 0;
+  height: auto;
+  text-align: inherit;
   text-decoration: none;
+  transition: none;
+  white-space: default;
+  width: auto;
 }
 
 .default {
@@ -71,6 +70,12 @@
 .submitTiny {
   background-color: #1f5af6;
   color: #ffffff;
+}
+
+.submitTiny {
+  height: auto;
+  text-align: inherit;
+  width: auto;
 }
 
 .submit:hover,
@@ -109,6 +114,12 @@
 
 .transparent {
   background-color: transparent;
+  border-radius: 0;
+  height: auto;
+  text-align: inherit;
+  transition: none;
+  white-space: default;
+  width: auto;
 }
 
 .transparent:hover {
