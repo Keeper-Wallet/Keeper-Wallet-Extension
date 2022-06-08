@@ -427,12 +427,8 @@ export const convertFromSa = {
       }
       case TRANSACTION_TYPE.REISSUE: {
         const quantity = input.data.quantity || input.data.amount;
-
-        let assetId = input.data.assetId;
-
-        if (!assetId && quantity instanceof Money) {
-          assetId = quantity.asset.id;
-        }
+        const assetId =
+          quantity instanceof Money ? quantity.asset.id : input.data.assetId;
 
         return convertLongToBigNumber(
           reissue(
@@ -455,12 +451,8 @@ export const convertFromSa = {
       }
       case TRANSACTION_TYPE.BURN: {
         const quantity = input.data.quantity || input.data.amount;
-
-        let assetId = input.data.assetId;
-
-        if (!assetId && quantity instanceof Money) {
-          assetId = quantity.asset.id;
-        }
+        const assetId =
+          quantity instanceof Money ? quantity.asset.id : input.data.assetId;
 
         return convertLongToBigNumber(
           burn(
