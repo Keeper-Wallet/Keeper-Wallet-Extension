@@ -311,7 +311,7 @@ export class AssetInfoController {
   }
 
   toAssetDetails(info) {
-    const assetDetail = {
+    return {
       id: info.assetId,
       name: info.name,
       precision: info.decimals,
@@ -329,12 +329,7 @@ export class AssetInfoController {
       issuer: info.issuer,
       isSuspicious: this.isSuspiciousAsset(info.assetId),
       lastUpdated: new Date().getTime(),
-      usdPrice: this.getUsdPrice(info.assetId),
     };
-
-    // todo fetch single nft details
-
-    return assetDetail;
   }
 
   async toggleAssetFavorite(assetId) {
@@ -378,8 +373,6 @@ export class AssetInfoController {
     switch (resp.status) {
       case 200: {
         const assetInfos = await resp.json();
-
-        // todo fetch multiple nft details
 
         assetInfos.forEach(assetInfo => {
           if (!assetInfo.error) {
