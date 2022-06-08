@@ -1,15 +1,18 @@
-import { ducklingsEntriesUrl } from 'nfts/ducklings/constants';
+import { ducklingsDataUrl } from 'nfts/ducklings/constants';
 import { NftDetails, NftVendor } from 'nfts/index';
 import { DucklingInfo } from 'nfts/ducklings/index';
 
-export async function fetchAll(nfts: NftDetails[]): Promise<DucklingInfo[]> {
+export async function fetchAll(
+  nodeUrl: string,
+  nfts: NftDetails[]
+): Promise<DucklingInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
 
   const nftIds = nfts.map(nft => nft.assetId);
 
-  return fetch(ducklingsEntriesUrl, {
+  return fetch(ducklingsDataUrl(nodeUrl), {
     method: 'POST',
     headers: {
       Accept: 'application/json',

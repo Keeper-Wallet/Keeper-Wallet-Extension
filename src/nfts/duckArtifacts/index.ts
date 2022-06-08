@@ -1,8 +1,5 @@
 import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
-import {
-  ArtefactNames,
-  ducksArtefactApiUrl,
-} from 'nfts/duckArtifacts/constants';
+import { ArtefactNames } from 'nfts/duckArtifacts/constants';
 import * as React from 'react';
 
 export interface DucksArtefactInfo extends BaseInfo {
@@ -35,6 +32,6 @@ export class DucksArtefact extends BaseNft<DucksArtefactInfo> {
   }
 
   get foreground(): string {
-    return ducksArtefactApiUrl + `${this.asset.name}.svg`;
+    return `https://wavesducks.com/ducks/artefacts/${this.asset.name}.svg`;
   }
 }

@@ -10,9 +10,14 @@ export class NftInfoController {
     nfts: Record<string, DuckInfo | SignArtInfo>;
   }>;
   protected getNetwork: () => NetworkName;
+  protected getNode: (network?: NetworkName) => string;
 
   constructor(
-    options: { initState?: unknown; getNetwork?: () => NetworkName } = {}
+    options: {
+      initState?: unknown;
+      getNetwork?: () => NetworkName;
+      getNode?: (network?: NetworkName) => string;
+    } = {}
   ) {
     this.store = new ObservableStore(
       Object.assign(
@@ -24,6 +29,7 @@ export class NftInfoController {
       )
     );
     this.getNetwork = options.getNetwork;
+    this.getNode = options.getNode;
   }
 
   getNfts() {
@@ -35,13 +41,13 @@ export class NftInfoController {
       return;
     }
 
-    if (this.getNetwork() !== 'mainnet') {
+    if (this.getNetwork() !== NetworkName.Mainnet) {
       return;
     }
 
     const storeNfts = this.getNfts();
     const fetchNfts = nfts.filter(nft => !storeNfts[nft.assetId]);
-    const infoNfts = await fetchAllNfts(fetchNfts);
+    const infoNfts = await fetchAllNfts(this.getNode(), fetchNfts);
 
     infoNfts.forEach(info => (storeNfts[info.id] = info));
 

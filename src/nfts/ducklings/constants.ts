@@ -1,9 +1,8 @@
 export const ducklingsDApp = '3PKmLiGEfqLWMC1H9xhzqvAZKUXfFm8uoeg';
 
-export const ducklingsApiUrl = 'https://wavesducks.com/ducks/ducklings/';
+export const ducklingsDataUrl = (nodeUrl: string) =>
+  new URL(`addresses/data/${ducklingsDApp}`, nodeUrl).toString();
 
-const nodeUrl = 'https://nodes-keeper.wavesnodes.com'; // todo getNetwork()
-export const ducklingsEntriesUrl = nodeUrl + `/addresses/data/${ducklingsDApp}`;
 export const DucklingAdjectives = [
   'admiring',
   'adoring',

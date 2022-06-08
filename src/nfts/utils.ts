@@ -66,6 +66,7 @@ export function nftType(nft: AssetDetail): NftVendor {
 }
 
 export async function fetchAllNfts(
+  nodeUrl: string,
   nfts: NftDetails[]
 ): Promise<Array<NftInfo>> {
   const ducks = [];
@@ -92,11 +93,10 @@ export async function fetchAllNfts(
 
   return Array.prototype.flat.call(
     await Promise.all([
-      fetchAllSignArts(signArts).catch(() => []),
+      fetchAllSignArts(nodeUrl, signArts).catch(() => []),
       fetchAllDucks(ducks).catch(() => []),
       fetchAllArtefacts(ducksArtefacts).catch(() => []),
-      fetchAllDucklings(babyDucks).catch(() => []),
-      unknown.map(nft => ({ id: nft.assetId, vendor: NftVendor.Unknown })),
+      fetchAllDucklings(nodeUrl, babyDucks).catch(() => []),
     ])
   );
 }

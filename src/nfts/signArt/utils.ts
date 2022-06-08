@@ -1,17 +1,20 @@
-import { signArtData, signArtUserData } from 'nfts/signArt/constants';
+import { signArtDataUrl, signArtUserDataUrl } from 'nfts/signArt/constants';
 import { NftDetails, NftVendor } from 'nfts/index';
 import { SignArtInfo } from 'nfts/signArt/index';
 
 export const artworkInfoMask = /art_sold_\d+_of_\d+_(\w+)_(\w+)/i;
 
-export async function fetchAll(nfts: NftDetails[]): Promise<SignArtInfo[]> {
+export async function fetchAll(
+  nodeUrl: string,
+  nfts: NftDetails[]
+): Promise<SignArtInfo[]> {
   if (nfts.length === 0) {
     return [];
   }
 
   const nftIds = nfts.map(nft => nft.assetId);
 
-  return fetch(signArtData, {
+  return fetch(signArtDataUrl(nodeUrl), {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -35,7 +38,7 @@ export async function fetchAll(nfts: NftDetails[]): Promise<SignArtInfo[]> {
     )
     .then(artworks =>
       Promise.all([
-        fetch(signArtData, {
+        fetch(signArtDataUrl(nodeUrl), {
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -57,7 +60,7 @@ export async function fetchAll(nfts: NftDetails[]): Promise<SignArtInfo[]> {
             ? response.json()
             : response.text().then(text => Promise.reject(new Error(text)))
         ),
-        fetch(signArtUserData, {
+        fetch(signArtUserDataUrl(nodeUrl), {
           method: 'POST',
           headers: {
             Accept: 'application/json',

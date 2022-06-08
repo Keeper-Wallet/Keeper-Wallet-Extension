@@ -98,5 +98,3 @@ export const duckNames = {
 export const ducksDAppBreeder = '3PDVuU45H7Eh5dmtNbnRNRStGwULA7NY6Hb';
 export const ducksDAppIncubator = '3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv';
 export const ducksDApps = [ducksDAppBreeder, ducksDAppIncubator];
-
-export const ducksApiUrl = 'https://wavesducks.com/api/v1/ducks/';

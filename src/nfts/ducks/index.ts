@@ -5,7 +5,6 @@ import {
   duckColors,
   duckGenerationNames,
   duckNames,
-  ducksApiUrl,
   ducksDAppBreeder,
   ducksDAppIncubator,
 } from 'nfts/ducks/constants';
@@ -66,8 +65,9 @@ export class Duck extends BaseNft<DuckInfo> {
 
   get foreground(): string {
     return (
-      ducksApiUrl +
-      `${this.genoType}.svg?color=${this.generationColor[1]}&druck=${this.druck}`
+      `https://wavesducks.com/api/v1/ducks/${this.genoType}.svg` +
+      `?color=${this.generationColor[1]}` +
+      `&druck=${this.druck}`
     );
   }
 

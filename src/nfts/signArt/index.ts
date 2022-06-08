@@ -1,5 +1,4 @@
 import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
-import { signArtApiUrl } from 'nfts/signArt/constants';
 
 export interface SignArtInfo extends BaseInfo {
   vendor: NftVendor.SignArt;
@@ -37,6 +36,6 @@ export class SignArt extends BaseNft<SignArtInfo> {
   }
 
   get foreground(): string {
-    return this.info.cid ? signArtApiUrl + this.info.cid : null;
+    return this.info.cid ? `https://ipfs.io/ipfs/${this.info.cid}` : null;
   }
 }

@@ -2,7 +2,6 @@ import { BaseInfo, BaseNft, NftVendor } from 'nfts/index';
 import { capitalize } from 'nfts/utils';
 import {
   DucklingAdjectives,
-  ducklingsApiUrl,
   DucklingsDescription,
 } from 'nfts/ducklings/constants';
 import * as React from 'react';
@@ -56,6 +55,6 @@ export class Duckling extends BaseNft<DucklingInfo> {
   get foreground() {
     let fileIndex = Math.trunc(this.info.growthLevel / 25);
     fileIndex = fileIndex < 4 ? fileIndex : 3;
-    return ducklingsApiUrl + `duckling-${fileIndex}.svg`;
+    return `https://wavesducks.com/ducks/ducklings/duckling-${fileIndex}.svg`;
   }
 }
