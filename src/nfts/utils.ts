@@ -72,7 +72,6 @@ export async function fetchAllNfts(
   const babyDucks = [];
   const ducksArtefacts = [];
   const signArts = [];
-  const unknown = [];
 
   for (const nft of nfts) {
     switch (this.nftType(nft)) {
@@ -87,9 +86,6 @@ export async function fetchAllNfts(
         break;
       case NftVendor.SignArt:
         signArts.push(nft);
-        break;
-      default:
-        unknown.push(nft);
         break;
     }
   }
