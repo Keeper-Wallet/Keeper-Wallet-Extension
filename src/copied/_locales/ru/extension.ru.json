@@ -224,7 +224,7 @@
     "addAnotherAccount": "Добавить еще аккаунт",
     "finish": "Завершить",
     "createNew": "Создать новый аккаунт",
-    "importVia": "Или ипортировать через",
+    "importVia": "Или импортировать через",
     "notSupportedByBrowser": "Не поддерживается вашим браузером",
     "additionSuccess": "Ваш аккаунт '{{ name }}' успешно добавлен!",
     "readyToUse": "Ваш аккаунт '{{ name }}' готов к использованию",
@@ -483,7 +483,7 @@
     "value": "Значение"
   },
   "sign": {
-    "auth": "Авторизация",
+    "auth": "Авторизоваться",
     "authConfirmed": "Запрос подписан!",
     "authRejected": "Запрос не подписан.",
     "blacklist": "Добавить в черный список",
@@ -538,7 +538,7 @@
     "statusFailed": "Сделка не удалась",
     "statusInProgress": "Ждем завершения сделки",
     "statusSucceeded": "Сделка успешна",
-    "submitButtonText": "Обмен",
+    "submitButtonText": "Обменять",
     "title": "Обменять активы",
     "toInputLabel": "Получите (расчетная сумма)",
     "transactionFee": "Комиссия за транзакцию",
