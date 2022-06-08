@@ -2,8 +2,7 @@ import { UiStore } from '../store';
 import { ACTION } from './constants';
 import { equals } from 'ramda';
 import { AssetDetail } from '../services/Background';
-import { DuckInfo } from 'nfts/ducks/utils';
-import { SignArtInfo } from 'nfts/signArt';
+import { NftInfo } from 'nfts';
 
 function getParam<S>(param: S, defaultParam: S) {
   if (param) {
@@ -21,7 +20,7 @@ interface Account {
 interface UpdateStateInput {
   addresses: Record<string, string>;
   assets: Record<string, Record<string, AssetDetail>>;
-  nfts: Record<string, Record<string, DuckInfo | SignArtInfo>>;
+  nfts: Record<string, Record<string, NftInfo>>;
   accounts?: Account[];
   balances?: Record<
     string,

@@ -1,35 +1,32 @@
 import * as ObservableStore from 'obs-store';
 import { NetworkName } from 'accounts/types';
 import { fetchAllNfts } from 'nfts/utils';
-import { DuckInfo } from 'nfts/ducks/utils';
-import { NftDetails } from 'nfts';
-import { SignArtInfo } from 'nfts/signArt';
+import { NftDetails, NftInfo } from 'nfts';
+import ExtensionStore from 'lib/localStore';
 
 export class NftInfoController {
   store: ObservableStore<{
-    nfts: Record<string, DuckInfo | SignArtInfo>;
+    nfts: Record<string, NftInfo>;
   }>;
   protected getNetwork: () => NetworkName;
   protected getNode: (network?: NetworkName) => string;
 
-  constructor(
-    options: {
-      initState?: unknown;
-      getNetwork?: () => NetworkName;
-      getNode?: (network?: NetworkName) => string;
-    } = {}
-  ) {
-    this.store = new ObservableStore(
-      Object.assign(
-        {},
-        {
-          nfts: {},
-        },
-        options.initState
-      )
-    );
-    this.getNetwork = options.getNetwork;
-    this.getNode = options.getNode;
+  constructor({
+    localStore,
+    getNetwork,
+    getNode,
+  }: {
+    localStore?: ExtensionStore;
+    getNetwork?: () => NetworkName;
+    getNode?: (network?: NetworkName) => string;
+  } = {}) {
+    const defaults = { nfts: {} };
+    const initState = localStore.getInitState(defaults);
+    this.store = new ObservableStore(initState);
+    localStore.subscribe(this.store);
+
+    this.getNetwork = getNetwork;
+    this.getNode = getNode;
   }
 
   getNfts() {

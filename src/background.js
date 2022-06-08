@@ -7,7 +7,7 @@ import { ERRORS } from 'lib/KeeperError';
 import PortStream from 'lib/port-stream.js';
 import LocalStore from 'lib/localStore';
 import { getFirstLangCode } from 'lib/get-first-lang-code';
-import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
+import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import {
   AssetInfoController,
   CurrentAccountController,
@@ -341,7 +341,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.nftInfoController = new NftInfoController({
-      initState: initState.NftInfoController,
+      localStore: this.localStore,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
