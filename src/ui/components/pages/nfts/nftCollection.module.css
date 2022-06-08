@@ -43,7 +43,7 @@
 }
 
 .filterContainer button {
-  width: auto;
+  padding: 0;
 }
 
 .stickyBottomPanel {
