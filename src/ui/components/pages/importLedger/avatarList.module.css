@@ -4,15 +4,15 @@
 }
 
 .item {
-  flex: 0 0 60px;
   display: flex;
+  flex: 0 0 60px;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
-  border: 1px solid transparent;
-  padding: 4px;
+  align-items: center;
   min-width: 0;
+  padding: 4px;
   overflow: hidden;
+  border: 1px solid transparent;
   border-radius: 2px;
   cursor: pointer;
 }
@@ -23,9 +23,9 @@
 }
 
 .itemLabel {
-  color: var(--color-basic500);
   max-width: 100%;
   overflow: hidden;
+  color: var(--color-basic500);
   font-size: 10px;
   white-space: nowrap;
   text-overflow: ellipsis;

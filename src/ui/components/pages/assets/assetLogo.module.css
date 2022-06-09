@@ -1,15 +1,15 @@
 .assetLogo {
-  border-radius: 50%;
   width: 40px;
   height: 40px;
-  line-height: 40px;
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-align: center;
-  color: #edf0f4;
   margin-right: 14px;
-  cursor: default;
   object-fit: contain;
+  color: #edf0f4;
+  font-weight: bold;
+  font-size: 1.25rem;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 50%;
+  cursor: default;
 }
 
 .assetSubIconContainer {
@@ -20,17 +20,17 @@
 
 .assetSubIcon {
   position: absolute;
-  bottom: 0;
   right: 0;
-  border-radius: 50%;
+  bottom: 0;
   width: 18px;
   height: 18px;
-  line-height: 18px;
+  color: #edf0f4;
   font-size: 0.75rem;
+  line-height: 18px;
   text-align: center;
   vertical-align: center;
-  color: #edf0f4;
   background-color: #292f3c;
+  border-radius: 50%;
 }
 
 .assetSubIconSvg {

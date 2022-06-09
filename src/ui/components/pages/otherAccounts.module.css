@@ -7,22 +7,22 @@
 
 .header {
   position: sticky;
-  z-index: 2;
   top: 0;
-  border-bottom: 1px solid #edf0f4;
+  z-index: 2;
   padding: 14px;
   background: #fff;
+  border-bottom: 1px solid #edf0f4;
 }
 
 .title {
-  font-size: 24px;
   font-weight: normal;
+  font-size: 24px;
 }
 
 .accounts {
-  flex: 1 1 auto;
   position: relative;
   z-index: 1;
+  flex: 1 1 auto;
   padding: 0 14px 14px;
   background: #f8f9fb;
 }
@@ -38,17 +38,17 @@
 }
 
 .addAccountButton {
-  margin: 20px 0 40px;
-  border: 1px dashed #dae1e9;
-  padding: 0 14px 0 34px;
   height: 32px;
-  border-radius: 4px;
-  background: url(../../assets/img/add-14-basic-500.svg) 13px center no-repeat;
+  margin: 20px 0 40px;
+  padding: 0 14px 0 34px;
   color: #9ba6b2;
   font: inherit;
   font-size: 14px;
   line-height: 32px;
   white-space: nowrap;
+  background: url(../../assets/img/add-14-basic-500.svg) 13px center no-repeat;
+  border: 1px dashed #dae1e9;
+  border-radius: 4px;
   cursor: pointer;
 }
 

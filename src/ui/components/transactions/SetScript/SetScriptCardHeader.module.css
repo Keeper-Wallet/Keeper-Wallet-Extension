@@ -1,21 +1,21 @@
 .header {
-  align-items: center;
   display: flex;
+  align-items: center;
 }
 
 .icon {
+  width: 48px;
   height: 48px;
   margin-right: 10px;
-  width: 48px;
 }
 
 .data {
+  margin-bottom: 4px;
   color: var(--color-basic500);
   font-size: 12px;
-  margin-bottom: 4px;
 }
 
 .title {
-  font-size: 18px;
   font-weight: 500;
+  font-size: 18px;
 }

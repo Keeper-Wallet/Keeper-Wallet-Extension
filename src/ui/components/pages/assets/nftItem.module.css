@@ -1,15 +1,15 @@
 .nftCard {
-  width: 325px;
-  background: #fff;
-  display: flex;
-  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
-  border-radius: 4px;
-  padding: 14px;
   position: relative;
   z-index: 1;
-  margin-bottom: 8px;
+  display: flex;
+  width: 325px;
   height: 64px;
+  margin-bottom: 8px;
+  padding: 14px;
   overflow: hidden;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
 }
 
 .nftIcon {
@@ -18,13 +18,13 @@
 
 .nftData {
   flex-grow: 1;
-  text-align: left;
   overflow: hidden;
+  text-align: left;
 }
 
 .nftName {
-  line-height: 24px;
   overflow: hidden;
+  line-height: 24px;
   text-overflow: ellipsis;
 }
 

@@ -1,9 +1,9 @@
 .root {
   display: flex;
-  flex-direction: column;
   flex: 1;
-  overflow: auto;
+  flex-direction: column;
   padding: 40px 60px;
+  overflow: auto;
 }
 
 .footer {

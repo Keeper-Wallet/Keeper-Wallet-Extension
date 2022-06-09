@@ -1,16 +1,16 @@
 .historyCard {
-  width: 325px;
-  background: #fff;
-  display: flex;
-  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
-  border-radius: 4px;
-  padding: 8px;
-  flex-wrap: wrap;
   position: relative;
   z-index: 1;
-  margin-bottom: 8px;
-  cursor: default;
+  display: flex;
+  flex-wrap: wrap;
+  width: 325px;
   height: 64px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+  cursor: default;
 }
 
 .historyData {
@@ -20,23 +20,23 @@
 
 .historyInfo,
 .historyLabel {
-  line-height: 24px;
-  height: 24px;
   max-width: 220px;
+  height: 24px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 24px;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .historyIconWrapper {
-  border-radius: 50%;
   width: 48px;
   height: 48px;
-  line-height: 48px;
-  font-size: 1rem;
-  text-align: center;
-  color: #edf0f4;
   margin-right: 8px;
+  color: #edf0f4;
+  font-size: 1rem;
+  line-height: 48px;
+  text-align: center;
+  border-radius: 50%;
 }
 
 .historyIcon {
@@ -48,10 +48,10 @@
   position: absolute;
   right: 14px;
   bottom: 19px;
-  border: 0;
   padding: 0;
-  border-radius: 2px;
   background: none;
+  border: 0;
+  border-radius: 2px;
   cursor: pointer;
 }
 
@@ -73,17 +73,17 @@
 
 .txSubIcon {
   position: absolute;
-  bottom: 0;
   right: 0;
-  border-radius: 50%;
-  border: 1px solid rgb(229, 57, 53);
+  bottom: 0;
   width: 18px;
   height: 18px;
-  line-height: 18px;
   font-size: 0.75rem;
+  line-height: 18px;
   text-align: center;
   vertical-align: center;
   background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(229, 57, 53);
+  border-radius: 50%;
 }
 
 .txSubIconSvg {

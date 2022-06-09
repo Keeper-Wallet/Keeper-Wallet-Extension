@@ -1,11 +1,11 @@
 .content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center;
-  overflow: auto;
-  padding: 0 60px;
   position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 60px;
+  overflow: auto;
 }
 
 .greyLine {
