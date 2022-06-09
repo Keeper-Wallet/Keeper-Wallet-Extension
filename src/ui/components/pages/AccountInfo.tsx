@@ -172,19 +172,21 @@ class AccountInfoComponent extends React.Component<Props, State> {
           </div>
         </div>
 
-        <div id="accountInfoPublicKey" className="margin-main-big">
-          <div className="input-title basic500 tag1">
-            {t('accountInfo.pubKey')}
+        {selectedAccount.type !== 'debug' && (
+          <div id="accountInfoPublicKey" className="margin-main-big">
+            <div className="input-title basic500 tag1">
+              {t('accountInfo.pubKey')}
+            </div>
+            <div className={`input-like tag1 ${styles.ellipsis}`}>
+              <CopyText
+                text={publicKey}
+                showCopy={true}
+                showText={true}
+                onCopy={onCopyHandler}
+              />
+            </div>
           </div>
-          <div className={`input-like tag1 ${styles.ellipsis}`}>
-            <CopyText
-              text={publicKey}
-              showCopy={true}
-              showText={true}
-              onCopy={onCopyHandler}
-            />
-          </div>
-        </div>
+        )}
 
         {['seed', 'encodedSeed', 'privateKey'].includes(
           selectedAccount.type
@@ -258,6 +260,14 @@ class AccountInfoComponent extends React.Component<Props, State> {
               <div className="input-title tag1">{t('accountInfo.backUp')}</div>
 
               <div>{t('accountInfo.emailNoBackupPhrase')}</div>
+            </div>
+          </>
+        ) : selectedAccount.type === 'debug' ? (
+          <>
+            <div className="margin-main-big basic500">
+              <div className="input-title tag1">{t('accountInfo.backUp')}</div>
+
+              <div>{t('accountInfo.debugNoBackupPhrase')}</div>
             </div>
           </>
         ) : null}
