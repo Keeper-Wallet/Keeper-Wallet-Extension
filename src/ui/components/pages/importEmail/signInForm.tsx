@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../../ui';
 import * as React from 'react';
 import { useAppSelector } from '../../../store';
-import { baseByNetwork } from './importEmail';
+
+const baseByNetwork = {
+  mainnet: 'https://waves.exchange',
+  testnet: 'https://testnet.waves.exchange',
+};
 
 interface Props {
   className?: string;
