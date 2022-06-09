@@ -1,9 +1,9 @@
 .content {
   display: flex;
-  flex-direction: column;
   flex: 1;
-  overflow: auto;
+  flex-direction: column;
   padding: 20px 60px 32px;
+  overflow: auto;
   word-break: break-word;
 }
 
@@ -15,9 +15,9 @@
 
 .successIcon {
   flex-shrink: 0;
+  width: 80px;
   height: 80px;
   margin: auto auto 0;
-  width: 80px;
 }
 
 .greyLine {

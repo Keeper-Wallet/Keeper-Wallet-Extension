@@ -5,14 +5,14 @@
 }
 
 .content {
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
-  padding: 14px 0;
   width: 329px;
   height: 572px;
-  border-radius: 4px;
+  padding: 14px 0;
   background: var(--color-white);
+  border-radius: 4px;
 }
 
 .header {
@@ -25,16 +25,16 @@
 }
 
 .listViewport {
-  margin-top: 14px;
   flex: 1 1 0;
+  margin-top: 14px;
   overflow-y: auto;
   font-size: 14px;
 }
 
 .listItem {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 8px 14px;
   cursor: pointer;
 }
@@ -45,8 +45,8 @@
 }
 
 .listItem_disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .listItemTooltipContent {
@@ -66,14 +66,14 @@
 }
 
 .logoPlaceholder {
-  border-radius: 50%;
   width: 24px;
   height: 24px;
   color: #fff;
-  font-size: 14px;
   font-weight: bold;
+  font-size: 14px;
   line-height: 24px;
   text-align: center;
+  border-radius: 50%;
 }
 
 .listItemName {

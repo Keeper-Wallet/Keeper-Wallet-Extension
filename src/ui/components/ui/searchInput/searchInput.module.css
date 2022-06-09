@@ -1,18 +1,18 @@
 .searchInputWrapper {
-  display: flex;
-  align-items: center;
   position: relative;
+  display: flex;
   flex-grow: 1;
+  align-items: center;
 }
 
 .searchInput {
-  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
-    8px;
   height: 32px;
   padding: 0 32px 0 32px;
+  background: url(../../../assets/img/search-14-basic200.svg) no-repeat scroll
+    8px;
   border: none;
-  border-radius: unset;
   border-bottom: solid 1px var(--color-basic500);
+  border-radius: unset;
 }
 
 .searchInput:hover {
@@ -21,18 +21,18 @@
 }
 
 .searchInput:focus {
-  outline: none;
   border: none;
   border-bottom: 1px solid var(--color-submit400);
+  outline: none;
 }
 
 .searchClear {
-  background: none;
   position: absolute;
+  right: 0;
   width: 32px;
   height: 32px;
-  right: 0;
   color: var(--color-basic200);
+  background: none;
 }
 
 .searchClear:hover {

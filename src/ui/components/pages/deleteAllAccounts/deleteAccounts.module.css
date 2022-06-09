@@ -1,24 +1,24 @@
 .content {
   display: flex;
   flex-direction: column;
-  font-weight: 400;
-  overflow: auto;
   padding: 20px 40px 32px;
+  overflow: auto;
+  font-weight: 400;
 }
 
 .error {
-  background: none;
-  border-color: var(--color-error400);
-  color: var(--color-error400);
   flex-shrink: 0;
   min-height: 1rem;
+  color: var(--color-error400);
+  background: none;
+  border-color: var(--color-error400);
 }
 
 .errorIcon {
-  background-size: cover;
   display: block;
   flex-shrink: 0;
+  width: 48px;
   height: 48px;
   margin: 0 auto 24px auto;
-  width: 48px;
+  background-size: cover;
 }

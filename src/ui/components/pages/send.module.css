@@ -6,37 +6,37 @@
 }
 
 .wrapper {
-  flex: 1 1 0;
   display: flex;
+  flex: 1 1 0;
   flex-direction: column;
 }
 
 .header {
   position: sticky;
-  z-index: 1;
   top: 0;
-  border-bottom: 1px solid #edf0f4;
+  z-index: 1;
   padding: 14px;
   background: #fff;
+  border-bottom: 1px solid #edf0f4;
 }
 
 .title {
-  font-size: 24px;
   font-weight: normal;
+  font-size: 24px;
 }
 
 .fields {
-  flex: 1 0 auto;
   position: relative;
+  flex: 1 0 auto;
   padding: 14px;
   background: #f8f9fb;
 }
 
 .submitButtonWrapper {
   position: sticky;
-  z-index: 1;
   bottom: 0;
-  border-top: 1px solid #edf0f4;
+  z-index: 1;
   padding: 14px;
   background: #fff;
+  border-top: 1px solid #edf0f4;
 }

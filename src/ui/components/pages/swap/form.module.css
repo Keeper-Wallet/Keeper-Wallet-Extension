@@ -1,8 +1,8 @@
 .root {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
   position: relative;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
   padding: 12px 14px;
 }
 
@@ -16,13 +16,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
-  background: #fff;
   color: #edf0f4;
   vertical-align: middle;
+  background: #fff;
+  border: 1px solid;
+  border-radius: 50%;
   cursor: pointer;
 }
 
@@ -43,10 +43,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: solid 1px var(--color-basic100);
   padding: 12px;
-  border-radius: 4px;
   background: #fff;
+  border: solid 1px var(--color-basic100);
+  border-radius: 4px;
 }
 
 .toAmountHead {
@@ -55,17 +55,17 @@
 
 .toAmountLabel {
   flex: 1 1 0;
+  overflow: hidden;
   color: var(--color-basic500);
   font-size: 11px;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .toAmountBalance {
   flex-shrink: 0;
-  font-size: 11px;
   overflow: hidden;
+  font-size: 11px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -75,22 +75,22 @@
 }
 
 .toAmountCards {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-top: 12px;
 }
 
 .toAmountCard {
   position: relative;
   display: inline-flex;
-  justify-content: space-between;
   align-items: center;
-  border: solid 1px var(--color-basic100);
-  padding: 8px 14px;
+  justify-content: space-between;
   width: 100%;
-  border-radius: 5px;
+  padding: 8px 14px;
   background: none;
+  border: solid 1px var(--color-basic100);
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -104,8 +104,8 @@
 
 .toAmountCardVendor {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
 }
 
 .toAmountCardVendorLogo {
@@ -125,16 +125,16 @@
 }
 
 .toAmountCardFormattedValue {
-  font-size: 14px;
   overflow: hidden;
+  font-size: 14px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .toAmountCardUsdAmount {
   color: var(--color-basic500);
-  font-size: 11px;
   font-weight: 500;
+  font-size: 11px;
 }
 
 .toAmountCardError {
@@ -146,19 +146,19 @@
   top: -8px;
   left: -1px;
   padding: 1px 8px;
-  border-radius: 4px;
-  border-bottom-left-radius: 0;
-  background: #0155ff;
   color: var(--color-white);
   font-weight: 600;
   font-size: 11px;
+  background: #0155ff;
+  border-radius: 4px;
+  border-bottom-left-radius: 0;
 }
 
 .slippageToleranceBtn {
-  vertical-align: bottom;
   margin-right: 8px;
-  background: none;
   color: var(--color-basic500);
+  vertical-align: bottom;
+  background: none;
   cursor: pointer;
 }
 
@@ -172,8 +172,8 @@
 
 .swapPriceDirectionBtn {
   margin-right: 8px;
-  background: none;
   color: var(--color-basic500);
+  background: none;
   cursor: pointer;
 }
 
@@ -248,8 +248,8 @@
 
 .slippageToleranceModalTitle {
   margin-bottom: 10px;
-  font-size: 24px;
   font-weight: normal;
+  font-size: 24px;
 }
 
 .slippageToleranceModalDescription {
@@ -258,9 +258,9 @@
 
 .slippageToleranceControl {
   display: inline-flex;
+  overflow: hidden;
   border: 1px solid var(--color-submit400);
   border-radius: 10px;
-  overflow: hidden;
 }
 
 .slippageToleranceInput {
@@ -283,8 +283,8 @@
 }
 
 .slippageToleranceInput:checked + .slippageToleranceLabel {
-  background-color: var(--color-submit400);
   color: var(--color-white);
+  background-color: var(--color-submit400);
 }
 
 .route {
@@ -308,11 +308,11 @@
 
 .stickyBottomPanel {
   position: sticky;
-  z-index: 1;
   bottom: 0;
-  border-top: 1px solid #edf0f4;
+  z-index: 1;
   padding: 14px;
   background: #fff;
+  border-top: 1px solid #edf0f4;
 }
 
 .stickyBottomPanelError {

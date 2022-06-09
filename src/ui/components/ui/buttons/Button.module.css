@@ -26,19 +26,19 @@
 }
 
 .button {
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: Roboto;
-  font-size: 14px;
-  font-weight: 300;
+  width: 100%;
   height: 40px;
-  overflow: hidden;
   padding: 0 20px;
+  overflow: hidden;
+  font-weight: 300;
+  font-size: 14px;
+  font-family: Roboto;
+  white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
+  border-radius: 4px;
+  cursor: pointer;
   transition: all 0.3s;
-  white-space: nowrap;
-  width: 100%;
 }
 
 .button:focus {
@@ -46,20 +46,20 @@
 }
 
 .custom {
-  border-radius: 0;
+  width: auto;
   height: auto;
+  white-space: normal;
   text-align: inherit;
   text-decoration: none;
+  border-radius: 0;
   transition: none;
-  white-space: default;
-  width: auto;
 }
 
 .default {
-  background-color: #ffffff;
-  border: 1px solid #dae1e9;
   color: #000000;
   font-weight: 300;
+  background-color: #ffffff;
+  border: 1px solid #dae1e9;
 }
 
 .default:hover {
@@ -68,14 +68,14 @@
 
 .submit,
 .submitTiny {
-  background-color: #1f5af6;
   color: #ffffff;
+  background-color: #1f5af6;
 }
 
 .submitTiny {
+  width: auto;
   height: auto;
   text-align: inherit;
-  width: auto;
 }
 
 .submit:hover,
@@ -108,23 +108,23 @@
 
 .icon {
   display: inline-block;
-  padding: 0 16px 0 36px;
   width: auto;
+  padding: 0 16px 0 36px;
 }
 
 .transparent {
+  width: auto;
+  height: auto;
+  white-space: normal;
+  text-align: inherit;
   background-color: transparent;
   border-radius: 0;
-  height: auto;
-  text-align: inherit;
   transition: none;
-  white-space: default;
-  width: auto;
 }
 
 .transparent:hover {
-  background-color: transparent;
   text-decoration: none;
+  background-color: transparent;
 }
 
 .transparent.disabled {
@@ -140,9 +140,9 @@
 }
 
 .warning {
-  background-color: #e5494d;
   color: #ffffff;
   font-weight: 300;
+  background-color: #e5494d;
 }
 
 .warning:hover {
@@ -152,8 +152,8 @@
 .warning.disabled,
 .warning:disabled,
 .warning[disabled] {
-  opacity: 0.5;
   cursor: default;
+  opacity: 0.5;
 }
 
 .warning.disabled:hover,
@@ -163,9 +163,9 @@
 }
 
 .danger {
-  background-color: #e53935;
   color: #ffffff;
   font-weight: 300;
+  background-color: #e53935;
 }
 
 .danger:hover {
@@ -173,16 +173,16 @@
 }
 
 .interface {
+  flex-basis: auto;
+  width: auto;
+  height: 32px;
+  margin: 0;
+  padding: 0 14px;
+  font-weight: 400;
+  line-height: 32px;
   background-color: #ffffff;
   border: 0.5px solid transparent;
   box-shadow: 0 2px 4px 0 #9ba6b266;
-  flex-basis: auto;
-  font-weight: 400;
-  height: 32px;
-  line-height: 32px;
-  margin: 0;
-  padding: 0 14px;
-  width: auto;
 }
 
 .interface:not(:last-child) {
@@ -207,18 +207,18 @@
 }
 
 .loading::after {
-  animation: rotate-spinner 0.6s linear infinite;
-  border: 2px solid #edf0f4;
-  border-radius: 50%;
-  border-right-color: #1f5af6;
-  content: '';
-  height: 16px;
-  left: 50%;
-  margin-left: -8px;
-  margin-top: -8px;
   position: absolute;
   top: 50%;
+  left: 50%;
   width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  margin-left: -8px;
+  border: 2px solid #edf0f4;
+  border-right-color: #1f5af6;
+  border-radius: 50%;
+  animation: rotate-spinner 0.6s linear infinite;
+  content: '';
 }
 
 @keyframes rotate-spinner {

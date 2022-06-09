@@ -1,19 +1,19 @@
 .root {
   position: relative;
-  margin: 84px 58px 0;
   height: calc(100% - 180px);
+  margin: 84px 58px 0;
 }
 
 .title {
   margin-bottom: 20px;
-  font-size: 24px;
   font-weight: normal;
+  font-size: 24px;
 }
 
 .instructions {
   margin: 20px 0;
-  font-size: 14px;
   color: #999;
+  font-size: 14px;
 }
 
 .error {
@@ -21,9 +21,9 @@
 }
 
 .errorRetryButton {
-  background: none;
   color: var(--color-submit400);
   font: inherit;
+  background: none;
   cursor: pointer;
 }
 
@@ -35,17 +35,17 @@
 
 .avatarList {
   position: relative;
-  margin: 20px 0;
   display: flex;
   align-items: center;
   min-height: 72px;
+  margin: 20px 0;
 }
 
 .avatarListArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
   background: none;
+  transform: translateY(-50%);
   cursor: pointer;
 }
 

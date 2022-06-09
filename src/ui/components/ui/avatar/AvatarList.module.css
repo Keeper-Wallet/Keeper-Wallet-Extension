@@ -1,18 +1,18 @@
 .avatarList {
   display: flex;
-  width: 100%;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .avatarListItem {
-  border: 1px solid transparent;
-  padding: 4px;
   display: flex;
+  padding: 4px;
+  border: 1px solid transparent;
 }
 
 .avatarListItem_selected {
   background-color: rgba(31, 90, 246, 0.1);
-  border-radius: 2px;
   border-color: var(--color-submit400);
+  border-radius: 2px;
 }

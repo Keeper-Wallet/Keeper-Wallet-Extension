@@ -5,11 +5,11 @@
 }
 
 .content {
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
   width: 329px;
   padding: 28px;
-  border-radius: 4px;
   background: var(--color-white);
+  border-radius: 4px;
 }

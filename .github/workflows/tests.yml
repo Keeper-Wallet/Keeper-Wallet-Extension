@@ -33,6 +33,9 @@ jobs:
       - name: Check eslint
         run: npm run lint:eslint
 
+      - name: Check stylelint
+        run: npm run lint:stylelint
+
       - name: Build
         run: |
           echo '{}' > config.json

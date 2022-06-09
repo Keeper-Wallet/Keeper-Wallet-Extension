@@ -1,12 +1,12 @@
 .moreActions {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: none;
-  height: 64px;
-  padding: 0 8px;
-  margin-right: -14px;
   gap: 4px;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  margin-right: -14px;
+  padding: 0 8px;
+  background: none;
   border-radius: 4px;
 }
 
