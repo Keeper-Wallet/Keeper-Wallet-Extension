@@ -13,6 +13,7 @@ export type Account = {
   | { type: 'privateKey' }
   | { type: 'ledger'; id: number }
   | { type: 'wx'; uuid: string; username: string }
+  | { type: 'debug' }
 );
 
 export type AccountType = Account['type'];
