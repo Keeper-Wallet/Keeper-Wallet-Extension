@@ -8,18 +8,18 @@
 
 .header {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   padding: 14px 14px 6px;
 }
 
 .title {
+  overflow: hidden;
   font-weight: 700;
   font-size: 18px;
   line-height: 21px;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -32,14 +32,14 @@
 .filterContainer {
   position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin: 0 14px 14px;
 }
 
 .searchInput {
-  background-position: 0;
   padding: 0 24px;
+  background-position: 0;
 }
 
 .filterContainer button {
@@ -48,11 +48,11 @@
 
 .stickyBottomPanel {
   position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   gap: 14px;
-  z-index: 1;
-  bottom: 0;
-  border-top: 1px solid #edf0f4;
   padding: 14px;
   background: #fff;
+  border-top: 1px solid #edf0f4;
 }

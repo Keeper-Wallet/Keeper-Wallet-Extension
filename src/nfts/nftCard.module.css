@@ -1,25 +1,25 @@
 .card {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: 162px;
   height: 162px;
-  background: #fff;
-  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
-  border-radius: 4px;
-  position: relative;
-  z-index: 1;
   margin-bottom: 8px;
   overflow: hidden;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
   cursor: pointer;
 }
 
 .cover {
+  position: relative;
   flex-grow: 1;
   object-fit: cover;
-  background-position: center center;
   background-repeat: no-repeat;
+  background-position: center center;
   background-size: cover;
-  position: relative;
 }
 
 .withTitle {
@@ -27,19 +27,19 @@
 }
 
 .footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
   position: absolute;
   bottom: 4px;
   left: 4px;
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
   width: calc(100% - 8px);
   padding: 4px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  line-height: 1em;
   overflow: hidden;
   color: var(--color-basic100);
+  line-height: 1em;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
 }
 
 .title {
