@@ -429,6 +429,18 @@
     "select": "アドレスアバターを選択",
     "selectInfo": "アバターは唯一無二です。後で変更することはできません。"
   },
+  "nftCollection": {
+    "backToNftBtn": "NFTに戻る"
+  },
+  "nftInfo": {
+    "backBtn": "戻る",
+    "creator": "作成者",
+    "creatorUrlTooltip": "作成者のページへ",
+    "description": "説明",
+    "sendBtn": "送信",
+    "viewInExplorer": "エクスプローラーで詳細確認",
+    "viewOnMarketplace": "マーケットプレイスで確認"
+  },
   "otherAccounts": {
     "addAccount": "アカウント追加",
     "noAccountsNote": "現在のネットワークに他のアカウントはありません。",
