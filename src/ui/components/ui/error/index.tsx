@@ -65,6 +65,7 @@ export class Error extends React.PureComponent<Props> {
       className = '',
       errors,
       type,
+      show,
       ...otherProps
     } = this.props;
 
