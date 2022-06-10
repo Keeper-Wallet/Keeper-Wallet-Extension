@@ -457,11 +457,11 @@
     "backToNftBtn": "Back to NFTs"
   },
   "nftInfo": {
+    "backBtn": "Back",
     "creator": "Creator",
     "creatorUrlTooltip": "Visit author's page",
     "description": "Description",
     "sendBtn": "Send",
-    "backBtn": "Back",
     "viewInExplorer": "View details in Explorer",
     "viewOnMarketplace": "View on marketplace"
   },
