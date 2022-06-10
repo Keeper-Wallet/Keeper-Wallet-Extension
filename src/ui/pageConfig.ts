@@ -36,6 +36,7 @@ import { ImportEmail } from './components/pages/importEmail/importEmail';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
 import { Send } from './components/pages/send';
 import { ImportSuccess } from 'ui/components/pages/importSuccess';
+import { ImportDebug } from 'ui/components/pages/importDebug';
 
 export const PAGES = {
   WELCOME: 'welcome',
@@ -49,6 +50,7 @@ export const PAGES = {
   ACCOUNT_NAME_SEED: 'account_name_seed',
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',
+  IMPORT_DEBUG: 'import_debug',
   IMPORT_EMAIL: 'import_email',
   IMPORT_KEYSTORE: 'import_keystore',
   IMPORT_LEDGER: 'import_ledger',
@@ -221,6 +223,17 @@ export const PAGES_CONF = {
       hasLogo: true,
       hasSettings: false,
       back: PAGES.SAVE_BACKUP,
+    },
+  },
+  [PAGES.IMPORT_DEBUG]: {
+    component: ImportDebug,
+    bottom: {
+      noChangeNetwork: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
     },
   },
   [PAGES.IMPORT_EMAIL]: {

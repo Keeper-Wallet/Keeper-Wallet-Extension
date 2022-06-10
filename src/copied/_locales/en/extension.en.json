@@ -243,6 +243,15 @@
     "viaSeed": "Seed Phrase or Private Key",
     "viaEmail": "Email Account"
   },
+  "importDebug": {
+    "title": "Import Debug Account",
+    "nameInput": "Name",
+    "addressInput": "Address",
+    "continueBtn": "Continue",
+    "requiredError": "Cannot be blank",
+    "alreadyExists": "Account already exists",
+    "invalidAddressError": "Should be valid {{ networkName }} address"
+  },
   "importEmail": {
     "importEmailTitle": "Import Email Account",
     "importEmailDesc": "Connect an email account created on Waves.Exchange",
