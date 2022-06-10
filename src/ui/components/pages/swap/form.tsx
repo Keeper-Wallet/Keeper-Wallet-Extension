@@ -60,7 +60,7 @@ interface Props {
   onSwap: (params: OnSwapParams) => void;
 }
 
-type ExchangeInfoVendorState =
+type SwapInfoVendorState =
   | {
       type: 'loading';
     }
@@ -75,17 +75,17 @@ type ExchangeInfoVendorState =
       tx: SwapClientInvokeTransaction;
     };
 
-type ExchangeInfoState = {
-  [K in SwapVendor]: ExchangeInfoVendorState;
+type SwapInfoState = {
+  [K in SwapVendor]: SwapInfoVendorState;
 };
 
-const exchangeInfoInitialState: ExchangeInfoState = {
+const swapInfoLoadingState: SwapInfoState = {
   [SwapVendor.Keeper]: { type: 'loading' },
   [SwapVendor.Puzzle]: { type: 'loading' },
   [SwapVendor.Swopfi]: { type: 'loading' },
 };
 
-const exchangeInfoErrorState: ExchangeInfoState = {
+const swapInfoErrorState: SwapInfoState = {
   [SwapVendor.Keeper]: {
     type: 'error',
     code: SwapClientErrorCode.UNEXPECTED,
@@ -186,9 +186,8 @@ export function SwapForm({
 
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
-  const [exchangeInfo, setExchangeInfo] = React.useState<ExchangeInfoState>(
-    exchangeInfoInitialState
-  );
+  const [swapInfo, setSwapInfo] =
+    React.useState<SwapInfoState>(swapInfoLoadingState);
 
   const [swapClient] = React.useState(() => new SwapClient());
 
@@ -244,9 +243,9 @@ export function SwapForm({
     setTouched(false);
 
     if (swapParams) {
-      setExchangeInfo(exchangeInfoInitialState);
+      setSwapInfo(swapInfoLoadingState);
     } else {
-      setExchangeInfo(exchangeInfoErrorState);
+      setSwapInfo(swapInfoErrorState);
     }
   }, [swapParams]);
 
@@ -267,7 +266,7 @@ export function SwapForm({
 
     return swapClient.subscribe({
       onError: () => {
-        setExchangeInfo(exchangeInfoInitialState);
+        setSwapInfo(swapInfoLoadingState);
         setSwapClientError(t('swap.exchangeChannelConnectionError'));
       },
       onData: (vendor, response) => {
@@ -279,7 +278,7 @@ export function SwapForm({
           return;
         }
 
-        let vendorState: ExchangeInfoVendorState;
+        let vendorState: SwapInfoVendorState;
 
         if (response.type === 'error') {
           vendorState = {
@@ -298,7 +297,7 @@ export function SwapForm({
           };
         }
 
-        setExchangeInfo(prevState => ({
+        setSwapInfo(prevState => ({
           ...prevState,
           [typedVendor]: vendorState,
         }));
@@ -332,12 +331,12 @@ export function SwapForm({
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
     React.useState(false);
 
-  const [selectedExchangeVendor, setSelectedExchangeVendor] = React.useState(
+  const [selectedSwapVendor, setSelectedSwapVendor] = React.useState(
     SwapVendor.Keeper
   );
   const [touched, setTouched] = React.useState(false);
 
-  const vendorExchangeInfo = exchangeInfo[selectedExchangeVendor];
+  const swapVendorInfo = swapInfo[selectedSwapVendor];
 
   const defaultPriceDirectionSwapped =
     vendorExchangeInfo.type === 'data' &&
@@ -352,11 +351,11 @@ export function SwapForm({
   }, [defaultPriceDirectionSwapped]);
 
   const minReceived =
-    vendorExchangeInfo.type === 'data'
+    swapVendorInfo.type === 'data'
       ? Money.fromTokens(
           fromAmountTokens.eq(0)
             ? new BigNumber(0)
-            : vendorExchangeInfo.toAmountTokens
+            : swapVendorInfo.toAmountTokens
                 .mul(new BigNumber(100).sub(slippageTolerance).sub(KEEPER_FEE))
                 .div(100)
                 .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR),
@@ -367,27 +366,27 @@ export function SwapForm({
   const dispatch = useAppDispatch();
 
   const priceImpact =
-    fromAmountTokens.eq(0) || vendorExchangeInfo.type !== 'data'
+    fromAmountTokens.eq(0) || swapVendorInfo.type !== 'data'
       ? new BigNumber(0)
-      : new BigNumber(vendorExchangeInfo.priceImpact);
+      : new BigNumber(swapVendorInfo.priceImpact);
 
   const [nonProfitVendor, profitVendor] = (
-    Object.keys(exchangeInfo) as SwapVendor[]
+    Object.keys(swapInfo) as SwapVendor[]
   ).reduce<[SwapVendor, SwapVendor]>(
     ([nonProfit, profit], next) => {
-      const nonProfitInfo = exchangeInfo[nonProfit];
+      const nonProfitInfo = swapInfo[nonProfit];
       const minAmount =
         nonProfitInfo?.type === 'data'
           ? nonProfitInfo.toAmountTokens
           : BigNumber.MAX_VALUE;
 
-      const profitInfo = exchangeInfo[profit];
+      const profitInfo = swapInfo[profit];
       const maxAmount =
         profitInfo?.type === 'data'
           ? profitInfo.toAmountTokens
           : new BigNumber(0);
 
-      const nextInfo = exchangeInfo[next];
+      const nextInfo = swapInfo[next];
       const nextAmount =
         nextInfo?.type === 'data' && fromAmountTokens.gt(0)
           ? nextInfo.toAmountTokens
@@ -403,7 +402,7 @@ export function SwapForm({
 
   React.useEffect(() => {
     if (!touched) {
-      setSelectedExchangeVendor(profitVendor);
+      setSelectedSwapVendor(profitVendor);
     }
   }, [touched, profitVendor]);
 
@@ -465,7 +464,7 @@ export function SwapForm({
           onSubmit={event => {
             event.preventDefault();
 
-            if (vendorExchangeInfo.type !== 'data') {
+            if (swapVendorInfo.type !== 'data') {
               return;
             }
 
@@ -480,11 +479,11 @@ export function SwapForm({
               slippageTolerance,
               toAssetId,
               toCoins: Money.fromTokens(
-                vendorExchangeInfo.toAmountTokens,
+                swapVendorInfo.toAmountTokens,
                 toAsset
               ).getCoins(),
-              tx: vendorExchangeInfo.tx,
-              vendor: selectedExchangeVendor,
+              tx: swapVendorInfo.tx,
+              vendor: selectedSwapVendor,
             });
           }}
         >
@@ -527,10 +526,10 @@ export function SwapForm({
           <div className={styles.swapDirectionBtnWrapper}>
             <button
               className={styles.swapDirectionBtn}
-              disabled={vendorExchangeInfo.type !== 'data'}
+              disabled={swapVendorInfo.type !== 'data'}
               type="button"
               onClick={() => {
-                if (vendorExchangeInfo.type !== 'data') {
+                if (swapVendorInfo.type !== 'data') {
                   return;
                 }
 
@@ -544,7 +543,7 @@ export function SwapForm({
                     ? ''
                     : fromAmountTokens.eq(0)
                     ? '0'
-                    : vendorExchangeInfo.toAmountTokens.toFixed();
+                    : swapVendorInfo.toAmountTokens.toFixed();
 
                 setFromAmountValue(newFromAmount);
                 setIsPriceDirectionSwapped(prevState => !prevState);
@@ -589,8 +588,8 @@ export function SwapForm({
 
             <div className={styles.toAmountCards}>
               {(
-                Object.entries(exchangeInfo) as Array<
-                  [SwapVendor, ExchangeInfoVendorState]
+                Object.entries(swapInfo) as Array<
+                  [SwapVendor, SwapInfoVendorState]
                 >
               ).map(([vendor, info]) => {
                 const amountTokens = new BigNumber(
@@ -617,7 +616,7 @@ export function SwapForm({
                   }
                 );
 
-                const nextInfo = exchangeInfo[nonProfitVendor];
+                const nextInfo = swapInfo[nonProfitVendor];
 
                 const profitTokens =
                   info.type === 'data' &&
@@ -634,12 +633,12 @@ export function SwapForm({
                     key={vendor}
                     className={cn(styles.toAmountCard, {
                       [styles.toAmountCard_selected]:
-                        selectedExchangeVendor === vendor,
+                        selectedSwapVendor === vendor,
                     })}
                     type="button"
                     onClick={() => {
                       setTouched(true);
-                      setSelectedExchangeVendor(vendor);
+                      setSelectedSwapVendor(vendor);
                     }}
                   >
                     <div className={styles.toAmountCardVendor}>
@@ -732,9 +731,9 @@ export function SwapForm({
               </div>
 
               <div className={styles.summaryValue}>
-                {vendorExchangeInfo.type === 'loading' ? (
+                {swapVendorInfo.type === 'loading' ? (
                   <Loader />
-                ) : vendorExchangeInfo.type === 'data' ? (
+                ) : swapVendorInfo.type === 'data' ? (
                   <div>
                     <button
                       className={styles.slippageToleranceBtn}
@@ -774,9 +773,9 @@ export function SwapForm({
               <div className={styles.summaryLabel}>{t('swap.priceLabel')}</div>
 
               <div className={styles.summaryValue}>
-                {vendorExchangeInfo.type === 'loading' ? (
+                {swapVendorInfo.type === 'loading' ? (
                   <Loader />
-                ) : vendorExchangeInfo.type === 'data' ? (
+                ) : swapVendorInfo.type === 'data' ? (
                   <div>
                     <button
                       className={styles.swapPriceDirectionBtn}
@@ -798,12 +797,12 @@ export function SwapForm({
                     {isPriceDirectionSwapped ? (
                       <span>
                         1 {toAsset.displayName} ≈{' '}
-                        {(vendorExchangeInfo.toAmountTokens.eq(0)
+                        {(swapVendorInfo.toAmountTokens.eq(0)
                           ? new BigNumber(0)
                           : (fromAmountTokens.eq(0)
                               ? new BigNumber(1)
                               : fromAmountTokens
-                            ).div(vendorExchangeInfo.toAmountTokens)
+                            ).div(swapVendorInfo.toAmountTokens)
                         ).toFixed(
                           fromAsset.precision,
                           BigNumber.ROUND_MODE.ROUND_FLOOR
@@ -813,7 +812,7 @@ export function SwapForm({
                     ) : (
                       <span>
                         1 {fromAsset.displayName} ~{' '}
-                        {vendorExchangeInfo.toAmountTokens
+                        {swapVendorInfo.toAmountTokens
                           .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
                           .toFixed(
                             toAsset.precision,
@@ -978,7 +977,7 @@ export function SwapForm({
             fromAmountTokens.eq(0) ||
             maxAmountExceededErrorMessage != null ||
             validationErrorMessage != null ||
-            vendorExchangeInfo.type !== 'data' ||
+            swapVendorInfo.type !== 'data' ||
             isSwapInProgress
           }
           form="swapForm"
