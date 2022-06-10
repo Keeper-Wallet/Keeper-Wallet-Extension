@@ -74,6 +74,11 @@ export function ExportAccounts({ onBack }: Props) {
                         password
                       ),
                     };
+                  case 'debug':
+                    return {
+                      ...commonData,
+                      type: acc.type,
+                    };
                 }
               })
             );

@@ -1,5 +1,5 @@
 import { ACTION, addBackTab, selectAccount, setTab } from '../actions';
-import background from '../services/Background';
+import background, { WalletTypes } from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
 
 export const addAccount = store => next => action => {
@@ -19,7 +19,9 @@ export const addAccount = store => next => action => {
         store.dispatch(addBackTab(currentTab));
         store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
 
-        background.sendEvent('addWallet', { type: meta.type });
+        if (meta.type !== WalletTypes.Debug) {
+          background.sendEvent('addWallet', { type: meta.type });
+        }
       });
   }
 
@@ -29,7 +31,9 @@ export const addAccount = store => next => action => {
         store.dispatch(addBackTab(currentTab));
         store.dispatch(setTab(PAGES.IMPORT_SUCCESS));
 
-        background.sendEvent('addWallet', { type: meta.type });
+        if (meta.type !== WalletTypes.Debug) {
+          background.sendEvent('addWallet', { type: meta.type });
+        }
       }
     );
   }

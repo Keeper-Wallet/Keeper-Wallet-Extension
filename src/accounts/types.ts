@@ -13,6 +13,7 @@ export type Account = {
   | { type: 'privateKey' }
   | { type: 'ledger'; id: number }
   | { type: 'wx'; uuid: string; username: string }
+  | { type: 'debug' }
 );
 
 export type AccountType = Account['type'];
@@ -30,6 +31,7 @@ export type KeystoreAccount = Pick<
     | { type?: 'seed'; seed: string }
     | { type: 'encodedSeed'; encodedSeed: string }
     | { type: 'privateKey'; privateKey: string }
+    | { type: 'debug' }
   );
 
 export type KeystoreProfiles = Record<

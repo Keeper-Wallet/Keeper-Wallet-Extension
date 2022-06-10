@@ -15,6 +15,7 @@
     "passwordError": "Incorrect password",
     "privateKeyNoBackupPhrase": "This account was imported using private key, so there's no backup phrase to copy",
     "emailNoBackupPhrase": "This account was imported using the Waves.Exchange account, so there is no backup phrase or private key to copy",
+    "debugNoBackupPhrase": "This account is for debugging, so there's no backup phrase, private key or public key to copy",
     "privKey": "Private key",
     "pubKey": "Public key",
     "viewInExplorer": "View in Explorer"
@@ -240,7 +241,17 @@
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",
+    "viaDebug": "Debug",
     "viaEmail": "Email Account"
+  },
+  "importDebug": {
+    "title": "Import Debug Account",
+    "nameInput": "Name",
+    "addressInput": "Address",
+    "continueBtn": "Continue",
+    "requiredError": "Cannot be blank",
+    "alreadyExists": "Account already exists",
+    "invalidAddressError": "Should be valid {{ networkName }} address"
   },
   "importEmail": {
     "importEmailTitle": "Import Email Account",

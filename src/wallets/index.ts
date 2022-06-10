@@ -7,6 +7,7 @@ import { LedgerApi, LedgerWallet, LedgerWalletInput } from './ledger';
 import { AssetDetail } from 'ui/services/Background';
 import { WxWallet, WxWalletInput } from './wx';
 import { IdentityApi } from '../controllers/IdentityController';
+import { DebugWallet, DebugWalletInput } from 'wallets/debug';
 
 export function createWallet(
   input:
@@ -14,7 +15,8 @@ export function createWallet(
     | ({ type: 'encodedSeed' } & EncodedSeedWalletInput)
     | ({ type: 'privateKey' } & PrivateKeyWalletInput)
     | ({ type: 'wx' } & WxWalletInput)
-    | ({ type: 'ledger' } & LedgerWalletInput),
+    | ({ type: 'ledger' } & LedgerWalletInput)
+    | ({ type: 'debug' } & DebugWalletInput),
   {
     getAssetInfo,
     identity,
@@ -73,6 +75,13 @@ export function createWallet(
         ledger,
         getAssetInfo
       );
+    case 'debug':
+      return new DebugWallet({
+        address: input.address,
+        name: input.name,
+        network: input.network,
+        networkCode: input.networkCode,
+      });
     default:
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       throw new Error(`Unsupported wallet type: "${(input as any).type}"`);

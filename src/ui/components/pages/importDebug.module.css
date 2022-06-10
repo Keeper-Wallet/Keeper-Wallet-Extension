@@ -1,0 +1,11 @@
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 40px 60px;
+}
+
+.continueBtn {
+  margin-bottom: 42px;
+}

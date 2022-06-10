@@ -20,6 +20,7 @@ export function batchAddAccounts(
         | { type: 'seed'; seed: string }
         | { type: 'encodedSeed'; encodedSeed: string }
         | { type: 'privateKey'; privateKey: string }
+        | { type: 'debug'; address: string }
       )
   >,
   type: WalletTypes

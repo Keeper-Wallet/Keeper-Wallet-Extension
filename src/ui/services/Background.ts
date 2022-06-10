@@ -671,6 +671,7 @@ export enum WalletTypes {
   Ledger = 'ledger',
   Keystore = 'keystore',
   KeystoreWx = 'keystore_wx',
+  Debug = 'debug',
 }
 
 export interface AssetDetail extends IAssetInfo {
