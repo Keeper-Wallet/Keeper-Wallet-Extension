@@ -24,10 +24,10 @@ export function ImportDebug() {
   const nameError = React.useMemo(() => {
     if (!name) {
       return t('importDebug.requiredError');
-    } else {
-      if (accounts.some(account => account.name === name)) {
-        return t('importDebug.alreadyExists');
-      }
+    }
+
+    if (accounts.some(account => account.name === name)) {
+      return t('importDebug.alreadyExists');
     }
 
     return null;
@@ -36,16 +36,16 @@ export function ImportDebug() {
   const addressError = React.useMemo(() => {
     if (!address) {
       return t('importDebug.requiredError');
-    } else {
-      if (!validators.isValidAddress(address, networkCode.charCodeAt(0))) {
-        return t('importDebug.invalidAddressError', {
-          values: { networkName: currentNetwork },
-        });
-      }
+    }
 
-      if (accounts.some(account => account.address === address)) {
-        return t('importDebug.alreadyExists');
-      }
+    if (!validators.isValidAddress(address, networkCode.charCodeAt(0))) {
+      return t('importDebug.invalidAddressError', {
+        networkName: currentNetwork,
+      });
+    }
+
+    if (accounts.some(account => account.address === address)) {
+      return t('importDebug.alreadyExists');
     }
 
     return null;
