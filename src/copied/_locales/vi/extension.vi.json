@@ -429,6 +429,18 @@
     "select": "Chọn ảnh đại diện tài khoản của bạn",
     "selectInfo": "Hình đại diện này là duy nhất. Bạn không thể thay đổi nó sau này."
   },
+  "nftCollection": {
+    "backToNftBtn": "Quay lại NFT"
+  },
+  "nftInfo": {
+    "backBtn": "Quay lại",
+    "creator": "Người tạo",
+    "creatorUrlTooltip": "Đến trang của tác giả",
+    "description": "Mô tả",
+    "sendBtn": "Gửi",
+    "viewInExplorer": "Xem thông tin trên trình duyệt",
+    "viewOnMarketplace": "Xem trên thị trường"
+  },
   "otherAccounts": {
     "addAccount": "Thêm tài khoản",
     "noAccountsNote": "Bạn không còn tài khoản khác trên mạng hiện tại",
