@@ -427,6 +427,18 @@
     "select": "选择您的地址头像",
     "selectInfo": "该头像很独特，您之后将无法改变投向。"
   },
+  "nftCollection": {
+    "backToNftBtn": "返回NFT收藏"
+  },
+  "nftInfo": {
+    "backBtn": "返回",
+    "creator": "创作者",
+    "creatorUrlTooltip": "访问作者页",
+    "description": "描述",
+    "sendBtn": "发送",
+    "viewInExplorer": "在浏览器中查看详情",
+    "viewOnMarketplace": "在市场中查看"
+  },
   "otherAccounts": {
     "addAccount": "添加账户",
     "noAccountsNote": "在当前网络中，您没有其他账户",
