@@ -438,6 +438,18 @@
     "select": "Elige tu dirección avatar",
     "selectInfo": "Este avatar es único. No puedes cambiarlo más tarde."
   },
+  "nftCollection": {
+    "backToNftBtn": "Volver a los NFT"
+  },
+  "nftInfo": {
+    "backBtn": "Atrás",
+    "creator": "Creador",
+    "creatorUrlTooltip": "Visita la página del autor",
+    "description": "Descripción",
+    "sendBtn": "Enviar",
+    "viewInExplorer": "Ver detalles en el Explorador",
+    "viewOnMarketplace": "Ver en el mercado"
+  },
   "otherAccounts": {
     "addAccount": "Añadir cuenta",
     "noAccountsNote": "No tienes otras cuentas en la red actual",
