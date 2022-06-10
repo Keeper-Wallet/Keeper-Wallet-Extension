@@ -429,6 +429,18 @@
     "select": "Adres avatarınızı seçin",
     "selectInfo": "Bu avatar eşsizdir. Daha sonrasında değiştiremezsiniz."
   },
+  "nftCollection": {
+    "backToNftBtn": "NFT’lere dön"
+  },
+  "nftInfo": {
+    "backBtn": "Geri",
+    "creator": "Kreatör",
+    "creatorUrlTooltip": "Kreatörün sayfasını ziyaret et",
+    "description": "Tanım",
+    "sendBtn": "Gönder",
+    "viewInExplorer": "Detaylarını incele",
+    "viewOnMarketplace": "Pazaryerinde gör"
+  },
   "otherAccounts": {
     "addAccount": "Hesap ekle",
     "noAccountsNote": "Mevcuttaki ağda başka hesabınız yok",
