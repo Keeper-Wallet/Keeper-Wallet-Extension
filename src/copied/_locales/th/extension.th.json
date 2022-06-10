@@ -429,6 +429,18 @@
     "select": "เลือก Avatar สำหรับกระเป๋าของคุณ ",
     "selectInfo": "Avatar นี้มีเอกลักษณ์ คุณไม่สามารถเปลี่ยนได้ในภายหลัง"
   },
+  "nftCollection": {
+    "backToNftBtn": "กลับไปที่ NFTs"
+  },
+  "nftInfo": {
+    "backBtn": "กลับ",
+    "creator": "ผู้ออกแบบ",
+    "creatorUrlTooltip": "เยี่ยมชมหน้าผู้เขียน",
+    "description": "คำอธิบาย",
+    "sendBtn": "ส่ง",
+    "viewInExplorer": "ดูรายละเอียดใน Explorer",
+    "viewOnMarketplace": "ดูในตลาดกลาง"
+  },
   "otherAccounts": {
     "addAccount": "เพิ่มบัญชี",
     "noAccountsNote": "คุณไม่มีบัญชีอื่นๆ ในเครือข่ายปัจจุบัน",
