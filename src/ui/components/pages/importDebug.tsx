@@ -18,42 +18,40 @@ export function ImportDebug() {
     customCodes[currentNetwork] ||
     networks.find(n => currentNetwork === n.name).code;
 
-  const [showErrors, setShowErrors] = React.useState<boolean>(false);
+  const [name, setName] = React.useState('');
+  const [address, setAddress] = React.useState('');
 
-  const [name, setName] = React.useState<string>();
-  const [nameErr, setNameErr] = React.useState<string>();
-  const [address, setAddress] = React.useState<string>();
-  const [addressErr, setAddressErr] = React.useState<string>();
-
-  React.useEffect(() => {
-    setNameErr(t('importDebug.requiredError'));
-
-    if (name != null) {
-      setNameErr(null);
-
+  const nameError = React.useMemo(() => {
+    if (!name) {
+      return t('importDebug.requiredError');
+    } else {
       if (accounts.some(account => account.name === name)) {
-        setNameErr(t('importDebug.alreadyExists'));
+        return t('importDebug.alreadyExists');
       }
     }
 
-    setAddressErr(t('importDebug.requiredError'));
+    return null;
+  }, [name, accounts, t]);
 
-    if (address != null) {
-      setAddressErr(null);
-
+  const addressError = React.useMemo(() => {
+    if (!address) {
+      return t('importDebug.requiredError');
+    } else {
       if (!validators.isValidAddress(address, networkCode.charCodeAt(0))) {
-        setAddressErr(
-          t('importDebug.invalidAddressError', {
-            values: { networkName: currentNetwork },
-          })
-        );
+        return t('importDebug.invalidAddressError', {
+          values: { networkName: currentNetwork },
+        });
       }
 
       if (accounts.some(account => account.address === address)) {
-        setAddressErr(t('importDebug.alreadyExists'));
+        return t('importDebug.alreadyExists');
       }
     }
-  }, [name, address, currentNetwork, networkCode, accounts, dispatch, t]);
+
+    return null;
+  }, [address, accounts, currentNetwork, networkCode, t]);
+
+  const [showErrors, setShowErrors] = React.useState<boolean>(false);
 
   return (
     <div className={styles.content}>
@@ -65,7 +63,7 @@ export function ImportDebug() {
 
           setShowErrors(true);
 
-          if (nameErr || addressErr) {
+          if (nameError || addressError) {
             return;
           }
 
@@ -90,12 +88,12 @@ export function ImportDebug() {
             id="accountName"
             className="margin1"
             onChange={e => setName(e.target.value)}
-            value={name ?? ''}
+            value={name}
             maxLength={32}
             autoFocus
-            error={showErrors && !!nameErr}
+            error={showErrors && !!nameError}
           />
-          <Error show={showErrors && !!nameErr}>{nameErr}</Error>
+          <Error show={showErrors && !!nameError}>{nameError}</Error>
         </div>
 
         <div className="margin4">
@@ -106,11 +104,11 @@ export function ImportDebug() {
             id="accountAddress"
             className="margin1"
             onChange={e => setAddress(e.target.value)}
-            value={address ?? ''}
+            value={address}
             maxLength={35}
-            error={showErrors && !!addressErr}
+            error={showErrors && !!addressError}
           />
-          <Error show={showErrors && !!addressErr}>{addressErr}</Error>
+          <Error show={showErrors && !!addressError}>{addressError}</Error>
         </div>
 
         <div className="margin4">
