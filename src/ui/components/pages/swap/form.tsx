@@ -202,11 +202,6 @@ export function SwapForm({
   );
 
   const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
-  const maxTokensRef = React.useRef(maxTokens);
-
-  React.useEffect(() => {
-    maxTokensRef.current = maxTokens;
-  }, [maxTokens]);
 
   const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
     ? t('swap.maxAmountExceeded', {
@@ -225,11 +220,13 @@ export function SwapForm({
       onData: (vendor, response) => {
         setSwapClientError(null);
 
-        const fromTokens = new BigNumber(
+        const fromAmountTokens = new BigNumber(
           latestFromAmountValueRef.current || '0'
         );
 
-        if (fromTokens.gt(maxTokensRef.current)) {
+        const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+        if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
           return;
         }
 
@@ -264,26 +261,30 @@ export function SwapForm({
         }));
       },
     });
-  }, [swapClient, t, toAsset]);
+  }, [fromAsset, swapClient, t, toAsset]);
 
   const updateSwapParams = React.useCallback(() => {
-    let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
+    let fromAmountTokens = new BigNumber(
+      latestFromAmountValueRef.current || '0'
+    );
 
-    if (fromTokens.gt(maxTokensRef.current)) {
-      setExchangeInfo(exchangeInfoErrorState);
-      return;
-    }
-
-    if (fromTokens.eq(0)) {
-      fromTokens = new BigNumber(1);
+    if (fromAmountTokens.eq(0)) {
+      fromAmountTokens = new BigNumber(1);
     }
 
     const latestSlippageTolerance =
       SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
 
+    const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+    if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
+      setExchangeInfo(exchangeInfoErrorState);
+      return;
+    }
+
     swapClient.setSwapParams({
       address: accountAddress,
-      amountCoins: Money.fromTokens(fromTokens, fromAsset).toCoins(),
+      amountCoins: fromAmount.toCoins(),
       fromAssetId: fromAsset.id,
       slippageTolerance: latestSlippageTolerance,
       toAssetId: toAsset.id,
