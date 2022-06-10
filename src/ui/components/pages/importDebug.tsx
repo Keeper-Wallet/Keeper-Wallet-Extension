@@ -72,7 +72,7 @@ export function ImportDebug() {
           dispatch(
             createAccount(
               {
-                type: WalletTypes.Debug,
+                type: 'debug',
                 address,
                 name,
                 networkCode,

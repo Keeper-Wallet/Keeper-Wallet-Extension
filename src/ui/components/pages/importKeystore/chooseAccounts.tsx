@@ -148,7 +148,11 @@ export function ImportKeystoreChooseAccounts({
                         title={account.address}
                       >
                         <div className={styles.accountInfo}>
-                          <Avatar size={40} address={account.address} />
+                          <Avatar
+                            size={40}
+                            address={account.address}
+                            type={account.type}
+                          />
 
                           <div className={styles.accountInfoText}>
                             <div

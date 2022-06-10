@@ -22,7 +22,7 @@ interface Props {
 }
 
 function isAccountExportable(account: Account) {
-  return ['seed', 'encodedSeed', 'privateKey'].includes(account.type);
+  return ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(account.type);
 }
 
 export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {

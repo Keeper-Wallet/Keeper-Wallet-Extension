@@ -31,6 +31,7 @@ export type KeystoreAccount = Pick<
     | { type?: 'seed'; seed: string }
     | { type: 'encodedSeed'; encodedSeed: string }
     | { type: 'privateKey'; privateKey: string }
+    | { type: 'debug' }
   );
 
 export type KeystoreProfiles = Record<
