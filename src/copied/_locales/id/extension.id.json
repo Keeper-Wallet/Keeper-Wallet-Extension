@@ -438,6 +438,18 @@
     "select": "Pilih address avatar",
     "selectInfo": "Avatar ini unik. Anda tidak dapat mengubahnya nanti."
   },
+  "nftCollection": {
+    "backToNftBtn": "Kembali ke NFT"
+  },
+  "nftInfo": {
+    "backBtn": "Kembali",
+    "creator": "Pencipta",
+    "creatorUrlTooltip": "Kunjungi halaman author",
+    "description": "Deskripsi",
+    "sendBtn": "Kirim",
+    "viewInExplorer": "Lihat detail di Explorer",
+    "viewOnMarketplace": "Lihat di marketplace"
+  },
   "otherAccounts": {
     "addAccount": "Taambahkan akun",
     "noAccountsNote": "Anda tidak memiliki akun lain di jaringan saat ini",
