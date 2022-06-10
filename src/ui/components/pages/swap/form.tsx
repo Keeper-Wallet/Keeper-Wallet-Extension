@@ -26,6 +26,7 @@ import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 import { SwapVendor } from 'swap/constants';
 import { getSwapVendorLogo } from 'swap/utils';
+import { useDebouncedValue } from 'common/useDebouncedValue';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
@@ -191,12 +192,6 @@ export function SwapForm({
 
   const [swapClient] = React.useState(() => new SwapClient());
 
-  const latestFromAmountValueRef = React.useRef(fromAmountValue);
-
-  React.useEffect(() => {
-    latestFromAmountValueRef.current = fromAmountValue;
-  }, [fromAmountValue]);
-
   const [swapClientError, setSwapClientError] = React.useState<string | null>(
     null
   );
@@ -211,7 +206,65 @@ export function SwapForm({
 
   const accountAddress = useAppSelector(state => state.selectedAccount.address);
 
+  const slippageToleranceIndex = useAppSelector(
+    state => state.uiState.slippageToleranceIndex ?? 2
+  );
+
+  const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
+
+  const swapParams = React.useMemo(() => {
+    let fromAmountTokens = new BigNumber(fromAmountValue || '0');
+
+    if (fromAmountTokens.eq(0)) {
+      fromAmountTokens = new BigNumber(1);
+    }
+
+    const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+    if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
+      return null;
+    }
+
+    return {
+      address: accountAddress,
+      amountCoins: fromAmount.toCoins(),
+      fromAssetId: fromAsset.id,
+      slippageTolerance,
+      toAssetId: toAsset.id,
+    };
+  }, [
+    accountAddress,
+    fromAmountValue,
+    fromAsset,
+    slippageTolerance,
+    toAsset.id,
+  ]);
+
   React.useEffect(() => {
+    setTouched(false);
+
+    if (swapParams) {
+      setExchangeInfo(exchangeInfoInitialState);
+    } else {
+      setExchangeInfo(exchangeInfoErrorState);
+    }
+  }, [swapParams]);
+
+  const debouncedSwapParams = useDebouncedValue(swapParams, 500);
+
+  React.useEffect(() => {
+    if (!debouncedSwapParams) {
+      return;
+    }
+
+    swapClient.setSwapParams(debouncedSwapParams);
+  }, [debouncedSwapParams, swapClient]);
+
+  React.useEffect(() => {
+    if (!swapParams) {
+      return;
+    }
+
     return swapClient.subscribe({
       onError: () => {
         setExchangeInfo(exchangeInfoInitialState);
@@ -219,16 +272,6 @@ export function SwapForm({
       },
       onData: (vendor, response) => {
         setSwapClientError(null);
-
-        const fromAmountTokens = new BigNumber(
-          latestFromAmountValueRef.current || '0'
-        );
-
-        const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
-
-        if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
-          return;
-        }
 
         const typedVendor = vendor as SwapVendor;
 
@@ -261,47 +304,7 @@ export function SwapForm({
         }));
       },
     });
-  }, [fromAsset, swapClient, t, toAsset]);
-
-  const updateSwapParams = React.useCallback(() => {
-    let fromAmountTokens = new BigNumber(
-      latestFromAmountValueRef.current || '0'
-    );
-
-    if (fromAmountTokens.eq(0)) {
-      fromAmountTokens = new BigNumber(1);
-    }
-
-    const latestSlippageTolerance =
-      SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
-
-    const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
-
-    if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
-      setExchangeInfo(exchangeInfoErrorState);
-      return;
-    }
-
-    swapClient.setSwapParams({
-      address: accountAddress,
-      amountCoins: fromAmount.toCoins(),
-      fromAssetId: fromAsset.id,
-      slippageTolerance: latestSlippageTolerance,
-      toAssetId: toAsset.id,
-    });
-  }, [accountAddress, fromAsset, swapClient, toAsset.id]);
-
-  React.useEffect(() => {
-    setExchangeInfo(exchangeInfoInitialState);
-    setTouched(false);
-    updateSwapParams();
-  }, [updateSwapParams]);
-
-  const updateSwapParamsRef = React.useRef(updateSwapParams);
-
-  React.useEffect(() => {
-    updateSwapParamsRef.current = updateSwapParams;
-  }, [updateSwapParams]);
+  }, [swapClient, swapParams, t, toAsset]);
 
   const sponsoredAssetFee = accountBalance.assets[feeAssetId]
     ? convertToSponsoredAssetFee(
@@ -322,56 +325,12 @@ export function SwapForm({
       ? t('swap.insufficientFundsError')
       : null;
 
-  const updateSwapParamsTimeoutRef = React.useRef<number | null>(null);
-
-  function scheduleUpdateSwapParams() {
-    if (updateSwapParamsTimeoutRef.current != null) {
-      window.clearTimeout(updateSwapParamsTimeoutRef.current);
-    }
-
-    updateSwapParamsTimeoutRef.current = window.setTimeout(() => {
-      updateSwapParamsRef.current();
-    }, 500);
-  }
-
-  React.useEffect(() => {
-    return () => {
-      if (updateSwapParamsTimeoutRef.current != null) {
-        window.clearTimeout(updateSwapParamsTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  function setFromAmount(newValue: string) {
-    if (newValue !== fromAmountValue) {
-      setFromAmountValue(newValue);
-      setExchangeInfo(exchangeInfoInitialState);
-      setTouched(false);
-      scheduleUpdateSwapParams();
-    }
-  }
-
   function setSlippageToleranceIndex(index: number) {
     dispatch(setUiState({ slippageToleranceIndex: index }));
-    setExchangeInfo(exchangeInfoInitialState);
-    setTouched(false);
-    scheduleUpdateSwapParams();
   }
 
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
     React.useState(false);
-
-  const slippageToleranceIndex = useAppSelector(
-    state => state.uiState.slippageToleranceIndex ?? 2
-  );
-
-  const latestSlippageToleranceIndexRef = React.useRef(slippageToleranceIndex);
-
-  React.useEffect(() => {
-    latestSlippageToleranceIndexRef.current = slippageToleranceIndex;
-  }, [slippageToleranceIndex]);
-
-  const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
   const [selectedExchangeVendor, setSelectedExchangeVendor] = React.useState(
     SwapVendor.Keeper
@@ -558,10 +517,10 @@ export function SwapForm({
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
               }
 
-              setFromAmount(max.getTokens().toFixed());
+              setFromAmountValue(max.getTokens().toFixed());
             }}
             onChange={newValue => {
-              setFromAmount(newValue);
+              setFromAmountValue(newValue);
             }}
           />
 
@@ -587,7 +546,7 @@ export function SwapForm({
                     ? '0'
                     : vendorExchangeInfo.toAmountTokens.toFixed();
 
-                setFromAmount(newFromAmount);
+                setFromAmountValue(newFromAmount);
                 setIsPriceDirectionSwapped(prevState => !prevState);
               }}
             >
