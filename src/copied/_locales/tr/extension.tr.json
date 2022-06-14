@@ -27,6 +27,7 @@
     "addressInvalidError": "Adres değeri geçersiz",
     "cancel": "İptal et",
     "copied": "Kopyalandı!",
+    "copyToClipboard": "Panoya kopyalamak için tıklayın",
     "delete": "Adresi sil",
     "deleteDescription": "Bu adresi, kişilerinizden silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
     "edit": "Adresi düzelt",

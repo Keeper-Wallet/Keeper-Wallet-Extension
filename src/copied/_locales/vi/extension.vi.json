@@ -27,6 +27,7 @@
     "addressInvalidError": "Giá trị địa chỉ không hợp lệ",
     "cancel": "Hủy",
     "copied": "Đã sao chép",
+    "copyToClipboard": "Nhấn để sao chép vào bộ nhớ tạm",
     "delete": "Xóa địa chỉ",
     "deleteDescription": "Bạn có chắc muốn xóa địa chỉ này khỏi sổ liên lạc của bạn? Hành động này không thể thay đổi.",
     "edit": "Sửa địa chỉ",

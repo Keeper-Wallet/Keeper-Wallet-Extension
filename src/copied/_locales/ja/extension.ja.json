@@ -27,6 +27,7 @@
     "addressInvalidError": "アドレスの値が無効です",
     "cancel": "キャンセル",
     "copied": "コピーしました。",
+    "copyToClipboard": "クリックしてクリップボードにコピーします。",
     "delete": "アドレス削除",
     "deleteDescription": "アドレス帳からこのアドレスを削除しますか？この操作は元には戻せません。",
     "edit": "アドレス編集",

@@ -27,6 +27,7 @@
     "addressInvalidError": "Endereço inválido",
     "cancel": "Cancelae",
     "copied": "Copiado!",
+    "copyToClipboard": "Clique para copiar para a área de transferência",
     "delete": "Deletar endereço",
     "deleteDescription": "Tem certeza de que deseja excluir este endereço de seus contatos? Esta ação é irreversível.",
     "edit": "Editar endereço",

@@ -36,6 +36,7 @@
     "addressInvalidError": "Address value is invalid",
     "cancel": "Cancel",
     "copied": "Copied!",
+    "copyToClipboard": "Click to copy to clipboard",
     "delete": "Delete address",
     "deleteDescription": "Are you sure you want to delete this address from your contacts? This action is irreversible.",
     "edit": "Edit address",

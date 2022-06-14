@@ -16,7 +16,14 @@ export function AddressTooltip({ className, address }: Props) {
 
   return (
     <>
-      <Tooltip content={address}>
+      <Tooltip
+        content={
+          <>
+            <p>{address}</p>
+            <p className={styles.copy}>{t('address.copyToClipboard')}</p>
+          </>
+        }
+      >
         {props => (
           <Copy
             text={address}

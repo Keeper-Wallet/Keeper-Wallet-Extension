@@ -6,3 +6,8 @@
   border-radius: 2px;
   cursor: pointer;
 }
+
+.copy {
+  font-size: 12px;
+  text-align: right;
+}

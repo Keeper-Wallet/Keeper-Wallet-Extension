@@ -28,6 +28,7 @@
     "addressInvalidError": "地址不正确",
     "cancel": "取消",
     "copied": "已复制",
+    "copyToClipboard": "点击复制到剪贴板",
     "delete": "删除地址",
     "deleteDescription": "您确定要从通讯录中删除该地址吗？该行为不可恢复。",
     "edit": "编辑地址",
