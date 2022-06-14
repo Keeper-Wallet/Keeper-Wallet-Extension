@@ -32,12 +32,14 @@
   left: 4px;
   display: flex;
   gap: 4px;
+  align-items: center;
   justify-content: space-between;
   width: calc(100% - 8px);
   padding: 4px;
   overflow: hidden;
   color: var(--color-basic100);
   line-height: 1em;
+  white-space: nowrap;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
 }
