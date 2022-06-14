@@ -44,6 +44,21 @@
   line-height: 14px;
 }
 
+.fieldName {
+  margin-bottom: 8px;
+  color: var(--color-basic500);
+}
+
+.fieldContent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 14px;
+  word-break: break-word;
+}
+
 .stickyBottomPanel {
   position: sticky;
   bottom: 0;

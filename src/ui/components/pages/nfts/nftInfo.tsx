@@ -65,8 +65,8 @@ export function NftInfo({
           )}
         </div>
 
-        <div className="basic500 margin1">{t('nftInfo.creator')}</div>
-        <div className="body1 margin2 flex">
+        <div className={styles.fieldName}>{t('nftInfo.creator')}</div>
+        <div className={styles.fieldContent}>
           <div>
             {nft?.creator === nft?.displayCreator ? (
               <Ellipsis text={nft?.creator} size={16} />
@@ -100,8 +100,8 @@ export function NftInfo({
 
         {nft.description && (
           <>
-            <div className="basic500 margin1">{t('nftInfo.description')}</div>
-            <div className="body1 margin2">{nft.description}</div>
+            <div className={styles.fieldName}>{t('nftInfo.description')}</div>
+            <div className={styles.fieldContent}>{nft.description}</div>
           </>
         )}
       </div>
