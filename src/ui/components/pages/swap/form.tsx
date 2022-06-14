@@ -30,8 +30,6 @@ import { useDebouncedValue } from 'common/useDebouncedValue';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
-const KEEPER_FEE = new BigNumber(0.1);
-
 function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
   return asset.id === 'WAVES'
     ? new Money(accountBalance.available, asset)
@@ -70,6 +68,7 @@ type SwapInfoVendorState =
     }
   | {
       type: 'data';
+      minimumReceivedTokens: BigNumber;
       priceImpact: number;
       toAmountTokens: BigNumber;
       tx: SwapClientInvokeTransaction;
@@ -294,6 +293,10 @@ export function SwapForm({
         } else {
           vendorState = {
             type: 'data',
+            minimumReceivedTokens: new Money(
+              response.minimumReceivedCoins,
+              toAsset
+            ).getTokens(),
             priceImpact: response.priceImpact,
             toAmountTokens: new Money(
               response.amountCoins,
@@ -352,10 +355,7 @@ export function SwapForm({
       ? Money.fromTokens(
           fromAmountTokens.eq(0)
             ? new BigNumber(0)
-            : swapVendorInfo.toAmountTokens
-                .mul(new BigNumber(100).sub(slippageTolerance).sub(KEEPER_FEE))
-                .div(100)
-                .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR),
+            : swapVendorInfo.minimumReceivedTokens,
           toAsset
         )
       : null;
