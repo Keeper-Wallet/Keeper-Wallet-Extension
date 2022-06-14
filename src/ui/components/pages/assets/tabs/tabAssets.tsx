@@ -84,7 +84,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     value => setFilters({ ...filters, onlyMy: value }),
   ];
   const [onlyFav, setOnlyFav] = [
-    filters?.onlyMy,
+    filters?.onlyFavorites,
     value => setFilters({ ...filters, onlyFavorites: value }),
   ];
 
