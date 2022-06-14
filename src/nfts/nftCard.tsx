@@ -27,10 +27,6 @@ export function NftCover({ className, nft }: { className?: string; nft: Nft }) {
   );
 }
 
-export function NftTitle({ children }: { children: React.ReactNode }) {
-  return <div className={styles.title}>{children}</div>;
-}
-
 export function NftCard({
   nft,
   count = 0,
