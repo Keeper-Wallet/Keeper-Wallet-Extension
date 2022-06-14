@@ -37,6 +37,7 @@ const BalanceComponent = ({
   split,
   getAsset,
   addSign = null,
+  className,
   showAsset,
   showUsdAmount,
   isShortFormat,
@@ -78,7 +79,7 @@ const BalanceComponent = ({
   if (!split) {
     return (
       <>
-        <div {...props}>
+        <div {...props} className={`${styles.amount} ${className}`}>
           {tokens.join(SEPARATOR)} {assetName} {children}
         </div>
         {showUsdAmount && (
@@ -94,7 +95,7 @@ const BalanceComponent = ({
 
   return (
     <>
-      <div {...props}>
+      <div {...props} className={`${styles.amount} ${className}`}>
         {addSign ? <span>{addSign}</span> : null}
         <span className="font600">{tokens[0]}</span>
         {tokens[1] ? (

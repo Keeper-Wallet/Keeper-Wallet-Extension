@@ -291,7 +291,7 @@ export function Import({ setTab }: Props) {
             <p className="body1 disabled500 font300 center margin-main-big-top margin-main-large">
               <Trans
                 i18nKey="import.noAccounts"
-                values={{ currentNetwork }}
+                values={{ currentNetwork: t(`bottom.${currentNetwork}`) }}
                 t={t}
               />
             </p>

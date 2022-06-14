@@ -8,6 +8,7 @@ import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 
 export function RootAccounts() {
   const dispatch = useAppDispatch();
+  const currentLocale = useAccountsSelector(state => state.currentLocale);
   const backTabs = useAccountsSelector(state => state.backTabs);
   const currentTab = useAccountsSelector(state => {
     if (state.localState.loading) {
@@ -83,7 +84,7 @@ export function RootAccounts() {
   const pageProps = { ...pageConf.props, setTab: onSetTab, onBack };
 
   return (
-    <div className="height">
+    <div className={`height ${currentLocale}`}>
       <Menu
         hasLogo={pageConf.menu.hasLogo}
         hasSettings={pageConf.menu.hasSettings}

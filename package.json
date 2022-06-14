@@ -22,7 +22,7 @@
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha",
-    "dist": "NODE_ENV=production webpack"
+    "dist": "NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 webpack"
   },
   "mocha": {
     "extension": [

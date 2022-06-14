@@ -1,7 +1,13 @@
+.amount {
+  font-size: 14px;
+  line-height: 17px;
+}
+
 .usdAmount {
   color: var(--color-basic500);
   font-weight: 500;
   font-size: 12px;
+  line-height: 15px;
 }
 
 .usdAmountNote {

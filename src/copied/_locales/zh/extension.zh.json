@@ -116,7 +116,7 @@
     "selectWord": "请按照顺序点击各个单词",
     "wrongSeed": "顺序错误，请重试"
   },
-  "copyAddress": { "copyAddress": "复制地址" },
+  "copyAddress": "复制地址",
   "date": { "today": "今天" },
   "deleteAccount": {
     "attention": "请注意！",
@@ -129,11 +129,15 @@
     "chooseAccountsExportBtn": "导出账户{{count}}",
     "chooseAccountsExportBtn_plural": "批量导出账户{{count}}",
     "chooseAccountsTitle": "导出密钥存储文件",
+    "exportNotSupported": "无法导出该账户",
     "passwordError": "密码不正确",
     "passwordLabel": "密码",
     "passwordVerifyDesc": "请输入Keeper密码进行本人身份认证",
     "passwordVerifyImportantNote": "<attention>请注意:</attention>该密码也将用于加密导出的文件。如果您忘记该密码，您将无法恢复账户。",
-    "verifyBtn": "验证"
+    "verifyBtn": "验证",
+    "warningModalConfirmButton": "我已了解",
+    "warningModalDesc": "无法导出Ledger和邮箱账号",
+    "warningModalTitle": "注意"
   },
   "featureUpdateInfo": {
     "intro": "Keeper钱包很重视您的资产安全，我们郑重提醒您：忘记助记词种子意味着您将永久丢失访问账户的权利。",
@@ -278,7 +282,9 @@
     "couldNotGetUsersError": "无法从Ledger获得用户。请确保您的Ledger设备已解锁连接，且Waves应用已打开，然后点击<retryButton>T重试</retryButton>。",
     "selectAccountInstructions": "选择您的地址",
     "title": "导入Ledger",
-    "tryAgainButton": "重试"
+    "tryAgainButton": "重试",
+    "userIdInputMaxValueError": "账户ID不能大于 {{ maxUserId }}位",
+    "userIdInputNumbersError": "只允许输入数字"
   },
   "importSeed": {
     "accountExistsError": "账户'{{ name }}'已经存在",

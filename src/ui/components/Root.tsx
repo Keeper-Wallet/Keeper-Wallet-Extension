@@ -160,7 +160,7 @@ class RootComponent extends React.Component {
     const pageProps = { ...pageConf.props, setTab, onBack };
 
     return (
-      <div className="height">
+      <div className={`height ${this.props.currentLocale}`}>
         <Menu
           {...menuProps}
           setTab={setTab}
@@ -176,6 +176,7 @@ class RootComponent extends React.Component {
 
 const mapStateToProps = function (store: AppState) {
   return {
+    currentLocale: store.currentLocale,
     loading: store.localState.loading,
     locked: store.state && store.state.locked,
     initialized: store.state && store.state.initialized,
@@ -199,6 +200,7 @@ const actions = {
 export const Root = connect(mapStateToProps, actions)(RootComponent as any);
 
 interface IProps {
+  currentLocale: string;
   locked: boolean;
   initialized: boolean;
   accounts: Array<Account>;

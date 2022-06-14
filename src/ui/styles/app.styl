@@ -89,7 +89,6 @@
   height: 100%;
   display: flex;
   line-height: normal;
-  font-family: Roboto;
   font-weight: 300;
   font-size: 12px;
   overflow: hidden;
@@ -98,6 +97,15 @@
   min-height: 600px;
   align-items: center;
   justify-content: center;
+
+:global .th *
+  font-family: Noto-Sans-Th, Roboto
+
+:global .ja *
+  font-family: Noto-Sans-Ja
+
+:global .zh *
+  font-family: Noto-Sans-Zh
 
 ul
   list-style-type: none;
@@ -155,25 +163,24 @@ ul
 
 :global .headline2
   font-size: 18px;
-  font-family: Roboto-Medium, Arial, Tahoma;
+  font-weight: 500;
 
 :global .headline2Bold
   font-size: 18px;
-  font-family: Roboto-Bold, Arial, Tahoma;
+  font-weight: 700;
 
 :global .headline3
   font-size: 16px;
 
 :global .headline4
   font-size: 16px;
-  font-family: Roboto;
 
 :global .body1
   font-size: 14px;
 
 :global .body2
   font-size: 16px;
-  font-family: Roboto-Medium, Arial, Tahoma;
+  font-weight: 500;
 
 :global .body3
   font-size: 12px;

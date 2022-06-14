@@ -1,4 +1,5 @@
 .tooltip {
+  max-width: 240px;
   padding: 8px 14px;
   color: #fff;
   font-size: 14px;
