@@ -163,7 +163,9 @@ Possible errors:
 - `{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}` – incorrect notification title.
 - `{message: "Incorrect notification data", data: null, code: "19"}` – incorrect notification data.
 - `{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}` – try to send later, you can send 1 message in 30 sec.
-- `{message: "Api rejected by user", code: 12}` – the user denied the request or the website is not trusted.
+- `{message: 'User denied message', data: 'rejected', code: '10'}` — the user rejected the request.
+- `{message: 'User denied message', data: 'rejected_forever', code: '10'}` — the user rejected the request and blocked the website.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user or sending messages is not allowed.
 
 #### encryptMessage
 
@@ -316,7 +318,7 @@ Possible errors:
 
 - `{message: "Invalid data", data: "[{"field":"data","type":"string","message":"field is required"}]", code: 9}` – signature data contain errors.
 - `{message: "User denied message", code: 10}` – the user denied the request.
-- `{message: "Api rejected by user", code: 12}` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 
 <details><summary><a id="validity"></a><b>How to check signature validity</b></summary>
 
@@ -535,7 +537,7 @@ Response:
 Possible errors:
 
 - `{message: "User denied message", code: 10}` – the user denied the request.
-- `{message: "Api rejected by user", code: 12}` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{message: "Invalid data", data: "Reason", code: 9}` – invalid/incomplete request data.
 
 #### signAndPublishTransaction
@@ -620,8 +622,8 @@ KeeperWallet.signTransactionPackage(tx, name);
 
 Sign two transaction:
 
-- Transfer 1.567 WAVES to the alias `test`
-- Transfer 0.1 WAVES to the alias `merry`
+- Transfer 1.567 WAVES to the alias `test`.
+- Transfer 0.1 WAVES to the alias `merry`.
 
 Response: a unit of two lines – transactions that are signed and ready to broadcast.
 
@@ -643,6 +645,23 @@ In Keeper Wallet API transaction format is different from [Node REST API](https:
     }
 }
 ```
+
+Keeper Wallet supports the following types of transactions:
+
+- [Issue transaction (type 3)](#issue-transaction-type-3)
+- [Transfer transaction (type 4)](#transfer-transaction-type-4)
+- [Reissue transaction (type 5)](#reissue-transaction-type-5)
+- [Burn transaction (type 6)](#burn-transaction-type-6)
+- [Lease transaction (type 8)](#lease-transaction-type-8)
+- [Lease Cancel transaction (type 9)](#lease-cancel-transaction-type-9)
+- [Create Alias transaction (type 10)](#create-alias-transaction-type-10)
+- [Mass Transfer transaction (type 11)](#mass-transfer-transaction-type-11)
+- [Data transaction (type 12)](#data-transaction-type-12)
+- [Set Script transaction (type 13)](#set-script-transaction-type-13)
+- [Sponsor Fee transaction (type 14)](#sponsor-fee-transaction-type-14)
+- [Set Asset Script transaction (type 15)](#set-asset-script-transaction-type-15)
+- [Invoke Script transaction (type 16)](#invoke-script-transaction-type-16)
+- [Update Asset Info transaction (type 17)](#update-asset-info-transaction-type-17)
 
 Legend keys:
 
@@ -718,7 +737,7 @@ See [Transfer transaction details](https://docs.waves.tech/en/blockchain/transac
 Fields: 
 - `amount`: MoneyLike – amount.
 - `recipient`: string – recipient's address or alias.
-- `attachment`: [,140 bytes] string or byte array – additional info in text.
+- `attachment`: [,140 bytes]: string – additional info in text.
 - `*fee`: MoneyLike – fee.
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp`: number/string – time in ms.
@@ -930,7 +949,7 @@ Fields:
 - `transfers`  an array of objects:
    { `recipient`: string – address/alias, `amount`: number/string/MoneyLike }
 - `*fee`: MoneyLike – fee.
-- `attachment`: [,140 bytes in base58] string/byte array – additional info.
+- `attachment`: [,140 bytes]: string – additional info in text.
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp`: number/string – time in ms.
 
@@ -1071,9 +1090,9 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of success, a new script will be added to the account, allowing any transactions without a signature (be careful!).
+In case of success, a new script will be added to the account (be careful!).
 
-For cancelling a script set `script: null` or `script: ''`.`script` must be `null`.
+For cancelling a script set `script: null` or `script: ''`.
 
 Example 2:
 
@@ -1180,9 +1199,9 @@ See [Invoke Script transaction details](https://docs.waves.tech/en/blockchain/tr
 Fields:
 
 - `dApp` string – address of the dApp account.
-- `call`: object:
+- `call` — object:
    - `function`: string – function name.
-   - `args`: array:
+   - `args` — array of objects:
       - `type`: "binary"/string/"integer"/"boolean"/"list" – argument type.
       - `value`: string(base64)/string/number/boolean/array – argument value.
 - `*fee`: MoneyLike – fee.
@@ -1355,7 +1374,7 @@ Response: a line with data for sending to the matcher.
 Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signAndPublishOrder
@@ -1403,7 +1422,7 @@ Response: a data line for sending to the matcher.
 Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signAndPublishCancelOrder
@@ -1449,7 +1468,9 @@ Keeper Wallet's method for signing typified data, for signing requests on variou
 }
 ```
 
-Currently, the method supports only type 1001: signing data for a request to the matcher for your orders. Fields:
+Currently, the method supports only type 1001: signing data for a request to the matcher for your orders.
+
+Fields:
 
    - `timestamp`: number/string – time in ms.
    - `*senderPublicKey`: string – user's public key in base58.
@@ -1470,7 +1491,7 @@ REPLY: a line with a signature in base58.
 ERRORS:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signCustomData
@@ -1507,7 +1528,7 @@ Response:
 Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 ##### Version 2
@@ -1543,7 +1564,7 @@ Response:
 Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### verifyCustomData
@@ -1589,7 +1610,7 @@ Response: true/false.
 Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
-- `{ message: "Api rejected by user", code: 12 }` – the website is not trusted.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 
 #### resourceIsApproved
 
