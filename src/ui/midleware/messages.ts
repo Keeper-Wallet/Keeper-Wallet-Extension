@@ -22,7 +22,7 @@ export const updateActiveMessageReducer = store => next => action => {
     }
 
     const activeMessageUpdated = messages.find(
-      ({ id }) => id === activeMessage.id
+      ({ id }) => id === activeMessage?.id
     );
 
     if (activeMessageUpdated) {

@@ -324,13 +324,16 @@ export function SwapForm({
     watchExchangeRef.current = watchExchange;
   }, [watchExchange]);
 
-  const sponsoredAssetFee = convertToSponsoredAssetFee(
-    wavesFeeCoinsBN,
-    feeAsset,
-    accountBalance.assets[feeAssetId]
-  );
+  const sponsoredAssetFee = accountBalance.assets[feeAssetId]
+    ? convertToSponsoredAssetFee(
+        wavesFeeCoinsBN,
+        feeAsset,
+        accountBalance.assets[feeAssetId]
+      )
+    : null;
 
   const validationErrorMessage =
+    !sponsoredAssetFee ||
     fromAmountTokens.gt(fromAssetBalance.getTokens()) ||
     feeAssetBalance.getTokens().lt(sponsoredAssetFee.getTokens()) ||
     (fromAssetId === feeAssetId &&
