@@ -44,7 +44,7 @@ class AccountInfoComponent extends React.Component<Props, State> {
     const { selectedAccount, assets, balances } = props;
     const asset = assets['WAVES'];
 
-    if (!asset) {
+    if (!asset || !selectedAccount) {
       props.getAsset('WAVES');
       return { balance: null };
     }
@@ -89,6 +89,11 @@ class AccountInfoComponent extends React.Component<Props, State> {
 
   render() {
     const { t, selectedAccount } = this.props;
+
+    if (!selectedAccount) {
+      return null;
+    }
+
     const { onCopyHandler } = this;
     const { leaseBalance } = this.state;
     const showLease =
