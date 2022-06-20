@@ -65,17 +65,13 @@ describe('Password management', () => {
         this.wait
       );
       firstPasswordErrorDiv = this.driver.findElement(
-        By.xpath(
-          "//input[@id='first']//following-sibling::div[contains(@class, '-error-error')]"
-        )
+        By.css('[data-testid="firstError"]')
       );
       secondPasswordInput = this.driver.findElement(
         By.css('.app input#second[type=password]')
       );
       secondPasswordErrorDiv = this.driver.findElement(
-        By.xpath(
-          "//input[@id='second']//following-sibling::div[contains(@class, '-error-error')]"
-        )
+        By.css('[data-testid="secondError"]')
       );
     });
 
@@ -189,11 +185,7 @@ describe('Password management', () => {
       await oldPasswordInput.sendKeys('\t');
       expect(
         await this.driver
-          .findElement(
-            By.xpath(
-              "//input[@id='old']//following-sibling::div[contains(@class, '-error-error')]"
-            )
-          )
+          .findElement(By.css('[data-testid="oldError"]'))
           .getText()
       ).matches(/Password can't be so short/i);
       await clear(oldPasswordInput);
@@ -202,11 +194,7 @@ describe('Password management', () => {
       await newFirstPasswordInput.sendKeys('\t');
       expect(
         await this.driver
-          .findElement(
-            By.xpath(
-              "//input[@id='first']//following-sibling::div[contains(@class, '-error-error')]"
-            )
-          )
+          .findElement(By.css('[data-testid="firstError"]'))
           .getText()
       ).matches(/Password is too short/i);
       await clear(newFirstPasswordInput);
@@ -221,9 +209,7 @@ describe('Password management', () => {
       await newFirstPasswordInput.sendKeys('\t');
 
       const errDiv = this.driver.findElement(
-        By.xpath(
-          "//input[@id='second']//following-sibling::div[contains(@class, '-error-error')]"
-        )
+        By.css('[data-testid="secondError"]')
       );
       expect(await errDiv.getText()).matches(/New passwords do not match/i);
       await clear(newSecondPasswordInput);
@@ -239,9 +225,7 @@ describe('Password management', () => {
       await newFirstPasswordInput.sendKeys('\t');
 
       const errDiv = this.driver.findElement(
-        By.xpath(
-          "//input[@id='second']//following-sibling::div[contains(@class, '-error-error')]"
-        )
+        By.css('[data-testid="secondError"]')
       );
       expect(await errDiv.getText()).matches(/Old password is equal new/i);
       await clear(newFirstPasswordInput);
@@ -347,11 +331,7 @@ describe('Password management', () => {
 
       expect(
         await this.driver
-          .findElement(
-            By.xpath(
-              "//input[@type='password']//following-sibling::div[contains(@class, '-error-error')]"
-            )
-          )
+          .findElement(By.css('[data-testid="loginPasswordError"]'))
           .getText()
       ).matches(/Wrong password/i);
       await loginInput.clear();

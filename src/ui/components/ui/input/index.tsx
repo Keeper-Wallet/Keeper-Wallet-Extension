@@ -57,12 +57,12 @@ export const Input: React.FC<InputProps | TextareaProps> = ({
 
   return multiLine ? (
     <textarea
-      className={cn(wrapperClassName, className)}
+      className={cn(wrapperClassName, styles.wrapper, className)}
       {...(props as TextareaProps)}
       ref={getRef}
     />
   ) : (
-    <div className={cn(wrapperClassName, 'relative')}>
+    <div className={cn(wrapperClassName, styles.wrapper, 'relative')}>
       <input
         className={className}
         {...(props as InputProps)}

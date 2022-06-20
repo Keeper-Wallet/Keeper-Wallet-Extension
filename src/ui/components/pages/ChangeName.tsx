@@ -94,7 +94,11 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
               maxLength={26}
               autoFocus={true}
             />
-            <Error show={this.state.error} errors={this.state.errors} />
+            <Error
+              show={this.state.error}
+              errors={this.state.errors}
+              data-testid="newAccountNameError"
+            />
           </div>
 
           <Button

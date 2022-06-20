@@ -155,7 +155,9 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
             value={this.state.node}
             onChange={this.onInputHandler}
           />
-          <Error show={nodeError}>{t('networkSettings.nodeError')}</Error>
+          <Error show={nodeError} data-testid="nodeAddressError">
+            {t('networkSettings.nodeError')}
+          </Error>
         </div>
 
         <div className="margin-main-big relative">

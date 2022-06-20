@@ -147,9 +147,7 @@ describe('Network management', function () {
             By.css('input#node_address')
           );
           nodeAddressError = this.driver.findElement(
-            By.xpath(
-              "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
-            )
+            By.css('[data-testid="nodeAddressError"]')
           );
           matcherAddressInput = this.driver.findElement(
             By.css('input#matcher_address')
@@ -177,9 +175,7 @@ describe('Network management', function () {
             await this.driver.wait(
               until.elementTextMatches(
                 this.driver.findElement(
-                  By.xpath(
-                    "//input[@id='node_address']//following-sibling::div[contains(@class, '-error-error')]"
-                  )
+                  By.css('[data-testid="nodeAddressError"]')
                 ),
                 /Incorrect node address/i
               ),

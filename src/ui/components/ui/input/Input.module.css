@@ -2,6 +2,10 @@ textarea {
   resize: none;
 }
 
+.wrapper {
+  width: 100%;
+}
+
 .input {
   position: relative;
   width: 100%;

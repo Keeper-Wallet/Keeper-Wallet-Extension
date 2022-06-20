@@ -356,9 +356,7 @@ describe('Account management', function () {
           this.wait
         );
         newAccountNameErr = this.driver.findElement(
-          By.xpath(
-            "//input[@id='newAccountName']//following-sibling::div[contains(@class, '-error-error')]"
-          )
+          By.css('[data-testid="newAccountNameError"]')
         );
         saveBtn = this.driver.findElement(By.css('button#save'));
         currentAccountName = await this.driver

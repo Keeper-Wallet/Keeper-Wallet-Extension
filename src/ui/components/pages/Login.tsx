@@ -59,7 +59,10 @@ class LoginComponent extends React.Component<Props> {
               autoFocus={true}
               autoComplete="off"
             />
-            <Error show={this.state.passwordError}>
+            <Error
+              show={this.state.passwordError}
+              data-testid="loginPasswordError"
+            >
               {t('login.passwordError')}
             </Error>
           </div>

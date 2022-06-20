@@ -144,7 +144,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 autoComplete="off"
               />
 
-              <Error show={this.state.firstError}>
+              <Error show={this.state.firstError} data-testid="firstError">
                 {t('newAccount.smallPass')}
               </Error>
             </div>
@@ -162,7 +162,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
                 error={!!this.state.secondError}
                 autoComplete="off"
               />
-              <Error show={this.state.secondError}>
+              <Error show={this.state.secondError} data-testid="secondError">
                 {t('newAccount.notMatch')}
               </Error>
             </div>

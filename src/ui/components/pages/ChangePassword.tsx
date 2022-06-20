@@ -56,7 +56,10 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 onBlur={this.onOldBlur}
                 error={!!(this.state.oldError || this.state.passwordError)}
               />
-              <Error show={!!(this.state.oldError || this.state.passwordError)}>
+              <Error
+                show={!!(this.state.oldError || this.state.passwordError)}
+                data-testid="oldError"
+              >
                 {this.state.oldError ? t('changePassword.errorShortOld') : null}
                 {this.state.passwordError
                   ? t('changePassword.errorWrongOld')
@@ -77,7 +80,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 onChange={this.onChangeFist}
                 error={!!this.state.firstError || this.state.oldEqualNewError}
               />
-              <Error show={!!this.state.firstError}>
+              <Error show={!!this.state.firstError} data-testid="firstError">
                 {t('changePassword.errorShortNew')}
               </Error>
             </div>
@@ -97,6 +100,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
               />
               <Error
                 show={!!this.state.secondError || this.state.oldEqualNewError}
+                data-testid="secondError"
               >
                 {this.state.oldEqualNewError
                   ? t('changePassword.equalPassword')
