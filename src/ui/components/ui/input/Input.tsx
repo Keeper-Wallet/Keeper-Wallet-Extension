@@ -26,7 +26,7 @@ export type TextareaProps = Props &
     HTMLTextAreaElement
   >;
 
-export const Input: React.FC<InputProps | TextareaProps> = ({
+export function Input({
   wrapperClassName,
   className,
   error,
@@ -35,7 +35,7 @@ export const Input: React.FC<InputProps | TextareaProps> = ({
   type,
   forwardRef,
   ...props
-}) => {
+}: InputProps | TextareaProps) {
   className = cn(styles.input, className, {
     [styles.error]: error,
     [styles.checkbox]: type === 'checkbox',
@@ -79,4 +79,4 @@ export const Input: React.FC<InputProps | TextareaProps> = ({
       )}
     </div>
   );
-};
+}
