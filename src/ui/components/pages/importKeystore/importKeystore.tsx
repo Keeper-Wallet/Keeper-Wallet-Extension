@@ -210,7 +210,7 @@ export function ImportKeystore({ setTab }: Props) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        setTab(PAGES.SETTINGS);
+        setTab(PAGES.ROOT);
       }}
       onSubmit={selectedAccounts => {
         dispatch(
