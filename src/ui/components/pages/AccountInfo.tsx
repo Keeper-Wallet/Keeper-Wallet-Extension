@@ -64,8 +64,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
     );
 
     const { changeName: changeNameNotify } = props.notifications;
-    const balance = balancesMoney[selectedAccount.address];
-    const leaseBalance = leaseMoney[selectedAccount.address];
+    const balance = balancesMoney[selectedAccount?.address];
+    const leaseBalance = leaseMoney[selectedAccount?.address];
     return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
   }
 

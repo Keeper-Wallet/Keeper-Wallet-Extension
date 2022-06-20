@@ -554,7 +554,10 @@ export function SwapForm({
             onBalanceClick={() => {
               let max = fromAssetBalance;
 
-              if (feeAssetId === fromAssetId) {
+              if (
+                feeAssetId === fromAssetId &&
+                accountBalance.assets[feeAssetId]
+              ) {
                 const fee = convertToSponsoredAssetFee(
                   new BigNumber(wavesFeeCoins),
                   new Asset(assets[feeAssetId]),
