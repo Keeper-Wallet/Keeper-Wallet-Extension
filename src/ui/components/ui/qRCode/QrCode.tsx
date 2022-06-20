@@ -44,7 +44,7 @@ const QrCodeImage = ({
         <div dangerouslySetInnerHTML={svgSource} />
       ) : (
         <img
-          className={!src && 'skeleton-glow'}
+          className={!src ? 'skeleton-glow' : null}
           srcSet={src}
           width={options.width}
           height={options.height}
