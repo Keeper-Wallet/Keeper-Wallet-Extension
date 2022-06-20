@@ -43,7 +43,12 @@ const QrCodeImage = ({
       {isSvg ? (
         <div dangerouslySetInnerHTML={svgSource} />
       ) : (
-        <img srcSet={src} width={options.width} height={options.height} />
+        <img
+          className={!src && 'skeleton-glow'}
+          srcSet={src}
+          width={options.width}
+          height={options.height}
+        />
       )}
       {props.children}
     </div>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/selectedAccountQr.styl';
-import { Button, QRCode } from '../ui';
+import { Button, Loader, QRCode } from '../ui';
 import { Account } from 'accounts/types';
 import { AppState } from 'ui/store';
 
@@ -18,15 +18,16 @@ class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
 
   render() {
     const { t } = this.props;
-    const address = this.props.selectedAccount.address;
-    const name = this.props.selectedAccount.name;
+    const account = this.props.selectedAccount;
+    const address = account?.address;
+    const name = account?.name;
     const isEdge =
       window.navigator &&
       typeof window.navigator.msSaveOrOpenBlob === 'function';
     return (
       <div className={`center ${styles.content}`}>
-        <div className="input-title fullwidth tag1">{name}</div>
-        <div className="tag1 basic500 margin-main">{address}</div>
+        <div className="input-title fullwidth tag1">{name || <Loader />}</div>
+        <div className="tag1 basic500 margin-main">{address || <Loader />}</div>
 
         <QRCode
           ref={this.getQrRef}
