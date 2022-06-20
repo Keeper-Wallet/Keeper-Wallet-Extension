@@ -112,7 +112,7 @@ export function Swap({ setTab }: Props) {
 
   if (
     wavesFeeCoins == null ||
-    !accountBalance.assets ||
+    !accountBalance?.assets ||
     swappableAssets.some(asset => asset == null)
   ) {
     return <div className={styles.loader} />;
