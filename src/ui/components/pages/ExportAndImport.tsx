@@ -28,6 +28,7 @@ export function ExportAndImport() {
 
       <Button
         className={styles.exportBtn}
+        data-testid="exportAccounts"
         type="button"
         view="transparent"
         onClick={() => {
@@ -96,7 +97,7 @@ export function ExportAndImport() {
             }}
             onSubmit={async password => {
               await downloadKeystore(allNetworksAccounts, addresses, password);
-              dispatch(setTab(PAGES.ROOT));
+              dispatch(setTab(PAGES.SETTINGS));
             }}
           />
         )}

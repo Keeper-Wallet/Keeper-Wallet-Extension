@@ -30,7 +30,7 @@ export function ExportAddressBook() {
 
           if (!encrypted) {
             await downloadKeystore(undefined, addressesSelected);
-            dispatch(setTab(PAGES.ROOT));
+            dispatch(setTab(PAGES.SETTINGS));
             return;
           }
 
@@ -45,7 +45,7 @@ export function ExportAddressBook() {
           }}
           onSubmit={async password => {
             await downloadKeystore(undefined, addressesToExport, password);
-            dispatch(setTab(PAGES.ROOT));
+            dispatch(setTab(PAGES.SETTINGS));
           }}
         />
       )}
