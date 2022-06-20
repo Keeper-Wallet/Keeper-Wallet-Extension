@@ -82,11 +82,11 @@ export function ImportKeystoreChooseAccounts({
         );
       }}
     >
-      <h2 className={cn(styles.centered, 'margin1', 'title1')}>
+      <h2 className={cn(styles.title, 'title1')}>
         {t('importKeystore.chooseAccountsTitle')}
       </h2>
 
-      <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
+      <p className={cn(styles.description, 'body1', 'disabled500')}>
         {t('importKeystore.chooseAccountsDesc')}
       </p>
 
@@ -120,7 +120,6 @@ export function ImportKeystoreChooseAccounts({
                       checked={newAccounts.every(acc =>
                         selected.has(acc.address)
                       )}
-                      className={styles.checkbox}
                       type="checkbox"
                       onChange={event => {
                         toggleSelected(
@@ -149,7 +148,7 @@ export function ImportKeystoreChooseAccounts({
                       >
                         <div className={styles.accountInfo}>
                           <Avatar
-                            size={40}
+                            size={32}
                             address={account.address}
                             type={account.type}
                           />
@@ -182,7 +181,6 @@ export function ImportKeystoreChooseAccounts({
                         {!existingAccount && (
                           <input
                             checked={selected.has(account.address)}
-                            className={styles.checkbox}
                             name="selected"
                             type="checkbox"
                             value={account.address}
@@ -207,7 +205,6 @@ export function ImportKeystoreChooseAccounts({
         {selected.size === 0 ? (
           <Button
             data-testid="skipButton"
-            view="interface"
             onClick={() => {
               onSkip();
             }}

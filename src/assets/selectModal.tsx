@@ -5,7 +5,7 @@ import ColorHash from 'color-hash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
-import { Input } from 'ui/components/ui/input/index';
+import { Input } from 'ui/components/ui/Input';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';

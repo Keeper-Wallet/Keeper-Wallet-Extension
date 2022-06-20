@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { useTranslation, Trans } from 'react-i18next';
-import { Input } from 'ui/components/ui/input';
+import { Input } from 'ui/components/ui/Input';
 import { Error } from 'ui/components/ui/error';
 import { Button } from 'ui/components/ui/buttons/Button';
 
@@ -12,9 +12,9 @@ interface Props {
   onSubmit: (password: string) => Promise<void>;
 }
 
-export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
+export function ExportPasswordModal({ onClose, onSubmit }: Props) {
   const { t } = useTranslation();
-  const passwordInputRef = React.useRef<Input | null>(null);
+  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
 
@@ -50,11 +50,12 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
             </div>
 
             <Input
-              className="margin1"
+              wrapperClassName="margin1"
               data-testid="passwordInput"
               error={passwordError}
-              ref={passwordInputRef}
+              forwardRef={passwordInputRef}
               type="password"
+              view="password"
               value={password}
               onChange={event => {
                 setPassword(event.currentTarget.value);

@@ -26,4 +26,5 @@ export * from './PairingAccountQr';
 export * from './MessagesList';
 export * from './SettingsGeneral';
 export * from './Notifications';
+export * from './ExportAndImport';
 export { TTabTypes } from 'ui/components/pages/PermissionsSettings';

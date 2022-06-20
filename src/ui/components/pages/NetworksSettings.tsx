@@ -150,7 +150,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
             {t('networksSettings.node')}
           </label>
           <Input
-            disable={disableForm ? 'true' : ''}
+            disabled={!!disableForm}
             id="node_address"
             value={this.state.node}
             onChange={this.onInputHandler}
@@ -169,7 +169,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
             {t('networksSettings.matcher')}
           </label>
           <Input
-            disable={disableForm ? 'true' : ''}
+            disabled={!!disableForm}
             id="matcher_address"
             value={this.state.matcher}
             onChange={this.onInputMatcherHandler}

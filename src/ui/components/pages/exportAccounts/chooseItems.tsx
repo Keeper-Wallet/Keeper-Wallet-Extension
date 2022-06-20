@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Modal } from 'ui/components/ui/modal/Modal';
-import * as styles from './chooseAccounts.styl';
+import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
+import * as styles from './chooseItems.styl';
 
 const allNetworks: NetworkName[] = ['mainnet', 'testnet', 'stagenet', 'custom'];
 
@@ -16,30 +17,44 @@ const networkLabels: Record<NetworkName, string> = {
   stagenet: 'Stagenet',
 };
 
-interface Props {
-  accounts: Account[];
-  onSubmit: (selectedAccounts: Account[]) => void;
+interface Contact {
+  name: string;
+  address: string;
+  network: NetworkName;
 }
 
-function isAccountExportable(account: Account) {
-  return ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(account.type);
+type Type = 'accounts' | 'contacts' | 'all';
+
+interface Props<T> {
+  items: T[];
+  type: Type;
+  onSubmit: (items: T[], encrypted: boolean) => void;
 }
 
-export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
+function isExportable(item: Account | Contact) {
+  return (
+    !('type' in item) ||
+    ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type)
+  );
+}
+
+export function ExportKeystoreChooseItems<T extends Account | Contact>({
+  items,
+  type,
+  onSubmit,
+}: Props<T>) {
   const { t } = useTranslation();
 
+  const [encrypted, setEncrypted] = React.useState(true);
   const [selected, setSelected] = React.useState(
-    () =>
-      new Set(
-        accounts.filter(isAccountExportable).map(({ address }) => address)
-      )
+    () => new Set(items.filter(isExportable).map(({ address }) => address))
   );
 
-  function toggleSelected(accounts: Account[], isSelected: boolean) {
+  function toggleSelected(items: (Account | Contact)[], isSelected: boolean) {
     setSelected(prevSelected => {
       const newSelected = new Set(prevSelected);
 
-      accounts.forEach(acc => {
+      items.forEach(acc => {
         if (isSelected) {
           newSelected.add(acc.address);
         } else {
@@ -52,7 +67,7 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
   }
 
   const [showWarningModal, setShowWarningModal] = React.useState(
-    !accounts.every(isAccountExportable)
+    !items.every(isExportable)
   );
 
   return (
@@ -60,29 +75,36 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-
-        onSubmit(accounts.filter(({ address }) => selected.has(address)));
+        onSubmit(
+          items.filter(({ address }) => selected.has(address)),
+          encrypted
+        );
       }}
     >
       <h1 className={cn(styles.centered, 'margin1', 'title1')}>
-        {t('exportKeystore.chooseAccountsTitle')}
+        {t(
+          type === 'contacts'
+            ? 'exportKeystore.chooseContactsTitle'
+            : 'exportKeystore.chooseAccountsTitle'
+        )}
       </h1>
 
       <p className={cn(styles.centered, 'margin1', 'body1', 'disabled500')}>
-        {t('exportKeystore.chooseAccountsDesc')}
+        {t(
+          type === 'contacts'
+            ? 'exportKeystore.chooseContactsDesc'
+            : 'exportKeystore.chooseAccountsDesc'
+        )}
       </p>
 
       <div className={styles.accounts}>
         {allNetworks
-          .map(
-            network =>
-              [
-                network,
-                accounts.filter(acc => acc.network === network),
-              ] as const
-          )
-          .filter(([, accounts]) => accounts.length !== 0)
-          .map(([network, accounts]) => (
+          .map<[NetworkName, (Account | Contact)[]]>(network => [
+            network,
+            items.filter(acc => acc.network === network),
+          ])
+          .filter(([, items]) => items.length !== 0)
+          .map(([network, items]) => (
             <div key={network} className={styles.accountsGroup}>
               <header className={styles.accountsGroupHeader}>
                 <i className={cn(styles.accountsGroupIcon, 'networkIcon')} />
@@ -91,43 +113,45 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
                   {networkLabels[network]}
                 </h2>
 
-                {accounts.some(isAccountExportable) && (
+                {items.some(isExportable) && (
                   <input
-                    checked={accounts
-                      .filter(isAccountExportable)
+                    checked={items
+                      .filter(isExportable)
                       .every(acc => selected.has(acc.address))}
                     className={styles.checkbox}
                     type="checkbox"
                     onChange={event => {
-                      toggleSelected(accounts, event.currentTarget.checked);
+                      toggleSelected(items, event.currentTarget.checked);
                     }}
                   />
                 )}
               </header>
 
               <ul className={styles.accountList}>
-                {accounts.map(account => {
-                  const isExportable = isAccountExportable(account);
+                {items.map(item => {
+                  const showExportable = isExportable(item);
 
                   return (
                     <li
-                      key={account.address}
+                      key={item.address}
                       className={styles.accountListItem}
-                      title={account.address}
+                      title={item.address}
                     >
                       <div className={styles.accountInfo}>
                         <Avatar
-                          size={40}
-                          address={account.address}
-                          type={account.type}
+                          size={32}
+                          address={item.address}
+                          type={'type' in item ? item.type : undefined}
                         />
 
                         <div className={styles.accountInfoText}>
-                          <div className={styles.accountName}>
-                            {account.name}
-                          </div>
+                          <div className={styles.accountName}>{item.name}</div>
 
-                          {!isExportable && (
+                          {type === 'contacts' && (
+                            <Ellipsis text={item.address} size={8} />
+                          )}
+
+                          {!showExportable && (
                             <div className={styles.accountInfoNote}>
                               {t('exportKeystore.exportNotSupported')}
                             </div>
@@ -135,18 +159,15 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
                         </div>
                       </div>
 
-                      {isExportable && (
+                      {showExportable && (
                         <input
-                          checked={selected.has(account.address)}
+                          checked={selected.has(item.address)}
                           className={styles.checkbox}
                           name="selected"
                           type="checkbox"
-                          value={account.address}
+                          value={item.address}
                           onChange={event => {
-                            toggleSelected(
-                              [account],
-                              event.currentTarget.checked
-                            );
+                            toggleSelected([item], event.currentTarget.checked);
                           }}
                         />
                       )}
@@ -158,6 +179,18 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
           ))}
       </div>
 
+      {type === 'contacts' && (
+        <div className={styles.encrypt}>
+          <p className={styles.encryptTitle}>{t('exportKeystore.encrypt')}</p>
+          <input
+            type="checkbox"
+            checked={encrypted}
+            onChange={event => {
+              setEncrypted(event.currentTarget.checked);
+            }}
+          />
+        </div>
+      )}
       <div className={styles.buttons}>
         <Button
           data-testid="exportButton"
@@ -165,9 +198,11 @@ export function ExportKeystoreChooseAccounts({ accounts, onSubmit }: Props) {
           type="submit"
           view="submit"
         >
-          {t('exportKeystore.chooseAccountsExportBtn', {
-            count: selected.size,
-          })}
+          {type === 'contacts'
+            ? t('exportKeystore.chooseContactsExportBtn')
+            : t('exportKeystore.chooseAccountsExportBtn', {
+                count: selected.size,
+              })}
         </Button>
       </div>
 

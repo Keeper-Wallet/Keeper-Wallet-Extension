@@ -22,7 +22,6 @@ interface INewAccountComponentProps extends WithTranslation {
 }
 
 class NewAccountComponent extends React.PureComponent<INewAccountComponentProps> {
-  inputEl: Input;
   state = {
     firstValue: '',
     secondValue: '',
@@ -77,8 +76,6 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
 
     return { error: 'noMatch' };
   }
-
-  getRef = input => (this.inputEl = input);
 
   onFirstBlur = () => this._onFirstBlur();
 
@@ -137,9 +134,9 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               </div>
               <Input
                 id="first"
-                className="margin1"
+                wrapperClassName="margin1"
                 type="password"
-                ref={this.getRef}
+                view="password"
                 onBlur={this.onFirstBlur}
                 onChange={this.onChangeFist}
                 error={!!this.state.firstError}
@@ -157,8 +154,9 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               </div>
               <Input
                 id="second"
-                className="margin1"
+                wrapperClassName="margin1"
                 type="password"
+                view="password"
                 onBlur={this.onSecondBlur}
                 onChange={this.onChangeSecond}
                 error={!!this.state.secondError}
@@ -171,6 +169,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
           </div>
           <div className="flex margin-main margin-main-top">
             <Input
+              wrapperClassName={styles.checkbox}
               id="termsAccepted"
               type="checkbox"
               checked={this.state.termsAccepted}
@@ -189,6 +188,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
           </div>
           <div className="flex margin-main margin-main-top">
             <Input
+              wrapperClassName={styles.checkbox}
               id="conditionsAccepted"
               type="checkbox"
               checked={this.state.conditionsAccepted}

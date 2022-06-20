@@ -155,7 +155,7 @@ export function VerifyCodeComponent({
         {refs.map((ref, i) => (
           <Input
             key={i}
-            inputRef={ref}
+            forwardRef={ref}
             className={styles.codeInput}
             value={values[i]}
             autoFocus={i === 0}

@@ -94,7 +94,7 @@ export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
             maxLength={32}
             disabled={!!existedAccount}
             autoFocus
-            error={error}
+            error={!!error}
           />
           <Error data-testid="newAccountNameError" show={!!error}>
             {error}

@@ -14,7 +14,6 @@ interface Props extends WithTranslation {
 }
 
 class LoginComponent extends React.Component<Props> {
-  inputEl: Input;
   state = {
     passwordError: false,
     password: '',
@@ -37,13 +36,7 @@ class LoginComponent extends React.Component<Props> {
 
   onSubmit = e => this._onSubmit(e);
 
-  getRef = input => (this.inputEl = input);
-
   forgotHandler = () => this.props.setTab(PAGES.FORGOT);
-
-  componentDidMount() {
-    //this.inputEl.focus();
-  }
 
   render() {
     const { t } = this.props;
@@ -60,7 +53,7 @@ class LoginComponent extends React.Component<Props> {
             <Input
               id="loginPassword"
               type="password"
-              ref={this.getRef}
+              view="password"
               onChange={this.onChange}
               error={this.state.passwordError}
               autoFocus={true}

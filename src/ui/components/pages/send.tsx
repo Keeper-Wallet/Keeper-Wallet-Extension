@@ -4,7 +4,7 @@ import { validators } from '@waves/waves-transactions';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { AddressInput } from '../ui/Address/Input';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';

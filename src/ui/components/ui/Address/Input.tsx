@@ -165,7 +165,7 @@ export interface Props extends InputProps {
   onSuggest: (value?: string) => void;
 }
 
-export function AddressInput(props: Props) {
+export function AddressInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
   const accounts = useAppSelector(state => state.accounts);
@@ -248,7 +248,7 @@ export function AddressInput(props: Props) {
           setValue={setValue}
           setAddress={setAddress}
           setShowSuggest={setShowSuggest}
-          onSuggest={props.onSuggest}
+          onSuggest={onSuggest}
         />
         {address && (
           <AddressTooltip className={styles.tooltip} address={address} />
@@ -260,7 +260,7 @@ export function AddressInput(props: Props) {
             setValue={setValue}
             setAddress={setAddress}
             setShowSuggest={setShowSuggest}
-            onSuggest={props.onSuggest}
+            onSuggest={onSuggest}
           />
         )}
       </Backdrop>

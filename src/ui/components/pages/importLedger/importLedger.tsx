@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
-import { Input } from 'ui/components/ui/input';
+import { Input } from 'ui/components/ui/Input';
 import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';

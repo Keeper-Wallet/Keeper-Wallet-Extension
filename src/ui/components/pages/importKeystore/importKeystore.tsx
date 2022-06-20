@@ -1,38 +1,16 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
-import { NetworkName, KeystoreProfiles } from 'accounts/types';
+import { KeystoreProfiles } from 'accounts/types';
+import { getNetworkByNetworkCode } from 'ui/utils/waves';
+import { PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { setAddresses } from 'ui/actions';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-
-function readFileAsText(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Could not read the file'));
-    reader.onload = () =>
-      typeof reader.result === 'string'
-        ? resolve(reader.result)
-        : reject('Expected result to be a string');
-    reader.readAsText(file);
-  });
-}
-
-const networkCodeToNetworkMap: Record<
-  'S' | 'T' | 'W',
-  Exclude<NetworkName, 'custom'>
-> = {
-  S: 'stagenet',
-  T: 'testnet',
-  W: 'mainnet',
-};
-
-function findNetworkByNetworkCode(networkCode: string): NetworkName {
-  return networkCodeToNetworkMap[networkCode] || 'custom';
-}
+import { getFormattedAddresses } from './importAddressBook';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -112,7 +90,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 )
                 .forEach(acc => {
                   const networkCode = String.fromCharCode(acc.networkByte);
-                  const network = findNetworkByNetworkCode(networkCode);
+                  const network = getNetworkByNetworkCode(networkCode);
 
                   profiles[network].accounts.push({
                     address: acc.address,
@@ -153,19 +131,22 @@ export function ImportKeystore({ setTab }: Props) {
   const { t } = useTranslation();
   const [error, setError] = React.useState<string | null>(null);
   const [profiles, setProfiles] = React.useState<KeystoreProfiles | null>(null);
-  const [keystoreAddresses, setKeystoreAddresses] = React.useState({});
+  const [keystoreAddresses, setKeystoreAddresses] = React.useState(null);
   const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
 
   if (profiles == null) {
     return (
       <ImportKeystoreChooseFile
+        title={t('importKeystore.chooseFileTitle')}
+        label={t('importKeystore.keystoreLabel')}
+        placeholder={t('importKeystore.passwordPlaceholder')}
         error={error}
-        onSubmit={async (keystoreFile, password) => {
+        setError={setError}
+        onSubmit={async (result, password) => {
           setError(null);
 
           try {
-            const text = await readFileAsText(keystoreFile);
-            const keystore = parseKeystore(text);
+            const keystore = parseKeystore(result);
 
             if (!keystore) {
               setError(t('importKeystore.errorFormat'));
@@ -229,46 +210,18 @@ export function ImportKeystore({ setTab }: Props) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        setTab('');
+        setTab(PAGES.ROOT);
       }}
       onSubmit={selectedAccounts => {
         dispatch(
-          setAddresses(
-            Object.entries<string>(keystoreAddresses).reduce(
-              (acc, [keystoreAddress, keystoreName]) => {
-                let sameName = Object.values(addresses || {}).find(
-                  name => keystoreName === name
-                );
-
-                while (sameName) {
-                  const suffixMatch = keystoreName.match(suffixRe);
-
-                  if (suffixMatch) {
-                    keystoreName = keystoreName.replace(
-                      suffixRe,
-                      `(${Number(suffixMatch[1]) + 1})`
-                    );
-                  } else {
-                    keystoreName += ' (1)';
-                  }
-
-                  sameName = Object.values<string>(keystoreAddresses).find(
-                    name => keystoreName === name
-                  );
-                }
-
-                return { ...acc, [keystoreAddress]: keystoreName };
-              },
-              {}
-            )
-          )
+          setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
         );
         dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({
               type: 'seed',
               ...acc,
-              network: findNetworkByNetworkCode(acc.networkCode),
+              network: getNetworkByNetworkCode(acc.networkCode),
             })),
             walletType
           )

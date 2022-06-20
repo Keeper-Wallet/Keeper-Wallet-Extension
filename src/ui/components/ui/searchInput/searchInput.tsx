@@ -18,10 +18,11 @@ export function SearchInput({
   const inputRef = React.createRef<HTMLInputElement>();
 
   return (
-    <div className={`${styles.searchInputWrapper} ${className}`}>
+    <div className={cn(styles.searchWrapper, className)}>
       <Input
         {...restProps}
-        ref={inputRef}
+        forwardRef={inputRef}
+        wrapperClassName={styles.searchInputWrapper}
         className={cn(styles.searchInput, 'font300')}
         onInput={onInput}
         value={value}

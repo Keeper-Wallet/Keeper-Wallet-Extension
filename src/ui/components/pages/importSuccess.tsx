@@ -7,6 +7,36 @@ import { PAGES } from '../../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { setTab } from 'ui/actions';
 
+export function ImportSuccessAddressBook() {
+  const { t } = useTranslation();
+
+  return (
+    <div data-testid="importSuccessForm" className={styles.content}>
+      <div className={cn(styles.successIcon, 'tx-approve-icon')} />
+
+      <p className={cn(styles.title, 'headline2')}>
+        {t('import.readyToUseAddressBook')}
+      </p>
+
+      <p className={cn(styles.description, 'body1 basic500')}>
+        {t('import.readyAddressBookText')}
+      </p>
+
+      <div className={styles.footer}>
+        <Button
+          data-testid="finishBtn"
+          className={styles.button}
+          type="submit"
+          view="submit"
+          onClick={() => window.close()}
+        >
+          {t('import.finish')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function ImportSuccess() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -19,31 +49,33 @@ export function ImportSuccess() {
     <div data-testid="importSuccessForm" className={styles.content}>
       <div className={cn(styles.successIcon, 'tx-approve-icon')} />
 
-      <p className="headline2 center margin-main-top margin-min">
+      <p className={cn(styles.title, 'headline2')}>
         {t(
-          !isKeystoreImport ? 'import.readyToUse' : 'import.readyToUseKeystore',
+          isKeystoreImport ? 'import.readyToUse' : 'import.readyToUseKeystore',
           { name: account.name }
         )}
       </p>
 
-      <p className="body1 basic500 center">{t('import.readyHelpText')}</p>
+      <p className={cn(styles.description, 'body1 basic500')}>
+        {t('import.readyHelpText')}
+      </p>
+
+      {isKeystoreImport && (
+        <>
+          <div className={`${styles.address} tag1 basic500 input-title`}>
+            {t('newAccountName.accountAddress')}
+          </div>
+
+          <div className={`${styles.greyLine} grey-line`}>
+            {account.address}
+          </div>
+        </>
+      )}
 
       <div className={styles.footer}>
-        {!isKeystoreImport && (
-          <>
-            <div className={`tag1 basic500 input-title`}>
-              {t('newAccountName.accountAddress')}
-            </div>
-
-            <div className={`${styles.greyLine} grey-line`}>
-              {account.address}
-            </div>
-          </>
-        )}
-
         <Button
           data-testid="finishBtn"
-          className="margin2"
+          className={styles.button}
           type="submit"
           view="submit"
           onClick={() => window.close()}
@@ -53,7 +85,7 @@ export function ImportSuccess() {
 
         <Button
           data-testid="addAnotherAccountBtn"
-          className="margin1"
+          className={styles.button}
           type="button"
           onClick={() => dispatch(setTab(PAGES.ROOT))}
         >

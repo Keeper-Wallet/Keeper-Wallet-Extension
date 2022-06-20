@@ -163,12 +163,23 @@
     "delete": "Delete account",
     "warn": "Deleting an account will lead to its irretrievable loss!"
   },
+  "exportAndImport": {
+    "exportAccounts": "Export accounts",
+    "importAccounts": "Import accounts",
+    "exportAddressBook": "Export address book",
+    "importAddressBook": "Import address book",
+    "exportAll": "Export all"
+  },
   "exportKeystore": {
     "cancelBtn": "Cancel",
     "chooseAccountsDesc": "Select which accounts you want to export. They will be encrypted and exported into a Keystore file",
+    "chooseContactsDesc": "Select which address you want to export. They will be encrypted and exported into a Keystore file",
     "chooseAccountsExportBtn": "Export {{count}} account",
     "chooseAccountsExportBtn_plural": "Export {{count}} accounts",
+    "chooseContactsExportBtn": "Continue",
     "chooseAccountsTitle": "Export to Keystore file",
+    "chooseContactsTitle": "Export Contacts to file",
+    "encrypt": "Encrypt the file",
     "exportNotSupported": "This account cannot be exported",
     "warningModalTitle": "Attention",
     "warningModalDesc": "Ledger and email accounts cannot be exported",
@@ -177,7 +188,7 @@
     "passwordLabel": "Password",
     "passwordVerifyDesc": "Please enter your Keeper password to confirm that it's really you",
     "passwordVerifyImportantNote": "<attention>Attention:</attention> this password will also be used to encrypt the resulting file. If you forget it, you won't be able to restore your accounts.",
-    "verifyBtn": "Verify"
+    "verifyBtn": "Enter"
   },
   "featureUpdateInfo": {
     "intro": "Keeper Wallet cares about safety of your funds and would like to remind you that losing the seed phrase means losing access to the account permanently.",
@@ -269,6 +280,8 @@
     "readyToUse": "Your account '{{ name }}' is ready to use",
     "readyToUseKeystore": "Your accounts are ready to use",
     "readyHelpText": "You can now close this tab and continue using the extension or add more accounts.",
+    "readyToUseAddressBook": "Your Address Book is ready to use",
+    "readyAddressBookText": "You can now close this tab and continue using the extension.",
     "viaKeystore": "Keystore File",
     "viaLedger": "Ledger",
     "viaSeed": "Seed Phrase or Private Key",
@@ -306,13 +319,16 @@
     "alreadyExists": "Account already exists"
   },
   "importKeystore": {
+    "addressBookLabel": "Address Book file",
+    "addressBookPasswordPlaceholder": "Password used to create file",
     "browse": "Browse...",
-    "chooseAccountsTitle": "Choose accounts",
     "chooseAccountsDesc": "Select which accounts you want to import",
     "chooseAccountsExistingAccountNote": "Already exists in Keeper as {{existingName}}",
     "chooseAccountsImportBtn": "Import {{count}} account",
     "chooseAccountsImportBtn_plural": "Import {{count}} accounts",
     "chooseAccountsSkipBtn": "Skip",
+    "chooseAccountsTitle": "Choose accounts",
+    "chooseAddressBookFileTitle": "Import Address Book",
     "chooseFileSubmitBtn": "Continue",
     "chooseFileTitle": "Import Keystore File",
     "errorDecrypt": "Could not decrypt the Keystore file with the given password",
@@ -506,7 +522,7 @@
     "autoClickDisable": "Disabled",
     "autoClickEnable": "Enabled",
     "deleteAccounts": "Delete accounts",
-    "export": "Export accounts",
+    "exportAndImport": "Export and import",
     "langs": "Change language",
     "logOut": "Log out",
     "network": "Network",
