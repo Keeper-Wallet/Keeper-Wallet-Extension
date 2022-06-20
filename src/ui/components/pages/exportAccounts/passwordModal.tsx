@@ -3,7 +3,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { useTranslation, Trans } from 'react-i18next';
-import { Input } from 'ui/components/ui/Input';
+import { Input } from 'ui/components/ui/input';
 import { Error } from 'ui/components/ui/error';
 import { Button } from 'ui/components/ui/buttons/Button';
 

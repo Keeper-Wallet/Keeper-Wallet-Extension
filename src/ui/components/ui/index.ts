@@ -1,6 +1,6 @@
 export * from './buttons';
 export * from './select';
-export * from './Input';
+export * from './input';
 export * from './avatar';
 export * from './error';
 export * from './balance/Balance';
