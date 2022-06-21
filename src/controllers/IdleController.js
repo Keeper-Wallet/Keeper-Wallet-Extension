@@ -13,10 +13,10 @@ export class IdleController {
     };
     this.preferencesController = preferencesController;
     this.vaultController = vaultController;
-    this.lastUpdateIdle = Date.now();
     this.store = new ObservableStore(
-      localStore.getInitState({ lastUpdateIdle: this.lastUpdateIdle })
+      localStore.getInitState({ lastUpdateIdle: Date.now() })
     );
+    this.lastUpdateIdle = this.store.getState().lastUpdateIdle;
     localStore.subscribe(this.store);
     this.start();
 
