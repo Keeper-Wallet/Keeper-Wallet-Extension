@@ -3,7 +3,8 @@ textarea {
 }
 
 .wrapper {
-  flex-grow: 1;
+  position: relative;
+  width: 100%;
 }
 
 .input {
@@ -27,8 +28,8 @@ textarea {
   outline: none;
 }
 
-.input.error,
-.input.error:hover {
+.error .input,
+.error .input:hover {
   border: 1px solid var(--color-error400);
 }
 
@@ -48,7 +49,7 @@ textarea {
   border: 1px solid var(--color-basic100);
 }
 
-.input.password {
+.password .input {
   padding-right: 32px;
 }
 
@@ -88,6 +89,11 @@ textarea {
 
 :global .input-like.password-input {
   padding-left: 42px;
+}
+
+.checkbox {
+  width: 22px;
+  height: 22px;
 }
 
 input[type='checkbox'] {

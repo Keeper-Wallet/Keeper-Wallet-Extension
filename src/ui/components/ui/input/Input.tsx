@@ -36,12 +36,6 @@ export function Input({
   forwardRef,
   ...props
 }: InputProps | TextareaProps) {
-  className = cn(styles.input, className, {
-    [styles.error]: error,
-    [styles.checkbox]: type === 'checkbox',
-    [styles.password]: view === 'password',
-  });
-
   const [rootType, setRootType] = React.useState(type);
 
   const rootRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(
@@ -55,27 +49,37 @@ export function Input({
     [forwardRef]
   );
 
-  return multiLine ? (
-    <textarea
-      className={cn(wrapperClassName, styles.wrapper, className)}
-      {...(props as TextareaProps)}
-      ref={getRef}
-    />
-  ) : (
-    <div className={cn(wrapperClassName, styles.wrapper, 'relative')}>
-      <input
-        className={className}
-        {...(props as InputProps)}
-        type={rootType}
-        ref={getRef}
-      />
-      {view === 'password' && (
-        <i
-          className={styles.passwordIcon}
-          onClick={() => {
-            setRootType(rootType === 'password' ? 'text' : 'password');
-          }}
+  return (
+    <div
+      className={cn(styles.wrapper, wrapperClassName, {
+        [styles.error]: error,
+        [styles.checkbox]: type === 'checkbox',
+        [styles.password]: view === 'password',
+      })}
+    >
+      {multiLine ? (
+        <textarea
+          className={cn(styles.input, className)}
+          {...(props as TextareaProps)}
+          ref={getRef}
         />
+      ) : (
+        <>
+          <input
+            className={cn(styles.input, className)}
+            {...(props as InputProps)}
+            type={rootType}
+            ref={getRef}
+          />
+          {view === 'password' && (
+            <i
+              className={styles.passwordIcon}
+              onClick={() => {
+                setRootType(rootType === 'password' ? 'text' : 'password');
+              }}
+            />
+          )}
+        </>
       )}
     </div>
   );
