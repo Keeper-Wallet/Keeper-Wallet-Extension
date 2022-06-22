@@ -7,17 +7,17 @@ import { useAppSelector } from '../../../store';
 import { useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { getTxDetailLink } from '../../../urls';
+import { fromWavesToEthereumAddress } from '../../../utils/ethereum';
 
 function Address({ base58 }: { base58: string }) {
   return <Ellipsis text={base58} size={12} className="basic500" />;
 }
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx: any;
+  tx: TransactionFromNode;
   className?: string;
 }
 
@@ -33,7 +33,9 @@ export function HistoryItem({ tx, className }: Props) {
 
   let tooltip, label, info, messageType, addSign;
   const isTxFailed =
-    tx.applicationStatus && tx.applicationStatus !== 'succeeded';
+    'applicationStatus' in tx &&
+    tx.applicationStatus &&
+    tx.applicationStatus !== 'succeeded';
 
   const fromCoins = (amount, assetId) =>
     assets[assetId ?? 'WAVES'] &&
@@ -326,6 +328,35 @@ export function HistoryItem({ tx, className }: Props) {
       info = assets[tx.assetId]?.displayName;
       messageType = 'issue';
       break;
+    case TRANSACTION_TYPE.ETHEREUM: {
+      const payload = tx.payload;
+
+      switch (payload.type) {
+        case 'transfer':
+          tooltip = t('historyCard.transferReceive');
+          label = <Address base58={fromWavesToEthereumAddress(tx.sender)} />;
+          addSign = '+';
+          messageType = 'receive';
+          info = (
+            <Balance
+              split
+              showAsset
+              addSign={addSign}
+              balance={fromCoins(payload.amount, payload.asset)}
+            />
+          );
+          break;
+        case 'invocation':
+          tooltip = t('historyCard.scriptInvocation');
+          label = <Address base58={payload.dApp} />;
+          info = payload.call?.function || 'default';
+          messageType = 'script_invocation';
+          break;
+        default:
+          tooltip = label = null;
+      }
+      break;
+    }
     default:
       label = <Loader />;
       info = <Loader />;

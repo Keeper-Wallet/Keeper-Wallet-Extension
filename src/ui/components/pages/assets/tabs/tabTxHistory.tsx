@@ -5,7 +5,6 @@ import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
 import { CSSProperties } from 'react';
-import { WithId } from '@waves/waves-transactions/dist/transactions';
 import { useAppSelector } from 'ui/store';
 import {
   buildTxTypeOptions,
@@ -13,7 +12,7 @@ import {
   FULL_GROUP_HEIGHT,
   useTxHistoryFilter,
 } from './helpers';
-import { Transaction, TRANSACTION_TYPE } from '@waves/ts-types';
+import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from 'controllers/CurrentAccountController';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { VariableSizeList } from 'react-window';
@@ -27,7 +26,7 @@ const Row = ({
   style,
 }: {
   data: {
-    historyWithGroups: Array<Record<string, unknown>>;
+    historyWithGroups: Array<TransactionFromNode | { groupName: string }>;
     hasMore: boolean;
     hasFilters: boolean;
     historyLink: string;
@@ -72,11 +71,11 @@ const Row = ({
   );
 };
 
-const PLACEHOLDERS = [...Array(4).keys()].map<Transaction & WithId>(
+const PLACEHOLDERS = [...Array(4).keys()].map<TransactionFromNode>(
   key =>
     ({
       id: `${key}`,
-    } as Transaction & WithId)
+    } as TransactionFromNode)
 );
 
 export function TabTxHistory() {
@@ -200,7 +199,7 @@ export function TabTxHistory() {
               (tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && hasInvokePayments))
           );
         })
-        .reduce<Array<(Transaction & WithId) | { groupName: string }>>(
+        .reduce<Array<TransactionFromNode | { groupName: string }>>(
           (result, tx, index, prevItems) => {
             const d = new Date(tx.timestamp);
 

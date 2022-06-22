@@ -108,7 +108,7 @@ export const DEFAULT_FEE_CONFIG = {
       fee: 100000000,
     },
     16: {
-      fee: 500000,
+      price_per_kb: 100000,
     },
     17: {
       fee: 100000,
