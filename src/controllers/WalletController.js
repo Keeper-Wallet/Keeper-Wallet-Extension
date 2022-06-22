@@ -30,10 +30,11 @@ export class WalletController extends EventEmitter {
   }) {
     super();
 
-    const initState = localStore.getInitState();
-    this.store = new ObservableStore({
-      WalletController: initState.WalletController || { vault: undefined },
-    });
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        WalletController: { vault: undefined },
+      })
+    );
     localStore.subscribe(this.store);
 
     this.password = localStore.getInitSession().password;
