@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, Select, TabPanel } from 'ui/components/ui';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
@@ -334,9 +334,10 @@ export function TabTxHistory() {
           {term || type || onlyIn || onlyOut ? (
             <>
               <div className="margin-min">
-                {t('assets.notFoundHistory', {
-                  count: MAX_TX_HISTORY_ITEMS - 1,
-                })}
+                <Trans
+                  i18nKey="assets.notFoundHistory"
+                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                />
               </div>
               <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
