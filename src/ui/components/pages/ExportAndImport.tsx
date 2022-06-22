@@ -8,6 +8,7 @@ import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
 import { downloadKeystore } from '../../utils/keystore';
 import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
+import { isExportable } from '../pages/exportAccounts/chooseItems';
 
 export function ExportAndImport() {
   const { t } = useTranslation();
@@ -96,7 +97,11 @@ export function ExportAndImport() {
               setShowExportModal(false);
             }}
             onSubmit={async password => {
-              await downloadKeystore(allNetworksAccounts, addresses, password);
+              await downloadKeystore(
+                allNetworksAccounts.filter(isExportable),
+                addresses,
+                password
+              );
               dispatch(setTab(PAGES.SETTINGS));
             }}
           />

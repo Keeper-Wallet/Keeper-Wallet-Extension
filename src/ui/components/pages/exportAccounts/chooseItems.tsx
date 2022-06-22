@@ -31,7 +31,7 @@ interface Props<T> {
   onSubmit: (items: T[], encrypted: boolean) => void;
 }
 
-function isExportable(item: Account | Contact) {
+export function isExportable(item: Account | Contact) {
   return (
     !('type' in item) ||
     ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type)
