@@ -351,16 +351,12 @@ class BackgroundService extends EventEmitter {
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
       localStore: this.localStore,
-      getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
       getAccounts: this.walletController.getAccounts.bind(
         this.walletController
-      ),
-      getCode: this.networkController.getNetworkCode.bind(
-        this.networkController
       ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController

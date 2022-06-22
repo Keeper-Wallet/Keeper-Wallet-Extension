@@ -11,11 +11,9 @@ export class CurrentAccountController {
     localStore,
     assetInfoController,
     nftInfoController,
-    getNetworkConfig,
     getAccounts,
     getNetwork,
     getNode,
-    getCode,
     getSelectedAccount,
     isLocked,
   }) {
@@ -27,11 +25,9 @@ export class CurrentAccountController {
 
     this.assetInfoController = assetInfoController;
     this.nftInfoController = nftInfoController;
-    this.getNetworkConfig = getNetworkConfig;
     this.getAccounts = getAccounts;
     this.getNetwork = getNetwork;
     this.getNode = getNode;
-    this.getCode = getCode;
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
