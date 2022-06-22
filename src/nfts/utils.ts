@@ -22,10 +22,6 @@ export function createNft(
   info: NftInfo | { id: string; vendor: NftVendor.Unknown },
   currentAccount?: string
 ) {
-  if (!asset) {
-    return null;
-  }
-
   switch (nftType(asset)) {
     case NftVendor.Ducklings:
       return new Duckling(asset, info as DucklingInfo);
@@ -47,9 +43,6 @@ export function createNft(
 }
 
 export function nftType(nft: AssetDetail): NftVendor {
-  if (!nft) {
-    return null;
-  }
   if (nft.issuer === signArtDApp) {
     return NftVendor.SignArt;
   }

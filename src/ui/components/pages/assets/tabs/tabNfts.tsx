@@ -40,9 +40,10 @@ export function TabNfts() {
     [nfts, currentAddress]
   );
 
-  const sortedNfts = myNfts
-    ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
-    : PLACEHOLDERS;
+  const sortedNfts =
+    myNfts && nfts
+      ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
+      : PLACEHOLDERS;
 
   const [creatorNfts, creatorCounts] = sortedNfts.reduce<
     [Nft[], Record<string, number>]

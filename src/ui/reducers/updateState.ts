@@ -153,7 +153,7 @@ export const addresses = createSimpleReducer<Record<string, string>>(
 );
 
 export const nfts = createSimpleReducer<Record<string, NftInfo>>(
-  {},
+  null,
   ACTION.UPDATE_NFTS
 );
 

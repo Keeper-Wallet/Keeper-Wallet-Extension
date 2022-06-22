@@ -267,7 +267,7 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const nfts = getParam(state.nfts, {});
+    const nfts = getParam(state.nfts, null);
     if (nfts && !equals(nfts, currentState.nfts)) {
       store.dispatch({
         type: ACTION.UPDATE_NFTS,
