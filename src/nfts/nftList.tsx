@@ -21,11 +21,12 @@ const Row = ({
     mode: DisplayMode;
     len: number;
     onClick: (asset: Nft) => void;
+    renderMore: () => void;
   };
   index: number;
   style: CSSProperties;
 }) => {
-  const { rows, counts = {}, mode, len, onClick } = data;
+  const { rows, counts = {}, mode, len, onClick, renderMore } = data;
 
   const leftIndex = 2 * index;
   const leftNft = rows[leftIndex];
@@ -56,6 +57,8 @@ const Row = ({
           />
         )}
       </div>
+
+      {typeof renderMore === 'function' && index === len - 1 && renderMore()}
     </div>
   );
 };
@@ -65,11 +68,14 @@ export function NftList({
   nfts,
   counters = {},
   onClick,
+  renderMore,
 }: {
   mode: DisplayMode;
   nfts: AssetDetail[];
   counters?: Record<string, number>;
+  hasMore?: boolean;
   onClick: (asset: Nft) => void;
+  renderMore?: () => void;
 }) {
   return (
     <div className={styles.nftList}>
@@ -88,6 +94,7 @@ export function NftList({
                 mode,
                 len,
                 onClick,
+                renderMore,
               }}
               itemKey={(index, { rows }) => rows[index].id}
             >

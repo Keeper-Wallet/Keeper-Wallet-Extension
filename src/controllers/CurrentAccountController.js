@@ -3,7 +3,7 @@ import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
-const MAX_NFT_ITEMS = 1000;
+export const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {
