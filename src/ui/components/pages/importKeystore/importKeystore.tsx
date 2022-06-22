@@ -7,10 +7,8 @@ import { PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
-import { setAddresses } from 'ui/actions';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { getFormattedAddresses } from './importAddressBook';
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -32,12 +30,12 @@ type ExchangeKeystoreAccount = {
 
 interface EncryptedKeystore {
   type: WalletTypes;
-  decrypt: (password: string) => [KeystoreProfiles, Record<string, string>];
+  decrypt: (password: string) => KeystoreProfiles;
 }
 
 function parseKeystore(json: string): EncryptedKeystore | null {
   try {
-    const { profiles, addresses, data } = JSON.parse(json);
+    const { profiles, data } = JSON.parse(json);
 
     if (profiles) {
       if (typeof profiles === 'string') {
@@ -45,12 +43,9 @@ function parseKeystore(json: string): EncryptedKeystore | null {
           type: WalletTypes.Keystore,
           decrypt: password => {
             try {
-              return [
-                JSON.parse(seedUtils.decryptSeed(atob(profiles), password)),
-                addresses && typeof addresses === 'string'
-                  ? JSON.parse(seedUtils.decryptSeed(atob(addresses), password))
-                  : {},
-              ];
+              return JSON.parse(
+                seedUtils.decryptSeed(atob(profiles), password)
+              );
             } catch (err) {
               return null;
             }
@@ -101,7 +96,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                   });
                 });
 
-              return [profiles, {}];
+              return profiles;
             } catch (err) {
               return null;
             }
@@ -124,14 +119,12 @@ interface Props {
 
 export function ImportKeystore({ setTab }: Props) {
   const dispatch = useAppDispatch();
-  const addresses = useAppSelector(state => state.addresses);
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
   );
   const { t } = useTranslation();
   const [error, setError] = React.useState<string | null>(null);
   const [profiles, setProfiles] = React.useState<KeystoreProfiles | null>(null);
-  const [keystoreAddresses, setKeystoreAddresses] = React.useState(null);
   const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
 
   if (profiles == null) {
@@ -153,7 +146,7 @@ export function ImportKeystore({ setTab }: Props) {
               return;
             }
 
-            const [newProfiles, newAddresses] = keystore.decrypt(password);
+            const newProfiles = keystore.decrypt(password);
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
@@ -196,7 +189,6 @@ export function ImportKeystore({ setTab }: Props) {
             });
             setWalletType(keystore.type);
             setProfiles(newProfiles);
-            setKeystoreAddresses(newAddresses);
           } catch (err) {
             setError(t('importKeystore.errorUnexpected'));
           }
@@ -213,9 +205,6 @@ export function ImportKeystore({ setTab }: Props) {
         setTab(PAGES.ROOT);
       }}
       onSubmit={selectedAccounts => {
-        dispatch(
-          setAddresses(getFormattedAddresses(addresses, keystoreAddresses))
-        );
         dispatch(
           batchAddAccounts(
             selectedAccounts.map(acc => ({
