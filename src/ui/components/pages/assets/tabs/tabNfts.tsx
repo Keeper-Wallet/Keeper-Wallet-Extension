@@ -1,5 +1,5 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -82,7 +82,14 @@ export function TabNfts() {
           {term ? (
             <>
               <div className="margin-min">
-                {t('assets.notFoundNFTs', { count: MAX_NFT_ITEMS })}
+                {myNfts?.length > MAX_NFT_ITEMS - 1 ? (
+                  <Trans
+                    i18nKey="assets.notFoundMaxNFTs"
+                    values={{ count: MAX_NFT_ITEMS }}
+                  />
+                ) : (
+                  t('assets.notFoundNFTs')
+                )}
               </div>
               <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
@@ -105,13 +112,16 @@ export function TabNfts() {
             myNfts?.length > MAX_NFT_ITEMS - 1 && (
               <div className={cn(styles.nftListMore, 'basic500')}>
                 <div className="margin-min">
-                  {term
-                    ? t('assets.maxFiltersNFTs', {
-                        count: MAX_NFT_ITEMS,
-                      })
-                    : t('assets.maxNFTs', {
-                        count: MAX_NFT_ITEMS,
-                      })}
+                  {term ? (
+                    <Trans
+                      i18nKey="assets.maxFiltersNFTs"
+                      values={{ count: MAX_NFT_ITEMS }}
+                    />
+                  ) : (
+                    t('assets.maxNFTs', {
+                      count: MAX_NFT_ITEMS,
+                    })
+                  )}
                 </div>
                 <a
                   className="blue link"
