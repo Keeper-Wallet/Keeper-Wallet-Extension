@@ -36,6 +36,12 @@ export class SignArt extends BaseNft<SignArtInfo> {
   }
 
   get foreground(): string {
-    return this.info.cid ? `https://ipfs.io/ipfs/${this.info.cid}` : null;
+    if (!this.info.cid) {
+      return null;
+    }
+
+    const [domain, filename] = this.info.cid.split('/');
+
+    return `https://${domain}.ipfs.infura-ipfs.io/${filename}`;
   }
 }
