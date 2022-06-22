@@ -335,6 +335,7 @@ export function TabTxHistory() {
             <>
               <div className="margin-min">
                 <Trans
+                  t={t}
                   i18nKey="assets.notFoundHistory"
                   values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
                 />

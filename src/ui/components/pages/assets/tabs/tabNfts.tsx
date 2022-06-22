@@ -114,6 +114,7 @@ export function TabNfts() {
                 <div className="margin-min">
                   {term ? (
                     <Trans
+                      t={t}
                       i18nKey="assets.maxFiltersNFTs"
                       values={{ count: MAX_NFT_ITEMS }}
                     />
