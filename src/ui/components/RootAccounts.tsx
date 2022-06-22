@@ -19,7 +19,7 @@ export function RootAccounts() {
 
     if (typeof state.tab !== 'string') {
       const page = window.location.hash.split('#')[1];
-      tab = Object.values(PAGES).includes(page) ? page : '';
+      tab = Object.values(PAGES).includes(page) ? page : PAGES.ROOT;
     }
 
     if (!tab && state.state?.locked == null) {

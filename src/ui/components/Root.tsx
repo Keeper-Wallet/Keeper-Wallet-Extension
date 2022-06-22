@@ -28,7 +28,7 @@ class RootComponent extends React.Component {
       return { tab: PAGES.INTRO };
     }
 
-    let tab = nextProps.tab;
+    let tab = nextProps.tab || PAGES.ROOT;
 
     /**
      * Intro page on load

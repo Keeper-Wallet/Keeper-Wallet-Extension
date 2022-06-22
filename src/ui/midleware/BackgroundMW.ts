@@ -11,7 +11,6 @@ import {
 } from '../actions';
 import background from '../services/Background';
 import i18n from '../i18n';
-import { PAGES } from '../pageConfig';
 
 export const pairingData = store => next => action => {
   if (action.type !== ACTION.PAIRING.GET_SEED) {
@@ -116,7 +115,7 @@ export const deleteActiveAccount = store => next => action => {
       store.dispatch(notificationDelete(true));
       setTimeout(() => {
         store.dispatch(notificationDelete(false));
-        store.dispatch(setTab(PAGES.ROOT));
+        store.dispatch(setTab(null));
       }, 1000);
     });
     return null;
@@ -136,7 +135,7 @@ export const deleteAccountMw = store => next => action => {
   if (action.type === ACTION.DELETE_ACCOUNT) {
     background.deleteVault().then(() => {
       store.dispatch(updateActiveState());
-      store.dispatch(setTab(PAGES.ROOT));
+      store.dispatch(setTab(null));
     });
     return null;
   }
@@ -171,12 +170,12 @@ export const changeNetwork = store => next => action => {
   if (action.type === ACTION.CHANGE_NETWORK) {
     background
       .setNetwork(action.payload)
-      .then(() => store.dispatch(setTab(PAGES.ROOT)));
+      .then(() => store.dispatch(setTab(null)));
     return null;
   }
   if (action.type === ACTION.UPDATE_CURRENT_NETWORK) {
     if (store.getState().localState.tabMode === 'tab') {
-      store.dispatch(setTab(PAGES.ROOT));
+      store.dispatch(setTab(null));
     }
   }
 
