@@ -93,8 +93,9 @@ export function EditModal({
                 }
 
                 if (
-                  validators.isValidAddress(name) ||
-                  validators.isValidAlias(name)
+                  /^\s/g.test(nameValue) ||
+                  validators.isValidAddress(nameValue) ||
+                  validators.isValidAlias(nameValue)
                 ) {
                   setNameError(t('address.nameInvalidError'));
                   return;

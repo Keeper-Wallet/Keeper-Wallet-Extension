@@ -83,6 +83,7 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                 }
 
                 if (
+                  /^\s/g.test(name) ||
                   validators.isValidAddress(name) ||
                   validators.isValidAlias(name)
                 ) {
