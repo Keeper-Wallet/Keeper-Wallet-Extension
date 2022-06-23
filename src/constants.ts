@@ -74,9 +74,6 @@ export const DEFAULT_CONFIG = {
   },
 };
 
-export const DEFAULT_FEE_CONFIG_URL =
-  'https://raw.githubusercontent.com/wavesplatform/waves-client-config/master/fee.json';
-
 export const DEFAULT_FEE_CONFIG = {
   smart_asset_extra_fee: 400000,
   smart_account_extra_fee: 400000,
@@ -102,16 +99,13 @@ export const DEFAULT_FEE_CONFIG = {
       price_per_kb: 100000,
     },
     13: {
-      fee: 1000000,
+      price_per_kb: 100000,
     },
     15: {
       fee: 100000000,
     },
     16: {
-      price_per_kb: 100000,
-    },
-    17: {
-      fee: 100000,
+      fee: 500000,
     },
   },
 };
