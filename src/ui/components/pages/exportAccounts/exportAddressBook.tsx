@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useAppSelector, useAppDispatch } from 'ui/store';
-import { setTab } from '../../../actions';
+import { addBackTab, setTab } from '../../../actions';
 import { PAGES } from '../../../pageConfig';
 import { getNetworkByAddress } from 'ui/utils/waves';
 import { downloadKeystore } from '../../../utils/keystore';
@@ -24,7 +24,7 @@ export function ExportAddressBook() {
         type="contacts"
         onSubmit={async (contacts, encrypted) => {
           const addressesSelected = contacts.reduce(
-            (acc, contact) => ({ ...acc, [contact.name]: contact.address }),
+            (acc, contact) => ({ ...acc, [contact.address]: contact.name }),
             {}
           );
 
@@ -45,6 +45,7 @@ export function ExportAddressBook() {
           }}
           onSubmit={async password => {
             await downloadKeystore(undefined, addressesToExport, password);
+            dispatch(addBackTab(PAGES.ROOT));
             dispatch(setTab(PAGES.SETTINGS));
           }}
         />

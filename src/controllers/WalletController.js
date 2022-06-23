@@ -124,6 +124,10 @@ export class WalletController extends EventEmitter {
     this._saveWallets();
   }
 
+  checkPassword(password) {
+    return password === this.password;
+  }
+
   getAccountSeed(address, network, password) {
     if (!password) throw new Error('Password is required');
     this._restoreWallets(password);

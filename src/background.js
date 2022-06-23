@@ -493,6 +493,8 @@ class BackgroundService extends EventEmitter {
       },
       newPassword: async (oldPassword, newPassword) =>
         this.walletController.newPassword(oldPassword, newPassword),
+      checkPassword: async password =>
+        this.walletController.checkPassword(password),
       getAccountSeed: async (address, network, password) =>
         this.walletController.getAccountSeed(address, network, password),
       getAccountEncodedSeed: async (address, network, password) =>

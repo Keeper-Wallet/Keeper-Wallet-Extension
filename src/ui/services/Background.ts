@@ -245,6 +245,16 @@ class Background {
     }
   }
 
+  async checkPassword(password: string): Promise<string> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.checkPassword(password);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async getAccountSeed(
     address: string,
     network: string,

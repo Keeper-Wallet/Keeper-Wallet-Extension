@@ -72,13 +72,20 @@ const encryptProfiles = async (
   return btoa(seedUtils.encryptSeed(JSON.stringify(profiles), password));
 };
 
-const encryptAddresses = (
+const encryptAddresses = async (
   addresses: Record<string, string>,
   password?: string
-) =>
-  password
-    ? btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password))
-    : btoa(JSON.stringify(addresses));
+) => {
+  if (!password) {
+    return btoa(JSON.stringify(addresses));
+  }
+
+  if (await background.checkPassword(password)) {
+    return btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password));
+  } else {
+    throw new Error('Invalid password');
+  }
+};
 
 function download(json: string, filename: string) {
   const anchorEl = document.createElement('a');
@@ -106,16 +113,17 @@ export async function downloadKeystore(
   )}`;
 
   if (accounts) {
-    const profiles = await encryptProfiles(accounts, password);
     download(
-      JSON.stringify({ profiles }),
+      JSON.stringify({ profiles: await encryptProfiles(accounts, password) }),
       `keystore-accounts-keeper-${nowStr}.json`
     );
   }
 
   if (addresses) {
     download(
-      JSON.stringify({ addresses: encryptAddresses(addresses, password) }),
+      JSON.stringify({
+        addresses: await encryptAddresses(addresses, password),
+      }),
       `keystore-address-book-keeper-${nowStr}.json`
     );
   }
