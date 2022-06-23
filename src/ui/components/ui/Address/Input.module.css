@@ -1,104 +1,81 @@
-.suggest {
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.ethereum .wrapper::before,
+.waves .wrapper::before {
   position: absolute;
-  top: 41px;
-  right: 0;
-  left: 0;
+  top: 50%;
+  left: 15px;
   z-index: 1;
-  max-height: 300px;
-  overflow-y: scroll;
-  background: var(--color-white);
-  border-radius: 4px;
-  box-shadow: 0px 4px 6px rgb(155, 166, 178, 0.4);
-}
-
-.title {
-  padding: 8px 14px 0;
-  color: #c5d0de;
-  font-weight: 500;
-  font-size: 11px;
-  line-height: 13px;
-  text-transform: uppercase;
-}
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  margin: 4px 0;
-  padding: 10px 14px;
-  cursor: pointer;
-}
-
-.item:hover {
-  background-color: var(--color-basic50);
-}
-
-.name {
-  margin-right: 8px;
-  font-size: 14px;
-  line-height: 17px;
-  word-break: break-all;
-}
-
-.tooltip {
-  position: absolute;
-  top: 12px;
-  right: 44px;
-  cursor: default;
-}
-
-.buttonIcon {
-  width: 18px;
-  height: 18px;
-  margin-left: 14px;
-  background-color: var(--color-white);
-  background-image: url(../../../assets/img/search-user.svg);
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
   background-size: cover;
-  cursor: pointer;
+  transform: translateY(-50%);
+  content: '';
 }
 
-.modal {
+.ethereum .wrapper::before {
+  width: 14px;
+  height: 14px;
+  background-image: url(../../../assets/img/ethereum.svg);
+}
+
+.waves .wrapper::before {
+  width: 12px;
+  height: 12px;
+  background-image: url(../../../assets/img/waves.svg);
+}
+
+.ethereum .input,
+.waves .input {
+  padding-left: 32px;
+}
+
+.mirrorAddress {
+  position: absolute;
+  bottom: -21px;
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.modalContent {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 284px;
-  padding: 24px 0 0;
-  background: var(--color-white);
-  border-radius: 2px;
-}
-
-.modalTitle {
-  margin-bottom: 14px;
-  text-align: center;
-}
-
-.modalSearchInput {
-  margin: 0 24px 8px;
-}
-
-.modalSuggest {
-  position: static;
-}
-
-.highlight {
-  position: absolute;
-  left: 15px;
-  color: #ffaf00;
-  font-weight: 500;
-  font-size: 14px;
-  pointer-events: none;
-}
-
-.warningAlias {
-  margin-top: 4px;
-  padding: 12px 14px;
-  color: #9ba6b2;
+  padding: 2px;
+  color: #c5d0de;
   font-size: 11px;
-  border: 1px dashed #ffaf00;
+  line-height: 13px;
+  background-color: var(--color-basic50);
   border-radius: 2px;
+}
+
+.mirrorAddress::before {
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  content: '';
+}
+
+.ethereum .mirrorAddress::before {
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  background-image: url(../../../assets/img/waves.svg);
+}
+
+.waves .mirrorAddress::before {
+  width: 10px;
+  height: 10px;
+  margin-right: 2px;
+  background-image: url(../../../assets/img/ethereum.svg);
+}
+
+.error {
+  position: absolute;
+  bottom: -16px;
+  margin: 0;
+}
+
+.ethereum .error,
+.waves .error {
+  bottom: -36px
 }

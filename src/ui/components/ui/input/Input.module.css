@@ -16,7 +16,7 @@ textarea {
   border: solid 1px var(--color-basic100);
   border-radius: 4px;
   outline: 0 none;
-  transition: 0.3s;
+  transition: border 0.3s, outline 0.3s, color 0.3s, background-color 0.3s;
 }
 
 .input:hover {

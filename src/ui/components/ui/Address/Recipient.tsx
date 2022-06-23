@@ -1,6 +1,12 @@
 import * as styles from './Recipient.module.css';
 import * as React from 'react';
+import cn from 'classnames';
 import { validators } from '@waves/waves-transactions';
+import {
+  isValidEthereumAddress,
+  fromEthereumToWavesAddress,
+  fromWavesToEthereumAddress,
+} from 'ui/utils/ethereum';
 import { processAliasOrAddress } from 'transactions/utils';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
@@ -35,6 +41,17 @@ export function AddressRecipient({
 
   const [showAddModal, setShowAddModal] = React.useState(false);
 
+  const [type, mirrorAddress] = React.useMemo(() => {
+    switch (true) {
+      case isValidEthereumAddress(address):
+        return ['ethereum', fromEthereumToWavesAddress(address, chainId)];
+      case validators.isValidAddress(address):
+        return ['waves', fromWavesToEthereumAddress(address)];
+      default:
+        return [];
+    }
+  }, [address, chainId]);
+
   if (validators.isValidAlias(address)) {
     return (
       <div className={className}>
@@ -55,13 +72,32 @@ export function AddressRecipient({
   return (
     <>
       {name ? (
-        <div className={`${styles.content} ${className}`} data-testid={testid}>
+        <div className={cn(styles.content, className)} data-testid={testid}>
           <p className={styles.name}>{name}</p>
           <AddressTooltip address={address} />
         </div>
       ) : (
-        <div className={`${styles.content} ${className}`} data-testid={testid}>
-          <p className={styles.recipient}>{address}</p>
+        <div className={cn(styles.content, className)} data-testid={testid}>
+          <Tooltip
+            className={cn(styles.mirrorAddress, {
+              [styles.ethereum]: type === 'ethereum',
+              [styles.waves]: type === 'waves',
+            })}
+            content={mirrorAddress}
+            placement="auto-end"
+          >
+            {props => (
+              <p
+                className={cn(styles.recipient, {
+                  [styles.ethereum]: type === 'ethereum',
+                  [styles.waves]: type === 'waves',
+                })}
+                {...props}
+              >
+                {address}
+              </p>
+            )}
+          </Tooltip>
           <Tooltip content={t('address.addTooltip')} placement="auto-end">
             {props => (
               <button

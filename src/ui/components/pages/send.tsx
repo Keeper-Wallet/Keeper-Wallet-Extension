@@ -1,11 +1,16 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
+import {
+  isValidEthereumAddress,
+  isEthereumAddress,
+  fromEthereumToWavesAddress,
+} from 'ui/utils/ethereum';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
-import { AddressInput } from '../ui/Address/Input';
+import { AddressSuggestInput } from '../ui/Address/SuggestInput';
 import { Button } from '../ui/buttons/Button';
 import * as styles from './send.module.css';
 import { getBalances, setUiState } from 'ui/actions';
@@ -51,7 +56,8 @@ export function Send() {
     ? t('send.recipientRequiredError')
     : !(
         validators.isValidAddress(recipientValue, chainId) ||
-        validators.isValidAlias(recipientValue)
+        validators.isValidAlias(recipientValue) ||
+        isValidEthereumAddress(recipientValue)
       )
     ? t('send.recipientInvalidError')
     : null;
@@ -73,6 +79,10 @@ export function Send() {
   const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const recipientAddress = isEthereumAddress(recipientValue)
+    ? fromEthereumToWavesAddress(recipientValue, chainId)
+    : recipientValue;
 
   return (
     <form
@@ -96,7 +106,7 @@ export function Send() {
                 assetId: currentAsset.id,
                 tokens: amountValue,
               },
-              recipient: recipientValue,
+              recipient: recipientAddress,
               attachment: attachmentValue,
             },
           })
@@ -120,7 +130,7 @@ export function Send() {
           </div>
 
           <div className="margin-main-big">
-            <AddressInput
+            <AddressSuggestInput
               data-testid="recipientInput"
               error={showRecipientError}
               onChange={event => {

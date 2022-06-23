@@ -53,6 +53,7 @@
     "debounce": "^1.2.1",
     "debounce-stream": "^2.0.0",
     "dnode": "^1.2.2",
+    "ethereumjs-util": "^7.1.5",
     "events": "^3.3.0",
     "highlight.js": "^11.3.1",
     "i18next": "^20.6.1",

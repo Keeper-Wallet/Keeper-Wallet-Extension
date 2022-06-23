@@ -4,6 +4,8 @@ import { validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { setAddress, removeAddress } from 'ui/actions';
+import { isValidEthereumAddress } from 'ui/utils/ethereum';
+import { AddressInput } from './Input';
 import { Modal, Input, Error, Button } from '..';
 
 interface Props {
@@ -95,7 +97,8 @@ export function EditModal({
                 if (
                   /^\s/g.test(nameValue) ||
                   validators.isValidAddress(nameValue) ||
-                  validators.isValidAlias(nameValue)
+                  validators.isValidAlias(nameValue) ||
+                  isValidEthereumAddress(nameValue)
                 ) {
                   setNameError(t('address.nameInvalidError'));
                   return;
@@ -106,7 +109,10 @@ export function EditModal({
                   return;
                 }
 
-                if (!validators.isValidAddress(addressValue)) {
+                if (
+                  !validators.isValidAddress(addressValue) &&
+                  !isValidEthereumAddress(addressValue)
+                ) {
                   setAddressError(t('address.addressInvalidError'));
                   return;
                 }
@@ -123,33 +129,33 @@ export function EditModal({
               <p className={`basic500 ${styles.subtitle}`}>
                 {t('address.name')}
               </p>
-              <Input
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setNameValue(e.target.value);
-                  setNameError('');
-                }}
-                value={nameValue}
-                maxLength={35}
-                autoFocus
-                error={!!nameError}
-              />
-              <Error className={styles.error} show={!!nameError}>
-                {nameError}
-              </Error>
+              <div className={styles.name}>
+                <Input
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setNameValue(e.target.value);
+                    setNameError('');
+                  }}
+                  value={nameValue}
+                  maxLength={35}
+                  autoFocus
+                  error={!!nameError}
+                />
+                <Error className={styles.error} show={!!nameError}>
+                  {nameError}
+                </Error>
+              </div>
               <p className={`basic500 ${styles.subtitle}`}>
                 {t('address.subtitle')}
               </p>
-              <Input
+              <AddressInput
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setAddressValue(e.target.value);
                   setAddressError('');
                 }}
                 value={addressValue}
-                error={!!addressError}
+                addressError={addressError}
+                showMirrorAddress
               />
-              <Error className={styles.error} show={!!addressError}>
-                {addressError}
-              </Error>
               <Button
                 type="submit"
                 view="submit"

@@ -29,12 +29,19 @@
   font-size: 11px;
 }
 
+.name {
+  position: relative;
+  margin-bottom: 24px;
+}
+
 .error {
-  margin-bottom: 20px;
+  position: absolute;
+  bottom: -16px;
+  margin: 0;
 }
 
 .button {
   width: auto;
-  margin: 36px auto 0;
+  margin: 60px auto 0;
   padding: 0 36px;
 }

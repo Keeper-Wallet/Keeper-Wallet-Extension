@@ -10,9 +10,44 @@ mark {
 }
 
 .recipient {
+  display: flex;
+  align-items: center;
   margin-right: 8px;
   font-size: 12px;
   line-height: 14px;
+}
+
+.ethereum.mirrorAddress,
+.waves.mirrorAddress {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.recipient::before,
+.mirrorAddress::before {
+  display: block;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  content: '';
+}
+
+.ethereum.recipient::before,
+.waves.mirrorAddress::before {
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+  background-image: url(../../../assets/img/ethereum.svg);
+}
+
+.waves.recipient::before,
+.ehereum.mirrorAddress::before {
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  background-image: url(../../../assets/img/waves.svg);
 }
 
 .addButtonIcon {
