@@ -1,4 +1,4 @@
-import * as styles from './styles/newaccount.styl';
+import * as styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
 import { createNew, setTab } from '../../actions';
 import * as React from 'react';
@@ -125,9 +125,11 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
           className={styles.content}
           onSubmit={this.onSubmit}
         >
-          <h2 className={`title1 margin3 left`}>{t('newAccount.protect')}</h2>
+          <h2 className={`${styles.title} title1`}>
+            {t('newAccount.protect')}
+          </h2>
 
-          <div>
+          <div className={styles.inner}>
             <div className="margin1 relative">
               <div className={`basic500 tag1 left input-title`}>
                 {t('newAccount.createPassword')}
@@ -154,7 +156,6 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               </div>
               <Input
                 id="second"
-                wrapperClassName="margin1"
                 type="password"
                 view="password"
                 onBlur={this.onSecondBlur}
@@ -167,7 +168,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               </Error>
             </div>
           </div>
-          <div className="flex margin-main margin-main-top">
+          <div className={styles.checkboxWrapper}>
             <Input
               wrapperClassName={styles.checkbox}
               id="termsAccepted"
@@ -186,7 +187,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
               </a>
             </label>
           </div>
-          <div className="flex margin-main margin-main-top">
+          <div className={styles.checkboxWrapper}>
             <Input
               wrapperClassName={styles.checkbox}
               id="conditionsAccepted"
@@ -207,13 +208,14 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
           </div>
 
           <Button
+            className={styles.button}
             type="submit"
             view="submit"
             disabled={this.state.buttonDisabled}
           >
             {t('newAccount.create')}
           </Button>
-          <div className={`tag1 left basic500 marginTop3`}>
+          <div className={`${styles.text} tag1 basic500`}>
             {t('newAccount.passinfo')}
           </div>
         </form>
