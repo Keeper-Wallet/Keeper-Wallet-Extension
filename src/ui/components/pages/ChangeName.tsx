@@ -18,7 +18,6 @@ interface Props extends WithTranslation {
 class ChangeAccountNameComponent extends React.PureComponent<Props> {
   readonly props;
   readonly state = { newName: '', error: false, errors: [] };
-  inputEl: Input;
 
   static validateName(name: string, accounts) {
     const errors = [];
@@ -42,8 +41,6 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
 
     return errors;
   }
-
-  getRef = input => (this.inputEl = input);
 
   setNewNameHandler = event => this.setNewName(event);
   onSubmit = event => this.changeName(event);
@@ -90,15 +87,18 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
           <div className="margin-main-big relative">
             <Input
               id="newAccountName"
-              ref={this.getRef}
               onInput={this.setNewNameHandler}
               onBlur={this.blurHandler}
               error={this.state.error}
               value={this.state.newName}
-              maxLength="26"
+              maxLength={26}
               autoFocus={true}
             />
-            <Error show={this.state.error} errors={this.state.errors} />
+            <Error
+              show={this.state.error}
+              errors={this.state.errors}
+              data-testid="newAccountNameError"
+            />
           </div>
 
           <Button
@@ -112,10 +112,6 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
         </form>
       </div>
     );
-  }
-
-  componentDidMount() {
-    //this.inputEl.focus();
   }
 
   onBlur() {

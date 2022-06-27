@@ -1,8 +1,26 @@
 import { libs } from '@waves/waves-transactions';
 import { concat, identity, ifElse, isNil, pipe } from 'ramda';
+import { NetworkName } from 'accounts/types';
 
-function networkByteFromAddress(address: string): string {
+function getNetworkByteByAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
+}
+
+const networkCodeToNetworkMap: Record<
+  'S' | 'T' | 'W',
+  Exclude<NetworkName, 'custom'>
+> = {
+  S: 'stagenet',
+  T: 'testnet',
+  W: 'mainnet',
+};
+
+export function getNetworkByNetworkCode(networkCode: string): NetworkName {
+  return networkCodeToNetworkMap[networkCode] || 'custom';
+}
+
+export function getNetworkByAddress(address: string): NetworkName {
+  return getNetworkByNetworkCode(getNetworkByteByAddress(address));
 }
 
 export async function getNetworkByte(url: string): Promise<string> {
@@ -13,7 +31,7 @@ export async function getNetworkByte(url: string): Promise<string> {
     throw new Error('Incorrect node url');
   }
 
-  const networkCode = networkByteFromAddress(generator);
+  const networkCode = getNetworkByteByAddress(generator);
 
   if (!networkCode) {
     throw new Error('Incorrect node byte');

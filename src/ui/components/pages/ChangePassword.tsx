@@ -14,7 +14,6 @@ interface Props extends WithTranslation {
 }
 
 class ChangePasswordComponent extends React.PureComponent<Props> {
-  inputEl: Input;
   state = {
     firstValue: '',
     secondValue: '',
@@ -28,7 +27,6 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
     oldEqualNewError: false,
   };
 
-  getRef = input => (this.inputEl = input);
   onFirstBlur = () => this._onBlur();
   onSecondBlur = () => this._onBlur();
   onOldBlur = () => this._onBlur();
@@ -36,10 +34,6 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
   onChangeSecond = e => this._onChangeSecond(e);
   onChangeOld = e => this._onChangeOld(e);
   onSubmit = e => this._onSubmit(e);
-
-  componentDidMount() {
-    //this.inputEl.focus();
-  }
 
   render() {
     const { t } = this.props;
@@ -56,13 +50,16 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 id="old"
                 value={this.state.oldValue}
                 type="password"
+                view="password"
                 autoFocus={true}
                 onChange={this.onChangeOld}
                 onBlur={this.onOldBlur}
                 error={!!(this.state.oldError || this.state.passwordError)}
-                ref={this.getRef}
               />
-              <Error show={!!(this.state.oldError || this.state.passwordError)}>
+              <Error
+                show={!!(this.state.oldError || this.state.passwordError)}
+                data-testid="oldError"
+              >
                 {this.state.oldError ? t('changePassword.errorShortOld') : null}
                 {this.state.passwordError
                   ? t('changePassword.errorWrongOld')
@@ -78,11 +75,12 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 id="first"
                 value={this.state.firstValue}
                 type="password"
+                view="password"
                 onBlur={this.onFirstBlur}
                 onChange={this.onChangeFist}
                 error={!!this.state.firstError || this.state.oldEqualNewError}
               />
-              <Error show={!!this.state.firstError}>
+              <Error show={!!this.state.firstError} data-testid="firstError">
                 {t('changePassword.errorShortNew')}
               </Error>
             </div>
@@ -95,12 +93,14 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
                 id="second"
                 value={this.state.secondValue}
                 type="password"
+                view="password"
                 onBlur={this.onSecondBlur}
                 onChange={this.onChangeSecond}
                 error={!!this.state.secondError || this.state.oldEqualNewError}
               />
               <Error
                 show={!!this.state.secondError || this.state.oldEqualNewError}
+                data-testid="secondError"
               >
                 {this.state.oldEqualNewError
                   ? t('changePassword.equalPassword')

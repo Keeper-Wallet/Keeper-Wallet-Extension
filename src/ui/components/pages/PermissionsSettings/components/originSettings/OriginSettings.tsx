@@ -232,7 +232,7 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
               onChange={this.amountHandler}
               className={styles.amountInput}
               value={value}
-              placeholder={0}
+              placeholder="0"
             />
             <div className={styles.waves}>Waves</div>
           </div>

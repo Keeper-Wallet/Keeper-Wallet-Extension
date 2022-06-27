@@ -7,11 +7,12 @@
   height: calc(100% - 48px);
 
 .title1
-  padding: 60px 60px 24px
+  padding: 60px 60px 20px;
 
 .settingsMenu
   flex-grow: 1;
   padding: 0 60px;
+  margin-bottom: 12px;
 
 .settingsMenuItem
   border-bottom: 1px solid $accent50;
@@ -31,8 +32,10 @@
     button.settingsBtn
       opacity: 1;
 
-  &.general
+  &.addresses
     background-image: url(../../../assets/img/general-14-basic200.svg);
+  &.general
+    background-image: url(../../../assets/img/key.svg);
   &.network
     background-image: url(../../../assets/img/network-14-basic-200.svg);
   &.pairing
@@ -65,8 +68,7 @@
 .clickProtection
   display: flex;
   line-height: 1.5em;
-  padding-top: 10px;
-  height: 64px;
+  margin-bottom: 12px;
 
 .settingsFooter
   background: $basic50;
@@ -76,7 +78,7 @@
   display: flex;
   flex-grow: 1;
   justify-content: space-between;
-  height: 86px;
+  height: 76px;
 
   & > div
     display: flex;

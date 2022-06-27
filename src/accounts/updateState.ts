@@ -16,6 +16,7 @@ interface Account {
 }
 
 interface UpdateStateInput {
+  addresses: Record<string, string>;
   accounts?: Account[];
   currentLocale: string;
   currentNetwork?: string;
@@ -133,6 +134,14 @@ export function createUpdateState(store: AccountsStore) {
       actions.push({
         type: ACTION.UPDATE_APP_STATE,
         payload: { initialized: state.initialized, locked: state.locked },
+      });
+    }
+
+    const addresses = getParam(state.addresses, {});
+    if (addresses && !equals(addresses, currentState.addresses)) {
+      store.dispatch({
+        type: ACTION.UPDATE_ADDRESSES,
+        payload: addresses,
       });
     }
 

@@ -1,17 +1,24 @@
 import * as styles from './massTransfer.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
+import { validators } from '@waves/waves-transactions';
+import { processAliasOrAddress } from 'transactions/utils';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
-import { Attachment, Balance, Ellipsis, PlateCollapsable } from '../../ui';
+import { AddressRecipient } from '../../ui/Address/Recipient';
+import { Attachment, Balance, Spoiler } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
 
-const MIN_COUNT = 0;
-const ADDRESS_LENGTH = 35;
+const showAliasWarning = (transfers, chainId) =>
+  transfers.some(({ recipient }) =>
+    validators.isValidAlias(processAliasOrAddress(recipient, chainId))
+  );
 
-const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
+const MIN_COUNT = 0;
+
+const Transfers = ({ transfers, totalAmount, chainId, count = MIN_COUNT }) => {
   const assets = { [totalAmount.asset.id]: totalAmount.asset };
 
   return transfers.slice(0, count).map(({ recipient, amount }) => {
@@ -19,21 +26,16 @@ const Transfers = ({ transfers, totalAmount, count = MIN_COUNT }) => {
       getTransferAmount(amount, totalAmount.asset.id),
       assets
     );
-    const isAddress = recipient.length == ADDRESS_LENGTH;
 
     return (
-      <div key={recipient} className={styles.txRow}>
-        <div
-          className={cn(
-            'body3',
-            'tx-title-black',
-            styles.massTransferRecipient
-          )}
-          title={recipient}
-        >
-          {isAddress ? <Ellipsis text={recipient} /> : recipient}
-        </div>
-        <div className={cn('body3', 'submit400', styles.massTransferAmount)}>
+      <div key={recipient} className={styles.massTransferItem}>
+        <AddressRecipient
+          className={styles.massTransferRecipient}
+          recipient={recipient}
+          chainId={chainId}
+          showAliasWarning={false}
+        />
+        <div className="body3 submit400">
           <Balance
             isShortFormat={true}
             balance={money}
@@ -94,18 +96,24 @@ class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
             <div className="tx-title tag1 basic500">
               {t('transactions.recipients')}
             </div>
-            <div className={styles.txValue}>
-              <PlateCollapsable
-                className={styles.expandableList}
-                showExpand={!collapsed}
-              >
-                <Transfers
-                  transfers={tx.transfers}
-                  totalAmount={amount}
-                  count={tx.transfers.length}
-                />
-              </PlateCollapsable>
-            </div>
+            <Spoiler
+              className={styles.massTransferSpoiler}
+              count={tx.transfers.length}
+              title={t('transactions.recipients')}
+              expanded={!collapsed}
+            >
+              <Transfers
+                transfers={tx.transfers}
+                chainId={tx.chainId}
+                totalAmount={amount}
+                count={tx.transfers.length}
+              />
+            </Spoiler>
+            {showAliasWarning(tx.transfers, tx.chainId) && (
+              <p className={styles.massTransferWarningAlias}>
+                {t('address.warningAlias')}
+              </p>
+            )}
           </div>
 
           {tx.attachment && tx.attachment.length ? (

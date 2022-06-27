@@ -17,6 +17,7 @@ interface Account {
 }
 
 interface UpdateStateInput {
+  addresses: Record<string, string>;
   assets: Record<string, Record<string, AssetDetail>>;
   accounts?: Account[];
   balances?: Record<
@@ -253,6 +254,14 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.SET_USD_PRICES,
         payload: usdPrices,
+      });
+    }
+
+    const addresses = getParam(state.addresses, {});
+    if (addresses && !equals(addresses, currentState.addresses)) {
+      store.dispatch({
+        type: ACTION.UPDATE_ADDRESSES,
+        payload: addresses,
       });
     }
   };

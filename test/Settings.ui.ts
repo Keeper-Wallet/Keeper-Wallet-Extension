@@ -112,6 +112,12 @@ describe('Settings', function () {
         .click();
       await this.driver
         .wait(
+          until.elementLocated(By.css('[data-testid=exportAccounts]')),
+          this.wait
+        )
+        .click();
+      await this.driver
+        .wait(
           until.elementLocated(
             By.css('input[value="3P5Xx9MFs8VchRjfLeocGFxXkZGknm38oq1"]')
           ),

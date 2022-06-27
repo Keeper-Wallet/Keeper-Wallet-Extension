@@ -75,7 +75,7 @@ module.exports = ({
       if (isProduction) {
         await zipFolder(
           platformFolder,
-          path.join(DIST_FOLDER, `waves-keeper-${version}-${platformName}.zip`)
+          path.join(DIST_FOLDER, `keeper-wallet-${version}-${platformName}.zip`)
         );
 
         console.log(`Zipping ${platformName} is done`);

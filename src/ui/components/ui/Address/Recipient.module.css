@@ -1,0 +1,76 @@
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+mark {
+  color: #ffaf00;
+  background-color: transparent;
+}
+
+.recipient {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.ethereum.mirrorAddress,
+.waves.mirrorAddress {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.recipient::before,
+.mirrorAddress::before {
+  display: block;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  content: '';
+}
+
+.ethereum.recipient::before,
+.waves.mirrorAddress::before {
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+  background-image: url(../../../assets/img/ethereum.svg);
+}
+
+.waves.recipient::before,
+.ehereum.mirrorAddress::before {
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  background-image: url(../../../assets/img/waves.svg);
+}
+
+.addButtonIcon {
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-white);
+  background-image: url(../../../assets/img/add-user.svg);
+  background-size: cover;
+  cursor: pointer;
+}
+
+.name {
+  margin-right: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.warningAlias {
+  margin-top: 4px;
+  padding: 12px 14px;
+  color: #9ba6b2;
+  font-size: 11px;
+  border: 1px dashed #ffaf00;
+  border-radius: 2px;
+}

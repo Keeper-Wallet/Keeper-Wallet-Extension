@@ -19,3 +19,5 @@ export * from './Tabs';
 export * from './highlight';
 export * from './ellipsis';
 export * from './searchInput/searchInput';
+export * from './Backdrop';
+export * from './Spoiler';

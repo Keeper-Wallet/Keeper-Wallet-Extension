@@ -22,6 +22,33 @@
   "activeAccountCard": {
     "swapButton": "Intercambio"
   },
+  "address": {
+    "add": "Nueva dirección",
+    "addButton": "Agregar nueva",
+    "addTooltip": "Agrega una dirección a tus contactos",
+    "added": "Dirección agregada",
+    "addressAlreadyExist": "Dirección ya existente",
+    "addressInvalidError": "Dirección invalida",
+    "cancel": "Cancelar",
+    "copied": "Copiado!",
+    "copyToClipboard": "Haz click para copiar al portapales",
+    "delete": "Borrar dirección",
+    "deleteDescription": "¿Está seguro de que desea eliminar esta dirección de sus contactos? Esta acción es irreversible.",
+    "edit": "Editar dirección",
+    "edited": "Dirección editada",
+    "emptyDescription": "Agregue el nombre y la dirección del destinatario para acceder rápidamente a la transferencia y ver en el historial",
+    "emptyTitle": "Nada aquí todavia",
+    "name": "Nombre",
+    "nameAlreadyExist": "Nombre ya existente",
+    "nameInvalidError": "Nombre invalida",
+    "save": "Guardar la dirección",
+    "saveChanges": "Guardar los cambios",
+    "select": "Elige tu dirección",
+    "subtitle": "Dirección",
+    "title": "Contactos",
+    "wallets": "Mis wallets",
+    "warningAlias": "Ten cuidado, el destinatario tiene una cuenta de Alias, no es un usuario de tus contactos"
+  },
   "assetAmountInput": {
     "balanceLabel": "Saldo"
   },

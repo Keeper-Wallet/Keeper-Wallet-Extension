@@ -18,6 +18,33 @@
     "viewInExplorer": "Tarayıcı'da görüntüle"
   },
   "activeAccountCard": { "swapButton": "Takas et" },
+  "address": {
+    "add": "Yeni adres",
+    "addButton": "Yeni ekle",
+    "addTooltip": "Kişilerinize bir adres ekleyin",
+    "added": "Adres eklendi",
+    "addressAlreadyExist": "Bu adres zaten var",
+    "addressInvalidError": "Adres değeri geçersiz",
+    "cancel": "İptal et",
+    "copied": "Kopyalandı!",
+    "copyToClipboard": "Panoya kopyalamak için tıklayın",
+    "delete": "Adresi sil",
+    "deleteDescription": "Bu adresi, kişilerinizden silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "edit": "Adresi düzelt",
+    "edited": "Adres düzenlendi",
+    "emptyDescription": "Transfer etmek ve geçmişte görüntülemek üzere hızlı erişim sağlamak için alıcının Adını ve Adresini ekleyin",
+    "emptyTitle": "Henüz burada görüntülenecek bir şey yok",
+    "name": "İsim",
+    "nameAlreadyExist": "Bu isim zaten var",
+    "nameInvalidError": "Isim değeri geçersiz",
+    "save": "Adresi kaydet",
+    "saveChanges": "Değişiklikleri kaydet",
+    "select": "Adresinizi seçin",
+    "subtitle": "Adres",
+    "title": "Kişiler",
+    "wallets": "Cüzdanlarım",
+    "warningAlias": "Dikkatli olun, alıcının bir Alias ​​hesabı var, kişilerinizden biri değil"
+  },
   "assetAmountInput": {
     "balanceLabel": "Bakiye"
   },

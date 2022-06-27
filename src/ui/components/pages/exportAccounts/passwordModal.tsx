@@ -12,9 +12,9 @@ interface Props {
   onSubmit: (password: string) => Promise<void>;
 }
 
-export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
+export function ExportPasswordModal({ onClose, onSubmit }: Props) {
   const { t } = useTranslation();
-  const passwordInputRef = React.useRef<Input | null>(null);
+  const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
 
@@ -50,11 +50,12 @@ export function ExportAccountsPasswordModal({ onClose, onSubmit }: Props) {
             </div>
 
             <Input
-              className="margin1"
+              wrapperClassName="margin1"
               data-testid="passwordInput"
               error={passwordError}
-              ref={passwordInputRef}
+              forwardRef={passwordInputRef}
               type="password"
+              view="password"
               value={password}
               onChange={event => {
                 setPassword(event.currentTarget.value);

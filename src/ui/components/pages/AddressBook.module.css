@@ -1,0 +1,134 @@
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100% - 48px);
+  padding: 20px 0 0;
+  overflow: auto;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 0 48px;
+}
+
+.addButtonIcon {
+  width: 18px;
+  height: 18px;
+  background-color: var(--color-white);
+  background-image: url(../../assets/img/add-user.svg);
+  background-size: cover;
+  cursor: pointer;
+}
+
+.empty {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 220px 24px 0;
+}
+
+.empty::before {
+  position: absolute;
+  top: 124px;
+  width: 80px;
+  height: 80px;
+  background-image: url(../../assets/img/users.svg);
+  background-size: cover;
+  content: '';
+}
+
+.emptyTitle {
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.emptyDescription {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.addButton {
+  width: auto;
+  padding: 0 40px;
+}
+
+.serp {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.searchInput {
+  flex-grow: 0;
+  margin: 0 14px 10px;
+}
+
+.cardList {
+  flex-grow: 1;
+  padding-bottom: 14px;
+  background-color: var(--color-basic50);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  margin: 14px 14px 0;
+  padding: 8px 14px;
+  overflow: hidden;
+  background-color: var(--color-white);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(155, 166, 178, 0.4);
+}
+
+.cardContent {
+  margin-right: auto;
+}
+
+.cardAvatar {
+  margin-right: 14px;
+}
+
+.cardName {
+  max-width: 220px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 14px;
+  text-overflow: ellipsis;
+}
+
+.cardAddress {
+  color: var(--color-basic500);
+  font-size: 12px;
+}
+
+.copyButton,
+.editButton,
+.deleteButton {
+  margin: 0 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.copyIcon,
+.editIcon,
+.deleteIcon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  fill: var(--color-basic200);
+}
+
+.copyIcon:hover,
+.editIcon:hover,
+.deleteIcon:hover {
+  fill: var(--color-basic500);
+}

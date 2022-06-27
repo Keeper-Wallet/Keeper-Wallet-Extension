@@ -20,7 +20,7 @@ function createSimpleReducer<
   ) => (actionType === action.type ? action.payload : state);
 }
 
-export const tab = createSimpleReducer('', ACTION.CHANGE_TAB);
+export const tab = createSimpleReducer(null, ACTION.CHANGE_TAB);
 
 export type AssetFilters = {
   term?: string;
@@ -144,6 +144,11 @@ export const assets = createSimpleReducer<Record<string, AssetDetail>>(
 export const usdPrices = createSimpleReducer<Record<string, string>>(
   {},
   ACTION.SET_USD_PRICES
+);
+
+export const addresses = createSimpleReducer<Record<string, string>>(
+  {},
+  ACTION.UPDATE_ADDRESSES
 );
 
 export const backTabs = (

@@ -22,13 +22,14 @@ class SettingsComponent extends React.Component<Props> {
     this.props.lock();
   };
   networkHandler = () => this.props.setTab(PAGES.NETWORK_SETTINGS);
-  exportHandler = () => this.props.setTab(PAGES.EXPORT_ACCOUNTS);
+  exportAndImportHandler = () => this.props.setTab(PAGES.EXPORT_AND_IMPORT);
   langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
   permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
   passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
   deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
   pairingHandler = () => this.props.setTab(PAGES.PAIRING);
   settingsGeneral = () => this.props.setTab(PAGES.GENERAL_SETTINGS);
+  addressesHandler = () => this.props.setTab(PAGES.ADDRESS_BOOK);
   toggleAutoLockHandler = () => {
     this.props.setUiState({
       autoClickProtection: !this.props.autoClickProtection,
@@ -43,6 +44,18 @@ class SettingsComponent extends React.Component<Props> {
           {t('settings.settings')}
         </div>
         <div className={styles.settingsMenu}>
+          <div className={`${styles.settingsMenuItem} ${styles.addresses}`}>
+            <Button
+              id="settingsAddresses"
+              type="button"
+              view="transparent"
+              className={styles.settingsBtn}
+              onClick={this.addressesHandler}
+            >
+              <div className="body1 left">{t('address.title')}</div>
+            </Button>
+          </div>
+
           <div className={`${styles.settingsMenuItem} ${styles.general}`}>
             <Button
               id="settingsGeneral"
@@ -100,9 +113,9 @@ class SettingsComponent extends React.Component<Props> {
               type="button"
               view="transparent"
               className={styles.settingsBtn}
-              onClick={this.exportHandler}
+              onClick={this.exportAndImportHandler}
             >
-              <div className="body1 left">{t('settings.export')}</div>
+              <div className="body1 left">{t('settings.exportAndImport')}</div>
             </Button>
           </div>
         </div>

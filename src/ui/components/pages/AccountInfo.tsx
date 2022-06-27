@@ -303,8 +303,9 @@ class AccountInfoComponent extends React.Component<Props, State> {
                 <Input
                   autoFocus
                   type="password"
+                  view="password"
                   error={this.state.passwordError}
-                  className="margin1"
+                  wrapperClassName="margin1"
                   onChange={this.inputPassword}
                 />
 

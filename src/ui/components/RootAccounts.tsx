@@ -15,7 +15,12 @@ export function RootAccounts() {
       return PAGES.INTRO;
     }
 
-    let tab = state.tab ?? '';
+    let tab = state.tab;
+
+    if (typeof state.tab !== 'string') {
+      const page = window.location.hash.split('#')[1];
+      tab = Object.values(PAGES).includes(page) ? page : PAGES.ROOT;
+    }
 
     if (!tab && state.state?.locked == null) {
       tab = PAGES.INTRO;
@@ -25,11 +30,18 @@ export function RootAccounts() {
       tab = PAGES.WELCOME;
     }
 
-    const canUseTab = [PAGES.NEW, PAGES.INTRO].includes(tab)
-      ? !state.state?.initialized
-      : [PAGES.LOGIN, PAGES.FORGOT].includes(tab)
-      ? state.state?.initialized && state.state?.locked
-      : !state.state?.locked;
+    let canUseTab = !state.state?.locked;
+
+    switch (tab) {
+      case PAGES.NEW:
+      case PAGES.INTRO:
+        canUseTab = !state.state?.initialized;
+        break;
+      case PAGES.LOGIN:
+      case PAGES.FORGOT:
+        canUseTab = state.state?.initialized && state.state?.locked;
+        break;
+    }
 
     if (!tab || !canUseTab) {
       tab = state.state?.locked
@@ -91,6 +103,7 @@ export function RootAccounts() {
         deleteAccount={pageConf.menu.deleteAccount}
         hasClose={!!pageConf.menu.close}
         hasBack={
+          currentTab !== window.location.hash.split('#')[1] &&
           pageConf.menu.back !== null &&
           (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back)
         }

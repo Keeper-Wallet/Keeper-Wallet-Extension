@@ -6,6 +6,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 const reducer = combineReducers({
   tab: reducers.tab,
+  addresses: reducers.addresses,
   accounts: reducers.accounts,
   currentLocale: reducers.currentLocale,
   state: reducers.state,

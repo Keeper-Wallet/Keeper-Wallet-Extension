@@ -1,0 +1,51 @@
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 284px;
+  padding: 24px;
+  background: var(--color-white);
+  border-radius: 2px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.subtitle {
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.name {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.error {
+  position: absolute;
+  bottom: -16px;
+  margin: 0;
+}
+
+.button {
+  width: auto;
+  margin: 60px 40px 0;
+}
+
+.deleteButton {
+  width: auto;
+  margin: 14px 40px 0;
+}

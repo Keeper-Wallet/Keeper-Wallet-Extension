@@ -245,6 +245,16 @@ class Background {
     }
   }
 
+  async checkPassword(password: string): Promise<string> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.checkPassword(password);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
   async getAccountSeed(
     address: string,
     network: string,
@@ -430,6 +440,36 @@ class Background {
       await this.initPromise;
       await this._connect();
       return await this.background.updateAssets(assetIds);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async setAddress(address: string, name: string): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.setAddress(address, name);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async setAddresses(addresses: Record<string, string>): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.setAddresses(addresses);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async removeAddress(address: string): Promise<void> {
+    try {
+      await this.initPromise;
+      await this._connect();
+      return await this.background.removeAddress(address);
     } catch (err) {
       throw new Error(prepareErrorMessage(err));
     }

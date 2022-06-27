@@ -22,6 +22,33 @@
   "activeAccountCard": {
     "swapButton": "Swap"
   },
+  "address": {
+    "add": "Alamat baru",
+    "addButton": "Tambah baru",
+    "addTooltip": "Tambahkan alamat ke kontak Anda",
+    "added": "Alamat ditambahkan",
+    "addressAlreadyExist": "Alamat sudah ada",
+    "addressInvalidError": "Nilai alamat tidak valid",
+    "cancel": "Batal",
+    "copied": "Disalin!",
+    "copyToClipboard": "Klik untuk salin ke clipboard",
+    "delete": "Hapus alamat",
+    "deleteDescription": "Yakin ingin untuk menghapus alamat ini dari kontak Anda? Tindakan ini tidak dapat dibatalkan.",
+    "edit": "Edit alamat",
+    "edited": "Alamat diedit",
+    "emptyDescription": "Tambahkan Nama dan Alamat penerima untuk akses cepat ke transfer dan lihat di histori",
+    "emptyTitle": "Belum ada orang di sini",
+    "name": "Nama",
+    "nameAlreadyExist": "Nama sudah ada",
+    "nameInvalidError": "Nama alamat tidak valid",
+    "save": "Simpan alamat",
+    "saveChanges": "Simpan perubahan",
+    "select": "Pilih address",
+    "subtitle": "Alamat",
+    "title": "Kontak",
+    "wallets": "Dompet saya",
+    "warningAlias": "Hati-hati, penerima memiliki akun Alias, itu bukan pengguna dari kontak Anda"
+  },
   "assetAmountInput": {
     "balanceLabel": "Saldo"
   },

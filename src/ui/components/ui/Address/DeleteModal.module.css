@@ -1,0 +1,35 @@
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 284px;
+  padding: 24px;
+  background: var(--color-white);
+  border-radius: 2px;
+}
+
+.title {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.description {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.cancelButton {
+  width: auto;
+  margin: 0 40px 14px;
+}
+
+.button {
+  width: auto;
+  margin: 0 40px;
+}

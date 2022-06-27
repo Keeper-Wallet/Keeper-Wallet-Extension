@@ -1,37 +1,14 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
-import { NetworkName, KeystoreProfiles } from 'accounts/types';
+import { KeystoreProfiles } from 'accounts/types';
+import { getNetworkByNetworkCode } from 'ui/utils/waves';
+import { PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-
-function readFileAsText(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Could not read the file'));
-    reader.onload = () =>
-      typeof reader.result === 'string'
-        ? resolve(reader.result)
-        : reject('Expected result to be a string');
-    reader.readAsText(file);
-  });
-}
-
-const networkCodeToNetworkMap: Record<
-  'S' | 'T' | 'W',
-  Exclude<NetworkName, 'custom'>
-> = {
-  S: 'stagenet',
-  T: 'testnet',
-  W: 'mainnet',
-};
-
-function findNetworkByNetworkCode(networkCode: string): NetworkName {
-  return networkCodeToNetworkMap[networkCode] || 'custom';
-}
 
 type ExchangeKeystoreAccount = {
   address: string;
@@ -58,11 +35,9 @@ interface EncryptedKeystore {
 
 function parseKeystore(json: string): EncryptedKeystore | null {
   try {
-    const obj = JSON.parse(json);
+    const { profiles, data } = JSON.parse(json);
 
-    if (obj.profiles) {
-      const { profiles } = obj;
-
+    if (profiles) {
       if (typeof profiles === 'string') {
         return {
           type: WalletTypes.Keystore,
@@ -77,8 +52,8 @@ function parseKeystore(json: string): EncryptedKeystore | null {
           },
         };
       }
-    } else if (obj.data) {
-      const { encryptionRounds, saveUsers } = JSON.parse(atob(obj.data));
+    } else if (data) {
+      const { encryptionRounds, saveUsers } = JSON.parse(atob(data));
 
       if (
         typeof saveUsers === 'string' &&
@@ -110,7 +85,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
                 )
                 .forEach(acc => {
                   const networkCode = String.fromCharCode(acc.networkByte);
-                  const network = findNetworkByNetworkCode(networkCode);
+                  const network = getNetworkByNetworkCode(networkCode);
 
                   profiles[network].accounts.push({
                     address: acc.address,
@@ -136,6 +111,8 @@ function parseKeystore(json: string): EncryptedKeystore | null {
   }
 }
 
+const suffixRe = /\((\d+)\)$/;
+
 interface Props {
   setTab: (newTab: string) => void;
 }
@@ -153,13 +130,16 @@ export function ImportKeystore({ setTab }: Props) {
   if (profiles == null) {
     return (
       <ImportKeystoreChooseFile
+        title={t('importKeystore.chooseFileTitle')}
+        label={t('importKeystore.keystoreLabel')}
+        placeholder={t('importKeystore.passwordPlaceholder')}
         error={error}
-        onSubmit={async (keystoreFile, password) => {
+        setError={setError}
+        onSubmit={async (result, password) => {
           setError(null);
 
           try {
-            const text = await readFileAsText(keystoreFile);
-            const keystore = parseKeystore(text);
+            const keystore = parseKeystore(result);
 
             if (!keystore) {
               setError(t('importKeystore.errorFormat'));
@@ -172,8 +152,6 @@ export function ImportKeystore({ setTab }: Props) {
               setError(t('importKeystore.errorDecrypt'));
               return;
             }
-
-            const suffixRe = /\((\d+)\)$/;
 
             Object.entries(newProfiles).forEach(([network, profile]) => {
               const currentNetworkAccounts = allNetworksAccounts.filter(
@@ -224,7 +202,7 @@ export function ImportKeystore({ setTab }: Props) {
       allNetworksAccounts={allNetworksAccounts}
       profiles={profiles}
       onSkip={() => {
-        setTab('');
+        setTab(PAGES.ROOT);
       }}
       onSubmit={selectedAccounts => {
         dispatch(
@@ -232,7 +210,7 @@ export function ImportKeystore({ setTab }: Props) {
             selectedAccounts.map(acc => ({
               type: 'seed',
               ...acc,
-              network: findNetworkByNetworkCode(acc.networkCode),
+              network: getNetworkByNetworkCode(acc.networkCode),
             })),
             walletType
           )

@@ -59,7 +59,7 @@ class NetworkSettingsComponent extends React.PureComponent<
                 value={this.state.node || ''}
                 onChange={this.changeHandler('node', 'nodeError')}
               />
-              <Error show={this.state.nodeError}>
+              <Error show={this.state.nodeError} data-testid="nodeAddressError">
                 {this.state.node
                   ? t('networkSettings.nodeError')
                   : t('networkSettings.nodeUrlEmpty')}

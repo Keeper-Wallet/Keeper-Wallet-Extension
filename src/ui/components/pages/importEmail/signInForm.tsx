@@ -127,7 +127,7 @@ export function SignInForm({ className, userData, signIn }: Props) {
             spellCheck={false}
             onChange={handleEmailChange}
             onBlur={handleEmailBlur}
-            error={errors.emailRequired}
+            error={!!errors.emailRequired}
             autoFocus
           />
         )}
@@ -145,11 +145,12 @@ export function SignInForm({ className, userData, signIn }: Props) {
         <Input
           data-testid="passwordInput"
           type="password"
+          view="password"
           value={password}
           onChange={handlePasswordChange}
           onBlur={handlePasswordBlur}
-          error={errors.passwordRequired}
-          autoFocus={userData?.username}
+          error={!!errors.passwordRequired}
+          autoFocus={!!userData?.username}
         />
         <Error show={errors.passwordRequired != null}>
           {errors.passwordRequired}

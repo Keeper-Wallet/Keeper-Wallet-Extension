@@ -1,16 +1,14 @@
 .root
   display: flex;
   flex-direction: column;
-  padding: 20px 0 0;
   height: calc(100% - 48px);
   overflow: hidden;
 
-.checkbox.checkbox // for increased specificity
-  margin-right: 0;
+.title
+  margin: 24px 48px 14px;
 
-.centered
-  margin-right: 60px;
-  margin-left: 60px;
+.description
+  margin: 0 48px 24px;
 
 .accounts
   flex: 1 1 0;
@@ -27,11 +25,11 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #edf0f4;
-  padding: 10px 74px;
+  padding: 10px 48px;
   background: #fff;
 
 .accountsGroupIcon
-  margin: 0 27px 0 13px;
+  margin: 0 8px 2px 0;
 
 .accountsGroupLabel
   margin-right: auto;
@@ -42,17 +40,18 @@
 .accountList
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 24px 60px;
+  gap: 14px;
+  padding: 12px 48px;
 
 .accountListItem
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(155, 166, 178, 0.4);
   background: #FFFFFF;
+  padding: 11px 16px 11px 14px;
+  min-height: 64px;
 
 .accountInfo
   display: flex;
@@ -71,4 +70,4 @@
 
 .buttons
   border-top: 1px solid #edf0f4;
-  padding: 20px 60px;
+  padding: 24px 48px;

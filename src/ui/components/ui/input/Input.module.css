@@ -1,0 +1,132 @@
+textarea {
+  resize: none;
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  position: relative;
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 14px;
+  background-color: #ffffff;
+  border: solid 1px var(--color-basic100);
+  border-radius: 4px;
+  outline: 0 none;
+  transition: border 0.3s, outline 0.3s, color 0.3s, background-color 0.3s;
+}
+
+.input:hover {
+  border: 1px solid var(--color-basic500);
+}
+
+.input:focus {
+  border: 1px solid var(--color-submit400);
+  outline: none;
+}
+
+.error .input,
+.error .input:hover {
+  border: 1px solid var(--color-error400);
+}
+
+.input[disabled] {
+  color: var(--color-basic500);
+  background: var(--color-basic50);
+}
+
+.input[disabled]::-webkit-input-placeholder,
+.input[disabled]::-moz-placeholder,
+.input[disabled]:-moz-placeholder,
+.input[disabled]:-ms-input-placeholder {
+  color: var(--color-basic500);
+}
+
+.input[disabled]:hover {
+  border: 1px solid var(--color-basic100);
+}
+
+.password .input {
+  padding-right: 32px;
+}
+
+.passwordIcon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  background: url(../../../assets/img/eye-basic200.svg) center no-repeat;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.textarea {
+  padding: 14px;
+  transition: 0.3s;
+}
+
+:global .input-like {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  line-height: 24px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 #9ba6b266;
+  transition: 0.3s;
+}
+
+:global .input-like:hover {
+  box-shadow: 0 4px 6px 0 #9ba6b266;
+}
+
+:global .input-like.password-input {
+  padding-left: 42px;
+}
+
+.checkbox {
+  width: 22px;
+  height: 22px;
+}
+
+input[type='checkbox'] {
+  display: block;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: url(../../../assets/img/check-12-basic-200.svg) center no-repeat;
+  border: 1px solid var(--color-basic100);
+  border-radius: 4px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  content: '';
+}
+
+input[type='checkbox']:focus {
+  border: 1px solid var(--color-basic100);
+}
+
+input[type='checkbox']:checked {
+  background: url(../../../assets/img/check-12-white.svg) center no-repeat
+    var(--color-submit400);
+  border: 1px solid var(--color-submit400);
+}
+
+input[type='checkbox']:hover {
+  border: 1px solid var(--color-submit400);
+  cursor: pointer;
+}
+
+input[type='checkbox'] + label {
+  flex-grow: 1;
+  cursor: pointer;
+}

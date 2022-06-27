@@ -3,6 +3,7 @@ import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
+import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
@@ -44,7 +45,9 @@ class LeaseCardComponent extends React.PureComponent<ComponentProps> {
             <div className="tx-title tag1 basic500">
               {t('transactions.recipient')}
             </div>
-            <div className={styles.txValue}>{tx.recipient}</div>
+            <div className={styles.txValue}>
+              <AddressRecipient recipient={tx.recipient} chainId={tx.chainId} />
+            </div>
           </div>
         </div>
       </div>

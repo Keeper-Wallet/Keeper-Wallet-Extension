@@ -150,12 +150,14 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
             {t('networksSettings.node')}
           </label>
           <Input
-            disable={disableForm ? 'true' : ''}
+            disabled={!!disableForm}
             id="node_address"
             value={this.state.node}
             onChange={this.onInputHandler}
           />
-          <Error show={nodeError}>{t('networkSettings.nodeError')}</Error>
+          <Error show={nodeError} data-testid="nodeAddressError">
+            {t('networkSettings.nodeError')}
+          </Error>
         </div>
 
         <div className="margin-main-big relative">
@@ -169,7 +171,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
             {t('networksSettings.matcher')}
           </label>
           <Input
-            disable={disableForm ? 'true' : ''}
+            disabled={!!disableForm}
             id="matcher_address"
             value={this.state.matcher}
             onChange={this.onInputMatcherHandler}

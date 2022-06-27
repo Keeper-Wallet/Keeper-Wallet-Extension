@@ -1,5 +1,6 @@
 import {
   AccountInfo,
+  AddressBook,
   Assets,
   BackUpSeed,
   ChangeAccountName,
@@ -7,6 +8,7 @@ import {
   ConfirmBackup,
   DeleteActiveAccount,
   DeleteAllAccounts,
+  ExportAndImport,
   Import,
   Info,
   Intro,
@@ -31,11 +33,16 @@ import { ImportLedger } from './components/pages/importLedger/importLedger';
 import { ImportSeed } from './components/pages/importSeed';
 import { Swap } from './components/pages/swap/swap';
 import { ExportAccounts } from './components/pages/exportAccounts/exportAccounts';
+import { ExportAddressBook } from './components/pages/exportAccounts/exportAddressBook';
 import { ImportKeystore } from './components/pages/importKeystore/importKeystore';
+import { ImportAddressBook } from './components/pages/importKeystore/importAddressBook';
 import { ImportEmail } from './components/pages/importEmail/importEmail';
 import { OtherAccountsPage } from './components/pages/otherAccounts';
 import { Send } from './components/pages/send';
-import { ImportSuccess } from 'ui/components/pages/importSuccess';
+import {
+  ImportSuccess,
+  ImportSuccessAddressBook,
+} from 'ui/components/pages/importSuccess';
 import { ImportDebug } from 'ui/components/pages/importDebug';
 
 export const PAGES = {
@@ -48,8 +55,10 @@ export const PAGES = {
   NEW_ACCOUNT_BACK: 'new_account_back',
   ACCOUNT_NAME: 'account_name',
   ACCOUNT_NAME_SEED: 'account_name_seed',
+  ADDRESS_BOOK: 'address_book',
   SAVE_BACKUP: 'safe_backup',
   CONFIRM_BACKUP: 'confirm_backup',
+  IMPORT_ADDRESS_BOOK: 'import_address_book',
   IMPORT_DEBUG: 'import_debug',
   IMPORT_EMAIL: 'import_email',
   IMPORT_KEYSTORE: 'import_keystore',
@@ -57,7 +66,10 @@ export const PAGES = {
   IMPORT_SEED: 'import_seed',
   IMPORT_SEED_BACK: 'import_seed_back',
   IMPORT_SUCCESS: 'import_success',
+  IMPORT_SUCCESS_ADDRESS_BOOK: 'import_success_address_book',
   EXPORT_ACCOUNTS: 'export_accounts',
+  EXPORT_ADDRESS_BOOK: 'export_address_book',
+  EXPORT_AND_IMPORT: 'export_and_import',
   ASSETS: 'assets',
   OTHER_ACCOUNTS: 'other_accounts',
   SETTINGS: 'settings',
@@ -182,7 +194,18 @@ export const PAGES_CONF = {
   [PAGES.IMPORT_SUCCESS]: {
     component: ImportSuccess,
     bottom: {
-      noChangeNetwork: true,
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: null,
+    },
+  },
+  [PAGES.IMPORT_SUCCESS_ADDRESS_BOOK]: {
+    component: ImportSuccessAddressBook,
+    bottom: {
+      hide: true,
     },
     menu: {
       hasLogo: true,
@@ -223,6 +246,17 @@ export const PAGES_CONF = {
       hasLogo: true,
       hasSettings: false,
       back: PAGES.SAVE_BACKUP,
+    },
+  },
+  [PAGES.IMPORT_ADDRESS_BOOK]: {
+    component: ImportAddressBook,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
     },
   },
   [PAGES.IMPORT_DEBUG]: {
@@ -296,6 +330,28 @@ export const PAGES_CONF = {
   },
   [PAGES.EXPORT_ACCOUNTS]: {
     component: ExportAccounts,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
+    },
+  },
+  [PAGES.EXPORT_ADDRESS_BOOK]: {
+    component: ExportAddressBook,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
+    },
+  },
+  [PAGES.EXPORT_AND_IMPORT]: {
+    component: ExportAndImport,
     bottom: {
       hide: true,
     },
@@ -404,6 +460,17 @@ export const PAGES_CONF = {
   },
   [PAGES.GENERAL_SETTINGS]: {
     component: SettingsGeneral,
+    bottom: {
+      hide: true,
+    },
+    menu: {
+      hasLogo: true,
+      hasSettings: false,
+      back: true,
+    },
+  },
+  [PAGES.ADDRESS_BOOK]: {
+    component: AddressBook,
     bottom: {
       hide: true,
     },
