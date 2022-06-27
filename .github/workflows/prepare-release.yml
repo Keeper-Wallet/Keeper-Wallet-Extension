@@ -37,6 +37,17 @@ jobs:
       - name: Create empty config.json
         run: echo '{}' > config.json
 
+      - name: Create config.json for production
+        run: |
+          cat > config.json << EOF
+          {
+            "statisticsApiKey": "$STATISTICS_TOKEN"
+          }
+          EOF
+        if: steps.tagInfo.outputs.ENVIRONMENT == 'production'
+        env:
+          STATISTICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
+
       - name: Build
         run: npm run dist
         env:
