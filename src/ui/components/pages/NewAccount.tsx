@@ -2,7 +2,7 @@ import * as styles from './styles/newaccount.styl';
 import { connect } from 'react-redux';
 import { createNew, setTab } from '../../actions';
 import * as React from 'react';
-import { Button, Error, Input } from '../ui';
+import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
 import { AppState } from 'ui/store';
@@ -217,6 +217,9 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
             {t('newAccount.passinfo')}
           </div>
         </form>
+        <div className={styles.footer}>
+          <LangsSelect />
+        </div>
       </div>
     );
   }

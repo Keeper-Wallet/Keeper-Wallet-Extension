@@ -1,8 +1,8 @@
-import * as styles from './styles/welcome.styl';
+import * as styles from './Welcome.module.css';
 import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../ui';
+import { Button, LangsSelect } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
@@ -23,9 +23,10 @@ export function Welcome({ setTab }: Props) {
   }, [setTab]);
 
   return (
-    <div className={`${styles.content}`}>
-      <BigLogo className="margin-main-large" />
+    <div className={styles.content}>
+      <BigLogo className={styles.logo} />
       <Button
+        className={styles.button}
         data-testid="getStartedBtn"
         type="submit"
         view="submit"
@@ -38,13 +39,15 @@ export function Welcome({ setTab }: Props) {
           }
           setTab(PAGES.NEW);
         }}
-        className="margin-main-big"
       >
         {t('welcome.getStarted')}
       </Button>
-      <div className="basic500 body3">
+      <div className={`${styles.text} basic500 body3`}>
         <div>{t('welcome.info')}</div>
         <div>{t('welcome.info2')}</div>
+      </div>
+      <div className={styles.footer}>
+        <LangsSelect />
       </div>
     </div>
   );

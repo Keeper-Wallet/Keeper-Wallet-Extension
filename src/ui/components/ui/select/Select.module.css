@@ -11,13 +11,13 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   cursor: pointer;
 }
 
 .trigger:after {
   width: 14px;
   height: 14px;
+  margin-left: auto;
   background: url(../../../assets/img/select-14-black.svg) center no-repeat;
   content: '';
 }
@@ -52,6 +52,8 @@
 }
 
 .item {
+  display: flex;
+  align-items: center;
   max-width: 300px;
   white-space: nowrap;
   cursor: pointer;
