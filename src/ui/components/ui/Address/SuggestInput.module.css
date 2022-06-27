@@ -5,7 +5,7 @@
   left: 0;
   z-index: 1;
   max-height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
   background: var(--color-white);
   border-radius: 4px;
   box-shadow: 0px 4px 6px rgb(155, 166, 178, 0.4);
