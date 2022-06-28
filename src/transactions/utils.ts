@@ -39,8 +39,16 @@ import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
+import {
+  isValidEthereumAddress,
+  fromEthereumToWavesAddress,
+} from 'ui/utils/ethereum';
 
 export function processAliasOrAddress(recipient: string, chainId: number) {
+  if (isValidEthereumAddress(recipient)) {
+    return fromEthereumToWavesAddress(recipient, chainId);
+  }
+
   return validators.isValidAddress(recipient) ||
     validators.isValidAlias(recipient)
     ? recipient

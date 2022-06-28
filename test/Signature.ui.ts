@@ -1456,7 +1456,7 @@ describe('Signature', function () {
             version: 2,
             senderPublicKey,
             chainId: 84,
-            fee: 1400000,
+            fee: 500000,
             script: SET_SCRIPT.data.script,
           };
 
@@ -1498,7 +1498,7 @@ describe('Signature', function () {
             version: 2,
             senderPublicKey,
             chainId: 84,
-            fee: 1400000,
+            fee: 500000,
           };
 
           const bytes = makeTxBytes({
@@ -1537,7 +1537,7 @@ describe('Signature', function () {
             version: 1,
             senderPublicKey,
             chainId: 84,
-            fee: 1400000,
+            fee: 500000,
             script: SET_SCRIPT.data.script,
           };
 

@@ -1,8 +1,7 @@
 import { Account, NetworkName } from 'accounts/types';
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
-import { WithId } from '@waves/waves-transactions/dist/transactions';
-import { Transaction } from '@waves/ts-types';
+import { TransactionFromNode } from '@waves/ts-types';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -105,7 +104,7 @@ export interface AccountBalance {
   assets?: BalanceAssets;
   aliases: string[];
   nfts: AssetDetail[];
-  txHistory: Array<Transaction & WithId>;
+  txHistory: Array<TransactionFromNode>;
 }
 
 export const balances = createSimpleReducer<{

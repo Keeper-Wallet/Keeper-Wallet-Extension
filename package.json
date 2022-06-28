@@ -43,7 +43,7 @@
     "@waves/bignumber": "^1.0.0",
     "@waves/data-entities": "^2.0.4",
     "@waves/marshall": "^0.14.0",
-    "@waves/ts-types": "^1.0.7",
+    "@waves/ts-types": "^1.0.12",
     "@waves/waves-transactions": "^4.2.5-beta.3",
     "amazon-cognito-identity-js": "^5.2.6",
     "circle-progress-bar": "^1.0.0",
