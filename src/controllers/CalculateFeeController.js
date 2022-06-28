@@ -121,8 +121,9 @@ function currentFeeFactory(config) {
         return minFee.add(
           getMassTransferFee(tx, config, smartAssetIdList || [])
         );
-      case TRANSACTION_TYPE.DATA:
       case TRANSACTION_TYPE.SET_SCRIPT:
+        return tx.script ? accountFee.add(getScriptFee(tx, config)) : minFee;
+      case TRANSACTION_TYPE.DATA:
         return accountFee.add(getDataFee(bytes, tx, config));
       case TRANSACTION_TYPE.ISSUE:
         return getIssueFee(tx, accountFee, config);
@@ -157,6 +158,14 @@ function getSmartAssetFeeByAssetId(assetId, config, smartAssetIdList) {
 function getDataFee(bytes, tx, config) {
   const kbPrice = getConfigProperty(tx.type, 'price_per_kb', config) || 0;
   return new BigNumber(kbPrice).mul(Math.floor(1 + (bytes.length - 1) / 1024));
+}
+
+function getScriptFee(tx, config) {
+  const bytes = libs.crypto.base64Decode(
+    tx.script.toString().startsWith('base64:') ? tx.script.slice(7) : tx.script
+  );
+  const kbPrice = getConfigProperty(tx.type, 'price_per_kb', config) || 0;
+  return new BigNumber(Math.ceil(bytes.length / 1024) * kbPrice);
 }
 
 function getMassTransferFee(tx, config, smartAssetIdList) {

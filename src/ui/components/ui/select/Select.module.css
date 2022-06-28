@@ -52,7 +52,7 @@
 }
 
 .item {
-  max-width: 240px;
+  max-width: 300px;
   white-space: nowrap;
   cursor: pointer;
 }
