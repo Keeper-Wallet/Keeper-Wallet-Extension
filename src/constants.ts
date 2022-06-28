@@ -74,6 +74,9 @@ export const DEFAULT_CONFIG = {
   },
 };
 
+export const DEFAULT_FEE_CONFIG_URL =
+  'https://raw.githubusercontent.com/Waves-Keeper/configs/master/fee.json';
+
 export const DEFAULT_FEE_CONFIG = {
   smart_asset_extra_fee: 400000,
   smart_account_extra_fee: 400000,
