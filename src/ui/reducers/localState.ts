@@ -6,6 +6,7 @@ import {
   setTabMode,
 } from '../actions';
 import { pairing } from './pairing';
+import { Account } from 'accounts/types';
 
 function newUser(state = {}, action) {
   switch (action.type) {

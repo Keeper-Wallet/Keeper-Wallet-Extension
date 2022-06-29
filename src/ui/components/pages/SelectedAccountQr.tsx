@@ -21,9 +21,7 @@ class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
     const account = this.props.selectedAccount;
     const address = account?.address;
     const name = account?.name;
-    const isEdge =
-      window.navigator &&
-      typeof window.navigator.msSaveOrOpenBlob === 'function';
+
     return (
       <div className={`center ${styles.content}`}>
         <div className="input-title fullwidth tag1">{name || <Loader />}</div>
@@ -40,16 +38,14 @@ class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
           text={address}
         />
 
-        {isEdge ? null : (
-          <Button
-            type="submit"
-            view="submitTiny"
-            className={`${styles.downloadQr}`}
-            onClick={this.downloadHandler}
-          >
-            <div>{t('qrCode.download')}</div>
-          </Button>
-        )}
+        <Button
+          type="submit"
+          view="submitTiny"
+          className={`${styles.downloadQr}`}
+          onClick={this.downloadHandler}
+        >
+          <div>{t('qrCode.download')}</div>
+        </Button>
       </div>
     );
   }

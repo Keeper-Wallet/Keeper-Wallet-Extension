@@ -17,6 +17,7 @@ import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 import { Message } from 'ui/components/transactions/BaseTransaction';
+import { Account } from 'accounts/types';
 
 export interface Notification {
   id: string;
