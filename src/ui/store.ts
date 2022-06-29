@@ -5,11 +5,13 @@ import * as middleware from './midleware';
 import { extension } from 'lib/extension';
 import { KEEPERWALLET_DEBUG } from './appConfig';
 
+const middlewares = Object.values(middleware);
+
 if (KEEPERWALLET_DEBUG) {
-  middleware['logMW'] = () => next => action => {
+  middlewares.push(() => next => action => {
     console.log('-->', action.type, action.payload, action.meta);
     return next(action);
-  };
+  });
 }
 
 const reducer = combineReducers(reducers);
@@ -22,7 +24,7 @@ export function createUiStore() {
   return createStore(
     reducer,
     { version: extension.runtime.getManifest().version },
-    applyMiddleware(...Object.values(middleware))
+    applyMiddleware(...middlewares)
   );
 }
 
