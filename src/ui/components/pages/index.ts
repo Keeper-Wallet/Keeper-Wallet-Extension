@@ -27,4 +27,4 @@ export * from './MessagesList';
 export * from './SettingsGeneral';
 export * from './Notifications';
 export * from './ExportAndImport';
-export { TTabTypes } from 'ui/components/pages/PermissionsSettings';
+export type { TTabTypes } from 'ui/components/pages/PermissionsSettings';

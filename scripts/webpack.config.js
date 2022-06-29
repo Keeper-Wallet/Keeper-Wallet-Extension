@@ -4,7 +4,6 @@ const path = require('path');
 const webpack = require('webpack');
 const metaConf = require('./meta.conf');
 const WebpackCustomActions = require('./WebpackCustomActionsPlugin');
-const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -174,11 +173,7 @@ module.exports = ({
       alias: {
         long: 'long/index.js', // needed because webpack@^4 does not support package.json#exports yet
       },
-      plugins: [
-        new TsConfigPathsPlugin({
-          /*configFile: "./path/to/tsconfig.json" */
-        }),
-      ],
+      modules: [path.join(__dirname, '..', 'src'), 'node_modules'],
       extensions: ['.ts', '.tsx', '.js'],
     },
 
@@ -209,12 +204,7 @@ module.exports = ({
           loader: 'file-loader?name=assets/fonts/[name].[ext]',
         },
         {
-          test: /\.tsx?$/,
-          loader: 'babel-loader!awesome-typescript-loader?transpileOnly',
-          exclude: /node_modules/,
-        },
-        {
-          test: /\.(jsx?)$/,
+          test: /\.(js|tsx?)$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
         },
