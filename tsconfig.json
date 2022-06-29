@@ -16,6 +16,9 @@
       "resize-observer-browser",
       "@waves/waveskeeper-types",
       "chrome"
+    ],
+    "references": [
+      { "path": "./atqa-framework" }
     ]
   }
 }

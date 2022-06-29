@@ -1,0 +1,16 @@
+{
+  "ts-node": {
+    "files": true
+  },
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["es2016", "es2017", "es2018", "es2019", "es2020", "dom"],
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true,
+    "allowJs": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true
+  }
+}
