@@ -8,7 +8,6 @@ const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const getLocales = require('./lokalise');
 const updateManifest = require('./updateManifest');
 
 function ncpAsync(from, to) {
@@ -36,14 +35,7 @@ function zipFolder(from, to) {
   });
 }
 
-module.exports = ({
-  version,
-  DIST,
-  LANGS,
-  PAGE_TITLE,
-  PLATFORMS,
-  isProduction,
-}) => {
+module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
   const SOURCE_FOLDER = path.resolve(__dirname, '../', 'src');
   const DIST_FOLDER = path.resolve(__dirname, '../', DIST);
   const BUILD_FOLDER = path.resolve(DIST_FOLDER, 'build');
@@ -79,12 +71,6 @@ module.exports = ({
         );
 
         console.log(`Zipping ${platformName} is done`);
-
-        if (platformName === 'edge') {
-          console.log('-= Build AppX for Edge =-');
-          require('./edgeExt');
-          console.log('-= Build AppX for Edge ended =-');
-        }
       }
     }, Promise.resolve());
   };
@@ -137,12 +123,6 @@ module.exports = ({
       template: path.resolve(SOURCE_FOLDER, 'accounts.html'),
       hash: true,
       chunks: ['commons', 'accounts/ui'],
-    })
-  );
-
-  plugins.push(
-    new WebpackCustomActions({
-      onBuildStart: [() => getLocales(LANGS, 'src/copied/_locales')],
     })
   );
 
