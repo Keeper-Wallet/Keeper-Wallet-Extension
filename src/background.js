@@ -115,11 +115,10 @@ extension.runtime.onInstalled.addListener(async details => {
   });
 
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+    await bgService.localStore.clear();
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
-
-    await bgService.localStore.clear();
   }
 });
 
@@ -457,6 +456,10 @@ class BackgroundService extends EventEmitter {
     return {
       // state
       getState: async params => await this.getState(params),
+      resetState: async () => {
+        await this.localStore.reset();
+        await extension.runtime.reload();
+      },
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }) => {
         const config = this.remoteConfigController.getIdleConfig();

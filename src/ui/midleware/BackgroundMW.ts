@@ -12,6 +12,14 @@ import {
 import background from '../services/Background';
 import i18n from '../i18n';
 
+export const resetState = () => next => action => {
+  if (action.type !== ACTION.RESET_STATE) {
+    return next(action);
+  }
+
+  background.resetState();
+};
+
 export const pairingData = store => next => action => {
   if (action.type !== ACTION.PAIRING.GET_SEED) {
     return next(action);
