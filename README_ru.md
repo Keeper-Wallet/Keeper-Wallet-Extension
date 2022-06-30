@@ -182,7 +182,7 @@ KeeperWallet.decryptMessage(
 );
 ```
 
-Example:
+Пример:
 
 ```js
 KeeperWallet.decryptMessage(
@@ -193,7 +193,7 @@ KeeperWallet.decryptMessage(
 });
 ```
 
-Возможные ошибки
+Возможные ошибки:
 
 - `{ message: "Init Keeper Wallet and add account" }` — Keeper Wallet не проинициализирован.
 - `{ message: "App is locked" }` — Keeper Wallet в режиме ожидания (требуется ввод пароля).
@@ -331,9 +331,7 @@ KeeperWallet.auth(authData)
 - `{message: "User denied message", code: 10}` — пользователь отклонил запрос.
 - `{message: "Api rejected by user", code: 12}` — сайт уже заблокирован пользователем.
 
-<details><summary><a id="validity"></a><b>How to check signature validity</b></summary>
-
-#### Как проверить валидность подписи <a id="validity"></a>
+<details><summary><a id="validity"></a><b>Как проверить валидность подписи</b></summary>
 
 Подписанные данные состоят из трех частей: `prefix` (строка `WavesWalletAuthentication`) + `host` + предоставленные вами данные. Все строки конвертируются в `length bytes` + `value bytes`, как в транзакции данных. `prefix` и `host` нужны в целях безопасности, на случай, если вредоносный сервис попытается использовать данные и подпись.
 
@@ -351,7 +349,7 @@ const authValidate = (data: { host: string; data: string }, signature: string, p
     return verifyAuthData({ publicKey, address, signature }, data);
 };
 
-// Example
+// Получение подписи
 const data = await WavesKeeper.auth({data: '123'});
 
 authValidate(data, { host: data.host, data: '123' }); // true
@@ -369,7 +367,7 @@ const authValidate = (signature, data, publicKey, chainId) => {
    return verifyAuthData({ publicKey, address, signature }, data);
 };
 
-// Example
+// Получение подписи
 const data = await WavesKeeper.auth({data: '123'});
 
 authValidate(data, { host: data.host, data: '123' }); // true
@@ -1164,7 +1162,7 @@ KeeperWallet.signAndPublishTransaction({
 Поля:
 
 - `assetId`: string — идентификатор ассета в кодировке base58.
-- `script` string — скрипт ассета, см. раздел [Смарт-ассет](/ru/building-apps/smart-contracts/what-is-smart-asset).
+- `script` string — скрипт ассета, см. раздел [Смарт-ассет](https://docs.waves.tech/ru/building-apps/smart-contracts/what-is-smart-asset).
 - `*fee`: MoneyLike — комиссия за транзакцию.
 - `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
 - `*timestamp`: number/string — время в миллисекундах.
@@ -1273,9 +1271,9 @@ KeeperWallet.signAndPublishTransaction({
       },
    }
 }).then((tx) => {
-  console.log("Hurray! I've invoked the script!!!");
+  console.log("Ура! Я выполнил скрипт!!!");
 }).catch((error) => {
-   console.error("Something went wrong", error);
+   console.error("Что-то пошло не так", error);
 });
 ```
 

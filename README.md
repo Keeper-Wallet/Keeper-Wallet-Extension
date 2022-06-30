@@ -338,7 +338,7 @@ const authValidate = (data: { host: string; data: string }, signature: string, p
     return verifyAuthData({ publicKey, address, signature }, data);
 };
 
-// Example
+// Obtaining the signature
 const data = await WavesKeeper.auth({data: '123'});
 
 authValidate(data, { host: data.host, data: '123' }); // true
@@ -356,7 +356,7 @@ const authValidate = (signature, data, publicKey, chainId) => {
    return verifyAuthData({ publicKey, address, signature }, data);
 };
 
-// Example
+// Obtaining the signature
 const data = await WavesKeeper.auth({data: '123'});
 
 authValidate(data, { host: data.host, data: '123' }); // true
@@ -1161,7 +1161,7 @@ See [Set Asset Script transaction details](https://docs.waves.tech/en/blockchain
 Fields:
 
 - `assetId`: string – asset ID in base58.
-- `script`: string – asset script, see the [Smart Asset](/en/building-apps/smart-contracts/what-is-smart-asset) article in the Waves protocol documentation.
+- `script`: string – asset script, see the [Smart Asset](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-asset) article in the Waves protocol documentation.
 - `*fee`: MoneyLike – fee.
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp` number/string – time in ms.
@@ -1486,9 +1486,9 @@ KeeperWallet.signRequest({
 });
 ```
 
-REPLY: a line with a signature in base58.
+Response: a line with a signature in base58.
 
-ERRORS:
+Possible errors:
 
 - `{ message: "User denied message", code: 10 }` – the user rejected the request.
 - `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
