@@ -32,10 +32,11 @@ const DEF_CODE = 11;
 const DEF_ERR = ERRORS_DATA[DEF_CODE].msg;
 
 class KeeperError extends Error {
-  constructor(text = DEF_ERR, code = DEF_CODE, data = null) {
+  constructor(text = DEF_ERR, code = DEF_CODE, data = null, details = null) {
     super(text);
     this.data = data;
     this.code = code;
+    this.details = details;
   }
 }
 
@@ -60,7 +61,13 @@ class KeeperError extends Error {
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
   (acc, [code, data]) => {
     const { msg, name } = data;
-    acc[name] = e => new KeeperError(msg, code, e);
+    acc[name] = (meta, e) =>
+      new KeeperError(
+        e && e.message ? `${msg}: ${e.message}` : msg,
+        code,
+        meta,
+        e && e.stack
+      );
     return acc;
   },
   Object.create(null)

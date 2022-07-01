@@ -113,7 +113,7 @@ export class MessageController extends EventEmitter {
     try {
       message = await this._generateMessage(messageData);
     } catch (e) {
-      throw ERRORS.REQUEST_ERROR(messageData);
+      throw ERRORS.REQUEST_ERROR(messageData, e);
     }
 
     const messages = this.store.getState().messages;
@@ -580,19 +580,21 @@ export class MessageController extends EventEmitter {
   }
 
   async _generateMessage(messageData) {
-    const { options } = messageData;
-
     const message = {
       ...messageData,
       id: uuidv4(),
       timestamp: Date.now(),
-      ext_uuid: options && options.uid,
+      ext_uuid: messageData.options && messageData.options.uid,
       status: MSG_STATUSES.UNAPPROVED,
     };
 
+    if (!message.data && message.type !== 'authOrigin') {
+      throw new Error('Should contain a data field');
+    }
+
     const result = { ...message };
 
-    if (message.data && message.data.successPath) {
+    if (message.data.successPath) {
       result.successPath = message.data.successPath;
     }
 
@@ -634,8 +636,6 @@ export class MessageController extends EventEmitter {
         );
         break;
       case 'transactionPackage': {
-        if (!Array.isArray(message.data))
-          throw new Error('Should contain array of txParams');
         const { max, allow_tx } = this.getPackConfig();
 
         const msgs = message.data.length;
@@ -720,7 +720,7 @@ export class MessageController extends EventEmitter {
       }
       case 'transaction': {
         if (!result.data.type || result.data.type >= 1000) {
-          throw ERRORS.REQUEST_ERROR(result.data);
+          throw new Error('Invalid transaction type');
         }
 
         this._validateTx(result.data, message.account);
