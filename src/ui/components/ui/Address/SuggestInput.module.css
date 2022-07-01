@@ -67,7 +67,8 @@
   display: flex;
   flex-direction: column;
   width: 284px;
-  padding: 24px 0 0;
+  height: 340px;
+  padding: 24px 0 12px;
   background: var(--color-white);
   border-radius: 2px;
 }
@@ -78,11 +79,19 @@
 }
 
 .modalSearchInput {
-  margin: 0 24px 8px;
+  flex-grow: 0;
+  margin: 0 24px 0;
 }
 
 .modalSuggest {
   position: static;
+  box-shadow: none;
+}
+
+.notFound {
+  margin: auto;
+  color: var(--color-basic500);
+  text-align: center;
 }
 
 .highlight {

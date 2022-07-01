@@ -166,9 +166,13 @@ export function AddressBook() {
             onClear={() => setSearch('')}
           />
           <div className={styles.cardList}>
-            {addressList.map(([address, name]) => (
-              <AddressCard key={address} address={address} name={name} />
-            ))}
+            {addressList.length > 0 ? (
+              addressList.map(([address, name]) => (
+                <AddressCard key={address} address={address} name={name} />
+              ))
+            ) : (
+              <p className={styles.notFound}>{t('address.notFound')}</p>
+            )}
           </div>
         </div>
       )}

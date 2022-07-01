@@ -141,23 +141,27 @@ export function SuggestModal(props: ModalProps) {
             onInput={e => setSearch(e.target.value)}
             onClear={() => setSearch('')}
           />
-          <Suggest
-            className={styles.modalSuggest}
-            paddingLeft={24}
-            paddingRight={24}
-            accounts={accounts}
-            addresses={addresses}
-            setValue={props.setValue}
-            setAddress={props.setAddress}
-            setShowSuggest={props.setShowSuggest}
-            onSuggest={value => {
-              props.setShowModal(false);
+          {accounts.length > 0 ? (
+            <Suggest
+              className={styles.modalSuggest}
+              paddingLeft={24}
+              paddingRight={24}
+              accounts={accounts}
+              addresses={addresses}
+              setValue={props.setValue}
+              setAddress={props.setAddress}
+              setShowSuggest={props.setShowSuggest}
+              onSuggest={value => {
+                props.setShowModal(false);
 
-              if (props.onSuggest) {
-                props.onSuggest(value);
-              }
-            }}
-          />
+                if (props.onSuggest) {
+                  props.onSuggest(value);
+                }
+              }}
+            />
+          ) : (
+            <p className={styles.notFound}>{t('address.notFound')}</p>
+          )}
         </div>
       </div>
     </Modal>

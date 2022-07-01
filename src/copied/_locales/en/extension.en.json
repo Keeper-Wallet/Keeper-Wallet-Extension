@@ -46,6 +46,7 @@
     "name": "Name",
     "nameAlreadyExist": "Name already exist",
     "nameInvalidError": "Name value is invalid",
+    "notFound": "Addresses not found",
     "save": "Save address",
     "saveChanges": "Save changes",
     "select": "Choose your address",
