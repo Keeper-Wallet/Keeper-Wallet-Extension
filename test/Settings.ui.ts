@@ -1152,7 +1152,7 @@ describe('Settings', function () {
         expect(
           await this.driver.wait(
             until.elementLocated(
-              By.xpath("//div[contains(@class, '-welcome-content')]")
+              By.xpath("//div[contains(@class, '-Welcome-module-content')]")
             ),
             this.wait
           )

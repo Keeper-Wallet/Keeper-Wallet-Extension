@@ -8,6 +8,7 @@ interface SelectItem<T> {
   id: string | number;
   text: TText;
   value: T;
+  icon?: React.ReactNode;
 }
 
 type ListPlacement = 'top' | 'bottom';
@@ -25,8 +26,8 @@ interface Props<T> {
   fill?: boolean;
   forwardRef?: React.MutableRefObject<HTMLDivElement>;
   listPlacement?: ListPlacement;
-  selected?: string | number;
   selectList: Array<SelectItem<T>>;
+  selected?: string | number;
   theme?: Theme;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -104,6 +105,7 @@ export function Select<T>({
         }}
         {...otherProps}
       >
+        {selectedItem.icon}
         <div className={styles.triggerText}>{selectedItem.text}</div>
       </div>
 
@@ -129,6 +131,7 @@ export function Select<T>({
                 }}
               >
                 {item.text}
+                {item.icon}
               </div>
             ))}
         </div>

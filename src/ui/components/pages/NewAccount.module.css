@@ -1,0 +1,47 @@
+.account {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  max-height: 484px;
+  overflow-y: auto;
+}
+
+.title {
+  margin: 24px 48px;
+}
+
+.inner {
+  margin: 0 48px 12px;
+}
+
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  margin: 0 48px 14px;
+}
+
+.checkbox {
+  margin-right: 12px;
+}
+
+.button {
+  flex-shrink: 0;
+  width: auto;
+  margin: 0 48px 14px;
+}
+
+.text {
+  margin: 0 48px 14px;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 13px 48px 14px;
+  background-color: var(--color-basic50);
+  border-top: 1px solid #edf0f4;
+}
