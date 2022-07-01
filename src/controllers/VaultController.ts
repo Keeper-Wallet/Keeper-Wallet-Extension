@@ -86,7 +86,19 @@ export class VaultController {
   }
 
   migrate() {
-    if (this.wallet.store.getState().WalletController.vault) {
+    const state = this.wallet.store.getState().WalletController;
+
+    if (state.initialized != null) {
+      this.store.updateState({
+        initialized: state.initialized,
+      });
+
+      delete state.locked;
+      delete state.initialized;
+      this.wallet.store.putState(state);
+    }
+
+    if (state.vault) {
       this.store.updateState({ initialized: true });
     }
   }
