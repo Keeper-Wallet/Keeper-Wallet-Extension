@@ -28,7 +28,7 @@ type Type = 'accounts' | 'contacts' | 'all';
 interface Props<T> {
   items: T[];
   type: Type;
-  onSubmit: (items: T[], encrypted: boolean) => void;
+  onSubmit: (items: T[]) => void;
 }
 
 export function isExportable(item: Account | Contact) {
@@ -45,7 +45,6 @@ export function ExportKeystoreChooseItems<T extends Account | Contact>({
 }: Props<T>) {
   const { t } = useTranslation();
 
-  const [encrypted, setEncrypted] = React.useState(true);
   const [selected, setSelected] = React.useState(
     () => new Set(items.filter(isExportable).map(({ address }) => address))
   );
@@ -75,10 +74,7 @@ export function ExportKeystoreChooseItems<T extends Account | Contact>({
       className={styles.root}
       onSubmit={event => {
         event.preventDefault();
-        onSubmit(
-          items.filter(({ address }) => selected.has(address)),
-          encrypted
-        );
+        onSubmit(items.filter(({ address }) => selected.has(address)));
       }}
     >
       <h1 className={cn(styles.centered, 'margin1', 'title1')}>
@@ -179,18 +175,6 @@ export function ExportKeystoreChooseItems<T extends Account | Contact>({
           ))}
       </div>
 
-      {type === 'contacts' && (
-        <div className={styles.encrypt}>
-          <p className={styles.encryptTitle}>{t('exportKeystore.encrypt')}</p>
-          <input
-            type="checkbox"
-            checked={encrypted}
-            onChange={event => {
-              setEncrypted(event.currentTarget.checked);
-            }}
-          />
-        </div>
-      )}
       <div className={styles.buttons}>
         <Button
           data-testid="exportButton"

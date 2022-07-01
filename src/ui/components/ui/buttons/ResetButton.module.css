@@ -1,0 +1,35 @@
+.reset {
+  margin-right: 14px;
+  background-color: transparent;
+}
+
+.resetModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resetModalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 284px;
+  padding: 24px;
+  background: var(--color-white);
+  border-radius: 2px;
+}
+
+.resetModalTitle {
+  margin-bottom: 14px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  text-align: center;
+}
+
+.resetModalDescription {
+  margin-bottom: 24px;
+  color: var(--color-basic500);
+  font-size: 14px;
+  line-height: 14px;
+}

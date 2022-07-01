@@ -22,29 +22,28 @@ export function ExportAddressBook() {
           network: getNetworkByAddress(address),
         }))}
         type="contacts"
-        onSubmit={async (contacts, encrypted) => {
+        onSubmit={async contacts => {
           const addressesSelected = contacts.reduce(
             (acc, contact) => ({ ...acc, [contact.address]: contact.name }),
             {}
           );
-
-          if (!encrypted) {
-            await downloadKeystore(undefined, addressesSelected);
-            dispatch(setTab(PAGES.SETTINGS));
-            return;
-          }
-
           setAddressesToExport(addressesSelected);
         }}
       />
 
       {addressesToExport != null && (
         <ExportPasswordModal
+          showEncrypted
           onClose={() => {
             setAddressesToExport(null);
           }}
-          onSubmit={async password => {
-            await downloadKeystore(undefined, addressesToExport, password);
+          onSubmit={async (password, encrypted) => {
+            await downloadKeystore(
+              undefined,
+              addressesToExport,
+              password,
+              encrypted
+            );
             dispatch(addBackTab(PAGES.ROOT));
             dispatch(setTab(PAGES.SETTINGS));
           }}

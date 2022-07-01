@@ -74,9 +74,10 @@ const encryptProfiles = async (
 
 const encryptAddresses = async (
   addresses: Record<string, string>,
-  password?: string
+  password?: string,
+  encrypted?: boolean
 ) => {
-  if (!password) {
+  if (!encrypted) {
     return btoa(JSON.stringify(addresses));
   }
 
@@ -99,7 +100,8 @@ function download(json: string, filename: string) {
 export async function downloadKeystore(
   accounts?: Account[],
   addresses?: Record<string, string>,
-  password?: string
+  password?: string,
+  encrypted?: boolean
 ) {
   const now = new Date();
   const pad = (zeroes: number, value: number) =>
@@ -122,7 +124,7 @@ export async function downloadKeystore(
   if (addresses) {
     download(
       JSON.stringify({
-        addresses: await encryptAddresses(addresses, password),
+        addresses: await encryptAddresses(addresses, password, encrypted),
       }),
       `keystore-address-book-keeper-${nowStr}.json`
     );

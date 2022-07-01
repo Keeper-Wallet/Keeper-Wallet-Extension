@@ -1,14 +1,30 @@
 import * as styles from './styles/intro.styl';
 import * as React from 'react';
 import { BigLogo } from '../head';
+import { ExportButton, ResetButton } from 'ui/components/ui';
 
-export class Intro extends React.Component {
-  render() {
-    return (
-      <div className={styles.intro}>
-        <BigLogo />
-        <div className={styles.loader}></div>
-      </div>
-    );
-  }
+const DEFAULT_TIMEOUT = 5000;
+
+export function Intro() {
+  const [showReset, setShowReset] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowReset(true);
+    }, DEFAULT_TIMEOUT);
+  }, []);
+
+  return (
+    <div className={styles.intro}>
+      <BigLogo />
+      <div className={styles.loader}></div>
+
+      {showReset && (
+        <div className={styles.footer}>
+          <ExportButton className={styles.export} />
+          <ResetButton className={styles.reset} />
+        </div>
+      )}
+    </div>
+  );
 }

@@ -28,6 +28,17 @@ const CONTROLLERS = [
 
 const SAFE_FIELDS = new Set(['WalletController', 'accounts', 'addresses']);
 
+export async function reset() {
+  const state = await extension.storage.local.get();
+  await extension.storage.local.remove(
+    Object.keys(state).reduce(
+      (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
+      []
+    )
+  );
+  await extension.runtime.reload();
+}
+
 export default class ExtensionStore {
   private _state: Record<string, unknown>;
   private _initState: Record<string, unknown>;
@@ -67,17 +78,6 @@ export default class ExtensionStore {
 
     const keysToRemove = Object.keys(this._initState).reduce(
       (acc, key) => (this._state[key] ? acc : [...acc, key]),
-      []
-    );
-    await this._remove(storageState, keysToRemove);
-  }
-
-  async reset() {
-    const storageState = extension.storage.local;
-
-    const currentState = await this._get(storageState);
-    const keysToRemove = Object.keys(currentState).reduce(
-      (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
       []
     );
     await this._remove(storageState, keysToRemove);

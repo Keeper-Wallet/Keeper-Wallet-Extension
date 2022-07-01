@@ -8,15 +8,23 @@ import { Error } from 'ui/components/ui/error';
 import { Button } from 'ui/components/ui/buttons/Button';
 
 interface Props {
+  showAttention?: boolean;
+  showEncrypted?: boolean;
   onClose: () => void;
-  onSubmit: (password: string) => Promise<void>;
+  onSubmit: (password: string, encrypted?: boolean) => Promise<void>;
 }
 
-export function ExportPasswordModal({ onClose, onSubmit }: Props) {
+export function ExportPasswordModal({
+  showAttention,
+  showEncrypted,
+  onClose,
+  onSubmit,
+}: Props) {
   const { t } = useTranslation();
   const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
+  const [encrypted, setEncrypted] = React.useState(true);
 
   React.useLayoutEffect(() => {
     passwordInputRef.current.focus();
@@ -32,7 +40,7 @@ export function ExportPasswordModal({ onClose, onSubmit }: Props) {
             setPasswordError(false);
 
             try {
-              await onSubmit(password);
+              await onSubmit(password, encrypted);
             } catch {
               setPasswordError(true);
             }
@@ -67,13 +75,30 @@ export function ExportPasswordModal({ onClose, onSubmit }: Props) {
             </Error>
           </div>
 
-          <p className={cn('margin2', 'body1', 'disabled500')}>
-            <Trans
-              t={t}
-              components={{ attention: <strong className="error500" /> }}
-              i18nKey="exportKeystore.passwordVerifyImportantNote"
-            />
-          </p>
+          {(showAttention || encrypted) && (
+            <p className={cn(styles.attention, 'body1', 'disabled500')}>
+              <Trans
+                t={t}
+                components={{ attention: <strong className="error500" /> }}
+                i18nKey="exportKeystore.passwordVerifyImportantNote"
+              />
+            </p>
+          )}
+
+          {showEncrypted && (
+            <div className={styles.encrypt}>
+              <p className={styles.encryptTitle}>
+                {t('exportKeystore.encrypt')}
+              </p>
+              <input
+                type="checkbox"
+                checked={encrypted}
+                onChange={event => {
+                  setEncrypted(event.currentTarget.checked);
+                }}
+              />
+            </div>
+          )}
 
           <Button
             data-testid="verifyButton"

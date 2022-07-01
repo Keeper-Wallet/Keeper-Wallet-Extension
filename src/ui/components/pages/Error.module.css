@@ -104,26 +104,6 @@
   background-color: var(--color-basic50);
 }
 
-.export {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 48px;
-  color: var(--color-basic500);
-  font-size: 12px;
-  line-height: 14px;
-  border-top: 1px solid var(--color-basic100);
-  cursor: pointer;
-}
-
-.exportIcon {
-  display: block;
-  width: 18px;
-  height: 18px;
-  background-image: url(../../assets/img/export.svg);
-  background-size: cover;
-}
-
 .buttons {
   display: flex;
   padding: 14px;

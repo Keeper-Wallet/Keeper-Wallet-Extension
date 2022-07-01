@@ -1,13 +1,15 @@
 import * as styles from './Error.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from 'ui/store';
 import { HeadLogo } from '../head';
-import { resetState } from 'ui/actions';
-import { Button, Highlight, Modal, Copy } from 'ui/components/ui';
-import { downloadKeystore } from '../../utils/keystore';
-import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
-import { isExportable } from '../pages/exportAccounts/chooseItems';
+import {
+  Button,
+  ExportButton,
+  ResetButton,
+  Highlight,
+  Modal,
+  Copy,
+} from 'ui/components/ui';
 
 interface Props {
   error: Error;
@@ -17,16 +19,6 @@ interface Props {
 
 export function Error({ error, componentStack, resetError }: Props) {
   const { t } = useTranslation();
-
-  const dispatch = useAppDispatch();
-
-  const addresses = useAppSelector(state => state.addresses);
-  const allNetworksAccounts = useAppSelector(
-    state => state.allNetworksAccounts
-  );
-
-  const [showExportModal, setShowExportModal] = React.useState(false);
-  const [showResetModal, setShowResetModal] = React.useState(false);
 
   const [showDetails, setShowDetails] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
@@ -76,40 +68,9 @@ export function Error({ error, componentStack, resetError }: Props) {
       </div>
 
       <div className={styles.footer}>
-        <div
-          className={styles.export}
-          onClick={() => {
-            setShowExportModal(true);
-          }}
-        >
-          <span>{t('errorPage.export')}</span>
-          <i className={styles.exportIcon} />
-        </div>
-
-        {showExportModal && (
-          <ExportPasswordModal
-            onClose={() => {
-              setShowExportModal(false);
-            }}
-            onSubmit={async password => {
-              await downloadKeystore(
-                allNetworksAccounts.filter(isExportable),
-                addresses,
-                password
-              );
-              setShowExportModal(false);
-            }}
-          />
-        )}
+        <ExportButton />
         <div className={styles.buttons}>
-          <Button
-            className={styles.reset}
-            onClick={() => {
-              setShowResetModal(true);
-            }}
-          >
-            {t('errorPage.reset')}
-          </Button>
+          <ResetButton />
           <Button
             view="submit"
             onClick={() => {
@@ -120,36 +81,6 @@ export function Error({ error, componentStack, resetError }: Props) {
           </Button>
         </div>
       </div>
-
-      <Modal animation={Modal.ANIMATION.FLASH} showModal={showResetModal}>
-        <div className={`modal cover ${styles.resetModal}`}>
-          <div className={styles.resetModalContent}>
-            <Button
-              className="modal-close"
-              type="button"
-              view="transparent"
-              onClick={() => {
-                setShowResetModal(false);
-              }}
-            />
-            <p className={styles.resetModalTitle}>
-              {t('errorPage.resetTitle')}
-            </p>
-            <p className={styles.resetModalDescription}>
-              {t('errorPage.resetDescription')}
-            </p>
-            <Button
-              view="submit"
-              className={styles.resetModalButton}
-              onClick={() => {
-                dispatch(resetState());
-              }}
-            >
-              {t('errorPage.resetButton')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

@@ -456,10 +456,6 @@ class BackgroundService extends EventEmitter {
     return {
       // state
       getState: async params => await this.getState(params),
-      resetState: async () => {
-        await this.localStore.reset();
-        await extension.runtime.reload();
-      },
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }) => {
         const config = this.remoteConfigController.getIdleConfig();

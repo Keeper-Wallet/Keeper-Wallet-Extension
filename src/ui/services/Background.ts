@@ -60,16 +60,6 @@ class Background {
     }
   }
 
-  async resetState() {
-    try {
-      await this.initPromise;
-      await this._connect();
-      return await this.background.resetState();
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async updateIdle() {
     this.updatedByUser = true;
     this._updateIdle();
