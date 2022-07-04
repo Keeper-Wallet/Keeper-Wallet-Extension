@@ -77,15 +77,9 @@ const encryptAddresses = async (
   password?: string,
   encrypted?: boolean
 ) => {
-  if (!encrypted) {
-    return btoa(JSON.stringify(addresses));
-  }
-
-  if (await background.checkPassword(password)) {
-    return btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password));
-  } else {
-    throw new Error('Invalid password');
-  }
+  return encrypted
+    ? btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password))
+    : btoa(unescape(encodeURIComponent(JSON.stringify(addresses))));
 };
 
 function download(json: string, filename: string) {
@@ -103,6 +97,12 @@ export async function downloadKeystore(
   password?: string,
   encrypted?: boolean
 ) {
+  const correctPassword = await background.checkPassword(password);
+
+  if (!correctPassword) {
+    throw new Error('Invalid password');
+  }
+
   const now = new Date();
   const pad = (zeroes: number, value: number) =>
     value.toString().padStart(zeroes, '0');
