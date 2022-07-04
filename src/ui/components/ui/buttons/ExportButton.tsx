@@ -39,11 +39,12 @@ export const ExportButton = ({ className }: Props) => {
           onClose={() => {
             setShowExportModal(false);
           }}
-          onSubmit={async password => {
+          onSubmit={async (password, encrypted) => {
             await downloadKeystore(
               allNetworksAccounts.filter(isExportable),
               addresses,
-              password
+              password,
+              encrypted
             );
             setShowExportModal(false);
           }}
