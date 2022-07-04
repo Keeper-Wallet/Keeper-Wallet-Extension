@@ -102,6 +102,7 @@
   overflow: hidden;
   font-weight: 700;
   font-size: 14px;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 

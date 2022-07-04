@@ -79,7 +79,7 @@ const encryptAddresses = async (
 ) => {
   return encrypted
     ? btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password))
-    : btoa(unescape(encodeURIComponent(JSON.stringify(addresses))));
+    : btoa(encodeURIComponent(JSON.stringify(addresses)));
 };
 
 function download(json: string, filename: string) {
