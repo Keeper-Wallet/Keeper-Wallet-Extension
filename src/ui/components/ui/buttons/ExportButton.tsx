@@ -20,7 +20,7 @@ export const ExportButton = ({ className }: Props) => {
 
   const [showExportModal, setShowExportModal] = React.useState(false);
 
-  return (
+  return allNetworksAccounts.length !== 0 ? (
     <>
       <div
         className={`${styles.export} ${className}`}
@@ -50,5 +50,5 @@ export const ExportButton = ({ className }: Props) => {
         />
       )}
     </>
-  );
+  ) : null;
 };

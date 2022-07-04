@@ -12,6 +12,7 @@ export const ResetButton = ({ className }: Props) => {
   const { t } = useTranslation();
 
   const [showResetModal, setShowResetModal] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   return (
     <>
@@ -41,15 +42,20 @@ export const ResetButton = ({ className }: Props) => {
             <p className={styles.resetModalDescription}>
               {t('errorPage.resetDescription')}
             </p>
-            <Button
-              view="submit"
-              className={styles.resetModalButton}
-              onClick={() => {
-                reset();
-              }}
-            >
-              {t('errorPage.resetButton')}
-            </Button>
+            {loading ? (
+              <div className={styles.resetModalLoader} />
+            ) : (
+              <Button
+                view="submit"
+                className={styles.resetModalButton}
+                onClick={() => {
+                  reset();
+                  setLoading(true);
+                }}
+              >
+                {t('errorPage.resetButton')}
+              </Button>
+            )}
           </div>
         </div>
       </Modal>
