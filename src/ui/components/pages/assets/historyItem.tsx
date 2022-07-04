@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import * as styles from './historyItem.module.css';
-import { Balance, Ellipsis, Loader } from '../../ui';
+import { Balance, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';
 import { useAppSelector } from '../../../store';
@@ -9,12 +9,8 @@ import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
+import { AddressRecipient } from '../../ui/Address/Recipient';
 import { getTxDetailLink } from '../../../urls';
-import { fromWavesToEthereumAddress } from '../../../utils/ethereum';
-
-function Address({ base58 }: { base58: string }) {
-  return <Ellipsis text={base58} size={12} className="basic500" />;
-}
 
 interface Props {
   tx: TransactionFromNode;
@@ -26,6 +22,9 @@ export function HistoryItem({ tx, className }: Props) {
   const address = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
+  );
+  const chainId = useAppSelector(state =>
+    state.selectedAccount.networkCode.charCodeAt(0)
   );
   const assets = useAppSelector(state => state.assets);
   const aliases = useAppSelector(state => state.balances[address]?.aliases);
@@ -78,7 +77,13 @@ export function HistoryItem({ tx, className }: Props) {
         tx.type === TRANSACTION_TYPE.TRANSFER
           ? t('historyCard.transfer')
           : t('historyCard.payment');
-      label = <Address base58={tx.recipient} />;
+      label = (
+        <AddressRecipient
+          className={styles.recipient}
+          recipient={tx.recipient}
+          chainId={chainId}
+        />
+      );
       addSign = '-';
       messageType = 'transfer';
 
@@ -87,7 +92,13 @@ export function HistoryItem({ tx, className }: Props) {
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferReceive')
             : t('historyCard.paymentReceive');
-        label = <Address base58={tx.sender} />;
+        label = (
+          <AddressRecipient
+            className={styles.recipient}
+            recipient={tx.sender}
+            chainId={chainId}
+          />
+        );
         addSign = '+';
         messageType = 'receive';
       }
@@ -97,7 +108,13 @@ export function HistoryItem({ tx, className }: Props) {
           tx.type === TRANSACTION_TYPE.TRANSFER
             ? t('historyCard.transferSelf')
             : t('historyCard.paymentSelf');
-        label = <Address base58={tx.sender} />;
+        label = (
+          <AddressRecipient
+            className={styles.recipient}
+            recipient={tx.sender}
+            chainId={chainId}
+          />
+        );
         addSign = '';
         messageType = 'self-transfer';
       }
@@ -176,12 +193,24 @@ export function HistoryItem({ tx, className }: Props) {
     }
     case TRANSACTION_TYPE.LEASE:
       tooltip = t('historyCard.lease');
-      label = <Address base58={tx.recipient} />;
+      label = (
+        <AddressRecipient
+          className={styles.recipient}
+          recipient={tx.recipient}
+          chainId={chainId}
+        />
+      );
       addSign = '-';
 
       if (addressAlias.includes(tx.recipient)) {
         tooltip = t('historyCard.leaseIncoming');
-        label = <Address base58={tx.sender} />;
+        label = (
+          <AddressRecipient
+            className={styles.recipient}
+            recipient={tx.sender}
+            chainId={chainId}
+          />
+        );
         addSign = '+';
       }
 
@@ -197,11 +226,23 @@ export function HistoryItem({ tx, className }: Props) {
       break;
     case TRANSACTION_TYPE.CANCEL_LEASE:
       tooltip = t('historyCard.leaseCancel');
-      label = <Address base58={tx.lease.recipient} />;
+      label = (
+        <AddressRecipient
+          className={styles.recipient}
+          recipient={tx.lease.recipient}
+          chainId={chainId}
+        />
+      );
       addSign = '+';
 
       if (addressAlias.includes(tx.lease.recipient)) {
-        label = <Address base58={tx.lease.sender} />;
+        label = (
+          <AddressRecipient
+            className={styles.recipient}
+            recipient={tx.lease.sender}
+            chainId={chainId}
+          />
+        );
         addSign = '-';
       }
 
@@ -222,7 +263,13 @@ export function HistoryItem({ tx, className }: Props) {
       break;
     case TRANSACTION_TYPE.MASS_TRANSFER: {
       tooltip = t('historyCard.massTransferReceive');
-      label = <Address base58={tx.sender} />;
+      label = (
+        <AddressRecipient
+          className={styles.recipient}
+          recipient={tx.sender}
+          chainId={chainId}
+        />
+      );
 
       addSign = '+';
       let balance = fromCoins(
@@ -318,7 +365,13 @@ export function HistoryItem({ tx, className }: Props) {
         messageType = 'swap';
       } else {
         tooltip = t('historyCard.scriptInvocation');
-        label = <Address base58={tx.dApp} />;
+        label = (
+          <AddressRecipient
+            className={styles.recipient}
+            recipient={tx.dApp}
+            chainId={chainId}
+          />
+        );
         info = tx.call?.function || 'default';
         messageType = 'script_invocation';
       }
@@ -334,7 +387,13 @@ export function HistoryItem({ tx, className }: Props) {
       switch (payload.type) {
         case 'transfer':
           tooltip = t('historyCard.transferReceive');
-          label = <Address base58={fromWavesToEthereumAddress(tx.sender)} />;
+          label = (
+            <AddressRecipient
+              className={styles.recipient}
+              recipient={tx.sender}
+              chainId={chainId}
+            />
+          );
           addSign = '+';
           messageType = 'receive';
           info = (
@@ -348,7 +407,13 @@ export function HistoryItem({ tx, className }: Props) {
           break;
         case 'invocation':
           tooltip = t('historyCard.scriptInvocation');
-          label = <Address base58={payload.dApp} />;
+          label = (
+            <AddressRecipient
+              className={styles.recipient}
+              recipient={payload.dApp}
+              chainId={chainId}
+            />
+          );
           info = payload.call?.function || 'default';
           messageType = 'script_invocation';
           break;

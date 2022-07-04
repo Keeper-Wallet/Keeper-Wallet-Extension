@@ -56,19 +56,12 @@
   cursor: pointer;
 }
 
-.modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .modalContent {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 284px;
-  height: 340px;
-  padding: 24px 0 12px;
+  padding: 24px 0 4px;
   background: var(--color-white);
   border-radius: 2px;
 }
@@ -89,7 +82,7 @@
 }
 
 .notFound {
-  margin: auto;
+  margin: 28px;
   color: var(--color-basic500);
   text-align: center;
 }

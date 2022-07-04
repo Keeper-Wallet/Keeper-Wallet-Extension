@@ -113,10 +113,14 @@ export function AddressBook() {
   const [search, setSearch] = React.useState('');
   const addressList = React.useMemo(
     () =>
-      Object.entries(addresses).filter(
-        ([address, name]) =>
-          icontains(address, search) || icontains(name, search)
-      ),
+      Object.entries(addresses)
+        .filter(
+          ([address, name]) =>
+            icontains(address, search) || icontains(name, search)
+        )
+        .sort(([, firstName], [, secondName]) =>
+          firstName.localeCompare(secondName)
+        ),
     [addresses, search]
   );
 

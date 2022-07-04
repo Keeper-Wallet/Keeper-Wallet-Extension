@@ -20,12 +20,24 @@
 
 .historyInfo,
 .historyLabel {
-  max-width: 220px;
+  display: flex;
+  align-items: center;
+  max-width: 216px;
   height: 24px;
   overflow: hidden;
   line-height: 24px;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.recipient {
+  width: 100%;
+  color: var(--color-basic500);
+}
+
+.recipient i {
+  width: 14px;
+  height: 14px;
 }
 
 .historyIconWrapper {
@@ -42,11 +54,12 @@
 .historyIcon {
   width: 48px;
   height: 48px;
+  background-size: contain;
 }
 
 .infoButton {
   position: absolute;
-  right: 14px;
+  right: 10px;
   bottom: 19px;
   padding: 0;
   background: none;

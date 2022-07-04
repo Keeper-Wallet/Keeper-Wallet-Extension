@@ -81,6 +81,10 @@ export class StatisticsController {
   }
 
   sendEvents() {
+    if (!config.statisticsApiKey) {
+      return;
+    }
+
     this.sended = this.sended
       .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
       .then(() => {
@@ -98,7 +102,7 @@ export class StatisticsController {
             Accept: '*/*',
           },
           body: JSON.stringify({
-            api_key: config.statisticsApiKey || '',
+            api_key: config.statisticsApiKey,
             events: events,
           }),
         })

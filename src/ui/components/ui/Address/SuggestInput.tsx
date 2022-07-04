@@ -121,7 +121,7 @@ export function SuggestModal(props: ModalProps) {
 
   return (
     <Modal animation={Modal.ANIMATION.FLASH} showModal={props.showModal}>
-      <div className={`modal cover ${styles.modal}`}>
+      <div className="modal cover">
         <div className={styles.modalContent}>
           <Button
             className="modal-close"
@@ -179,7 +179,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
     state.selectedAccount.networkCode.charCodeAt(0)
   );
   const accounts = useAppSelector(state => state.accounts);
-  const addresses = useAppSelector(state =>
+  const addresses = useAppSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
       if (isEthereumAddress(address)) {
         return { ...acc, [address]: name };
@@ -209,7 +209,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         : [],
     [accounts, value]
   );
-  const foundAddresses = React.useMemo(
+  const foundAddresses = React.useMemo<Record<string, string>>(
     () =>
       value
         ? Object.entries(addresses).reduce(
@@ -268,7 +268,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
           showModal={showSuggestModal}
           setShowModal={setShowSuggestModal}
           accounts={accounts}
-          addresses={Object.entries(addresses)}
+          addresses={Object.entries(addresses).sort(
+            ([, firstName], [, secondName]) =>
+              firstName.localeCompare(secondName)
+          )}
           setValue={setValue}
           setAddress={setAddress}
           setShowSuggest={setShowSuggest}
@@ -280,7 +283,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         {showSuggest && (
           <Suggest
             accounts={foundAccounts}
-            addresses={Object.entries(foundAddresses)}
+            addresses={Object.entries(foundAddresses).sort(
+              ([, firstName], [, secondName]) =>
+                firstName.localeCompare(secondName)
+            )}
             setValue={setValue}
             setAddress={setAddress}
             setShowSuggest={setShowSuggest}
