@@ -35,9 +35,9 @@
 }
 
 .resetModalLoader {
+  width: 40px;
+  height: 40px;
+  margin: auto;
   background: url(../../../../ui/assets/img/loader.gif) center no-repeat;
   background-size: 40px;
-  height: 40px;
-  width: 40px;
-  margin: auto;
 }
