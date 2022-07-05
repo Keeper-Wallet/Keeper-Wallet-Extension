@@ -156,6 +156,20 @@
     "delete": "Hesabı sil",
     "warn": "Herhangi bir hesabın silinmesi, fonlara olan erişimin geri alınamaz şekilde kaybolmasına neden olabilir! Her zaman 'ANAHTAR KELİMELER' inizi yedeklediğinizden emin olun."
   },
+  "errorPage": {
+    "copied": "Kopyalandı!",
+    "copyToClipboard": "Panoya kopyala",
+    "details": "Hata detayları",
+    "export": "Hesapları ve adres defterini dışa aktar",
+    "hide": "Gizle",
+    "reload": "Yeniden yüklemeyi dene",
+    "reset": "Uzantı sıfırlama",
+    "resetButton": "Cüzdanı sıfırla",
+    "resetDescription": "Bu işlemden sonra tüm ikincil bilgileri sileriz (ör. favori tokenler). Ek olarak, bir kez daha “Giriş Yapmanız” gerekecektir.",
+    "resetTitle": "Dikkat",
+    "show": "Göster",
+    "title": "Bir şeyler yanlış gitti"
+  },
   "exportAndImport": {
     "exportAccounts": "Hesapları dışa aktar",
     "importAccounts": "Hesapları içe aktar",
@@ -172,7 +186,7 @@
     "chooseContactsDesc": "Hangi adresi dışa aktarmak istediğinizi seçin. Şifrelenecek ve bir Keystore dosyasına aktarılacaktır",
     "chooseContactsExportBtn": "Devam et",
     "chooseContactsTitle": "Kişileri dosyaya aktar",
-    "encrypt": "Dosyayı şifrele",
+    "encryptAddressBook": "Adres Defterini şifrele",
     "exportNotSupported": "Bu hesap dışa aktarılamaz",
     "passwordError": "Yalnış şifre",
     "passwordLabel": "Şifre",

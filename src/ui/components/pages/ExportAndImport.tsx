@@ -93,14 +93,17 @@ export function ExportAndImport() {
 
         {showExportModal && (
           <ExportPasswordModal
+            showAttention
+            showEncrypted
             onClose={() => {
               setShowExportModal(false);
             }}
-            onSubmit={async password => {
+            onSubmit={async (password, encrypted) => {
               await downloadKeystore(
                 allNetworksAccounts.filter(isExportable),
                 addresses,
-                password
+                password,
+                encrypted
               );
               dispatch(setTab(PAGES.SETTINGS));
             }}

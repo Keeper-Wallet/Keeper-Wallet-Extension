@@ -167,6 +167,20 @@
     "delete": "Delete account",
     "warn": "Deleting an account will lead to its irretrievable loss!"
   },
+  "errorPage": {
+    "copied": "Copied!",
+    "copyToClipboard": "Copy to clipboard",
+    "details": "Error details",
+    "export": "Export accounts and address book",
+    "hide": "Hide",
+    "reload": "Try to reload",
+    "reset": "Extension reset",
+    "resetButton": "Reset the wallet",
+    "resetDescription": "After this action we delete all secondary information (e.g. favorite tokens). Also you will need to Log In once again.",
+    "resetTitle": "Attention",
+    "show": "Show",
+    "title": "Something went wrong"
+  },
   "exportAndImport": {
     "exportAccounts": "Export accounts",
     "importAccounts": "Import accounts",
@@ -183,7 +197,7 @@
     "chooseContactsExportBtn": "Continue",
     "chooseAccountsTitle": "Export to Keystore file",
     "chooseContactsTitle": "Export Contacts to file",
-    "encrypt": "Encrypt the file",
+    "encryptAddressBook": "Encrypt the Address Book",
     "exportNotSupported": "This account cannot be exported",
     "warningModalTitle": "Attention",
     "warningModalDesc": "Ledger and email accounts cannot be exported",

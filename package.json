@@ -127,7 +127,7 @@
     "prettier": "^2.4.1",
     "request": "^2.88.0",
     "selenium-webdriver": "^4.1.2",
-    "source-map-loader": "^0.2.4",
+    "source-map-loader": "^1.0.0",
     "style-loader": "^0.22.1",
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^9.0.3",

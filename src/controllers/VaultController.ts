@@ -86,7 +86,7 @@ export class VaultController {
   }
 
   migrate() {
-    const state = this.wallet.store.getState();
+    const state = this.wallet.store.getState().WalletController;
 
     if (state.initialized != null) {
       this.store.updateState({

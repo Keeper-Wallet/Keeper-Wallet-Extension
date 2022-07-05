@@ -29,6 +29,7 @@ export function ExportAccounts() {
 
       {accountsToExport != null && (
         <ExportPasswordModal
+          showAttention
           onClose={() => {
             setAccountsToExport(null);
           }}

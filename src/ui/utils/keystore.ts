@@ -74,17 +74,12 @@ const encryptProfiles = async (
 
 const encryptAddresses = async (
   addresses: Record<string, string>,
-  password?: string
+  password?: string,
+  encrypted?: boolean
 ) => {
-  if (!password) {
-    return btoa(JSON.stringify(addresses));
-  }
-
-  if (await background.checkPassword(password)) {
-    return btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password));
-  } else {
-    throw new Error('Invalid password');
-  }
+  return encrypted
+    ? btoa(seedUtils.encryptSeed(JSON.stringify(addresses), password))
+    : btoa(encodeURIComponent(JSON.stringify(addresses)));
 };
 
 function download(json: string, filename: string) {
@@ -99,8 +94,15 @@ function download(json: string, filename: string) {
 export async function downloadKeystore(
   accounts?: Account[],
   addresses?: Record<string, string>,
-  password?: string
+  password?: string,
+  encrypted?: boolean
 ) {
+  const correctPassword = await background.checkPassword(password);
+
+  if (!correctPassword) {
+    throw new Error('Invalid password');
+  }
+
   const now = new Date();
   const pad = (zeroes: number, value: number) =>
     value.toString().padStart(zeroes, '0');
@@ -122,7 +124,7 @@ export async function downloadKeystore(
   if (addresses) {
     download(
       JSON.stringify({
-        addresses: await encryptAddresses(addresses, password),
+        addresses: await encryptAddresses(addresses, password, encrypted),
       }),
       `keystore-address-book-keeper-${nowStr}.json`
     );
