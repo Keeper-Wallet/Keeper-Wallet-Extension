@@ -14,13 +14,11 @@ export const ExportButton = ({ className }: Props) => {
   const { t } = useTranslation();
 
   const addresses = useAppSelector(state => state.addresses);
-  const allNetworksAccounts = useAppSelector(
-    state => state.allNetworksAccounts
-  );
+  const accounts = useAppSelector(state => state.allNetworksAccounts);
 
   const [showExportModal, setShowExportModal] = React.useState(false);
 
-  return allNetworksAccounts.length !== 0 ? (
+  return accounts.length !== 0 && Object.keys(addresses).length !== 0 ? (
     <>
       <div
         className={`${styles.export} ${className}`}
@@ -41,7 +39,7 @@ export const ExportButton = ({ className }: Props) => {
           }}
           onSubmit={async (password, encrypted) => {
             await downloadKeystore(
-              allNetworksAccounts.filter(isExportable),
+              accounts.filter(isExportable),
               addresses,
               password,
               encrypted
