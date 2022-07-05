@@ -18,7 +18,7 @@ export const ExportButton = ({ className }: Props) => {
 
   const [showExportModal, setShowExportModal] = React.useState(false);
 
-  return accounts.length !== 0 && Object.keys(addresses).length !== 0 ? (
+  return accounts.length !== 0 || Object.keys(addresses).length !== 0 ? (
     <>
       <div
         className={`${styles.export} ${className}`}
