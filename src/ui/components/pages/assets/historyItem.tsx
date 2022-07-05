@@ -82,6 +82,7 @@ export function HistoryItem({ tx, className }: Props) {
           className={styles.recipient}
           recipient={tx.recipient}
           chainId={chainId}
+          showAliasWarning={false}
         />
       );
       addSign = '-';
@@ -97,6 +98,7 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.recipient}
             recipient={tx.sender}
             chainId={chainId}
+            showAliasWarning={false}
           />
         );
         addSign = '+';
@@ -113,6 +115,7 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.recipient}
             recipient={tx.sender}
             chainId={chainId}
+            showAliasWarning={false}
           />
         );
         addSign = '';
@@ -198,6 +201,7 @@ export function HistoryItem({ tx, className }: Props) {
           className={styles.recipient}
           recipient={tx.recipient}
           chainId={chainId}
+          showAliasWarning={false}
         />
       );
       addSign = '-';
@@ -209,6 +213,7 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.recipient}
             recipient={tx.sender}
             chainId={chainId}
+            showAliasWarning={false}
           />
         );
         addSign = '+';
@@ -231,6 +236,7 @@ export function HistoryItem({ tx, className }: Props) {
           className={styles.recipient}
           recipient={tx.lease.recipient}
           chainId={chainId}
+          showAliasWarning={false}
         />
       );
       addSign = '+';
@@ -241,6 +247,7 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.recipient}
             recipient={tx.lease.sender}
             chainId={chainId}
+            showAliasWarning={false}
           />
         );
         addSign = '-';
@@ -268,6 +275,7 @@ export function HistoryItem({ tx, className }: Props) {
           className={styles.recipient}
           recipient={tx.sender}
           chainId={chainId}
+          showAliasWarning={false}
         />
       );
 
@@ -370,6 +378,7 @@ export function HistoryItem({ tx, className }: Props) {
             className={styles.recipient}
             recipient={tx.dApp}
             chainId={chainId}
+            showAliasWarning={false}
           />
         );
         info = tx.call?.function || 'default';
@@ -392,6 +401,7 @@ export function HistoryItem({ tx, className }: Props) {
               className={styles.recipient}
               recipient={tx.sender}
               chainId={chainId}
+              showAliasWarning={false}
             />
           );
           addSign = '+';
@@ -412,6 +422,7 @@ export function HistoryItem({ tx, className }: Props) {
               className={styles.recipient}
               recipient={payload.dApp}
               chainId={chainId}
+              showAliasWarning={false}
             />
           );
           info = payload.call?.function || 'default';
