@@ -1,5 +1,7 @@
 {
-  "accountCard": { "infoTooltip": "Informações da conta" },
+  "accountCard": {
+    "infoTooltip": "Informações da conta"
+  },
   "accountInfo": {
     "address": "Seu endereço",
     "backUp": "Frase de backup",
@@ -17,7 +19,9 @@
     "pubKey": "Chave Pública",
     "viewInExplorer": "Ver no Explorer"
   },
-  "activeAccountCard": { "swapButton": "Converter" },
+  "activeAccountCard": {
+    "swapButton": "Converter"
+  },
   "address": {
     "add": "Novo endereço",
     "addButton": "Adicionar novo",
@@ -75,27 +79,31 @@
     "title": "Selecionar um token"
   },
   "assets": {
+    "assets": "Ativos",
     "changeName": "Nome da conta alterado",
     "copied": "Copiado!",
     "deleteAccount": "Excluir conta",
+    "emptyAssets": "Você ainda não tem nenhum ativo",
+    "emptyHistory": "Ainda não há nada para mostrar",
+    "emptyNFTs": "Você ainda não tem nenhum NFT",
+    "history": "Histórico",
     "inStorage": "Outras contas",
     "issuedBy": "Emitido por {{ issuer }}",
-    "selectAccountNotification": "Conta ativa alterada",
-    "assets": "Ativos",
-    "nfts": "NFTs",
-    "emptyAssets": "Você ainda não tem nenhum ativo",
-    "notFoundAssets": "Nenhum ativo foi encontrado para os filtros especificados",
-    "emptyNFTs": "Você ainda não tem nenhum NFT",
-    "notFoundNFTs": "Nenhum NFT foi encontrado para os filtros especificados",
-    "emptyHistory": "Ainda não há nada para mostrar",
-    "notFoundHistory": "Nada foi encontrado entre as últimas {{ count }} transações pelos filtros especificados",
-    "maxHistory": "Apenas as últimas {{ count }} transações são exibidas",
     "maxFiltersHistory": "Filtros aplicados apenas às últimas {{ count }} transações",
-    "showExplorerHistory": "Veja histórico completo no Explorer",
-    "history": "Histórico",
-    "onlyMyAssets": "Apenas emitidos por mim",
+    "maxFiltersNFTs": "Os filtros são aplicados apenas às últimas {{ count }} NFTs",
+    "maxHistory": "Apenas as últimas {{ count }} transações são exibidas",
+    "maxNFTs": "Apenas as últimas {{ count }} NFTs são exibidas",
+    "nfts": "NFTs",
+    "notFoundAssets": "Nenhum ativo foi encontrado para os filtros especificados",
+    "notFoundHistory": "Nada foi encontrado entre as últimas {{ count }} transações pelos filtros especificados",
+    "notFoundMaxNFTs": "Nada foi encontrado entre as últimas {{ count }} NFTs pelos filtros especificados",
+    "notFoundNFTs": "Nenhum NFT foi encontrado para os filtros especificados",
     "onlyFavorites": "Apenas Favoritos",
-    "resetFilters": "Redefinir filtros"
+    "onlyMyAssets": "Apenas emitidos por mim",
+    "resetFilters": "Redefinir filtros",
+    "selectAccountNotification": "Conta ativa alterada",
+    "showExplorerHistory": "Veja histórico completo no Explorer",
+    "showExplorerNFTs": "Veja todos os NFTs no Explorer"
   },
   "backupSeed": {
     "backupCarefully": "Por favor, escreva cuidadosamente estas 15 palavras ou copie-as",
@@ -146,7 +154,9 @@
     "wrongSeed": "Sequência incorreta, tente novamente"
   },
   "copyAddress": "Copiar endereço",
-  "date": { "today": "Hoje" },
+  "date": {
+    "today": "Hoje"
+  },
   "deleteAccount": {
     "attention": "Atenção!",
     "delete": "Excluir conta",
@@ -355,7 +365,10 @@
     "joinUs": "Junte-se à comunidade Waves",
     "keepUp": "A Keeper Wallet é a maneira mais segura de interagir com recursos da Web de terceiros, com funcionalidade integrada a Waves ou DApps. Usando a Keeper Wallet, você pode assinar transações e permanecer protegido contra sites maliciosos."
   },
-  "langsSettings": { "confirm": "Confirmar", "title": "Alterar o idioma" },
+  "langsSettings": {
+    "confirm": "Confirmar",
+    "title": "Alterar o idioma"
+  },
   "ledgerErrors": {
     "unknown": "Não foi possível conectar ao ledger. Por favor, tente novamente",
     "usedBySomeOtherApp": "Parece que o ledger já está sendo usado por outro aplicativo. Feche todos os aplicativos que podem usar o ledger e tente novamente."
@@ -429,6 +442,18 @@
     "select": "Escolha o avatar do endereço",
     "selectInfo": "Esse avatar é único. Você não poderá alterá-lo depois."
   },
+  "nftCollection": {
+    "backToNftBtn": "Voltar para NFTs"
+  },
+  "nftInfo": {
+    "creator": "Criador",
+    "creatorUrlTooltip": "Visite a página do autor",
+    "description": "Descrição",
+    "sendBtn": "Enviar",
+    "backBtn": "Voltar",
+    "viewInExplorer": "Ver detalhes no Explorer",
+    "viewOnMarketplace": "Ver no marketplace"
+  },
   "otherAccounts": {
     "addAccount": "Adicionar Conta",
     "noAccountsNote": "Você não tem outras contas na rede atual",
@@ -477,7 +502,9 @@
     "collapse": "Recolher",
     "expand": "Expandir"
   },
-  "qrCode": { "download": "Baixar código QR" },
+  "qrCode": {
+    "download": "Baixar código QR"
+  },
   "send": {
     "amountInputLabel": "Valor",
     "amountRequiredError": "A quantia é obrigatória",
@@ -635,7 +662,9 @@
     "paymentsCount": "{{count}} Pagamento",
     "paymentsCount_plural": "{{count}} Pagamentos",
     "paymentsNone": "Sem Pagamentos",
-    "permission": { "details": "Detalhes da permissão" },
+    "permission": {
+      "details": "Detalhes da permissão"
+    },
     "price": "Preço",
     "publicKey": "Chave Pública",
     "recipient": "Destinatário",
@@ -665,7 +694,9 @@
     "unknown": "Desconhecido",
     "wavesAuthTimeStamp": "Time Stamp"
   },
-  "ui": { "logoTitle": "Mantenha suas chaves Waves seguras online" },
+  "ui": {
+    "logoTitle": "Mantenha suas chaves Waves seguras online"
+  },
   "notifications": {
     "allowSending": "Permitir o envio de mensagens",
     "toListBtn": "Notificações",
@@ -674,7 +705,9 @@
     "time": "Hora",
     "messages": "Mensagens"
   },
-  "wallet": { "lease": "Leased" },
+  "wallet": {
+    "lease": "Leased"
+  },
   "welcome": {
     "getStarted": "Iniciar",
     "info": "Keeper Wallet é a maneira mais segura de interagir com recursos da Web de terceiros, com funcionalidade integrada a Waves ou DApps.",

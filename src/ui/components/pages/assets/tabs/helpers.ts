@@ -1,78 +1,29 @@
 import { useAppDispatch, useAppSelector } from '../../../../store';
 import { setUiState } from '../../../../actions';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import {
-  AssetFilters,
-  NftFilters,
-  TxHistoryFilters,
-} from '../../../../reducers/updateState';
+import { UiState } from '../../../../reducers/updateState';
 import * as React from 'react';
-import { Dispatch, SetStateAction } from 'react';
 import { AssetDetail } from '../../../../services/Background';
+import { equals } from 'ramda';
+import { Nft } from 'nfts/utils';
+import { NftVendorKeys } from 'nfts';
 
-function useFilter<T, F extends keyof T>(name: string, fields: F[]) {
+export function useUiState<T extends keyof UiState>(
+  key: T
+): [UiState[T], (newState: UiState[T]) => void] {
   const dispatch = useAppDispatch();
-  const stateFilters: T = useAppSelector(state => state.uiState[name] || {});
+  const initialValue = useAppSelector(state => state.uiState[key]);
+  const [state, setState] = React.useState(initialValue);
+  return [
+    state,
+    newState => {
+      setState(newState);
 
-  const manageFilters = fields.reduce<{
-    [K in keyof T]?: [Pick<T, K>[K], Dispatch<SetStateAction<Pick<T, K>[K]>>];
-  }>((manage, field) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    manage[field] = React.useState<Pick<T, F>[F]>(stateFilters[field]);
-    return manage;
-  }, {});
-
-  const valueFilters = fields.reduce<{ [K in F]?: Pick<T, K>[K] }>(
-    (newFilters, field) => {
-      newFilters[field] = manageFilters[field][0];
-      return newFilters;
+      if (!equals(newState, state)) {
+        dispatch(setUiState({ [key]: newState }));
+      }
     },
-    {}
-  );
-
-  React.useEffect(() => {
-    if (
-      fields.reduce(
-        (isEqualEachFilter, field) =>
-          isEqualEachFilter && valueFilters[field] == stateFilters[field],
-        true
-      )
-    ) {
-      return;
-    }
-
-    dispatch(setUiState({ [name]: valueFilters }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valueFilters, stateFilters, dispatch, setUiState]);
-
-  return {
-    ...manageFilters,
-    clearFilters: () => {
-      fields.forEach(field => manageFilters[field][1](null));
-    },
-  };
-}
-
-export function useAssetFilter() {
-  return useFilter<AssetFilters, keyof AssetFilters>('assetFilters', [
-    'term',
-    'onlyMy',
-    'onlyFavorites',
-  ]);
-}
-
-export function useNftFilter() {
-  return useFilter<NftFilters, keyof NftFilters>('nftFilters', [
-    'term',
-    'onlyMy',
-  ]);
-}
-
-export function useTxHistoryFilter() {
-  return useFilter<TxHistoryFilters, keyof TxHistoryFilters>(
-    'txHistoryFilters',
-    ['term', 'type', 'onlyIncoming', 'onlyOutgoing']
-  );
+  ];
 }
 
 export function sortAssetEntries<T>(
@@ -96,6 +47,34 @@ export function sortAssetEntries<T>(
               assets[b].displayName ?? ''
             )))
     );
+}
+
+export function sortAndFilterNfts<T extends Nft>(
+  nfts: T[],
+  filters: {
+    term?: string;
+    creator?: string;
+  }
+) {
+  const { creator, term } = filters;
+
+  if (creator) {
+    nfts = nfts.filter(nft => nft.creator === creator);
+  }
+
+  if (term) {
+    nfts = nfts.filter(
+      nft =>
+        nft.id.toLowerCase() === term.toLowerCase() ||
+        nft.creator.toLowerCase() === term.toLowerCase() ||
+        nft.displayCreator.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
+        nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1
+    );
+  }
+
+  return nfts.sort((a, b) => {
+    return NftVendorKeys.indexOf(a.vendor) - NftVendorKeys.indexOf(b.vendor);
+  });
 }
 
 export const MONTH = [

@@ -79,27 +79,31 @@
     "title": "Seleccionar un token"
   },
   "assets": {
+    "assets": "Activos",
     "changeName": "Nombre de la cuenta cambiado",
     "copied": "¡Copiado!",
     "deleteAccount": "Eliminar cuenta",
+    "emptyAssets": "No tienes ningun activo aún",
+    "emptyHistory": "No hay nada para mostrar aún",
+    "emptyNFTs": "Aún no tienes ningún NFT",
+    "history": "Historial",
     "inStorage": "Otras cuentas",
     "issuedBy": "Emitido por {{ issuer }}",
-    "selectAccountNotification": "Cuenta activa cambiada",
-    "assets": "Activos",
-    "nfts": "NFTs",
-    "emptyAssets": "No tienes ningun activo aún",
-    "notFoundAssets": "Ningún activo fue encontrado para los filtros especificados",
-    "emptyNFTs": "Aún no tienes ningún NFT",
-    "notFoundNFTs": "Ningún NFT fue encontrado para los filtros especificados",
-    "emptyHistory": "No hay nada para mostrar aún",
-    "notFoundHistory": "Los filtros especificados no encontraron nada entre las últimas {{ count }} transacciones",
-    "maxHistory": "Solo se muestran las últimas {{ count }} transacciones",
     "maxFiltersHistory": "Los filtros se aplican solo a las últimas {{ count }} transacciones",
-    "showExplorerHistory": "Mirar todo el historial en el explorador",
-    "history": "Historial",
-    "onlyMyAssets": "Solo emitido por mí",
+    "maxFiltersNFTs": "Los filtros se aplican sólo a los últimos {{ count }} NFTs",
+    "maxHistory": "Solo se muestran las últimas {{ count }} transacciones",
+    "maxNFTs": "Sólo los últimos {{ count }} NFTs",
+    "nfts": "NFTs",
+    "notFoundAssets": "Ningún activo fue encontrado para los filtros especificados",
+    "notFoundHistory": "Los filtros especificados no encontraron nada entre las últimas {{ count }} transacciones",
+    "notFoundMaxNFTs": "No se ha encontrado nada entre los últimos {{ count }} NFTs por los filtros especificados",
+    "notFoundNFTs": "Ningún NFT fue encontrado para los filtros especificados",
     "onlyFavorites": "Solo favoritos",
-    "resetFilters": "Restablecer filtros"
+    "onlyMyAssets": "Solo emitido por mí",
+    "resetFilters": "Restablecer filtros",
+    "selectAccountNotification": "Cuenta activa cambiada",
+    "showExplorerHistory": "Mirar todo el historial en el explorador",
+    "showExplorerNFTs": "Ver todos los NFTs en el Explorador"
   },
   "backupSeed": {
     "backupCarefully": "Por favor, escriba cuidadosamente estas 15 palabras o cópielas.",
@@ -437,6 +441,18 @@
     "createNew": "Crear una nueva cuenta",
     "select": "Elige tu dirección avatar",
     "selectInfo": "Este avatar es único. No puedes cambiarlo más tarde."
+  },
+  "nftCollection": {
+    "backToNftBtn": "Volver a los NFT"
+  },
+  "nftInfo": {
+    "backBtn": "Atrás",
+    "creator": "Creador",
+    "creatorUrlTooltip": "Visita la página del autor",
+    "description": "Descripción",
+    "sendBtn": "Enviar",
+    "viewInExplorer": "Ver detalles en el Explorador",
+    "viewOnMarketplace": "Ver en el mercado"
   },
   "otherAccounts": {
     "addAccount": "Añadir cuenta",

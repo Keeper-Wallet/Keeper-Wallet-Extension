@@ -75,27 +75,31 @@
     "title": "Выберите токен"
   },
   "assets": {
+    "assets": "Активы",
     "changeName": "Имя аккаунта было изменено",
     "copied": "Скопировано!",
     "deleteAccount": "Удалить аккаунт",
+    "emptyAssets": "У вас пока нет ни одного актива",
+    "emptyHistory": "Тут пока ничего нет",
+    "emptyNFTs": "У вас пока нет NFT",
+    "history": "История",
     "inStorage": "Другие аккаунты",
     "issuedBy": "Выпущен {{ issuer }}",
-    "selectAccountNotification": "Активный аккаунт был изменен",
-    "assets": "Активы",
-    "nfts": "NFT",
-    "emptyAssets": "У вас пока нет ни одного актива",
-    "notFoundAssets": "Для указанных фильтров активов не найдено",
-    "emptyNFTs": "У вас пока нет NFT",
-    "notFoundNFTs": "Для указанных фильтров NFT не найдено",
-    "emptyHistory": "Тут пока ничего нет",
-    "notFoundHistory": "Среди последних {{ count }} транзакций по указанным фильтрам ничего не найдено",
-    "maxHistory": "Отображаются только последние {{ count }} транзакций",
     "maxFiltersHistory": "Фильтры применяются только к последним {{ count }} транзакциям",
-    "showExplorerHistory": "Посмотреть всю историю в Explorer",
-    "history": "История",
-    "onlyMyAssets": "Только выпущенные мной",
+    "maxFiltersNFTs": "Фильтры применяются только к последним {{ count }} NFTs",
+    "maxHistory": "Отображаются только последние {{ count }} транзакций",
+    "maxNFTs": "Отображаются только последние {{ count }} NFT",
+    "nfts": "NFT",
+    "notFoundAssets": "Для указанных фильтров активов не найдено",
+    "notFoundHistory": "Среди последних {{ count }} транзакций по указанным фильтрам ничего не найдено",
+    "notFoundMaxNFTs": "Среди последних {{ count }} NFT по указанным фильтрам ничего не найдено.",
+    "notFoundNFTs": "Для указанных фильтров NFT не найдено",
     "onlyFavorites": "Только избранные",
-    "resetFilters": "Сбросить фильтры"
+    "onlyMyAssets": "Только выпущенные мной",
+    "resetFilters": "Сбросить фильтры",
+    "selectAccountNotification": "Активный аккаунт был изменен",
+    "showExplorerHistory": "Посмотреть всю историю в Explorer",
+    "showExplorerNFTs": "Просмотреть все NFT в Explorer"
   },
   "backupSeed": {
     "backupCarefully": "Пожалуйста, внимательно перепишите эти 15 слов или скопируйте их",
@@ -432,6 +436,18 @@
     "createNew": "Создать новый аккаунт",
     "select": "Выберите аватар для вашего адреса",
     "selectInfo": "Аватар уникален. Его нельзя изменить позже."
+  },
+  "nftCollection": {
+    "backToNftBtn": "Вернуться к NFT"
+  },
+  "nftInfo": {
+    "creator": "Автор",
+    "creatorUrlTooltip": "Посетить страницу автора",
+    "description": "Описание",
+    "sendBtn": "Отправить",
+    "backBtn": "Назад",
+    "viewInExplorer": "Посмотреть подробности в Explorer",
+    "viewOnMarketplace": "Посмотреть на маркетплейсе"
   },
   "otherAccounts": {
     "addAccount": "Добавить аккаунт",

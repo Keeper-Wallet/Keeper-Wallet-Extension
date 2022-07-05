@@ -1,169 +1,97 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
-import { icontains } from 'ui/components/pages/assets/helpers';
-import { useTranslation } from 'react-i18next';
-import { NftItem } from 'ui/components/pages/assets/nftItem';
+import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { CSSProperties } from 'react';
-import { useAppSelector } from 'ui/store';
-import { CARD_FULL_HEIGHT, FULL_GROUP_HEIGHT, useNftFilter } from './helpers';
-import { Tooltip } from 'ui/components/ui/tooltip';
-import { VariableSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { useAppDispatch, useAppSelector } from 'ui/store';
+import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
-import { AssetDetail } from 'ui/services/Background';
-import { Asset } from '@waves/data-entities';
+import { NftList } from 'nfts/nftList';
+import { DisplayMode } from 'nfts';
+import { PAGES } from 'ui/pageConfig';
+import { setTab } from 'ui/actions';
+import { createNft, Nft } from 'nfts/utils';
+import { getNftsLink } from 'ui/urls';
+import { MAX_NFT_ITEMS } from 'controllers/CurrentAccountController';
 
-const Row = ({
-  data,
-  index,
-  style,
-}: {
-  data: {
-    nftWithGroups: Array<{ groupName: string } | Asset>;
-    onInfoClick: (assetId: string) => void;
-    onSendClick: (assetId: string) => void;
-  };
-  index: number;
-  style: CSSProperties;
-}) => {
-  const { t } = useTranslation();
-  const { nftWithGroups, onInfoClick, onSendClick } = data;
-  const nftOrGroup = nftWithGroups[index];
-
-  return (
-    <div style={style}>
-      {'groupName' in nftOrGroup ? (
-        <div className={cn('basic500 margin-min', 'margin-min-top')}>
-          {t('assets.issuedBy', { issuer: nftOrGroup.groupName })}
-        </div>
-      ) : (
-        <NftItem
-          asset={nftOrGroup}
-          onInfoClick={onInfoClick}
-          onSendClick={onSendClick}
-        />
-      )}
-    </div>
-  );
-};
-
-const PLACEHOLDERS = [...Array(4).keys()].map<AssetDetail>(
+const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
     ({
       id: `${key}`,
-    } as AssetDetail)
+      creator: `${key}`,
+    } as Nft)
 );
 
-export function TabNfts({
-  onInfoClick,
-  onSendClick,
-}: {
-  onInfoClick: (assetId: string) => void;
-  onSendClick: (assetId: string) => void;
-}) {
+export function TabNfts() {
   const { t } = useTranslation();
+
   const address = useAppSelector(state => state.selectedAccount.address);
+  const networkCode = useAppSelector(
+    state => state.selectedAccount.networkCode
+  );
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  const nfts = useAppSelector(state => state.nfts);
 
-  const {
-    term: [term, setTerm],
-    onlyMy: [onlyMy, setOnlyMy],
-    clearFilters,
-  } = useNftFilter();
+  const dispatch = useAppDispatch();
 
-  const listRef = React.useRef<VariableSizeList>();
+  const [filters, setFilters] = useUiState('nftFilters');
+  const [term, setTerm] = [
+    filters?.term,
+    value => setFilters({ ...filters, term: value }),
+  ];
+  const setCreator = value => setFilters({ ...filters, creator: value });
 
-  React.useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [myNfts]);
+  const getNftDetails = React.useCallback(
+    nft => createNft(nft, nfts[nft.id], address),
+    [nfts, address]
+  );
 
-  const nftWithGroups = myNfts
-    ? myNfts
-        .filter(
-          nft =>
-            (!onlyMy || nft.issuer === address) &&
-            (!term || nft.id === term || icontains(nft.displayName, term))
-        )
-        .sort(
-          (a, b) =>
-            (a.issuer ?? '').localeCompare(b.issuer ?? '') ||
-            (a.displayName ?? '').localeCompare(b.displayName ?? '')
-        )
-        .reduce<Array<AssetDetail | { groupName: string }>>(
-          (result, item, index, prevItems) => {
-            if (
-              item.issuer &&
-              (!prevItems[index - 1] ||
-                prevItems[index - 1].issuer !== item.issuer)
-            ) {
-              result.push({ groupName: item.issuer });
-            }
-            result.push(item);
-            return result;
-          },
-          []
-        )
-    : PLACEHOLDERS;
+  const sortedNfts =
+    myNfts && nfts
+      ? sortAndFilterNfts(myNfts.map(getNftDetails), { term })
+      : PLACEHOLDERS;
+
+  const [creatorNfts, creatorCounts] = sortedNfts.reduce<
+    [Nft[], Record<string, number>]
+  >(
+    ([creatorNfts, creatorCounts], current) => {
+      const creator = current.creator;
+      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
+        creatorCounts[creator] += 1;
+        return [creatorNfts, creatorCounts];
+      }
+
+      creatorCounts[creator] = 1;
+      creatorNfts.push(current);
+
+      return [creatorNfts, creatorCounts];
+    },
+    [[], {}]
+  );
+
   return (
     <TabPanel className={styles.assetsPanel}>
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => {
-            listRef.current && listRef.current.resetAfterIndex(0);
-            setTerm(e.target.value);
-          }}
-          onClear={() => {
-            listRef.current && listRef.current.resetAfterIndex(0);
-            setTerm('');
-          }}
+          onInput={e => setTerm(e.target.value)}
+          onClear={() => setTerm('')}
         />
-        <Tooltip content={t('assets.onlyMyAssets')}>
-          {props => (
-            <div
-              className={styles.filterBtn}
-              onClick={() => {
-                listRef.current && listRef.current.resetAfterIndex(0);
-                setOnlyMy(!onlyMy);
-              }}
-              {...props}
-            >
-              <svg
-                className={styles.filterBtnIcon}
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
-                <path
-                  fill={
-                    onlyMy ? 'var(--color-submit400)' : 'var(--color-basic500)'
-                  }
-                  fillOpacity=".01"
-                  d="M0 0h14v14H0z"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M7 5.6c1.534 0 2.778-1.254 2.778-2.8C9.778 1.254 8.534 0 7 0S4.222 1.254 4.222 2.8c0 1.546 1.244 2.8 2.778 2.8Zm-5 6.16c.003-2.782 2.24-5.037 5-5.04 2.76.003 4.997 2.258 5 5.04v1.68c0 .31-.249.56-.556.56H2.556A.558.558 0 0 1 2 13.44v-1.68Z"
-                  fill={
-                    onlyMy ? 'var(--color-submit400)' : 'var(--color-basic500)'
-                  }
-                />
-              </svg>
-            </div>
-          )}
-        </Tooltip>
       </div>
-      {nftWithGroups.length === 0 ? (
+      {sortedNfts.length === 0 ? (
         <div className={cn('basic500 center margin-min-top', styles.tabInfo)}>
-          {term || onlyMy ? (
+          {term ? (
             <>
-              <div className="margin-min">{t('assets.notFoundNFTs')}</div>
-              <p className="blue link" onClick={() => clearFilters()}>
+              <div className="margin-min">
+                {myNfts?.length > MAX_NFT_ITEMS - 1 ? (
+                  <Trans
+                    i18nKey="assets.notFoundMaxNFTs"
+                    values={{ count: MAX_NFT_ITEMS }}
+                  />
+                ) : (
+                  t('assets.notFoundNFTs')
+                )}
+              </div>
+              <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
             </>
@@ -172,33 +100,42 @@ export function TabNfts({
           )}
         </div>
       ) : (
-        <div className={styles.nftList}>
-          <AutoSizer>
-            {({ height, width }) => {
-              return (
-                <VariableSizeList
-                  ref={listRef}
-                  height={height}
-                  width={width}
-                  itemCount={nftWithGroups.length}
-                  itemSize={index =>
-                    'groupName' in nftWithGroups[index]
-                      ? FULL_GROUP_HEIGHT
-                      : CARD_FULL_HEIGHT
-                  }
-                  itemData={{ nftWithGroups, onInfoClick, onSendClick }}
-                  itemKey={(index, { nftWithGroups }) =>
-                    'groupName' in nftWithGroups[index]
-                      ? `g:${nftWithGroups[index].groupName}`
-                      : `a:${nftWithGroups[index].id}`
-                  }
+        <NftList
+          mode={DisplayMode.Creator}
+          nfts={creatorNfts}
+          counters={creatorCounts}
+          onClick={(asset: Nft) => {
+            setCreator(asset.creator);
+            dispatch(setTab(PAGES.NFT_COLLECTION));
+          }}
+          renderMore={() =>
+            myNfts?.length > MAX_NFT_ITEMS - 1 && (
+              <div className={cn(styles.nftListMore, 'basic500')}>
+                <div className="margin-min">
+                  {term ? (
+                    <Trans
+                      t={t}
+                      i18nKey="assets.maxFiltersNFTs"
+                      values={{ count: MAX_NFT_ITEMS }}
+                    />
+                  ) : (
+                    t('assets.maxNFTs', {
+                      count: MAX_NFT_ITEMS,
+                    })
+                  )}
+                </div>
+                <a
+                  className="blue link"
+                  href={getNftsLink(networkCode, address)}
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
-                  {Row}
-                </VariableSizeList>
-              );
-            }}
-          </AutoSizer>
-        </div>
+                  {t('assets.showExplorerNFTs')}
+                </a>
+              </div>
+            )
+          }
+        />
       )}
     </TabPanel>
   );

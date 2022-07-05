@@ -4,6 +4,7 @@ import { Button, Input } from 'ui/components/ui';
 import cn from 'classnames';
 
 interface Props extends React.HTMLProps<HTMLInputElement> {
+  className?: string;
   onInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClear?: () => void;
 }

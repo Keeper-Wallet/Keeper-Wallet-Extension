@@ -3,18 +3,17 @@ import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
-const MAX_NFT_ITEMS = 1000;
+export const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
 export class CurrentAccountController {
   constructor({
     localStore,
     assetInfoController,
-    getNetworkConfig,
+    nftInfoController,
     getAccounts,
     getNetwork,
     getNode,
-    getCode,
     getSelectedAccount,
     isLocked,
   }) {
@@ -25,11 +24,10 @@ export class CurrentAccountController {
     localStore.subscribe(this.store);
 
     this.assetInfoController = assetInfoController;
-    this.getNetworkConfig = getNetworkConfig;
+    this.nftInfoController = nftInfoController;
     this.getAccounts = getAccounts;
     this.getNetwork = getNetwork;
     this.getNode = getNode;
-    this.getCode = getCode;
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
@@ -141,6 +139,7 @@ export class CurrentAccountController {
               );
 
             await this.assetInfoController.updateAssets(fetchAssetIds);
+            await this.nftInfoController.updateNfts(myNfts);
           }
 
           const available = new BigNumber(wavesBalances.available);

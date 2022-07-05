@@ -715,9 +715,9 @@ export enum WalletTypes {
 }
 
 export interface AssetDetail extends IAssetInfo {
-  displayName: string;
   originTransactionId: string;
   issuer?: string;
+  displayName: string;
   isFavorite?: boolean;
   isSuspicious?: boolean;
 }

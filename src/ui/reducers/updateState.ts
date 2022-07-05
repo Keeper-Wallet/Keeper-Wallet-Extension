@@ -2,6 +2,8 @@ import { Account, NetworkName } from 'accounts/types';
 import { ACTION } from '../actions';
 import { AssetDetail } from '../services/Background';
 import { TransactionFromNode } from '@waves/ts-types';
+import { NftInfo } from 'nfts';
+import { Nft } from 'nfts/utils';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -28,7 +30,7 @@ export type AssetFilters = {
 };
 export type NftFilters = {
   term?: string;
-  onlyMy?: boolean;
+  creator?: string;
 };
 export type TxHistoryFilters = {
   term?: string;
@@ -42,7 +44,7 @@ export interface UiState {
   assetFilters?: AssetFilters;
   assetsTab?: number;
   autoClickProtection?: boolean;
-  currentAsset?: AssetDetail;
+  currentAsset?: AssetDetail | Nft;
   isFeatureUpdateShown?: boolean;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
@@ -84,9 +86,9 @@ export const networks = createSimpleReducer<
 >([], ACTION.UPDATE_NETWORKS);
 
 export const currentNetwork = createSimpleReducer<
-  'custom' | 'mainnet' | 'stagenet' | 'testnet',
+  NetworkName,
   typeof ACTION.UPDATE_CURRENT_NETWORK
->('mainnet', ACTION.UPDATE_CURRENT_NETWORK);
+>(NetworkName.Mainnet, ACTION.UPDATE_CURRENT_NETWORK);
 
 export interface AssetBalance {
   balance: string;
@@ -148,6 +150,11 @@ export const usdPrices = createSimpleReducer<Record<string, string>>(
 export const addresses = createSimpleReducer<Record<string, string>>(
   {},
   ACTION.UPDATE_ADDRESSES
+);
+
+export const nfts = createSimpleReducer<Record<string, NftInfo>>(
+  null,
+  ACTION.UPDATE_NFTS
 );
 
 export const backTabs = (

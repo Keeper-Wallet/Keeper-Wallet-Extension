@@ -288,27 +288,11 @@ export class AssetInfoController {
                 text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
               )
             );
-          const mapped = {
-            quantity: assetInfo.quantity,
-            ticker: assetTickers[assetInfo.assetId],
-            id: assetInfo.assetId,
-            name: assetInfo.name,
-            precision: assetInfo.decimals,
-            description: assetInfo.description,
-            height: assetInfo.issueHeight,
-            timestamp: new Date(parseInt(assetInfo.issueTimestamp)).toJSON(),
-            sender: assetInfo.issuer,
-            hasScript: assetInfo.scripted,
-            reissuable: assetInfo.reissuable,
-            displayName: assetTickers[assetInfo.assetId] || assetInfo.name,
-            minSponsoredFee: assetInfo.minSponsoredAssetFee,
-            originTransactionId: assetInfo.originTransactionId,
-            issuer: assetInfo.issuer,
-            isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
-            lastUpdated: new Date().getTime(),
-          };
           assets[network] = assets[network] || {};
-          assets[network][assetId] = { ...assets[network][assetId], ...mapped };
+          assets[network][assetId] = {
+            ...assets[network][assetId],
+            ...this.toAssetDetails(assetInfo),
+          };
           this.store.updateState({ assets });
           break;
         }
@@ -324,6 +308,28 @@ export class AssetInfoController {
     }
 
     return assets[network][assetId];
+  }
+
+  toAssetDetails(info) {
+    return {
+      id: info.assetId,
+      name: info.name,
+      precision: info.decimals,
+      description: info.description,
+      height: info.issueHeight,
+      timestamp: new Date(parseInt(info.issueTimestamp)).toJSON(),
+      sender: info.issuer,
+      quantity: info.quantity,
+      reissuable: info.reissuable,
+      hasScript: info.scripted,
+      ticker: assetTickers[info.assetId],
+      displayName: assetTickers[info.assetId] || info.name,
+      minSponsoredFee: info.minSponsoredAssetFee,
+      originTransactionId: info.originTransactionId,
+      issuer: info.issuer,
+      isSuspicious: this.isSuspiciousAsset(info.assetId),
+      lastUpdated: new Date().getTime(),
+    };
   }
 
   async toggleAssetFavorite(assetId) {
@@ -367,29 +373,12 @@ export class AssetInfoController {
     switch (resp.status) {
       case 200: {
         const assetInfos = await resp.json();
-        const lastUpdated = new Date().getTime();
 
         assetInfos.forEach(assetInfo => {
           if (!assetInfo.error) {
             assets[network][assetInfo.assetId] = {
               ...assets[network][assetInfo.assetId],
-              id: assetInfo.assetId,
-              name: assetInfo.name,
-              precision: assetInfo.decimals,
-              description: assetInfo.description,
-              height: assetInfo.issueHeight,
-              timestamp: new Date(parseInt(assetInfo.issueTimestamp)).toJSON(),
-              sender: assetInfo.issuer,
-              quantity: assetInfo.quantity,
-              reissuable: assetInfo.reissuable,
-              hasScript: assetInfo.scripted,
-              ticker: assetTickers[assetInfo.assetId],
-              displayName: assetTickers[assetInfo.assetId] || assetInfo.name,
-              minSponsoredFee: assetInfo.minSponsoredAssetFee,
-              originTransactionId: assetInfo.originTransactionId,
-              issuer: assetInfo.issuer,
-              isSuspicious: this.isSuspiciousAsset(assetInfo.assetId),
-              lastUpdated,
+              ...this.toAssetDetails(assetInfo),
             };
           }
         });

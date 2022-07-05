@@ -13,3 +13,4 @@ export { NotificationsController } from './NotificationsController';
 export { StatisticsController } from './Statistics';
 export { TrashController } from './Trash';
 export { IdentityController } from './IdentityController';
+export { NftInfoController } from './NftInfoController';
