@@ -41,6 +41,7 @@
     "name": "Nome",
     "nameAlreadyExist": "O nome já existe",
     "nameInvalidError": "Nome inválido",
+    "notFound": "Endereços não encontrados",
     "save": "Salvar endereço",
     "saveChanges": "Salvar mudanças",
     "select": "Escolha seu endereço",

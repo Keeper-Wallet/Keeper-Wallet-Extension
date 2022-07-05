@@ -41,6 +41,7 @@
     "name": "Nama",
     "nameAlreadyExist": "Nama sudah ada",
     "nameInvalidError": "Nama alamat tidak valid",
+    "notFound": "Alamat tidak ditemukan",
     "save": "Simpan alamat",
     "saveChanges": "Simpan perubahan",
     "select": "Pilih address",
