@@ -68,7 +68,7 @@ export async function fetchAllNfts(
   const signArts = [];
 
   for (const nft of nfts) {
-    switch (this.nftType(nft)) {
+    switch (nftType(nft)) {
       case NftVendor.Ducks:
         ducks.push(nft);
         break;
