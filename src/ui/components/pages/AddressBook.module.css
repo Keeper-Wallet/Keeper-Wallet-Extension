@@ -69,6 +69,12 @@
   margin: 0 14px 10px;
 }
 
+.notFound {
+  margin: 24px;
+  color: var(--color-basic500);
+  text-align: center;
+}
+
 .cardList {
   flex-grow: 1;
   padding-bottom: 14px;

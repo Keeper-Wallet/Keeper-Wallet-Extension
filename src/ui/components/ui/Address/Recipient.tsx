@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { Tooltip } from '../tooltip';
 import { AddModal } from './AddModal';
+import { Ellipsis } from '../../ui';
 import { AddressTooltip } from './Tooltip';
 
 export interface Props {
@@ -87,25 +88,25 @@ export function AddressRecipient({
             placement="auto-end"
           >
             {props => (
-              <p
-                className={cn(styles.recipient, {
-                  [styles.ethereum]: type === 'ethereum',
-                  [styles.waves]: type === 'waves',
-                })}
-                {...props}
-              >
-                {address}
+              <p className={styles.recipientWrapper} {...props}>
+                <Ellipsis
+                  text={address}
+                  size={12}
+                  className={cn(styles.recipient, {
+                    [styles.ethereum]: type === 'ethereum',
+                    [styles.waves]: type === 'waves',
+                  })}
+                />
               </p>
             )}
           </Tooltip>
           <Tooltip content={t('address.addTooltip')} placement="auto-end">
             {props => (
-              <button
+              <i
                 className={styles.addButtonIcon}
                 onClick={() => {
                   setShowAddModal(true);
                 }}
-                type="button"
                 {...props}
               />
             )}

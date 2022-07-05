@@ -37,6 +37,7 @@
     "name": "名前",
     "nameAlreadyExist": "名前が既に存在しています",
     "nameInvalidError": "名前値が無効です",
+    "notFound": "アドレスが見つかりません",
     "save": "アドレスを保存",
     "saveChanges": "変更を保存",
     "select": "アドレスを選択",

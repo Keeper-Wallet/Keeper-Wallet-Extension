@@ -38,6 +38,7 @@
     "name": "名称",
     "nameAlreadyExist": "名称已存在",
     "nameInvalidError": "名称不正确",
+    "notFound": "地址未找到",
     "save": "保存地址",
     "saveChanges": "保存更改",
     "select": "选择您的地址",

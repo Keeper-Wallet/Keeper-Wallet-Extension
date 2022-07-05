@@ -37,6 +37,7 @@
     "name": "Tên",
     "nameAlreadyExist": "Tên đã tồn tại",
     "nameInvalidError": "Giá trị tên không hợp lệ",
+    "notFound": "Địa chỉ không hợp lệ",
     "save": "Lưu địa chỉ",
     "saveChanges": "Lưu thay đổi",
     "select": "Chọn địa chỉ của bạn",
