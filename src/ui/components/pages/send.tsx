@@ -141,24 +141,7 @@ export function Send() {
               }}
             />
 
-            {showRecipientError ? (
-              <Error show={showRecipientError}>{recipientError}</Error>
-            ) : (
-              isEthereumAddress(recipientValue) && (
-                <div className={styles.recipientHelper}>
-                  <svg width="14" height="14" viewBox="0 0 7 7">
-                    <rect
-                      x="3.01849"
-                      width="4.26214"
-                      height="4.26877"
-                      transform="rotate(45 3.01849 0)"
-                      fill="var(--color-basic500)"
-                    />
-                  </svg>
-                  <div className={styles.wavesAddress}>{recipientAddress}</div>
-                </div>
-              )
-            )}
+            <Error show={showRecipientError}>{recipientError}</Error>
           </div>
 
           {!isNft && (

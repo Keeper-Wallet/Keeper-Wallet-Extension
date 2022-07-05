@@ -158,6 +158,20 @@
     "delete": "Hapus akun",
     "warn": "Menghapus akun dapat menyebabkan hilangnya akses ke dana yang tidak dapat diperbaiki! Selalu pastikan Anda telah mencadangkan SEED Anda."
   },
+  "errorPage": {
+    "copied": "Disalin!",
+    "copyToClipboard": "Salin ke papan klip",
+    "detail": "Detail kesalahan",
+    "export": "Ekspor akun dan buku alamat",
+    "sembunyikan": "Sembunyikan",
+    "reload": "Coba muat ulang",
+    "reset": "Setel ulang ekstensi",
+    "resetButton": "Setel ulang dompet",
+    "resetDescription": "Setelah tindakan ini kami menghapus semua informasi sekunder (misalnya token favorit). Anda juga harus Masuk sekali lagi .",
+    "resetTitle": "Perhatian",
+    "show": "Lihat",
+    "title": "Ada yang tidak beres"
+  },
   "exportAndImport": {
     "exportAccounts": "Ekspor akun",
     "importAccounts": "Impor akun",
@@ -174,7 +188,7 @@
     "chooseContactsDesc": "Pilih alamat mana yang ingin anda ekspor. alamat tersebut akan dienkripsi dan diekspor ke file Keystore",
     "chooseContactsExportBtn": "Lanjut",
     "chooseContactsTitle": "Ekspor Kontak ke file",
-    "encrypt": "Enkripsi file",
+    "encryptAddressBook": "Enkripsi Buku Alamat",
     "exportNotSupported": "Akun ini tidak dapat diekspor",
     "passwordError": "Sandi salah",
     "passwordLabel": "Password",

@@ -88,7 +88,7 @@ export function ExportPasswordModal({
           {showEncrypted && (
             <div className={styles.encrypt}>
               <p className={styles.encryptTitle}>
-                {t('exportKeystore.encrypt')}
+                {t('exportKeystore.encryptAddressBook')}
               </p>
               <input
                 type="checkbox"
