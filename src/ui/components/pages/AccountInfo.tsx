@@ -90,10 +90,9 @@ class AccountInfoComponent extends React.Component<Props, State> {
   render() {
     const { t, selectedAccount } = this.props;
 
-    // temporary
-    // if (!selectedAccount) {
-    //   return null;
-    // }
+    if (!selectedAccount) {
+      return null;
+    }
 
     const { onCopyHandler } = this;
     const { leaseBalance } = this.state;
