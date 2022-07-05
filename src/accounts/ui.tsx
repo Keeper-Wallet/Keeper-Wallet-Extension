@@ -16,6 +16,7 @@ import * as PortStream from 'lib/port-stream.js';
 import { setLangs, setTabMode } from 'ui/actions';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';
+import { Error } from 'ui/components/pages/Error';
 import { LANGS } from 'ui/i18n';
 import backgroundService from 'ui/services/Background';
 import { createAccountsStore } from './store';
@@ -40,9 +41,11 @@ async function startUi() {
 
   ReactDOM.render(
     <Provider store={store}>
-      <div className="app">
-        <RootAccounts />
-      </div>
+      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
+        <div className="app">
+          <RootAccounts />
+        </div>
+      </Sentry.ErrorBoundary>
     </Provider>,
     document.getElementById('app-content')
   );

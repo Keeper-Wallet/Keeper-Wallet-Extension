@@ -50,7 +50,7 @@ export function ImportKeystoreChooseFile({
         try {
           setShowPassword(
             !Object.values(JSON.parse(reader.result)).every(
-              (text: string) => !!JSON.parse(atob(text))
+              (text: string) => !!JSON.parse(decodeURIComponent(atob(text)))
             )
           );
         } catch {

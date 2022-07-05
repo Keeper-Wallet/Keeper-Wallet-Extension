@@ -16,7 +16,7 @@ const getClassName = (className?: string, view?: View, loading?: boolean) =>
   cn(className, styles.button, {
     [styles.custom]: view === 'custom',
     [styles.danger]: view === 'danger',
-    [styles.default]: !view,
+    [styles.defaultView]: !view,
     [styles.icon]: view === 'icon',
     [styles.interface]: view === 'interface',
     [styles.loading]: !!loading,

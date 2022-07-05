@@ -22,7 +22,7 @@ function parseAddressBook(json: string): EncryptedAddressBook | null {
           try {
             return password
               ? JSON.parse(seedUtils.decryptSeed(atob(addresses), password))
-              : JSON.parse(atob(addresses));
+              : JSON.parse(decodeURIComponent(atob(addresses)));
           } catch (err) {
             return null;
           }

@@ -97,11 +97,13 @@
 }
 
 .cardName {
+  display: inline-block;
   max-width: 220px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   overflow: hidden;
   font-weight: 700;
   font-size: 14px;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 

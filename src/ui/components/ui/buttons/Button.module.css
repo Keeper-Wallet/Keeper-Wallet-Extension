@@ -54,14 +54,14 @@
   transition: none;
 }
 
-.default {
+.defaultView {
   color: #000000;
   font-weight: 300;
   background-color: #ffffff;
   border: 1px solid #dae1e9;
 }
 
-.default:hover {
+.defaultView:hover {
   border: 1px solid #000000;
 }
 

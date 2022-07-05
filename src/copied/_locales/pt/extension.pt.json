@@ -162,6 +162,20 @@
     "delete": "Excluir conta",
     "warn": "A exclusão de uma conta pode levar à perda irrecuperável do acesso aos fundos! Certifique-se sempre de fazer backup da sua SEED."
   },
+  "errorPage": {
+    "copied": "Copiado!",
+    "copyToClipboard": "Copiar para área de transferência",
+    "details": "Detalhes do erro",
+    "export": "Exportar contas e livro de endereços",
+    "hide": "Esconder",
+    "reload": "Tente recarregar",
+    "reset": "Redefinição de extensão",
+    "resetButton": "Redefinir a carteira",
+    "resetDescription": "Após esta ação, excluímos todas as informações secundárias (por exemplo, tokens favoritos). Além disso, você precisará fazer login novamente.",
+    "resetTitle": "Atenção",
+    "show": "Mostrar",
+    "title": "Algo deu errado"
+  },
   "exportAndImport": {
     "exportAccounts": "Exportar contas",
     "importAccounts": "Importar contas",
@@ -178,7 +192,7 @@
     "chooseContactsDesc": "Selecione qual endereço você deseja exportar. Eles serão criptografados e exportados para um arquivo Keystore",
     "chooseContactsExportBtn": "Continue",
     "chooseContactsTitle": "Export Contacts to file",
-    "encrypt": "Criptografar o arquivo",
+    "encryptAddressBook": "Criptografar o livro de endereços",
     "exportNotSupported": "Esta conta não pode ser exportada",
     "passwordError": "Senha incorreta",
     "passwordLabel": "Senha",

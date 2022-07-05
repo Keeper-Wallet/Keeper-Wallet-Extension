@@ -26,6 +26,19 @@ const CONTROLLERS = [
   'VaultController',
 ];
 
+const SAFE_FIELDS = new Set(['WalletController', 'accounts', 'addresses']);
+
+export async function reset() {
+  const state = await extension.storage.local.get();
+  await extension.storage.local.remove(
+    Object.keys(state).reduce(
+      (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
+      []
+    )
+  );
+  await extension.runtime.reload();
+}
+
 export default class ExtensionStore {
   private _state: Record<string, unknown>;
   private _initState: Record<string, unknown>;

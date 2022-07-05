@@ -17,7 +17,8 @@ import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
 import * as PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
 import { createUpdateState } from './ui/actions/updateState';
-import { Root } from './ui/components/Root';
+import { Root } from 'ui/components/Root';
+import { Error } from 'ui/components/pages/Error';
 import { LANGS } from './ui/i18n';
 import backgroundService from './ui/services/Background';
 import { createUiStore } from './ui/store';
@@ -41,9 +42,11 @@ async function startUi() {
 
   ReactDOM.render(
     <Provider store={store}>
-      <div className="app">
-        <Root />
-      </div>
+      <Sentry.ErrorBoundary fallback={errorData => <Error {...errorData} />}>
+        <div className="app">
+          <Root />
+        </div>
+      </Sentry.ErrorBoundary>
     </Provider>,
     document.getElementById('app-content')
   );

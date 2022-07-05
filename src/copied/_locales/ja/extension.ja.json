@@ -156,6 +156,20 @@
     "delete": "アカウント削除",
     "warn": "アカウントを削除すると、資金へアクセスできなくなります。シードフレーズを必ずバックアップしてください。"
   },
+  "errorPage": {
+    "copied": "コピーしました",
+    "copyToClipboard": "クリップボードへコピー",
+    "details": "エラー詳細",
+    "export": "アカウントとアドレス帳をエクスポート",
+    "hide": "隠す",
+    "reload": "リロードする",
+    "reset": "拡張リセット",
+    "resetButton": "ウォレットをリセット",
+    "resetDescription": "この操作の後、すべての二次情報（例：お気に入りトークン）を削除します。また、再度ログインする必要があります。",
+    "resetTitle": "注意",
+    "show": "表示",
+    "title": "失敗しました"
+  },
   "exportAndImport": {
     "exportAccounts": "アカウントをエクスポート",
     "importAccounts": "アカウントをインポート",
@@ -172,7 +186,7 @@
     "chooseContactsDesc": "エクスポートするアドレスを選択します。これらは暗号化され、Keystoreファイルにエクスポートされます。",
     "chooseContactsExportBtn": "続行",
     "chooseContactsTitle": "アドレスをファイルにエクスポート",
-    "encrypt": "ファイルを暗号化",
+    "encryptAddressBook": "アドレス帳を暗号化",
     "exportNotSupported": "このアカウントはエクスポートできません",
     "passwordError": "パスワードが間違っています。",
     "passwordLabel": "パスワード",
