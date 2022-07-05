@@ -9,6 +9,11 @@ mark {
   background-color: transparent;
 }
 
+.recipientWrapper {
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+}
+
 .recipient {
   display: flex;
   align-items: center;
@@ -61,9 +66,11 @@ mark {
 
 .name {
   margin-right: 8px;
+  overflow: hidden;
   font-weight: 500;
   font-size: 14px;
   line-height: 17px;
+  text-overflow: ellipsis;
 }
 
 .warningAlias {

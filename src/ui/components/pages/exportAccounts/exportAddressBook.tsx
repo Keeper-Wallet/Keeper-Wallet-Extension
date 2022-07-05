@@ -18,13 +18,17 @@ export function ExportAddressBook() {
   return (
     <>
       <ExportKeystoreChooseItems
-        items={Object.entries(addresses).map(([address, name]) => ({
-          name,
-          address,
-          network: isEthereumAddress(address)
-            ? currentNetwork
-            : getNetworkByAddress(address),
-        }))}
+        items={Object.entries(addresses)
+          .sort(([, firstName], [, secondName]) =>
+            firstName.localeCompare(secondName)
+          )
+          .map(([address, name]) => ({
+            name,
+            address,
+            network: isEthereumAddress(address)
+              ? currentNetwork
+              : getNetworkByAddress(address),
+          }))}
         type="contacts"
         onSubmit={async contacts => {
           const addressesSelected = contacts.reduce(

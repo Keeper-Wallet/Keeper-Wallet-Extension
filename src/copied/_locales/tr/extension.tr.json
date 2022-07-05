@@ -37,6 +37,7 @@
     "name": "İsim",
     "nameAlreadyExist": "Bu isim zaten var",
     "nameInvalidError": "Isim değeri geçersiz",
+    "notFound": "Adresler bulunamadı",
     "save": "Adresi kaydet",
     "saveChanges": "Değişiklikleri kaydet",
     "select": "Adresinizi seçin",

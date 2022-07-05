@@ -41,6 +41,7 @@
     "name": "Nombre",
     "nameAlreadyExist": "Nombre ya existente",
     "nameInvalidError": "Nombre invalida",
+    "notFound": "Direcciones no encontradas",
     "save": "Guardar la dirección",
     "saveChanges": "Guardar los cambios",
     "select": "Elige tu dirección",

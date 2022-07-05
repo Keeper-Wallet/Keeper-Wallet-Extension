@@ -121,7 +121,7 @@ export function SuggestModal(props: ModalProps) {
 
   return (
     <Modal animation={Modal.ANIMATION.FLASH} showModal={props.showModal}>
-      <div className={`modal cover ${styles.modal}`}>
+      <div className="modal cover">
         <div className={styles.modalContent}>
           <Button
             className="modal-close"
@@ -141,23 +141,27 @@ export function SuggestModal(props: ModalProps) {
             onInput={e => setSearch(e.target.value)}
             onClear={() => setSearch('')}
           />
-          <Suggest
-            className={styles.modalSuggest}
-            paddingLeft={24}
-            paddingRight={24}
-            accounts={accounts}
-            addresses={addresses}
-            setValue={props.setValue}
-            setAddress={props.setAddress}
-            setShowSuggest={props.setShowSuggest}
-            onSuggest={value => {
-              props.setShowModal(false);
+          {accounts.length > 0 ? (
+            <Suggest
+              className={styles.modalSuggest}
+              paddingLeft={24}
+              paddingRight={24}
+              accounts={accounts}
+              addresses={addresses}
+              setValue={props.setValue}
+              setAddress={props.setAddress}
+              setShowSuggest={props.setShowSuggest}
+              onSuggest={value => {
+                props.setShowModal(false);
 
-              if (props.onSuggest) {
-                props.onSuggest(value);
-              }
-            }}
-          />
+                if (props.onSuggest) {
+                  props.onSuggest(value);
+                }
+              }}
+            />
+          ) : (
+            <p className={styles.notFound}>{t('address.notFound')}</p>
+          )}
         </div>
       </div>
     </Modal>
@@ -175,7 +179,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
     state.selectedAccount.networkCode.charCodeAt(0)
   );
   const accounts = useAppSelector(state => state.accounts);
-  const addresses = useAppSelector(state =>
+  const addresses = useAppSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
       if (isEthereumAddress(address)) {
         return { ...acc, [address]: name };
@@ -205,7 +209,7 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         : [],
     [accounts, value]
   );
-  const foundAddresses = React.useMemo(
+  const foundAddresses = React.useMemo<Record<string, string>>(
     () =>
       value
         ? Object.entries(addresses).reduce(
@@ -264,7 +268,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
           showModal={showSuggestModal}
           setShowModal={setShowSuggestModal}
           accounts={accounts}
-          addresses={Object.entries(addresses)}
+          addresses={Object.entries(addresses).sort(
+            ([, firstName], [, secondName]) =>
+              firstName.localeCompare(secondName)
+          )}
           setValue={setValue}
           setAddress={setAddress}
           setShowSuggest={setShowSuggest}
@@ -276,7 +283,10 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
         {showSuggest && (
           <Suggest
             accounts={foundAccounts}
-            addresses={Object.entries(foundAddresses)}
+            addresses={Object.entries(foundAddresses).sort(
+              ([, firstName], [, secondName]) =>
+                firstName.localeCompare(secondName)
+            )}
             setValue={setValue}
             setAddress={setAddress}
             setShowSuggest={setShowSuggest}

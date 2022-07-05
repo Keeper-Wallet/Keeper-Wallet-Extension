@@ -113,10 +113,14 @@ export function AddressBook() {
   const [search, setSearch] = React.useState('');
   const addressList = React.useMemo(
     () =>
-      Object.entries(addresses).filter(
-        ([address, name]) =>
-          icontains(address, search) || icontains(name, search)
-      ),
+      Object.entries(addresses)
+        .filter(
+          ([address, name]) =>
+            icontains(address, search) || icontains(name, search)
+        )
+        .sort(([, firstName], [, secondName]) =>
+          firstName.localeCompare(secondName)
+        ),
     [addresses, search]
   );
 
@@ -166,9 +170,13 @@ export function AddressBook() {
             onClear={() => setSearch('')}
           />
           <div className={styles.cardList}>
-            {addressList.map(([address, name]) => (
-              <AddressCard key={address} address={address} name={name} />
-            ))}
+            {addressList.length > 0 ? (
+              addressList.map(([address, name]) => (
+                <AddressCard key={address} address={address} name={name} />
+              ))
+            ) : (
+              <p className={styles.notFound}>{t('address.notFound')}</p>
+            )}
           </div>
         </div>
       )}

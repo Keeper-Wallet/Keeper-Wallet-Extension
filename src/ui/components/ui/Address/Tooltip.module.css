@@ -1,6 +1,8 @@
 .address {
   padding: 2px;
   color: #c5d0de;
+  font-size: 11px;
+  line-height: 13px;
   white-space: nowrap;
   background-color: var(--color-basic50);
   border-radius: 2px;

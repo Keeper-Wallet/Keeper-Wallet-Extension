@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
 import { libs } from '@waves/waves-transactions';
-import { statisticsApiKey } from '../../config.json';
+import config from '../../config.json';
 import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
@@ -81,6 +81,10 @@ export class StatisticsController {
   }
 
   sendEvents() {
+    if (!config.statisticsApiKey) {
+      return;
+    }
+
     this.sended = this.sended
       .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
       .then(() => {
@@ -98,7 +102,7 @@ export class StatisticsController {
             Accept: '*/*',
           },
           body: JSON.stringify({
-            api_key: statisticsApiKey,
+            api_key: config.statisticsApiKey,
             events: events,
           }),
         })
