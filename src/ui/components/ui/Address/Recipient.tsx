@@ -88,7 +88,7 @@ export function AddressRecipient({
             placement="auto-end"
           >
             {props => (
-              <p {...props}>
+              <p className={styles.recipientWrapper} {...props}>
                 <Ellipsis
                   text={address}
                   size={12}

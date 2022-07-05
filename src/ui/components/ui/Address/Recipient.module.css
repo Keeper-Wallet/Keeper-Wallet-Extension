@@ -9,6 +9,11 @@ mark {
   background-color: transparent;
 }
 
+.recipientWrapper {
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+}
+
 .recipient {
   display: flex;
   align-items: center;
