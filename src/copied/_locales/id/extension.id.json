@@ -79,27 +79,31 @@
     "title": "Pilih token"
   },
   "assets": {
+    "assets": "Asset",
     "changeName": "Nama dirubah",
     "copied": "Disalin!",
     "deleteAccount": "Hapus akun",
+    "emptyAssets": "Anda belum memiliki aset",
+    "emptyHistory": "Tidak ditemukan",
+    "emptyNFTs": "Anda belum memiliki NFT",
+    "history": "Histori",
     "inStorage": "Akun lainnya",
     "issuedBy": "Dikeluarkan oleh {{ issuer }}",
-    "selectAccountNotification": "Akun aktif berubah",
-    "assets": "Asset",
-    "nfts": "NFT",
-    "emptyAssets": "Anda belum memiliki aset",
-    "notFoundAssets": "Tidak ada aset yang ditemukan untuk filter yang ditentukan",
-    "emptyNFTs": "Anda belum memiliki NFT",
-    "notFoundNFTs": "Tidak ditemukan",
-    "emptyHistory": "Tidak ditemukan",
-    "notFoundHistory": "Tidak ada yang ditemukan {{ count }} transaksi terakhir oleh filter yang ditentukan",
-    "maxHistory": "Hanya {{ count }} transaksi terakhir yang ditampilkan",
     "maxFiltersHistory": "Filter hanya diterapkan pada {{ count }} transaksi terakhir",
-    "showExplorerHistory": "Lihat riwayat lengkap di Explorer",
-    "history": "Histori",
-    "onlyMyAssets": "Hanya Dikeluarkan oleh Saya",
+    "maxFiltersNFTs": "Filter hanya diterapkan pada {{ count }} NFT terakhir",
+    "maxHistory": "Hanya {{ count }} transaksi terakhir yang ditampilkan",
+    "maxNFTs": "Hanya {{ count }} NFT terakhir yang ditampilkan",
+    "nfts": "NFT",
+    "notFoundAssets": "Tidak ada aset yang ditemukan untuk filter yang ditentukan",
+    "notFoundHistory": "Tidak ada yang ditemukan {{ count }} transaksi terakhir oleh filter yang ditentukan",
+    "notFoundMaxNFTs": "Tidak ada yang ditemukan di antara {{ count }} terakhir NFT oleh filter yang ditentukan",
+    "notFoundNFTs": "Tidak ditemukan",
     "onlyFavorites": "Hanya favorit",
-    "resetFilters": "Reset filter"
+    "onlyMyAssets": "Hanya Dikeluarkan oleh Saya",
+    "resetFilters": "Reset filter",
+    "selectAccountNotification": "Akun aktif berubah",
+    "showExplorerHistory": "Lihat riwayat lengkap di Explorer",
+    "showExplorerNFTs": "Lihat semua NFT di Explorer"
   },
   "backupSeed": {
     "backupCarefully": "Harap hati-hati menuliskan 15 kata ini atau menyalinnya",
@@ -437,6 +441,18 @@
     "createNew": "Buat akun baru",
     "select": "Pilih address avatar",
     "selectInfo": "Avatar ini unik. Anda tidak dapat mengubahnya nanti."
+  },
+  "nftCollection": {
+    "backToNftBtn": "Kembali ke NFT"
+  },
+  "nftInfo": {
+    "backBtn": "Kembali",
+    "creator": "Pencipta",
+    "creatorUrlTooltip": "Kunjungi halaman author",
+    "description": "Deskripsi",
+    "sendBtn": "Kirim",
+    "viewInExplorer": "Lihat detail di Explorer",
+    "viewOnMarketplace": "Lihat di marketplace"
   },
   "otherAccounts": {
     "addAccount": "Taambahkan akun",

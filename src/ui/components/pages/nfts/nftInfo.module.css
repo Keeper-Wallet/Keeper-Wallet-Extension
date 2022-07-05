@@ -1,0 +1,71 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-basic50);
+}
+
+.header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+}
+
+.title {
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 18px;
+  font-style: normal;
+  line-height: 21px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 24px;
+  overflow: auto;
+}
+
+.cover {
+  max-height: 310px;
+  border-radius: 8px;
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 0;
+  line-height: 14px;
+}
+
+.fieldName {
+  margin-bottom: 8px;
+  color: var(--color-basic500);
+}
+
+.fieldContent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.stickyBottomPanel {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: #fff;
+  border-top: 1px solid #edf0f4;
+}

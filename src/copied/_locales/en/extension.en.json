@@ -95,12 +95,16 @@
     "emptyAssets": "You don't have any asset yet",
     "notFoundAssets": "No assets were found for the specified filters",
     "emptyNFTs": "You don't have any NFT yet",
+    "notFoundMaxNFTs": "Nothing was found among the last {{ count }} NFTs <br/> by the specified filters",
     "notFoundNFTs": "No NFTs were found for the specified filters",
     "emptyHistory": "There's nothing to show yet",
-    "notFoundHistory": "Nothing was found among the last {{ count }} transactions by the specified filters",
+    "notFoundHistory": "Nothing was found among the last {{ count }} transactions <br/> by the specified filters",
     "maxHistory": "Only the last {{ count }} transactions are displayed",
     "maxFiltersHistory": "Filters are applied only to the last {{ count }} transactions",
+    "maxNFTs": "Only the last {{ count }} NFTs are displayed",
+    "maxFiltersNFTs": "Filters are applied only to the last {{ count }} NFTs",
     "showExplorerHistory": "See full history in Explorer",
+    "showExplorerNFTs": "See all NFTs in Explorer",
     "history": "History",
     "onlyMyAssets": "Only Issued by Me",
     "onlyFavorites": "Only Favorites",
@@ -452,6 +456,18 @@
     "createNew": "Create New Account",
     "select": "Choose your address avatar",
     "selectInfo": "This avatar is unique. You cannot change it later."
+  },
+  "nftCollection": {
+    "backToNftBtn": "Back to NFTs"
+  },
+  "nftInfo": {
+    "backBtn": "Back",
+    "creator": "Creator",
+    "creatorUrlTooltip": "Visit author's page",
+    "description": "Description",
+    "sendBtn": "Send",
+    "viewInExplorer": "View details in Explorer",
+    "viewOnMarketplace": "View on marketplace"
   },
   "otherAccounts": {
     "addAccount": "Add account",

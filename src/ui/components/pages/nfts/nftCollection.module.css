@@ -1,0 +1,58 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-basic50);
+}
+
+.header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 6px;
+}
+
+.title {
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.filterContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 14px 14px;
+}
+
+.searchInput input {
+  padding: 0 24px;
+  background-position: 0;
+}
+
+.filterContainer button {
+  padding: 0;
+}
+
+.stickyBottomPanel {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: #fff;
+  border-top: 1px solid #edf0f4;
+}

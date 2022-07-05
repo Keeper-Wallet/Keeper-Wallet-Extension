@@ -10,9 +10,9 @@ const networkCodeToNetworkMap: Record<
   'S' | 'T' | 'W',
   Exclude<NetworkName, 'custom'>
 > = {
-  S: 'stagenet',
-  T: 'testnet',
-  W: 'mainnet',
+  S: NetworkName.Stagenet,
+  T: NetworkName.Testnet,
+  W: NetworkName.Mainnet,
 };
 
 export function getNetworkByNetworkCode(networkCode: string): NetworkName {

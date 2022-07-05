@@ -75,27 +75,31 @@
     "title": "トークンを選択"
   },
   "assets": {
+    "assets": "アセット",
     "changeName": "アカウント名が変更されました。",
     "copied": "コピーされました。",
     "deleteAccount": "アカウント削除",
+    "emptyAssets": "アセットを保有していません。",
+    "emptyHistory": "表示できるものがありません。",
+    "emptyNFTs": "NFTを所有していません。",
+    "history": "履歴",
     "inStorage": "その他のアカウント",
     "issuedBy": "{{ issuer }}に発行されました。",
-    "selectAccountNotification": "有効なアカウントが変更されました。",
-    "assets": "アセット",
-    "nfts": "NFT",
-    "emptyAssets": "アセットを保有していません。",
-    "notFoundAssets": "条件に合致するアセットが見つかりません。",
-    "emptyNFTs": "NFTを所有していません。",
-    "notFoundNFTs": "条件に合致するNFTが見つかりません。",
-    "emptyHistory": "表示できるものがありません。",
-    "notFoundHistory": "指定されたフィルターによる {{ count }} トランザクションからは何も見つかりませんでした。",
-    "maxHistory": "最後の {{ count }} トランザクションのみ表示されています。",
     "maxFiltersHistory": "最後の {{ count }} トランザクションにフィルターが適用されています。",
-    "showExplorerHistory": "エクスプローラーで全履歴を確認",
-    "history": "履歴",
-    "onlyMyAssets": "自分が発行したもののみ",
+    "maxFiltersNFTs": "最後の{{count }} NFTにのみフィルターが適用されます",
+    "maxHistory": "最後の {{ count }} トランザクションのみ表示されています。",
+    "maxNFTs": "最後の{{count }} NFTのみ表示されます。",
+    "nfts": "NFT",
+    "notFoundAssets": "条件に合致するアセットが見つかりません。",
+    "notFoundHistory": "指定されたフィルターによる {{ count }} トランザクションからは何も見つかりませんでした。",
+    "notFoundMaxNFTs": "指定されたフィルターでの最後の{{ count }} NFTの中には見つかりませんでした。",
+    "notFoundNFTs": "条件に合致するNFTが見つかりません。",
     "onlyFavorites": "お気に入りのみ",
-    "resetFilters": "フィルターをリセット"
+    "onlyMyAssets": "自分が発行したもののみ",
+    "resetFilters": "フィルターをリセット",
+    "selectAccountNotification": "有効なアカウントが変更されました。",
+    "showExplorerHistory": "エクスプローラーで全履歴を確認",
+    "showExplorerNFTs": "全てのNFTをエクスプローラーで表示"
   },
   "backupSeed": {
     "backupCarefully": "15個の単語を注意深く書き留めるか、コピーしてください。",
@@ -428,6 +432,18 @@
     "createNew": "新規アカウントを作成",
     "select": "アドレスアバターを選択",
     "selectInfo": "アバターは唯一無二です。後で変更することはできません。"
+  },
+  "nftCollection": {
+    "backToNftBtn": "NFTに戻る"
+  },
+  "nftInfo": {
+    "backBtn": "戻る",
+    "creator": "作成者",
+    "creatorUrlTooltip": "作成者のページへ",
+    "description": "説明",
+    "sendBtn": "送信",
+    "viewInExplorer": "エクスプローラーで詳細確認",
+    "viewOnMarketplace": "マーケットプレイスで確認"
   },
   "otherAccounts": {
     "addAccount": "アカウント追加",

@@ -1,6 +1,6 @@
 import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, Select, TabPanel } from 'ui/components/ui';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { HistoryItem } from 'ui/components/pages/assets/historyItem';
 import * as React from 'react';
@@ -10,7 +10,7 @@ import {
   buildTxTypeOptions,
   CARD_FULL_HEIGHT,
   FULL_GROUP_HEIGHT,
-  useTxHistoryFilter,
+  useUiState,
 } from './helpers';
 import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { MAX_TX_HISTORY_ITEMS } from 'controllers/CurrentAccountController';
@@ -98,13 +98,24 @@ export function TabTxHistory() {
   const thisMonth = new Date().getMonth();
   const thisDate = new Date().getDate();
 
-  const {
-    term: [term, setTerm],
-    type: [type, setType],
-    onlyIncoming: [onlyIn, setOnlyIn],
-    onlyOutgoing: [onlyOut, setOnlyOut],
-    clearFilters,
-  } = useTxHistoryFilter();
+  const [filters, setFilters] = useUiState('txHistoryFilters');
+  const [term, setTerm] = [
+    filters?.term,
+    value => setFilters({ ...filters, term: value }),
+  ];
+  const [type, setType] = [
+    filters?.type,
+    value => setFilters({ ...filters, type: value }),
+  ];
+  const [onlyIn, setOnlyIn] = [
+    filters?.onlyIncoming,
+    value => setFilters({ ...filters, onlyIncoming: value }),
+  ];
+  const [onlyOut, setOnlyOut] = [
+    filters?.onlyOutgoing,
+    value => setFilters({ ...filters, onlyOutgoing: value }),
+  ];
+
   const listRef = React.useRef<VariableSizeList>();
 
   React.useEffect(() => {
@@ -323,11 +334,13 @@ export function TabTxHistory() {
           {term || type || onlyIn || onlyOut ? (
             <>
               <div className="margin-min">
-                {t('assets.notFoundHistory', {
-                  count: MAX_TX_HISTORY_ITEMS - 1,
-                })}
+                <Trans
+                  t={t}
+                  i18nKey="assets.notFoundHistory"
+                  values={{ count: MAX_TX_HISTORY_ITEMS - 1 }}
+                />
               </div>
-              <p className="blue link" onClick={() => clearFilters()}>
+              <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
               </p>
             </>

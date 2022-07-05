@@ -7,7 +7,7 @@ import { ERRORS } from 'lib/KeeperError';
 import PortStream from 'lib/port-stream.js';
 import LocalStore from 'lib/localStore';
 import { getFirstLangCode } from 'lib/get-first-lang-code';
-import { MSG_STATUSES, KEEPERWALLET_DEBUG } from './constants';
+import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import {
   AssetInfoController,
   CurrentAccountController,
@@ -15,6 +15,7 @@ import {
   IdleController,
   MessageController,
   NetworkController,
+  NftInfoController,
   NotificationsController,
   PERMISSIONS,
   PermissionsController,
@@ -339,10 +340,17 @@ class BackgroundService extends EventEmitter {
       getNode: this.networkController.getNode.bind(this.networkController),
     });
 
+    this.nftInfoController = new NftInfoController({
+      localStore: this.localStore,
+      getNetwork: this.networkController.getNetwork.bind(
+        this.networkController
+      ),
+      getNode: this.networkController.getNode.bind(this.networkController),
+    });
+
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
       localStore: this.localStore,
-      getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -350,14 +358,12 @@ class BackgroundService extends EventEmitter {
       getAccounts: this.walletController.getAccounts.bind(
         this.walletController
       ),
-      getCode: this.networkController.getNetworkCode.bind(
-        this.networkController
-      ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController
       ),
       isLocked: this.vaultController.isLocked.bind(this.vaultController),
       assetInfoController: this.assetInfoController,
+      nftInfoController: this.nftInfoController,
     });
 
     this.txinfoController = new TxInfoController({

@@ -90,7 +90,7 @@ export function OtherAccountsPage({ setTab }: Props) {
               balance={balancesMoney[account.address]}
               onClick={account => {
                 dispatch(selectAccount(account));
-                setTab(PAGES.ASSETS);
+                dispatch(resetTab(PAGES.ASSETS));
               }}
               onInfoClick={account => {
                 dispatch(setActiveAccount(account));

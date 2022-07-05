@@ -1,4 +1,9 @@
-export type NetworkName = 'mainnet' | 'testnet' | 'stagenet' | 'custom';
+export enum NetworkName {
+  Mainnet = 'mainnet',
+  Testnet = 'testnet',
+  Stagenet = 'stagenet',
+  Custom = 'custom',
+}
 
 export type Account = {
   address: string;
