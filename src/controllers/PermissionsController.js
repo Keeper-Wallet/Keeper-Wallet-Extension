@@ -189,7 +189,7 @@ export class PermissionsController {
     const waitTime = minInterval - delta;
 
     if (waitTime > 0) {
-      throw ERRORS.NOTIFICATION_ERROR({
+      throw ERRORS.NOTIFICATION_ERROR(undefined, {
         msg: `Min notification interval ${minInterval / 1000}s. Wait ${
           waitTime / 1000
         }s.`,

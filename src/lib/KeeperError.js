@@ -60,7 +60,7 @@ class KeeperError extends Error {
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
   (acc, [code, data]) => {
     const { msg, name } = data;
-    acc[name] = (data, message) =>
+    acc[name] = (message, data) =>
       new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
     return acc;
   },

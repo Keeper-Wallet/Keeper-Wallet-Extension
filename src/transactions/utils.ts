@@ -416,7 +416,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(issue(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.TRANSFER: {
@@ -440,7 +440,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(transfer(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.REISSUE: {
@@ -465,7 +465,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(reissue(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.BURN: {
@@ -489,7 +489,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(burn(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.LEASE: {
@@ -511,7 +511,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(lease(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.CANCEL_LEASE: {
@@ -530,7 +530,7 @@ export const convertFromSa = {
             cancelLease(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.ALIAS: {
@@ -547,7 +547,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(alias(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.MASS_TRANSFER: {
@@ -574,7 +574,7 @@ export const convertFromSa = {
             massTransfer(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.DATA: {
@@ -595,7 +595,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(data(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.SET_SCRIPT: {
@@ -612,7 +612,7 @@ export const convertFromSa = {
         try {
           return convertLongToBigNumber(setScript(convertBigNumberToLong(tx)));
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.SPONSORSHIP: {
@@ -632,7 +632,7 @@ export const convertFromSa = {
             sponsorship(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.SET_ASSET_SCRIPT: {
@@ -652,7 +652,7 @@ export const convertFromSa = {
             setAssetScript(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.INVOKE_SCRIPT: {
@@ -683,7 +683,7 @@ export const convertFromSa = {
             invokeScript(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
@@ -705,14 +705,14 @@ export const convertFromSa = {
             updateAssetInfo(convertBigNumberToLong(tx))
           );
         } catch (e) {
-          throw ERRORS.REQUEST_ERROR(input, e.message);
+          throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
       default:
         throw ERRORS.REQUEST_ERROR(
-          input,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          `unexpected type: ${(input as any).type}`
+          `unexpected type: ${(input as any).type}`,
+          input
         );
     }
   },

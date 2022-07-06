@@ -879,11 +879,11 @@ class BackgroundService extends EventEmitter {
         }
 
         if (!prefix || typeof prefix !== 'string') {
-          throw ERRORS.INVALID_FORMAT('prefix is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'prefix is invalid');
         }
 
         if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
         await this.validatePermission(origin);
@@ -907,11 +907,11 @@ class BackgroundService extends EventEmitter {
         }
 
         if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT('message is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
         }
 
         if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
         await this.validatePermission(origin);
@@ -936,11 +936,11 @@ class BackgroundService extends EventEmitter {
         }
 
         if (!message || typeof message !== 'string') {
-          throw ERRORS.INVALID_FORMAT('message is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'message is invalid');
         }
 
         if (!publicKey || typeof publicKey !== 'string') {
-          throw ERRORS.INVALID_FORMAT('publicKey is invalid');
+          throw ERRORS.INVALID_FORMAT(undefined, 'publicKey is invalid');
         }
 
         await this.validatePermission(origin);
