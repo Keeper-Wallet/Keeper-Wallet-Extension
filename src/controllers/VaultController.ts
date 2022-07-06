@@ -62,11 +62,16 @@ export class VaultController {
     this.locked = true;
   }
 
-  unlock(password) {
+  unlock(password: string) {
     this.wallet.unlock(password);
     this.identity.unlock(password);
 
     this.locked = false;
+  }
+
+  update(oldPassword: string, newPassword: string) {
+    this.wallet.newPassword(oldPassword, newPassword);
+    this.identity.updateVault(oldPassword, newPassword);
   }
 
   clear() {
@@ -79,10 +84,6 @@ export class VaultController {
 
   isLocked() {
     return this.locked;
-  }
-
-  isReady() {
-    return !this.locked && this.initialized;
   }
 
   migrate() {
