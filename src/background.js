@@ -489,7 +489,7 @@ class BackgroundService extends EventEmitter {
         await this.vaultController.clear();
       },
       newPassword: async (oldPassword, newPassword) =>
-        this.walletController.newPassword(oldPassword, newPassword),
+        this.vaultController.update(oldPassword, newPassword),
       checkPassword: async password =>
         this.walletController.checkPassword(password),
       getAccountSeed: async (address, network, password) =>

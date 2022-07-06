@@ -144,6 +144,15 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     });
   }
 
+  update(password: string) {
+    const cognitoSessions = this.decrypt();
+
+    this._setPassword(password);
+    this.updateState({
+      cognitoSessions: this.encrypt(cognitoSessions),
+    });
+  }
+
   private _updateMemo() {
     this._setSession({ memo: this.memo });
   }
@@ -218,8 +227,13 @@ export class IdentityController implements IdentityApi {
     this.configure();
   }
 
-  initVault(password) {
+  initVault(password: string) {
     this.store.unlock(password);
+  }
+
+  updateVault(oldPassword: string, newPassword: string) {
+    this.unlock(oldPassword);
+    this.store.update(newPassword);
   }
 
   deleteVault() {
