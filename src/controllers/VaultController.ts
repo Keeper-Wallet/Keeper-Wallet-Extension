@@ -81,10 +81,6 @@ export class VaultController {
     return this.locked;
   }
 
-  isReady() {
-    return !this.locked && this.initialized;
-  }
-
   migrate() {
     const state = this.wallet.store.getState().WalletController;
 
