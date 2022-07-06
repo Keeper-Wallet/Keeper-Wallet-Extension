@@ -2,13 +2,12 @@ import * as styles from 'ui/components/pages/styles/assets.styl';
 import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';
-import { useAppDispatch, useAppSelector } from 'ui/store';
+import { useAppSelector } from 'ui/store';
 import { sortAndFilterNfts, useUiState } from './helpers';
 import cn from 'classnames';
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import { PAGES } from 'ui/pageConfig';
-import { setTab } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
 import { getNftsLink } from 'ui/urls';
 import { MAX_NFT_ITEMS } from 'controllers/CurrentAccountController';
@@ -21,7 +20,7 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function TabNfts() {
+export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
   const { t } = useTranslation();
 
   const address = useAppSelector(state => state.selectedAccount.address);
@@ -30,8 +29,6 @@ export function TabNfts() {
   );
   const myNfts = useAppSelector(state => state.balances[address]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
-
-  const dispatch = useAppDispatch();
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
@@ -106,7 +103,7 @@ export function TabNfts() {
           counters={creatorCounts}
           onClick={(asset: Nft) => {
             setCreator(asset.creator);
-            dispatch(setTab(PAGES.NFT_COLLECTION));
+            nextTab(PAGES.NFT_COLLECTION);
           }}
           renderMore={() =>
             myNfts?.length > MAX_NFT_ITEMS - 1 && (
