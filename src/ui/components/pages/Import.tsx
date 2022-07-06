@@ -3,12 +3,10 @@ import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal } from '../ui';
+import { Button } from '../ui';
 import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { FeatureUpdateInfo } from './FeatureUpdateInfo';
-import { setUiState } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
 
 interface Props {
@@ -17,17 +15,8 @@ interface Props {
 
 export function Import({ setTab }: Props) {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-  const showUpdateInfo = useAppSelector(
-    state =>
-      !state.uiState.isFeatureUpdateShown && !!state.allNetworksAccounts.length
-  );
   const tabMode = useAppSelector(state => state.localState?.tabMode);
-
-  const dismissFeatureInfo = () =>
-    dispatch(setUiState({ isFeatureUpdateShown: true }));
-  const exportToKeystore = () => setTab(PAGES.EXPORT_ACCOUNTS);
 
   const [isLedgerSupported, setIsLedgerSupported] = React.useState(false);
   const [isDebug, setDebug] = React.useState(false);
@@ -311,16 +300,6 @@ export function Import({ setTab }: Props) {
           </>
         )
       )}
-
-      <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
-        <FeatureUpdateInfo
-          onClose={dismissFeatureInfo}
-          onSubmit={() => {
-            dismissFeatureInfo();
-            exportToKeystore();
-          }}
-        />
-      </Modal>
     </div>
   );
 }

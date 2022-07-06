@@ -198,14 +198,6 @@
     "warningModalDesc": "Ledger และบัญชีอีเมลไม่สามารถส่งออกได้",
     "warningModalTitle": "โปรดทราบ"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper Wallet ใส่ใจในความปลอดภัยของเงินลงทุนของคุณและต้องการเตือนคุณว่าการสูญ seed phrase หมายถึงการสูญเสียการเข้าถึงบัญชีอย่างถาวร",
-    "recommendation": "ดังนั้น เราขอแนะนำอย่างยิ่งให้สร้างไฟล์สำรองที่มี seed phrase ของบัญชีทั้งหมดของคุณไว้",
-    "keystoreInfo": "ไฟล์ Keystore เป็นที่ที่ปลอดภัยซึ่งคุณสามารถจัดเก็บ seed phrase ที่เข้ารหัสด้วยรหัสผ่านของคุณ",
-    "keystoreImport": "คุณสามารถนำเข้าบัญชีจากไฟล์นี้กลับเข้าสู่ Keeper Wallet ได้ในภายหลัง",
-    "backupBtn": "สำรองข้อมูลไปยังไฟล์ keystore",
-    "cancelBtn": "ฉันจะทำในภายหลัง"
-  },
   "forgotPassword": {
     "attention": "โปรดทราบ!",
     "attentionMessage": "ในการรีเซ็ตรหัสผ่าน คุณต้องลบบัญชีทั้งหมดออกจาก Keeper Wallet, ตั้งรหัสผ่านใหม่, นำเข้าแต่ละบัญชีของคุณอีกครั้งจาก Seed phrase",

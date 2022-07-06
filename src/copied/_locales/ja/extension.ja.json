@@ -198,14 +198,6 @@
     "warningModalDesc": "レッジャーとメールアカウントはエクスポートできません",
     "warningModalTitle": "注意"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper Wallet は資金の安全性を重視しているため、シードフレーズを失うことはアカウントへのアクセスを永久に失うことにご注意ください。",
-    "recommendation": "すべてのアカウントのシードフレーズを含むバックアップファイルを作成することを強くお勧めします。",
-    "keystoreInfo": "キーストアは、パスワードで暗号化されたシードフレーズを保存できる安全なファイルです。",
-    "keystoreImport": "キーストアファイルからKeeperウォレットにアカウントをインポートすることができます。",
-    "backupBtn": "キーストアファイルへのバックアップ",
-    "cancelBtn": "後で行う"
-  },
   "forgotPassword": {
     "attention": "注意",
     "attentionMessage": "パスワードをリセットするには、Keeper Wallet からすべてのアカウントを削除して新パスワードを設定し、シードフレーズから各アカウントを再度インポートする必要があります。",

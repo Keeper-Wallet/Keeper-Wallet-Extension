@@ -7,14 +7,12 @@ import {
   getBalances,
   setActiveAccount,
   setSwapScreenInitialState,
-  setUiState,
 } from 'ui/actions';
 import { PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
 import { Intro } from './Intro';
-import { FeatureUpdateInfo } from './FeatureUpdateInfo';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { AssetInfo } from './assets/assetInfo';
 import { TabAssets } from './assets/tabs/tabAssets';
@@ -39,9 +37,6 @@ export function Assets({ setTab }: Props) {
   const usdPrices = useAppSelector(state => state.usdPrices);
   const balances = useAppSelector(state => state.balances);
   const notifications = useAppSelector(state => state.localState.notifications);
-  const showUpdateInfo = useAppSelector(
-    state => !state.uiState.isFeatureUpdateShown && !!state.accounts.length
-  );
 
   const [activeTab, setActiveTab] = useUiState('assetsTab');
 
@@ -176,18 +171,6 @@ export function Assets({ setTab }: Props) {
             setTimeout(() => setShowCopy(false), 1000);
           }}
           onClose={() => setShowAsset(false)}
-        />
-      </Modal>
-
-      <Modal animation={Modal.ANIMATION.FLASH} showModal={showUpdateInfo}>
-        <FeatureUpdateInfo
-          onClose={() => {
-            dispatch(setUiState({ isFeatureUpdateShown: true }));
-          }}
-          onSubmit={() => {
-            dispatch(setUiState({ isFeatureUpdateShown: true }));
-            setTab(PAGES.EXPORT_ACCOUNTS);
-          }}
         />
       </Modal>
     </div>

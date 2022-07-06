@@ -45,7 +45,6 @@ export interface UiState {
   assetsTab?: number;
   autoClickProtection?: boolean;
   currentAsset?: AssetDetail | Nft;
-  isFeatureUpdateShown?: boolean;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
   slippageToleranceIndex?: number;
