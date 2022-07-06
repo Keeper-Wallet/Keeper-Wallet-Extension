@@ -189,8 +189,6 @@ export function SwapForm({
   }
 
   const [fromAmountValue, setFromAmountValue] = React.useState('');
-  const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] =
-    React.useState(false);
 
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
@@ -400,6 +398,18 @@ export function SwapForm({
   const [touched, setTouched] = React.useState(false);
 
   const vendorExchangeInfo = exchangeInfo[selectedExchangeVendor];
+
+  const defaultPriceDirectionSwapped =
+    vendorExchangeInfo.type === 'data' &&
+    +vendorExchangeInfo.toAmountTokens
+      .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
+      .toFixed(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR) < 1;
+  const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = React.useState(
+    defaultPriceDirectionSwapped
+  );
+  React.useEffect(() => {
+    setIsPriceDirectionSwapped(defaultPriceDirectionSwapped);
+  }, [defaultPriceDirectionSwapped]);
 
   const minReceived =
     vendorExchangeInfo.type === 'data'
