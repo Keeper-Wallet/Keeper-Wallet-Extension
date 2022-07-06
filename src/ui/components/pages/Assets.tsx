@@ -132,7 +132,7 @@ export function Assets({ setTab }: Props) {
               setTab(PAGES.SWAP);
             }}
           />
-          <TabNfts />
+          <TabNfts nextTab={setTab} />
           <TabTxHistory />
         </TabPanels>
       </Tabs>
