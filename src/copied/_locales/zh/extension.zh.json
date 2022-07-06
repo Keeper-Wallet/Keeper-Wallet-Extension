@@ -196,14 +196,6 @@
     "warningModalDesc": "无法导出Ledger和邮箱账号",
     "warningModalTitle": "注意"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper钱包很重视您的资产安全，我们郑重提醒您：忘记助记词种子意味着您将永久丢失访问账户的权利。",
-    "recommendation": "因为我们强烈推荐您使用助记词种子为您所有的账户创建备份文件。",
-    "keystoreInfo": "密钥存储文件是您可以使用密码对您的助记词种子进行加密的地方。",
-    "keystoreImport": "您可以在稍后使用该密钥存储文件在Keeper钱包中导入账户。",
-    "backupBtn": "备份至密钥存储文件",
-    "cancelBtn": "稍后再备份"
-  },
   "forgotPassword": {
     "attention": "请注意！",
     "attentionMessage": "要想重置密码，您需要删除Keeper钱包内的所有账户，然后设置新密码，并重新导入所有账户的助记词种子。",

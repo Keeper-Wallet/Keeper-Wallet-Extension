@@ -198,14 +198,6 @@
     "warningModalDesc": "Không thể xuất leger và địa chỉ email này",
     "warningModalTitle": "Chú ý"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper Wallet quan tâm đến sự an toàn của tiền của bạn và muốn nhắc bạn rằng mất Seed pharse có nghĩa là mất quyền truy cập vào tài khoản vĩnh viễn.",
-    "recommendation": "Cho nên chúng tôi khuyên bạn nên tạo một file backup với seedphrase của tất cả các tài khoản",
-    "keystoreInfo": "Keystore file là một nơi an toàn, nơi bạn có thể lưu trữ các seedpharse được mã hóa bằng mật khẩu của mình.",
-    "keystoreImport": "Bạn có thể import các tài khoản từ file này Ví Keeper sau đó.",
-    "backupBtn": "Sao lưu vào keystore file",
-    "cancelBtn": "Tôi sẽ làm sau!"
-  },
   "forgotPassword": {
     "attention": "Chú ý!",
     "attentionMessage": "Để tạo lại mật khẩu, bạn cần xóa tất cả tài khoản từ ví Keeper, tạo mật khẩu mới, nhập từng tài khoản của bạn lại bằng seedpharse",
