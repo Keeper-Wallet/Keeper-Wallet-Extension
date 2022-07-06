@@ -5,7 +5,6 @@ import { PAGES } from 'ui/pageConfig';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { AssetDetail } from 'ui/services/Background';
 import { useTranslation } from 'react-i18next';
 import { setUiState } from 'ui/actions';
 import { createNft, Nft } from 'nfts/utils';
@@ -42,10 +41,10 @@ export function NftCollection({
 
   const dispatch = useAppDispatch();
 
-  const [, setCurrentAsset] = [
-    useAppSelector(state => state.uiState?.currentAsset),
-    (asset: AssetDetail | Nft) => dispatch(setUiState({ currentAsset: asset })),
-  ];
+  const setCurrentAsset = React.useCallback(
+    (assetId: Nft) => dispatch(setUiState({ currentAsset: assetId })),
+    [dispatch]
+  );
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
