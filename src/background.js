@@ -106,14 +106,6 @@ extension.runtime.onConnectExternal.addListener(async remotePort => {
 
 extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
-  const prevUiState = bgService.uiStateController.getUiState();
-
-  bgService.uiStateController.setUiState({
-    ...prevUiState,
-    isFeatureUpdateShown:
-      details.reason === extension.runtime.OnInstalledReason.INSTALL ||
-      !!prevUiState.isFeatureUpdateShown,
-  });
 
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
     await bgService.localStore.clear();

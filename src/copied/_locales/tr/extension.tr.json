@@ -198,14 +198,6 @@
     "warningModalDesc": "Ledger ve e-posta hesapları dışa aktarılamaz",
     "warningModalTitle": "Dikkat"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper Wallet, fonlarınızın güvenliğini önemser ve anahtar kelimenizi kaybetmenin hesaba erişiminizi kalıcı olarak kaybetmek anlamına geldiğini size hatırlatmak ister.",
-    "recommendation": "Dolayısıyla, tüm hesaplarınızın anahtar kelimeleriyle bir yedekleme dosyası oluşturmanızı şiddetle tavsiye ederiz.",
-    "keystoreInfo": "Keystore dosyası, parolanızla şifrelenmiş anahtar kelimelerinizi saklayabileceğiniz güvenli bir dosyadır.",
-    "keystoreImport": "Daha sonrasında hesapları bu dosyadan Keeper Wallet'a tekrar aktarabilirsiniz.",
-    "backupBtn": "Keystore dosyasına yedekle",
-    "cancelBtn": "Bunu sonra yaparım"
-  },
   "forgotPassword": {
     "attention": "Dikkat!",
     "attentionMessage": "Şifreyi sıfırlamak için Keeper Wallet üzerindeki tüm hesapları silmeniz, yeni bir şifre belirlemeniz, hesaplarınızın her birini yeniden Anahtar Kelimeler kullanarak içe aktarmanız gerekir.",

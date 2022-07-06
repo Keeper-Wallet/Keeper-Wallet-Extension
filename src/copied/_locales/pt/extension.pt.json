@@ -204,14 +204,6 @@
     "warningModalDesc": "Ledger e de e-mail não podem ser exportadas",
     "warningModalTitle": "Atenção"
   },
-  "featureUpdateInfo": {
-    "intro": "A Keeper Wallet se preocupa com a segurança do seu dinheiro e gostaria de lembrá-lo de que perder a frase seed significa perder o acesso à conta permanentemente.",
-    "recommendation": "Portanto, é altamente recomendável criar um arquivo de backup com as seeds de todas as suas contas.",
-    "keystoreInfo": "O arquivo keystore é um local seguro onde você pode armazenar seeds criptografadas com sua senha.",
-    "keystoreImport": "Mais tarde, você poderá importar contas desse arquivo de volta para a Keeper Wallet.",
-    "backupBtn": "Fazer backup em um arquivo keystore",
-    "cancelBtn": "Fazer isso depois"
-  },
   "forgotPassword": {
     "attention": "Atenção!",
     "attentionMessage": "Para redefinir a senha, você precisa excluir todas as contas da Keeper Wallet, definir uma senha nova, importar cada uma de suas contas novamente com a Seed.",

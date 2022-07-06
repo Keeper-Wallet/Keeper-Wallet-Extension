@@ -204,14 +204,6 @@
     "warningModalDesc": "La ledger y las cuentas del correo electrónico no pueden ser exportadas",
     "warningModalTitle": "Atención"
   },
-  "featureUpdateInfo": {
-    "intro": "Keeper Wallet se preocupa por la seguridad de sus fondos y quisiera recordarle que perder la frase inicial significa perder el acceso a la cuenta de forma permanente.",
-    "recommendation": "Por lo tanto, recomendamos encarecidamente crear un archivo de respaldo con frases iniciales de todas sus cuentas.",
-    "keystoreInfo": "El archivo Keystore es un lugar seguro donde puede almacenar frases iniciales cifradas con su contraseña.",
-    "keystoreImport": "Posteriormente, puede importar cuentas desde este archivo nuevamente a Keeper Wallet.",
-    "backupBtn": "Hacer respaldo del archivo Keystore",
-    "cancelBtn": "Lo haré después"
-  },
   "forgotPassword": {
     "attention": "¡Atención!",
     "attentionMessage": "Para restablecer la contraseña, debe eliminar todas las cuentas de Keeper Wallet, establecer una nueva contraseña, importar cada una de sus cuentas nuevamente desde la frase inicial.",
