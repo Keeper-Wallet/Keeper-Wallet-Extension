@@ -250,14 +250,11 @@ describe('Password management', () => {
         )
         .click();
 
-      expect(
-        await this.driver
-          .wait(
-            until.elementLocated(By.css('[data-testid="modalPassword"]')),
-            this.wait
-          )
-          .getText()
-      ).matches(/Password changed/i);
+      const modalPassword = await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="modalPassword"]')),
+        this.wait
+      );
+      expect(await modalPassword.getText()).matches(/Password changed/i);
     });
   });
 
