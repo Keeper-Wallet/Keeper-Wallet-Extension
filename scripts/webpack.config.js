@@ -101,7 +101,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'popup.html',
       template: path.resolve(SOURCE_FOLDER, 'popup.html'),
       hash: true,
-      chunks: ['commons', 'ui'],
+      excludeChunks: ['accounts/ui', 'background', 'inpage', 'contentscript'],
     })
   );
 
@@ -111,7 +111,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'notification.html',
       template: path.resolve(SOURCE_FOLDER, 'notification.html'),
       hash: true,
-      chunks: ['commons', 'ui'],
+      excludeChunks: ['accounts/ui', 'background', 'inpage', 'contentscript'],
     })
   );
 
@@ -121,7 +121,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'accounts.html',
       template: path.resolve(SOURCE_FOLDER, 'accounts.html'),
       hash: true,
-      chunks: ['commons', 'accounts/ui'],
+      excludeChunks: ['ui', 'background', 'inpage', 'contentscript'],
     })
   );
 
@@ -164,9 +164,11 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
         cacheGroups: {
           commons: {
             name: 'commons',
+            test: /.js$/,
             chunks(chunk) {
               return ['ui', 'accounts/ui'].includes(chunk.name);
             },
+            maxSize: 4000000,
           },
         },
       },
