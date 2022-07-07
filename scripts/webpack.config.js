@@ -164,9 +164,11 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
         cacheGroups: {
           commons: {
             name: 'commons',
+            test: /.js$/,
             chunks(chunk) {
               return ['ui', 'accounts/ui'].includes(chunk.name);
             },
+            maxSize: 4000000,
           },
         },
       },
