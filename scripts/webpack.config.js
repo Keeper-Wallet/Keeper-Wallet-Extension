@@ -101,7 +101,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'popup.html',
       template: path.resolve(SOURCE_FOLDER, 'popup.html'),
       hash: true,
-      excludeChunks: ['accounts/ui', 'background', 'inpage', 'contentscript'],
+      chunks: ['commons', 'ui'],
     })
   );
 
@@ -111,7 +111,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'notification.html',
       template: path.resolve(SOURCE_FOLDER, 'notification.html'),
       hash: true,
-      excludeChunks: ['accounts/ui', 'background', 'inpage', 'contentscript'],
+      chunks: ['commons', 'ui'],
     })
   );
 
@@ -121,7 +121,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       filename: 'accounts.html',
       template: path.resolve(SOURCE_FOLDER, 'accounts.html'),
       hash: true,
-      excludeChunks: ['ui', 'background', 'inpage', 'contentscript'],
+      chunks: ['commons', 'accounts/ui'],
     })
   );
 
