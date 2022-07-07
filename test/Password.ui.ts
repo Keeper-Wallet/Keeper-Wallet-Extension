@@ -2,7 +2,10 @@ import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
 import { App, CreateNewAccount } from './utils/actions';
-import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
+import {
+  DEFAULT_PAGE_LOAD_DELAY,
+  DEFAULT_ANIMATION_DELAY,
+} from './utils/constants';
 
 describe('Password management', () => {
   const PASSWORD = {
@@ -250,6 +253,7 @@ describe('Password management', () => {
         )
         .click();
 
+      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
       expect(
         await this.driver
           .wait(
