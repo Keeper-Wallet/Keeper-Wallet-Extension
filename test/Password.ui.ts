@@ -254,7 +254,7 @@ describe('Password management', () => {
         await this.driver
           .wait(
             until.elementIsVisible(
-              this.driver.findElement(By.css('[data-testid="modalPassword"]'))
+              this.driver.findElement(By.css('.modal.notification'))
             ),
             this.wait
           )
