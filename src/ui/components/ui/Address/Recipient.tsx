@@ -3,6 +3,7 @@ import * as React from 'react';
 import cn from 'classnames';
 import { validators } from '@waves/waves-transactions';
 import {
+  isEthereumAddress,
   isValidEthereumAddress,
   fromEthereumToWavesAddress,
   fromWavesToEthereumAddress,
@@ -33,7 +34,9 @@ export function AddressRecipient({
   testid,
 }: Props) {
   const { t } = useTranslation();
-  const address = processAliasOrAddress(recipient, chainId);
+  const address = isEthereumAddress(recipient)
+    ? fromEthereumToWavesAddress(recipient, chainId)
+    : processAliasOrAddress(recipient, chainId);
 
   const accounts = useAppSelector(state => state.accounts);
   const addresses = useAppSelector(state => state.addresses);
