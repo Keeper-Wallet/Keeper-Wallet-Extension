@@ -149,16 +149,12 @@ describe('Settings', function () {
         .click();
 
       await this.driver.wait(
-        until.elementLocated(
-          By.xpath("//div[contains(@class, '-settings-networkTab')]")
-        ),
-        this.wait
-      );
-
-      await this.driver.wait(
         until.elementIsVisible(
-          this.driver.findElement(
-            By.xpath("//div[contains(@class, '-settings-networkTab')]")
+          this.driver.wait(
+            until.elementLocated(
+              By.xpath("//div[contains(@class, '-settings-networkTab')]")
+            ),
+            this.wait
           )
         ),
         this.wait
