@@ -6,6 +6,10 @@ import { setAddresses } from 'ui/actions';
 import { PAGES } from '../../../pageConfig';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
+import {
+  fromEthereumToWavesAddress,
+  isEthereumAddress,
+} from 'ui/utils/ethereum';
 
 interface EncryptedAddressBook {
   type: WalletTypes;
@@ -60,7 +64,12 @@ export function getFormattedAddresses(
         );
       }
 
-      return { ...acc, [keystoreAddress]: keystoreName };
+      return {
+        ...acc,
+        [isEthereumAddress(keystoreAddress)
+          ? fromEthereumToWavesAddress(keystoreAddress)
+          : keystoreAddress]: keystoreName,
+      };
     },
     {}
   );

@@ -1,7 +1,6 @@
 import * as styles from './SuggestInput.module.css';
 import * as React from 'react';
 import { libs, validators } from '@waves/waves-transactions';
-import { isEthereumAddress } from 'ui/utils/ethereum';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { icontains } from 'ui/components/pages/assets/helpers';
@@ -181,10 +180,6 @@ export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const accounts = useAppSelector(state => state.accounts);
   const addresses = useAppSelector<Record<string, string>>(state =>
     Object.entries(state.addresses).reduce((acc, [address, name]) => {
-      if (isEthereumAddress(address)) {
-        return { ...acc, [address]: name };
-      }
-
       if (!validators.isValidAddress(address, chainId)) {
         return acc;
       }

@@ -402,6 +402,7 @@ export function HistoryItem({ tx, className }: Props) {
               recipient={tx.sender}
               chainId={chainId}
               showAliasWarning={false}
+              showMirrorAddress
             />
           );
           addSign = '+';
