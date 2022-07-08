@@ -35,7 +35,7 @@ export function AddressRecipient({
 }: Props) {
   const { t } = useTranslation();
   const address = isEthereumAddress(recipient)
-    ? fromEthereumToWavesAddress(recipient, chainId)
+    ? recipient
     : processAliasOrAddress(recipient, chainId);
 
   const accounts = useAppSelector(state => state.accounts);
