@@ -253,7 +253,12 @@ describe('Password management', () => {
       expect(
         await this.driver
           .wait(
-            until.elementLocated(By.css('[data-testid="modalPassword"]')),
+            until.elementIsVisible(
+              this.driver.wait(
+                until.elementLocated(By.css('[data-testid="modalPassword"]')),
+                this.wait
+              )
+            ),
             this.wait
           )
           .getText()
