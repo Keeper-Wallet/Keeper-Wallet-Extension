@@ -3,14 +3,12 @@ import { useAppSelector, useAppDispatch } from 'ui/store';
 import { addBackTab, setTab } from '../../../actions';
 import { PAGES } from '../../../pageConfig';
 import { getNetworkByAddress } from 'ui/utils/waves';
-import { isEthereumAddress } from 'ui/utils/ethereum';
 import { downloadKeystore } from '../../../utils/keystore';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
 
 export function ExportAddressBook() {
   const dispatch = useAppDispatch();
-  const currentNetwork = useAppSelector(state => state.currentNetwork);
   const addresses = useAppSelector(state => state.addresses);
 
   const [addressesToExport, setAddressesToExport] = React.useState(null);
@@ -25,9 +23,7 @@ export function ExportAddressBook() {
           .map(([address, name]) => ({
             name,
             address,
-            network: isEthereumAddress(address)
-              ? currentNetwork
-              : getNetworkByAddress(address),
+            network: getNetworkByAddress(address),
           }))}
         type="contacts"
         onSubmit={async contacts => {

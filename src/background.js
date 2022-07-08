@@ -112,6 +112,7 @@ extension.runtime.onInstalled.addListener(async details => {
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
+    bgService.addressBookController.migrate();
   }
 });
 
