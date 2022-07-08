@@ -17,10 +17,10 @@ export function fromWavesToEthereumAddress(address: string) {
   return `0x${base16Encode(bytes.slice(2, bytes.length - 4))}`;
 }
 
-export function fromEthereumToWavesAddress(address: string, chainId: number) {
+export function fromEthereumToWavesAddress(address: string, chainId?: number) {
   const hex = address.slice(2);
   const bytes = base16Decode(hex);
-  const chainBytes = new Uint8Array([0x01, chainId]);
+  const chainBytes = new Uint8Array([0x01, chainId || 87]);
   const checksum = keccak(blake2b(new Uint8Array([...chainBytes, ...bytes])));
   return base58Encode(
     new Uint8Array([...chainBytes, ...bytes, ...checksum.slice(0, 4)])

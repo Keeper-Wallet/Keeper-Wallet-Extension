@@ -20,6 +20,7 @@ export interface Props {
   recipient: string;
   chainId: number;
   showAliasWarning?: boolean;
+  showMirrorAddress?: boolean;
   testid?: string;
 }
 
@@ -28,6 +29,7 @@ export function AddressRecipient({
   recipient,
   chainId,
   showAliasWarning = true,
+  showMirrorAddress,
   testid,
 }: Props) {
   const { t } = useTranslation();
@@ -79,27 +81,41 @@ export function AddressRecipient({
         </div>
       ) : (
         <div className={cn(styles.content, className)} data-testid={testid}>
-          <Tooltip
-            className={cn(styles.mirrorAddress, {
-              [styles.ethereum]: type === 'ethereum',
-              [styles.waves]: type === 'waves',
-            })}
-            content={mirrorAddress}
-            placement="auto-end"
-          >
-            {props => (
-              <p className={styles.recipientWrapper} {...props}>
-                <Ellipsis
-                  text={address}
-                  size={12}
-                  className={cn(styles.recipient, {
-                    [styles.ethereum]: type === 'ethereum',
-                    [styles.waves]: type === 'waves',
-                  })}
-                />
-              </p>
-            )}
-          </Tooltip>
+          {showMirrorAddress ? (
+            <Tooltip
+              className={cn(styles.mirrorAddress, {
+                [styles.ethereum]: type === 'ethereum',
+                [styles.waves]: type === 'waves',
+              })}
+              content={mirrorAddress}
+              placement="auto-end"
+            >
+              {props => (
+                <p className={styles.recipientWrapper} {...props}>
+                  <Ellipsis
+                    text={address}
+                    size={12}
+                    className={cn(styles.recipient, {
+                      [styles.ethereum]: type === 'ethereum',
+                      [styles.waves]: type === 'waves',
+                    })}
+                  />
+                </p>
+              )}
+            </Tooltip>
+          ) : (
+            <Tooltip content={address} placement="auto-end">
+              {props => (
+                <p className={styles.recipientWrapper} {...props}>
+                  <Ellipsis
+                    text={address}
+                    size={12}
+                    className={styles.recipient}
+                  />
+                </p>
+              )}
+            </Tooltip>
+          )}
           <Tooltip content={t('address.addTooltip')} placement="auto-end">
             {props => (
               <i

@@ -1,5 +1,9 @@
 import * as ObservableStore from 'obs-store';
 import LocalStore from '../lib/localStore';
+import {
+  fromEthereumToWavesAddress,
+  isEthereumAddress,
+} from 'ui/utils/ethereum';
 
 type AddressBookState = { addresses: Record<string, string> };
 
@@ -31,5 +35,20 @@ export class AddressBookController {
     const { addresses } = this.store.getState();
     delete addresses[address];
     this.store.updateState({ addresses });
+  }
+
+  migrate() {
+    const { addresses } = this.store.getState();
+    this.store.updateState({
+      addresses: Object.entries(addresses).reduce(
+        (acc, [address, name]) => ({
+          ...acc,
+          [isEthereumAddress(address)
+            ? fromEthereumToWavesAddress(address)
+            : address]: name,
+        }),
+        {}
+      ),
+    });
   }
 }

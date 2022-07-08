@@ -4,7 +4,6 @@ import { validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { setAddress, removeAddress } from 'ui/actions';
-import { isValidEthereumAddress } from 'ui/utils/ethereum';
 import { AddressInput } from './Input';
 import { Modal, Input, Error, Button } from '..';
 
@@ -97,8 +96,7 @@ export function EditModal({
                 if (
                   /^\s/g.test(nameValue) ||
                   validators.isValidAddress(nameValue) ||
-                  validators.isValidAlias(nameValue) ||
-                  isValidEthereumAddress(nameValue)
+                  validators.isValidAlias(nameValue)
                 ) {
                   setNameError(t('address.nameInvalidError'));
                   return;
@@ -109,10 +107,7 @@ export function EditModal({
                   return;
                 }
 
-                if (
-                  !validators.isValidAddress(addressValue) &&
-                  !isValidEthereumAddress(addressValue)
-                ) {
+                if (!validators.isValidAddress(addressValue)) {
                   setAddressError(t('address.addressInvalidError'));
                   return;
                 }

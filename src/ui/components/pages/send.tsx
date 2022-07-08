@@ -1,11 +1,6 @@
 import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { validators } from '@waves/waves-transactions';
-import {
-  isValidEthereumAddress,
-  isEthereumAddress,
-  fromEthereumToWavesAddress,
-} from 'ui/utils/ethereum';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -56,8 +51,7 @@ export function Send() {
     ? t('send.recipientRequiredError')
     : !(
         validators.isValidAddress(recipientValue, chainId) ||
-        validators.isValidAlias(recipientValue) ||
-        isValidEthereumAddress(recipientValue)
+        validators.isValidAlias(recipientValue)
       )
     ? t('send.recipientInvalidError')
     : null;
@@ -79,10 +73,6 @@ export function Send() {
   const showAttachmentError = isTriedToSubmit && attachmentError != null;
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const recipientAddress = isEthereumAddress(recipientValue)
-    ? fromEthereumToWavesAddress(recipientValue, chainId)
-    : recipientValue;
 
   return (
     <form
@@ -106,7 +96,7 @@ export function Send() {
                 assetId: currentAsset.id,
                 tokens: amountValue,
               },
-              recipient: recipientAddress,
+              recipient: recipientValue,
               attachment: attachmentValue,
             },
           })
