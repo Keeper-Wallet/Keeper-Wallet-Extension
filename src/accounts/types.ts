@@ -5,6 +5,12 @@ export enum NetworkName {
   Custom = 'custom',
 }
 
+export enum NetworkByte {
+  Mainnet = 87,
+  Testnet = 84,
+  Stagenet = 83,
+}
+
 export type Account = {
   address: string;
   lastUsed?: number;
