@@ -923,7 +923,7 @@ KeeperWallet.signAndPublishTransaction({
 
 ##### Транзакция создания псевдонима (тип 10)
 
-Подробное [описание транзакции создания псевдонима](https://docs.waves.tech/ru/blockchain/transaction-type/lease-cancel-transaction) приведено в документации протокола Waves.
+Подробное [описание транзакции создания псевдонима](https://docs.waves.tech/ru/blockchain/transaction-type/create-alias-transaction) приведено в документации протокола Waves.
 
 Поля:
 
@@ -957,7 +957,7 @@ KeeperWallet.signAndPublishTransaction({
 
 ##### Транзакция массового перевода (тип 11)
 
-Подробное [описание транзакции массового перевода](https://docs.waves.tech/ru/blockchain/transaction-type/lease-cancel-transaction) приведено в документации протокола Waves.
+Подробное [описание транзакции массового перевода](https://docs.waves.tech/ru/blockchain/transaction-type/mass-transfer-transaction) приведено в документации протокола Waves.
 
 Поля:
 
@@ -1287,6 +1287,8 @@ KeeperWallet.signAndPublishTransaction({
 
 ##### Транзакция обновления информации ассета (тип 17)
 
+Подробное [описание транзакции обновления информации ассета](https://docs.waves.tech/ru/blockchain/transaction-type/update-asset-info-transaction) приведено в документации протокола Waves.
+
 Поля:
 
 - `name`: [4,16 байт] string — имя токена.
@@ -1331,7 +1333,7 @@ WavesKeeper.signAndPublishTransaction({
 }
 ```
 
-Подробное [описание ордера](https://docs.waves.tech/en/blockchain/order) приведено в документации протокола Waves.
+Подробное [описание ордера](https://docs.waves.tech/ru/blockchain/order) приведено в документации протокола Waves.
 
 Как рассчитывается комиссия для ордера, см. в разделе [Комиссия матчера](https://docs.waves.exchange/ru/waves-matcher/matcher-fee) документации Waves.Exchange.
 
