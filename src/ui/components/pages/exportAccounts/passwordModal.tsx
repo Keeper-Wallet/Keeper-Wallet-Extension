@@ -21,10 +21,15 @@ export function ExportPasswordModal({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+
   const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
+
   const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
+
   const [encrypted, setEncrypted] = React.useState(true);
+
+  const [loading, setLoading] = React.useState(false);
 
   React.useLayoutEffect(() => {
     passwordInputRef.current.focus();
@@ -38,12 +43,15 @@ export function ExportPasswordModal({
           onSubmit={async event => {
             event.preventDefault();
             setPasswordError(false);
+            setLoading(true);
 
             try {
               await onSubmit(password, encrypted);
             } catch {
               setPasswordError(true);
             }
+
+            setLoading(false);
           }}
         >
           <i className={cn(styles.lockIcon, 'lock-icon')} />
@@ -102,7 +110,8 @@ export function ExportPasswordModal({
 
           <Button
             data-testid="verifyButton"
-            disabled={!password}
+            disabled={loading || !password}
+            loading={loading}
             className="margin1"
             type="submit"
             view="submit"

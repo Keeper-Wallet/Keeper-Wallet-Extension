@@ -8,6 +8,7 @@ interface Props {
   title: string;
   label: string;
   placeholder: string;
+  loading?: boolean;
   error: string | null;
   setError: (error: string | null) => void;
   onSubmit: (result: string, password?: string) => void;
@@ -17,6 +18,7 @@ export function ImportKeystoreChooseFile({
   title,
   label,
   placeholder,
+  loading,
   error,
   setError,
   onSubmit,
@@ -126,7 +128,10 @@ export function ImportKeystoreChooseFile({
       <Button
         className={styles.keystoreButton}
         data-testid="submitButton"
-        disabled={keystoreFile == null || (showPassword && !password)}
+        disabled={
+          loading || keystoreFile == null || (showPassword && !password)
+        }
+        loading={loading}
         type="submit"
         view="submit"
       >
