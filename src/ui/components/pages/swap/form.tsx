@@ -339,8 +339,8 @@ export function SwapForm({
   const swapVendorInfo = swapInfo[swapVendor];
 
   const defaultPriceDirectionSwapped =
-    vendorExchangeInfo.type === 'data' &&
-    +vendorExchangeInfo.toAmountTokens
+    swapVendorInfo.type === 'data' &&
+    +swapVendorInfo.toAmountTokens
       .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
       .toFixed(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR) < 1;
   const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = React.useState(
