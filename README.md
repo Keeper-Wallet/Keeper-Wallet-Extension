@@ -490,7 +490,7 @@ else
 
 #### signTransaction
 
-A method for signing transactions in Waves network. See the description of supported transaction types in [Transaction format](#transaction-format) section below.
+A method for signing transactions in Waves network. See the description of supported transaction types in [Transactions](#transactions) section below.
 
 Example:
 
@@ -586,7 +586,7 @@ Possible errors:
 
 #### signTransactionPackage
 
-A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. See the description of supported transaction types in [Transaction format](#transaction-format) section below.
+A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. See the description of supported transaction types in [Transactions](#transactions) section below.
 
 Example:
 
