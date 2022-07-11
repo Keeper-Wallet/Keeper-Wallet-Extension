@@ -753,7 +753,7 @@ KeeperWallet.signAndPublishTransaction({
 
 - `amount`: MoneyLike — количество токена.
 - `recipient`: string — адрес или псевдоним получателя.
-- `attachment`: [,140 байт] string — произвольный текстовый комментарий.
+- `attachment`: [,140 байт] string or byte array — произвольные данные (обычно комментарий к транзакции).
 - `*fee`: MoneyLike — комиссия за транзакцию.
 - `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
 - `*timestamp`: number/string — время в миллисекундах.
@@ -964,7 +964,7 @@ KeeperWallet.signAndPublishTransaction({
 - `totalAmount`: MoneyLike — суммарное количество ассета; вместо вычисления можно указать { `assetId`: "ID of the asset to be sent", `coins`: 0}.
 - `transfers` — массив объектов { `recipient`: string — адрес или псевдоним получателя, `amount`: number/string/MoneyLike }.
 - `*fee`: MoneyLike — комиссия за транзакцию.
-- `attachment`: [,140 байт] string — произвольный текстовый комментарий.
+- `attachment`: [,140 байт] string or byte array — произвольные данные (обычно комментарий к транзакции).
 - `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
 - `*timestamp`: number/string — время в миллисекундах.
 
