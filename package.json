@@ -12,7 +12,7 @@
     "node": "^10.24.1"
   },
   "scripts": {
-    "dev": "webpack --watch",
+    "dev": "webpack --node-env=development --watch",
     "lint:eslint": "eslint --ext .ts,.tsx,.js .",
     "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
@@ -22,7 +22,7 @@
     "lint:typescript": "tsc --noEmit",
     "test:dev": "mocha --watch",
     "test": "mocha",
-    "dist": "NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 webpack"
+    "dist": "NODE_OPTIONS=--max-old-space-size=8192 webpack --node-env=production"
   },
   "mocha": {
     "extension": [
