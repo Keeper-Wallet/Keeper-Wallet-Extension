@@ -1,12 +1,7 @@
 import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { binary, serializePrimitives } from '@waves/marshall';
-import {
-  base58Encode,
-  blake2b,
-  concat,
-  stringToBytes,
-} from '@waves/ts-lib-crypto';
+import { base58Encode, blake2b, concat, TBinaryIn } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
   alias,
@@ -72,7 +67,7 @@ interface SaTransfer {
     senderPublicKey?: string;
     amount: Money;
     recipient: string;
-    attachment?: string;
+    attachment?: TBinaryIn;
     fee: Money;
     timestamp: number;
     chainId?: number;
@@ -163,7 +158,7 @@ interface SaMassTransfer {
     }>;
     fee: Money;
     timestamp: number;
-    attachment?: string;
+    attachment?: TBinaryIn;
     proofs?: string[];
     chainId?: number;
   };
@@ -415,7 +410,7 @@ export const convertFromSa = {
               recipient: processAliasOrAddress(input.data.recipient, chainId),
               amount: input.data.amount.getCoins(),
               attachment: input.data.attachment
-                ? base58Encode(stringToBytes(input.data.attachment))
+                ? base58Encode(input.data.attachment)
                 : '',
               fee: input.data.fee.getCoins(),
               feeAssetId: input.data.fee.asset.id,
@@ -538,7 +533,7 @@ export const convertFromSa = {
               fee: input.data.fee.getCoins(),
               timestamp: input.data.timestamp,
               attachment: input.data.attachment
-                ? base58Encode(stringToBytes(input.data.attachment))
+                ? base58Encode(input.data.attachment)
                 : '',
               proofs: input.data.proofs || [],
               chainId,
