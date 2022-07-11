@@ -342,15 +342,20 @@ KeeperWallet.auth(authData)
 ```typescript
 import { verifyAuthData, libs } from '@waves/waves-transactions';
 
-
-const authValidate = (data: { host: string; data: string }, signature: string, publicKey: string, chainId: string | number): boolean => {
-    const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
-    const address = libs.crypto.address({ publicKey }, chain);
-    return verifyAuthData({ publicKey, address, signature }, data);
+const authValidate = (
+  data: { host: string; data: string },
+  signature: string,
+  publicKey: string,
+  chainId: string | number
+): boolean => {
+  const chain =
+    typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+  const address = libs.crypto.address({ publicKey }, chain);
+  return verifyAuthData({ publicKey, address, signature }, data);
 };
 
 // Получение подписи
-const data = await WavesKeeper.auth({data: '123'});
+const data = await WavesKeeper.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -360,15 +365,15 @@ authValidate(data, { host: data.host, data: '123' }); // true
 ```js
 import { verifyAuthData, libs } from '@waves/waves-transactions';
 
-
-const authValidate = (signature, data, publicKey, chainId) => { 
-   const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
-   const address = libs.crypto.address({ publicKey }, chain);
-   return verifyAuthData({ publicKey, address, signature }, data);
+const authValidate = (signature, data, publicKey, chainId) => {
+  const chain =
+    typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+  const address = libs.crypto.address({ publicKey }, chain);
+  return verifyAuthData({ publicKey, address, signature }, data);
 };
 
 // Получение подписи
-const data = await WavesKeeper.auth({data: '123'});
+const data = await WavesKeeper.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -380,50 +385,50 @@ import axolotl_curve25519 as curve
 import pywaves.crypto as crypto
 import base58
 from urllib.parse import urlparse, parse_qs
- 
- 
+
+
 def str_with_length(string_data):
     string_length_bytes = len(string_data).to_bytes(2, byteorder='big')
     string_bytes = string_data.encode('utf-8')
     return string_length_bytes + string_bytes
- 
- 
+
+
 def signed_data(host, data):
     prefix = 'WavesWalletAuthentication'
     return str_with_length(prefix) + str_with_length(host) + str_with_length(data)
- 
- 
+
+
 def verify(public_key, signature, message):
     public_key_bytes = base58.b58decode(public_key)
     signature_bytes = base58.b58decode(signature)
- 
+
     return curve.verifySignature(public_key_bytes, message, signature_bytes) == 0
- 
- 
+
+
 def verifyAddress(public_key, address):
     public_key_bytes = base58.b58decode(public_key)
     unhashed_address = chr(1) + str('W') + crypto.hashChain(public_key_bytes)[0:20]
     address_hash = crypto.hashChain(crypto.str2bytes(unhashed_address))[0:4]
     address_from_public_key = base58.b58encode(crypto.str2bytes(unhashed_address + address_hash))
- 
+
     return address_from_public_key == address
- 
+
 address = '3PCAB4sHXgvtu5NPoen6EXR5yaNbvsEA8Fj'
 pub_key = '2M25DqL2W4rGFLCFadgATboS8EPqyWAN3DjH12AH5Kdr'
 signature = '2w7QKSkxKEUwCVhx2VGrt5YiYVtAdoBZ8KQcxuNjGfN6n4fi1bn7PfPTnmdygZ6d87WhSXF1B9hW2pSmP7HucVbh'
 data_string = '0123456789abc'
 host_string = 'example.com'
 message_bytes = signed_data(host_string, data_string)
- 
+
 print('Address:', address)
 print('Public key:', pub_key)
 print('Signed Data:', message_bytes)
 print('Real signature:', signature)
 print('Verified:', verify(pub_key, signature, message_bytes))
 print('Address verified:', verifyAddress(pub_key, address))
- 
+
 fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw'
- 
+
 print('Fake signature:', fake_signature)
 print('Fake signature verification:', verify(pub_key, fake_signature, message_bytes))
 ```
@@ -444,7 +449,7 @@ use deemru\WavesKit;
 function signed_data( $host, $data )
 {
     $prefix = 'WavesWalletAuthentication';
-    return str_with_length($prefix) . str_with_length($host) . str_with_length($data);    
+    return str_with_length($prefix) . str_with_length($host) . str_with_length($data);
 }
 
 function str_with_length( $data )
@@ -468,16 +473,16 @@ $wk->log('i', 'Real signature: '. $signature);
 $wk->setPublicKey( $pub_key );
 $is_address_verified = $address === $wk->getAddress();
 
-if ( $is_address_verified === true) 
-    $wk->log('s', "Address: Verified: TRUE"); 
-else 
+if ( $is_address_verified === true)
+    $wk->log('s', "Address: Verified: TRUE");
+else
     $wk->log('e', "Address: Verified: FALSE");
 
 $signature_verified = $wk->verify($wk->base58Decode($signature), $message_bytes);
 
-if ( $signature_verified === true) 
-    $wk->log('s', "Signature Verified: TRUE"); 
-else 
+if ( $signature_verified === true)
+    $wk->log('s', "Signature Verified: TRUE");
+else
     $wk->log('e', "Signature Verified: FALSE");
 
 $fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw';
@@ -485,12 +490,13 @@ $wk->log('i', 'Fake Signature: '. $fake_signature);
 
 $signature_verified = $wk->verify($wk->base58Decode($fake_signature), $message_bytes);
 
-if ( $signature_verified === true) 
-    $wk->log('e', "Fake Signature Verified: TRUE"); 
-else 
+if ( $signature_verified === true)
+    $wk->log('e', "Fake Signature Verified: TRUE");
+else
     $wk->log('s', "Fake Signature Verified: FALSE");
 ?>
 ```
+
 </details>
 
 #### signTransaction
@@ -996,9 +1002,9 @@ KeeperWallet.signAndPublishTransaction({
 Поля:
 
 - `data`: массив объектов.
-   - `type`: "binary"/string/"integer"/"boolean" — тип записи.
-   - `key`: string — ключ записи.
-   - `value`: string(base64)/string/number/boolean в зависимости от типа. `null` для удаления записи.
+  - `type`: "binary"/string/"integer"/"boolean" — тип записи.
+  - `key`: string — ключ записи.
+  - `value`: string(base64)/string/number/boolean в зависимости от типа. `null` для удаления записи.
 - `*version`: number — версия транзакции.
 - `*fee`: MoneyLike — комиссия за транзакцию.
 - `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
@@ -1038,22 +1044,22 @@ KeeperWallet.signAndPublishTransaction({
 
 ```js
 KeeperWallet.signAndPublishTransaction({
-   type: 12,
-   data: {
-      version: 2,
-      data: [
-         { key: "binary", value: null },
-      ],
-      fee: {
-         tokens: "0.001",
-         assetId: "WAVES"
-      }
-   }
-}).then((tx) => {
-   console.log("Hurray! I've deleted data!!!");
-}).catch((error) => {
-   console.error("Something went wrong", error);
-});
+  type: 12,
+  data: {
+    version: 2,
+    data: [{ key: 'binary', value: null }],
+    fee: {
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've deleted data!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 ##### Транзакция установки скрипта (тип 13)
@@ -1062,7 +1068,7 @@ KeeperWallet.signAndPublishTransaction({
 
 Поля:
 
-- `script`: string — скрипт аккаунта или dApp-скрипт (см. разделы [Смарт-аккаунт](https://docs.waves.tech/ru/building-apps/smart-contracts/what-is-smart-account)) и [dApp](https://docs.waves.tech/ru/building-apps/smart-contracts/what-is-a-dapp) документации протокола Waves). 
+- `script`: string — скрипт аккаунта или dApp-скрипт (см. разделы [Смарт-аккаунт](https://docs.waves.tech/ru/building-apps/smart-contracts/what-is-smart-account)) и [dApp](https://docs.waves.tech/ru/building-apps/smart-contracts/what-is-a-dapp) документации протокола Waves).
 - `*fee`: MoneyLike — комиссия за транзакцию.
 - `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
 - `*timestamp`: number/string — время в миллисекундах.
@@ -1126,7 +1132,7 @@ KeeperWallet.signAndPublishTransaction({
 
 - `minSponsoredAssetFee`: MoneyLike — количество спонсорского ассета, эквивалентное 0,001 WAVES.
 - `*fee`: MoneyLike — комиссия за транзакцию.
-- `*senderPublicKey`: string —  публичный ключ пользователя в кодировке base58.
+- `*senderPublicKey`: string — публичный ключ пользователя в кодировке base58.
 - `*timestamp`: number/string — время в миллисекундах.
 
 Пример:
@@ -1248,33 +1254,35 @@ KeeperWallet.signAndPublishTransaction({
 
 ```js
 KeeperWallet.signAndPublishTransaction({
-   type: 16,
-   data: {
-      dApp: "3N28o4ZDhPK77QFFKoKBnN3uNeoaNSNXzXm",
-      call: {
-         function: "foo",
-         args: [
-            {
-               type: "list",
-               value: [
-                  { type: "string", value: "alpha" },
-                  { type: "string", value: "beta" },
-                  { type: "string", value: "gamma" }
-              ],
-            }
-         ]
-      },
-      payment: [],
-      fee: {
-         tokens: "0.005",
-         assetId: "WAVES"
-      },
-   }
-}).then((tx) => {
-  console.log("Ура! Я выполнил скрипт!!!");
-}).catch((error) => {
-   console.error("Что-то пошло не так", error);
-});
+  type: 16,
+  data: {
+    dApp: '3N28o4ZDhPK77QFFKoKBnN3uNeoaNSNXzXm',
+    call: {
+      function: 'foo',
+      args: [
+        {
+          type: 'list',
+          value: [
+            { type: 'string', value: 'alpha' },
+            { type: 'string', value: 'beta' },
+            { type: 'string', value: 'gamma' },
+          ],
+        },
+      ],
+    },
+    payment: [],
+    fee: {
+      tokens: '0.005',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log('Ура! Я выполнил скрипт!!!');
+  })
+  .catch(error => {
+    console.error('Что-то пошло не так', error);
+  });
 ```
 
 ##### Транзакция обновления информации ассета (тип 17)
@@ -1291,21 +1299,23 @@ KeeperWallet.signAndPublishTransaction({
 
 ```js
 WavesKeeper.signAndPublishTransaction({
-   type: 17,
-   data: {
-      name: "New name",
-      description: "New description",
-      assetId: "DS5fJKbhKDaFfcRpCd7hTcMqqxsfoF3iY9yEcmsTQV1T",
-      fee: {
-         assetId: "WAVES",
-         tokens: "0.001"
-      },
-   }
-}).then((tx) => {
-   console.log("Hurray! I've renamed the asset!!!");
-}).catch((error) => {
-   console.error("Something went wrong", error);
-});
+  type: 17,
+  data: {
+    name: 'New name',
+    description: 'New description',
+    assetId: 'DS5fJKbhKDaFfcRpCd7hTcMqqxsfoF3iY9yEcmsTQV1T',
+    fee: {
+      assetId: 'WAVES',
+      tokens: '0.001',
+    },
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've renamed the asset!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 #### signOrder
@@ -1426,7 +1436,7 @@ KeeperWallet.signCancelOrder({
 
 #### signAndPublishCancelOrder
 
- еще отправляет транзакцию в блокчейн. Описание поддерживаемых транзакций см. в разделе [Транзакции](#transactions) ниже.
+еще отправляет транзакцию в блокчейн. Описание поддерживаемых транзакций см. в разделе [Транзакции](#transactions) ниже.
 
 Метод Keeper Wallet для отмены ордера. Работает идентично `signCancelOrder`, но еще и отправляет данные на матчер. Для этого необходимо дополнительно передать два поля из ордера: `priceAsset` и `amountAsset`.
 

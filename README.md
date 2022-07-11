@@ -331,15 +331,20 @@ We also suggest address validation in case the signature and public key is valid
 ```typescript
 import { verifyAuthData, libs } from '@waves/waves-transactions';
 
-
-const authValidate = (data: { host: string; data: string }, signature: string, publicKey: string, chainId: string | number): boolean => {
-    const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
-    const address = libs.crypto.address({ publicKey }, chain);
-    return verifyAuthData({ publicKey, address, signature }, data);
+const authValidate = (
+  data: { host: string; data: string },
+  signature: string,
+  publicKey: string,
+  chainId: string | number
+): boolean => {
+  const chain =
+    typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+  const address = libs.crypto.address({ publicKey }, chain);
+  return verifyAuthData({ publicKey, address, signature }, data);
 };
 
 // Obtaining the signature
-const data = await WavesKeeper.auth({data: '123'});
+const data = await WavesKeeper.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -349,15 +354,15 @@ authValidate(data, { host: data.host, data: '123' }); // true
 ```js
 import { verifyAuthData, libs } from '@waves/waves-transactions';
 
-
-const authValidate = (signature, data, publicKey, chainId) => { 
-   const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
-   const address = libs.crypto.address({ publicKey }, chain);
-   return verifyAuthData({ publicKey, address, signature }, data);
+const authValidate = (signature, data, publicKey, chainId) => {
+  const chain =
+    typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+  const address = libs.crypto.address({ publicKey }, chain);
+  return verifyAuthData({ publicKey, address, signature }, data);
 };
 
 // Obtaining the signature
-const data = await WavesKeeper.auth({data: '123'});
+const data = await WavesKeeper.auth({ data: '123' });
 
 authValidate(data, { host: data.host, data: '123' }); // true
 ```
@@ -369,50 +374,50 @@ import axolotl_curve25519 as curve
 import pywaves.crypto as crypto
 import base58
 from urllib.parse import urlparse, parse_qs
- 
- 
+
+
 def str_with_length(string_data):
     string_length_bytes = len(string_data).to_bytes(2, byteorder='big')
     string_bytes = string_data.encode('utf-8')
     return string_length_bytes + string_bytes
- 
- 
+
+
 def signed_data(host, data):
     prefix = 'WavesWalletAuthentication'
     return str_with_length(prefix) + str_with_length(host) + str_with_length(data)
- 
- 
+
+
 def verify(public_key, signature, message):
     public_key_bytes = base58.b58decode(public_key)
     signature_bytes = base58.b58decode(signature)
- 
+
     return curve.verifySignature(public_key_bytes, message, signature_bytes) == 0
- 
- 
+
+
 def verifyAddress(public_key, address):
     public_key_bytes = base58.b58decode(public_key)
     unhashed_address = chr(1) + str('W') + crypto.hashChain(public_key_bytes)[0:20]
     address_hash = crypto.hashChain(crypto.str2bytes(unhashed_address))[0:4]
     address_from_public_key = base58.b58encode(crypto.str2bytes(unhashed_address + address_hash))
- 
+
     return address_from_public_key == address
- 
+
 address = '3PCAB4sHXgvtu5NPoen6EXR5yaNbvsEA8Fj'
 pub_key = '2M25DqL2W4rGFLCFadgATboS8EPqyWAN3DjH12AH5Kdr'
 signature = '2w7QKSkxKEUwCVhx2VGrt5YiYVtAdoBZ8KQcxuNjGfN6n4fi1bn7PfPTnmdygZ6d87WhSXF1B9hW2pSmP7HucVbh'
 data_string = '0123456789abc'
 host_string = 'example.com'
 message_bytes = signed_data(host_string, data_string)
- 
+
 print('Address:', address)
 print('Public key:', pub_key)
 print('Signed Data:', message_bytes)
 print('Real signature:', signature)
 print('Verified:', verify(pub_key, signature, message_bytes))
 print('Address verified:', verifyAddress(pub_key, address))
- 
+
 fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw'
- 
+
 print('Fake signature:', fake_signature)
 print('Fake signature verification:', verify(pub_key, fake_signature, message_bytes))
 ```
@@ -433,7 +438,7 @@ use deemru\WavesKit;
 function signed_data( $host, $data )
 {
     $prefix = 'WavesWalletAuthentication';
-    return str_with_length($prefix) . str_with_length($host) . str_with_length($data);    
+    return str_with_length($prefix) . str_with_length($host) . str_with_length($data);
 }
 
 function str_with_length( $data )
@@ -457,16 +462,16 @@ $wk->log('i', 'Real signature: '. $signature);
 $wk->setPublicKey( $pub_key );
 $is_address_verified = $address === $wk->getAddress();
 
-if ( $is_address_verified === true) 
-    $wk->log('s', "Address: Verified: TRUE"); 
-else 
+if ( $is_address_verified === true)
+    $wk->log('s', "Address: Verified: TRUE");
+else
     $wk->log('e', "Address: Verified: FALSE");
 
 $signature_verified = $wk->verify($wk->base58Decode($signature), $message_bytes);
 
-if ( $signature_verified === true) 
-    $wk->log('s', "Signature Verified: TRUE"); 
-else 
+if ( $signature_verified === true)
+    $wk->log('s', "Signature Verified: TRUE");
+else
     $wk->log('e', "Signature Verified: FALSE");
 
 $fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw';
@@ -474,12 +479,13 @@ $wk->log('i', 'Fake Signature: '. $fake_signature);
 
 $signature_verified = $wk->verify($wk->base58Decode($fake_signature), $message_bytes);
 
-if ( $signature_verified === true) 
-    $wk->log('e', "Fake Signature Verified: TRUE"); 
-else 
+if ( $signature_verified === true)
+    $wk->log('e', "Fake Signature Verified: TRUE");
+else
     $wk->log('s', "Fake Signature Verified: FALSE");
 ?>
 ```
+
 </details>
 
 #### signTransaction
@@ -734,7 +740,8 @@ In case of success, we issue a new asset in the quantity of 1,000,000, and your 
 
 See [Transfer transaction details](https://docs.waves.tech/en/blockchain/transaction-type/transfer-transaction) in the Waves protocol documentation.
 
-Fields: 
+Fields:
+
 - `amount`: MoneyLike – amount.
 - `recipient`: string – recipient's address or alias.
 - `attachment`: [,140 bytes]: string – additional info in text.
@@ -842,7 +849,7 @@ See [Lease transaction details](https://docs.waves.tech/en/blockchain/transactio
 Fields:
 
 - `recipient`: string – recipient's address or alias.
-- `amount`: [0 - (JLM)] number/string/MoneyLike –  quantity.
+- `amount`: [0 - (JLM)] number/string/MoneyLike – quantity.
 - `*fee`: MoneyLike – fee.
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp`: number/string – time in ms.
@@ -947,7 +954,7 @@ Fields:
 
 - `totalAmount`: MoneyLike – total to be sent; instead of calculating the amount you may insert { `assetId`: "ID of the asset to be sent", `coins:` 0}.
 - `transfers`  an array of objects:
-   { `recipient`: string – address/alias, `amount`: number/string/MoneyLike }
+  { `recipient`: string – address/alias, `amount`: number/string/MoneyLike }
 - `*fee`: MoneyLike – fee.
 - `attachment`: [,140 bytes]: string – additional info in text.
 - `*senderPublicKey`: string – user's public key in base58.
@@ -987,9 +994,9 @@ See [Data transaction details](https://docs.waves.tech/en/blockchain/transaction
 Fields:
 
 - `data`: array of objects:
-   - `type`: "binary"/string/"integer"/"boolean" – entry type.
-   - `key`: string – entry key.
-   - `value`: string(base64)/string/number/boolean, depending on `type`. `null` to delete the entry.
+  - `type`: "binary"/string/"integer"/"boolean" – entry type.
+  - `key`: string – entry key.
+  - `value`: string(base64)/string/number/boolean, depending on `type`. `null` to delete the entry.
 - `*version`: number – transaction version.
 - `*fee`: MoneyLike – fee.
 - `*senderPublicKey`: string – user's public key in base58.
@@ -1040,19 +1047,19 @@ KeeperWallet.signAndPublishTransaction({
   type: 12,
   data: {
     version: 2,
-    data: [
-      { key: "binary", value: null },
-    ],
+    data: [{ key: 'binary', value: null }],
     fee: {
-      tokens: "0.001",
-      assetId: "WAVES"
-    }
-  }
-}).then((tx) => {
-   console.log("Hurray! I've deleted data!!!");
-}).catch((error) => {
-   console.error("Something went wrong", error);
-});
+      tokens: '0.001',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've deleted data!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 ##### Set Script transaction (type 13)
@@ -1200,10 +1207,10 @@ Fields:
 
 - `dApp` string – address of the dApp account.
 - `call` — object:
-   - `function`: string – function name.
-   - `args` — array of objects:
-      - `type`: "binary"/string/"integer"/"boolean"/"list" – argument type.
-      - `value`: string(base64)/string/number/boolean/array – argument value.
+  - `function`: string – function name.
+  - `args` — array of objects:
+    - `type`: "binary"/string/"integer"/"boolean"/"list" – argument type.
+    - `value`: string(base64)/string/number/boolean/array – argument value.
 - `*fee`: MoneyLike – fee.
 - `*payment`: array of MoneyLike.
 - `*version`: number — transaction version
@@ -1243,37 +1250,39 @@ KeeperWallet.signAndPublishTransaction({
 
 In case of success, the callable function `tellme` of Testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU` will be invoked.
 
-An example of an invocation of a function with a list argument: 
+An example of an invocation of a function with a list argument:
 
 ```js
 KeeperWallet.signAndPublishTransaction({
   type: 16,
   data: {
-    dApp: "3N28o4ZDhPK77QFFKoKBnN3uNeoaNSNXzXm",
+    dApp: '3N28o4ZDhPK77QFFKoKBnN3uNeoaNSNXzXm',
     call: {
-      function: "foo",
+      function: 'foo',
       args: [
         {
-          type: "list",
+          type: 'list',
           value: [
-            { type: "string", value: "alpha" },
-            { type: "string", value: "beta" },
-            { type: "string", value: "gamma" }
-         ],
-        }
-      ]
+            { type: 'string', value: 'alpha' },
+            { type: 'string', value: 'beta' },
+            { type: 'string', value: 'gamma' },
+          ],
+        },
+      ],
     },
     payment: [],
     fee: {
-       tokens: "0.005",
-       assetId: "WAVES"
+      tokens: '0.005',
+      assetId: 'WAVES',
     },
-  }
-}).then((tx) => {
-  console.log("Hurray! I've invoked the script!!!");
-}).catch((error) => {
-   console.error("Something went wrong", error);
-});
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've invoked the script!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 ##### Update Asset Info transaction (type 17)
@@ -1294,19 +1303,21 @@ Example:
 KeeperWallet.signAndPublishTransaction({
   type: 17,
   data: {
-    name: "New name",
-    description: "New description",
-    assetId: "DS5fJKbhKDaFfcRpCd7hTcMqqxsfoF3iY9yEcmsTQV1T",
+    name: 'New name',
+    description: 'New description',
+    assetId: 'DS5fJKbhKDaFfcRpCd7hTcMqqxsfoF3iY9yEcmsTQV1T',
     fee: {
-      assetId: "WAVES",
-      tokens: "0.001"
+      assetId: 'WAVES',
+      tokens: '0.001',
     },
-  }
-}).then((tx) => {
-   console.log("Hurray! I've renamed the asset!!!");
-}).catch((error) => {
-   console.error("Something went wrong", error);
-});
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've renamed the asset!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 #### signOrder
@@ -1360,11 +1371,10 @@ KeeperWallet.signOrder({
       assetId: 'WAVES',
     },
   },
-})
+});
 then(tx => {
   console.log("Hurray! I've signed an order!!!");
-})
-.catch(error => {
+}).catch(error => {
   console.error('Something went wrong', error);
 });
 ```
@@ -1440,12 +1450,12 @@ KeeperWallet.signAndPublishCancelOrder({
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
   },
 })
-.then(() => {
-  console.log("Hurray! I've cancelled the order");
-})
-.catch(error => {
-  console.error('Something went wrong', error);
-});
+  .then(() => {
+    console.log("Hurray! I've cancelled the order");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
 ```
 
 Response: data returned by the matcher.
@@ -1472,8 +1482,8 @@ Currently, the method supports only type 1001: signing data for a request to the
 
 Fields:
 
-   - `timestamp`: number/string – time in ms.
-   - `*senderPublicKey`: string – user's public key in base58.
+- `timestamp`: number/string – time in ms.
+- `*senderPublicKey`: string – user's public key in base58.
 
 Example:
 
@@ -1535,9 +1545,9 @@ Possible errors:
 
 - `version`: 2
 - `data`: array of objects:
-   - `type`: "binary"/string/"integer"/"boolean" – field type.
-   - `key`: string – field name.
-   - `value`: string(base64)/string/number/boolean
+  - `type`: "binary"/string/"integer"/"boolean" – field type.
+  - `key`: string – field name.
+  - `value`: string(base64)/string/number/boolean
 
 Bytes to sign: [255, 255, 255, 2, ...(from data array to bin)]. For the details check [serializeCustomData](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L63) method in waves-transactions library.
 
