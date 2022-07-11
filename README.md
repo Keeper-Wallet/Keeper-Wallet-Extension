@@ -2,45 +2,48 @@
 
 en | [ru](https://github.com/wavesplatform/waves-keeper/blob/master/README_ru.md)
 
-Keeper Wallet is an extension that allows users to securely interact with Waves-enabled web services from the Chrome browser.
+Keeper Wallet is a browser extension that enables secure interaction with Waves-enabled web services.
 
 Seed phrases and private keys are encrypted and stored within the extension and cannot be accessed by online dApps and services, making sure that users' funds are always protected from hackers and malicious websites. Completion of a transaction doesn't require entering any sensitive information.
 
-Keeper Wallet is designed for convenience, so users can sign transactions with just a couple of clicks. Users can create multiple wallets and switch between them easily. And if a user ever forgets the password to the account, it can be recovered from the seed phrase.
+Keeper Wallet is designed for convenience, so users can sign transactions with just one click. Users can create multiple wallets and switch between them easily. And if a user ever forgets the password to the account, it can be recovered from the seed phrase.
+
+[Waves protocol documentation](https://docs.waves.tech/en/)
 
 ## Keeper Wallet API
 
-On browser pages that operate under the http/https (not worked local pages with file:// protocol) with Keeper Wallet extension installed, KeeperWallet global object becomes available.
+On browser pages that operate under `http/https` (not local pages with `file://` protocol) with Keeper Wallet extension installed, `KeeperWallet` global object becomes available.
 
-> WavesKeeper global object is **deprecated** and is not recommended for future use.
+> `WavesKeeper` global object is **deprecated** and is not recommended for future use.
 
-In KeeperWallet you will find the following methods:
+In `KeeperWallet` you will find the following methods:
 
-- `auth`
-- `publicState`
-- `signAndPublishCancelOrder`
-- `signAndPublishOrder`
-- `signAndPublishTransaction`
-- `signCancelOrder`
-- `signOrder`
-- `signTransaction`
-- `signRequest`
-- `signTransactionPackage`
-- `signCustomData`
-- `verifyCustomData`
-- `notification`
-- `encryptMessage`
-- `decryptMessage`
-- `resourceIsApproved`
-- `resourceIsBlocked`
-- `on`
+- [publicState](#publicstate)
+- [notification](#notification)
+- [encryptMessage](#encryptmessage)
+- [decryptMessage](#decryptmessage)
+- [on](#on)
+- [auth](#auth)
+- [signTransaction](#signtransaction)
+- [signAndPublishTransaction](#signandpublishtransaction)
+- [signTransactionPackage](#signtransactionpackage)
+- [signOrder](#signorder)
+- [signAndPublishOrder](#signandpublishorder)
+- [signCancelOrder](#signcancelorder)
+- [signAndPublishCancelOrder](#signandpublishcancelorder)
+- [signRequest](#signrequest)
+- [signCustomData](#signcustomdata)
+- [resourceIsApproved](#resourceisapproved)
+- [resourceIsBlocked](#resourceisblocked)
+- [verifyCustomData](#verifycustomdata)
 
-All methods, except for "on" operate asynchronously and return [promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+All methods except for `on` operate asynchronously and return [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
-In code, you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types)
+In code, you can use [TypeScript types](https://github.com/wavesplatform/waveskeeper-types).
 
-On initialize `window.KeeperWallet` has not api methods.
-You can use `KeeperWallet.initialPromise` for waiting end initializing api.
+On initialize `window.KeeperWallet` has no API methods.
+You can use `KeeperWallet.initialPromise` to wait for API initialization to complete.
+
 Example:
 
 ```js
@@ -50,7 +53,7 @@ KeeperWallet.initialPromise.then(keeperApi => {
 });
 ```
 
-In Keeper Wallet, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except "`on"`), the user will see a request to allow that website's access to Keeper Wallet. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and an error message will be displayed in response to all requests `{message: "Api rejected by user", code: 12}`. The users won't see new notifications. To grant access, the user will mark the website as trusted in the interface.
+In Keeper Wallet, for greater security and ease of use, each new website using API has to be allowed by the user. At the first attempt to use API (except `on`), the user will see a request to allow the website to access Keeper Wallet. If the user agrees to allow access, the website is considered trusted and can use API on its pages. Otherwise, the website is blocked, and the error message `{message: "Api rejected by user", code: 12}` will be displayed in response to all requests. The user won't see new notifications. To grant access, the user has to mark the website as trusted in the interface.
 
 ### Description of methods
 
@@ -89,7 +92,7 @@ const getPublicState = async () => {
 const result = await getPublicState();
 ```
 
-REPLY
+Response:
 
 ```json
 {
@@ -120,32 +123,29 @@ REPLY
 }
 ```
 
-Description of query return fields
+Response fields:
 
-- `initialized` - boolean keeper initialized
-- `locked` - boolean keeper in wait mode
-- `account` – current account, if the user allowed access to the website, or null
-- `network` – current Waves network, node and matcher addresses
-- `messages` – signature request statuses
-- `txVersion` – available transaction versions for each type
+- `initialized` – boolean: Keeper Wallet is initialized.
+- `locked` – boolean: Keeper Wallet is locked (password required).
+- `account` – current account if the user allowed access to the website, `null` otherwise.
+- `network` – current Waves network, node and matcher addresses.
+- `messages` – signature request statuses.
+- `txVersion` – available transaction versions for each type.
 
-Possible errors
+Possible errors:
 
-- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
-- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized.
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts.
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet.
 
 #### notification
 
-Send message to keeper.
-Ypu can send message only 1 time in 30 sec for trusted sites with send permission.
+A method for sending a user a message from the site. You can send message only 1 time in 30 sec for trusted sites with send permission.
 
-`notification` facilitates input of the following data
+`notification` facilitates input of the following data:
 
-- `title` - string (20 chars max) (required field)
-- `message` - string (250 chars max) (optional field)
-
-return Promise
+- `title` – string, 20 chars max (required field).
+- `message` – string, 250 chars max (optional field).
 
 Example:
 
@@ -156,19 +156,23 @@ KeeperWallet.notification({
 });
 ```
 
-Possible errors
+Response: `Promise`.
 
-- `{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}` - Incorrect notification title
-- `{message: "Incorrect notification data", data: null, code: "19"}` - Incorrect notification data
-- `{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}` - try to send later, you can send 1 message in 30 sec
-- `{message: "Api rejected by user", code: 12}` the user denied the request or the website is not trusted.
+Possible errors:
+
+- `{message: "Incorrect notification data", data: "title has more than 20 characters", code: "19"}` – incorrect notification title.
+- `{message: "Incorrect notification data", data: null, code: "19"}` – incorrect notification data.
+- `{message: "Can't sent notification", data: {msg: "Min notification interval 30s. Wait 28.017s."}, code: "18"}` – try to send later, you can send 1 message in 30 sec.
+- `{message: 'User denied message', data: 'rejected', code: '10'}` — the user rejected the request.
+- `{message: 'User denied message', data: 'rejected_forever', code: '10'}` — the user rejected the request and blocked the website.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user or sending messages is not allowed.
 
 #### encryptMessage
 
 You can encrypt string messages to account in Waves network.
 You need have recipient publicKey.
 
-KeeperWallet.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+KeeperWallet.encryptMessage(`*string to encrypt*`, `*public key in base58 string*`, `*prefix: a secret app string for encoding*`)
 
 Example:
 
@@ -182,19 +186,19 @@ KeeperWallet.encryptMessage(
 });
 ```
 
-Possible errors
+Possible errors:
 
-- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
-- `{ message: "App is locked" }` – Keeper Wallet is locked
-- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized.
+- `{ message: "App is locked" }` – Keeper Wallet is locked (password required).
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts.
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet.
 
 #### decryptMessage
 
 You can decrypt string messages from account in Waves network to you.
-You need have sender publicKey and encrypted message.
+You need to have user's public key and the encrypted message.
 
-KeeperWallet.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix is secret app string need for encoding*`)
+KeeperWallet.decryptMessage(`*string to decrypt*`, `*public key in base58 string*`, `*prefix: a secret app string for encoding*`)
 
 Example:
 
@@ -208,12 +212,12 @@ KeeperWallet.decryptMessage(
 });
 ```
 
-Possible errors
+Possible errors:
 
-- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized
-- `{ message: "App is locked" }` – Keeper Wallet is locked
-- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts
-- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet
+- `{ message: "Init Keeper Wallet and add account" }` – Keeper Wallet is not initialized.
+- `{ message: "App is locked" }` – Keeper Wallet is locked (password required).
+- `{ message: "Add Keeper Wallet account" }` – Keeper Wallet accessed, but there are no accounts.
+- `{ message: "User denied message" }` – the user denied the website operation with Keeper Wallet.
 
 #### on
 
@@ -221,7 +225,7 @@ Allows subscribing to Keeper Wallet events.
 
 Supports events:
 
-- `update` – subscribe for updates of the state
+- `update` – subscribe for updates of the state.
 
 Example:
 
@@ -231,11 +235,11 @@ KeeperWallet.on('update', state => {
 });
 ```
 
-If a website is not trusted, events won't show.
+If a website is not trusted, events won't be displayed.
 
 #### auth
 
-This is a method for obtaining a signature of authorization data while verifying Waves' user. It works the same way as [Web Auth API](https://docs.waves.exchange/en/waves-exchange/waves-exchange-client-api/waves-exchange-web-auth-api).
+This is a method for obtaining a signature of authorization data while verifying Waves' user. If the the signature is valid, be sure that the given blockchain account belongs to that user.
 
 Example:
 
@@ -270,15 +274,15 @@ const authData = { data: 'Auth on my site' };
 getAuthData(authData);
 ```
 
-`auth` facilitates input of the following data
+`auth` facilitates input of the following data:
 
-- `name` – name of the service (optional field)
-- `data` – a string line with any data (required field)
-- `referrer` – a websites' full URL for redirect (optional field)
-- `icon` – path to the logo relative to the `referrer`or origin of the website (optional field)
-- `successPath` – relative path to the website's Auth API (optional field)
+- `name` – name of the service (optional field).
+- `data` – a string line with any data (required field).
+- `referrer` – a websites' full URL for redirect (optional field).
+- `icon` – path to the logo relative to the `referrer` or origin of the website (optional field).
+- `successPath` – relative path to the website's Auth API (optional field).
 
-Example
+Example:
 
 ```js
 const authData = {
@@ -300,25 +304,187 @@ KeeperWallet.auth(authData)
   });
 ```
 
-If the verification is successful, Keeper Wallet will return to the promise an object containing data for signature verification:
+If the verification is successful, Keeper Wallet returns to the `Promise` an object containing data for signature verification:
 
-- `host` – a host that requested a signature
-- `name` – the name of an application that requested a signature
-- `prefix` – a prefix participating in the signature
-- `address` – an address in Waves network
-- `publicKey` – the user's public key
-- `signature` - signature
-- `version` – API version
+- `host` – host that requested a signature.
+- `name` – name of an application that requested a signature.
+- `prefix` – prefix participating in the signature.
+- `address` – address in Waves network.
+- `publicKey` – user's public key.
+- `signature` – user's signature.
+- `version` – API version.
 
-ERRORS
+Possible errors:
 
-- `{message: "Invalid data", data: "[{"field":"data","type":"string","message":"field is required"}]", code: 9}` – signature data contain errors
-- `{message: "User denied message", code: 10}` – the user denied the request
-- `{message: "Api rejected by user", code: 12}` - the website is not trusted
+- `{message: "Invalid data", data: "[{"field":"data","type":"string","message":"field is required"}]", code: 9}` – signature data contain errors.
+- `{message: "User denied message", code: 10}` – the user denied the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+
+<details><summary><a id="validity"></a><b>How to check signature validity</b></summary>
+
+Signed data consists of three parts: `prefix` (`WavesWalletAuthentication` string) + `host` + provided data. All strings are converted to `length bytes` + `value bytes` as in Data Transactions. Prefix string and the host is required for security purposes if malicious service tries to use data and signature.
+
+We also suggest address validation in case the signature and public key is valid but the address was swapped.
+
+**TypeScript example code**
+
+```typescript
+import { verifyAuthData, libs } from '@waves/waves-transactions';
+
+
+const authValidate = (data: { host: string; data: string }, signature: string, publicKey: string, chainId: string | number): boolean => {
+    const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+    const address = libs.crypto.address({ publicKey }, chain);
+    return verifyAuthData({ publicKey, address, signature }, data);
+};
+
+// Obtaining the signature
+const data = await WavesKeeper.auth({data: '123'});
+
+authValidate(data, { host: data.host, data: '123' }); // true
+```
+
+**JS example code**
+
+```js
+import { verifyAuthData, libs } from '@waves/waves-transactions';
+
+
+const authValidate = (signature, data, publicKey, chainId) => { 
+   const chain = typeof chainId === 'string' ? chainId : String.fromCharCode(chainId);
+   const address = libs.crypto.address({ publicKey }, chain);
+   return verifyAuthData({ publicKey, address, signature }, data);
+};
+
+// Obtaining the signature
+const data = await WavesKeeper.auth({data: '123'});
+
+authValidate(data, { host: data.host, data: '123' }); // true
+```
+
+**Python example code**
+
+```python
+import axolotl_curve25519 as curve
+import pywaves.crypto as crypto
+import base58
+from urllib.parse import urlparse, parse_qs
+ 
+ 
+def str_with_length(string_data):
+    string_length_bytes = len(string_data).to_bytes(2, byteorder='big')
+    string_bytes = string_data.encode('utf-8')
+    return string_length_bytes + string_bytes
+ 
+ 
+def signed_data(host, data):
+    prefix = 'WavesWalletAuthentication'
+    return str_with_length(prefix) + str_with_length(host) + str_with_length(data)
+ 
+ 
+def verify(public_key, signature, message):
+    public_key_bytes = base58.b58decode(public_key)
+    signature_bytes = base58.b58decode(signature)
+ 
+    return curve.verifySignature(public_key_bytes, message, signature_bytes) == 0
+ 
+ 
+def verifyAddress(public_key, address):
+    public_key_bytes = base58.b58decode(public_key)
+    unhashed_address = chr(1) + str('W') + crypto.hashChain(public_key_bytes)[0:20]
+    address_hash = crypto.hashChain(crypto.str2bytes(unhashed_address))[0:4]
+    address_from_public_key = base58.b58encode(crypto.str2bytes(unhashed_address + address_hash))
+ 
+    return address_from_public_key == address
+ 
+address = '3PCAB4sHXgvtu5NPoen6EXR5yaNbvsEA8Fj'
+pub_key = '2M25DqL2W4rGFLCFadgATboS8EPqyWAN3DjH12AH5Kdr'
+signature = '2w7QKSkxKEUwCVhx2VGrt5YiYVtAdoBZ8KQcxuNjGfN6n4fi1bn7PfPTnmdygZ6d87WhSXF1B9hW2pSmP7HucVbh'
+data_string = '0123456789abc'
+host_string = 'example.com'
+message_bytes = signed_data(host_string, data_string)
+ 
+print('Address:', address)
+print('Public key:', pub_key)
+print('Signed Data:', message_bytes)
+print('Real signature:', signature)
+print('Verified:', verify(pub_key, signature, message_bytes))
+print('Address verified:', verifyAddress(pub_key, address))
+ 
+fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw'
+ 
+print('Fake signature:', fake_signature)
+print('Fake signature verification:', verify(pub_key, fake_signature, message_bytes))
+```
+
+**PHP example code**
+
+```php
+<?php
+
+/*
+ * Requires WavesKit by deemru
+ * https://github.com/deemru/WavesKit
+ */
+
+require_once __DIR__ . '/vendor/autoload.php';
+use deemru\WavesKit;
+
+function signed_data( $host, $data )
+{
+    $prefix = 'WavesWalletAuthentication';
+    return str_with_length($prefix) . str_with_length($host) . str_with_length($data);    
+}
+
+function str_with_length( $data )
+{
+    return pack('n', strlen($data)).$data;
+}
+
+$wk = new WavesKit("W");
+$address = '3PCAB4sHXgvtu5NPoen6EXR5yaNbvsEA8Fj';
+$pub_key = '2M25DqL2W4rGFLCFadgATboS8EPqyWAN3DjH12AH5Kdr';
+$signature = '2w7QKSkxKEUwCVhx2VGrt5YiYVtAdoBZ8KQcxuNjGfN6n4fi1bn7PfPTnmdygZ6d87WhSXF1B9hW2pSmP7HucVbh';
+$data_string = '0123456789abc';
+$host_string = 'example.com';
+$message_bytes = signed_data($host_string, $data_string);
+
+$wk->log('i', 'Address: '. $address);
+$wk->log('i', 'Public key:' . $pub_key);
+$wk->log('i', 'Signed Data: ' . $message_bytes);
+$wk->log('i', 'Real signature: '. $signature);
+
+$wk->setPublicKey( $pub_key );
+$is_address_verified = $address === $wk->getAddress();
+
+if ( $is_address_verified === true) 
+    $wk->log('s', "Address: Verified: TRUE"); 
+else 
+    $wk->log('e', "Address: Verified: FALSE");
+
+$signature_verified = $wk->verify($wk->base58Decode($signature), $message_bytes);
+
+if ( $signature_verified === true) 
+    $wk->log('s', "Signature Verified: TRUE"); 
+else 
+    $wk->log('e', "Signature Verified: FALSE");
+
+$fake_signature = '29qWReHU9RXrQdQyXVXVciZarWXu7DXwekyV1zPivkrAzf4VSHb2Aq2FCKgRkKSozHFknKeq99dQaSmkhUDtZWsw';
+$wk->log('i', 'Fake Signature: '. $fake_signature);
+
+$signature_verified = $wk->verify($wk->base58Decode($fake_signature), $message_bytes);
+
+if ( $signature_verified === true) 
+    $wk->log('e', "Fake Signature Verified: TRUE"); 
+else 
+    $wk->log('s', "Fake Signature Verified: FALSE");
+?>
+```
+</details>
 
 #### signTransaction
 
-A method for signing transactions in Waves' network.
+A method for signing transactions in Waves network. See the description of supported transaction types in [Transaction format](#transaction-format) section below.
 
 Example:
 
@@ -346,13 +512,11 @@ KeeperWallet.signTransaction(txData)
   });
 ```
 
-API returns lines, not an object, as in javascript precision is lost in operation with 8-byte integers.
+> API returns lines, not an object, as in JavaScript precision is lost in operation with 8-byte integers.
 
-A description of supported transaction types is below.
+In the example, we are signing a transaction for transferring WAVES to the alias `test` in Waves network.
 
-In the example, we are signing a transaction for transferring WAVES to the alias `test`in Waves' network.
-
-REPLY
+Response:
 
 ```json
 {
@@ -370,15 +534,15 @@ REPLY
 }
 ```
 
-ERRORS
+Possible errors:
 
-- `{message: "User denied message", code: 10}` – The user denied the request.
-- `{message: "Api rejected by user", code: 12}` – The website is not trusted.
+- `{message: "User denied message", code: 10}` – the user denied the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 - `{message: "Invalid data", data: "Reason", code: 9}` – invalid/incomplete request data.
 
 #### signAndPublishTransaction
 
-This is similar to "`signTransaction"`, but it also broadcasts a transaction to the blockchain.
+This is similar to `signTransaction`, but it also broadcasts a transaction to the blockchain. See the description of supported transaction types in [Transactions](#transactions) section below.
 
 Example:
 
@@ -407,32 +571,16 @@ KeeperWallet.signAndPublishTransaction(txData)
   });
 ```
 
-REPLY
+Response: a reply from Waves network returns as a line containing the entire past transaction.
 
-A reply from Waves network returns as a line containing the entire past transaction.
+Possible errors:
 
-ERRORS
-
-- Same as `signTransaction`
-- `{message: "Failed request", data: "Error description", code: 15}` – a request was signed but not broadcast
+- Same as `signTransaction`.
+- `{message: "Failed request", data: "Error description", code: 15}` – a request was signed but not broadcasted.
 
 #### signTransactionPackage
 
-A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. Only certain types of transactions are permitted:
-
-- `3` – issues a token
-- `4` – transfer a token
-- `5` – reissues a token
-- `6` – burns a token
-- `8` – leases WAVES
-- `9` – cancels the leasing
-- `10` – creating an alias for an address in Waves network
-- `11` – mass transfer
-- `12` - adds, modifies and deletes data entries in the sender's account data storage
-- `13` - assigns the dApp script or account script to the sender's account
-- `14` - configures sponsorship
-- `15` - modifies the asset script
-- `16` - calls the function from a dApp script
+A package transaction signature. Sometimes several transactions need to be simultaneously signed, and for users' convenience, up to seven transactions at ones could be signed. See the description of supported transaction types in [Transaction format](#transaction-format) section below.
 
 Example:
 
@@ -474,23 +622,20 @@ KeeperWallet.signTransactionPackage(tx, name);
 
 Sign two transaction:
 
-- Transfer 1.567 WAVES to the alias test
-- Transfer 0.1 WAVES to the alias merry
+- Transfer 1.567 WAVES to the alias `test`.
+- Transfer 0.1 WAVES to the alias `merry`.
 
-REPLY
+Response: a unit of two lines – transactions that are signed and ready to broadcast.
 
-A unit of two lines – transactions that are signed and ready to broadcast.
+Possible errors:
 
-ERRORS
+Same as in `signTransaction`.
 
-Same as in `signTransaction`
+#### Transactions
 
-##### [Transactions](https://docs.waves.tech/en/building-apps/waves-api-and-sdk/client-libraries/waves-transactions)\*\*
+Every user of Waves network has a state (balances, assets, data, scripts), and every past transaction changes this data. [More about transactions](https://docs.waves.tech/en/blockchain/transaction/)
 
-Every user of Waves' network has a state (balances, assets, data, scripts), and every past transactions changes these data. \
-In Keeper Wallet API it is different from [NODE REST API](https://docs.waves.tech/en/waves-node/node-api/).
-
-`signTransaction`, `signAndPublishTransaction` accept transactions as follows
+In Keeper Wallet API transaction format is different from [Node REST API](https://docs.waves.tech/en/waves-node/node-api/). `signTransaction`, `signAndPublishTransaction`, and `signTransactionPackage` accept transactions as follows:
 
 ```js
 {
@@ -501,36 +646,62 @@ In Keeper Wallet API it is different from [NODE REST API](https://docs.waves.tec
 }
 ```
 
-Legend keys
+Keeper Wallet supports the following types of transactions:
 
-- - optional field, data are automatically supplied from KeeperWallet. \
-    [x,y] – length limit from x to y. \
-    [,x] – length limit to x. \
-    [y,] – length limit from y. \
-    [x-y] – number from x to y. x/y - x or y. (JLM) - JAVA LONG MAX = 9 223 372 036 854 775 807 \
-    MoneyLike - price
+- [Issue transaction (type 3)](#issue-transaction-type-3)
+- [Transfer transaction (type 4)](#transfer-transaction-type-4)
+- [Reissue transaction (type 5)](#reissue-transaction-type-5)
+- [Burn transaction (type 6)](#burn-transaction-type-6)
+- [Lease transaction (type 8)](#lease-transaction-type-8)
+- [Lease Cancel transaction (type 9)](#lease-cancel-transaction-type-9)
+- [Create Alias transaction (type 10)](#create-alias-transaction-type-10)
+- [Mass Transfer transaction (type 11)](#mass-transfer-transaction-type-11)
+- [Data transaction (type 12)](#data-transaction-type-12)
+- [Set Script transaction (type 13)](#set-script-transaction-type-13)
+- [Sponsor Fee transaction (type 14)](#sponsor-fee-transaction-type-14)
+- [Set Asset Script transaction (type 15)](#set-asset-script-transaction-type-15)
+- [Invoke Script transaction (type 16)](#invoke-script-transaction-type-16)
+- [Update Asset Info transaction (type 17)](#update-asset-info-transaction-type-17)
+
+Legend keys:
+
+- \* - optional field, data is automatically supplied from `KeeperWallet`.
+- [x,y] – length limit from x to y.
+- [,x] – length limit to x.
+- [y,] – length limit from y.
+- [x-y] – number from x to y.
+- x/y – x or y.
+- (JLM) – JAVA LONG MAX = 9 223 372 036 854 775 807.
+- MoneyLike - price.
 
 MoneyLike could look as:
 
 - `{ tokens: 1, assetId: "WAVES" }`
 - `{ coins: 100000000, assetId: "WAVES" }`;
 
-In both messages, the same price of 1 WAVES is indicated. You can easily convert `coins`into `tokens`and back, if you know in what asset the price is indicated, and you have received its precision `tokens = coins / (10 ** precision)` \
-If the field contains other types than MoneyLike, for instance, string/MoneyLike , the sum is indicated as a number in  `coins`.
+In both messages, the same price of 1 WAVES is indicated. You can easily convert `coins` into `tokens` and back, if you know in what asset the price is indicated, and you have received its precision: `tokens = coins / (10 ** precision)`.
 
----
+If the field contains other types than MoneyLike, for instance, string/MoneyLike, the sum is indicated as a number in  `coins`.
 
-###### [Type 3 ISSUE – token issue](https://docs.waves.tech/en/blockchain/transaction-type/issue-transaction)\*\*
+##### Transaction fee
 
-- `name` [4, 16] string – token name,
-- `description` [0, 1000] string – token description,
-- `quantity` [0 - (JLM)] number/string - quantity,
-- `precision` [0 - 8] number - precision,
-- `reissuable` true|false – re-issuable,
-- `*fee` MoneyLike -fee
-- `*script` string – [smart asset](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-asset)
-- `*senderPublicKey` string – sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Transaction fee](https://docs.waves.tech/en/blockchain/transaction/transaction-fee) section in the Waves protocol documentation.
+
+##### Issue transaction (type 3)
+
+See [Issue transaction details](https://docs.waves.tech/en/blockchain/transaction-type/issue-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `name`: [4, 16 bytes] string – token name.
+- `description`: [0, 1000 bytes] string – token description.
+- `quantity`: [0 - (JLM)] number/string – token quantity.
+- `precision`: [0 - 8] number – precision.
+- `reissuable`: true|false – reissuable.
+- `*fee`: MoneyLike – fee.
+- `*script`: string – asset script, see the [Smart Asset](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-asset) article.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -539,7 +710,7 @@ KeeperWallet.signAndPublishTransaction({
   type: 3,
   data: {
     name: 'Best Token',
-    description: 'Greate token',
+    description: 'Great token',
     quantity: 1000000,
     precision: 2,
     reissuable: true,
@@ -557,16 +728,19 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, we are issuing a new asset in the quantity of 1,000,000, and your balance will show 10,000.00 Best Token
+In case of success, we issue a new asset in the quantity of 1,000,000, and your balance will show 10,000.00 Best Token.
 
-###### [Type 4 TRANSFER – asset transfer](https://docs.waves.tech/en/blockchain/transaction-type/transfer-transaction)\*\*
+##### Transfer transaction (type 4)
 
-- `amount` MoneyLike - amount,
-- `recipient` string – recipient's address or alias
-- `attachment`[,140 bytes] string or byte Array – additional info in text
-- `*fee` MoneyLike - fee
-- `*senderPublicKey` string – sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Transfer transaction details](https://docs.waves.tech/en/blockchain/transaction-type/transfer-transaction) in the Waves protocol documentation.
+
+Fields: 
+- `amount`: MoneyLike – amount.
+- `recipient`: string – recipient's address or alias.
+- `attachment`: [,140 bytes]: string – additional info in text.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -587,14 +761,18 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-###### [Type 5 REISSUE – token reissue](https://docs.waves.tech/en/blockchain/transaction-type/reissue-transaction)\*\*
+##### Reissue transaction (type 5)
 
-- `assetId` string - "asset ID",
-- `quantity` [0 - (JLM)] number/string/MoneyLike - quantity,
-- `reissuable` false – deny reissue
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string – sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Reissue transaction details](https://docs.waves.tech/en/blockchain/transaction-type/reissue-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `assetId`: string – asset ID in base58.
+- `quantity`: [0 - (JLM)] number/string/MoneyLike – quantity.
+- `reissuable`: false – deny reissue.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -603,7 +781,7 @@ KeeperWallet.signAndPublishTransaction({
   type: 5,
   data: {
     quantity: 1000,
-    assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+    assetId: '4DZ1wnZAKr66kpPtYr8hH1kfViF7Z7vrALfUDDttSGzD',
     reissuable: true,
     fee: {
       tokens: '1',
@@ -619,15 +797,19 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, we are re-issuing a new asset in the quantity of 1,000,000, and your balance will show 10,000.00 Best Token
+In case of success, we reissue the asset in the quantity of 1000, and user balance will show 10,010.00 Best Token.
 
-###### [Type 6 BURN – burning tokens](https://docs.waves.tech/en/blockchain/transaction-type/burn-transaction)\*\*
+##### Burn transaction (type 6)
 
-- `assetId` string – asset ID,
-- `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Burn transaction details](https://docs.waves.tech/en/blockchain/transaction-type/burn-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `assetId`: string – asset ID in base58.
+- `amount`: [0 - (JLM)] number/string/MoneyLike – quantity.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -636,7 +818,7 @@ KeeperWallet.signAndPublishTransaction({
   type: 6,
   data: {
     amount: 1000,
-    assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
+    assetId: '4DZ1wnZAKr66kpPtYr8hH1kfViF7Z7vrALfUDDttSGzD',
     fee: {
       tokens: '0.001',
       assetId: 'WAVES',
@@ -651,15 +833,19 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, 1,000 coins `are burned`.
+In case of success, 1000 coins are burned.
 
-###### [Type 8 LEASE - Leasing](https://docs.waves.tech/en/blockchain/transaction-type/lease-transaction)\*\*
+##### Lease transaction (type 8)
 
-- `recipient` string – recipient's address or alias,
-- `amount` [0 - (JLM)] number/string/MoneyLike - quantity,
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Lease transaction details](https://docs.waves.tech/en/blockchain/transaction-type/lease-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `recipient`: string – recipient's address or alias.
+- `amount`: [0 - (JLM)] number/string/MoneyLike –  quantity.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -683,14 +869,18 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, 0.00001000 WAVES is leased.
+In case of success, 0.00001000 WAVES is leased.
 
-###### [Type 9 LEASE CANCEL – cancel leasing](https://docs.waves.tech/en/blockchain/transaction-type/lease-cancel-transaction)\*\*
+##### Lease Cancel transaction (type 9)
 
-- `leaseId` string – leasing transaction ID,
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Lease Cancel transaction details](https://docs.waves.tech/en/blockchain/transaction-type/lease-cancel-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `leaseId`: string – lease ID in base58.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -713,14 +903,18 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, the leasing transaction is cancelled.
+In case of success, the lease is cancelled.
 
-###### [Type 10 CREATE ALIAS – creating an alias for an address](https://docs.waves.tech/en/blockchain/transaction-type/create-alias-transaction)\*\*
+##### Create Alias transaction (type 10)
 
-- `alias`[4, 30] string - alias. [Alias Requirements](https://docs.waves.tech/en/blockchain/account/alias#alias-requirements)
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Create Alias transaction details](https://docs.waves.tech/en/blockchain/transaction-type/create-alias-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `alias`: [4, 30 bytes] string – alias. See [alias requirements](https://docs.waves.tech/en/blockchain/account/alias#alias-requirements).
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string - user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -743,17 +937,21 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, an alias (another name) is created.
+In case of success, an alias (another name) is created.
 
-###### [Type 11 MASS TRANSFER - a mass transfer of an asset](https://docs.waves.tech/en/blockchain/transaction-type/mass-transfer-transaction)\*\*
+##### Mass Transfer transaction (type 11)
 
-- `totalAmount` moneyLike – total to be sent // instead of calculating the amount you may insert { assetId: "ID of the asset to be sent", coins: 0},
-- `transfers`  a mass of objects
-  { `recipient`: string - address/alias, amount: number/string/moneyLike }
-- `*fee` MoneyLike -fee
-- `attachment` [,140 bytes в base58] string – additional info
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Mass Transfer transaction details](https://docs.waves.tech/en/blockchain/transaction-type/mass-transfer-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `totalAmount`: MoneyLike – total to be sent; instead of calculating the amount you may insert { `assetId`: "ID of the asset to be sent", `coins:` 0}.
+- `transfers`  an array of objects:
+   { `recipient`: string – address/alias, `amount`: number/string/MoneyLike }
+- `*fee`: MoneyLike – fee.
+- `attachment`: [,140 bytes]: string – additional info in text.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -780,19 +978,24 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, 0.002 WAVES will be sent to alias1 and alias2.
+In case of success, 0.00200000 WAVES will be sent to alias1 and alias2.
 
-###### [Type 12 DATA TRANSACTION - saving data](https://docs.waves.tech/en/blockchain/transaction-type/data-transaction)\*\*
+##### Data transaction (type 12)
 
-- `data`  mass of objects
-  - `type` "binary"/string/"integer"/"boolean" - type,
-  - `key` string – field name
-  - `value` /string/string/number/boolean depends on the type
-- `*fee` MoneyLike - fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Data transaction details](https://docs.waves.tech/en/blockchain/transaction-type/data-transaction) in the Waves protocol documentation.
 
-Field:
+Fields:
+
+- `data`: array of objects:
+   - `type`: "binary"/string/"integer"/"boolean" – entry type.
+   - `key`: string – entry key.
+   - `value`: string(base64)/string/number/boolean, depending on `type`. `null` to delete the entry.
+- `*version`: number – transaction version.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
+
+Example:
 
 ```js
 KeeperWallet.signAndPublishTransaction({
@@ -826,41 +1029,46 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, new data will be stored in the state.
+In case of success, new data is stored in the account data storage.
 
-###### [Type 13 SET SCRIPT – scripting an account](https://docs.waves.tech/en/blockchain/transaction-type/set-script-transaction)\*\*
-
-- `script` string - [script](https://docs.waves.tech/en/building-apps/smart-contracts/waves-smart-contracts-overview)
-- `*fee` MoneyLike -fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
-
-For cancelling a script the field `script` has to be `null`. [Script development on RIDE](https://waves-ide.com/)
+To delete an entry, pass the entry `key` along with `value: null`. Entry deletion is available from version 2, so the `version` field is required.
 
 Example:
 
 ```js
 KeeperWallet.signAndPublishTransaction({
-  type: 13,
+  type: 12,
   data: {
-    script: '',
+    version: 2,
+    data: [
+      { key: "binary", value: null },
+    ],
     fee: {
-      tokens: '0.04',
-      assetId: 'WAVES',
-    },
-  },
-})
-  .then(tx => {
-    console.log("Hurray! I've cancelled a script!!!");
-  })
-  .catch(error => {
-    console.error('Something went wrong', error);
-  });
+      tokens: "0.001",
+      assetId: "WAVES"
+    }
+  }
+}).then((tx) => {
+   console.log("Hurray! I've deleted data!!!");
+}).catch((error) => {
+   console.error("Something went wrong", error);
+});
 ```
 
-In case of a success, the script will be removed from the account.
+##### Set Script transaction (type 13)
 
-Example 2:
+See [Set Script transaction details](https://docs.waves.tech/en/blockchain/transaction-type/set-script-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `script`: string – account script or dApp script (see the [Smart Account](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-account) and [dApp](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-a-dapp) articles in the Waves protocol documentation.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
+
+To develop and compile the script, use [Waves IDE](https://waves-ide.com/).
+
+Example:
 
 ```js
 KeeperWallet.signAndPublishTransaction({
@@ -882,14 +1090,43 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, a new script will be added to the account, allowing any transactions without a signature (be careful!).
+In case of success, a new script will be added to the account (be careful!).
 
-###### [Type 14 Sponsored Fee Transaction - Sponsorship](https://docs.waves.tech/en/blockchain/transaction-type/sponsor-fee-transaction)\*\*
+For cancelling a script set `script: null` or `script: ''`.
 
-- `minSponsoredAssetFee` MoneyLike – fee price in the asset.
-- `*fee` MoneyLike - fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+Example 2:
+
+```js
+KeeperWallet.signAndPublishTransaction({
+  type: 13,
+  data: {
+    script: '',
+    fee: {
+      tokens: '0.04',
+      assetId: 'WAVES',
+    },
+  },
+})
+  .then(tx => {
+    console.log("Hurray! I've cancelled a script!!!");
+  })
+  .catch(error => {
+    console.error('Something went wrong', error);
+  });
+```
+
+In case of success, the script is removed from the account.
+
+##### Sponsor Fee transaction (type 14)
+
+See [Sponsor Fee transaction details](https://docs.waves.tech/en/blockchain/transaction-type/sponsor-fee-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `minSponsoredAssetFee`: MoneyLike – amount of the sponsored asset that is equivalent to 0.001 WAVES.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -915,17 +1152,21 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, a transfer fee can be paid in the asset.
+In case of success, fees for Transfer and Invoke Script transactions can be paid in the asset.
 
-###### [Type 15 SET ASSET SCRIPT – setting a script to an asset](https://docs.waves.tech/en/blockchain/transaction-type/set-asset-script-transaction)\*\*
+##### Set Asset Script transaction (type 15)
 
-- `assetId` string – asset ID
-- `script` string – [script](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-asset)
-- `*fee` MoneyLike – fee
-- `*senderPublicKey` string - sender's public key in base58
-- `*timestamp` number/string – time in ms
+See [Set Asset Script transaction details](https://docs.waves.tech/en/blockchain/transaction-type/set-asset-script-transaction) in the Waves protocol documentation.
 
-It's now impossible to cancel a script, you can only add a new script. [Script development on RIDE](https://waves-ide.com/)
+Fields:
+
+- `assetId`: string – asset ID in base58.
+- `script`: string – asset script, see the [Smart Asset](https://docs.waves.tech/en/building-apps/smart-contracts/what-is-smart-asset) article in the Waves protocol documentation.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp` number/string – time in ms.
+
+It's impossible to remove the asset script; you can only change the script. To develop and compile the script, use [Waves IDE](https://waves-ide.com/).
 
 Example:
 
@@ -949,20 +1190,25 @@ KeeperWallet.signAndPublishTransaction({
   });
 ```
 
-In case of a success, the asset's script will be reset.
+In case of success, the asset's script is reset.
 
-###### [Type 16 SCRIPT INVOCATION - call account script function](https://docs.waves.tech/en/blockchain/transaction-type/invoke-script-transaction)\*\*
+##### Invoke Script transaction (type 16)
 
-- `dApp` string – address script account
-- `call` object –
-  - `function` string function name
-  - `args` array
-    - `type` "binary"/string/"integer"/"boolean" - type,
-    - `value` /string/string/number/boolean - value for type
-- `*fee` MoneyLike – fee
-- `*payment` array MoneyLike
-- `*senderPublicKey` string - public key in base58
-- `*timestamp` number/string - number/string – time in ms
+See [Invoke Script transaction details](https://docs.waves.tech/en/blockchain/transaction-type/invoke-script-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `dApp` string – address of the dApp account.
+- `call` — object:
+   - `function`: string – function name.
+   - `args` — array of objects:
+      - `type`: "binary"/string/"integer"/"boolean"/"list" – argument type.
+      - `value`: string(base64)/string/number/boolean/array – argument value.
+- `*fee`: MoneyLike – fee.
+- `*payment`: array of MoneyLike.
+- `*version`: number — transaction version
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
 
 Example:
 
@@ -988,22 +1234,84 @@ KeeperWallet.signAndPublishTransaction({
   },
 })
   .then(tx => {
-    console.log('Ура! Я выполнил скрипт!!!');
+    console.log('Hurray! I've invoked the script!!!');
   })
   .catch(error => {
-    console.error('Что-то пошло не так', error);
+    console.error('Something went wrong', error);
   });
 ```
 
-In case of a success, invoke script function `tellme` in testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU`
+In case of success, the callable function `tellme` of Testnet account `3N27HUMt4ddx2X7foQwZRmpFzg5PSzLrUgU` will be invoked.
 
-##### [Calculating transaction fees](https://docs.waves.tech/en/blockchain/transaction/transaction-fee)\*\*
+An example of an invocation of a function with a list argument: 
 
----
+```js
+KeeperWallet.signAndPublishTransaction({
+  type: 16,
+  data: {
+    dApp: "3N28o4ZDhPK77QFFKoKBnN3uNeoaNSNXzXm",
+    call: {
+      function: "foo",
+      args: [
+        {
+          type: "list",
+          value: [
+            { type: "string", value: "alpha" },
+            { type: "string", value: "beta" },
+            { type: "string", value: "gamma" }
+         ],
+        }
+      ]
+    },
+    payment: [],
+    fee: {
+       tokens: "0.005",
+       assetId: "WAVES"
+    },
+  }
+}).then((tx) => {
+  console.log("Hurray! I've invoked the script!!!");
+}).catch((error) => {
+   console.error("Something went wrong", error);
+});
+```
 
-#### signOrder\*\*
+##### Update Asset Info transaction (type 17)
 
-Keeper Wallet's method for signing an order to the matcher. As input, it accepts an object similar to a transaction like this:
+See [Update Asset Info transaction details](https://docs.waves.tech/en/blockchain/transaction-type/update-asset-info-transaction) in the Waves protocol documentation.
+
+Fields:
+
+- `name`: [4..16 bytes] string – token name.
+- `description`: [0..1000 bytes] string – token description.
+- `*fee`: MoneyLike – fee.
+- `*senderPublicKey`: string – user's public key in base58.
+- `*timestamp`: number/string – time in ms.
+
+Example:
+
+```js
+KeeperWallet.signAndPublishTransaction({
+  type: 17,
+  data: {
+    name: "New name",
+    description: "New description",
+    assetId: "DS5fJKbhKDaFfcRpCd7hTcMqqxsfoF3iY9yEcmsTQV1T",
+    fee: {
+      assetId: "WAVES",
+      tokens: "0.001"
+    },
+  }
+}).then((tx) => {
+   console.log("Hurray! I've renamed the asset!!!");
+}).catch((error) => {
+   console.error("Something went wrong", error);
+});
+```
+
+#### signOrder
+
+Keeper Wallet's method for signing an order to the matcher (exchange service). As input, it accepts an object similar to a transaction like this:
 
 ```js
 {
@@ -1014,15 +1322,21 @@ Keeper Wallet's method for signing an order to the matcher. As input, it accepts
 }
 ```
 
-- `*version` 1,2,3
-- `amount` MoneyLike - amount
-- `price` MoneyLike - price
-- `orderType` 'sell'/'buy' – order type
-- `matcherFee` MoneyLike - fee (0.003 WAVES minimum),
-- `matcherPublicKey` string - the public key of the exchange service
-- `expiration` string/number – the order's expiration time
-- `*timestamp` string/number - current time
-- `*senderPublicKey` string - public key in base58
+See [order details](https://docs.waves.tech/en/blockchain/order) in the Waves protocol documentation.
+
+See [how to calculate the order fee](https://docs.waves.exchange/en/waves-matcher/matcher-fee) in Waves.Exchange documentation.
+
+Fields:
+
+- `*version`: 1,2,3.
+- `amount`: MoneyLike – amount.
+- `price`: MoneyLike – price.
+- `orderType`: 'sell'/'buy' – order type.
+- `matcherFee`: MoneyLike – order fee.
+- `matcherPublicKey`: string – public key of the matcher in base58.
+- `expiration`: string/number – the order's expiration time in ms.
+- `*timestamp`: string/number – current time in ms.
+- `*senderPublicKey`: string – user's public key in base58.
 
 Example:
 
@@ -1030,7 +1344,7 @@ Example:
 KeeperWallet.signOrder({
   type: 1002,
   data: {
-    matcherPublicKey: '7kPFrHDiGw1rCm7LPszuECwWYL3dMf6iMifLRDJQZMzy',
+    matcherPublicKey: '9cpfKN9suPNvfeUNphzxXMjcnn974eme8ZhWUjaktzU5',
     orderType: 'sell',
     expiration: Date.now() + 100000,
     amount: {
@@ -1042,37 +1356,37 @@ KeeperWallet.signOrder({
       assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
     },
     matcherFee: {
-      tokens: '0.03',
+      tokens: '0.1',
       assetId: 'WAVES',
     },
   },
 })
-  .then(tx => {
-    console.log("Hurray! I've signed an order!!!");
-  })
-  .catch(error => {
-    console.error('Something went wrong', error);
-  });
+then(tx => {
+  console.log("Hurray! I've signed an order!!!");
+})
+.catch(error => {
+  console.error('Something went wrong', error);
+});
 ```
 
-REPLY: A line with data for sending to the matcher.
+Response: a line with data for sending to the matcher.
 
-ERRORS:
+Possible errors:
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+- `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signAndPublishOrder
 
 Keeper Wallet's method for creating an order to the matcher is identical to `signOrder`, but it also tries to send data to the matcher.
 
-REPLY: the matcher's reply line about successful creation of an order.
+Response: the matcher's reply line about successful creation of an order.
 
-ERRORS:
+Possible errors:
 
-- Same as for `signOrder`
-- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
+- Same as for `signOrder`.
+- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher.
 
 #### signCancelOrder
 
@@ -1087,8 +1401,10 @@ Keeper Wallet's method for signing cancellation of an order to the matcher. As i
 }
 ```
 
-- `id` string – order ID
-- `*senderPublicKey` - string - sender's public key in base58
+Fields:
+
+- `id`: string – order ID in base58.
+- `*senderPublicKey`: string – user's public key in base58.
 
 Example:
 
@@ -1101,44 +1417,43 @@ KeeperWallet.signCancelOrder({
 });
 ```
 
-REPLY: A data line for sending to the matcher.
+Response: a data line for sending to the matcher.
 
-ERRORS:
+Possible errors:
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+- `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signAndPublishCancelOrder
 
-Keeper Wallet's method for cancelling an order to the matcher. It works identically to `signCancelOrder`,
-but also tries to send data to the matcher. For api need know also 2 field `priceAsset` and `amountAsset` from order.
+Keeper Wallet's method for cancelling an order to the matcher. It works identically to `signCancelOrder`, but also tries to send data to the matcher. You should specify two more fields: `priceAsset` and `amountAsset` from the order.
 
 Example:
 
 ```js
 KeeperWallet.signAndPublishCancelOrder({
   type: 1003,
-  priceAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
-  amountAsset: 'WAVES',
+  priceAsset: 'WAVES',
+  amountAsset: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS',
   data: {
     id: '31EeVpTAronk95TjCHdyaveDukde4nDr9BfFpvhZ3Sap',
   },
 })
-  .then(() => {
-    console.log("Hurray! I've cancelled an order");
-  })
-  .catch(error => {
-    console.error('Something went wrong', error);
-  });
+.then(() => {
+  console.log("Hurray! I've cancelled the order");
+})
+.catch(error => {
+  console.error('Something went wrong', error);
+});
 ```
 
-REPLY: Data that came from the matcher
+Response: data returned by the matcher.
 
-ERRORS:
+Possible errors:
 
-- Same as for `signCancelOrder`
-- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher
+- Same as for `signCancelOrder`.
+- `{message: "Failed request", data: "Error description", code: 15}` – a request has been signed, but not sent to the matcher.
 
 #### signRequest
 
@@ -1153,12 +1468,12 @@ Keeper Wallet's method for signing typified data, for signing requests on variou
 }
 ```
 
-Currently, the method supports the following types:
+Currently, the method supports only type 1001: signing data for a request to the matcher for your orders.
 
-**1001 – signing data for a request to the matcher for your orders**
+Fields:
 
-- `timestamp` number/string
-- `*senderPublicKey` string public key in base58
+   - `timestamp`: number/string – time in ms.
+   - `*senderPublicKey`: string – user's public key in base58.
 
 Example:
 
@@ -1171,24 +1486,24 @@ KeeperWallet.signRequest({
 });
 ```
 
-REPLY: a line with a signature in base58.
+Response: a line with a signature in base58.
 
-ERRORS:
+Possible errors:
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+- `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### signCustomData
 
-Method Keeper Wallet for sign custom data for different services, it accepts an object:
+Keeper Wallet's method for signing a custom data for different services. It accepts an object:
 
-##### version 1
+##### Version 1
 
-- `version` 1
-- `binary` string 'base64:....'
+- `version`: 1
+- `binary`: string 'base64:....'.
 
-Note: This method adds the `[255, 255, 255, 1]` prefix to the signed bytes. This was done to make it impossible to sign transaction data in this method, which can lead to unauthenticated transactions and phishing. For the details check `serializeCustomData` method in [waves-transactions](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L63) library.
+Note: This method adds the `[255, 255, 255, 1]` prefix to the signed bytes. This was done to make it impossible to sign transaction data in this method, which can lead to unauthenticated transactions and phishing. For the details check [serializeCustomData](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L63) method in waves-transactions library.
 
 Example:
 
@@ -1199,7 +1514,7 @@ KeeperWallet.signCustomData({
 });
 ```
 
-REPLY:
+Response:
 
 ```
    {
@@ -1210,22 +1525,21 @@ REPLY:
    }
 ```
 
-ERRORS:
+Possible errors:
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+- `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
-##### version 2
+##### Version 2
 
-- `version` 2
-- `data` Array of
-  - `type` "binary"/string/"integer"/"boolean" - field type,
-  - `key` string - field name
-  - `value` /string/string/number/boolean
+- `version`: 2
+- `data`: array of objects:
+   - `type`: "binary"/string/"integer"/"boolean" – field type.
+   - `key`: string – field name.
+   - `value`: string(base64)/string/number/boolean
 
-Bytes to sign: [255, 255, 255, 2, ...(from data Array to bin)]
-[waves-transaction library](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts)
+Bytes to sign: [255, 255, 255, 2, ...(from data array to bin)]. For the details check [serializeCustomData](https://github.com/wavesplatform/waves-transactions/blob/master/src/requests/custom-data.ts#L63) method in waves-transactions library.
 
 Example:
 
@@ -1236,7 +1550,7 @@ KeeperWallet.signCustomData({
 });
 ```
 
-REPLY:
+Response:
 
 ```
    {
@@ -1247,11 +1561,11 @@ REPLY:
    }
 ```
 
-ERRORS:
+Possible errors:
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
-- `{ message: "Invalid data", data: "Reason", code: 9 }` - invalid/incomplete request data
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
+- `{ message: "Invalid data", data: "Reason", code: 9 }` – invalid/incomplete request data.
 
 #### verifyCustomData
 
@@ -1291,14 +1605,16 @@ KeeperWallet.verifyCustomData({
 });
 ```
 
-REPLY: true/false
+Response: true/false.
 
-- `{ message: "User denied message", code: 10 }` – the user rejected the request
-- `{ message: "Api rejected by user", code: 12 }` – The website is not trusted
+Possible errors:
+
+- `{ message: "User denied message", code: 10 }` – the user rejected the request.
+- `{ message: "Api rejected by user", code: 12 }` — the website was previously blocked by the user.
 
 #### resourceIsApproved
 
-Check allow API status for your origin
+Check whether the user allowed your website to access Keeper Wallet.
 
 Example:
 
@@ -1308,11 +1624,11 @@ KeeperWallet.resourceIsApproved().then(result => {
 });
 ```
 
-REPLY: true/false
+Response: true/false.
 
 #### resourceIsBlocked
 
-Check block API status for your origin
+Check whether the user blocked your website in Keeper Wallet.
 
 Example:
 
@@ -1322,4 +1638,4 @@ KeeperWallet.resourceIsBlocked().then(result => {
 });
 ```
 
-REPLY: true/false
+Response: true/false.
