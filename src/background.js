@@ -458,7 +458,6 @@ class BackgroundService extends EventEmitter {
     return {
       // state
       getState: async params => this.getState(params),
-      getAssets: async () => await this.assetInfoController.getAssets(),
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }) => {
         const config = this.remoteConfigController.getIdleConfig();
@@ -847,16 +846,7 @@ class BackgroundService extends EventEmitter {
 
         await this.validatePermission(origin);
 
-        return this._publicState(
-          this.getState([
-            'selectedAccount',
-            'balances',
-            'messages',
-            'initialized',
-            'locked',
-          ]),
-          origin
-        );
+        return this._publicState(origin);
       },
 
       resourceIsApproved: async () => {
@@ -997,16 +987,21 @@ class BackgroundService extends EventEmitter {
     return !account ? null : networks;
   }
 
-  _publicState(
-    { selectedAccount, balances, messages, initialized, locked },
-    originReq
-  ) {
+  _publicState(originReq) {
     let account = null;
     let msg = [];
     const canIUse = this.permissionsController.hasPermission(
       originReq,
       PERMISSIONS.APPROVED
     );
+    const { selectedAccount, balances, messages, initialized, locked } =
+      this.getState([
+        'selectedAccount',
+        'balances',
+        'messages',
+        'initialized',
+        'locked',
+      ]);
 
     if (selectedAccount && canIUse) {
       const address = selectedAccount.address;

@@ -88,9 +88,6 @@ export default class ExtensionStore {
       (acc, key) => (this._state[key] ? acc : [...acc, key]),
       []
     );
-    for (const key in keysToRemove) {
-      delete this._state[key];
-    }
     await this._remove(storageState, keysToRemove);
   }
 
@@ -255,6 +252,12 @@ export default class ExtensionStore {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _remove(storageState: any, keys: string | string[]): Promise<void> {
+    if (typeof keys === 'string') {
+      delete this._state[keys];
+    } else {
+      keys.forEach(key => delete this._state[key]);
+    }
+
     return new Promise((resolve, reject) => {
       storageState.remove(keys, () => {
         const err = extension.runtime.lastError;
