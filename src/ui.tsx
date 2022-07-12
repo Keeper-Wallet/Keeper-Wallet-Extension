@@ -58,7 +58,7 @@ async function startUi() {
     const stateChanges = await backgroundService.getState([
       'initialized',
       'locked',
-      'assets',
+      ...('currentNetwork' in changes ? ['assets'] : []),
     ]);
 
     for (const key in changes) {

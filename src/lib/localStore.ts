@@ -88,6 +88,9 @@ export default class ExtensionStore {
       (acc, key) => (this._state[key] ? acc : [...acc, key]),
       []
     );
+    for (const key in keysToRemove) {
+      delete this._state[key];
+    }
     await this._remove(storageState, keysToRemove);
   }
 
@@ -121,6 +124,22 @@ export default class ExtensionStore {
     );
   }
 
+  getState(keys?: string | string[]) {
+    if (!keys) {
+      return this._state;
+    }
+
+    if (typeof keys === 'string') {
+      return { [keys]: this._state[keys] };
+    }
+
+    return keys.reduce(
+      (acc, key) =>
+        this._state[key] ? { ...acc, [key]: this._state[key] } : acc,
+      {}
+    );
+  }
+
   async get(keys?: string | string[]) {
     const storageState = extension.storage.local;
     return await this._get(storageState, keys);
@@ -136,6 +155,7 @@ export default class ExtensionStore {
 
   async set(state: Record<string, unknown>) {
     const storageState = extension.storage.local;
+    this._state = { ...this._state, ...state };
     return this._set(storageState, state);
   }
 
@@ -231,10 +251,6 @@ export default class ExtensionStore {
       )
     );
     await this._remove(storageState, migrateFields);
-  }
-
-  async _reverseMigrate() {
-    // do nothing
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

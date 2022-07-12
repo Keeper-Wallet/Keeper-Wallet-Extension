@@ -125,7 +125,8 @@ async function setupBackgroundService() {
   }
 
   const updateBadge = async () => {
-    const { selectedAccount } = await backgroundService.localStore.get();
+    const { selectedAccount } =
+      backgroundService.localStore.getState('selectedAccount');
     const messages = backgroundService.messageController.getUnapproved();
     const notifications =
       backgroundService.notificationsController.getGroupNotificationsByAccount(
@@ -439,10 +440,9 @@ class BackgroundService extends EventEmitter {
     });
   }
 
-  async getState(params) {
-    const state = await this.localStore.get(params);
-
-    const { selectedAccount } = await this.localStore.get(['selectedAccount']);
+  getState(params) {
+    const state = this.localStore.getState(params);
+    const { selectedAccount } = this.localStore.getState('selectedAccount');
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
         selectedAccount
@@ -457,7 +457,8 @@ class BackgroundService extends EventEmitter {
     // RPC API object. Only async functions allowed
     return {
       // state
-      getState: async params => await this.getState(params),
+      getState: async params => this.getState(params),
+      getAssets: async () => await this.assetInfoController.getAssets(),
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }) => {
         const config = this.remoteConfigController.getIdleConfig();
@@ -640,7 +641,7 @@ class BackgroundService extends EventEmitter {
   }
 
   async validatePermission(origin) {
-    const { selectedAccount } = await this.getState(['selectedAccount']);
+    const { selectedAccount } = this.getState('selectedAccount');
 
     if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
 
@@ -715,7 +716,7 @@ class BackgroundService extends EventEmitter {
         await this.validatePermission(origin);
       }
 
-      const { selectedAccount } = await this.getState(['selectedAccount']);
+      const { selectedAccount } = this.getState('selectedAccount');
 
       const { noSign, ...result } = await this.messageController.newMessage({
         data,
@@ -750,7 +751,7 @@ class BackgroundService extends EventEmitter {
     const newMessage = this.getNewMessageFn(origin);
 
     const newNotification = async data => {
-      const { selectedAccount } = await this.getState(['selectedAccount']);
+      const { selectedAccount } = this.getState('selectedAccount');
       const myData = { ...data };
       const result = this.notificationsController.newNotification({
         address: selectedAccount.address,
@@ -820,7 +821,7 @@ class BackgroundService extends EventEmitter {
       },
       verifyCustomData: async data => verifyCustomData(data),
       notification: async data => {
-        const { selectedAccount, initialized } = await this.getState([
+        const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
         ]);
@@ -835,7 +836,7 @@ class BackgroundService extends EventEmitter {
       },
 
       publicState: async () => {
-        const { selectedAccount, initialized } = await this.getState([
+        const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
         ]);
@@ -846,7 +847,7 @@ class BackgroundService extends EventEmitter {
 
         await this.validatePermission(origin);
 
-        return this._publicState(await this.getState(), origin);
+        return this._publicState(this.getState(), origin);
       },
 
       resourceIsApproved: async () => {
@@ -864,7 +865,7 @@ class BackgroundService extends EventEmitter {
       },
 
       getKEK: async (publicKey, prefix) => {
-        const { selectedAccount, initialized } = await this.getState([
+        const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
         ]);
@@ -892,7 +893,7 @@ class BackgroundService extends EventEmitter {
       },
 
       encryptMessage: async (message, publicKey, prefix) => {
-        const { selectedAccount, initialized } = await this.getState([
+        const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
         ]);
@@ -921,7 +922,7 @@ class BackgroundService extends EventEmitter {
       },
 
       decryptMessage: async (message, publicKey, prefix) => {
-        const { selectedAccount, initialized } = await this.getState([
+        const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
         ]);

@@ -3,7 +3,7 @@ import { CognitoUser } from 'amazon-cognito-identity-js';
 import { SwapVendor } from 'swap/constants';
 import { AuthChallenge, IdentityUser } from 'controllers/IdentityController';
 import { SwapAssetsParams, SwapAssetsResult } from 'controllers/SwapController';
-import { Account } from 'accounts/types';
+import { Account, NetworkName } from 'accounts/types';
 import { KEEPERWALLET_DEBUG } from '../../constants';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -711,3 +711,7 @@ export interface AssetDetail extends IAssetInfo {
   isFavorite?: boolean;
   isSuspicious?: boolean;
 }
+
+export type Assets = {
+  [key in NetworkName]?: Record<string, AssetDetail>;
+};
