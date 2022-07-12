@@ -847,7 +847,16 @@ class BackgroundService extends EventEmitter {
 
         await this.validatePermission(origin);
 
-        return this._publicState(this.getState(), origin);
+        return this._publicState(
+          this.getState([
+            'selectedAccount',
+            'balances',
+            'messages',
+            'initialized',
+            'locked',
+          ]),
+          origin
+        );
       },
 
       resourceIsApproved: async () => {
@@ -988,23 +997,26 @@ class BackgroundService extends EventEmitter {
     return !account ? null : networks;
   }
 
-  _publicState(state, originReq) {
+  _publicState(
+    { selectedAccount, balances, messages, initialized, locked },
+    originReq
+  ) {
     let account = null;
-    let messages = [];
+    let msg = [];
     const canIUse = this.permissionsController.hasPermission(
       originReq,
       PERMISSIONS.APPROVED
     );
 
-    if (state.selectedAccount && canIUse) {
-      const address = state.selectedAccount.address;
+    if (selectedAccount && canIUse) {
+      const address = selectedAccount.address;
 
       account = {
-        ...state.selectedAccount,
-        balance: state.balances[state.selectedAccount.address] || 0,
+        ...selectedAccount,
+        balance: balances[selectedAccount.address] || 0,
       };
 
-      messages = state.messages
+      msg = messages
         .filter(
           ({ account, origin }) =>
             account.address === address && origin === originReq
@@ -1014,14 +1026,12 @@ class BackgroundService extends EventEmitter {
 
     return {
       version: extension.runtime.getManifest().version,
-      initialized: state.initialized,
-      locked: state.locked,
+      initialized,
+      locked,
       account,
-      network: this._getCurrentNetwork(state.selectedAccount),
-      messages,
-      txVersion: getTxVersions(
-        state.selectedAccount ? state.selectedAccount.type : 'seed'
-      ),
+      network: this._getCurrentNetwork(selectedAccount),
+      messages: msg,
+      txVersion: getTxVersions(selectedAccount ? selectedAccount.type : 'seed'),
     };
   }
 
