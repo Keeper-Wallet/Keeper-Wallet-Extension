@@ -64,7 +64,6 @@ export class StatisticsController {
 
     this.events.push({
       user_id: userId,
-      device_id: 'waves_keeper',
       app_version: this.version,
       platform: this.browser.os,
       language:
@@ -80,13 +79,13 @@ export class StatisticsController {
     return this.sendEvents();
   }
 
-  sendEvents() {
+  sendEvents(time = 5000) {
     if (!config.statisticsApiKey) {
       return;
     }
 
     this.sended = this.sended
-      .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
+      .then(() => new Promise(resolve => setTimeout(resolve, time)))
       .then(() => {
         if (this.events.length === 0) {
           return;
@@ -95,7 +94,7 @@ export class StatisticsController {
         const events = this.events;
         this.events = [];
 
-        return fetch('https://api.amplitude.com/2/httpapi', {
+        return fetch('https://api2.amplitude.com/2/httpapi', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -113,7 +112,7 @@ export class StatisticsController {
 
             if (response.status === 429) {
               this.events.unshift(...events);
-              this.sendEvents();
+              this.sendEvents(30000);
             } else {
               return response.text().then(responseText => {
                 if (/Blocked by AdGuard/i.test(responseText)) {

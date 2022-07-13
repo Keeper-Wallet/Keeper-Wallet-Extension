@@ -26,7 +26,15 @@ const CONTROLLERS = [
   'VaultController',
 ];
 
-const SAFE_FIELDS = new Set(['WalletController', 'accounts', 'addresses']);
+const SAFE_FIELDS = new Set([
+  'WalletController',
+  'accounts',
+  'addresses',
+  'lastIdleKeeper',
+  'lastInstallKeeper',
+  'lastOpenKeeper',
+  'userId',
+]);
 
 export async function reset() {
   const state = await extension.storage.local.get();
