@@ -1,19 +1,13 @@
 const FolderZip = require('folder-zip');
-const ncp = require('ncp').ncp;
+const cpy = require('cpy');
+const del = require('del');
 const path = require('path');
 const webpack = require('webpack');
 const metaConf = require('./meta.conf');
-const WebpackCustomActions = require('./WebpackCustomActionsPlugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const updateManifest = require('./updateManifest');
-
-function ncpAsync(from, to) {
-  return new Promise((resolve, reject) => {
-    ncp(from, to, err => (err ? reject(err) : resolve()));
-  });
-}
 
 function zipFolder(from, to) {
   return new Promise((resolve, reject) => {
@@ -45,34 +39,6 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
       ignore: [],
     },
   ];
-
-  const getPlatforms = () => {
-    const platformsConfig = metaConf(version);
-
-    PLATFORMS.reduce(async (prevPromise, platformName) => {
-      await prevPromise;
-
-      const platformFolder = path.join(DIST_FOLDER, platformName);
-      await ncpAsync(BUILD_FOLDER, platformFolder);
-
-      updateManifest(
-        path.join(BUILD_FOLDER, 'manifest.json'),
-        platformsConfig[platformName].manifest,
-        path.join(platformFolder, 'manifest.json')
-      );
-
-      console.log(`Copying to ${platformName} is done`);
-
-      if (isProduction) {
-        await zipFolder(
-          platformFolder,
-          path.join(DIST_FOLDER, `keeper-wallet-${version}-${platformName}.zip`)
-        );
-
-        console.log(`Zipping ${platformName} is done`);
-      }
-    }, Promise.resolve());
-  };
 
   const plugins = [];
 
@@ -125,7 +91,58 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
     })
   );
 
-  plugins.push(new WebpackCustomActions({ onBuildEnd: [getPlatforms] }));
+  plugins.push(function () {
+    this.hooks.beforeRun.tapPromise('ClearDist', async () => {
+      await del([DIST_FOLDER]);
+    });
+
+    this.hooks.afterEmit.tapPromise(
+      { name: 'AdaptExtension', context: true },
+      async context => {
+        function report(message) {
+          const reportProgress = context && context.reportProgress;
+
+          if (!reportProgress) {
+            return;
+          }
+
+          // first argument is unused according to docs
+          // https://v4.webpack.js.org/api/plugins/#reporting-progress
+          reportProgress(0.95, message);
+        }
+
+        const platformConfigs = metaConf(version);
+
+        for (const platformName of PLATFORMS) {
+          report(`copying build to ${platformName}`);
+
+          const platformFolder = path.join(DIST_FOLDER, platformName);
+
+          await cpy('**', platformFolder, {
+            cwd: BUILD_FOLDER,
+            parents: true,
+          });
+
+          updateManifest(
+            path.join(BUILD_FOLDER, 'manifest.json'),
+            platformConfigs[platformName].manifest,
+            path.join(platformFolder, 'manifest.json')
+          );
+
+          if (isProduction) {
+            const zipFilename = `keeper-wallet-${version}-${platformName}.zip`;
+
+            report(`creating ${zipFilename}`);
+
+            await zipFolder(
+              platformFolder,
+              path.join(DIST_FOLDER, zipFilename)
+            );
+          }
+        }
+      }
+    );
+  });
 
   plugins.push(
     new webpack.NormalModuleReplacementPlugin(
