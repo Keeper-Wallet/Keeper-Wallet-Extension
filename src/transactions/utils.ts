@@ -2,6 +2,7 @@ import { BigNumber } from '@waves/bignumber';
 import { Money } from '@waves/data-entities';
 import { binary, serializePrimitives } from '@waves/marshall';
 import { base58Encode, blake2b, concat, TBinaryIn } from '@waves/ts-lib-crypto';
+import { _fromRawIn } from '@waves/ts-lib-crypto/conversions/param';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
   alias,
@@ -410,7 +411,7 @@ export const convertFromSa = {
               recipient: processAliasOrAddress(input.data.recipient, chainId),
               amount: input.data.amount.getCoins(),
               attachment: input.data.attachment
-                ? base58Encode(input.data.attachment)
+                ? base58Encode(_fromRawIn(input.data.attachment))
                 : '',
               fee: input.data.fee.getCoins(),
               feeAssetId: input.data.fee.asset.id,
@@ -533,7 +534,7 @@ export const convertFromSa = {
               fee: input.data.fee.getCoins(),
               timestamp: input.data.timestamp,
               attachment: input.data.attachment
-                ? base58Encode(input.data.attachment)
+                ? base58Encode(_fromRawIn(input.data.attachment))
                 : '',
               proofs: input.data.proofs || [],
               chainId,
