@@ -95,6 +95,10 @@ export function ImportAddressBook({ setTab }: Props) {
       error={error}
       setError={setError}
       onSubmit={async (result, password) => {
+        if (loading) {
+          return;
+        }
+
         setError(null);
         setLoading(true);
 

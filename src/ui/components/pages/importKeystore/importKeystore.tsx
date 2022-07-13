@@ -138,6 +138,10 @@ export function ImportKeystore({ setTab }: Props) {
         error={error}
         setError={setError}
         onSubmit={async (result, password) => {
+          if (loading) {
+            return;
+          }
+
           setError(null);
           setLoading(true);
 
