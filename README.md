@@ -744,7 +744,7 @@ Fields:
 
 - `amount`: MoneyLike – amount.
 - `recipient`: string – recipient's address or alias.
-- `attachment`: [,140 bytes]: string – additional info in text.
+- `attachment`: [,140 bytes]: string or byte array – arbitrary binary data (typically a comment to transfer).
 - `*fee`: MoneyLike – fee.
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp`: number/string – time in ms.
@@ -956,7 +956,7 @@ Fields:
 - `transfers`  an array of objects:
   { `recipient`: string – address/alias, `amount`: number/string/MoneyLike }
 - `*fee`: MoneyLike – fee.
-- `attachment`: [,140 bytes]: string – additional info in text.
+- `attachment`: [,140 bytes]: string or byte array – arbitrary binary data (typically a comment to transfer).
 - `*senderPublicKey`: string – user's public key in base58.
 - `*timestamp`: number/string – time in ms.
 

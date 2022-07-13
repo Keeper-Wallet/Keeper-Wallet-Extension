@@ -6,6 +6,8 @@ import {
   blake2b,
   concat,
   stringToBytes,
+  TRawStringIn,
+  TRawStringInDiscriminator,
 } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
@@ -40,6 +42,16 @@ import Long from 'long';
 import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 
+type RawStringIn = Exclude<TRawStringIn, TRawStringInDiscriminator>;
+
+function fromRawIn(val: RawStringIn): Uint8Array {
+  if (typeof val === 'string') return stringToBytes(val);
+
+  if (val instanceof Uint8Array) return val;
+
+  return Uint8Array.from(val);
+}
+
 export function processAliasOrAddress(recipient: string, chainId: number) {
   return validators.isValidAddress(recipient) ||
     validators.isValidAlias(recipient)
@@ -72,7 +84,7 @@ interface SaTransfer {
     senderPublicKey?: string;
     amount: Money;
     recipient: string;
-    attachment?: string;
+    attachment?: RawStringIn;
     fee: Money;
     timestamp: number;
     chainId?: number;
@@ -163,7 +175,7 @@ interface SaMassTransfer {
     }>;
     fee: Money;
     timestamp: number;
-    attachment?: string;
+    attachment?: RawStringIn;
     proofs?: string[];
     chainId?: number;
   };
@@ -415,7 +427,7 @@ export const convertFromSa = {
               recipient: processAliasOrAddress(input.data.recipient, chainId),
               amount: input.data.amount.getCoins(),
               attachment: input.data.attachment
-                ? base58Encode(stringToBytes(input.data.attachment))
+                ? base58Encode(fromRawIn(input.data.attachment))
                 : '',
               fee: input.data.fee.getCoins(),
               feeAssetId: input.data.fee.asset.id,
@@ -538,7 +550,7 @@ export const convertFromSa = {
               fee: input.data.fee.getCoins(),
               timestamp: input.data.timestamp,
               attachment: input.data.attachment
-                ? base58Encode(stringToBytes(input.data.attachment))
+                ? base58Encode(fromRawIn(input.data.attachment))
                 : '',
               proofs: input.data.proofs || [],
               chainId,
