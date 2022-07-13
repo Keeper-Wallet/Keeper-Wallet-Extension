@@ -116,6 +116,10 @@ export class StatisticsController {
               this.sendEvents();
             } else {
               return response.text().then(responseText => {
+                if (/Blocked by AdGuard/i.test(responseText)) {
+                  return;
+                }
+
                 Sentry.withScope(scope => {
                   scope.setExtra('responseText', responseText);
 

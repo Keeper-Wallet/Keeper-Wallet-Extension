@@ -1,12 +1,9 @@
 const path = require('path');
-const WebpackCustomActions = require('./scripts/WebpackCustomActionsPlugin');
-const clearDist = require('./scripts/clearDist');
 const conf = require('./scripts/webpack.config');
 const getVersion = require('./scripts/getVersion');
 
 const devConf = conf => ({
   ...conf,
-  mode: 'development',
   devtool: 'cheap-module-inline-source-map',
   module: {
     ...conf.module,
@@ -33,12 +30,7 @@ const devConf = conf => ({
 
 const prodConf = conf => ({
   ...conf,
-  mode: 'production',
   devtool: 'source-map',
-  plugins: [
-    ...conf.plugins,
-    new WebpackCustomActions({ onBuildStart: [clearDist] }),
-  ],
 });
 
 module.exports = () => {
