@@ -60,7 +60,10 @@ export default class ExtensionStore {
     this._initSession = await this.getSession();
   }
 
-  getInitState(defaults?: Record<string, unknown>) {
+  getInitState(
+    defaults?: Record<string, unknown>,
+    forced?: Record<string, unknown>
+  ) {
     if (!defaults) {
       return this._initState;
     }
@@ -72,7 +75,7 @@ export default class ExtensionStore {
           : acc,
       {}
     );
-    const initState = { ...defaults, ...defaultsInitState };
+    const initState = { ...defaults, ...defaultsInitState, ...(forced || {}) };
     this._state = { ...this._state, ...initState };
     return initState;
   }

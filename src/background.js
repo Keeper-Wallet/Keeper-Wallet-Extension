@@ -105,11 +105,11 @@ extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
   if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-    await bgService.localStore.clear();
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
     bgService.vaultController.migrate();
     bgService.addressBookController.migrate();
+    bgService.localStore.clear();
   }
 });
 
