@@ -103,6 +103,7 @@ export function ImportAddressBook({ setTab }: Props) {
 
           if (!addressBook) {
             setError(t('importKeystore.errorFormat'));
+            setLoading(false);
             return;
           }
 
@@ -110,6 +111,7 @@ export function ImportAddressBook({ setTab }: Props) {
 
           if (!keystoreAddresses) {
             setError(t('importKeystore.errorDecrypt'));
+            setLoading(false);
             return;
           }
 

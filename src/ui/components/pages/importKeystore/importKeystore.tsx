@@ -146,6 +146,7 @@ export function ImportKeystore({ setTab }: Props) {
 
             if (!keystore) {
               setError(t('importKeystore.errorFormat'));
+              setLoading(false);
               return;
             }
 
@@ -153,6 +154,7 @@ export function ImportKeystore({ setTab }: Props) {
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
+              setLoading(false);
               return;
             }
 
