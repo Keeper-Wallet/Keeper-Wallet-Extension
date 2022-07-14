@@ -79,13 +79,13 @@ export class StatisticsController {
     return this.sendEvents();
   }
 
-  sendEvents(time = 5000) {
+  sendEvents(delay = 5000) {
     if (!config.statisticsApiKey) {
       return;
     }
 
     this.sended = this.sended
-      .then(() => new Promise(resolve => setTimeout(resolve, time)))
+      .then(() => new Promise(resolve => setTimeout(resolve, delay)))
       .then(() => {
         if (this.events.length === 0) {
           return;
