@@ -71,6 +71,8 @@ export const LANGS = [
     id: 'zh',
     name: '中文',
   },
-];
+].sort((firstLang, secondLang) =>
+  firstLang.name.localeCompare(secondLang.name)
+);
 
 export default i18n;
