@@ -148,9 +148,14 @@ export const usdPrices = createSimpleReducer<Record<string, string>>(
   ACTION.SET_USD_PRICES
 );
 
-export const logos = createSimpleReducer<Record<string, string>>(
+export const assetLogos = createSimpleReducer<Record<string, string>>(
   {},
-  ACTION.SET_LOGOS
+  ACTION.SET_ASSET_LOGOS
+);
+
+export const assetIds = createSimpleReducer<Record<string, string>>(
+  {},
+  ACTION.SET_ASSET_IDS
 );
 
 export const addresses = createSimpleReducer<Record<string, string>>(
