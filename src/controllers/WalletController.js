@@ -59,7 +59,12 @@ export class WalletController extends EventEmitter {
 
     const wallet = this._createWallet({ ...options, networkCode });
 
-    this._checkForDuplicate(wallet.getAccount().address, options.network);
+    const foundWallet = this.getWalletsByNetwork(options.network).find(
+      item => item.getAccount().address === wallet.getAccount().address
+    );
+    if (foundWallet) {
+      return foundWallet;
+    }
 
     this.wallets.push(wallet);
     this._saveWallets();
@@ -342,17 +347,6 @@ export class WalletController extends EventEmitter {
   async decryptMessage(address, network, message, publicKey, prefix) {
     const wallet = this._findWallet(address, network);
     return await wallet.decryptMessage(message, publicKey, prefix);
-  }
-
-  // Private
-  _checkForDuplicate(address, network) {
-    if (
-      this.getWalletsByNetwork(network).find(
-        account => account.address === address
-      )
-    ) {
-      throw new Error(`Account with address ${address} already exists`);
-    }
   }
 
   _saveWallets() {

@@ -124,6 +124,7 @@ export function ImportKeystore({ setTab }: Props) {
   );
   const { t } = useTranslation();
   const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
   const [profiles, setProfiles] = React.useState<KeystoreProfiles | null>(null);
   const [walletType, setWalletType] = React.useState<WalletTypes | null>(null);
 
@@ -133,16 +134,19 @@ export function ImportKeystore({ setTab }: Props) {
         title={t('importKeystore.chooseFileTitle')}
         label={t('importKeystore.keystoreLabel')}
         placeholder={t('importKeystore.passwordPlaceholder')}
+        loading={loading}
         error={error}
         setError={setError}
         onSubmit={async (result, password) => {
           setError(null);
+          setLoading(true);
 
           try {
             const keystore = parseKeystore(result);
 
             if (!keystore) {
               setError(t('importKeystore.errorFormat'));
+              setLoading(false);
               return;
             }
 
@@ -150,6 +154,7 @@ export function ImportKeystore({ setTab }: Props) {
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
+              setLoading(false);
               return;
             }
 
@@ -192,6 +197,8 @@ export function ImportKeystore({ setTab }: Props) {
           } catch (err) {
             setError(t('importKeystore.errorUnexpected'));
           }
+
+          setLoading(false);
         }}
       />
     );

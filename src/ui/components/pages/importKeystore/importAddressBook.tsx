@@ -83,6 +83,7 @@ export function ImportAddressBook({ setTab }: Props) {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
   const { t } = useTranslation();
+  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   return (
@@ -90,16 +91,19 @@ export function ImportAddressBook({ setTab }: Props) {
       title={t('importKeystore.chooseAddressBookFileTitle')}
       label={t('importKeystore.addressBookLabel')}
       placeholder={t('importKeystore.addressBookPasswordPlaceholder')}
+      loading={loading}
       error={error}
       setError={setError}
       onSubmit={async (result, password) => {
         setError(null);
+        setLoading(true);
 
         try {
           const addressBook = parseAddressBook(result);
 
           if (!addressBook) {
             setError(t('importKeystore.errorFormat'));
+            setLoading(false);
             return;
           }
 
@@ -107,6 +111,7 @@ export function ImportAddressBook({ setTab }: Props) {
 
           if (!keystoreAddresses) {
             setError(t('importKeystore.errorDecrypt'));
+            setLoading(false);
             return;
           }
 
@@ -117,6 +122,8 @@ export function ImportAddressBook({ setTab }: Props) {
         } catch (err) {
           setError(t('importKeystore.errorUnexpected'));
         }
+
+        setLoading(false);
       }}
     />
   );
