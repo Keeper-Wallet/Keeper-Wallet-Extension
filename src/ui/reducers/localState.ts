@@ -92,7 +92,7 @@ function notifications(
   }
 }
 
-interface TransactionStatusState {
+export interface TransactionStatusState {
   approvePending?: boolean;
   approveOk?: boolean;
   approveError?: boolean;

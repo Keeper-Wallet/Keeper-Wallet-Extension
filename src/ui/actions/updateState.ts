@@ -3,6 +3,7 @@ import { ACTION } from './constants';
 import { equals } from 'ramda';
 import { AssetDetail } from '../services/Background';
 import { NftInfo } from 'nfts';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
 function getParam<S>(param: S, defaultParam: S) {
   if (param) {
@@ -39,7 +40,7 @@ interface UpdateStateInput {
   idleOptions?: unknown;
   initialized: boolean;
   locked: boolean;
-  messages?: unknown[];
+  messages?: Message[];
   networks?: unknown[];
   myNotifications?: unknown[];
   origins?: unknown;

@@ -1,6 +1,5 @@
 import { Account } from 'accounts/types';
 import { AssetDetail } from 'ui/services/Background';
-import { BalanceAssets } from 'ui/components/transactions/BaseTransaction/TxInfo';
 import { WithTranslation } from 'react-i18next';
 
 export * from './TxIcon';
@@ -42,7 +41,6 @@ export interface ComponentProps extends WithTranslation {
   collapsed?: boolean;
   txHash: string;
   assets: Record<string, AssetDetail>;
-  sponsoredBalance?: BalanceAssets;
   message: Message;
   selectedAccount: Account;
 

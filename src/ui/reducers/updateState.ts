@@ -4,6 +4,7 @@ import { AssetDetail } from '../services/Background';
 import { TransactionFromNode } from '@waves/ts-types';
 import { NftInfo } from 'nfts';
 import { Nft } from 'nfts/utils';
+import { Message } from 'ui/components/transactions/BaseTransaction';
 
 export * from './localState';
 export * from './remoteConfig';
@@ -63,8 +64,8 @@ export const allNetworksAccounts = createSimpleReducer<Account[]>(
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 export function selectedAccount(
-  state: Partial<Account> = {},
-  action: { type: string; payload: Partial<Account> }
+  state: Account = {} as Account,
+  action: { type: string; payload: Account }
 ) {
   switch (action.type) {
     case ACTION.SELECT_ACCOUNT:
@@ -126,8 +127,8 @@ export const idleOptions = createSimpleReducer(
 );
 
 export const messages = (
-  state: unknown[] = [],
-  action: { type: string; payload: { unapprovedMessages: unknown[] } }
+  state: Message[] = [],
+  action: { type: string; payload: { unapprovedMessages: Message[] } }
 ) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];

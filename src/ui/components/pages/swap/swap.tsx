@@ -3,7 +3,8 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { swappableAssetIds } from 'assets/constants';
-import { convertToSponsoredAssetFee, getAssetIdByTicker } from 'assets/utils';
+import { getAssetIdByTicker } from 'assets/utils';
+import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateAssets } from 'ui/actions/assets';
@@ -146,11 +147,8 @@ export function Swap({ setTab }: Props) {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
 
-        const fee = convertToSponsoredAssetFee(
-          new BigNumber(wavesFeeCoins),
-          new Asset(assets[feeAssetId]),
-          accountBalance.assets[feeAssetId]
-        );
+        const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
+        const fee = convertFeeToAsset(wavesFee, new Asset(assets[feeAssetId]));
 
         try {
           const swapResult = await background.swapAssets({
