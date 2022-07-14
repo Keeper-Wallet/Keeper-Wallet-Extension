@@ -271,7 +271,6 @@
     "addAccount": "アカウントを追加",
     "addAnotherAccount": "別のアカウントを追加",
     "additionSuccess": "アカウント '{{ name }}' が追加されました。",
-    "beta": "ベータ",
     "createNew": "新規アカウントを作成",
     "finish": "終了",
     "importVia": "インポート",

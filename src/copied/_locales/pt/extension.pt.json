@@ -277,7 +277,6 @@
     "addAccount": "Adicionar Conta",
     "addAnotherAccount": "Adicionar outra conta",
     "additionSuccess": "Sua conta '{{ name }}' foi adicionada com sucesso!",
-    "beta": "beta",
     "createNew": "Criar uma conta nova",
     "finish": "Finalizar",
     "importVia": "Ou importar via",
