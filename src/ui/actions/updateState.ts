@@ -41,6 +41,7 @@ interface UpdateStateInput {
   feeConfig?: FeeConfig;
   idleOptions?: unknown;
   initialized: boolean;
+  logos: Record<string, string>;
   locked: boolean;
   messages?: Message[];
   networks?: unknown[];
@@ -270,6 +271,14 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.SET_USD_PRICES,
         payload: usdPrices,
+      });
+    }
+
+    const logos = getParam(state.logos, {});
+    if (logos && !equals(logos, currentState.logos)) {
+      store.dispatch({
+        type: ACTION.SET_LOGOS,
+        payload: logos,
       });
     }
 

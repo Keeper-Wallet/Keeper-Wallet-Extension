@@ -9,12 +9,73 @@ import { Input } from 'ui/components/ui/input';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
-import { getAssetLogo } from './utils';
+import { useAssetLogo } from './utils';
 import * as styles from './selectModal.module.css';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;
   disabledTooltip?: string;
+}
+
+interface ItemProps {
+  className?: string;
+  asset: AssetSelectModalOption;
+  network: string;
+  balance: Money;
+  onSelect: (assetId: string) => void;
+}
+
+function AssetSelectItem({
+  className,
+  network,
+  asset,
+  balance,
+  onSelect,
+}: ItemProps) {
+  const logoSrc = useAssetLogo(network, asset.id);
+
+  const listItemEl = (
+    <li
+      className={className}
+      onClick={
+        asset.disabled
+          ? undefined
+          : () => {
+              onSelect(asset.id);
+            }
+      }
+    >
+      <div className={styles.logo}>
+        {logoSrc ? (
+          <img className={styles.logoImg} src={logoSrc} alt="" />
+        ) : (
+          <div
+            className={styles.logoPlaceholder}
+            style={{
+              backgroundColor: new ColorHash().hex(asset.id),
+            }}
+          >
+            {asset.displayName[0].toUpperCase()}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.listItemName}>{asset.displayName}</div>
+      <div className={styles.listItemBalance}>{balance.toFormat()}</div>
+    </li>
+  );
+
+  return asset.disabled && asset.disabledTooltip ? (
+    <Tooltip
+      key={asset.id}
+      className={styles.listItemTooltipContent}
+      content={asset.disabledTooltip}
+    >
+      {props => React.cloneElement(listItemEl, props)}
+    </Tooltip>
+  ) : (
+    React.cloneElement(listItemEl, { key: asset.id })
+  );
 }
 
 interface Props {
@@ -199,58 +260,19 @@ export function AssetSelectModal({
 
         <div className={styles.listViewport} ref={listViewportRef}>
           <ul ref={listRef}>
-            {filteredAndSortedItems.map(({ asset, balance }, index) => {
-              const logoSrc = getAssetLogo(network, asset.id);
-
-              const listItemEl = (
-                <li
-                  className={cn(styles.listItem, {
-                    [styles.listItem_selected]: index === selectedIndex,
-                    [styles.listItem_disabled]: asset.disabled,
-                  })}
-                  onClick={
-                    asset.disabled
-                      ? undefined
-                      : () => {
-                          onSelect(asset.id);
-                        }
-                  }
-                >
-                  <div className={styles.logo}>
-                    {logoSrc ? (
-                      <img className={styles.logoImg} src={logoSrc} alt="" />
-                    ) : (
-                      <div
-                        className={styles.logoPlaceholder}
-                        style={{
-                          backgroundColor: new ColorHash().hex(asset.id),
-                        }}
-                      >
-                        {asset.displayName[0].toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={styles.listItemName}>{asset.displayName}</div>
-
-                  <div className={styles.listItemBalance}>
-                    {balance.toFormat()}
-                  </div>
-                </li>
-              );
-
-              return asset.disabled && asset.disabledTooltip ? (
-                <Tooltip
-                  key={asset.id}
-                  className={styles.listItemTooltipContent}
-                  content={asset.disabledTooltip}
-                >
-                  {props => React.cloneElement(listItemEl, props)}
-                </Tooltip>
-              ) : (
-                React.cloneElement(listItemEl, { key: asset.id })
-              );
-            })}
+            {filteredAndSortedItems.map(({ asset, balance }, index) => (
+              <AssetSelectItem
+                className={cn(styles.listItem, {
+                  [styles.listItem_selected]: index === selectedIndex,
+                  [styles.listItem_disabled]: asset.disabled,
+                })}
+                network={network}
+                asset={asset}
+                balance={balance}
+                onSelect={onSelect}
+                key={asset.id}
+              />
+            ))}
           </ul>
         </div>
 

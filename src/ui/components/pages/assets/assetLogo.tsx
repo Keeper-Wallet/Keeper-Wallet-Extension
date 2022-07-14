@@ -3,7 +3,7 @@ import * as styles from './assetLogo.module.css';
 import cn from 'classnames';
 import ColorHash from 'color-hash';
 import { useAppSelector } from '../../../store';
-import { getAssetLogo } from '../../../../assets/utils';
+import { useAssetLogo } from '../../../../assets/utils';
 
 interface Props {
   assetId: string;
@@ -26,7 +26,7 @@ export function AssetLogo({
   };
 
   const network = useAppSelector(state => state.currentNetwork);
-  const logoSrc = getAssetLogo(network, assetId);
+  const logoSrc = useAssetLogo(network, assetId);
 
   if (!logoSrc) {
     return (

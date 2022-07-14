@@ -23,6 +23,9 @@ const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_PERIOD_IN_MINUTES = 10;
 
+const STATIC_SERVICE_URL = 'https://static.keeper-wallet.app/';
+const LOGOS_PERIOD_IN_MINUTES = 240;
+
 const stablecoinAssetIds = new Set([
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
   '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ',
@@ -187,8 +190,9 @@ export class AssetInfoController {
           WAVES,
         },
       },
-      usdPrices: {},
       suspiciousAssets: [],
+      usdPrices: {},
+      logos: {},
     };
     const initState = localStore.getInitState(defaults);
     this.store = new ObservableStore(initState);
@@ -205,11 +209,18 @@ export class AssetInfoController {
       this.updateUsdPrices();
     }
 
+    if (Object.keys(initState.logos).length === 0) {
+      this.updateLogos();
+    }
+
     extension.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
     });
     extension.alarms.create('updateUsdPrices', {
       periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
+    });
+    extension.alarms.create('updateLogos', {
+      periodInMinutes: LOGOS_PERIOD_IN_MINUTES,
     });
 
     extension.alarms.onAlarm.addListener(({ name }) => {
@@ -219,6 +230,9 @@ export class AssetInfoController {
           break;
         case 'updateUsdPrices':
           this.updateUsdPrices();
+          break;
+        case 'updateLogos':
+          this.updateLogos();
           break;
         default:
           break;
@@ -451,6 +465,28 @@ export class AssetInfoController {
         });
 
         this.store.updateState({ usdPrices });
+      }
+    }
+  }
+
+  async updateLogos() {
+    const { logos } = this.store.getState();
+    const network = this.getNetwork();
+
+    if (!logos || network === 'mainnet') {
+      const resp = await fetch(new URL('/assets', STATIC_SERVICE_URL));
+
+      if (resp.ok) {
+        const assets = await resp.json();
+        this.store.updateState({
+          logos: assets.reduce(
+            (acc, { id, uri }) => ({
+              ...acc,
+              [id]: `${STATIC_SERVICE_URL}${uri}`,
+            }),
+            {}
+          ),
+        });
       }
     }
   }

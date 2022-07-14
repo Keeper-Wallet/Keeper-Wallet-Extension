@@ -5,7 +5,7 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import * as styles from './assetSelect.module.css';
 import { AssetSelectModal, AssetSelectModalOption } from './selectModal';
-import { getAssetLogo } from './utils';
+import { useAssetLogo } from './utils';
 
 export type AssetSelectOption = AssetSelectModalOption;
 
@@ -24,7 +24,7 @@ export function AssetSelect({
   value,
   onChange,
 }: Props) {
-  const logoSrc = getAssetLogo(network, value);
+  const logoSrc = useAssetLogo(network, value);
   const asset = options.find(o => o.id === value);
 
   const [showModal, setShowModal] = React.useState(false);

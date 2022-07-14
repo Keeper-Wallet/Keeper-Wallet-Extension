@@ -1,7 +1,15 @@
 import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
+import { useAppSelector } from 'ui/store';
+import { NetworkName } from '../accounts/types';
 
-export function getAssetLogo(network: string, assetId: string) {
-  return assetLogosByNetwork[network]?.[assetId];
+export function useAssetLogo(network: string, assetId: string) {
+  const logos = useAppSelector(state => state.logos);
+
+  if (network !== NetworkName.Mainnet) {
+    return assetLogosByNetwork[network]?.[assetId];
+  }
+
+  return logos[assetId] || assetLogosByNetwork[network]?.[assetId];
 }
 
 export function getAssetIdByTicker(
