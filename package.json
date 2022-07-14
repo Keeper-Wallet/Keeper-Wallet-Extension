@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "keeperwallet",
   "version": "2.8.2",
   "description": "",
