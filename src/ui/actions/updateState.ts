@@ -48,7 +48,7 @@ interface UpdateStateInput {
   myNotifications?: unknown[];
   origins?: unknown;
   selectedAccount?: { address?: string; network?: string } | null;
-  assetIds: Record<string, string>;
+  assetTickers: Record<string, string>;
   uiState?: unknown;
   usdPrices: Record<string, string>;
 }
@@ -283,11 +283,11 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const assetIds = getParam(state.assetIds, {});
-    if (assetIds && !equals(assetIds, currentState.assetIds)) {
+    const assetTickers = getParam(state.assetTickers, {});
+    if (assetTickers && !equals(assetTickers, currentState.assetTickers)) {
       store.dispatch({
-        type: ACTION.SET_ASSET_IDS,
-        payload: assetIds,
+        type: ACTION.SET_ASSET_TICKERS,
+        payload: assetTickers,
       });
     }
 

@@ -13,13 +13,16 @@ export function useAssetLogo(network: string, assetId: string) {
 }
 
 export function useAssetIdByTicker(network: string, ticker: string) {
-  const ids = useAppSelector(state => state.assetIds);
+  const tickers = useAppSelector(state => state.assetTickers);
 
   if (network !== NetworkName.Mainnet) {
     return assetIds[network]?.[ticker];
   }
 
-  return ids[ticker] || assetIds[network]?.[ticker];
+  return (
+    Object.keys(tickers).find(id => tickers[id] === ticker) ||
+    assetIds[network]?.[ticker]
+  );
 }
 
 export function isSwappableAsset(network: string, assetId: string) {

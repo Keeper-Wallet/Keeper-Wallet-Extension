@@ -153,9 +153,9 @@ export const assetLogos = createSimpleReducer<Record<string, string>>(
   ACTION.SET_ASSET_LOGOS
 );
 
-export const assetIds = createSimpleReducer<Record<string, string>>(
+export const assetTickers = createSimpleReducer<Record<string, string>>(
   {},
-  ACTION.SET_ASSET_IDS
+  ACTION.SET_ASSET_TICKERS
 );
 
 export const addresses = createSimpleReducer<Record<string, string>>(
