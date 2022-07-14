@@ -138,10 +138,6 @@ export function ImportKeystore({ setTab }: Props) {
         error={error}
         setError={setError}
         onSubmit={async (result, password) => {
-          if (loading) {
-            return;
-          }
-
           setError(null);
           setLoading(true);
 
@@ -218,11 +214,24 @@ export function ImportKeystore({ setTab }: Props) {
       onSubmit={selectedAccounts => {
         dispatch(
           batchAddAccounts(
-            selectedAccounts.map(acc => ({
-              type: 'seed',
-              ...acc,
-              network: getNetworkByNetworkCode(acc.networkCode),
-            })),
+            selectedAccounts.reduce(
+              (acc, selectedAccount) =>
+                allNetworksAccounts.find(
+                  account => account.address === selectedAccount.address
+                )
+                  ? acc
+                  : [
+                      ...acc,
+                      {
+                        type: 'seed',
+                        ...selectedAccount,
+                        network: getNetworkByNetworkCode(
+                          selectedAccount.networkCode
+                        ),
+                      },
+                    ],
+              []
+            ),
             walletType
           )
         );
