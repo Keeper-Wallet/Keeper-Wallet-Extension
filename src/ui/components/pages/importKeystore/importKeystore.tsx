@@ -214,24 +214,11 @@ export function ImportKeystore({ setTab }: Props) {
       onSubmit={selectedAccounts => {
         dispatch(
           batchAddAccounts(
-            selectedAccounts.reduce(
-              (acc, selectedAccount) =>
-                allNetworksAccounts.find(
-                  account => account.address === selectedAccount.address
-                )
-                  ? acc
-                  : [
-                      ...acc,
-                      {
-                        type: 'seed',
-                        ...selectedAccount,
-                        network: getNetworkByNetworkCode(
-                          selectedAccount.networkCode
-                        ),
-                      },
-                    ],
-              []
-            ),
+            selectedAccounts.map(acc => ({
+              type: 'seed',
+              ...acc,
+              network: getNetworkByNetworkCode(acc.networkCode),
+            })),
             walletType
           )
         );
