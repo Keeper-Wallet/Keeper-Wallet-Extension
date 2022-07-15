@@ -455,11 +455,6 @@
     "noAccountsFound": "没找到其他符合当前过滤条件的账户",
     "title": "其他账户"
   },
-  "pairing": {
-    "appInfo": "下载我们的手机应用：",
-    "scanInfo": "使用您的iPhone或安卓设备扫描下方与您的账户进行匹配。",
-    "scanPairing": "扫描匹配码"
-  },
   "permission": { "customList": "自定义名单", "whiteList": "白名单" },
   "permissionSettings": {
     "modal": {

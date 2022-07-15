@@ -457,11 +457,6 @@
     "noAccountsFound": "Không tìm thấy tài khoản khác cho bộ lọc đã chọn",
     "title": "Các tài khoản khác"
   },
-  "pairing": {
-    "appInfo": "Tải ứng dụng di động của chúng tôi bên dưới:",
-    "scanInfo": "Quét mã bên dưới với Iphone hoặc thiết bị android để ghép nối với tài khoản của bạn",
-    "scanPairing": "Quét mã ghép nối"
-  },
   "permission": {
     "customList": "Danh sách tùy chọn",
     "whiteList": "Danh sách trắng"

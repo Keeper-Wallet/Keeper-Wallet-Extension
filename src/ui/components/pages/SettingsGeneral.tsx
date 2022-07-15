@@ -18,7 +18,6 @@ class SettingsGeneralComponent extends React.Component<Props> {
   readonly props;
   langsHandler = () => this.props.setTab(PAGES.LANGS_SETTINGS);
   passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
-  pairingHandler = () => this.props.setTab(PAGES.PAIRING);
   setIdle = id => this.props.setIdle(id);
 
   render() {

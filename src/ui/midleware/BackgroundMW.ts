@@ -3,32 +3,12 @@ import {
   notificationChangeName,
   notificationDelete,
   notificationSelect,
-  pairingLoading,
-  pairingSetData,
   setActiveNotification,
   setTab,
   updateActiveState,
 } from '../actions';
 import background from '../services/Background';
 import i18n from '../i18n';
-
-export const pairingData = store => next => action => {
-  if (action.type !== ACTION.PAIRING.GET_SEED) {
-    return next(action);
-  }
-  const { currentNetwork } = store.getState();
-  store.dispatch(pairingLoading(true));
-  background.exportSeed(action.payload, currentNetwork).then(
-    data => {
-      store.dispatch(pairingSetData(data));
-      store.dispatch(pairingLoading(false));
-    },
-    () => {
-      store.dispatch(pairingSetData(null));
-      store.dispatch(pairingLoading(false));
-    }
-  );
-};
 
 export const changeLang = store => next => action => {
   if (

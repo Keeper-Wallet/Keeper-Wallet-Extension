@@ -21,7 +21,6 @@ import {
   NewWallet,
   NewWalletName,
   Notifications,
-  PairingAccountQr,
   PermissionsSettings,
   QRCodeSelectedAccount,
   SelectTxAccount,
@@ -87,7 +86,6 @@ export const PAGES = {
   LANGS_SETTINGS_INTRO: 'langs_settings_intro',
   CHANGE_PASSWORD: 'change_password_settings',
   DELETE_ACCOUNT: 'delete_account',
-  PAIRING: 'pairing',
   PERMISSIONS: 'origin_permisiions',
   NOTIFICATIONS: 'notifications',
   MESSAGES: 'messages',
@@ -420,17 +418,6 @@ export const PAGES_CONF = {
   },
   [PAGES.DELETE_ACTIVE_ACCOUNT]: {
     component: DeleteActiveAccount,
-    bottom: {
-      hide: true,
-    },
-    menu: {
-      hasLogo: true,
-      hasSettings: false,
-      back: true,
-    },
-  },
-  [PAGES.PAIRING]: {
-    component: PairingAccountQr,
     bottom: {
       hide: true,
     },

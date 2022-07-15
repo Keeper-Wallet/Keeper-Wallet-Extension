@@ -481,11 +481,6 @@
     "noAccountsFound": "No other accounts were found for the specified filters",
     "title": "Other accounts"
   },
-  "pairing": {
-    "appInfo": "Download our mobile applications below:",
-    "scanInfo": "Scan the code below with your iPhone or Android device to pair it with your account.",
-    "scanPairing": "Scan Pairing Code"
-  },
   "permission": {
     "customList": "Custom list",
     "whiteList": "White list"

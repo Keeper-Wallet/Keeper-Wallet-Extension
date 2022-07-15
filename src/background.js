@@ -831,7 +831,6 @@ class BackgroundService extends EventEmitter {
 
         return await newNotification(data);
       },
-      //pairing: async (data, from) => await newMessage(data, 'pairing', from, false),
 
       publicState: async () => {
         const { selectedAccount, initialized } = await this.getState([
