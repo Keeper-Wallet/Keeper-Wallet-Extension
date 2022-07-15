@@ -204,7 +204,7 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
         },
         {
           test: /\.(js|tsx?)$/,
-          exclude: /node_modules/,
+          include: SOURCE_FOLDER,
           loader: 'babel-loader',
         },
         {
@@ -213,7 +213,6 @@ module.exports = ({ version, DIST, PAGE_TITLE, PLATFORMS, isProduction }) => {
         },
         {
           test: /\.styl/,
-          exclude: /node_modules/,
           loader: ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [

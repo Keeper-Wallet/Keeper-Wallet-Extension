@@ -7,7 +7,11 @@ import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
 import { convertToSponsoredAssetFee } from 'assets/utils';
-import { SwapAssetsInvokeParams } from 'controllers/SwapController';
+import {
+  SwapClient,
+  SwapClientErrorCode,
+  SwapClientInvokeTransaction,
+} from '@keeper-wallet/swap-client';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
@@ -18,21 +22,13 @@ import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { proto } from './channel.proto.compiled';
-import { ExchangeChannelClient } from './channelClient';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 import { SwapVendor } from 'swap/constants';
 import { getSwapVendorLogo } from 'swap/utils';
+import { useDebouncedValue } from 'common/useDebouncedValue';
 
-const SLIPPAGE_TOLERANCE_OPTIONS = [
-  new BigNumber(0.1),
-  new BigNumber(0.5),
-  new BigNumber(1),
-  new BigNumber(3),
-];
-
-const KEEPER_FEE = new BigNumber(0.1);
+const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
 function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
   return asset.id === 'WAVES'
@@ -40,15 +36,15 @@ function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
 }
 
-export interface SwapParams {
+export interface OnSwapParams {
   feeAssetId: string;
   fromAssetId: string;
   fromCoins: BigNumber;
-  invoke: SwapAssetsInvokeParams;
   minReceivedCoins: BigNumber;
-  slippageTolerance: BigNumber;
+  slippageTolerance: number;
   toAssetId: string;
   toCoins: BigNumber;
+  tx: SwapClientInvokeTransaction;
   vendor: SwapVendor;
 }
 
@@ -59,46 +55,47 @@ interface Props {
   swapErrorMessage: string;
   swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
-  onSwap: (params: SwapParams) => void;
+  onSwap: (params: OnSwapParams) => void;
 }
 
-type ExchangeInfoVendorState =
+type SwapInfoVendorState =
   | {
       type: 'loading';
     }
   | {
       type: 'error';
-      code: proto.Response.Error.CODES;
+      code: SwapClientErrorCode;
     }
   | {
       type: 'data';
-      invoke: SwapAssetsInvokeParams;
+      minimumReceivedTokens: BigNumber;
       priceImpact: number;
       toAmountTokens: BigNumber;
+      tx: SwapClientInvokeTransaction;
     };
 
-type ExchangeInfoState = {
-  [K in SwapVendor]: ExchangeInfoVendorState;
+type SwapInfoState = {
+  [K in SwapVendor]: SwapInfoVendorState;
 };
 
-const exchangeInfoInitialState: ExchangeInfoState = {
+const swapInfoLoadingState: SwapInfoState = {
   [SwapVendor.Keeper]: { type: 'loading' },
   [SwapVendor.Puzzle]: { type: 'loading' },
   [SwapVendor.Swopfi]: { type: 'loading' },
 };
 
-const exchangeInfoErrorState: ExchangeInfoState = {
+const swapInfoErrorState: SwapInfoState = {
   [SwapVendor.Keeper]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
   [SwapVendor.Puzzle]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
   [SwapVendor.Swopfi]: {
     type: 'error',
-    code: proto.Response.Error.CODES.UNEXPECTED,
+    code: SwapClientErrorCode.UNEXPECTED,
   },
 };
 
@@ -111,6 +108,7 @@ export function SwapForm({
   wavesFeeCoins,
   onSwap,
 }: Props) {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
   const assets = useAppSelector(state => state.assets);
@@ -120,10 +118,6 @@ export function SwapForm({
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
-
-  const swapChannel = useAppSelector(
-    state => state.config.network_config[state.currentNetwork].swapChannel
-  );
 
   const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
 
@@ -189,44 +183,30 @@ export function SwapForm({
   }
 
   const [fromAmountValue, setFromAmountValue] = React.useState('');
-
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
-  const [exchangeInfo, setExchangeInfo] = React.useState<ExchangeInfoState>(
-    exchangeInfoInitialState
+  const [swapVendor, setSwapVendor] = React.useState(SwapVendor.Keeper);
+  const [swapVendorTouched, setSwapVendorTouched] = React.useState(false);
+
+  const slippageToleranceIndex = useAppSelector(
+    state => state.uiState.slippageToleranceIndex ?? 2
   );
 
-  const [channelClient, setChannelClient] =
-    React.useState<ExchangeChannelClient | null>(null);
+  function setSlippageToleranceIndex(index: number) {
+    dispatch(setUiState({ slippageToleranceIndex: index }));
+  }
 
-  React.useEffect(() => {
-    const client = new ExchangeChannelClient(
-      new URL('/v2', swapChannel).toString()
-    );
+  const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
 
-    setChannelClient(client);
+  const [swapInfo, setSwapInfo] = React.useState(swapInfoLoadingState);
 
-    return () => {
-      client.close();
-    };
-  }, [swapChannel]);
+  const [swapClient] = React.useState(() => new SwapClient());
 
-  const latestFromAmountValueRef = React.useRef(fromAmountValue);
-
-  React.useEffect(() => {
-    latestFromAmountValueRef.current = fromAmountValue;
-  }, [fromAmountValue]);
-
-  const [exchangeChannelError, setExchangeChannelError] = React.useState<
-    string | null
-  >(null);
+  const [swapClientError, setSwapClientError] = React.useState<string | null>(
+    null
+  );
 
   const maxTokens = new Money(BigNumber.MAX_VALUE, fromAsset).getTokens();
-  const maxTokensRef = React.useRef(maxTokens);
-
-  React.useEffect(() => {
-    maxTokensRef.current = maxTokens;
-  }, [maxTokens]);
 
   const maxAmountExceededErrorMessage = fromAmountTokens.gt(maxTokens)
     ? t('swap.maxAmountExceeded', {
@@ -236,38 +216,66 @@ export function SwapForm({
 
   const accountAddress = useAppSelector(state => state.selectedAccount.address);
 
-  const watchExchange = React.useCallback(() => {
-    let fromTokens = new BigNumber(latestFromAmountValueRef.current || '0');
+  const swapParams = React.useMemo(() => {
+    let fromAmountTokens = new BigNumber(fromAmountValue || '0');
 
-    if (fromTokens.gt(maxTokensRef.current)) {
-      setExchangeInfo(exchangeInfoErrorState);
-      channelClient?.close();
+    if (fromAmountTokens.eq(0)) {
+      fromAmountTokens = new BigNumber(1);
+    }
+
+    const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+    if (fromAmount.getCoins().gt(BigNumber.MAX_VALUE)) {
+      return null;
+    }
+
+    return {
+      address: accountAddress,
+      amountCoins: fromAmount.toCoins(),
+      fromAssetId: fromAsset.id,
+      slippageTolerance,
+      toAssetId: toAsset.id,
+    };
+  }, [
+    accountAddress,
+    fromAmountValue,
+    fromAsset,
+    slippageTolerance,
+    toAsset.id,
+  ]);
+
+  React.useEffect(() => {
+    setSwapVendorTouched(false);
+
+    if (swapParams) {
+      setSwapInfo(swapInfoLoadingState);
+    } else {
+      setSwapInfo(swapInfoErrorState);
+    }
+  }, [swapParams]);
+
+  const debouncedSwapParams = useDebouncedValue(swapParams, 500);
+
+  React.useEffect(() => {
+    if (!debouncedSwapParams) {
       return;
     }
 
-    if (fromTokens.eq(0)) {
-      fromTokens = new BigNumber(1);
+    swapClient.setSwapParams(debouncedSwapParams);
+  }, [debouncedSwapParams, swapClient]);
+
+  React.useEffect(() => {
+    if (!swapParams) {
+      return;
     }
 
-    const latestSlippageTolerance =
-      SLIPPAGE_TOLERANCE_OPTIONS[latestSlippageToleranceIndexRef.current];
-
-    return channelClient?.exchange(
-      {
-        fromAmountCoins: Money.fromTokens(fromTokens, fromAsset).getCoins(),
-        fromAsset,
-        slippageTolerance: latestSlippageTolerance.toNumber() * 10,
-        toAsset,
-        address: accountAddress,
+    return swapClient.subscribe({
+      onError: () => {
+        setSwapInfo(swapInfoLoadingState);
+        setSwapClientError(t('swap.exchangeChannelConnectionError'));
       },
-      (err, vendor, response) => {
-        if (err) {
-          setExchangeInfo(exchangeInfoInitialState);
-          setExchangeChannelError(t('swap.exchangeChannelConnectionError'));
-          return;
-        }
-
-        setExchangeChannelError(null);
+      onData: (vendor, response) => {
+        setSwapClientError(null);
 
         const typedVendor = vendor as SwapVendor;
 
@@ -275,7 +283,7 @@ export function SwapForm({
           return;
         }
 
-        let vendorState: ExchangeInfoVendorState;
+        let vendorState: SwapInfoVendorState;
 
         if (response.type === 'error') {
           vendorState = {
@@ -285,42 +293,26 @@ export function SwapForm({
         } else {
           vendorState = {
             type: 'data',
-            invoke: response.invoke,
-            priceImpact: response.priceImpact,
-            toAmountTokens: new Money(
-              response.toAmountCoins,
+            minimumReceivedTokens: new Money(
+              response.minimumReceivedCoins,
               toAsset
             ).getTokens(),
+            priceImpact: response.priceImpact,
+            toAmountTokens: new Money(
+              response.amountCoins,
+              toAsset
+            ).getTokens(),
+            tx: response.tx,
           };
         }
 
-        setExchangeInfo(prevState => ({
+        setSwapInfo(prevState => ({
           ...prevState,
           [typedVendor]: vendorState,
         }));
-      }
-    );
-  }, [
-    channelClient,
-    fromAsset,
-    toAsset,
-    latestFromAmountValueRef,
-    accountAddress,
-    maxTokensRef,
-    t,
-  ]);
-
-  React.useEffect(() => {
-    setExchangeInfo(exchangeInfoInitialState);
-    setTouched(false);
-    watchExchange();
-  }, [watchExchange]);
-
-  const watchExchangeRef = React.useRef(watchExchange);
-
-  React.useEffect(() => {
-    watchExchangeRef.current = watchExchange;
-  }, [watchExchange]);
+      },
+    });
+  }, [swapClient, swapParams, t, toAsset]);
 
   const sponsoredAssetFee = accountBalance.assets[feeAssetId]
     ? convertToSponsoredAssetFee(
@@ -330,7 +322,7 @@ export function SwapForm({
       )
     : null;
 
-  const validationErrorMessage =
+  const balanceErrorMessage =
     !sponsoredAssetFee ||
     fromAmountTokens.gt(fromAssetBalance.getTokens()) ||
     feeAssetBalance.getTokens().lt(sponsoredAssetFee.getTokens()) ||
@@ -341,67 +333,14 @@ export function SwapForm({
       ? t('swap.insufficientFundsError')
       : null;
 
-  const watchExchangeTimeoutRef = React.useRef<number | null>(null);
-
-  function scheduleWatchExchangeUpdate() {
-    if (watchExchangeTimeoutRef.current != null) {
-      window.clearTimeout(watchExchangeTimeoutRef.current);
-    }
-
-    watchExchangeTimeoutRef.current = window.setTimeout(() => {
-      watchExchangeRef.current();
-    }, 500);
-  }
-
-  React.useEffect(() => {
-    return () => {
-      if (watchExchangeTimeoutRef.current != null) {
-        window.clearTimeout(watchExchangeTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  function setFromAmount(newValue: string) {
-    if (newValue !== fromAmountValue) {
-      setFromAmountValue(newValue);
-      setExchangeInfo(exchangeInfoInitialState);
-      setTouched(false);
-      scheduleWatchExchangeUpdate();
-    }
-  }
-
-  function setSlippageToleranceIndex(index: number) {
-    dispatch(setUiState({ slippageToleranceIndex: index }));
-    setExchangeInfo(exchangeInfoInitialState);
-    setTouched(false);
-    scheduleWatchExchangeUpdate();
-  }
-
   const [showSlippageToleranceModal, setShowSlippageToleranceModal] =
     React.useState(false);
 
-  const slippageToleranceIndex = useAppSelector(
-    state => state.uiState.slippageToleranceIndex ?? 2
-  );
-
-  const latestSlippageToleranceIndexRef = React.useRef(slippageToleranceIndex);
-
-  React.useEffect(() => {
-    latestSlippageToleranceIndexRef.current = slippageToleranceIndex;
-  }, [slippageToleranceIndex]);
-
-  const slippageTolerance = SLIPPAGE_TOLERANCE_OPTIONS[slippageToleranceIndex];
-
-  const [selectedExchangeVendor, setSelectedExchangeVendor] = React.useState(
-    SwapVendor.Keeper
-  );
-  const [touched, setTouched] = React.useState(false);
-
-  const vendorExchangeInfo = exchangeInfo[selectedExchangeVendor];
+  const swapVendorInfo = swapInfo[swapVendor];
 
   const defaultPriceDirectionSwapped =
-    vendorExchangeInfo.type === 'data' &&
-    +vendorExchangeInfo.toAmountTokens
+    swapVendorInfo.type === 'data' &&
+    +swapVendorInfo.toAmountTokens
       .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
       .toFixed(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR) < 1;
   const [isPriceDirectionSwapped, setIsPriceDirectionSwapped] = React.useState(
@@ -412,42 +351,37 @@ export function SwapForm({
   }, [defaultPriceDirectionSwapped]);
 
   const minReceived =
-    vendorExchangeInfo.type === 'data'
+    swapVendorInfo.type === 'data'
       ? Money.fromTokens(
           fromAmountTokens.eq(0)
             ? new BigNumber(0)
-            : vendorExchangeInfo.toAmountTokens
-                .mul(new BigNumber(100).sub(slippageTolerance).sub(KEEPER_FEE))
-                .div(100)
-                .roundTo(toAsset.precision, BigNumber.ROUND_MODE.ROUND_FLOOR),
+            : swapVendorInfo.minimumReceivedTokens,
           toAsset
         )
       : null;
 
-  const dispatch = useAppDispatch();
-
   const priceImpact =
-    fromAmountTokens.eq(0) || vendorExchangeInfo.type !== 'data'
+    fromAmountTokens.eq(0) || swapVendorInfo.type !== 'data'
       ? new BigNumber(0)
-      : new BigNumber(vendorExchangeInfo.priceImpact);
+      : new BigNumber(swapVendorInfo.priceImpact);
 
   const [nonProfitVendor, profitVendor] = (
-    Object.keys(exchangeInfo) as SwapVendor[]
+    Object.keys(swapInfo) as SwapVendor[]
   ).reduce<[SwapVendor, SwapVendor]>(
     ([nonProfit, profit], next) => {
-      const nonProfitInfo = exchangeInfo[nonProfit];
+      const nonProfitInfo = swapInfo[nonProfit];
       const minAmount =
         nonProfitInfo?.type === 'data'
           ? nonProfitInfo.toAmountTokens
           : BigNumber.MAX_VALUE;
 
-      const profitInfo = exchangeInfo[profit];
+      const profitInfo = swapInfo[profit];
       const maxAmount =
         profitInfo?.type === 'data'
           ? profitInfo.toAmountTokens
           : new BigNumber(0);
 
-      const nextInfo = exchangeInfo[next];
+      const nextInfo = swapInfo[next];
       const nextAmount =
         nextInfo?.type === 'data' && fromAmountTokens.gt(0)
           ? nextInfo.toAmountTokens
@@ -462,10 +396,10 @@ export function SwapForm({
   );
 
   React.useEffect(() => {
-    if (!touched) {
-      setSelectedExchangeVendor(profitVendor);
+    if (!swapVendorTouched) {
+      setSwapVendor(profitVendor);
     }
-  }, [touched, profitVendor]);
+  }, [swapVendorTouched, profitVendor]);
 
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
@@ -525,7 +459,7 @@ export function SwapForm({
           onSubmit={event => {
             event.preventDefault();
 
-            if (vendorExchangeInfo.type !== 'data') {
+            if (swapVendorInfo.type !== 'data') {
               return;
             }
 
@@ -536,15 +470,15 @@ export function SwapForm({
                 fromAmountTokens,
                 fromAsset
               ).getCoins(),
-              invoke: vendorExchangeInfo.invoke,
               minReceivedCoins: minReceived.getCoins(),
               slippageTolerance,
               toAssetId,
               toCoins: Money.fromTokens(
-                vendorExchangeInfo.toAmountTokens,
+                swapVendorInfo.toAmountTokens,
                 toAsset
               ).getCoins(),
-              vendor: selectedExchangeVendor,
+              tx: swapVendorInfo.tx,
+              vendor: swapVendor,
             });
           }}
         >
@@ -577,20 +511,20 @@ export function SwapForm({
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
               }
 
-              setFromAmount(max.getTokens().toFixed());
+              setFromAmountValue(max.getTokens().toFixed());
             }}
             onChange={newValue => {
-              setFromAmount(newValue);
+              setFromAmountValue(newValue);
             }}
           />
 
           <div className={styles.swapDirectionBtnWrapper}>
             <button
               className={styles.swapDirectionBtn}
-              disabled={vendorExchangeInfo.type !== 'data'}
+              disabled={swapVendorInfo.type !== 'data'}
               type="button"
               onClick={() => {
-                if (vendorExchangeInfo.type !== 'data') {
+                if (swapVendorInfo.type !== 'data') {
                   return;
                 }
 
@@ -604,9 +538,9 @@ export function SwapForm({
                     ? ''
                     : fromAmountTokens.eq(0)
                     ? '0'
-                    : vendorExchangeInfo.toAmountTokens.toFixed();
+                    : swapVendorInfo.toAmountTokens.toFixed();
 
-                setFromAmount(newFromAmount);
+                setFromAmountValue(newFromAmount);
                 setIsPriceDirectionSwapped(prevState => !prevState);
               }}
             >
@@ -649,8 +583,8 @@ export function SwapForm({
 
             <div className={styles.toAmountCards}>
               {(
-                Object.entries(exchangeInfo) as Array<
-                  [SwapVendor, ExchangeInfoVendorState]
+                Object.entries(swapInfo) as Array<
+                  [SwapVendor, SwapInfoVendorState]
                 >
               ).map(([vendor, info]) => {
                 const amountTokens = new BigNumber(
@@ -677,7 +611,7 @@ export function SwapForm({
                   }
                 );
 
-                const nextInfo = exchangeInfo[nonProfitVendor];
+                const nextInfo = swapInfo[nonProfitVendor];
 
                 const profitTokens =
                   info.type === 'data' &&
@@ -693,13 +627,12 @@ export function SwapForm({
                   <button
                     key={vendor}
                     className={cn(styles.toAmountCard, {
-                      [styles.toAmountCard_selected]:
-                        selectedExchangeVendor === vendor,
+                      [styles.toAmountCard_selected]: swapVendor === vendor,
                     })}
                     type="button"
                     onClick={() => {
-                      setTouched(true);
-                      setSelectedExchangeVendor(vendor);
+                      setSwapVendorTouched(true);
+                      setSwapVendor(vendor);
                     }}
                   >
                     <div className={styles.toAmountCardVendor}>
@@ -732,10 +665,9 @@ export function SwapForm({
                       </div>
                     ) : (
                       <div className={styles.toAmountCardError}>
-                        {info.code ===
-                        proto.Response.Error.CODES.INVALID_ASSET_PAIR
+                        {info.code === SwapClientErrorCode.INVALID_ASSET_PAIR
                           ? t('swap.exchangeChannelInvalidAssetPairError')
-                          : info.code === proto.Response.Error.CODES.UNAVAILABLE
+                          : info.code === SwapClientErrorCode.UNAVAILABLE
                           ? t('swap.exchangeChannelUnavailableError')
                           : t('swap.exchangeChannelUnknownError')}
                       </div>
@@ -773,8 +705,8 @@ export function SwapForm({
             </div>
           </div>
 
-          {exchangeChannelError && (
-            <div className={styles.error}>{exchangeChannelError}</div>
+          {swapClientError && (
+            <div className={styles.error}>{swapClientError}</div>
           )}
 
           <div className={styles.summary}>
@@ -793,9 +725,9 @@ export function SwapForm({
               </div>
 
               <div className={styles.summaryValue}>
-                {vendorExchangeInfo.type === 'loading' ? (
+                {swapVendorInfo.type === 'loading' ? (
                   <Loader />
-                ) : vendorExchangeInfo.type === 'data' ? (
+                ) : swapVendorInfo.type === 'data' ? (
                   <div>
                     <button
                       className={styles.slippageToleranceBtn}
@@ -835,9 +767,9 @@ export function SwapForm({
               <div className={styles.summaryLabel}>{t('swap.priceLabel')}</div>
 
               <div className={styles.summaryValue}>
-                {vendorExchangeInfo.type === 'loading' ? (
+                {swapVendorInfo.type === 'loading' ? (
                   <Loader />
-                ) : vendorExchangeInfo.type === 'data' ? (
+                ) : swapVendorInfo.type === 'data' ? (
                   <div>
                     <button
                       className={styles.swapPriceDirectionBtn}
@@ -859,12 +791,12 @@ export function SwapForm({
                     {isPriceDirectionSwapped ? (
                       <span>
                         1 {toAsset.displayName} ≈{' '}
-                        {(vendorExchangeInfo.toAmountTokens.eq(0)
+                        {(swapVendorInfo.toAmountTokens.eq(0)
                           ? new BigNumber(0)
                           : (fromAmountTokens.eq(0)
                               ? new BigNumber(1)
                               : fromAmountTokens
-                            ).div(vendorExchangeInfo.toAmountTokens)
+                            ).div(swapVendorInfo.toAmountTokens)
                         ).toFixed(
                           fromAsset.precision,
                           BigNumber.ROUND_MODE.ROUND_FLOOR
@@ -874,7 +806,7 @@ export function SwapForm({
                     ) : (
                       <span>
                         1 {fromAsset.displayName} ~{' '}
-                        {vendorExchangeInfo.toAmountTokens
+                        {swapVendorInfo.toAmountTokens
                           .div(fromAmountTokens.eq(0) ? 1 : fromAmountTokens)
                           .toFixed(
                             toAsset.precision,
@@ -1011,7 +943,7 @@ export function SwapForm({
                         className={styles.slippageToleranceLabel}
                         htmlFor={id}
                       >
-                        {slippageTolerance.toFixed()}%
+                        {slippageTolerance.toString()}%
                       </label>
                     </React.Fragment>
                   );
@@ -1024,11 +956,11 @@ export function SwapForm({
 
       <div className={styles.stickyBottomPanel}>
         {(maxAmountExceededErrorMessage ||
-          validationErrorMessage ||
+          balanceErrorMessage ||
           swapErrorMessage) && (
           <div className={styles.stickyBottomPanelError}>
             {maxAmountExceededErrorMessage ||
-              validationErrorMessage ||
+              balanceErrorMessage ||
               swapErrorMessage}
           </div>
         )}
@@ -1038,8 +970,8 @@ export function SwapForm({
           disabled={
             fromAmountTokens.eq(0) ||
             maxAmountExceededErrorMessage != null ||
-            validationErrorMessage != null ||
-            vendorExchangeInfo.type !== 'data' ||
+            balanceErrorMessage != null ||
+            swapVendorInfo.type !== 'data' ||
             isSwapInProgress
           }
           form="swapForm"
