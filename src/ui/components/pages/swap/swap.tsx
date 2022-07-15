@@ -12,7 +12,7 @@ import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { PAGES } from 'ui/pageConfig';
 import background, { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import { SwapForm, SwapParams } from './form';
+import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
@@ -136,13 +136,13 @@ export function Swap({ setTab }: Props) {
         feeAssetId,
         fromAssetId,
         fromCoins,
-        invoke,
         minReceivedCoins,
         slippageTolerance,
         toAssetId,
         toCoins,
+        tx,
         vendor,
-      }: SwapParams) => {
+      }: OnSwapParams) => {
         setSwapErrorMessage(null);
         setIsSwapInProgress(true);
 
@@ -156,16 +156,14 @@ export function Swap({ setTab }: Props) {
           const swapResult = await background.swapAssets({
             feeAssetId,
             feeCoins: fee.toCoins(),
-            fromAssetId,
-            fromCoins: fromCoins.toFixed(),
-            invoke,
+            tx,
           });
 
           background.sendEvent('swapAssets', {
             fromAssetId,
             fromCoins: fromCoins.toFixed(),
             minReceivedCoins: minReceivedCoins.toFixed(),
-            slippageTolerance: slippageTolerance.toNumber(),
+            slippageTolerance,
             status: 'success',
             toAssetId,
             toCoins: toCoins.toFixed(),
@@ -243,7 +241,7 @@ export function Swap({ setTab }: Props) {
                   fromAssetId,
                   fromCoins: fromCoins.toFixed(),
                   minReceivedCoins: minReceivedCoins.toFixed(),
-                  slippageTolerance: slippageTolerance.toNumber(),
+                  slippageTolerance,
                   status: 'lessThanExpected',
                   toAssetId,
                   toCoins: toCoins.toFixed(),
@@ -265,7 +263,7 @@ export function Swap({ setTab }: Props) {
                   fromAssetId,
                   fromCoins: fromCoins.toFixed(),
                   minReceivedCoins: minReceivedCoins.toFixed(),
-                  slippageTolerance: slippageTolerance.toNumber(),
+                  slippageTolerance,
                   status: 'lessThanExpected',
                   toAssetId,
                   toCoins: toCoins.toFixed(),
