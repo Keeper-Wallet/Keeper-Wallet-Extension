@@ -244,7 +244,11 @@ export function createUpdateState(store: UiStore) {
 
     const assets = getParam(state.assets, {});
     const network = state.currentNetwork || currentState.currentNetwork;
-    if (assets && !equals(assets[network], currentState.assets)) {
+    if (
+      assets &&
+      assets[network] &&
+      !equals(assets[network], currentState.assets)
+    ) {
       store.dispatch({
         type: ACTION.SET_ASSETS,
         payload: assets[network],
