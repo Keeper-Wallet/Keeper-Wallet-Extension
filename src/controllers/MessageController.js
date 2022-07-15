@@ -47,6 +47,7 @@ export class MessageController extends EventEmitter {
     setPermission,
     canAutoApprove,
     getAccountBalance,
+    getFeeConfig,
   }) {
     super();
 
@@ -85,6 +86,7 @@ export class MessageController extends EventEmitter {
     this.canAutoApprove = canAutoApprove;
 
     this.getFee = calculateFeeFabric(assetInfoController, networkController);
+    this.getFeeConfig = getFeeConfig;
     this.getAccountBalance = getAccountBalance;
 
     this.rejectAllByTime();
@@ -812,7 +814,12 @@ export class MessageController extends EventEmitter {
 
     return {
       coins: (
-        await this.getFee(signableData, chainId, message.account)
+        await this.getFee(
+          signableData,
+          chainId,
+          message.account,
+          this.getFeeConfig()
+        )
       ).toString(),
       assetId: 'WAVES',
     };
@@ -840,6 +847,7 @@ export class MessageController extends EventEmitter {
       const feeOptions = getFeeOptions({
         assets,
         balance,
+        feeConfig: this.getFeeConfig(),
         initialFee: feeMoney,
         txType: message.data.type,
         usdPrices: this.assetInfoController.getUsdPrices(),

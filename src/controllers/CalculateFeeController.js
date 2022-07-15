@@ -2,35 +2,11 @@ import { BigNumber } from '@waves/bignumber';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { libs } from '@waves/waves-transactions';
 import { path } from 'ramda';
-import { DEFAULT_FEE_CONFIG, DEFAULT_FEE_CONFIG_URL } from '../constants';
 import { convertFromSa, makeBytes } from '../transactions/utils';
-
-const CONFIG_EXPIRATION_TIME = 60 * 60 * 1000;
 
 const FEE_TYPES = [
   2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1002,
 ];
-
-const promiseCache = (delta, defaultValue) => cb => {
-  const defaultConfig = Promise.resolve(defaultValue);
-  let time = null;
-  let promise = null;
-
-  return async () => {
-    const now = Date.now();
-
-    if (!promise || now - time > delta) {
-      try {
-        time = now;
-        promise = cb();
-      } catch (e) {
-        promise = defaultConfig;
-      }
-    }
-
-    return await promise;
-  };
-};
 
 const isAccountHasExtraFee = async (address, node) => {
   try {
@@ -43,23 +19,6 @@ const isAccountHasExtraFee = async (address, node) => {
     return 0;
   }
 };
-
-const getConfig = async function () {
-  const response = await fetch(DEFAULT_FEE_CONFIG_URL);
-  return await response.json();
-};
-
-const getCachingFeeConfig = promiseCache(
-  CONFIG_EXPIRATION_TIME,
-  DEFAULT_FEE_CONFIG
-)(getConfig);
-
-export async function getMinimumFee(txType) {
-  const feeConfig = await getCachingFeeConfig();
-  const rules = feeConfig.calculate_fee_rules;
-
-  return rules[txType] ? rules[txType].fee : rules.default.fee;
-}
 
 export async function getExtraFee(address, node) {
   const json = await fetch(
@@ -265,10 +224,8 @@ function getFee(
 
 export const calculateFeeFabric =
   (assetInfoController, networkController) =>
-  async (signData, chainId, account) => {
+  async (signData, chainId, account, feeConfig) => {
     const { type } = signData;
-
-    const feeConfig = await getCachingFeeConfig();
 
     if (!FEE_TYPES.includes(type)) {
       return Object.create(null);

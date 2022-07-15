@@ -4,16 +4,20 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { getMoney } from 'ui/utils/converters';
 import * as invokeScriptParseTx from '../ui/components/transactions/ScriptInvocation/parseTx';
 import * as transferParseTx from '../ui/components/transactions/Transfer/parseTx';
-import { DEFAULT_FEE_CONFIG } from '../constants';
+import { FeeConfig } from '../constants';
 import { Message } from 'ui/components/transactions/BaseTransaction';
 import { AssetDetail } from 'ui/services/Background';
 import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { SPONSORED_FEE_TX_TYPES } from './constants';
 
-export function convertFeeToAsset(fee: Money, asset: Asset) {
+export function convertFeeToAsset(
+  fee: Money,
+  asset: Asset,
+  feeConfig: FeeConfig
+) {
   const minSponsoredFee = (asset: Asset) =>
     asset.id === 'WAVES'
-      ? DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee
+      ? feeConfig.calculate_fee_rules.default.fee
       : asset.minSponsoredFee;
 
   return new Money(
@@ -29,23 +33,33 @@ export function convertFeeToAsset(fee: Money, asset: Asset) {
 export function getFeeOptions({
   assets,
   balance,
+  feeConfig,
   initialFee,
   txType,
   usdPrices,
 }: {
   assets: Record<string, AssetDetail>;
   balance: AccountBalance;
+  feeConfig: FeeConfig;
   initialFee: Money;
   txType: number;
   usdPrices: Record<string, string>;
 }) {
-  const feeInWaves = convertFeeToAsset(initialFee, new Asset(assets['WAVES']));
+  const feeInWaves = convertFeeToAsset(
+    initialFee,
+    new Asset(assets['WAVES']),
+    feeConfig
+  );
 
   return SPONSORED_FEE_TX_TYPES.includes(txType)
     ? Object.entries(balance.assets || {})
         .map(([assetId, assetBalance]) => ({
           assetBalance,
-          money: convertFeeToAsset(initialFee, new Asset(assets[assetId])),
+          money: convertFeeToAsset(
+            initialFee,
+            new Asset(assets[assetId]),
+            feeConfig
+          ),
         }))
         .filter(
           ({ assetBalance, money }) =>

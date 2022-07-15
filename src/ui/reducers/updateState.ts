@@ -7,6 +7,7 @@ import { Nft } from 'nfts/utils';
 import { Message } from 'ui/components/transactions/BaseTransaction';
 
 export * from './localState';
+export * from './feeConfig';
 export * from './remoteConfig';
 export * from './notifications';
 

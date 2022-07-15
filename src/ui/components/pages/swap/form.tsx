@@ -125,6 +125,8 @@ export function SwapForm({
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 
+  const feeConfig = useAppSelector(state => state.feeConfig);
+
   const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
 
   const feeOptions = useFeeOptions({
@@ -300,7 +302,7 @@ export function SwapForm({
   }, [swapClient, swapParams, t, toAsset]);
 
   const sponsoredAssetFee = accountBalance.assets[feeAssetId]
-    ? convertFeeToAsset(wavesFee, feeAsset)
+    ? convertFeeToAsset(wavesFee, feeAsset, feeConfig)
     : null;
 
   const balanceErrorMessage =
@@ -485,7 +487,8 @@ export function SwapForm({
               ) {
                 const fee = convertFeeToAsset(
                   wavesFee,
-                  new Asset(assets[feeAssetId])
+                  new Asset(assets[feeAssetId]),
+                  feeConfig
                 );
 
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);

@@ -15,11 +15,13 @@ export function useFeeOptions({
     state => state.balances[state.selectedAccount.address]
   );
 
+  const feeConfig = useAppSelector(state => state.feeConfig);
   const usdPrices = useAppSelector(state => state.usdPrices);
 
   return getFeeOptions({
     assets,
     balance,
+    feeConfig,
     initialFee,
     txType,
     usdPrices,

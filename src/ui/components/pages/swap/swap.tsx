@@ -27,6 +27,7 @@ export function Swap({ setTab }: Props) {
   const dispatch = useAppDispatch();
   const selectedAccount = useAppSelector(state => state.selectedAccount);
   const currentNetwork = useAppSelector(state => state.currentNetwork);
+  const feeConfig = useAppSelector(state => state.feeConfig);
 
   const initialStateFromRedux = useAppSelector(
     state => state.localState.swapScreenInitialState
@@ -49,20 +50,26 @@ export function Swap({ setTab }: Props) {
   const [swapErrorMessage, setSwapErrorMessage] = React.useState<string | null>(
     null
   );
-  const [wavesFeeCoins, setWavesFeeCoins] = React.useState<number | null>(null);
+
+  const rules = feeConfig.calculate_fee_rules;
+
+  const minimumFee = rules[TRANSACTION_TYPE.INVOKE_SCRIPT]
+    ? rules[TRANSACTION_TYPE.INVOKE_SCRIPT].fee
+    : rules.default.fee;
+
+  const [wavesFeeCoins, setWavesFeeCoins] = React.useState(minimumFee);
 
   React.useEffect(() => {
     let cancelled = false;
     let timeout: number;
 
-    Promise.all([
-      background.getMinimumFee(TRANSACTION_TYPE.INVOKE_SCRIPT),
-      background.getExtraFee(selectedAccount.address, currentNetwork),
-    ]).then(([feeMinimum, feeExtra]) => {
-      if (!cancelled) {
-        setWavesFeeCoins(feeMinimum + feeExtra);
-      }
-    });
+    background
+      .getExtraFee(selectedAccount.address, currentNetwork)
+      .then(feeExtra => {
+        if (!cancelled) {
+          setWavesFeeCoins(minimumFee + feeExtra);
+        }
+      });
 
     return () => {
       cancelled = true;
@@ -71,7 +78,7 @@ export function Swap({ setTab }: Props) {
         window.clearTimeout(timeout);
       }
     };
-  }, [currentNetwork, selectedAccount.address]);
+  }, [currentNetwork, minimumFee, selectedAccount.address]);
 
   const assets = useAppSelector(state => state.assets);
 
@@ -111,11 +118,7 @@ export function Swap({ setTab }: Props) {
 
   const swappableAssets = swappableAssetEntries.map(([, asset]) => asset);
 
-  if (
-    wavesFeeCoins == null ||
-    !accountBalance?.assets ||
-    swappableAssets.some(asset => asset == null)
-  ) {
+  if (!accountBalance?.assets || swappableAssets.some(asset => asset == null)) {
     return <div className={styles.loader} />;
   }
 
@@ -148,7 +151,11 @@ export function Swap({ setTab }: Props) {
         setIsSwapInProgress(true);
 
         const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
-        const fee = convertFeeToAsset(wavesFee, new Asset(assets[feeAssetId]));
+        const fee = convertFeeToAsset(
+          wavesFee,
+          new Asset(assets[feeAssetId]),
+          feeConfig
+        );
 
         try {
           const swapResult = await background.swapAssets({
