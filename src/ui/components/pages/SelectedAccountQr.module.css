@@ -1,16 +1,16 @@
 .content {
   margin: 64px 24px;
-  border-radius: 4px;
-  background: var(--color-basic50);
   padding: 24px 14px;
   text-align: center;
+  background: var(--color-basic50);
+  border-radius: 4px;
 }
 
 .downloadQr {
   margin-top: 24px;
   padding: 0 14px 0 36px;
-  background-image: url(../../assets/img/download-14-white.svg);
-  background-position: 14px center;
-  background-repeat: no-repeat;
   line-height: 32px;
+  background-image: url(../../assets/img/download-14-white.svg);
+  background-repeat: no-repeat;
+  background-position: 14px center;
 }
