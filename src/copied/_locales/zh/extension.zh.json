@@ -269,7 +269,6 @@
     "addAccount": "增加账户",
     "addAnotherAccount": "增加其他账户",
     "additionSuccess": "您的账户 '{{ name }}' 添加成功",
-    "beta": "测试版",
     "createNew": "创建新账户",
     "finish": "完成",
     "importVia": "或导入",

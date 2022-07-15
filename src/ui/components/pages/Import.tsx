@@ -266,9 +266,6 @@ export function Import({ setTab }: Props) {
                   </svg>
 
                   {t('import.viaEmail')}
-                  <div className={styles.importButtonBadge}>
-                    {t('import.beta')}
-                  </div>
                 </Button>
               </div>
             )}

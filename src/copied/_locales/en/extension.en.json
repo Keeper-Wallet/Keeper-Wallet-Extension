@@ -279,7 +279,6 @@
     "type": "Transaction Type"
   },
   "import": {
-    "beta": "beta",
     "noAccounts": "There are no accounts in selected <strong>{{currentNetwork}}</strong> network profile",
     "addAccount": "Add account",
     "addAnotherAccount": "Add another account",
