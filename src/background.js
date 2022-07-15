@@ -400,6 +400,9 @@ class BackgroundService extends EventEmitter {
       ),
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       getPackConfig: () => this.remoteConfigController.getPackConfig(),
+      getAccountBalance: this.currentAccountController.getAccountBalance.bind(
+        this.currentAccountController
+      ),
     });
 
     // Notifications

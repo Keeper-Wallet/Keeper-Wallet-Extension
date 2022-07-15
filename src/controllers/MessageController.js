@@ -15,7 +15,13 @@ import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
+import {
+  getFeeOptions,
+  getSpendingAmountsForSponsorableTx,
+  isEnoughBalanceForFeeAndSpendingAmounts,
+} from '../fee/utils';
 import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
+import { getMoney } from '../ui/utils/converters';
 import { getTxVersions } from '../wallets';
 
 const { stringify } = create({ BigNumber });
@@ -40,6 +46,7 @@ export class MessageController extends EventEmitter {
     txInfo,
     setPermission,
     canAutoApprove,
+    getAccountBalance,
   }) {
     super();
 
@@ -78,6 +85,7 @@ export class MessageController extends EventEmitter {
     this.canAutoApprove = canAutoApprove;
 
     this.getFee = calculateFeeFabric(assetInfoController, networkController);
+    this.getAccountBalance = getAccountBalance;
 
     this.rejectAllByTime();
     extension.alarms.onAlarm.addListener(({ name }) => {
@@ -582,19 +590,12 @@ export class MessageController extends EventEmitter {
       ext_uuid: options && options.uid,
       status: MSG_STATUSES.UNAPPROVED,
     };
-    return await this._validateAndTransform(message);
-  }
 
-  async _validateAndTransform(message) {
     const result = { ...message };
 
     if (message.data && message.data.successPath) {
       result.successPath = message.data.successPath;
     }
-
-    const hasFee =
-      message.data.data &&
-      (message.data.data.fee || message.data.data.matcherFee);
 
     switch (message.type) {
       case 'wavesAuth':
@@ -658,32 +659,29 @@ export class MessageController extends EventEmitter {
           this._validateTx(txParams, message.account);
           const data = this._prepareTx(txParams.data, message.account);
 
-          const feeData = !txParams.data.fee
-            ? await this._getFee(message, { ...txParams, data })
-            : {};
+          const fee =
+            txParams.data.fee ||
+            (await this._getDefaultTxFee(message, { ...txParams, data }));
 
-          const readyData = await this._transformData({
-            ...txParams,
-            data: { ...data, ...feeData },
-          });
+          const readyData = { ...txParams, data: { ...data, fee } };
 
           const id = getHash.transaction(
             makeBytes.transaction(
               convertFromSa.transaction(
-                readyData,
+                await this._transformData(clone(readyData)),
                 this.networkController.getNetworkCode().charCodeAt(0),
                 message.account.type
               )
             )
           );
+
           ids.push(id);
           readyData.id = id;
-          if (readyData.data.amount instanceof Money) {
-            readyData.data.amount = readyData.data.amount.toJSON();
-          }
+
           if (txParams.type === 9 && txParams.data.leaseId) {
             readyData.data.lease = await this.txInfo(txParams.data.leaseId);
           }
+
           return readyData;
         });
         result.data = await Promise.all(dataPromises);
@@ -698,14 +696,14 @@ export class MessageController extends EventEmitter {
           message.account
         );
 
-        const matcherFeeData = !hasFee
-          ? await this._getFee(message, result.data)
-          : {};
+        const matcherFee =
+          message.data.data?.matcherFee ||
+          (await this._getFee(message, result.data));
 
         const filledMessage = await this._fillSignableData(clone(result));
         const convertedData = convertFromSa.order(filledMessage.data);
 
-        result.data.data = { ...result.data.data, ...matcherFeeData };
+        result.data.data = { ...result.data.data, matcherFee };
         result.messageHash = getHash.order(makeBytes.order(convertedData));
 
         result.json = stringify(
@@ -729,9 +727,11 @@ export class MessageController extends EventEmitter {
         this._validateTx(result.data, message.account);
         result.data.data = this._prepareTx(result.data.data, message.account);
 
-        const feeData = !hasFee ? await this._getFee(message, result.data) : {};
+        const fee =
+          message.data.data?.fee ||
+          (await this._getDefaultTxFee(message, result.data));
 
-        result.data.data = { ...result.data.data, ...feeData };
+        result.data.data = { ...result.data.data, fee };
         result.data.data.initialFee = result.data.data.initialFee || {
           ...result.data.data.fee,
         };
@@ -810,16 +810,55 @@ export class MessageController extends EventEmitter {
     const signableData = await this._transformData({ ...signData });
     const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
-    const fee = {
+    return {
       coins: (
         await this.getFee(signableData, chainId, message.account)
       ).toString(),
       assetId: 'WAVES',
     };
-    return {
-      fee,
-      matcherFee: fee,
-    };
+  }
+
+  async _getDefaultTxFee(message, signData) {
+    let fee = await this._getFee(message, signData);
+
+    const assets = this.assetInfoController.getAssets();
+    const balance = this.getAccountBalance();
+    const feeMoney = getMoney(fee, assets);
+
+    const spendingAmounts = getSpendingAmountsForSponsorableTx({
+      assets,
+      message,
+    });
+
+    if (
+      !isEnoughBalanceForFeeAndSpendingAmounts({
+        assetBalance: balance.assets[feeMoney.asset.id],
+        fee: feeMoney,
+        spendingAmounts,
+      })
+    ) {
+      const feeOptions = getFeeOptions({
+        assets,
+        balance,
+        initialFee: feeMoney,
+        txType: message.data.type,
+        usdPrices: this.assetInfoController.getUsdPrices(),
+      });
+
+      const feeOption = feeOptions.find(({ assetBalance, money }) =>
+        isEnoughBalanceForFeeAndSpendingAmounts({
+          assetBalance,
+          fee: money,
+          spendingAmounts,
+        })
+      );
+
+      if (feeOption) {
+        fee = feeOption.money.toJSON();
+      }
+    }
+
+    return fee;
   }
 
   _getMoneyLikeValue(moneyLike) {
@@ -941,19 +980,12 @@ export class MessageController extends EventEmitter {
   }
 
   _prepareTx(txParams, account) {
-    const defaultFee = Money.fromCoins(
-      0,
-      new Asset(this.assetInfoController.getWavesAsset())
-    ).toJSON();
-
-    const txDefaults = {
+    return {
       timestamp: Date.now(),
       senderPublicKey: account.publicKey,
       chainId: networkByteFromAddress(account.address).charCodeAt(0),
-      fee: defaultFee,
-      matcherFee: defaultFee,
+      ...txParams,
     };
-    return { ...txDefaults, ...txParams };
   }
 
   _validateOrder(order) {

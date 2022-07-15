@@ -256,6 +256,10 @@ export class AssetInfoController {
     return this.store.getState().assets[this.getNetwork()];
   }
 
+  getUsdPrices() {
+    return this.store.getState().usdPrices;
+  }
+
   isMaxAgeExceeded(lastUpdated) {
     return new Date() - new Date(lastUpdated || 0) > MAX_AGE;
   }

@@ -31,6 +31,7 @@ export interface Message {
   lease?: unknown;
   broadcast?: boolean;
   title?: string;
+  json?: string;
 }
 
 export interface ComponentProps extends WithTranslation {
