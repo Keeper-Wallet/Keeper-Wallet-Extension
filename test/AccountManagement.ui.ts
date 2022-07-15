@@ -106,14 +106,12 @@ describe('Account management', function () {
           )
           .click();
 
-        expect(
-          await this.driver.wait(
-            until.elementLocated(
-              By.xpath("//div[contains(@class, '-selectedAccountQr')]")
-            ),
-            this.wait
-          )
-        ).not.to.be.throw;
+        await this.driver.wait(
+          until.elementLocated(
+            By.css('[class^="-SelectedAccountQr-module-content"]')
+          ),
+          this.wait
+        );
       });
 
       it('Check that QR matches the displayed address');
