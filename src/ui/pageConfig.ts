@@ -22,7 +22,7 @@ import {
   NewWalletName,
   Notifications,
   PermissionsSettings,
-  QRCodeSelectedAccount,
+  SelectedAccountQr,
   SelectTxAccount,
   Settings,
   SettingsGeneral,
@@ -428,7 +428,7 @@ export const PAGES_CONF = {
     },
   },
   [PAGES.QR_CODE_SELECTED]: {
-    component: QRCodeSelectedAccount,
+    component: SelectedAccountQr,
     bottom: {
       hide: true,
     },
