@@ -91,7 +91,6 @@ describe('Network management', function () {
     });
 
     describe('Custom', function () {
-      const validNodeUrl = 'https://nodes.wavesnodes.com';
       const invalidNodeUrl = 'https://nodes.invalid.com';
       const customNetwork = 'Custom';
 
@@ -109,7 +108,7 @@ describe('Network management', function () {
             this.wait
           )
           .findElement(By.css('input#node_address'))
-          .sendKeys(validNodeUrl);
+          .sendKeys(this.nodeUrl);
 
         await this.driver
           .findElement(By.css('button#networkSettingsSave'))
@@ -185,7 +184,7 @@ describe('Network management', function () {
         });
 
         it('Matcher address is not required field', async function () {
-          await nodeAddressInput.sendKeys(validNodeUrl);
+          await nodeAddressInput.sendKeys(this.nodeUrl);
           await saveAndApplyBtn.click();
           await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
