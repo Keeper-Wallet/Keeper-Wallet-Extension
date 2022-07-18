@@ -134,12 +134,6 @@ export function SwapForm({
     txType: TRANSACTION_TYPE.INVOKE_SCRIPT,
   });
 
-  const finalFeeOptions = [...feeOptions.map(({ money }) => money)];
-
-  if (finalFeeOptions.length === 0) {
-    finalFeeOptions.push(wavesFee);
-  }
-
   const [{ fromAssetId, toAssetId }, setAssetIds] = React.useState({
     fromAssetId: initialFromAssetId,
     toAssetId: initialToAssetId,
@@ -147,10 +141,10 @@ export function SwapForm({
 
   const [feeAssetId, setFeeAssetId] = React.useState(() => {
     const defaultOption =
-      finalFeeOptions.find(money => money.asset.id === 'WAVES') ||
-      finalFeeOptions[0];
+      feeOptions.find(option => option.money.asset.id === 'WAVES') ||
+      feeOptions[0];
 
-    return defaultOption.asset.id;
+    return defaultOption.money.asset.id;
   });
 
   const fromAsset = React.useMemo(
@@ -171,6 +165,27 @@ export function SwapForm({
 
   const [fromAmountValue, setFromAmountValue] = React.useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
+
+  const finalFeeOptions = feeOptions
+    .filter(option => {
+      if (
+        option.money.asset.id !== fromAssetId ||
+        option.money.asset.id === feeAssetId
+      ) {
+        return true;
+      }
+
+      const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+      return new BigNumber(option.assetBalance.balance).gte(
+        fromAmount.getCoins().add(option.money.getCoins())
+      );
+    })
+    .map(({ money }) => money);
+
+  if (finalFeeOptions.length === 0) {
+    finalFeeOptions.push(wavesFee);
+  }
 
   const [swapVendor, setSwapVendor] = React.useState(SwapVendor.Keeper);
   const [swapVendorTouched, setSwapVendorTouched] = React.useState(false);
