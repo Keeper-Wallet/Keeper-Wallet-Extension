@@ -3,7 +3,11 @@ import * as chrome from 'selenium-webdriver/chrome';
 import * as net from 'net';
 import * as mocha from 'mocha';
 import * as path from 'path';
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import {
+  GenericContainer,
+  Network,
+  StartedTestContainer,
+} from 'testcontainers';
 import { App } from './actions';
 
 declare global {
@@ -21,6 +25,7 @@ declare module 'mocha' {
     driver: WebDriver;
     extensionUrl: string;
     extensionPanel: string;
+    nodeUrl: string;
     wait: number;
   }
 }
@@ -33,10 +38,19 @@ declare module 'selenium-webdriver' {
 
 interface GlobalFixturesContext {
   selenium: StartedTestContainer;
+  node: StartedTestContainer;
 }
 
 export async function mochaGlobalSetup(this: GlobalFixturesContext) {
   const exposedPorts = [4444, 5900];
+
+  const host = await new Network().start();
+
+  this.node = await new GenericContainer('wavesplatform/waves-private-node')
+    .withExposedPorts(6869)
+    .withNetworkMode(host.getName())
+    .withNetworkAliases('waves-private-node')
+    .start();
 
   this.selenium = await new GenericContainer('selenium/standalone-chrome')
     .withBindMount(
@@ -50,6 +64,7 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
       'ro'
     )
     .withExposedPorts(...exposedPorts)
+    .withNetworkMode(host.getName())
     .start();
 
   await Promise.all(
@@ -80,6 +95,7 @@ export async function mochaGlobalSetup(this: GlobalFixturesContext) {
 
 export async function mochaGlobalTeardown(this: GlobalFixturesContext) {
   await this.selenium.stop();
+  await this.node.stop();
 }
 
 export const mochaHooks = () => ({
@@ -93,7 +109,8 @@ export const mochaHooks = () => ({
       .setChromeOptions(
         new chrome.Options().addArguments(
           '--load-extension=/app/dist/chrome',
-          '--disable-dev-shm-usage'
+          '--disable-dev-shm-usage',
+          '--disable-web-security'
         )
       )
       .build();
@@ -109,6 +126,7 @@ export const mochaHooks = () => ({
       if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
         this.extensionUrl = `chrome-extension://${id}/popup.html`;
         this.extensionPanel = `chrome://extensions/?id=${id}`;
+        this.nodeUrl = 'http://waves-private-node:6869';
         break;
       }
     }
