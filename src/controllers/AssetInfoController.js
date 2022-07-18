@@ -24,7 +24,7 @@ const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_PERIOD_IN_MINUTES = 10;
 
-const STATIC_SERVICE_URL = 'https://static.keeper-wallet.app/';
+const STATIC_SERVICE_URL = 'https://api.keeper-wallet.app/';
 const INFO_PERIOD_IN_MINUTES = 240;
 
 const stablecoinAssetIds = new Set([
