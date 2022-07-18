@@ -1,3 +1,4 @@
+import { Message } from 'ui/components/transactions/BaseTransaction';
 import { ACTION } from '../actions';
 
 const createSimpleReducer =
@@ -30,32 +31,60 @@ export const activeNotification = (store = null, { type, payload }) => {
   return store;
 };
 
-export const activePopup = (store = null, { type, payload }) => {
-  switch (type) {
+interface ActivePopupState {
+  msg: Message;
+  notify: unknown;
+}
+
+export const activePopup = (
+  state: ActivePopupState | null = null,
+  action:
+    | {
+        type: typeof ACTION.MESSAGES.SET_ACTIVE_AUTO;
+        payload: {
+          allMessages: Message[];
+          messages: Message[];
+          notifications: unknown[];
+        };
+      }
+    | {
+        type: typeof ACTION.MESSAGES.UPDATE_ACTIVE;
+        payload: null;
+      }
+    | {
+        type: typeof ACTION.MESSAGES.SET_ACTIVE_MESSAGE;
+        payload: Message;
+      }
+    | {
+        type: typeof ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION;
+        payload: unknown;
+      }
+): ActivePopupState | null => {
+  switch (action.type) {
     case ACTION.MESSAGES.SET_ACTIVE_AUTO:
       return getActiveFromState(
-        store,
-        payload.messages,
-        payload.allMessages,
-        payload.notifications
+        state,
+        action.payload.messages,
+        action.payload.allMessages,
+        action.payload.notifications
       );
     case ACTION.MESSAGES.UPDATE_ACTIVE:
-      return payload;
+      return action.payload;
     case ACTION.MESSAGES.SET_ACTIVE_MESSAGE:
-      return { notify: null, msg: payload };
+      return { notify: null, msg: action.payload };
     case ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION:
-      return { msg: null, notify: payload };
+      return { msg: null, notify: action.payload };
+    default:
+      return state;
   }
-
-  return store;
 };
 
 const getActiveFromState = (
-  state,
-  messages = [],
-  allMessages = [],
-  notifications = []
-) => {
+  state: ActivePopupState | null,
+  messages: Message[] = [],
+  allMessages: Message[] = [],
+  notifications: unknown[] = []
+): ActivePopupState | null => {
   // Can activeMessage
   if (state != null && (state.msg || state.notify)) {
     // Update from messages

@@ -13,6 +13,7 @@ import { Message, TxHeader } from '../BaseTransaction';
 import { Account } from 'accounts/types';
 import { AssetDetail } from 'ui/services/Background';
 import { ComponentConfig } from 'ui/components/transactions/index';
+import { TransactionStatusState } from 'ui/reducers/localState';
 
 const Error = ({ approveError }: { approveError: { error: unknown } }) => {
   const { t } = useTranslation();
@@ -32,11 +33,7 @@ const Error = ({ approveError }: { approveError: { error: unknown } }) => {
 };
 
 interface Props extends WithTranslation {
-  transactionStatus: {
-    approveOk: boolean;
-    approveError: boolean;
-    rejectOk: boolean;
-  };
+  transactionStatus: TransactionStatusState;
   selectedAccount: Account;
   messages: Message[];
   notifications: unknown[];

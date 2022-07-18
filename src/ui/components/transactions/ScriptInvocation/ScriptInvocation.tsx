@@ -11,7 +11,6 @@ import {
 } from '../BaseTransaction';
 
 export function ScriptInvocation(props: ComponentProps) {
-  const { sponsoredBalance } = props;
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />
@@ -24,7 +23,7 @@ export function ScriptInvocation(props: ComponentProps) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo sponsoredBalance={sponsoredBalance} />
+          <TxInfo />
         </TxDetailTabs>
       </div>
 

@@ -4,7 +4,7 @@ import * as styles from './Select.module.css';
 
 type TText = string | React.ReactNode;
 
-interface SelectItem<T> {
+export interface SelectItem<T> {
   id: string | number;
   text: TText;
   value: T;

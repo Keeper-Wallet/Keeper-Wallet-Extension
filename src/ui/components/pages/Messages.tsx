@@ -1,74 +1,105 @@
+import { Money } from '@waves/data-entities';
+import { Account } from 'accounts/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
+  AccountBalance,
+  TransactionStatusState,
+} from 'ui/reducers/updateState';
+import { AssetDetail } from 'ui/services/Background';
+import { AppState } from 'ui/store';
+import {
   approve,
-  clearMessages,
   clearMessagesStatus,
   closeNotificationWindow,
   getAsset,
   reject,
   rejectForever,
-  setActiveMessage,
   setAutoOrigin,
   setShowNotification,
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
-import { Money } from '@waves/data-entities';
-import { Intro } from './Intro';
 import {
   ComponentConfig,
   FinalTransaction,
   getConfigByTransaction,
 } from '../transactions';
-import { BalanceAssets, Message } from '../transactions/BaseTransaction';
-import { DEFAULT_FEE_CONFIG } from '../../../constants';
-import { Account } from 'accounts/types';
-import { AssetDetail } from 'ui/services/Background';
+import { Message } from '../transactions/BaseTransaction';
+import { Intro } from './Intro';
 
-interface Props {
-  autoClickProtection?: boolean;
-  balance: unknown;
-  selectedAccount: Account;
-  assets: Record<string, AssetDetail>;
-  activeMessage: unknown;
-  messages: unknown[];
-  notifications: unknown[];
-  transactionStatus: string;
-  getAsset: (assetId: string) => void;
-  setTab: (tab: string) => void;
-  setAutoOrigin: (permissions: unknown) => void;
-  setShowNotification: (permissions: unknown) => void;
-  closeNotificationWindow: () => void;
-  approve: (id: string) => void;
-  reject: (id: string) => void;
-  rejectForever: (id: string) => void;
-  clearMessagesStatus: (perform: boolean) => void;
-}
-
-interface State {
-  transactionStatus: {
-    approveOk: boolean;
-    approveError: boolean;
-    rejectOk: boolean;
-  };
-  selectedAccount: Account;
+interface StateProps {
   activeMessage: Message;
-  config: ComponentConfig;
-  txHash: string;
-  sponsoredBalance: BalanceAssets;
   assets: Record<string, AssetDetail>;
+  autoClickProtection?: boolean;
+  balance: AccountBalance;
   messages: Message[];
   notifications: unknown[];
-  loading: boolean;
+  selectedAccount: Account;
+  transactionStatus: TransactionStatusState;
+}
+
+const mapStateToProps = function (state: AppState): StateProps {
+  return {
+    activeMessage: state.activePopup && state.activePopup.msg,
+    assets: state.assets,
+    autoClickProtection: state.uiState && state.uiState.autoClickProtection,
+    balance: state.balances[state.selectedAccount.address],
+    messages: state.messages,
+    notifications: state.notifications,
+    selectedAccount: state.selectedAccount,
+    transactionStatus: state.localState.transactionStatus,
+  };
+};
+
+const actions = {
+  approve,
+  clearMessagesStatus,
+  closeNotificationWindow,
+  getAsset,
+  reject,
+  rejectForever,
+  setAutoOrigin,
+  setShowNotification,
+};
+
+interface DispatchProps {
+  approve: (id: string) => void;
+  clearMessagesStatus: (perform: boolean) => void;
+  closeNotificationWindow: () => void;
+  getAsset: (assetId: string) => void;
+  reject: (id: string) => void;
+  rejectForever: (id: string) => void;
+  setAutoOrigin: (permissions: unknown) => void;
+  setShowNotification: (permissions: unknown) => void;
+}
+
+interface OwnProps {
+  setTab: (tab: string) => void;
+}
+
+type Props = OwnProps & StateProps & DispatchProps;
+
+interface State {
+  activeMessage: Message;
   approvePending: boolean;
+  assets: Record<string, AssetDetail>;
+  config: ComponentConfig;
+  loading: boolean;
+  messages: Message[];
+  notifications: unknown[];
+  selectedAccount: Account;
+  transactionStatus: TransactionStatusState;
+  txHash: string;
 }
 
 class MessagesComponent extends React.Component<Props, State> {
   readonly state = {} as State;
-  readonly props;
   hasApproved: boolean;
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State
+  ): Partial<State> | null {
     const {
       balance,
       selectedAccount,
@@ -76,43 +107,29 @@ class MessagesComponent extends React.Component<Props, State> {
       activeMessage,
       messages,
       notifications,
-    } = props;
+    } = nextProps;
     let loading = true;
 
     if (!assets || !assets['WAVES'] || !balance) {
-      props.getAsset('WAVES');
+      nextProps.getAsset('WAVES');
       return { loading: true, selectedAccount };
     }
 
-    const sponsoredBalance: BalanceAssets = Object.fromEntries(
-      Object.entries({
-        WAVES: {
-          balance: balance.available,
-          minSponsoredAssetFee:
-            DEFAULT_FEE_CONFIG.calculate_fee_rules.default.fee,
-          sponsorBalance: balance.available,
-        },
-        ...balance.assets,
-      } as BalanceAssets).filter(
-        ([, assetBalance]) => assetBalance.minSponsoredAssetFee != null
-      )
-    );
-
-    const { transactionStatus } = props;
+    const { transactionStatus } = nextProps;
     const isExistMsg =
       activeMessage &&
-      state.activeMessage &&
-      activeMessage.id === state.activeMessage.id;
+      prevState.activeMessage &&
+      activeMessage.id === prevState.activeMessage.id;
 
     if (isExistMsg) {
       loading = false;
       return {
-        selectedAccount,
         assets,
-        transactionStatus,
         loading,
         messages,
         notifications,
+        selectedAccount,
+        transactionStatus,
       };
     }
 
@@ -125,7 +142,7 @@ class MessagesComponent extends React.Component<Props, State> {
 
     const nextAssetId = needGetAssets.values().next().value;
     if (nextAssetId) {
-      props.getAsset(nextAssetId);
+      nextProps.getAsset(nextAssetId);
       return { loading, selectedAccount };
     }
 
@@ -138,7 +155,6 @@ class MessagesComponent extends React.Component<Props, State> {
       activeMessage,
       config,
       txHash,
-      sponsoredBalance,
       assets,
       messages,
       notifications,
@@ -244,14 +260,8 @@ class MessagesComponent extends React.Component<Props, State> {
       );
     }
 
-    const {
-      activeMessage,
-      assets,
-      approvePending,
-      txHash,
-      sponsoredBalance,
-      selectedAccount,
-    } = this.state;
+    const { activeMessage, assets, approvePending, txHash, selectedAccount } =
+      this.state;
     const conf = getConfigByTransaction(activeMessage);
     const { message: Component, type } = conf;
 
@@ -262,7 +272,6 @@ class MessagesComponent extends React.Component<Props, State> {
         pending={approvePending}
         txHash={txHash}
         assets={assets}
-        sponsoredBalance={sponsoredBalance}
         message={activeMessage}
         selectedAccount={selectedAccount}
         onClose={this.closeHandler}
@@ -322,31 +331,5 @@ class MessagesComponent extends React.Component<Props, State> {
     this.hasApproved = false;
   }
 }
-
-const mapStateToProps = function (store) {
-  return {
-    autoClickProtection: store.uiState && store.uiState.autoClickProtection,
-    transactionStatus: store.localState.transactionStatus,
-    balance: store.balances[store.selectedAccount.address],
-    selectedAccount: store.selectedAccount,
-    activeMessage: store.activePopup && store.activePopup.msg,
-    assets: store.assets,
-    messages: store.messages,
-    notifications: store.notifications,
-  };
-};
-
-const actions = {
-  setShowNotification,
-  closeNotificationWindow,
-  clearMessagesStatus,
-  setActiveMessage,
-  setAutoOrigin,
-  clearMessages,
-  getAsset,
-  approve,
-  reject,
-  rejectForever,
-};
 
 export const Messages = connect(mapStateToProps, actions)(MessagesComponent);

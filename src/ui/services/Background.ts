@@ -553,16 +553,6 @@ class Background {
     }
   }
 
-  async getMinimumFee(txType: number): Promise<number> {
-    try {
-      await this.initPromise;
-      await this._connect();
-      return await this.background.getMinimumFee(txType);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async getExtraFee(address: string, network: string): Promise<number> {
     try {
       await this.initPromise;
