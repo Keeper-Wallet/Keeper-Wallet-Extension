@@ -466,11 +466,6 @@
     "noAccountsFound": "Tidak ada akun lain yang ditemukan untuk filter yang ditentukan",
     "title": "Akun lain"
   },
-  "pairing": {
-    "appInfo": "Unduh aplikasi mobile kami di bawah ini:",
-    "scanInfo": "Pindai kode di bawah ini dengan perangkat iPhone atau Android Anda untuk memasangkannya dengan akun Anda.",
-    "scanPairing": "Pindai Kode Penyandingan"
-  },
   "permission": {
     "customList": "Daftar kustom",
     "whiteList": "White list"

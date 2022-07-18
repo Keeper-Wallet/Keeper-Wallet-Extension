@@ -457,11 +457,6 @@
     "noAccountsFound": "指定されたフィルターに合致するアカウントは見つかりませんでした。",
     "title": "他のアカウント"
   },
-  "pairing": {
-    "appInfo": "モバイルアプリは以下からダウンロードできます。",
-    "scanInfo": "iPhoneまたはAndroid端末で以下のコードを読み取り、アカウントとペアリングしてください。",
-    "scanPairing": "ペアリングコードをスキャン"
-  },
   "permission": {
     "customList": "カスタムリスト",
     "whiteList": "ホワイトリスト"

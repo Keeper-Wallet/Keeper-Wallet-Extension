@@ -457,11 +457,6 @@
     "noAccountsFound": "Belirtilen filtreler için başka hesap bulunamadı",
     "title": "Diğer hesaplar"
   },
-  "pairing": {
-    "appInfo": "Aşağıdan mobil uygulamalarımızı indirin:",
-    "scanInfo": "Hesabınızla eşleştirmek için aşağıdaki kodu iPhone veya Android cihazınızla tarayın.",
-    "scanPairing": "Eşleme Kodunu Tarayın"
-  },
   "permission": { "customList": "Özel Liste", "whiteList": "Whitelist" },
   "permissionSettings": {
     "modal": {

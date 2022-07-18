@@ -1,86 +1,58 @@
+import * as QrCode from 'qrcode';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import * as styles from './styles/selectedAccountQr.styl';
-import { Button, Loader, QRCode } from '../ui';
-import { Account } from 'accounts/types';
-import { AppState } from 'ui/store';
+import { useTranslation } from 'react-i18next';
+import { useAppSelector } from 'ui/store';
+import { Button } from '../ui/buttons/Button';
+import { Loader } from '../ui/loader/Loader';
+import * as styles from './SelectedAccountQr.module.css';
 
-interface Props extends WithTranslation {
-  selectedAccount: Account;
-}
+export function SelectedAccountQr() {
+  const { t } = useTranslation();
+  const selectedAccount = useAppSelector(state => state.selectedAccount);
 
-class QRCodeSelectedAccountComponent extends React.PureComponent<Props> {
-  readonly props;
-  qrCode: QRCode;
-  getQrRef = qr => (this.qrCode = qr);
-  downloadHandler = () => this._download();
+  const address = selectedAccount?.address;
+  const name = selectedAccount?.name;
 
-  render() {
-    const { t } = this.props;
-    const account = this.props.selectedAccount;
-    const address = account?.address;
-    const name = account?.name;
+  const [qrSrc, setQrSrc] = React.useState<string | null>(null);
+  const qrSize = 200;
 
-    return (
-      <div className={`center ${styles.content}`}>
-        <div className="input-title fullwidth tag1">{name || <Loader />}</div>
-        <div className="tag1 basic500 margin-main">{address || <Loader />}</div>
+  React.useEffect(() => {
+    QrCode.toDataURL(address, {
+      errorCorrectionLevel: 'H',
+      margin: 1,
+      rendererOpts: { quality: 1 },
+      scale: 16,
+      type: 'image/png',
+      width: qrSize,
+    }).then(setQrSrc);
+  }, [address]);
 
-        <QRCode
-          ref={this.getQrRef}
-          width={200}
-          height={200}
-          scale={16}
-          quality={1}
-          margin={1}
-          type="image/png"
-          text={address}
+  return (
+    <div className={styles.content}>
+      <div className="input-title fullwidth tag1">{name || <Loader />}</div>
+      <div className="tag1 basic500 margin-main">{address || <Loader />}</div>
+
+      <div>
+        <img
+          className={qrSrc ? undefined : 'skeleton-glow'}
+          src={qrSrc}
+          width={qrSize}
+          height={qrSize}
         />
-
-        <Button
-          type="submit"
-          view="submitTiny"
-          className={`${styles.downloadQr}`}
-          onClick={this.downloadHandler}
-        >
-          <div>{t('qrCode.download')}</div>
-        </Button>
       </div>
-    );
-  }
 
-  _download() {
-    const data = this.qrCode.getImg();
-    const name = `${this.props.selectedAccount.address}.png`;
-
-    const link = document.createElement('a');
-    link.setAttribute('href', data);
-    link.setAttribute('download', name);
-    link.setAttribute('target', '_blank');
-    link.style.position = 'absolute';
-    link.style.opacity = '0';
-    document.body.appendChild(link);
-    link.click();
-    requestAnimationFrame(() => {
-      document.body.removeChild(link);
-    });
-  }
-}
-
-const mapStateToProps = function (store: AppState) {
-  const activeAccount = store.selectedAccount.address;
-  const selected = store.localState.assets?.account
-    ? store.localState.assets.account.address
-    : activeAccount;
-  const selectedAccount = store.accounts.find(
-    ({ address }) => address === selected
+      <Button
+        className={styles.downloadQr}
+        view="submitTiny"
+        onClick={() => {
+          const link = document.createElement('a');
+          link.setAttribute('href', qrSrc);
+          link.setAttribute('download', `${selectedAccount.address}.png`);
+          link.click();
+        }}
+      >
+        {t('qrCode.download')}
+      </Button>
+    </div>
   );
-  return {
-    selectedAccount,
-  };
-};
-
-export const QRCodeSelectedAccount = connect(mapStateToProps)(
-  withTranslation()(QRCodeSelectedAccountComponent)
-);
+}

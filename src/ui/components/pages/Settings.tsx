@@ -27,7 +27,6 @@ class SettingsComponent extends React.Component<Props> {
   permissionsHandler = () => this.props.setTab(PAGES.PERMISSIONS);
   passwordHandler = () => this.props.setTab(PAGES.CHANGE_PASSWORD);
   deleteHandler = () => this.props.setTab(PAGES.DELETE_ACCOUNT);
-  pairingHandler = () => this.props.setTab(PAGES.PAIRING);
   settingsGeneral = () => this.props.setTab(PAGES.GENERAL_SETTINGS);
   addressesHandler = () => this.props.setTab(PAGES.ADDRESS_BOOK);
   toggleAutoLockHandler = () => {

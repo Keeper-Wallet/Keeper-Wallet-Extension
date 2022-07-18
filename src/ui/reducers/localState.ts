@@ -5,7 +5,6 @@ import {
   setSwapScreenInitialState,
   setTabMode,
 } from '../actions';
-import { pairing } from './pairing';
 import { Account } from 'accounts/types';
 
 function newUser(state = {}, action) {
@@ -162,6 +161,5 @@ export const localState = combineReducers({
   assets,
   notifications,
   transactionStatus,
-  pairing,
   swapScreenInitialState,
 });
