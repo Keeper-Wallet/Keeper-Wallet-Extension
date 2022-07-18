@@ -26,10 +26,27 @@ const CONTROLLERS = [
   'VaultController',
 ];
 
+export async function backup() {
+  const { backup = {}, WalletController } = await extension.storage.local.get([
+    'backup',
+    'WalletController',
+  ]);
+
+  if (WalletController?.vault) {
+    await extension.storage.local.set({
+      backup: {
+        ...backup,
+        [WalletController.vault]: extension.runtime.getManifest().version,
+      },
+    });
+  }
+}
+
 const SAFE_FIELDS = new Set([
   'WalletController',
   'accounts',
   'addresses',
+  'backup',
   'lastIdleKeeper',
   'lastInstallKeeper',
   'lastOpenKeeper',
@@ -55,9 +72,13 @@ export default class ExtensionStore {
   async create() {
     await this._migrate();
 
-    this._state = { migrationVersion: CURRENT_MIGRATION_VERSION };
     this._initState = await this.get();
     this._initSession = await this.getSession();
+
+    this._state = {
+      migrationVersion: CURRENT_MIGRATION_VERSION,
+      backup: this._initState.backup,
+    };
   }
 
   getInitState(defaults?: Record<string, unknown>) {

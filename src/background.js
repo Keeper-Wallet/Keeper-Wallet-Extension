@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/KeeperError';
 import PortStream from 'lib/port-stream.js';
-import LocalStore from 'lib/localStore';
+import LocalStore, { backup } from 'lib/localStore';
 import { getFirstLangCode } from 'lib/get-first-lang-code';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import {
@@ -102,9 +102,15 @@ extension.runtime.onConnectExternal.addListener(async remotePort => {
 });
 
 extension.runtime.onInstalled.addListener(async details => {
+  const isUpdate =
+    details.reason === extension.runtime.OnInstalledReason.UPDATE;
+  if (isUpdate) {
+    await backup();
+  }
+
   const bgService = await bgPromise;
 
-  if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+  if (isUpdate) {
     await bgService.localStore.clear();
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
