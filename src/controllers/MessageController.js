@@ -523,9 +523,6 @@ export class MessageController extends EventEmitter {
           message.account.network
         );
         break;
-      case 'pairing':
-        signedData = { approved: 'OK' };
-        break;
       case 'authOrigin':
         signedData = { approved: 'OK' };
         this.setPermission(message.origin, PERMISSIONS.APPROVED);
@@ -789,15 +786,6 @@ export class MessageController extends EventEmitter {
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
         result.messageHash = customData(result.data, 'fake user').hash;
-        break;
-      case 'pairing':
-        if (
-          !(
-            typeof message.data.address === 'string' &&
-            typeof message.data.encryptedSeed === 'string'
-          )
-        )
-          throw new Error('Address and encryptedSeed are required for pairing');
         break;
       default:
         throw new Error(`Incorrect type "${message.type}"`);

@@ -466,11 +466,6 @@
     "noAccountsFound": "No se encontraron otras cuentas para los filtros especificados",
     "title": "Otras cuentas"
   },
-  "pairing": {
-    "appInfo": "Descarga nuestras aplicaciones móviles a continuación:",
-    "scanInfo": "Escanee el código a continuación con su dispositivo iPhone o Android para emparejarlo con su cuenta.",
-    "scanPairing": "Escanear código de emparejamiento"
-  },
   "permission": {
     "customList": "Lista personalizada",
     "whiteList": "lista blanca"
