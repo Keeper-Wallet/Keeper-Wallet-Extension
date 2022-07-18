@@ -1,8 +1,10 @@
+import { NftInfo } from 'nfts';
+import { equals } from 'ramda';
+import { Message } from 'ui/components/transactions/BaseTransaction';
+import { FeeConfig } from '../../constants';
+import { AssetDetail } from '../services/Background';
 import { UiStore } from '../store';
 import { ACTION } from './constants';
-import { equals } from 'ramda';
-import { AssetDetail } from '../services/Background';
-import { NftInfo } from 'nfts';
 
 function getParam<S>(param: S, defaultParam: S) {
   if (param) {
@@ -36,10 +38,11 @@ interface UpdateStateInput {
   customCodes?: unknown;
   customMatchers?: unknown;
   customNodes?: unknown;
+  feeConfig?: FeeConfig;
   idleOptions?: unknown;
   initialized: boolean;
   locked: boolean;
-  messages?: unknown[];
+  messages?: Message[];
   networks?: unknown[];
   myNotifications?: unknown[];
   origins?: unknown;
@@ -64,6 +67,13 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.REMOTE_CONFIG.SET_CONFIG,
         payload: config,
+      });
+    }
+
+    if (state.feeConfig && !equals(currentState.feeConfig, state.feeConfig)) {
+      store.dispatch({
+        type: ACTION.UPDATE_FEE_CONFIG,
+        payload: state.feeConfig,
       });
     }
 

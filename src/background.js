@@ -29,10 +29,7 @@ import {
 } from './controllers';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
-import {
-  getExtraFee,
-  getMinimumFee,
-} from './controllers/CalculateFeeController';
+import { getExtraFee } from './controllers/CalculateFeeController';
 import { setupDnode } from './lib/dnode-util';
 import { WindowManager } from './lib/WindowManager';
 import { verifyCustomData } from '@waves/waves-transactions';
@@ -400,6 +397,12 @@ class BackgroundService extends EventEmitter {
       ),
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       getPackConfig: () => this.remoteConfigController.getPackConfig(),
+      getAccountBalance: this.currentAccountController.getAccountBalance.bind(
+        this.currentAccountController
+      ),
+      getFeeConfig: this.remoteConfigController.getFeeConfig.bind(
+        this.remoteConfigController
+      ),
     });
 
     // Notifications
@@ -610,7 +613,6 @@ class BackgroundService extends EventEmitter {
       swapAssets: this.swapController.swapAssets.bind(this.swapController),
       signAndPublishTransaction: data =>
         newMessage(data, 'transaction', undefined, true),
-      getMinimumFee: getMinimumFee,
       getExtraFee: (address, network) =>
         getExtraFee(address, this.networkController.getNode(network)),
 

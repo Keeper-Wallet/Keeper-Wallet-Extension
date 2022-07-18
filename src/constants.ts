@@ -1,3 +1,5 @@
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+
 export const KEEPERWALLET_DEBUG = process.env.NODE_ENV !== 'production';
 export const KEEPERWALLET_ENV = process.env.NODE_ENV || 'development';
 
@@ -76,6 +78,8 @@ export const DEFAULT_CONFIG = {
 export const DEFAULT_FEE_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/fee.json';
 
+export const FEE_CONFIG_UPDATE_INTERVAL = 1;
+
 export const DEFAULT_FEE_CONFIG = {
   smart_asset_extra_fee: 400000,
   smart_account_extra_fee: 400000,
@@ -86,31 +90,33 @@ export const DEFAULT_FEE_CONFIG = {
       min_price_step: 100000,
       fee: 100000,
     },
-    3: {
+    [TRANSACTION_TYPE.ISSUE]: {
       fee: 100000000,
       nftFee: 100000,
     },
-    7: {
+    [TRANSACTION_TYPE.EXCHANGE]: {
       add_smart_account_fee: false,
       fee: 300000,
     },
-    11: {
+    [TRANSACTION_TYPE.MASS_TRANSFER]: {
       price_per_transfer: 50000,
     },
-    12: {
+    [TRANSACTION_TYPE.DATA]: {
       price_per_kb: 100000,
     },
-    13: {
+    [TRANSACTION_TYPE.SET_SCRIPT]: {
       price_per_kb: 100000,
     },
-    15: {
+    [TRANSACTION_TYPE.SET_ASSET_SCRIPT]: {
       fee: 100000000,
     },
-    16: {
+    [TRANSACTION_TYPE.INVOKE_SCRIPT]: {
       fee: 500000,
     },
   },
 };
+
+export type FeeConfig = typeof DEFAULT_FEE_CONFIG;
 
 export const IGNORE_ERRORS_CONFIG_URL =
   'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';

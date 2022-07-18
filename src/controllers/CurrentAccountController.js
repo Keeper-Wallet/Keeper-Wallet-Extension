@@ -54,6 +54,12 @@ export class CurrentAccountController {
     }).then(resp => resp.json());
   }
 
+  getAccountBalance() {
+    const activeAccount = this.getSelectedAccount();
+
+    return this.store.getState().balances[activeAccount.address];
+  }
+
   async updateBalances() {
     const currentNetwork = this.getNetwork();
     const accounts = this.getAccounts().filter(

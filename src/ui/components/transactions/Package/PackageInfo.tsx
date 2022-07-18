@@ -25,7 +25,7 @@ const MessageItem = ({
   return (
     <div>
       <Card message={message} assets={assets} />
-      <TxInfo message={message} assets={assets} />
+      <TxInfo message={message} />
     </div>
   );
 };

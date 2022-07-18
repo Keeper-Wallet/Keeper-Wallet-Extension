@@ -70,7 +70,7 @@ interface SaIssue {
     script?: string;
     precision: number;
     reissuable: boolean;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -85,7 +85,7 @@ interface SaTransfer {
     amount: Money;
     recipient: string;
     attachment?: RawStringIn;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -102,7 +102,7 @@ interface SaReissue {
     quantity: string | number | BigNumber | Money;
     reissuable: boolean;
     chainId?: number;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
   };
@@ -117,7 +117,7 @@ interface SaBurn {
     amount?: string | BigNumber;
     quantity?: string | BigNumber;
     chainId?: number;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
   };
@@ -130,7 +130,7 @@ interface SaLease {
     senderPublicKey?: string;
     amount: string | BigNumber | Money;
     recipient: string;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
     chainId?: number;
@@ -143,7 +143,7 @@ interface SaCancelLease {
     version?: number;
     senderPublicKey?: string;
     leaseId: string;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -156,7 +156,7 @@ interface SaAlias {
     version?: number;
     senderPublicKey?: string;
     alias: string;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -173,7 +173,7 @@ interface SaMassTransfer {
       recipient: string;
       amount: string | number | BigNumber;
     }>;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     attachment?: RawStringIn;
     proofs?: string[];
@@ -189,7 +189,7 @@ interface SaData {
   data: {
     version?: number;
     senderPublicKey?: string;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
     chainId?: number;
@@ -207,7 +207,7 @@ interface SaSetScript {
     version?: number;
     senderPublicKey?: string;
     chainId?: number;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
     script: string;
@@ -220,7 +220,7 @@ interface SaSponsorship {
     version?: number;
     senderPublicKey?: string;
     minSponsoredAssetFee: Money;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -234,7 +234,7 @@ interface SaSetAssetScript {
     senderPublicKey?: string;
     assetId: string;
     chainId?: number;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
     script: string;
@@ -255,7 +255,7 @@ interface SaInvokeScript {
       }>;
     } | null;
     payment: Money[];
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     chainId?: number;
     proofs?: string[];
@@ -270,7 +270,7 @@ interface SaUpdateAssetInfo {
     name: string;
     description: string;
     assetId: string;
-    fee: Money;
+    fee?: Money;
     timestamp: number;
     proofs?: string[];
     chainId?: number;
@@ -408,7 +408,7 @@ export const convertFromSa = {
               script: input.data.script || null,
               decimals: input.data.precision,
               reissuable: input.data.reissuable,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               chainId: input.data.chainId || defaultChainId,
               proofs: input.data.proofs || [],
@@ -429,8 +429,8 @@ export const convertFromSa = {
               attachment: input.data.attachment
                 ? base58Encode(fromRawIn(input.data.attachment))
                 : '',
-              fee: input.data.fee.getCoins(),
-              feeAssetId: input.data.fee.asset.id,
+              fee: input.data.fee?.getCoins(),
+              feeAssetId: input.data.fee?.asset.id,
               timestamp: input.data.timestamp,
               chainId,
               proofs: input.data.proofs || [],
@@ -455,7 +455,7 @@ export const convertFromSa = {
                   : new BigNumber(quantity),
               reissuable: input.data.reissuable,
               chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
             })
@@ -478,7 +478,7 @@ export const convertFromSa = {
                   ? quantity.getCoins()
                   : new BigNumber(quantity),
               chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
             })
@@ -498,7 +498,7 @@ export const convertFromSa = {
                   ? input.data.amount.getCoins()
                   : new BigNumber(input.data.amount),
               recipient: processAliasOrAddress(input.data.recipient, chainId),
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
               chainId,
@@ -513,7 +513,7 @@ export const convertFromSa = {
               version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               leaseId: input.data.leaseId,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               chainId: input.data.chainId || defaultChainId,
               proofs: input.data.proofs || [],
@@ -527,7 +527,7 @@ export const convertFromSa = {
               version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               alias: input.data.alias,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               chainId: input.data.chainId || defaultChainId,
               proofs: input.data.proofs || [],
@@ -547,7 +547,7 @@ export const convertFromSa = {
                 amount: new BigNumber(transfer.amount),
                 recipient: processAliasOrAddress(transfer.recipient, chainId),
               })),
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               attachment: input.data.attachment
                 ? base58Encode(fromRawIn(input.data.attachment))
@@ -564,7 +564,7 @@ export const convertFromSa = {
             convertBigNumberToLong({
               version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
               chainId: input.data.chainId || defaultChainId,
@@ -583,7 +583,7 @@ export const convertFromSa = {
               version: input.data.version || fallbackVersion,
               senderPublicKey: input.data.senderPublicKey,
               chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
               script: input.data.script || null,
@@ -598,7 +598,7 @@ export const convertFromSa = {
               senderPublicKey: input.data.senderPublicKey,
               minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
               assetId: input.data.minSponsoredAssetFee.asset.id,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               chainId: input.data.chainId || defaultChainId,
               proofs: input.data.proofs || [],
@@ -613,7 +613,7 @@ export const convertFromSa = {
               senderPublicKey: input.data.senderPublicKey,
               assetId: input.data.assetId,
               chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee.getCoins(),
+              fee: input.data.fee?.getCoins(),
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
               script: input.data.script,
@@ -639,8 +639,8 @@ export const convertFromSa = {
                 amount: payment.getCoins(),
                 assetId: payment.asset.id,
               })),
-              fee: input.data.fee.getCoins(),
-              feeAssetId: input.data.fee.asset.id,
+              fee: input.data.fee?.getCoins(),
+              feeAssetId: input.data.fee?.asset.id,
               timestamp: input.data.timestamp,
               chainId,
               proofs: input.data.proofs || [],
@@ -657,8 +657,8 @@ export const convertFromSa = {
               name: input.data.name,
               description: input.data.description,
               assetId: input.data.assetId,
-              fee: input.data.fee.getCoins().toNumber(),
-              feeAssetId: input.data.fee.asset.id,
+              fee: input.data.fee?.getCoins().toNumber(),
+              feeAssetId: input.data.fee?.asset.id,
               timestamp: input.data.timestamp,
               proofs: input.data.proofs || [],
               chainId: input.data.chainId || defaultChainId,

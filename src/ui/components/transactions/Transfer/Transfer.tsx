@@ -11,8 +11,6 @@ import {
 } from '../BaseTransaction';
 
 export function Transfer(props: ComponentProps) {
-  const { sponsoredBalance } = props;
-
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />
@@ -23,7 +21,7 @@ export function Transfer(props: ComponentProps) {
         </div>
 
         <TxDetailTabs>
-          <TxInfo sponsoredBalance={sponsoredBalance} />
+          <TxInfo />
         </TxDetailTabs>
       </div>
 

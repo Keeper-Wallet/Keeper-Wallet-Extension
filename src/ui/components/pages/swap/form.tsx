@@ -1,17 +1,22 @@
-import BigNumber from '@waves/bignumber';
-import { Asset, Money } from '@waves/data-entities';
-import cn from 'classnames';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { AssetAmountInput } from 'assets/amountInput';
-import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
-import { swappableAssetTickersByVendor } from 'assets/constants';
-import { convertToSponsoredAssetFee } from 'assets/utils';
 import {
   SwapClient,
   SwapClientErrorCode,
   SwapClientInvokeTransaction,
 } from '@keeper-wallet/swap-client';
+import BigNumber from '@waves/bignumber';
+import { Asset, Money } from '@waves/data-entities';
+import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { AssetAmountInput } from 'assets/amountInput';
+import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
+import { swappableAssetTickersByVendor } from 'assets/constants';
+import cn from 'classnames';
+import { useDebouncedValue } from 'common/useDebouncedValue';
+import { useFeeOptions } from 'fee/useFeeOptions';
+import { convertFeeToAsset } from 'fee/utils';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { SwapVendor } from 'swap/constants';
+import { getSwapVendorLogo } from 'swap/utils';
 import { setUiState } from 'ui/actions/uiState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Loader } from 'ui/components/ui/loader/Loader';
@@ -19,14 +24,11 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
-import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
+import { AccountBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
-import { SwapVendor } from 'swap/constants';
-import { getSwapVendorLogo } from 'swap/utils';
-import { useDebouncedValue } from 'common/useDebouncedValue';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
@@ -99,6 +101,10 @@ const swapInfoErrorState: SwapInfoState = {
   },
 };
 
+function formatFeeOption(money: Money) {
+  return `${money.toFormat()} ${money.asset.displayName}`;
+}
+
 export function SwapForm({
   initialFromAssetId,
   initialToAssetId,
@@ -119,39 +125,27 @@ export function SwapForm({
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
 
-  const wavesFeeCoinsBN = new BigNumber(wavesFeeCoins);
+  const feeConfig = useAppSelector(state => state.feeConfig);
 
-  const sponsoredAssetBalanceEntries = Object.entries(
-    accountBalance.assets
-  ).filter(([assetId, assetBalance]) => {
-    const sponsoredAssetFee = convertToSponsoredAssetFee(
-      wavesFeeCoinsBN,
-      new Asset(assets[assetId]),
-      assetBalance
-    );
+  const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
 
-    return (
-      assetBalance.minSponsoredAssetFee != null &&
-      new BigNumber(assetBalance.sponsorBalance).gte(wavesFeeCoinsBN) &&
-      new BigNumber(assetBalance.balance).gte(sponsoredAssetFee.getCoins())
-    );
+  const feeOptions = useFeeOptions({
+    initialFee: wavesFee,
+    txType: TRANSACTION_TYPE.INVOKE_SCRIPT,
   });
-
-  if (sponsoredAssetBalanceEntries.length === 0) {
-    sponsoredAssetBalanceEntries.push([
-      'WAVES',
-      accountBalance.assets['WAVES'],
-    ]);
-  }
 
   const [{ fromAssetId, toAssetId }, setAssetIds] = React.useState({
     fromAssetId: initialFromAssetId,
     toAssetId: initialToAssetId,
   });
 
-  const [feeAssetId, setFeeAssetId] = React.useState(
-    sponsoredAssetBalanceEntries[0][0]
-  );
+  const [feeAssetId, setFeeAssetId] = React.useState(() => {
+    const defaultOption =
+      feeOptions.find(option => option.money.asset.id === 'WAVES') ||
+      feeOptions[0];
+
+    return defaultOption.money.asset.id;
+  });
 
   const fromAsset = React.useMemo(
     () => new Asset(assets[fromAssetId]),
@@ -169,21 +163,29 @@ export function SwapForm({
   const toAssetBalance = getAssetBalance(toAsset, accountBalance);
   const feeAssetBalance = getAssetBalance(feeAsset, accountBalance);
 
-  function formatSponsoredAssetBalanceEntry([assetId, assetBalance]: [
-    string,
-    AssetBalance
-  ]) {
-    const fee = convertToSponsoredAssetFee(
-      new BigNumber(wavesFeeCoins),
-      new Asset(assets[assetId]),
-      assetBalance
-    );
-
-    return `${fee.getTokens().toFormat()} ${fee.asset.displayName}`;
-  }
-
   const [fromAmountValue, setFromAmountValue] = React.useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
+
+  const finalFeeOptions = feeOptions
+    .filter(option => {
+      if (
+        option.money.asset.id !== fromAssetId ||
+        option.money.asset.id === feeAssetId
+      ) {
+        return true;
+      }
+
+      const fromAmount = Money.fromTokens(fromAmountTokens, fromAsset);
+
+      return new BigNumber(option.assetBalance.balance).gte(
+        fromAmount.getCoins().add(option.money.getCoins())
+      );
+    })
+    .map(({ money }) => money);
+
+  if (finalFeeOptions.length === 0) {
+    finalFeeOptions.push(wavesFee);
+  }
 
   const [swapVendor, setSwapVendor] = React.useState(SwapVendor.Keeper);
   const [swapVendorTouched, setSwapVendorTouched] = React.useState(false);
@@ -315,11 +317,7 @@ export function SwapForm({
   }, [swapClient, swapParams, t, toAsset]);
 
   const sponsoredAssetFee = accountBalance.assets[feeAssetId]
-    ? convertToSponsoredAssetFee(
-        wavesFeeCoinsBN,
-        feeAsset,
-        accountBalance.assets[feeAssetId]
-      )
+    ? convertFeeToAsset(wavesFee, feeAsset, feeConfig)
     : null;
 
   const balanceErrorMessage =
@@ -502,10 +500,10 @@ export function SwapForm({
                 feeAssetId === fromAssetId &&
                 accountBalance.assets[feeAssetId]
               ) {
-                const fee = convertToSponsoredAssetFee(
-                  new BigNumber(wavesFeeCoins),
+                const fee = convertFeeToAsset(
+                  wavesFee,
                   new Asset(assets[feeAssetId]),
-                  accountBalance.assets[feeAssetId]
+                  feeConfig
                 );
 
                 max = max.gt(fee) ? max.minus(fee) : max.cloneWithCoins(0);
@@ -868,20 +866,15 @@ export function SwapForm({
               </div>
 
               <div className={styles.summaryValue}>
-                {sponsoredAssetBalanceEntries.length > 1 ? (
+                {finalFeeOptions.length > 1 ? (
                   <Select
                     listPlacement="top"
                     selected={feeAssetId}
-                    selectList={sponsoredAssetBalanceEntries.map(
-                      ([assetId, assetBalance]) => ({
-                        id: assetId,
-                        text: formatSponsoredAssetBalanceEntry([
-                          assetId,
-                          assetBalance,
-                        ]),
-                        value: assetId,
-                      })
-                    )}
+                    selectList={finalFeeOptions.map(money => ({
+                      id: money.asset.id,
+                      text: formatFeeOption(money),
+                      value: money.asset.id,
+                    }))}
                     theme="compact"
                     onSelectItem={(_id, value) => {
                       setFeeAssetId(value);
@@ -889,9 +882,7 @@ export function SwapForm({
                   />
                 ) : (
                   <span className={styles.summaryValueText}>
-                    {formatSponsoredAssetBalanceEntry(
-                      sponsoredAssetBalanceEntries[0]
-                    )}
+                    {formatFeeOption(finalFeeOptions[0])}
                   </span>
                 )}
               </div>

@@ -3,8 +3,11 @@ import { extension } from 'lib/extension';
 import {
   CONFIG_URL,
   DEFAULT_CONFIG,
+  DEFAULT_FEE_CONFIG,
+  DEFAULT_FEE_CONFIG_URL,
   DEFAULT_IDENTITY_CONFIG,
   DEFAULT_IGNORE_ERRORS_CONFIG,
+  FEE_CONFIG_UPDATE_INTERVAL,
   IDENTITY_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_URL,
@@ -55,6 +58,7 @@ export class RemoteConfigController extends EventEmitter {
       },
       ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
       identityConfig: DEFAULT_IDENTITY_CONFIG,
+      feeConfig: DEFAULT_FEE_CONFIG,
       status: STATUS.PENDING,
     };
     this.store = new ObservableStore(localStore.getInitState(defaults));
@@ -63,6 +67,7 @@ export class RemoteConfigController extends EventEmitter {
     this._getConfig();
     this._getIgnoreErrorsConfig();
     this._fetchIdentityConfig();
+    this._fetchFeeConfig();
 
     extension.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
@@ -74,6 +79,9 @@ export class RemoteConfigController extends EventEmitter {
           break;
         case 'fetchIdentityConfig':
           this._fetchIdentityConfig();
+          break;
+        case 'fetchFeeConfig':
+          this._fetchFeeConfig();
           break;
       }
     });
@@ -291,5 +299,24 @@ export class RemoteConfigController extends EventEmitter {
   getIdentityConfig(network) {
     const { identityConfig } = this.store.getState();
     return identityConfig[network === 'testnet' ? 'testnet' : 'mainnet'];
+  }
+
+  async _fetchFeeConfig() {
+    try {
+      const feeConfig = await fetch(DEFAULT_FEE_CONFIG_URL).then(res =>
+        res.json()
+      );
+
+      this.store.updateState({ feeConfig });
+    } finally {
+      extension.alarms.create('fetchFeeConfig', {
+        delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
+      });
+    }
+  }
+
+  getFeeConfig() {
+    const { feeConfig } = this.store.getState();
+    return feeConfig;
   }
 }
