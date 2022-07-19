@@ -46,9 +46,11 @@ function setupConnection() {
     target: 'waves_keeper_page',
   });
 
-  const onChanged =
-    extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(() => {
+  extension.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local') {
+      return;
+    }
+
     pageStream.write({ name: 'updatePublicState' });
   });
 

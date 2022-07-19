@@ -52,9 +52,11 @@ async function startUi() {
 
   const updateState = createUpdateState(store);
 
-  const onChanged =
-    extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(async changes => {
+  extension.storage.onChanged.addListener(async (changes, area) => {
+    if (area !== 'local') {
+      return;
+    }
+
     const stateChanges = await backgroundService.getState([
       'initialized',
       'locked',
