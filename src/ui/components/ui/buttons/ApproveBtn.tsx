@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as styles from './approveButtons.styl';
-import { CircularProgressbar } from '../loader';
 import { Button } from './Button';
 import { CONFIG } from '../../../appConfig';
 import cn from 'classnames';
@@ -38,16 +37,6 @@ export class ApproveBtn extends React.PureComponent<Props, State> {
     const { pending } = this.state;
     const { autoClickProtection, disabled, loading, ...restProps } = this.props;
 
-    const progressProps = {
-      percent: this.state.percentage,
-      strokeWidth: 4,
-      className: styles.approveProgress,
-      colors: ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'],
-      trackLineColor: 'rgba(255, 255, 255, 0.33)',
-      size: 30,
-      lineCap: 'round',
-    };
-
     return (
       <Button
         {...restProps}
@@ -56,7 +45,6 @@ export class ApproveBtn extends React.PureComponent<Props, State> {
         className={cn(restProps.className, styles.hideText, styles.svgWrapper)}
       >
         {!loading && this.props.children}
-        {pending && <CircularProgressbar {...progressProps} />}
       </Button>
     );
   }
