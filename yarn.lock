@@ -3324,11 +3324,6 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-circle-progress-bar@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/circle-progress-bar/-/circle-progress-bar-1.0.0.tgz#c1e421c77cc67b8e64044ba8ea2afd4579439c5d"
-  integrity sha512-bKGmqRuDWAJvoUj5M/wwjXOeAlE5tOs0L5Rt+8QKNC4WdOBvnIa+TnZIpFOVtrkbdgtJ+Yf9b759lNMOW/ayXQ==
-
 class-utils@^0.3.5:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/class-utils/-/class-utils-0.3.6.tgz#f93369ae8b9a7ce02fd41faad0ca83033190c463"
