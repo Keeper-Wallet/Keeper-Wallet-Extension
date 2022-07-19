@@ -24,7 +24,7 @@ export function getNetworkByAddress(address: string): NetworkName {
 }
 
 export async function getNetworkByte(url: string): Promise<string> {
-  const response = await getUrl(url, 'blocks/last', true);
+  const response = await getUrl(url, '/blocks/headers/last', true);
   const { generator } = await response.json();
 
   if (!generator) {
