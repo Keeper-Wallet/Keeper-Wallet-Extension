@@ -27,7 +27,7 @@ const CONTROLLERS = [
 ];
 
 export async function backup() {
-  const { backup = {}, WalletController } = await extension.storage.local.get([
+  const { backup, WalletController } = await extension.storage.local.get([
     'backup',
     'WalletController',
   ]);
