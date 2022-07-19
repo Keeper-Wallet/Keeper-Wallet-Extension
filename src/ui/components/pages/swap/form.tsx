@@ -144,7 +144,7 @@ export function SwapForm({
       feeOptions.find(option => option.money.asset.id === 'WAVES') ||
       feeOptions[0];
 
-    return defaultOption.money.asset.id;
+    return defaultOption?.money.asset.id || 'WAVES';
   });
 
   const fromAsset = React.useMemo(
