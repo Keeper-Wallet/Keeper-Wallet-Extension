@@ -1,5 +1,6 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
+import { NetworkName } from '../accounts/types';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -23,6 +24,9 @@ const MARKETDATA_URL = 'https://marketdata.wavesplatform.com/';
 const MARKETDATA_USD_ASSET_ID = 'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p';
 const MARKETDATA_PERIOD_IN_MINUTES = 10;
 
+const STATIC_SERVICE_URL = 'https://api.keeper-wallet.app';
+const INFO_PERIOD_IN_MINUTES = 240;
+
 const stablecoinAssetIds = new Set([
   '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU',
   '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ',
@@ -32,7 +36,7 @@ const stablecoinAssetIds = new Set([
   'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p',
 ]);
 
-const assetTickers = {
+const defaultAssetTickers = {
   B1dG9exXzJdFASDF2MwCE7TYJE5My4UgVRx43nqDbF6s: 'ABTCLPC',
   '4NyYnDGopZvEAQ3TcBDJrJFWSiA2xzuAw83Ms8jT7WuK': 'ABTCLPM',
   J7UiL1tgEfPaHkrLCirqoyu4v6rVMDc6yPEV95ixorVB: 'AETHLPC',
@@ -187,8 +191,10 @@ export class AssetInfoController {
           WAVES,
         },
       },
-      usdPrices: {},
       suspiciousAssets: [],
+      usdPrices: {},
+      assetLogos: {},
+      assetTickers: defaultAssetTickers,
     };
     const initState = localStore.getInitState(defaults);
     this.store = new ObservableStore(initState);
@@ -205,11 +211,21 @@ export class AssetInfoController {
       this.updateUsdPrices();
     }
 
+    if (
+      Object.keys(initState.assetLogos).length === 0 ||
+      Object.keys(initState.assetTickers).length === 0
+    ) {
+      this.updateInfo();
+    }
+
     extension.alarms.create('updateSuspiciousAssets', {
       periodInMinutes: SUSPICIOUS_PERIOD_IN_MINUTES,
     });
     extension.alarms.create('updateUsdPrices', {
       periodInMinutes: MARKETDATA_PERIOD_IN_MINUTES,
+    });
+    extension.alarms.create('updateInfo', {
+      periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
     extension.alarms.onAlarm.addListener(({ name }) => {
@@ -220,6 +236,9 @@ export class AssetInfoController {
         case 'updateUsdPrices':
           this.updateUsdPrices();
           break;
+        case 'updateInfo':
+          this.updateInfo();
+          break;
         default:
           break;
       }
@@ -227,7 +246,7 @@ export class AssetInfoController {
   }
 
   addTickersForExistingAssets() {
-    const { assets } = this.store.getState();
+    const { assets, assetTickers } = this.store.getState();
 
     const assetIdsToUpdate = Object.keys(assetTickers).filter(assetId => {
       const asset = assets.mainnet[assetId];
@@ -269,7 +288,7 @@ export class AssetInfoController {
     const network = this.getNetwork();
     const asset = assets[network][assetId] || {};
 
-    return network === 'mainnet' && suspiciousAssets
+    return network === NetworkName.Mainnet && suspiciousAssets
       ? binarySearch(suspiciousAssets, assetId) > -1
       : asset.isSuspicious;
   }
@@ -324,6 +343,8 @@ export class AssetInfoController {
   }
 
   toAssetDetails(info) {
+    const { assetTickers } = this.store.getState();
+
     return {
       id: info.assetId,
       name: info.name,
@@ -407,16 +428,16 @@ export class AssetInfoController {
     const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
 
-    if (!suspiciousAssets || network === 'mainnet') {
+    if (!suspiciousAssets || network === NetworkName.Mainnet) {
       const resp = await fetch(new URL(SUSPICIOUS_LIST_URL));
 
       if (resp.ok) {
         const suspiciousAssets = (await resp.text()).split('\n').sort();
 
         if (suspiciousAssets) {
-          Object.keys(assets['mainnet']).forEach(
+          Object.keys(assets[NetworkName.Mainnet]).forEach(
             assetId =>
-              (assets['mainnet'][assetId].isSuspicious =
+              (assets[NetworkName.Mainnet][assetId].isSuspicious =
                 binarySearch(suspiciousAssets, assetId) > -1)
           );
         }
@@ -430,7 +451,7 @@ export class AssetInfoController {
     const { usdPrices } = this.store.getState();
     const network = this.getNetwork();
 
-    if (!usdPrices || network === 'mainnet') {
+    if (!usdPrices || network === NetworkName.Mainnet) {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
 
       if (resp.ok) {
@@ -451,6 +472,31 @@ export class AssetInfoController {
         });
 
         this.store.updateState({ usdPrices });
+      }
+    }
+  }
+
+  async updateInfo() {
+    const network = this.getNetwork();
+
+    if (network === NetworkName.Mainnet) {
+      const resp = await fetch(new URL('/assets', STATIC_SERVICE_URL));
+
+      if (resp.ok) {
+        const assets = await resp.json();
+
+        this.store.updateState(
+          assets.reduce(
+            (acc, { id, ticker, uri }) => ({
+              assetLogos: {
+                ...acc.assetLogos,
+                [id]: `${STATIC_SERVICE_URL}${uri}`,
+              },
+              assetTickers: { ...acc.assetTickers, [id]: ticker },
+            }),
+            {}
+          )
+        );
       }
     }
   }
