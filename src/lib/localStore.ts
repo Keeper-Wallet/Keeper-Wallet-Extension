@@ -36,7 +36,10 @@ export async function backup() {
     await extension.storage.local.set({
       backup: {
         ...backup,
-        [WalletController.vault]: extension.runtime.getManifest().version,
+        [WalletController.vault]: {
+          timestamp: Date.now(),
+          version: extension.runtime.getManifest().version,
+        },
       },
     });
   }
