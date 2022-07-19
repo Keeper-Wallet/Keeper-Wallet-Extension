@@ -4,7 +4,7 @@ import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Nft } from 'nfts/utils';
-import { Button, Ellipsis } from 'ui/components/ui';
+import { Button, Ellipsis, Loader } from 'ui/components/ui';
 import { PAGES } from 'ui/pageConfig';
 import { AssetDetail } from 'ui/services/Background';
 import { setUiState } from 'ui/actions';
@@ -32,13 +32,16 @@ export function NftInfo({
   );
 
   const creatorUrl =
-    nft && (nft.creatorUrl || getAccountLink(networkCode, nft.creator));
+    nft?.creatorUrl ||
+    (nft?.creator && getAccountLink(networkCode, nft.creator));
   const nftUrl = nft && getAssetDetailLink(networkCode, nft.id);
 
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <div className={styles.title}>{nft.displayName}</div>
+        <div className={styles.title}>
+          {!nft ? <Loader /> : nft.displayName}
+        </div>
       </div>
 
       <div className={styles.content}>
@@ -53,7 +56,7 @@ export function NftInfo({
           >
             {t('nftInfo.viewInExplorer')}
           </a>
-          {nft.marketplaceUrl && (
+          {nft?.marketplaceUrl && (
             <a
               rel="noopener noreferrer"
               target="_blank"
@@ -68,7 +71,9 @@ export function NftInfo({
         <div className={styles.fieldName}>{t('nftInfo.creator')}</div>
         <div className={styles.fieldContent}>
           <div>
-            {nft?.creator === nft?.displayCreator ? (
+            {!nft ? (
+              <Loader />
+            ) : nft?.creator === nft?.displayCreator ? (
               <Ellipsis text={nft?.creator} size={16} />
             ) : (
               nft?.displayCreator
@@ -98,7 +103,7 @@ export function NftInfo({
           </div>
         </div>
 
-        {nft.description && (
+        {nft?.description && (
           <>
             <div className={styles.fieldName}>{t('nftInfo.description')}</div>
             <div className={styles.fieldContent}>{nft.description}</div>

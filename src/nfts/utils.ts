@@ -14,6 +14,7 @@ import { Duck } from 'nfts/ducks';
 import { SignArt, SignArtInfo } from 'nfts/signArt';
 import { DucksArtefact } from 'nfts/duckArtifacts';
 import { MyNFT, Unknown } from 'nfts/unknown';
+import { DataTransactionEntry } from '@waves/ts-types';
 
 export type Nft = ReturnType<typeof createNft>;
 
@@ -100,4 +101,11 @@ export function capitalize(str: string): string {
   }
 
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function reduceDataEntries(entries: Array<DataTransactionEntry>) {
+  return entries.reduce((data, item) => {
+    data[item.key] = item.value;
+    return data;
+  }, {});
 }
