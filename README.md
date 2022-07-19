@@ -225,17 +225,27 @@ Allows subscribing to Keeper Wallet events.
 
 Supports events:
 
-- `update` – subscribe for updates of the state.
+- `update` – subscribe to state updates.
 
-Example:
+  Example:
 
-```js
-KeeperWallet.on('update', state => {
-  //state object as from KeeperWallet.publicState
-});
-```
+  ```js
+  KeeperWallet.on('update', state => {
+    // state object as from KeeperWallet.publicState
+  });
+  ```
 
-If a website is not trusted, events won't be displayed.
+- `networkChange` - subscribe to network changes.
+
+  Example:
+
+  ```js
+  KeeperWallet.on('networkChange', () => {
+    // called on network change (mainnet, testnet, etc.)
+  });
+  ```
+
+If a website is not trusted, events won't be emitted.
 
 #### auth
 

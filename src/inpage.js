@@ -96,21 +96,25 @@ async function setupInpageApi() {
   Object.assign(wavesApi, inpageApi);
   wavesAppDef.resolve(wavesApi);
   global.KeeperWallet = global.WavesKeeper = global.Waves = wavesApi;
-  let publicState = {};
-  connectionStream.on('data', async ({ name }) => {
-    if (name !== 'updatePublicState') {
+  let lastPublicState = {};
+  connectionStream.on('data', async data => {
+    if (!(await wavesApi.resourceIsApproved())) {
       return;
     }
 
-    const isApproved = await wavesApi.resourceIsApproved();
-    if (!isApproved) {
-      return;
-    }
+    switch (data.name) {
+      case 'updatePublicState': {
+        const publicState = await wavesApi.publicState();
 
-    const updatedPublicState = await wavesApi.publicState();
-    if (!equals(updatedPublicState, publicState)) {
-      publicState = updatedPublicState;
-      eventEmitter.emit('update', updatedPublicState);
+        if (!equals(publicState, lastPublicState)) {
+          lastPublicState = publicState;
+          eventEmitter.emit('update', publicState);
+        }
+        break;
+      }
+      case 'networkChange':
+        eventEmitter.emit('networkChange');
+        break;
     }
   });
   setupClickInterceptor(inpageApi);

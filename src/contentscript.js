@@ -52,6 +52,10 @@ function setupConnection() {
     }
 
     pageStream.write({ name: 'updatePublicState' });
+
+    if ('currentNetwork' in changes) {
+      pageStream.write({ name: 'networkChange' });
+    }
   });
 
   const connect = () => {

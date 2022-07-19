@@ -208,13 +208,23 @@ KeeperWallet.decryptMessage(
 
 - `update` — подписаться на изменения стейта.
 
-Пример:
+  Пример:
 
-```js
-KeeperWallet.on('update', state => {
-  //state — объект как из KeeperWallet.publicState
-});
-```
+  ```js
+  KeeperWallet.on('update', state => {
+    // state — объект как из KeeperWallet.publicState
+  });
+  ```
+
+- `networkChange` — подписаться на изменение сети.
+
+  Пример:
+
+  ```js
+  KeeperWallet.on('networkChange', () => {
+    // вызывается при изменении сети (mainnet, testnet и т.д.)
+  });
+  ```
 
 Если сайт не является доверенным, то события приходить не будут.
 
