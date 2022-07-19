@@ -41,12 +41,14 @@ interface UpdateStateInput {
   feeConfig?: FeeConfig;
   idleOptions?: unknown;
   initialized: boolean;
+  assetLogos: Record<string, string>;
   locked: boolean;
   messages?: Message[];
   networks?: unknown[];
   myNotifications?: unknown[];
   origins?: unknown;
   selectedAccount?: { address?: string; network?: string } | null;
+  assetTickers: Record<string, string>;
   uiState?: unknown;
   usdPrices: Record<string, string>;
 }
@@ -270,6 +272,22 @@ export function createUpdateState(store: UiStore) {
       store.dispatch({
         type: ACTION.SET_USD_PRICES,
         payload: usdPrices,
+      });
+    }
+
+    const assetLogos = getParam(state.assetLogos, {});
+    if (assetLogos && !equals(assetLogos, currentState.assetLogos)) {
+      store.dispatch({
+        type: ACTION.SET_ASSET_LOGOS,
+        payload: assetLogos,
+      });
+    }
+
+    const assetTickers = getParam(state.assetTickers, {});
+    if (assetTickers && !equals(assetTickers, currentState.assetTickers)) {
+      store.dispatch({
+        type: ACTION.SET_ASSET_TICKERS,
+        payload: assetTickers,
       });
     }
 
