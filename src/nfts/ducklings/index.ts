@@ -53,6 +53,10 @@ export class Duckling extends BaseNft<DucklingInfo> {
   }
 
   get foreground() {
+    if (!this.info) {
+      return null;
+    }
+
     let fileIndex = Math.trunc(this.info.growthLevel / 25);
     fileIndex = fileIndex < 4 ? fileIndex : 3;
     return `https://wavesducks.com/ducks/ducklings/duckling-${fileIndex}.svg`;
