@@ -20,7 +20,7 @@ import {
   PermissionsController,
   PERMISSIONS,
 } from './controllers/PermissionsController';
-import { PreferencesController } from './controllers/PreferencesController';
+import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
 import { StatisticsController } from './controllers/Statistics';
 import { TrashController } from './controllers/trash';
