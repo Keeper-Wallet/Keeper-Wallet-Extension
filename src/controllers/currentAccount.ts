@@ -1,12 +1,34 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
+import ExtensionStore from 'lib/localStore';
+import { AssetInfoController } from './assetInfo';
+import { NftInfoController } from './NftInfoController';
+import { WalletController } from './wallet';
+import { NetworkController } from './network';
+import { PreferencesController } from './preferences';
+import { VaultController } from './VaultController';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
+type GetAccounts = WalletController['getAccounts'];
+type GetNetwork = NetworkController['getNetwork'];
+type GetNode = NetworkController['getNode'];
+type GetSelectedAccount = PreferencesController['getSelectedAccount'];
+type IsLocked = VaultController['isLocked'];
+
 export class CurrentAccountController {
+  store: ObservableStore;
+  assetInfoController: AssetInfoController;
+  nftInfoController: NftInfoController;
+  getAccounts: GetAccounts;
+  getNetwork: GetNetwork;
+  getNode: GetNode;
+  getSelectedAccount: GetSelectedAccount;
+  isLocked: IsLocked;
+
   constructor({
     localStore,
     assetInfoController,
@@ -16,6 +38,15 @@ export class CurrentAccountController {
     getNode,
     getSelectedAccount,
     isLocked,
+  }: {
+    localStore: ExtensionStore;
+    assetInfoController: AssetInfoController;
+    nftInfoController: NftInfoController;
+    getAccounts: GetAccounts;
+    getNetwork: GetNetwork;
+    getNode: GetNode;
+    getSelectedAccount: GetSelectedAccount;
+    isLocked: IsLocked;
   }) {
     const defaults = {
       balances: {},

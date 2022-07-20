@@ -9,7 +9,7 @@ import LocalStore, { backup } from 'lib/localStore';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
-import { CurrentAccountController } from './controllers/CurrentAccountController';
+import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
 import { MessageController } from './controllers/MessageController';
