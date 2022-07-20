@@ -11,7 +11,7 @@ import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/CurrentAccountController';
 import { IdentityController } from './controllers/IdentityController';
-import { IdleController } from './controllers/IdleController';
+import { IdleController } from './controllers/idle';
 import { MessageController } from './controllers/MessageController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
