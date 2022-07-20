@@ -5,13 +5,32 @@ import config from '../../config.json';
 import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
+import { NetworkController } from './network';
+import ExtensionStore from 'lib/localStore';
 
 export class StatisticsController {
   events = [];
   sended = Promise.resolve();
   _idle = 0;
 
-  constructor({ localStore, networkController }) {
+  store: ObservableStore;
+  networkController: NetworkController;
+  version: unknown;
+  id: unknown;
+
+  browser: {
+    name: unknown;
+    os: unknown;
+    version: string;
+  };
+
+  constructor({
+    localStore,
+    networkController,
+  }: {
+    localStore: ExtensionStore;
+    networkController: NetworkController;
+  }) {
     const defaults = {
       lastIdleKeeper: undefined,
       lastInstallKeeper: undefined,
@@ -19,7 +38,8 @@ export class StatisticsController {
       userId: undefined,
     };
     const initState = localStore.getInitState(defaults);
-    const userId = initState.userId || StatisticsController.createUserId();
+    const userId =
+      (initState.userId as string) || StatisticsController.createUserId();
     Sentry.setUser({ id: userId });
     this.store = new ObservableStore({ ...initState, userId });
     localStore.subscribe(this.store);
@@ -69,7 +89,8 @@ export class StatisticsController {
       language:
         (navigator.languages && navigator.languages[0]) ||
         navigator.language ||
-        navigator.userLanguage,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (navigator as any).userLanguage,
       ip: '$remote',
       time: Date.now(),
       user_properties,
@@ -80,7 +101,8 @@ export class StatisticsController {
   }
 
   sendEvents(delay = 5000) {
-    if (!config.statisticsApiKey) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!(config as any).statisticsApiKey) {
       return;
     }
 
@@ -101,7 +123,8 @@ export class StatisticsController {
             Accept: '*/*',
           },
           body: JSON.stringify({
-            api_key: config.statisticsApiKey,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            api_key: (config as any).statisticsApiKey,
             events: events,
           }),
         })
@@ -154,14 +177,16 @@ export class StatisticsController {
      @param {number} [ms] in ms, by default is 1 hour
      @param {string} [storeKey] by default is `last{EventType}`
      **/
-  addEventOnce(eventType, ms, storeKey) {
+  addEventOnce(eventType, ms = undefined, storeKey = undefined) {
     ms = ms || 60 * 60 * 1000; // default 1 event per hour
     storeKey =
       storeKey ||
       'last' + eventType.charAt(0).toUpperCase() + eventType.slice(1);
     const state = this.store.getState();
-    const dateNow = new Date();
-    const dateLast = state[storeKey] ? new Date(state[storeKey]) : dateNow - ms;
+    const dateNow = new Date().getTime();
+    const dateLast = state[storeKey]
+      ? new Date(state[storeKey]).getTime()
+      : dateNow - ms;
 
     if (dateNow - dateLast >= ms) {
       const partial = {};

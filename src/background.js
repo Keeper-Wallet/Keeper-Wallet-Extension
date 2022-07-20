@@ -19,7 +19,7 @@ import { NotificationsController } from './controllers/NotificationsController';
 import { PermissionsController, PERMISSIONS } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
-import { StatisticsController } from './controllers/Statistics';
+import { StatisticsController } from './controllers/statistics';
 import { TrashController } from './controllers/trash';
 import { TxInfoController } from './controllers/txInfo';
 import { UiStateController } from './controllers/uiState';
