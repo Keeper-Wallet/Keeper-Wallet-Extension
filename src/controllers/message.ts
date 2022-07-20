@@ -51,6 +51,7 @@ type GetAccountBalance = CurrentAccountController['getAccountBalance'];
 type GetFeeConfig = RemoteConfigController['getFeeConfig'];
 
 interface Message {
+  result: unknown;
   status: string;
 }
 
@@ -276,7 +277,7 @@ export class MessageController extends EventEmitter {
    * @param {object} [account] - Account, approving this tx
    * @returns {Promise<object>}
    */
-  approve(id, account) {
+  approve(id, account = undefined) {
     const message = this._getMessageById(id);
     message.account = account || message.account;
     if (!message.account)
@@ -284,7 +285,7 @@ export class MessageController extends EventEmitter {
         'Message has empty account filed and no address is provided',
       ]);
 
-    return new Promise((resolve, reject) => {
+    return new Promise<[null, Message]>((resolve, reject) => {
       this._fillSignableData(message)
         .then(this._signMessage.bind(this))
         .then(this._broadcastMessage.bind(this))
@@ -367,7 +368,7 @@ export class MessageController extends EventEmitter {
    * Deletes all messages
    * @param {array} [ids] - message id
    */
-  clearMessages(ids) {
+  clearMessages(ids = undefined) {
     if (typeof ids === 'string') {
       this._deleteMessage(ids);
     } else if (ids && ids.length > 0) {

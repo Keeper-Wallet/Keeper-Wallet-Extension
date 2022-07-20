@@ -33,6 +33,7 @@ import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
 import { TabsManager } from 'lib/tabsManager';
+import ExtensionStore from 'lib/localStore';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -123,7 +124,8 @@ async function setupBackgroundService() {
 
   // global access to service on debug
   if (KEEPERWALLET_DEBUG) {
-    global.background = backgroundService;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).background = backgroundService;
   }
 
   const updateBadge = async () => {
@@ -174,6 +176,28 @@ async function setupBackgroundService() {
 }
 
 class BackgroundService extends EventEmitter {
+  localStore: ExtensionStore;
+
+  addressBookController: AddressBookController;
+  assetInfoController: AssetInfoController;
+  currentAccountController: CurrentAccountController;
+  identityController: IdentityController;
+  idleController: IdleController;
+  messageController: MessageController;
+  networkController: NetworkController;
+  nftInfoController: NftInfoController;
+  notificationsController: NotificationsController;
+  permissionsController: PermissionsController;
+  preferencesController: PreferencesController;
+  remoteConfigController: RemoteConfigController;
+  statisticsController: StatisticsController;
+  swapController: SwapController;
+  trash: TrashController;
+  txinfoController: TxInfoController;
+  uiStateController: UiStateController;
+  vaultController: VaultController;
+  walletController: WalletController;
+
   constructor({ localStore, initLangCode }) {
     super();
 
@@ -442,8 +466,9 @@ class BackgroundService extends EventEmitter {
     });
   }
 
-  getState(params) {
-    const state = this.localStore.getState(params);
+  getState(params = undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const state: any = this.localStore.getState(params);
     const { selectedAccount } = this.localStore.getState('selectedAccount');
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
@@ -705,7 +730,7 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getNewMessageFn(origin) {
+  getNewMessageFn(origin = undefined) {
     return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
@@ -1033,18 +1058,21 @@ class BackgroundService extends EventEmitter {
   }
 
   ledgerSign(type, data) {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const requestId = uuidv4();
 
       this.emit('ledger:signRequest', { id: requestId, type, data });
 
-      this.once(`ledger:signResponse:${requestId}`, (err, signature) => {
-        if (err) {
-          return reject(err);
-        }
+      this.once(
+        `ledger:signResponse:${requestId}`,
+        (err: unknown, signature: string) => {
+          if (err) {
+            return reject(err);
+          }
 
-        resolve(signature);
-      });
+          resolve(signature);
+        }
+      );
     });
   }
 }

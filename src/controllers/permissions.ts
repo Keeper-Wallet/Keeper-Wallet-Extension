@@ -29,7 +29,7 @@ const findPermissionFabric = permission => item => {
 
 interface Identity {
   restoreSession: (
-    userId: unknown
+    userId: string
   ) => ReturnType<IdentityController['restoreSession']>;
 }
 
