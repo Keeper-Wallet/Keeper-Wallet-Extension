@@ -1,6 +1,8 @@
 import { extension } from 'lib/extension';
+import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
 import { NetworkName } from '../accounts/types';
+import { NetworkController } from './network';
 
 const WAVES = {
   quantity: '10000000000000000',
@@ -174,8 +176,23 @@ function binarySearch(sortedArray, key) {
   return -1;
 }
 
+type GetNode = NetworkController['getNode'];
+type GetNetwork = NetworkController['getNetwork'];
+
 export class AssetInfoController {
-  constructor({ localStore, getNode, getNetwork }) {
+  store: ObservableStore;
+  getNode: GetNode;
+  getNetwork: GetNetwork;
+
+  constructor({
+    localStore,
+    getNode,
+    getNetwork,
+  }: {
+    localStore: ExtensionStore;
+    getNode: GetNode;
+    getNetwork: GetNetwork;
+  }) {
     const defaults = {
       assets: {
         mainnet: {
@@ -203,7 +220,8 @@ export class AssetInfoController {
     this.getNode = getNode;
     this.getNetwork = getNetwork;
 
-    if (initState.suspiciousAssets.length === 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((initState.suspiciousAssets as any).length === 0) {
       this.updateSuspiciousAssets();
     }
 
@@ -280,7 +298,9 @@ export class AssetInfoController {
   }
 
   isMaxAgeExceeded(lastUpdated) {
-    return new Date() - new Date(lastUpdated || 0) > MAX_AGE;
+    return (
+      new Date().getTime() - new Date(lastUpdated || 0).getTime() > MAX_AGE
+    );
   }
 
   isSuspiciousAsset(assetId) {
