@@ -8,25 +8,25 @@ import { PortStream } from 'lib/portStream';
 import LocalStore, { backup } from 'lib/localStore';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
+import { AssetInfoController } from './controllers/AssetInfoController';
+import { CurrentAccountController } from './controllers/CurrentAccountController';
+import { IdentityController } from './controllers/IdentityController';
+import { IdleController } from './controllers/IdleController';
+import { MessageController } from './controllers/MessageController';
+import { NetworkController } from './controllers/NetworkController';
+import { NftInfoController } from './controllers/NftInfoController';
+import { NotificationsController } from './controllers/NotificationsController';
 import {
-  AssetInfoController,
-  CurrentAccountController,
-  IdentityController,
-  IdleController,
-  MessageController,
-  NetworkController,
-  NftInfoController,
-  NotificationsController,
-  PERMISSIONS,
   PermissionsController,
-  PreferencesController,
-  RemoteConfigController,
-  StatisticsController,
-  TrashController,
-  TxInfoController,
-  UiStateController,
-  WalletController,
-} from './controllers';
+  PERMISSIONS,
+} from './controllers/PermissionsController';
+import { PreferencesController } from './controllers/PreferencesController';
+import { RemoteConfigController } from './controllers/RemoteConfigController';
+import { StatisticsController } from './controllers/Statistics';
+import { TrashController } from './controllers/Trash';
+import { TxInfoController } from './controllers/TxInfoController';
+import { UiStateController } from './controllers/UiStateController';
+import { WalletController } from './controllers/WalletController';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
 import { getExtraFee } from './controllers/CalculateFeeController';
