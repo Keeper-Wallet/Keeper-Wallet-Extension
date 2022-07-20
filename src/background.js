@@ -16,10 +16,7 @@ import { MessageController } from './controllers/MessageController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/NotificationsController';
-import {
-  PermissionsController,
-  PERMISSIONS,
-} from './controllers/PermissionsController';
+import { PermissionsController, PERMISSIONS } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
 import { StatisticsController } from './controllers/Statistics';

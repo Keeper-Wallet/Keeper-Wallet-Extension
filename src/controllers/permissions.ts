@@ -3,6 +3,10 @@ import { BigNumber } from '@waves/bignumber';
 import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/keeperError';
+import { RemoteConfigController } from './remoteConfig';
+import ExtensionStore from 'lib/localStore';
+import { PreferencesController } from './preferences';
+import { IdentityController } from './IdentityController';
 
 export const PERMISSIONS = {
   ALL: 'all',
@@ -23,8 +27,29 @@ const findPermissionFabric = permission => item => {
   return type === permission;
 };
 
+interface Identity {
+  restoreSession: (
+    userId: unknown
+  ) => ReturnType<IdentityController['restoreSession']>;
+}
+
 export class PermissionsController {
-  constructor({ localStore, remoteConfig, getSelectedAccount, identity }) {
+  store: ObservableStore;
+  remoteConfig: RemoteConfigController;
+  getSelectedAccount: PreferencesController['getSelectedAccount'];
+  identity: Identity;
+
+  constructor({
+    localStore,
+    remoteConfig,
+    getSelectedAccount,
+    identity,
+  }: {
+    localStore: ExtensionStore;
+    remoteConfig: RemoteConfigController;
+    getSelectedAccount: PreferencesController['getSelectedAccount'];
+    identity: Identity;
+  }) {
     const defaults = {
       origins: {},
       blacklist: [],
