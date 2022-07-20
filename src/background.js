@@ -26,7 +26,7 @@ import { UiStateController } from './controllers/uiState';
 import { WalletController } from './controllers/WalletController';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
-import { getExtraFee } from './controllers/CalculateFeeController';
+import { getExtraFee } from './controllers/calculateFee';
 import { setupDnode } from './lib/dnodeUtil';
 import { WindowManager } from './lib/windowManager';
 import { verifyCustomData } from '@waves/waves-transactions';

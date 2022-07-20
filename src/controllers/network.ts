@@ -88,7 +88,7 @@ export class NetworkController {
     return this.store.getState().customCodes;
   }
 
-  getNetworkCode(network) {
+  getNetworkCode(network = undefined) {
     const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
     return this.getCustomCodes()[network] || networks[network].code;

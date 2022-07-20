@@ -12,7 +12,7 @@ import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
 import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
 import { PERMISSIONS } from './permissions';
-import { calculateFeeFabric } from './CalculateFeeController';
+import { calculateFeeFabric } from './calculateFee';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
 import {
