@@ -1571,6 +1571,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/post-message-stream@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/post-message-stream/-/post-message-stream-3.0.1.tgz#919aad3921812647fe7b0a27637d47445f887c3f"
+  integrity sha512-j9X5t0bpDezd/pCLCddMUIWv4m3gdqrK95c3Utdw6zylv7caoyWskcJ1YjhtftAk2A70f+WtLqeedTr0lqQxzQ==
+  dependencies:
+    "@types/readable-stream" "*"
+
 "@types/prop-types@*":
   version "15.7.3"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
@@ -1582,6 +1589,13 @@
   integrity sha512-7uNT9L4WQTNJejHTSTdaJhfBSCN73xtXaHFyBJ8TSwiLhe4PRuTue7Iph0s2nG9R/ifUaSnGhLUOZavlBEqDWQ==
   dependencies:
     "@types/node" "*"
+
+"@types/ramda@^0.28.15":
+  version "0.28.15"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.28.15.tgz#36bb4c8de430e3bbcd29590537569aef64409716"
+  integrity sha512-FCaLNVZry65jW8x/FDnKgjgkCNQxgc5AYMQwdNn6yW5M+62R+0nt2Y36U43dTNora9hcquemfrY5gxhE5pcilQ==
+  dependencies:
+    ts-toolbelt "^6.15.1"
 
 "@types/react-dom@^16.0.7":
   version "16.9.8"
@@ -1624,6 +1638,14 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
+
+"@types/readable-stream@*":
+  version "2.3.14"
+  resolved "https://registry.yarnpkg.com/@types/readable-stream/-/readable-stream-2.3.14.tgz#1282cdc03a1fc9ed52982aa8f0553d7c251070b9"
+  integrity sha512-8jQ5Mp7bsDJEnW/69i6nAaQMoLwAVJVc7ZRAVTrdh/o6XueQsX38TEvKuYyoQj76/mg7WdlRfMrtl9pDLCJWsg==
+  dependencies:
+    "@types/node" "*"
+    safe-buffer "*"
 
 "@types/secp256k1@^4.0.1":
   version "4.0.3"
@@ -8059,15 +8081,15 @@ rxjs@6:
   dependencies:
     tslib "^1.9.0"
 
+safe-buffer@*, safe-buffer@^5.2.0:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
+  integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
+
 safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
-
-safe-buffer@^5.2.0:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
-  integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
 
 safe-regex@^1.1.0:
   version "1.1.0"
@@ -9031,6 +9053,11 @@ ts-node@^10.8.1:
     make-error "^1.1.1"
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
+
+ts-toolbelt@^6.15.1:
+  version "6.15.5"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
+  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"

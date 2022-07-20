@@ -300,6 +300,8 @@ export function createUpdateState(store: UiStore) {
     }
 
     const nfts = getParam(state.nfts, null);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (nfts && !equals(nfts, currentState.nfts)) {
       store.dispatch({
         type: ACTION.UPDATE_NFTS,
