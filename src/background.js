@@ -6,7 +6,7 @@ import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/KeeperError';
 import PortStream from 'lib/port-stream.js';
 import LocalStore, { backup } from 'lib/localStore';
-import { getFirstLangCode } from 'lib/get-first-lang-code';
+import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import {
   AssetInfoController,
