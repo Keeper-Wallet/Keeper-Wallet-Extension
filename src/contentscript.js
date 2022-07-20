@@ -1,6 +1,6 @@
 import { extension } from 'lib/extension';
 import LocalMessageDuplexStream from 'post-message-stream';
-import PortStream from './lib/port-stream.js';
+import { PortStream } from './lib/portStream';
 
 if (shouldInject()) {
   injectBundle();

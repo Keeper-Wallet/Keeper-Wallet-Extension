@@ -1646,7 +1646,7 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/readable-stream@*":
+"@types/readable-stream@*", "@types/readable-stream@^2.3.14":
   version "2.3.14"
   resolved "https://registry.yarnpkg.com/@types/readable-stream/-/readable-stream-2.3.14.tgz#1282cdc03a1fc9ed52982aa8f0553d7c251070b9"
   integrity sha512-8jQ5Mp7bsDJEnW/69i6nAaQMoLwAVJVc7ZRAVTrdh/o6XueQsX38TEvKuYyoQj76/mg7WdlRfMrtl9pDLCJWsg==

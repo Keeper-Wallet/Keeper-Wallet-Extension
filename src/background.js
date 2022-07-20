@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/KeeperError';
-import PortStream from 'lib/port-stream.js';
+import { PortStream } from 'lib/portStream';
 import LocalStore, { backup } from 'lib/localStore';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
