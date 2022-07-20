@@ -10,7 +10,7 @@ import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
-import { ERRORS, ERRORS_DATA } from '../lib/KeeperError';
+import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
 import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';

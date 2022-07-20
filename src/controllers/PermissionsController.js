@@ -2,7 +2,7 @@ import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
 import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
-import { ERRORS } from '../lib/KeeperError';
+import { ERRORS } from '../lib/keeperError';
 
 export const PERMISSIONS = {
   ALL: 'all',

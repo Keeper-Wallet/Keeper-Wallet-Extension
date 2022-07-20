@@ -1,4 +1,4 @@
-import { ERRORS } from '../lib/KeeperError';
+import { ERRORS } from '../lib/keeperError';
 
 const emptyTxConverter = tx => {
   return { ...tx };

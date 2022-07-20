@@ -4,7 +4,7 @@ import { MSG_STATUSES } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
-import { ERRORS } from '../lib/KeeperError';
+import { ERRORS } from '../lib/keeperError';
 
 export class NotificationsController extends EventEmitter {
   constructor({
