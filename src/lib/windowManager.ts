@@ -5,6 +5,8 @@ const height = 622;
 const width = 357;
 
 export class WindowManager {
+  store: ObservableStore;
+
   constructor({ localStore }) {
     this.store = new ObservableStore(
       localStore.getInitState({
@@ -29,7 +31,7 @@ export class WindowManager {
       extension.windows.update(notificationWindow.id, { focused: true });
     } else {
       // create new notification popup
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         extension.windows.create(
           {
             url: 'notification.html',
@@ -66,10 +68,11 @@ export class WindowManager {
 
   async _getNotificationWindow() {
     // get all extension windows
-    const windows = await new Promise(resolve =>
-      extension.windows.getAll({}, windows => {
-        resolve(windows || []);
-      })
+    const windows = await new Promise<Array<{ id: unknown; type: string }>>(
+      resolve =>
+        extension.windows.getAll({}, windows => {
+          resolve(windows || []);
+        })
     );
 
     const { notificationWindowId } = this.store.getState();
