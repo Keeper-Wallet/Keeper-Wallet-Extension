@@ -1,5 +1,5 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import { setupDnode, transformMethods, cbToPromise } from './lib/dnode-util';
+import { setupDnode, transformMethods, cbToPromise } from './lib/dnodeUtil';
 import { equals } from 'ramda';
 import EventEmitter from 'events';
 

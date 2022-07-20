@@ -2,7 +2,12 @@ import Dnode from 'dnode/browser';
 import pump from 'pump';
 import ObjectMultiplex from 'obj-multiplex';
 
-export function setupDnode(connectionStream, api, name, additional) {
+export function setupDnode(
+  connectionStream,
+  api,
+  name,
+  additional = undefined
+) {
   const mux = new ObjectMultiplex();
   pump(connectionStream, mux, connectionStream);
 

@@ -10,7 +10,7 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { KEEPERWALLET_DEBUG } from '../constants';
-import { cbToPromise, setupDnode, transformMethods } from 'lib/dnode-util';
+import { cbToPromise, setupDnode, transformMethods } from 'lib/dnodeUtil';
 import PortStream from 'lib/port-stream.js';
 import { setLangs, setTabMode } from 'ui/actions';
 import { createUpdateState } from './updateState';
