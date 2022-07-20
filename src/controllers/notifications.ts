@@ -5,20 +5,45 @@ import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
 import { ERRORS } from '../lib/keeperError';
+import ExtensionStore from 'lib/localStore';
+import { RemoteConfigController } from './remoteConfig';
+import { PermissionsController } from './permissions';
+
+type GetMessagesConfig = RemoteConfigController['getMessagesConfig'];
+type CanShowNotification = PermissionsController['canUseNotification'];
+type SetNotificationPermissions =
+  PermissionsController['setNotificationPermissions'];
+
+interface Notification {
+  address: string;
+  origin: string;
+}
 
 export class NotificationsController extends EventEmitter {
+  notifications: { notifications: Notification[] };
+  store: ObservableStore;
+  getMessagesConfig: GetMessagesConfig;
+  canShowNotification: CanShowNotification;
+  setNotificationPermissions: SetNotificationPermissions;
+
   constructor({
     localStore,
     getMessagesConfig,
     canShowNotification,
     setNotificationPermissions,
+  }: {
+    localStore: ExtensionStore;
+    getMessagesConfig: GetMessagesConfig;
+    canShowNotification: CanShowNotification;
+    setNotificationPermissions: SetNotificationPermissions;
   }) {
     super();
 
     const defaults = {
       notifications: [],
     };
-    this.notifications = localStore.getInitState(defaults);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.notifications = localStore.getInitState(defaults) as any;
     this.store = new ObservableStore(this.notifications);
     localStore.subscribe(this.store);
 
@@ -140,19 +165,21 @@ export class NotificationsController extends EventEmitter {
    */
   getGroupNotificationsByAccount(account) {
     const notifications = this.getNotificationsByAccount(account);
-    return [...notifications].reverse().reduce(
-      (acc, item) => {
-        if (!acc.hash[item.origin]) {
-          acc.hash[item.origin] = [];
-          acc.items.push(acc.hash[item.origin]);
-        }
+    return [...notifications]
+      .reverse()
+      .reduce<{ items: unknown[]; hash: Record<string, Notification[]> }>(
+        (acc, item) => {
+          if (!acc.hash[item.origin]) {
+            acc.hash[item.origin] = [];
+            acc.items.push(acc.hash[item.origin]);
+          }
 
-        acc.hash[item.origin].push(item);
+          acc.hash[item.origin].push(item);
 
-        return acc;
-      },
-      { items: [], hash: {} }
-    ).items;
+          return acc;
+        },
+        { items: [], hash: {} }
+      ).items;
   }
 
   /**

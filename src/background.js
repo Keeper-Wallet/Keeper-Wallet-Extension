@@ -15,7 +15,7 @@ import { IdleController } from './controllers/IdleController';
 import { MessageController } from './controllers/MessageController';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
-import { NotificationsController } from './controllers/NotificationsController';
+import { NotificationsController } from './controllers/notifications';
 import { PermissionsController, PERMISSIONS } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
