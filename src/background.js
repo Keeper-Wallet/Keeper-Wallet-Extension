@@ -21,7 +21,7 @@ import {
   PERMISSIONS,
 } from './controllers/PermissionsController';
 import { PreferencesController } from './controllers/PreferencesController';
-import { RemoteConfigController } from './controllers/RemoteConfigController';
+import { RemoteConfigController } from './controllers/remoteConfig';
 import { StatisticsController } from './controllers/Statistics';
 import { TrashController } from './controllers/Trash';
 import { TxInfoController } from './controllers/TxInfoController';
