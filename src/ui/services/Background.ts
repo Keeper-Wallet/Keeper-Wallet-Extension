@@ -305,16 +305,6 @@ class Background {
     }
   }
 
-  async exportSeed(address, network): Promise<void> {
-    try {
-      await this.initPromise;
-      await this._connect();
-      return await this.background.encryptedSeed(address, network);
-    } catch (err) {
-      throw new Error(prepareErrorMessage(err));
-    }
-  }
-
   async editWalletName(address, name, network) {
     try {
       await this.initPromise;

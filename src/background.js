@@ -23,7 +23,7 @@ import { StatisticsController } from './controllers/statistics';
 import { TrashController } from './controllers/trash';
 import { TxInfoController } from './controllers/txInfo';
 import { UiStateController } from './controllers/uiState';
-import { WalletController } from './controllers/WalletController';
+import { WalletController } from './controllers/wallet';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
 import { getExtraFee } from './controllers/calculateFee';

@@ -2,6 +2,14 @@ import ObservableStore from 'obs-store';
 import { seedUtils } from '@waves/waves-transactions';
 import { createWallet } from 'wallets';
 import { EventEmitter } from 'events';
+import ExtensionStore from 'lib/localStore';
+import { AssetInfoController } from './assetInfo';
+import { NetworkController } from './network';
+import { TrashController } from './trash';
+import { LedgerApi } from 'wallets/ledger';
+import { Wallet } from 'wallets/wallet';
+import { IdentityApi } from './IdentityController';
+import { Account } from 'accounts/types';
 
 function encrypt(object, password) {
   const jsonObj = JSON.stringify(object);
@@ -17,7 +25,24 @@ function decrypt(ciphertext, password) {
   }
 }
 
+type GetAssetInfo = AssetInfoController['assetInfo'];
+type GetNetwork = NetworkController['getNetwork'];
+type GetNetworks = NetworkController['getNetworks'];
+type GetNetworkCode = NetworkController['getNetworkCode'];
+
 export class WalletController extends EventEmitter {
+  store: ObservableStore;
+  password: string | undefined;
+  _setSession: ExtensionStore['setSession'];
+  wallets: Array<Wallet<Account>>;
+  assetInfo: GetAssetInfo;
+  getNetwork: GetNetwork;
+  getNetworks: GetNetworks;
+  getNetworkCode: GetNetworkCode;
+  ledger: LedgerApi;
+  trashControl: TrashController;
+  identity: IdentityApi;
+
   constructor({
     localStore,
     assetInfo,
@@ -27,6 +52,15 @@ export class WalletController extends EventEmitter {
     ledger,
     trash,
     identity,
+  }: {
+    localStore: ExtensionStore;
+    assetInfo: GetAssetInfo;
+    getNetwork: GetNetwork;
+    getNetworks: GetNetworks;
+    getNetworkCode: GetNetworkCode;
+    ledger: LedgerApi;
+    trash: TrashController;
+    identity: IdentityApi;
   }) {
     super();
 
@@ -37,7 +71,8 @@ export class WalletController extends EventEmitter {
     );
     localStore.subscribe(this.store);
 
-    this.password = localStore.getInitSession().password;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.password = localStore.getInitSession().password as any;
     this._setSession = localStore.setSession.bind(localStore);
 
     this.wallets = [];
@@ -153,14 +188,6 @@ export class WalletController extends EventEmitter {
     this._restoreWallets(password);
 
     return this._findWallet(address, network).getPrivateKey();
-  }
-
-  exportSeed(address, network) {
-    const wallet = this._findWallet(address, network);
-    if (!wallet)
-      throw new Error(`Wallet not found for address: ${address} in ${network}`);
-    const seed = new seedUtils.Seed(wallet.user.seed);
-    return seed.encrypt(this.password, 5000);
   }
 
   /**
