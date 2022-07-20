@@ -12,7 +12,7 @@ import { AssetInfoController } from './controllers/assetInfo';
 import { CurrentAccountController } from './controllers/currentAccount';
 import { IdentityController } from './controllers/IdentityController';
 import { IdleController } from './controllers/idle';
-import { MessageController } from './controllers/MessageController';
+import { MessageController } from './controllers/message';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/notifications';
