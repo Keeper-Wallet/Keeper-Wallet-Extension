@@ -25,7 +25,7 @@ import { RemoteConfigController } from './controllers/RemoteConfigController';
 import { StatisticsController } from './controllers/Statistics';
 import { TrashController } from './controllers/Trash';
 import { TxInfoController } from './controllers/TxInfoController';
-import { UiStateController } from './controllers/UiStateController';
+import { UiStateController } from './controllers/uiState';
 import { WalletController } from './controllers/WalletController';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
