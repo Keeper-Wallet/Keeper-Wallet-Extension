@@ -101,16 +101,15 @@ extension.runtime.onConnectExternal.addListener(async remotePort => {
   bgService.setupPageConnection(portStream, origin);
 });
 
-extension.runtime.onInstalled.addListener(async details => {
-  const isUpdate =
-    details.reason === extension.runtime.OnInstalledReason.UPDATE;
-  if (isUpdate) {
-    await backup();
-  }
+extension.runtime.onUpdateAvailable.addListener(async () => {
+  await backup();
+  await extension.runtime.reload();
+});
 
+extension.runtime.onInstalled.addListener(async details => {
   const bgService = await bgPromise;
 
-  if (isUpdate) {
+  if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
     await bgService.localStore.clear();
     bgService.messageController.clearUnusedMessages();
     bgService.assetInfoController.addTickersForExistingAssets();
