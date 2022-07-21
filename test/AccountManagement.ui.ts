@@ -108,7 +108,7 @@ describe('Account management', function () {
 
         await this.driver.wait(
           until.elementLocated(
-            By.css('[class^="-SelectedAccountQr-module-content"]')
+            By.css('[class^="SelectedAccountQr-module-content"]')
           ),
           this.wait
         );
