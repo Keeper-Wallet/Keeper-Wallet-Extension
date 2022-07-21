@@ -1,4 +1,4 @@
-import * as styles from './passwordModal.styl';
+import styles from './passwordModal.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';

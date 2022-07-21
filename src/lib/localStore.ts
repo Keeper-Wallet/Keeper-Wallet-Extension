@@ -1,6 +1,6 @@
-import * as pump from 'pump';
-import * as debounceStream from 'debounce-stream';
-import * as asStream from 'obs-store/lib/asStream';
+import pump from 'pump';
+import debounceStream from 'debounce-stream';
+import asStream from 'obs-store/lib/asStream';
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import { extension } from 'lib/extension';

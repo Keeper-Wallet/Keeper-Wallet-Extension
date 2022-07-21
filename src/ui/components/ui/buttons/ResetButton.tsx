@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './ResetButton.module.css';
+import styles from './ResetButton.module.css';
 import { useTranslation } from 'react-i18next';
 import { reset } from 'lib/localStore';
 import { Button, Modal } from 'ui/components/ui';

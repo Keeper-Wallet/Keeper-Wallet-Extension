@@ -1,4 +1,4 @@
-import * as styles from '../../pages/styles/transactions.styl';
+import styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation } from 'react-i18next';

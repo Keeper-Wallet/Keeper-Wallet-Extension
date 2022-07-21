@@ -1,4 +1,4 @@
-import * as styles from './createOrder.styl';
+import styles from './createOrder.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, TxIcon } from '../BaseTransaction';

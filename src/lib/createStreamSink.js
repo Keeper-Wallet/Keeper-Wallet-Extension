@@ -25,10 +25,10 @@ function promiseToCallback(promise) {
   return function (cb) {
     promise.then(
       function (data) {
-        setImmediate(cb, null, data);
+        setTimeout(cb, 0, null, data);
       },
       function (err) {
-        setImmediate(cb, err);
+        setTimeout(cb, 0, err);
       }
     );
   };

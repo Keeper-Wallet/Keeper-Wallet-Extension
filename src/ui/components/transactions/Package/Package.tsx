@@ -1,4 +1,4 @@
-import * as styles from './package.styl';
+import styles from './package.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 

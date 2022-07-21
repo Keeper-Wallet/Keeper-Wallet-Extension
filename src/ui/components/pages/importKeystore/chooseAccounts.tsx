@@ -1,4 +1,4 @@
-import * as styles from './chooseAccounts.styl';
+import styles from './chooseAccounts.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

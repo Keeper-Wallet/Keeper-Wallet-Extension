@@ -1,4 +1,4 @@
-import * as styles from './Recipient.module.css';
+import styles from './Recipient.module.css';
 import * as React from 'react';
 import cn from 'classnames';
 import { validators } from '@waves/waves-transactions';

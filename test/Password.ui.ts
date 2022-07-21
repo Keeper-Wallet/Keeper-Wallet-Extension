@@ -124,7 +124,7 @@ describe('Password management', () => {
       // check we are at create new account page
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-import-import')]")
+          By.xpath("//div[contains(@class, 'import-import')]")
         ),
         this.wait
       );
@@ -151,7 +151,7 @@ describe('Password management', () => {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-menu-settingsIcon')]")
+            By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
           ),
           this.wait
         )
@@ -274,7 +274,7 @@ describe('Password management', () => {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-menu-settingsIcon')]")
+            By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
           ),
           this.wait
         )
@@ -282,14 +282,14 @@ describe('Password management', () => {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-settings-logout')]")
+            By.xpath("//div[contains(@class, 'settings-logout')]")
           ),
           this.wait
         )
         .click();
       loginForm = await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-login-content')]")
+          By.xpath("//div[contains(@class, 'login-content')]")
         ),
         this.wait
       );
@@ -349,7 +349,7 @@ describe('Password management', () => {
       expect(
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-assets-assets')]")
+            By.xpath("//div[contains(@class, 'assets-assets')]")
           ),
           this.wait
         )
@@ -363,7 +363,7 @@ describe('Password management', () => {
 
       it('"I forgot password" button opens recovery page and "Delete all" button is disabled', async function () {
         await loginForm
-          .findElement(By.xpath("//div[contains(@class, '-login-forgotLnk')]"))
+          .findElement(By.xpath("//div[contains(@class, 'login-forgotLnk')]"))
           .click();
         await this.driver.wait(
           until.elementLocated(By.css('[data-testid="deleteAllAccounts"]')),
@@ -390,7 +390,7 @@ describe('Password management', () => {
         await performLogin.call(this, currentPassword);
         await this.driver.wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-assets-assets')]")
+            By.xpath("//div[contains(@class, 'assets-assets')]")
           ),
           this.wait
         );
@@ -407,13 +407,11 @@ describe('Password management', () => {
           await this.driver
             .wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-login-content')]")
+                By.xpath("//div[contains(@class, 'login-content')]")
               ),
               this.wait
             )
-            .findElement(
-              By.xpath("//div[contains(@class, '-login-forgotLnk')]")
-            )
+            .findElement(By.xpath("//div[contains(@class, 'login-forgotLnk')]"))
             .click();
 
           defaultPhrase = await this.driver
@@ -464,7 +462,7 @@ describe('Password management', () => {
             await this.driver
               .wait(
                 until.elementLocated(
-                  By.xpath("//div[contains(@class, '-Welcome-module-content')]")
+                  By.xpath("//div[contains(@class, 'Welcome-module-content')]")
                 ),
                 this.wait
               )

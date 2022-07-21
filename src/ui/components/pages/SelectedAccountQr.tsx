@@ -1,10 +1,10 @@
-import * as QrCode from 'qrcode';
+import QrCode from 'qrcode';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { Button } from '../ui/buttons/Button';
 import { Loader } from '../ui/loader/Loader';
-import * as styles from './SelectedAccountQr.module.css';
+import styles from './SelectedAccountQr.module.css';
 
 export function SelectedAccountQr() {
   const { t } = useTranslation();

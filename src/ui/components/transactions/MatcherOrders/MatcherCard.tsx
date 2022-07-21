@@ -1,4 +1,4 @@
-import * as styles from './matcher.styl';
+import styles from './matcher.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation } from 'react-i18next';

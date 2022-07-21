@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './Spoiler.module.css';
+import styles from './Spoiler.module.css';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../';
 

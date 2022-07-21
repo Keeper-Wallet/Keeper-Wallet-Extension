@@ -1,4 +1,4 @@
-import * as styles from 'nfts/nftCard.module.css';
+import styles from 'nfts/nftCard.module.css';
 import * as React from 'react';
 import cn from 'classnames';
 import { Ellipsis } from 'ui/components/ui';

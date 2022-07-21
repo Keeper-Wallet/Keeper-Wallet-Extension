@@ -1,4 +1,4 @@
-import * as styles from './sponsorship.styl';
+import styles from './sponsorship.styl';
 import * as React from 'react';
 
 import { SponsorshipCard } from './SponsorshipCard';

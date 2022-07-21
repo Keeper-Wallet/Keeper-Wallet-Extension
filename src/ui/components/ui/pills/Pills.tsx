@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Pill } from './Pill';
-import * as styles from './pills.styl';
+import styles from './pills.styl';
 import cn from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 

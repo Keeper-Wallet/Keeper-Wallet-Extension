@@ -1,4 +1,4 @@
-import * as styles from './index.styl';
+import styles from './index.styl';
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Button } from '../../ui';

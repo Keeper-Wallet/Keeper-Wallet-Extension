@@ -1,4 +1,4 @@
-import * as styles from './styles/assets.styl';
+import styles from './styles/assets.styl';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActiveAccountCard } from '../accounts/activeAccountCard';

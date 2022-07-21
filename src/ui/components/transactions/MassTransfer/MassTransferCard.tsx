@@ -1,4 +1,4 @@
-import * as styles from './massTransfer.styl';
+import styles from './massTransfer.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { validators } from '@waves/waves-transactions';

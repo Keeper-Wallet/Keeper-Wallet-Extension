@@ -11,7 +11,7 @@ import {
   Tabs,
 } from 'ui/components/ui';
 import { useAppSelector } from 'ui/store';
-import * as styles from './txdetailtabs.styl';
+import styles from './txdetailtabs.styl';
 
 interface Props {
   children?: React.ReactNode;

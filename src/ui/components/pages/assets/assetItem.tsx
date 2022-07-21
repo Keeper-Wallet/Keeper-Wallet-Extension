@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './assetItem.module.css';
+import styles from './assetItem.module.css';
 import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';

@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import * as styles from './nftItem.module.css';
+import styles from './nftItem.module.css';
 import { AssetLogo } from './assetLogo';
 import { Loader } from '../../ui';
 import * as React from 'react';

@@ -16,7 +16,7 @@ import {
   Tabs,
 } from '../ui';
 import { PAGES } from '../../pageConfig';
-import * as styles from './importSeed.module.css';
+import styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
 
 interface Props {

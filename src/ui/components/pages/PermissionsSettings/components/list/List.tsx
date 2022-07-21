@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
-import * as styles from './list.styl';
+import styles from './list.styl';
 import {
   IAutoAuth,
   TTabTypes,

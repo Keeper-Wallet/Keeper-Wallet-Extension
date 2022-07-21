@@ -13,7 +13,7 @@ import { KEEPERWALLET_DEBUG } from './constants';
 import { ledgerService } from './ledger/service';
 import { LedgerSignRequest } from './ledger/types';
 import { cbToPromise, setupDnode, transformMethods } from './lib/dnode-util';
-import * as PortStream from './lib/port-stream.js';
+import PortStream from './lib/port-stream.js';
 import { setLangs } from './ui/actions';
 import { createUpdateState } from './ui/actions/updateState';
 import { Root } from 'ui/components/Root';
@@ -38,6 +38,7 @@ async function startUi() {
   const store = createUiStore();
 
   store.dispatch(setLangs(LANGS));
+  console.log();
 
   ReactDOM.render(
     <Provider store={store}>

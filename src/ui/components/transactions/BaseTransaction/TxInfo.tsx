@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Message } from 'ui/components/transactions/BaseTransaction/index';
 import { useAppSelector } from 'ui/store';
-import * as styles from '../../pages/styles/transactions.styl';
+import styles from '../../pages/styles/transactions.styl';
 import { DateFormat } from '../../ui';
 import { TxFee } from './TxFee';
 

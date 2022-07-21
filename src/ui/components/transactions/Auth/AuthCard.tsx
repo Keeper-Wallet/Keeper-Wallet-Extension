@@ -1,4 +1,4 @@
-import * as styles from './auth.styl';
+import styles from './auth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation, WithTranslation } from 'react-i18next';

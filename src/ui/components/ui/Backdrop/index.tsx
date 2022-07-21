@@ -1,4 +1,4 @@
-import * as styles from './Backdrop.module.css';
+import styles from './Backdrop.module.css';
 import * as React from 'react';
 
 function isClickOnScrollBar(e: MouseEvent | TouchEvent) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
-import * as styles from './settings.styl';
+import styles from './settings.styl';
 import { Input, Select } from 'ui/components/ui';
 
 const CONFIG = {

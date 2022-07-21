@@ -1,7 +1,7 @@
 import { Account } from 'accounts/types';
 import * as React from 'react';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
-import * as styles from './accountInfoHeader.module.css';
+import styles from './accountInfoHeader.module.css';
 
 interface Props {
   account: Partial<Account>;

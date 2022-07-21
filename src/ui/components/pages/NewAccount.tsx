@@ -1,4 +1,4 @@
-import * as styles from './NewAccount.module.css';
+import styles from './NewAccount.module.css';
 import { connect } from 'react-redux';
 import { createNew, setTab } from '../../actions';
 import * as React from 'react';

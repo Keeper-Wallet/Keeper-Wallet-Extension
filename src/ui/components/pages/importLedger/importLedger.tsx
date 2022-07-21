@@ -9,7 +9,7 @@ import { Input } from 'ui/components/ui/input';
 import { PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
-import * as styles from './importLedger.module.css';
+import styles from './importLedger.module.css';
 
 const USERS_PER_PAGE = 4;
 const MAX_USER_ID = 2 ** 31 - 1;

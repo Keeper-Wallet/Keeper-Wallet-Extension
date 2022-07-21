@@ -1,4 +1,4 @@
-import * as styles from 'ui/components/pages/styles/transactions.styl';
+import styles from 'ui/components/pages/styles/transactions.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApproveBtn, Button } from 'ui/components/ui';

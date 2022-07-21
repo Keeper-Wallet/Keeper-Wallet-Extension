@@ -1,4 +1,4 @@
-import * as styles from './EditModal.module.css';
+import styles from './EditModal.module.css';
 import * as React from 'react';
 import { validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,4 @@
-import * as styles from './issue.styl';
+import styles from './issue.styl';
 import * as React from 'react';
 
 import { IssueCard } from './IssueCard';

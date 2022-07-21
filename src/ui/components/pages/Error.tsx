@@ -1,4 +1,4 @@
-import * as styles from './Error.module.css';
+import styles from './Error.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadLogo } from '../head';

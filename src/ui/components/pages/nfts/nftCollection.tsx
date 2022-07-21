@@ -2,7 +2,7 @@ import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
 import { PAGES } from 'ui/pageConfig';
-import * as styles from './nftCollection.module.css';
+import styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';

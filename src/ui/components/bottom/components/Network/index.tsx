@@ -15,7 +15,7 @@ import {
 } from 'ui/actions';
 import { Modal } from 'ui/components/ui';
 import { NetworkSettings } from '../NetworkSettings';
-import * as styles from './network.styl';
+import styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
 const key = key => `bottom.${key}`;

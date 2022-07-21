@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
-import * as styles from './settings.styl';
+import styles from './settings.styl';
 import { Button, Input, Select } from 'ui/components/ui';
 import { BigNumber } from '@waves/bignumber';
 

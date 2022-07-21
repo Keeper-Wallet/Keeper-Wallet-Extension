@@ -27,7 +27,7 @@ import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { AccountBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import * as styles from './form.module.css';
+import styles from './form.module.css';
 import { SwapLayout } from './layout';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];

@@ -1,4 +1,4 @@
-import * as styles from './cancelOrder.styl';
+import styles from './cancelOrder.styl';
 import * as React from 'react';
 
 import { CancelOrderCard } from './CancelOrderCard';

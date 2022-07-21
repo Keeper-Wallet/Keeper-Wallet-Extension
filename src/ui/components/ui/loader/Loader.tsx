@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './loader.styl';
+import styles from './loader.styl';
 import cn from 'classnames';
 
 export function Loader({

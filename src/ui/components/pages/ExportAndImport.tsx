@@ -1,4 +1,4 @@
-import * as styles from './ExportAndImport.module.css';
+import styles from './ExportAndImport.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from 'ui/store';

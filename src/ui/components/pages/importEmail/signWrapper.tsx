@@ -5,7 +5,7 @@ import { Button, Modal } from 'ui/components/ui';
 import cn from 'classnames';
 import { Login } from './login';
 import { useTranslation } from 'react-i18next';
-import * as styles from './signWrapper.module.css';
+import styles from './signWrapper.module.css';
 import { LedgerConnectModal } from 'ledger/connectModal';
 import { ledgerService, LedgerServiceStatus } from 'ledger/service';
 

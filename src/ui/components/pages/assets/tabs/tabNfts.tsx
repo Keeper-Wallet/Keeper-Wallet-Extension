@@ -1,4 +1,4 @@
-import * as styles from 'ui/components/pages/styles/assets.styl';
+import styles from 'ui/components/pages/styles/assets.styl';
 import { Trans, useTranslation } from 'react-i18next';
 import { SearchInput, TabPanel } from 'ui/components/ui';
 import * as React from 'react';

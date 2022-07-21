@@ -1,4 +1,4 @@
-import * as styles from './importSuccess.module.css';
+import styles from './importSuccess.module.css';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

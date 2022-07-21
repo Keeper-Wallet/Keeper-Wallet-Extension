@@ -1,4 +1,4 @@
-import * as styles from './alias.styl';
+import styles from './alias.styl';
 import * as React from 'react';
 
 import { AliasCard } from './AliasCard';

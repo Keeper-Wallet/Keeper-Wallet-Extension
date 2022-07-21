@@ -1,4 +1,4 @@
-import * as styles from './reissue.styl';
+import styles from './reissue.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';

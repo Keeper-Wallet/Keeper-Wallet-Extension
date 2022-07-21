@@ -1,4 +1,4 @@
-import * as styles from './tabs.styl';
+import styles from './tabs.styl';
 import * as React from 'react';
 import cn from 'classnames';
 

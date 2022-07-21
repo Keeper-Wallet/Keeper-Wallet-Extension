@@ -1,4 +1,4 @@
-import * as styles from './transfer.styl';
+import styles from './transfer.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';

@@ -1,4 +1,4 @@
-import * as styles from './alias.styl';
+import styles from './alias.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, TxIcon } from '../BaseTransaction';

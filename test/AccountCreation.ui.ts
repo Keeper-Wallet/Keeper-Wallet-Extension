@@ -41,7 +41,7 @@ describe('Account creation', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-accountInfo-deleteButton')]")
+            By.xpath("//div[contains(@class, 'accountInfo-deleteButton')]")
           ),
           this.wait
         )
@@ -134,8 +134,8 @@ describe('Account creation', function () {
         await this.driver
           .findElement(
             By.xpath(
-              "//div[(contains(@class, '-pills-selectedPill-') and not(contains(@class, '-pills-hiddenPill')))]" +
-                `//div[contains(@class,'-pills-text')][text()='${word}']`
+              "//div[(contains(@class, 'pills-selectedPill') and not(contains(@class, 'pills-hiddenPill')))]" +
+                `//div[contains(@class, 'pills-text')][text()='${word}']`
             )
           )
           .click();
@@ -199,7 +199,7 @@ describe('Account creation', function () {
             const prevAddress = await this.driver
               .wait(
                 until.elementLocated(
-                  By.xpath("//div[contains(@class, '-newwallet-greyLine')]")
+                  By.xpath("//div[contains(@class, 'newwallet-greyLine')]")
                 )
               )
               .getText();
@@ -220,7 +220,7 @@ describe('Account creation', function () {
               await this.driver
                 .wait(
                   until.elementLocated(
-                    By.xpath("//div[contains(@class, '-newwallet-greyLine')]")
+                    By.xpath("//div[contains(@class, 'newwallet-greyLine')]")
                   )
                 )
                 .getText()
@@ -230,12 +230,12 @@ describe('Account creation', function () {
           it('You can select any account from the list of 5 generated', async function () {
             const addressEl = this.driver.wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-newwallet-greyLine')]")
+                By.xpath("//div[contains(@class, 'newwallet-greyLine')]")
               )
             );
             let prevAddress = null;
             const avatarList = await this.driver.findElements(
-              By.xpath("//div[contains(@class, '-avatar-avatar-')]")
+              By.xpath("//div[contains(@class, 'avatar-avatar-')]")
             );
             expect(avatarList).length(5);
 
@@ -274,9 +274,9 @@ describe('Account creation', function () {
         describe('Confirm backup page', function () {
           let clearButton: WebElement;
           const xpWriteVisiblePill =
-              "//div[(contains(@class, '-pills-selectedPill-') and not(contains(@class, '-pills-hiddenPill')))]",
+              "//div[(contains(@class, 'pills-selectedPill-') and not(contains(@class, 'pills-hiddenPill')))]",
             xpReadVisiblePill =
-              "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-selectedPill-')) and not(contains(@class, '-pills-hiddenPill')))]",
+              "//div[(contains(@class, 'pills-pill-') and not(contains(@class, 'pills-selectedPill-')) and not(contains(@class, 'pills-hiddenPill')))]",
             PILLS_COUNT = 15;
 
           it('Filling in a seed in the wrong word order', async function () {
@@ -287,7 +287,7 @@ describe('Account creation', function () {
                 .findElement(
                   By.xpath(
                     xpWriteVisiblePill +
-                      `//div[contains(@class,'-pills-text')][text()='${word}']`
+                      `//div[contains(@class, 'pills-text')][text()='${word}']`
                   )
                 )
                 .click();
@@ -295,21 +295,19 @@ describe('Account creation', function () {
             }
             const errorDiv = this.driver.wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class,'-error-error')]")
+                By.xpath("//div[contains(@class, 'error-error')]")
               ),
               this.wait
             );
             expect(await errorDiv.isDisplayed()).to.be.true;
             expect(await errorDiv.getText()).is.not.empty;
             clearButton = this.driver.findElement(
-              By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
+              By.xpath("//div[contains(@class, 'confirmBackup-clearSeed')]")
             );
             expect(
               await this.driver
                 .findElement(
-                  By.xpath(
-                    "//div[contains(@class, '-confirmBackup-clearSeed')]"
-                  )
+                  By.xpath("//div[contains(@class, 'confirmBackup-clearSeed')]")
                 )
                 .isDisplayed()
             ).to.be.true;
@@ -326,13 +324,13 @@ describe('Account creation', function () {
 
             expect(
               await this.driver.findElements(
-                By.xpath("//div[contains(@class,'-error-error')]")
+                By.xpath("//div[contains(@class, 'error-error')]")
               )
             ).to.be.empty;
 
             expect(
               await this.driver.findElements(
-                By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
+                By.xpath("//div[contains(@class, 'confirmBackup-clearSeed')]")
               )
             ).to.be.empty;
             expect(await this.driver.findElements(By.xpath(xpReadVisiblePill)))
@@ -353,7 +351,7 @@ describe('Account creation', function () {
             }
             await this.driver.wait(
               until.elementLocated(
-                By.xpath("//div[contains(@class, '-confirmBackup-clearSeed')]")
+                By.xpath("//div[contains(@class, 'confirmBackup-clearSeed')]")
               ),
               this.wait
             );
@@ -365,8 +363,8 @@ describe('Account creation', function () {
 
             const readPills = await this.driver.findElements(
               By.xpath(
-                "//div[contains(@class, '-confirmBackup-readSeed')]" +
-                  "//div[(contains(@class, '-pills-pill-') and not(contains(@class, '-pills-hiddenPill')))]"
+                "//div[contains(@class, 'confirmBackup-readSeed')]" +
+                  "//div[(contains(@class, 'pills-pill-') and not(contains(@class, 'pills-hiddenPill')))]"
               )
             );
             for (const readPill of readPills) {
@@ -387,7 +385,7 @@ describe('Account creation', function () {
                 .findElement(
                   By.xpath(
                     xpWriteVisiblePill +
-                      `//div[contains(@class,'-pills-text')][text()='${word}']`
+                      `//div[contains(@class, 'pills-text')][text()='${word}']`
                   )
                 )
                 .click();
@@ -739,7 +737,7 @@ describe('Account creation', function () {
       afterEach(async function () {
         await this.driver
           .findElement(
-            By.xpath("//div[contains(@class, '-menu-arrowBackIcon')]")
+            By.xpath("//div[contains(@class, 'menu-arrowBackIcon')]")
           )
           .click();
       });

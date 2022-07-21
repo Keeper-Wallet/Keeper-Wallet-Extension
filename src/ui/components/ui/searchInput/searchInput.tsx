@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './searchInput.module.css';
+import styles from './searchInput.module.css';
 import { Button, Input } from 'ui/components/ui';
 import cn from 'classnames';
 

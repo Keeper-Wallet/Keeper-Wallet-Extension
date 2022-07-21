@@ -1,4 +1,4 @@
-import * as styles from './script.styl';
+import styles from './script.styl';
 import * as React from 'react';
 import {
   withTranslation,

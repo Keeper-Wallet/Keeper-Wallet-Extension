@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as copy from 'copy-to-clipboard';
+import copy from 'copy-to-clipboard';
 
 interface Props {
   text: string;

@@ -1,4 +1,4 @@
-import * as styles from './unknown.styl';
+import styles from './unknown.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { ComponentProps, TxIcon } from '../BaseTransaction';

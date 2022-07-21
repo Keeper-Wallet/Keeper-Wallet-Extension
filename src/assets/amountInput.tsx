@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useIMask } from 'react-imask';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { useAppSelector } from 'ui/store';
-import * as styles from './amountInput.module.css';
+import styles from './amountInput.module.css';
 import { useTranslation } from 'react-i18next';
 import { AssetSelect, AssetSelectOption } from './assetSelect';
 import { UsdAmount } from '../ui/components/ui/UsdAmount';

@@ -1,4 +1,4 @@
-import * as styles from './burn.styl';
+import styles from './burn.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';

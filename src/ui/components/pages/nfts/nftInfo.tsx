@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './nftInfo.module.css';
+import styles from './nftInfo.module.css';
 import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './verifyCodeComponent.module.css';
+import styles from './verifyCodeComponent.module.css';
 import { Button, Error, Input } from '../../ui';
 import { useTranslation } from 'react-i18next';
 

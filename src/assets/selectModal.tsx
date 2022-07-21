@@ -10,7 +10,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAssetLogo } from './utils';
-import * as styles from './selectModal.module.css';
+import styles from './selectModal.module.css';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;

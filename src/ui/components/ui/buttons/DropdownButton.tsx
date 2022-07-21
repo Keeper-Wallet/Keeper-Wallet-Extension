@@ -1,6 +1,6 @@
 import * as React from 'react';
 import cn from 'classnames';
-import * as styles from './dropdownButton.styl';
+import styles from './dropdownButton.styl';
 import { Button } from './Button';
 
 interface Props extends React.ComponentProps<'div'> {

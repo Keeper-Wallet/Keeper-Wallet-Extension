@@ -1,10 +1,10 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import * as styles from './styles/import.styl';
+import styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
+import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { PAGES } from '../../pageConfig';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';

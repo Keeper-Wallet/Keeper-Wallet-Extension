@@ -3,7 +3,7 @@ import ColorHash from 'color-hash';
 import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { BalanceAssets } from 'ui/reducers/updateState';
-import * as styles from './assetSelect.module.css';
+import styles from './assetSelect.module.css';
 import { AssetSelectModal, AssetSelectModalOption } from './selectModal';
 import { useAssetLogo } from './utils';
 

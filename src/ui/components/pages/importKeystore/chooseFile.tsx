@@ -1,4 +1,4 @@
-import * as styles from './chooseFile.styl';
+import styles from './chooseFile.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

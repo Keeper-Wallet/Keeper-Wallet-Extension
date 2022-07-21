@@ -1,4 +1,4 @@
-import * as styles from './setScript.styl';
+import styles from './setScript.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import cn from 'classnames';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './Input.module.css';
+import styles from './Input.module.css';
 import { Input, InputProps, Error } from '..';
 
 interface Props extends InputProps {

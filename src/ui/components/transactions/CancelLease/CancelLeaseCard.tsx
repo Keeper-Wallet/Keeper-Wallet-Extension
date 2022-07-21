@@ -1,4 +1,4 @@
-import * as styles from './cancelLease.styl';
+import styles from './cancelLease.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';

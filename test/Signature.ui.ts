@@ -125,7 +125,7 @@ describe('Signature', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath("//div[contains(@class, '-final-transaction')]")
+            By.xpath("//div[contains(@class, 'final-transaction')]")
           ),
           this.wait
         )
@@ -133,7 +133,7 @@ describe('Signature', function () {
         .click();
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets-assets')]")
         ),
         this.wait
       );
@@ -153,7 +153,7 @@ describe('Signature', function () {
       await this.driver.findElement(By.css('button#reject')).click();
       const txFinalEl: WebElement = this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-final-transaction')]")
+          By.xpath("//div[contains(@class, 'final-transaction')]")
         ),
         this.wait
       );
@@ -161,7 +161,7 @@ describe('Signature', function () {
       await txFinalEl.findElement(By.css('button#close')).click();
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets-assets')]")
         ),
         this.wait
       );
@@ -182,7 +182,7 @@ describe('Signature', function () {
         .click();
       const txFinalEl: WebElement = await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-final-transaction')]")
+          By.xpath("//div[contains(@class, 'final-transaction')]")
         ),
         this.wait
       );
@@ -192,7 +192,7 @@ describe('Signature', function () {
       await txFinalEl.findElement(By.css('button#close')).click();
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets-assets')]")
         ),
         this.wait
       );
@@ -211,7 +211,7 @@ describe('Signature', function () {
 
   describe('Permission request from origin', function () {
     const authFormLocator = By.xpath(
-      "//div[contains(@class, '-originAuth-transaction')]"
+      "//div[contains(@class, 'originAuth-transaction')]"
     );
     const REJECT_FOREVER = 'Reject forever';
     let lastOrigin;
@@ -242,7 +242,7 @@ describe('Signature', function () {
       await this.driver
         .findElement(
           By.xpath(
-            "//button[contains(@class, '-dropdownButton-dropdownButton')]"
+            "//button[contains(@class, 'dropdownButton-dropdownButton')]"
           )
         )
         .click();
@@ -251,7 +251,7 @@ describe('Signature', function () {
         .click();
       const txFinalEl: WebElement = await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-final-transaction')]")
+          By.xpath("//div[contains(@class, 'final-transaction')]")
         ),
         this.wait
       );
@@ -259,7 +259,7 @@ describe('Signature', function () {
       await txFinalEl.findElement(By.css('button#close')).click();
       await this.driver.wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-assets-assets')]")
+          By.xpath("//div[contains(@class, 'assets-assets')]")
         ),
         this.wait
       );
@@ -293,7 +293,7 @@ describe('Signature', function () {
     });
 
     checkAnyTransaction(
-      By.xpath("//div[contains(@class, '-auth-transaction')]"),
+      By.xpath("//div[contains(@class, 'auth-transaction')]"),
       (approveResult: string) => {
         const parsedApproveResult = JSON.parse(approveResult);
 
@@ -359,7 +359,7 @@ describe('Signature', function () {
     });
 
     checkAnyTransaction(
-      By.xpath("//div[contains(@class, '-matcher-transaction')]"),
+      By.xpath("//div[contains(@class, 'matcher-transaction')]"),
       (signature: string) => {
         const bytes = concat(
           serializePrimitives.BASE58_STRING(senderPublicKey),
@@ -417,7 +417,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-issue-transaction')]"),
+        By.xpath("//div[contains(@class, 'issue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -462,7 +462,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-issue-transaction')]"),
+        By.xpath("//div[contains(@class, 'issue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -505,7 +505,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-issue-transaction')]"),
+        By.xpath("//div[contains(@class, 'issue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -548,7 +548,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-transfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'transfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -596,7 +596,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-transfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'transfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -638,7 +638,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-transfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'transfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -680,7 +680,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-reissue-transaction')]"),
+        By.xpath("//div[contains(@class, 'reissue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -720,7 +720,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-reissue-transaction')]"),
+        By.xpath("//div[contains(@class, 'reissue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -760,7 +760,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-reissue-transaction')]"),
+        By.xpath("//div[contains(@class, 'reissue-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -800,7 +800,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-burn-transaction')]"),
+        By.xpath("//div[contains(@class, 'burn-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -839,7 +839,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-burn-transaction')]"),
+        By.xpath("//div[contains(@class, 'burn-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -878,7 +878,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-burn-transaction')]"),
+        By.xpath("//div[contains(@class, 'burn-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -921,7 +921,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        By.xpath("//div[contains(@class, 'lease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -960,7 +960,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        By.xpath("//div[contains(@class, 'lease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -999,7 +999,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        By.xpath("//div[contains(@class, 'lease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1038,7 +1038,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-lease-transaction')]"),
+        By.xpath("//div[contains(@class, 'lease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1077,7 +1077,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-cancelLease-transaction')]"),
+        By.xpath("//div[contains(@class, 'cancelLease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1115,7 +1115,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-cancelLease-transaction')]"),
+        By.xpath("//div[contains(@class, 'cancelLease-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1153,7 +1153,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-alias-transaction')]"),
+        By.xpath("//div[contains(@class, 'alias-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1194,7 +1194,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-alias-transaction')]"),
+        By.xpath("//div[contains(@class, 'alias-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1235,7 +1235,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-massTransfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'massTransfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1281,7 +1281,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-massTransfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'massTransfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1324,7 +1324,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-massTransfer-transaction')]"),
+        By.xpath("//div[contains(@class, 'massTransfer-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1367,7 +1367,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-data-transaction')]"),
+        By.xpath("//div[contains(@class, 'data-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1405,7 +1405,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-data-transaction')]"),
+        By.xpath("//div[contains(@class, 'data-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1447,7 +1447,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-setScript-transaction')]"),
+        By.xpath("//div[contains(@class, 'setScript-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1489,7 +1489,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-setScript-transaction')]"),
+        By.xpath("//div[contains(@class, 'setScript-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1528,7 +1528,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-setScript-transaction')]"),
+        By.xpath("//div[contains(@class, 'setScript-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1566,7 +1566,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-sponsorship-transaction')]"),
+        By.xpath("//div[contains(@class, 'sponsorship-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1608,7 +1608,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-sponsorship-transaction')]"),
+        By.xpath("//div[contains(@class, 'sponsorship-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1648,7 +1648,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-sponsorship-transaction')]"),
+        By.xpath("//div[contains(@class, 'sponsorship-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1687,7 +1687,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-assetScript-transaction')]"),
+        By.xpath("//div[contains(@class, 'assetScript-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1731,7 +1731,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-assetScript-transaction')]"),
+        By.xpath("//div[contains(@class, 'assetScript-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1770,7 +1770,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"),
+        By.xpath("//div[contains(@class, 'scriptInvocation-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1823,7 +1823,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"),
+        By.xpath("//div[contains(@class, 'scriptInvocation-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1863,7 +1863,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-scriptInvocation-transaction')]"),
+        By.xpath("//div[contains(@class, 'scriptInvocation-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1904,7 +1904,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-index-transaction')]"),
+        By.xpath("//div[contains(@class, 'index-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -1993,7 +1993,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-createOrder-transaction')]"),
+        By.xpath("//div[contains(@class, 'createOrder-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -2043,7 +2043,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-createOrder-transaction')]"),
+        By.xpath("//div[contains(@class, 'createOrder-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -2095,7 +2095,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-cancelOrder-transaction')]"),
+        By.xpath("//div[contains(@class, 'cancelOrder-transaction')]"),
         approveResult => {
           const parsedApproveResult = parse(approveResult);
 
@@ -2158,7 +2158,7 @@ describe('Signature', function () {
     });
 
     checkAnyTransaction(
-      By.xpath("//div[contains(@class, '-package-transaction')]"),
+      By.xpath("//div[contains(@class, 'package-transaction')]"),
       (approveResult: string[]) => {
         expect(approveResult).to.have.length(7);
 
@@ -2412,7 +2412,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-customData-transaction')]"),
+        By.xpath("//div[contains(@class, 'customData-transaction')]"),
         (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 
@@ -2442,7 +2442,7 @@ describe('Signature', function () {
       });
 
       checkAnyTransaction(
-        By.xpath("//div[contains(@class, '-customData-transaction')]"),
+        By.xpath("//div[contains(@class, 'customData-transaction')]"),
         (approveResult: string) => {
           const parsedApproveResult = JSON.parse(approveResult);
 

@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { AssetDetail } from 'ui/services/Background';
-import * as styles from './nftList.module.css';
+import styles from './nftList.module.css';
 import { nftRowFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 import { NftCard } from 'nfts/nftCard';

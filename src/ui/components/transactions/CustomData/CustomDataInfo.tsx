@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import * as styles from './customData.styl';
+import styles from './customData.styl';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 class CustomDataInfoComponent extends React.PureComponent<

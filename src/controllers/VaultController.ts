@@ -1,4 +1,4 @@
-import * as ObservableStore from 'obs-store';
+import ObservableStore from 'obs-store';
 import { WalletController } from './WalletController';
 import { IdentityController } from './IdentityController';
 import LocalStore from '../lib/localStore';

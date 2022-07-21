@@ -4,7 +4,7 @@ import * as React from 'react';
 import { createAccount } from 'ui/actions';
 import { WalletTypes } from 'ui/services/Background';
 import { Button, Error, Input } from 'ui/components/ui';
-import * as styles from 'ui/components/pages/importDebug.module.css';
+import styles from 'ui/components/pages/importDebug.module.css';
 import { useTranslation } from 'react-i18next';
 
 export function ImportDebug() {

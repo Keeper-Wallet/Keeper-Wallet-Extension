@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './importEmail.module.css';
+import styles from './importEmail.module.css';
 import cn from 'classnames';
 
 import { useTranslation } from 'react-i18next';

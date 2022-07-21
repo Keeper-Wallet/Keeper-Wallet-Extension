@@ -1,4 +1,4 @@
-import * as styles from './lease.styl';
+import styles from './lease.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';

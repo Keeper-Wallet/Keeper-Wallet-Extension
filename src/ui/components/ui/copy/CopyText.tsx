@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as styles from './copy.styl';
-import * as copy from 'copy-to-clipboard';
+import styles from './copy.styl';
+import copy from 'copy-to-clipboard';
 import cn from 'classnames';
 
 const DEFAULT_HIDDEN_CONTENT =

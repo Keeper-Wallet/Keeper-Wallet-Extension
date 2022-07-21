@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import * as styles from './matcher.styl';
+import styles from './matcher.styl';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 class MatcherInfoComponent extends React.PureComponent<

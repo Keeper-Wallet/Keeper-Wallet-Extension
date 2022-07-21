@@ -1,4 +1,4 @@
-import * as styles from './styles/settings.styl';
+import styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';

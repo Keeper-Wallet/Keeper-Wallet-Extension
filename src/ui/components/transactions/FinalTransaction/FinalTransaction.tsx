@@ -1,4 +1,4 @@
-import * as styles from './final.styl';
+import styles from './final.styl';
 import * as React from 'react';
 import {
   useTranslation,

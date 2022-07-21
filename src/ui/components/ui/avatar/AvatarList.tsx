@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import * as React from 'react';
 import { Avatar } from './Avatar';
-import * as styles from './AvatarList.module.css';
+import styles from './AvatarList.module.css';
 
 interface AvatarListItem {
   address: string;
