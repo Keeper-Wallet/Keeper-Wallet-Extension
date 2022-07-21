@@ -50,6 +50,7 @@ const SAFE_FIELDS = new Set([
   'accounts',
   'addresses',
   'backup',
+  'initialized',
   'lastIdleKeeper',
   'lastInstallKeeper',
   'lastOpenKeeper',
