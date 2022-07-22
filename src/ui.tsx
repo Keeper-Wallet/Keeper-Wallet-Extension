@@ -38,7 +38,6 @@ async function startUi() {
   const store = createUiStore();
 
   store.dispatch(setLangs(LANGS));
-  console.log();
 
   ReactDOM.render(
     <Provider store={store}>
