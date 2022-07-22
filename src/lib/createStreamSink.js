@@ -13,23 +13,13 @@ class AsyncWritableStream extends WritableStream {
 
   // write from incomming stream to state
   _write(chunk, encoding, callback) {
-    promiseToCallback(this._asyncWriteFn(chunk, encoding))(callback);
-  }
-}
-
-function promiseToCallback(promise) {
-  if (!(typeof promise.then === 'function')) {
-    throw new TypeError('Expected a promise');
-  }
-
-  return function (cb) {
-    promise.then(
-      function (data) {
-        setTimeout(cb, 0, null, data);
+    this._asyncWriteFn(chunk, encoding).then(
+      () => {
+        callback();
       },
-      function (err) {
-        setTimeout(cb, 0, err);
+      err => {
+        callback(err);
       }
     );
-  };
+  }
 }
