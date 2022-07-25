@@ -187,6 +187,7 @@ module.exports = (_, { mode }) => {
           ? ['chrome', 'firefox', 'opera', 'edge']
           : ['chrome', 'firefox'],
         version,
+        clear: isProduction,
         compress: isProduction,
         performance: isProduction,
       }),

@@ -31,17 +31,20 @@ const BUILD_FOLDER = path.resolve(DIST_FOLDER, 'build');
 const MAX_ASSET_SIZE = 4000000;
 
 module.exports = class PlatformPlugin {
-  constructor({ platforms, version, compress, performance }) {
+  constructor({ platforms, version, clear, compress, performance }) {
     this.platforms = platforms;
     this.version = version;
+    this.clear = clear;
     this.compress = compress;
     this.performance = performance;
   }
 
   apply(compiler) {
-    compiler.hooks.beforeCompile.tapPromise('ClearDist', async () => {
-      await del(DIST_FOLDER);
-    });
+    if (this.clear) {
+      compiler.hooks.beforeCompile.tapPromise('ClearDist', async () => {
+        await del(DIST_FOLDER);
+      });
+    }
 
     compiler.hooks.afterEmit.tapPromise('AdaptExtension', async () => {
       function report(message) {
