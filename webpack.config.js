@@ -72,14 +72,14 @@ module.exports = (_, { mode }) => {
           test: /\.(png|jpe?g|gif)$/,
           type: 'asset/resource',
           generator: {
-            filename: 'assets/img/[name].[ext]',
+            filename: 'assets/img/[name][ext]',
           },
         },
         {
           test: /\.(woff2?|ttf)$/,
           type: 'asset/resource',
           generator: {
-            filename: 'assets/fonts/[name].[ext]',
+            filename: 'assets/fonts/[name][ext]',
           },
         },
         {
@@ -94,7 +94,18 @@ module.exports = (_, { mode }) => {
         {
           test: /\.styl/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            isProduction
+              ? {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    publicPath: (resourcePath, context) => {
+                      return (
+                        path.relative(path.dirname(resourcePath), context) + '/'
+                      );
+                    },
+                  },
+                }
+              : 'style-loader',
             {
               loader: 'css-loader',
               options: {
@@ -110,7 +121,18 @@ module.exports = (_, { mode }) => {
         {
           test: /\.css/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            isProduction
+              ? {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    publicPath: (resourcePath, context) => {
+                      return (
+                        path.relative(path.dirname(resourcePath), context) + '/'
+                      );
+                    },
+                  },
+                }
+              : 'style-loader',
             {
               loader: 'css-loader',
               options: {
