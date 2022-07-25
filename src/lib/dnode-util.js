@@ -62,7 +62,7 @@ export function promiseToCb(fn, context) {
       callback = noop;
     }
     fn.apply(context, args)
-      .then(result => setTimeout(callback, 0, null, result))
-      .catch(error => setTimeout(callback, 0, error));
+      .then(result => callback(null, result))
+      .catch(error => callback(null, error));
   };
 }
