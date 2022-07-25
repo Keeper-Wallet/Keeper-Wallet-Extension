@@ -17,10 +17,12 @@ export class VaultController {
   private identity: IdentityController;
 
   constructor({ localStore, wallet, identity }: Options) {
-    this.store = new ObservableStore({
-      ...localStore.getInitState({ locked: null, initialized: null }),
-      locked: !localStore.getInitSession().password,
-    });
+    this.store = new ObservableStore(
+      localStore.getInitState(
+        { locked: null, initialized: null },
+        { locked: !localStore.getInitSession().password }
+      )
+    );
     localStore.subscribe(this.store);
 
     this.wallet = wallet;
