@@ -9,9 +9,13 @@ export function Intro() {
   const [showReset, setShowReset] = React.useState(false);
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setShowReset(true);
     }, DEFAULT_TIMEOUT);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (

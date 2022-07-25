@@ -60,7 +60,10 @@ export default class ExtensionStore {
     this._initSession = await this.getSession();
   }
 
-  getInitState(defaults?: Record<string, unknown>) {
+  getInitState(
+    defaults?: Record<string, unknown>,
+    forced?: Record<string, unknown>
+  ) {
     if (!defaults) {
       return this._initState;
     }
@@ -72,7 +75,7 @@ export default class ExtensionStore {
           : acc,
       {}
     );
-    const initState = { ...defaults, ...defaultsInitState };
+    const initState = { ...defaults, ...defaultsInitState, ...(forced || {}) };
     this._state = { ...this._state, ...initState };
     return initState;
   }
@@ -121,6 +124,22 @@ export default class ExtensionStore {
     );
   }
 
+  getState(keys?: string | string[]) {
+    if (!keys) {
+      return this._state;
+    }
+
+    if (typeof keys === 'string') {
+      return { [keys]: this._state[keys] };
+    }
+
+    return keys.reduce(
+      (acc, key) =>
+        this._state[key] ? { ...acc, [key]: this._state[key] } : acc,
+      {}
+    );
+  }
+
   async get(keys?: string | string[]) {
     const storageState = extension.storage.local;
     return await this._get(storageState, keys);
@@ -136,6 +155,7 @@ export default class ExtensionStore {
 
   async set(state: Record<string, unknown>) {
     const storageState = extension.storage.local;
+    this._state = { ...this._state, ...state };
     return this._set(storageState, state);
   }
 
@@ -233,12 +253,14 @@ export default class ExtensionStore {
     await this._remove(storageState, migrateFields);
   }
 
-  async _reverseMigrate() {
-    // do nothing
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _remove(storageState: any, keys: string | string[]): Promise<void> {
+    if (typeof keys === 'string') {
+      delete this._state[keys];
+    } else {
+      keys.forEach(key => delete this._state[key]);
+    }
+
     return new Promise((resolve, reject) => {
       storageState.remove(keys, () => {
         const err = extension.runtime.lastError;
