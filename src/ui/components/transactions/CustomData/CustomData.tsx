@@ -1,4 +1,4 @@
-import styles from './customData.styl';
+import * as styles from './customData.styl';
 import * as React from 'react';
 
 import { CustomDataCard } from './CustomDataCard';

@@ -1,4 +1,4 @@
-import styles from './styles/deleteAccount.styl';
+import * as styles from './styles/deleteAccount.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';

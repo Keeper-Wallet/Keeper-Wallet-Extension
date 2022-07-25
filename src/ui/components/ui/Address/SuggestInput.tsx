@@ -1,4 +1,4 @@
-import styles from './SuggestInput.module.css';
+import * as styles from './SuggestInput.module.css';
 import * as React from 'react';
 import { libs, validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';

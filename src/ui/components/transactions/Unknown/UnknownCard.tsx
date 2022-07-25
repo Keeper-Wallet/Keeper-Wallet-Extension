@@ -1,4 +1,4 @@
-import styles from './unknown.styl';
+import * as styles from './unknown.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { ComponentProps, TxIcon } from '../BaseTransaction';
@@ -6,9 +6,7 @@ import { messageType } from './parseTx';
 
 export class UnknownCard extends React.PureComponent<ComponentProps> {
   render() {
-    const className = cn(styles.unknownTransactionCard, this.props.className, {
-      [styles.authCard_collapsed]: this.props.collapsed,
-    });
+    const className = cn(styles.unknownTransactionCard, this.props.className);
 
     return (
       <div className={className}>

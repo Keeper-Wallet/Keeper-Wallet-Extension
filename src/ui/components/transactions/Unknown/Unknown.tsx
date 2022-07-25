@@ -1,4 +1,4 @@
-import styles from './unknown.styl';
+import * as styles from './unknown.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
-import styles from './list.styl';
+import * as styles from './list.styl';
 import {
   IAutoAuth,
   TTabTypes,
@@ -16,9 +16,7 @@ class ListComponent extends React.PureComponent<IProps> {
       return (
         <div className={styles.emptyBlock}>
           <div className={styles.icon} />
-          <div
-            className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}
-          >
+          <div className="body3 margin-main-top basic500 center">
             {t('permissionsSettings.empty')}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import styles from './styles/import.styl';
+import * as styles from './styles/import.styl';
 import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';

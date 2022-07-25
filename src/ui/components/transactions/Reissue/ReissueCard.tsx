@@ -1,4 +1,4 @@
-import styles from './reissue.styl';
+import * as styles from './reissue.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -10,7 +10,7 @@ import { getAmount, messageType } from './parseTx';
 class ReissueCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.reissueTransactionCard, this.props.className, {
-      [styles.reissueCard_collapsed]: this.props.collapsed,
+      [styles.reissueCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;

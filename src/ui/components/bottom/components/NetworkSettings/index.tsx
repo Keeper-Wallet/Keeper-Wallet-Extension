@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import styles from './networkSettings.styl';
+import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { Button, Error, Input } from 'ui/components/ui';
 

@@ -1,4 +1,4 @@
-import styles from './assetScript.styl';
+import * as styles from './assetScript.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -12,7 +12,7 @@ class AssetScriptCardComponent extends React.PureComponent<ComponentProps> {
       styles.assetScriptTransactionCard,
       this.props.className,
       {
-        [styles.assetScriptCard_collapsed]: this.props.collapsed,
+        [styles.assetScriptCardCollapsed]: this.props.collapsed,
       }
     );
 

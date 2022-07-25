@@ -14,7 +14,7 @@ import { Intro } from './Intro';
 import { getConfigByTransaction } from '../transactions';
 import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
-import styles from './styles/messageList.styl';
+import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
 import { AssetDetail } from 'ui/services/Background';
 import { Account } from 'accounts/types';

@@ -14,7 +14,7 @@ import {
 } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
-import styles from './styles/messageList.styl';
+import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
 import { Message } from 'ui/components/transactions/BaseTransaction';
 import { Account } from 'accounts/types';

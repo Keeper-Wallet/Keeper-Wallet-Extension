@@ -1,4 +1,4 @@
-import styles from './data.styl';
+import * as styles from './data.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -9,7 +9,7 @@ import { ShowScript } from '../../ui';
 class DataCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.dataTransactionCard, this.props.className, {
-      [styles.dataCard_collapsed]: this.props.collapsed,
+      [styles.dataCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message } = this.props;

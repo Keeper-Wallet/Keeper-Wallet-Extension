@@ -27,7 +27,7 @@ import { UsdAmount } from 'ui/components/ui/UsdAmount';
 import { AccountBalance } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
-import styles from './form.module.css';
+import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
@@ -625,7 +625,7 @@ export function SwapForm({
                   <button
                     key={vendor}
                     className={cn(styles.toAmountCard, {
-                      [styles.toAmountCard_selected]: swapVendor === vendor,
+                      [styles.toAmountCardSelected]: swapVendor === vendor,
                     })}
                     type="button"
                     onClick={() => {
@@ -851,7 +851,7 @@ export function SwapForm({
               </div>
             </div>
 
-            <div className={cn(styles.summaryRow, styles.summaryRow_center)}>
+            <div className={cn(styles.summaryRow, styles.summaryRowCenter)}>
               <div className={styles.summaryLabel}>
                 <Tooltip
                   className={styles.tooltipContent}

@@ -1,4 +1,4 @@
-import styles from 'ui/components/pages/styles/assets.styl';
+import * as styles from 'ui/components/pages/styles/assets.styl';
 import { icontains } from 'ui/components/pages/assets/helpers';
 import { useTranslation } from 'react-i18next';
 import { AssetItem } from 'ui/components/pages/assets//assetItem';

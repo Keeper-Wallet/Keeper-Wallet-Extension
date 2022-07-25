@@ -53,11 +53,11 @@
   cursor: not-allowed;
 }
 
-.avatarListArrow_left {
+.avatarListArrowLeft {
   left: -30px;
 }
 
-.avatarListArrow_right {
+.avatarListArrowRight {
   right: -30px;
 }
 
@@ -70,7 +70,7 @@
   fill: #000;
 }
 
-.avatarListArrowSvg_left {
+.avatarListArrowSvgLeft {
   transform: scaleX(-1);
 }
 

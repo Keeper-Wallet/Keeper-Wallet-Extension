@@ -1,6 +1,6 @@
 import * as React from 'react';
 import cn from 'classnames';
-import styles from './index.styl';
+import * as styles from './index.styl';
 
 export class Tabs extends React.PureComponent<IProps> {
   selectHandler = name => () => {

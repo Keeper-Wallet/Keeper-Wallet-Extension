@@ -15,7 +15,7 @@ import background, { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
-import styles from './swap.module.css';
+import * as styles from './swap.module.css';
 
 interface Props {
   setTab: (newTab: string) => void;

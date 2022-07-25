@@ -1,4 +1,4 @@
-import styles from './wavesAuth.styl';
+import * as styles from './wavesAuth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ class WavesAuthCardComponent extends React.PureComponent<ComponentProps> {
       styles.wavesAuthTransactionCard,
       this.props.className,
       {
-        [styles.wavesAuthCard_collapsed]: this.props.collapsed,
+        [styles.wavesAuthCardCollapsed]: this.props.collapsed,
       }
     );
 

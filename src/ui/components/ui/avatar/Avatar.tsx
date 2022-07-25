@@ -2,7 +2,7 @@ import { AccountType } from 'accounts/types';
 import cn from 'classnames';
 import * as avatar from 'identity-img';
 import * as React from 'react';
-import styles from './avatar.styl';
+import * as styles from './avatar.styl';
 
 const SIZE = 67;
 

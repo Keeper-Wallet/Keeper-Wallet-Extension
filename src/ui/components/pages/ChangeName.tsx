@@ -1,4 +1,4 @@
-import styles from './styles/changeName.styl';
+import * as styles from './styles/changeName.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { changeAccountName } from '../../actions';

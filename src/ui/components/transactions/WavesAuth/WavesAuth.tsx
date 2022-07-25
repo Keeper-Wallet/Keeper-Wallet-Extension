@@ -1,4 +1,4 @@
-import styles from './wavesAuth.styl';
+import * as styles from './wavesAuth.styl';
 import * as React from 'react';
 
 import { WavesAuthCard } from './WavesAuthCard';

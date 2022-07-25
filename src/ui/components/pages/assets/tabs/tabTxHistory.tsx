@@ -1,4 +1,4 @@
-import styles from 'ui/components/pages/styles/assets.styl';
+import * as styles from 'ui/components/pages/styles/assets.styl';
 import { SearchInput, Select, TabPanel } from 'ui/components/ui';
 import { Trans, useTranslation } from 'react-i18next';
 import { icontains } from 'ui/components/pages/assets/helpers';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Popper from 'react-popper';
 import modal from '../modal/modal.styl';
 import * as ReactDOM from 'react-dom';
-import styles from './tooltip.module.css';
+import * as styles from './tooltip.module.css';
 import { Placement } from '@popperjs/core';
 import cn from 'classnames';
 

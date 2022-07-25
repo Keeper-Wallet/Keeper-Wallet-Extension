@@ -1,4 +1,4 @@
-import styles from './sponsorship.styl';
+import * as styles from './sponsorship.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -13,7 +13,7 @@ class SponsorshipCardComponent extends React.PureComponent<ComponentProps> {
       styles.sponsorshipTransactionCard,
       this.props.className,
       {
-        [styles.sponsorshipCard_collapsed]: this.props.collapsed,
+        [styles.sponsorshipCardCollapsed]: this.props.collapsed,
       }
     );
 

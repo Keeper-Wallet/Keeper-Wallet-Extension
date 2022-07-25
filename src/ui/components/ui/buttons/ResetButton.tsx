@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './ResetButton.module.css';
+import * as styles from './ResetButton.module.css';
 import { useTranslation } from 'react-i18next';
 import { reset } from 'lib/localStore';
 import { Button, Modal } from 'ui/components/ui';
@@ -47,7 +47,6 @@ export const ResetButton = ({ className }: Props) => {
             ) : (
               <Button
                 view="submit"
-                className={styles.resetModalButton}
                 onClick={() => {
                   reset();
                   setLoading(true);

@@ -7,7 +7,7 @@ import { useAppSelector } from 'ui/store';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import { Copy } from '../ui/copy/Copy';
-import styles from './activeAccountCard.module.css';
+import * as styles from './activeAccountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
 import { Loader } from '../ui/loader';
 import { Account } from '../../../accounts/types';

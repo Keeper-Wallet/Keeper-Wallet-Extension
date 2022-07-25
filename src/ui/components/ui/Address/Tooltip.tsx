@@ -1,4 +1,4 @@
-import styles from './Tooltip.module.css';
+import * as styles from './Tooltip.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from '../tooltip';

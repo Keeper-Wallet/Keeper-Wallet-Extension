@@ -1,4 +1,4 @@
-import styles from './AddressBook.module.css';
+import * as styles from './AddressBook.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';

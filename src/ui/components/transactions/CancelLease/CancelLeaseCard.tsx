@@ -1,4 +1,4 @@
-import styles from './cancelLease.styl';
+import * as styles from './cancelLease.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -14,7 +14,7 @@ class CancelLeaseCardComponent extends React.PureComponent<ComponentProps> {
       styles.cancelLeaseTransactionCard,
       this.props.className,
       {
-        [styles.cancelLeaseCard_collapsed]: this.props.collapsed,
+        [styles.cancelLeaseCardCollapsed]: this.props.collapsed,
       }
     );
 

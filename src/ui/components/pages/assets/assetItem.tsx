@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './assetItem.module.css';
+import * as styles from './assetItem.module.css';
 import { Balance, Loader } from '../../ui';
 import { Money } from '@waves/data-entities';
 import cn from 'classnames';
@@ -86,7 +86,7 @@ export function AssetItem({
           )}
         </div>
 
-        <div className={styles.balance}>
+        <div>
           <Balance
             isShortFormat={false}
             split={true}

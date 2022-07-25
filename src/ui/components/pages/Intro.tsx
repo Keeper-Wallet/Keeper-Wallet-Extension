@@ -1,4 +1,4 @@
-import styles from './styles/intro.styl';
+import * as styles from './styles/intro.styl';
 import * as React from 'react';
 import { BigLogo } from '../head';
 import { ExportButton, ResetButton } from 'ui/components/ui';
@@ -21,7 +21,7 @@ export function Intro() {
 
       {showReset && (
         <div className={styles.footer}>
-          <ExportButton className={styles.export} />
+          <ExportButton className={styles.exportButton} />
           <ResetButton className={styles.reset} />
         </div>
       )}

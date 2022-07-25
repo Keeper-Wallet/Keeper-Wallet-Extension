@@ -7,7 +7,7 @@ import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
-import styles from './styles/newwallet.styl';
+import * as styles from './styles/newwallet.styl';
 
 interface Network {
   code: string;

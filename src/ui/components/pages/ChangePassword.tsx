@@ -1,4 +1,4 @@
-import styles from './styles/changePassword.styl';
+import * as styles from './styles/changePassword.styl';
 import { connect } from 'react-redux';
 import { changePassword } from '../../actions';
 import * as React from 'react';

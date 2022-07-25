@@ -1,4 +1,4 @@
-import styles from './massTransfer.styl';
+import * as styles from './massTransfer.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { validators } from '@waves/waves-transactions';
@@ -60,7 +60,7 @@ class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
       styles.massTransferTransactionCard,
       this.props.className,
       {
-        [styles.massTransferCard_collapsed]: this.props.collapsed,
+        [styles.massTransferCardCollapsed]: this.props.collapsed,
       }
     );
 

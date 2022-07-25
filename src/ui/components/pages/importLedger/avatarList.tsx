@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import * as React from 'react';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
-import styles from './avatarList.module.css';
+import * as styles from './avatarList.module.css';
 import { Tooltip } from 'ui/components/ui/tooltip';
 
 interface ListItem {
@@ -23,7 +23,7 @@ export function LedgerAvatarList({ selectedId, size, users, onSelect }: Props) {
         <div
           key={item.address}
           className={cn(styles.item, {
-            [styles.item_selected]: selectedId === item.id,
+            [styles.itemSelected]: selectedId === item.id,
           })}
           onClick={() => {
             onSelect(item.id);

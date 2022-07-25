@@ -1,4 +1,4 @@
-import styles from './alias.styl';
+import * as styles from './alias.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, TxIcon } from '../BaseTransaction';
@@ -8,7 +8,7 @@ import { messageType } from './parseTx';
 class AliasCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.aliasTransactionCard, this.props.className, {
-      [styles.aliasCard_collapsed]: this.props.collapsed,
+      [styles.aliasCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message } = this.props;

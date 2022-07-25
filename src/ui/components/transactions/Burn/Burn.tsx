@@ -1,4 +1,4 @@
-import styles from './burn.styl';
+import * as styles from './burn.styl';
 import * as React from 'react';
 
 import { BurnCard } from './BurnCard';

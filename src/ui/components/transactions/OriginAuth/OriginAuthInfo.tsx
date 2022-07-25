@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import styles from './originAuth.styl';
+import * as styles from './originAuth.styl';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 class OriginAuthInfoComponent extends React.PureComponent<

@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import styles from './historyItem.module.css';
+import * as styles from './historyItem.module.css';
 import { Balance, Loader } from '../../ui';
 import * as React from 'react';
 import { TxIcon } from '../../transactions/BaseTransaction';

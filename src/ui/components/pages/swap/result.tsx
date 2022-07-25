@@ -7,7 +7,7 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
 import { SwapLayout } from './layout';
-import styles from './result.module.css';
+import * as styles from './result.module.css';
 
 interface Props {
   fromMoney: Money;

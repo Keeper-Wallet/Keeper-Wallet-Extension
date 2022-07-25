@@ -100,6 +100,7 @@ module.exports = (_, { mode }) => {
               options: {
                 modules: {
                   localIdentName: '[name]-[local]-[hash:base64:6]',
+                  namedExport: true,
                 },
               },
             },
@@ -115,6 +116,7 @@ module.exports = (_, { mode }) => {
               options: {
                 modules: {
                   localIdentName: '[name]-[local]-[hash:base64:6]',
+                  namedExport: true,
                 },
               },
             },

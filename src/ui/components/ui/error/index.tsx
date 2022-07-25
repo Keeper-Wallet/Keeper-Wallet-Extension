@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './error.styl';
+import * as styles from './error.styl';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 

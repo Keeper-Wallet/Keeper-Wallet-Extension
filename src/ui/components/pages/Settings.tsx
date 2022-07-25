@@ -1,4 +1,4 @@
-import styles from './styles/settings.styl';
+import * as styles from './styles/settings.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -105,7 +105,7 @@ class SettingsComponent extends React.Component<Props> {
             </Button>
           </div>
 
-          <div className={`${styles.settingsMenuItem} ${styles.export}`}>
+          <div className={`${styles.settingsMenuItem} ${styles.exportButton}`}>
             <Button
               data-testid="exportMenuItem"
               id="settingsExport"

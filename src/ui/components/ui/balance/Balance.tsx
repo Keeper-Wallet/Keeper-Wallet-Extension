@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { getAsset } from '../../../actions';
 import { AssetDetail } from 'ui/services/Background';
 import { UsdAmount } from '../UsdAmount';
-import styles from './Balance.module.css';
+import * as styles from './Balance.module.css';
 import { AppState } from 'ui/store';
 
 const SEPARATOR = '.';

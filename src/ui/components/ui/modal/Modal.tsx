@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import styles from './modal.styl';
+import * as styles from './modal.styl';
 import { CSSTransition } from 'react-transition-group';
 
 const ModalWrapper = (props: IProps) => {

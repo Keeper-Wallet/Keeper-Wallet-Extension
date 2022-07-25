@@ -1,4 +1,4 @@
-import styles from './createOrder.styl';
+import * as styles from './createOrder.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, TxIcon } from '../BaseTransaction';
@@ -20,7 +20,7 @@ class CreateOrderCardComponent extends React.PureComponent<ComponentProps> {
       styles.createOrderTransactionCard,
       this.props.className,
       {
-        [styles.createOrderCard_collapsed]: this.props.collapsed,
+        [styles.createOrderCardCollapsed]: this.props.collapsed,
       }
     );
 

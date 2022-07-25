@@ -101,7 +101,7 @@
   background-color: #bacaf4;
 }
 
-.submit-tiny {
+.submitTiny {
   height: 32px;
 }
 
@@ -171,7 +171,7 @@
   background-color: #e5494dcc;
 }
 
-.interface {
+.interfaced {
   flex-basis: auto;
   width: auto;
   height: 32px;
@@ -184,17 +184,17 @@
   box-shadow: 0 2px 4px 0 #9ba6b266;
 }
 
-.interface:not(:last-child) {
+.interfaced:not(:last-child) {
   margin-right: 14px;
 }
 
-.interface:hover {
+.interfaced:hover {
   box-shadow: 0 4px 6px 0 #9ba6b266;
 }
 
-.interface.disabled,
-.interface:disabled,
-.interface[disabled] {
+.interfaced.disabled,
+.interfaced:disabled,
+.interfaced[disabled] {
   background-color: transparent;
   border: 0.5px solid #dae1e9;
   box-shadow: none;

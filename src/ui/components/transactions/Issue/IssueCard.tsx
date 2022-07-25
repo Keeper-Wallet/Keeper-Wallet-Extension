@@ -1,4 +1,4 @@
-import styles from './issue.styl';
+import * as styles from './issue.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -10,7 +10,7 @@ import { getAmount, messageType } from './parseTx';
 class IssueCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.issueTransactionCard, this.props.className, {
-      [styles.issueCard_collapsed]: this.props.collapsed,
+      [styles.issueCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;

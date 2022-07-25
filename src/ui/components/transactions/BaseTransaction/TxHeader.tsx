@@ -1,5 +1,5 @@
 import { TransactionWallet } from '../../wallets/TransactionWallet';
-import styles from '../../pages/styles/transactions.styl';
+import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,7 @@ const OriginWarning = ({ message }: { message: Message }) => {
       <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
       <div className={cn(styles.originNetwork, 'flex')}>
         <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
-        <span className={styles.networkBottom}>
-          {t(`bottom.${message?.account?.network}`)}
-        </span>
+        <span>{t(`bottom.${message?.account?.network}`)}</span>
       </div>
     </>
   );

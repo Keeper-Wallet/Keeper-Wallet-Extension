@@ -1,4 +1,4 @@
-import styles from './styles/backupSeed.styl';
+import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';

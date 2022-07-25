@@ -10,7 +10,7 @@ import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { AssetDetail } from 'ui/services/Background';
 import { useAssetLogo } from './utils';
-import styles from './selectModal.module.css';
+import * as styles from './selectModal.module.css';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;
@@ -263,8 +263,8 @@ export function AssetSelectModal({
             {filteredAndSortedItems.map(({ asset, balance }, index) => (
               <AssetSelectItem
                 className={cn(styles.listItem, {
-                  [styles.listItem_selected]: index === selectedIndex,
-                  [styles.listItem_disabled]: asset.disabled,
+                  [styles.listItemSelected]: index === selectedIndex,
+                  [styles.listItemDisabled]: asset.disabled,
                 })}
                 network={network}
                 asset={asset}

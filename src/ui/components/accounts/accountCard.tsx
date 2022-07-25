@@ -4,7 +4,7 @@ import { Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
 import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
-import styles from './accountCard.module.css';
+import * as styles from './accountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
 import { Account } from '../../../accounts/types';
 

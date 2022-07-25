@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import styles from './wavesAuth.styl';
+import * as styles from './wavesAuth.styl';
 import { DateFormat } from '../../ui';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 

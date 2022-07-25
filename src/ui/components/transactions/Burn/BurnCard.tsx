@@ -1,4 +1,4 @@
-import styles from './burn.styl';
+import * as styles from './burn.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -10,7 +10,7 @@ import { getAmount, messageType } from './parseTx';
 class BurnCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.burnTransactionCard, this.props.className, {
-      [styles.burnCard_collapsed]: this.props.collapsed,
+      [styles.burnCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;

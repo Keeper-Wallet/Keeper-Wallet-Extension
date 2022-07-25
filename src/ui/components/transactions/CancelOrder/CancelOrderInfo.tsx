@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import styles from './cancelOrder.styl';
+import * as styles from './cancelOrder.styl';
 import { DateFormat } from '../../ui';
 import {
   ComponentProps,

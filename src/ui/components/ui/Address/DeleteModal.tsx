@@ -1,4 +1,4 @@
-import styles from './DeleteModal.module.css';
+import * as styles from './DeleteModal.module.css';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from 'ui/store';

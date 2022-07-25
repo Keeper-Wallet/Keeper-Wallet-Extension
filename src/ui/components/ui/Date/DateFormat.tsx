@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './DateFormat.module.css';
+import * as styles from './DateFormat.module.css';
 
 const DEFAULT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',

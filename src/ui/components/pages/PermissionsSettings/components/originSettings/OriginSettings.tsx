@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import cn from 'classnames';
-import styles from './settings.styl';
+import * as styles from './settings.styl';
 import { Button, Input, Select } from 'ui/components/ui';
 import { BigNumber } from '@waves/bignumber';
 
@@ -262,7 +262,6 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
               <Button
                 id="save"
-                className={styles.test}
                 type="submit"
                 view="submit"
                 disabled={!this.state.canSave}
@@ -274,7 +273,6 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           ) : (
             <Button
               id="save"
-              className={styles.test}
               type="submit"
               view="submit"
               disabled={!this.state.canSave}

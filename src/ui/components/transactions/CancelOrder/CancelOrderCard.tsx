@@ -1,4 +1,4 @@
-import styles from './cancelOrder.styl';
+import * as styles from './cancelOrder.styl';
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Message, TxIcon } from '../BaseTransaction';
@@ -20,7 +20,7 @@ class CancelOrderCardComponent extends React.PureComponent<IProps> {
       styles.cancelOrderTransactionCard,
       this.props.className,
       {
-        [styles.cancelOrderCard_collapsed]: this.props.collapsed,
+        [styles.cancelOrderCardCollapsed]: this.props.collapsed,
       }
     );
 

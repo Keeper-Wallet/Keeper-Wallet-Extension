@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useAppSelector } from 'ui/store';
 import { SwapAccountInfoHeader } from './accountInfoHeader';
-import styles from './layout.module.css';
+import * as styles from './layout.module.css';
 import { useTranslation } from 'react-i18next';
 
 interface Props {

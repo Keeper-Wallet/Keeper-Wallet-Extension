@@ -1,4 +1,4 @@
-import styles from './auth.styl';
+import * as styles from './auth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -64,7 +64,7 @@ class AuthCardComponent extends React.PureComponent<IProps> {
     const tx = { type: data.type, ...data.data };
     const { name } = tx;
     const className = cn(styles.authTransactionCard, this.props.className, {
-      [styles.authCard_collapsed]: this.props.collapsed,
+      [styles.authCardCollapsed]: this.props.collapsed,
     });
 
     return (
@@ -73,7 +73,7 @@ class AuthCardComponent extends React.PureComponent<IProps> {
           {collapsed ? (
             <React.Fragment>
               <div className={styles.smallCardContent}>
-                <div className={styles.originAuthTxIconSmall}>
+                <div>
                   <Icon icon={icon} canUseIcon={canUseIcon} small={true} />
                 </div>
                 <div>
@@ -87,7 +87,7 @@ class AuthCardComponent extends React.PureComponent<IProps> {
               </div>
             </React.Fragment>
           ) : (
-            <div className={styles.originAuthTxIcon}>
+            <div>
               <Icon icon={icon} canUseIcon={canUseIcon} />
               <div>
                 <div className="body1 font600 margin-min">{name}</div>

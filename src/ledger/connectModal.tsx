@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { ledgerService, LedgerServiceStatus } from './service';
-import styles from './connectModal.module.css';
+import * as styles from './connectModal.module.css';
 
 interface Props {
   networkCode: string;

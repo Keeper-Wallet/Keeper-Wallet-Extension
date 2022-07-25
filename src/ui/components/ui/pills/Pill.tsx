@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './pills.styl';
+import * as styles from './pills.styl';
 import cn from 'classnames';
 
 const _onClick = cb => id => cb && cb(id);

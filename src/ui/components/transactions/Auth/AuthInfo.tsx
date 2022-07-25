@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import styles from './auth.styl';
+import * as styles from './auth.styl';
 import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
 
 class AuthInfoComponent extends React.PureComponent<

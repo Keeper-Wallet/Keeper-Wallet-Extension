@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { Button } from '../ui/buttons/Button';
 import { Loader } from '../ui/loader/Loader';
-import styles from './SelectedAccountQr.module.css';
+import * as styles from './SelectedAccountQr.module.css';
 
 export function SelectedAccountQr() {
   const { t } = useTranslation();

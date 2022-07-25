@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './SetScriptCardHeader.module.css';
+import * as styles from './SetScriptCardHeader.module.css';
 import { useTranslation } from 'react-i18next';
 
 import { TxIcon } from '../BaseTransaction';

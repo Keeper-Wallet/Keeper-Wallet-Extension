@@ -1,4 +1,4 @@
-import styles from './importSuccess.module.css';
+import * as styles from './importSuccess.module.css';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,9 +66,7 @@ export function ImportSuccess() {
             {t('newAccountName.accountAddress')}
           </div>
 
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address}
-          </div>
+          <div className="grey-line">{account.address}</div>
         </>
       )}
 

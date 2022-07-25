@@ -2,7 +2,7 @@ import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
 import { PAGES } from 'ui/pageConfig';
-import styles from './nftCollection.module.css';
+import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';
@@ -79,7 +79,7 @@ export function NftCollection({
             creatorRef.current?.displayCreator
           )}
         </div>
-        <div className={styles.creator}>
+        <div>
           <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
             {props => (
               <a

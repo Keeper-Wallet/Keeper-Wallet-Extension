@@ -1,4 +1,4 @@
-import styles from './createOrder.styl';
+import * as styles from './createOrder.styl';
 import * as React from 'react';
 
 import { CreateOrderCard } from './CreateOrderCard';

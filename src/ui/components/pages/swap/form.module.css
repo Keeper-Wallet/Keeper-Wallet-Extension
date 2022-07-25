@@ -98,7 +98,7 @@
   border-color: var(--color-submit200);
 }
 
-.toAmountCard.toAmountCard_selected {
+.toAmountCard.toAmountCardSelected {
   border-color: var(--color-submit400);
 }
 
@@ -214,7 +214,7 @@
   margin-top: 1em;
 }
 
-.summaryRow_center {
+.summaryRowCenter {
   align-items: center;
 }
 

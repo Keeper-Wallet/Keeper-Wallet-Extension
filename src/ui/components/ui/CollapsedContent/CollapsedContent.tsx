@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './index.styl';
+import * as styles from './index.styl';
 import cn from 'classnames';
 
 export class CollapsedContent extends React.PureComponent<IProps, IState> {

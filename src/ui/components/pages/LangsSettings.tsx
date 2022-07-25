@@ -1,4 +1,4 @@
-import styles from './LangsSettings.module.css';
+import * as styles from './LangsSettings.module.css';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { useTranslation } from 'react-i18next';

@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Input } from '../ui/input';
 import { AddressSuggestInput } from '../ui/Address/SuggestInput';
 import { Button } from '../ui/buttons/Button';
-import styles from './send.module.css';
+import * as styles from './send.module.css';
 import { getBalances, setUiState } from 'ui/actions';
 import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';

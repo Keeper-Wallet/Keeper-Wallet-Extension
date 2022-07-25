@@ -1,4 +1,4 @@
-import styles from './scriptInvocation.styl';
+import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -13,7 +13,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> 
       styles.scriptInvocationTransactionCard,
       this.props.className,
       {
-        [styles.scriptInvocationCard_collapsed]: this.props.collapsed,
+        [styles.scriptInvocationCardCollapsed]: this.props.collapsed,
       }
     );
 

@@ -1,4 +1,4 @@
-import styles from './index.styl';
+import * as styles from './index.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -12,7 +12,7 @@ class UpdateAssetInfoCardComponent extends React.PureComponent<ComponentProps> {
       styles.updateAssetInfoTransactionCard,
       this.props.className,
       {
-        [styles.updateAssetInfoCard_collapsed]: this.props.collapsed,
+        [styles.updateAssetInfoCardCollapsed]: this.props.collapsed,
       }
     );
 

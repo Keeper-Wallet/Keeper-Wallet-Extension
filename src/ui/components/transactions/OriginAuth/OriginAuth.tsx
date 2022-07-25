@@ -1,4 +1,4 @@
-import styles from './originAuth.styl';
+import * as styles from './originAuth.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 
@@ -62,7 +62,6 @@ class OriginAuthComponent extends SignClass {
             scrollElement={this.state.el}
           >
             <ExtendedPermission
-              className={styles.collapsedContent}
               originName={message.origin}
               autoSign={null}
               showNotify={false}

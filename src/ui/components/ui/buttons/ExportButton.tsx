@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './ExportButton.module.css';
+import * as styles from './ExportButton.module.css';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { downloadKeystore } from '../../../utils/keystore';
@@ -21,7 +21,7 @@ export const ExportButton = ({ className }: Props) => {
   return accounts.length !== 0 || Object.keys(addresses).length !== 0 ? (
     <>
       <div
-        className={`${styles.export} ${className}`}
+        className={`${styles.exportWrapper} ${className}`}
         onClick={() => {
           setShowExportModal(true);
         }}

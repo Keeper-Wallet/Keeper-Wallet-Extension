@@ -1,4 +1,4 @@
-import styles from './lease.styl';
+import * as styles from './lease.styl';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
@@ -11,7 +11,7 @@ import { getAmount, messageType } from './parseTx';
 class LeaseCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.leaseTransactionCard, this.props.className, {
-      [styles.leaseCard_collapsed]: this.props.collapsed,
+      [styles.leaseCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;

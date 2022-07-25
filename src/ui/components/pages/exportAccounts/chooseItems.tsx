@@ -6,7 +6,7 @@ import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
-import styles from './chooseItems.styl';
+import * as styles from './chooseItems.styl';
 
 const allNetworks: NetworkName[] = Object.values(NetworkName);
 

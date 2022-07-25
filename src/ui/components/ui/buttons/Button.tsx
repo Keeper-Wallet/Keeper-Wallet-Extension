@@ -1,12 +1,12 @@
 import * as React from 'react';
-import styles from './Button.module.css';
+import * as styles from './Button.module.css';
 import cn from 'classnames';
 
 type View =
   | 'custom'
   | 'danger'
   | 'icon'
-  | 'interface'
+  | 'interfaced'
   | 'submit'
   | 'submitTiny'
   | 'transparent'
@@ -18,7 +18,7 @@ const getClassName = (className?: string, view?: View, loading?: boolean) =>
     [styles.danger]: view === 'danger',
     [styles.defaultView]: !view,
     [styles.icon]: view === 'icon',
-    [styles.interface]: view === 'interface',
+    [styles.interfaced]: view === 'interfaced',
     [styles.loading]: !!loading,
     [styles.submitTiny]: view === 'submitTiny',
     [styles.submit]: view === 'submit',

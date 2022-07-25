@@ -1,7 +1,7 @@
 import * as React from 'react';
 import cn from 'classnames';
 import { Button } from 'ui/components/ui/buttons';
-import styles from './list.styl';
+import * as styles from './list.styl';
 import { IAutoAuth } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
 
 export const ListItem: React.FunctionComponent<IParams> = ({
