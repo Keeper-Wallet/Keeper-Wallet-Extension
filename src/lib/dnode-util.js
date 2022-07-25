@@ -63,6 +63,6 @@ export function promiseToCb(fn, context) {
     }
     fn.apply(context, args)
       .then(result => callback(null, result))
-      .catch(error => callback(null, error));
+      .catch(error => callback(error));
   };
 }
