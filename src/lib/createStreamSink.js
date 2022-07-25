@@ -14,8 +14,8 @@ class AsyncWritableStream extends WritableStream {
   // write from incomming stream to state
   _write(chunk, encoding, callback) {
     this._asyncWriteFn(chunk, encoding).then(
-      () => {
-        callback();
+      data => {
+        callback(null, data);
       },
       err => {
         callback(err);
