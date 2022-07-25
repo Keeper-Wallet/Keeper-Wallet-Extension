@@ -17,17 +17,19 @@ export class VaultController {
   private identity: IdentityController;
 
   constructor({ localStore, wallet, identity }: Options) {
-    const { vault } = wallet.store.getState().WalletController;
-
     this.store = new ObservableStore({
       ...localStore.getInitState({ locked: null, initialized: null }),
       locked: !localStore.getInitSession().password,
-      initialized: !!vault,
     });
     localStore.subscribe(this.store);
 
     this.wallet = wallet;
     this.identity = identity;
+
+    const { vault } = wallet.store.getState().WalletController;
+    if (vault) {
+      this.store.updateState({ initialized: true });
+    }
   }
 
   private get locked(): boolean {
@@ -100,10 +102,6 @@ export class VaultController {
       delete state.locked;
       delete state.initialized;
       this.wallet.store.putState(state);
-    }
-
-    if (state.vault) {
-      this.store.updateState({ initialized: true });
     }
   }
 }
