@@ -13,7 +13,7 @@
  *  "10": {msg: string, name: string}
  *  }}
  */
-const ERRORS_DATA = {
+export const ERRORS_DATA = {
   8: { msg: 'Invalid data format', name: 'INVALID_FORMAT' },
   9: { msg: 'Invalid request data', name: 'REQUEST_ERROR' },
   10: { msg: 'User denied message', name: 'USER_DENIED' },
@@ -60,7 +60,8 @@ class KeeperError extends Error {
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
   (acc, [code, data]) => {
     const { msg, name } = data;
-    acc[name] = e => new KeeperError(msg, code, e);
+    acc[name] = (message, data) =>
+      new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
     return acc;
   },
   Object.create(null)

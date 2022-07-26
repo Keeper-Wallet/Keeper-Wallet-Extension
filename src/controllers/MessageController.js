@@ -10,7 +10,7 @@ import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
-import { ERRORS } from '../lib/KeeperError';
+import { ERRORS, ERRORS_DATA } from '../lib/KeeperError';
 import { PERMISSIONS } from './PermissionsController';
 import { calculateFeeFabric } from './CalculateFeeController';
 import { clone } from 'ramda';
@@ -113,7 +113,7 @@ export class MessageController extends EventEmitter {
     try {
       message = await this._generateMessage(messageData);
     } catch (e) {
-      throw ERRORS.REQUEST_ERROR(messageData);
+      throw ERRORS_DATA[e.code] ? e : ERRORS.UNKNOWN(e.message, e.stack);
     }
 
     const messages = this.store.getState().messages;
@@ -170,9 +170,11 @@ export class MessageController extends EventEmitter {
         return Promise.resolve(message.result);
       case MSG_STATUSES.REJECTED:
       case MSG_STATUSES.REJECTED_FOREVER:
-        return Promise.reject(ERRORS.USER_DENIED(message.status));
+        return Promise.reject(ERRORS.USER_DENIED(undefined, message.status));
       case MSG_STATUSES.FAILED:
-        return Promise.reject(ERRORS.FAILED_MSG(message.err.message));
+        return Promise.reject(
+          ERRORS.FAILED_MSG(undefined, message.err.message)
+        );
       default:
         return new Promise((resolve, reject) => {
           this.once(`${id}:finished`, finishedMessage => {
@@ -182,9 +184,11 @@ export class MessageController extends EventEmitter {
                 return resolve(finishedMessage.result);
               case MSG_STATUSES.REJECTED:
               case MSG_STATUSES.REJECTED_FOREVER:
-                return reject(ERRORS.USER_DENIED(message.status));
+                return reject(ERRORS.USER_DENIED(undefined, message.status));
               case MSG_STATUSES.FAILED:
-                return reject(ERRORS.FAILED_MSG(finishedMessage.err.message));
+                return reject(
+                  ERRORS.FAILED_MSG(undefined, finishedMessage.err.message)
+                );
               default:
                 return reject(ERRORS.UNKNOWN());
             }
@@ -580,19 +584,21 @@ export class MessageController extends EventEmitter {
   }
 
   async _generateMessage(messageData) {
-    const { options } = messageData;
-
     const message = {
       ...messageData,
       id: uuidv4(),
       timestamp: Date.now(),
-      ext_uuid: options && options.uid,
+      ext_uuid: messageData.options && messageData.options.uid,
       status: MSG_STATUSES.UNAPPROVED,
     };
 
+    if (!message.data && message.type !== 'authOrigin') {
+      throw ERRORS.REQUEST_ERROR('should contain a data field', message);
+    }
+
     const result = { ...message };
 
-    if (message.data && message.data.successPath) {
+    if (message.data.successPath) {
       result.successPath = message.data.successPath;
     }
 
@@ -601,7 +607,11 @@ export class MessageController extends EventEmitter {
         result.data = message.data;
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        result.messageHash = wavesAuth(message.data, 'fake user').hash;
+        try {
+          result.messageHash = wavesAuth(message.data, 'fake user').hash;
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, message);
+        }
         break;
       case 'auth':
         try {
@@ -634,14 +644,15 @@ export class MessageController extends EventEmitter {
         );
         break;
       case 'transactionPackage': {
-        if (!Array.isArray(message.data))
-          throw new Error('Should contain array of txParams');
         const { max, allow_tx } = this.getPackConfig();
 
         const msgs = message.data.length;
 
         if (!msgs || msgs > max) {
-          throw new Error(`Max transactions in pack is ${max}`);
+          throw ERRORS.REQUEST_ERROR(
+            `max transactions in pack is ${max}`,
+            message
+          );
         }
 
         const unavailableTx = message.data.filter(
@@ -649,7 +660,10 @@ export class MessageController extends EventEmitter {
         );
 
         if (unavailableTx.length) {
-          throw new Error(`Tx type can be ${allow_tx.join(', ')}`);
+          throw ERRORS.REQUEST_ERROR(
+            `tx type can be ${allow_tx.join(', ')}`,
+            message
+          );
         }
 
         const ids = [];
@@ -720,7 +734,7 @@ export class MessageController extends EventEmitter {
       }
       case 'transaction': {
         if (!result.data.type || result.data.type >= 1000) {
-          throw ERRORS.REQUEST_ERROR(result.data);
+          throw ERRORS.REQUEST_ERROR('invalid transaction type', message);
         }
 
         this._validateTx(result.data, message.account);
@@ -787,10 +801,14 @@ export class MessageController extends EventEmitter {
       case 'customData':
         result.data.publicKey = message.data.publicKey =
           message.data.publicKey || message.account.publicKey;
-        result.messageHash = customData(result.data, 'fake user').hash;
+        try {
+          result.messageHash = customData(result.data, 'fake user').hash;
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, message);
+        }
         break;
       default:
-        throw new Error(`Incorrect type "${message.type}"`);
+        throw ERRORS.REQUEST_ERROR(`incorrect type "${message.type}"`, message);
     }
 
     return result;
@@ -889,35 +907,35 @@ export class MessageController extends EventEmitter {
 
   _validateTx(tx, account) {
     if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
-      throw new Error('fee is not valid');
+      throw ERRORS.REQUEST_ERROR('fee is not valid', tx);
     }
 
     if (
       'chainId' in tx.data &&
       tx.data.chainId !== this.networkController.getNetworkCode().charCodeAt(0)
     ) {
-      throw new Error('chainId does not match current network');
+      throw ERRORS.REQUEST_ERROR('chainId does not match current network', tx);
     }
 
     const versions = getTxVersions(account.type)[tx.type];
 
     if ('version' in tx.data && !versions.includes(tx.data.version)) {
-      throw new Error('Unsupported tx version');
+      throw ERRORS.REQUEST_ERROR('unsupported tx version', tx);
     }
 
     switch (tx.type) {
       case TRANSACTION_TYPE.ISSUE:
         if (!this._isNumberLikePositive(tx.data.quantity)) {
-          throw new Error('quantity is not valid');
+          throw ERRORS.REQUEST_ERROR('quantity is not valid', tx);
         }
 
         if (tx.data.precision < 0) {
-          throw new Error('precision is not valid');
+          throw ERRORS.REQUEST_ERROR('precision is not valid', tx);
         }
         break;
       case TRANSACTION_TYPE.TRANSFER:
         if (!this._isMoneyLikeValuePositive(tx.data.amount)) {
-          throw new Error('amount is not valid');
+          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
         }
         break;
       case TRANSACTION_TYPE.REISSUE:
@@ -925,7 +943,7 @@ export class MessageController extends EventEmitter {
           !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
         ) {
-          throw new Error('quantity is not valid');
+          throw ERRORS.REQUEST_ERROR('quantity is not valid', tx);
         }
         break;
       case TRANSACTION_TYPE.BURN:
@@ -933,7 +951,7 @@ export class MessageController extends EventEmitter {
           !this._isMoneyLikeValuePositive(tx.data.quantity || tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.quantity || tx.data.amount)
         ) {
-          throw new Error('amount is not valid');
+          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
         }
         break;
       case TRANSACTION_TYPE.LEASE:
@@ -941,7 +959,7 @@ export class MessageController extends EventEmitter {
           !this._isMoneyLikeValuePositive(tx.data.amount) &&
           !this._isNumberLikePositive(tx.data.amount)
         ) {
-          throw new Error('amount is not valid');
+          throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
         }
         break;
       case TRANSACTION_TYPE.MASS_TRANSFER:
@@ -950,7 +968,7 @@ export class MessageController extends EventEmitter {
             !this._isMoneyLikeValuePositive(amount) &&
             !this._isNumberLikePositive(amount)
           ) {
-            throw new Error('amount is not valid');
+            throw ERRORS.REQUEST_ERROR('amount is not valid', tx);
           }
         });
         break;
@@ -959,7 +977,7 @@ export class MessageController extends EventEmitter {
         const bn = value === null ? null : new BigNumber(value);
 
         if (!bn || !bn.isFinite() || bn.lt(0)) {
-          throw new Error('minSponsoredAssetFee is not valid');
+          throw ERRORS.REQUEST_ERROR('minSponsoredAssetFee is not valid', tx);
         }
         break;
       }
@@ -967,7 +985,7 @@ export class MessageController extends EventEmitter {
         if (tx.data.payment) {
           tx.data.payment.forEach(payment => {
             if (!this._isMoneyLikeValuePositive(payment)) {
-              throw new Error('payment is not valid');
+              throw ERRORS.REQUEST_ERROR('payment is not valid', tx);
             }
           });
         }
@@ -986,19 +1004,19 @@ export class MessageController extends EventEmitter {
 
   _validateOrder(order) {
     if (order.type !== 1002) {
-      throw new Error('Unexpected type');
+      throw ERRORS.REQUEST_ERROR('unexpected type', order);
     }
 
     if (!this._isMoneyLikeValuePositive(order.data.amount)) {
-      throw new Error('amount is not valid');
+      throw ERRORS.REQUEST_ERROR('amount is not valid', order);
     }
 
     if (!this._isMoneyLikeValuePositive(order.data.price)) {
-      throw new Error('price is not valid');
+      throw ERRORS.REQUEST_ERROR('price is not valid', order);
     }
 
     if (!this._isMoneyLikeValuePositive(order.data.matcherFee)) {
-      throw new Error('matcherFee is not valid');
+      throw ERRORS.REQUEST_ERROR('matcherFee is not valid', order);
     }
   }
 

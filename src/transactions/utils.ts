@@ -37,6 +37,7 @@ import {
   TTransactionType,
   WithSender,
 } from '@waves/waves-transactions/dist/transactions';
+import { ERRORS } from '../lib/KeeperError';
 import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';
@@ -396,278 +397,323 @@ export const convertFromSa = {
     const fallbackVersion = getTxVersions(accountType)[input.type][0];
 
     switch (input.type) {
-      case TRANSACTION_TYPE.ISSUE:
-        return convertLongToBigNumber(
-          issue(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              name: input.data.name,
-              description: input.data.description,
-              quantity: new BigNumber(input.data.quantity),
-              script: input.data.script || null,
-              decimals: input.data.precision,
-              reissuable: input.data.reissuable,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              chainId: input.data.chainId || defaultChainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+      case TRANSACTION_TYPE.ISSUE: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          name: input.data.name,
+          description: input.data.description,
+          quantity: new BigNumber(input.data.quantity),
+          script: input.data.script || null,
+          decimals: input.data.precision,
+          reissuable: input.data.reissuable,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          chainId: input.data.chainId || defaultChainId,
+          proofs: input.data.proofs || [],
+        };
+
+        try {
+          return convertLongToBigNumber(issue(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
       case TRANSACTION_TYPE.TRANSFER: {
         const chainId = input.data.chainId || defaultChainId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          assetId: input.data.amount.asset.id,
+          recipient: processAliasOrAddress(input.data.recipient, chainId),
+          amount: input.data.amount.getCoins(),
+          attachment: input.data.attachment
+            ? base58Encode(fromRawIn(input.data.attachment))
+            : '',
+          fee: input.data.fee?.getCoins(),
+          feeAssetId: input.data.fee?.asset.id,
+          timestamp: input.data.timestamp,
+          chainId,
+          proofs: input.data.proofs || [],
+        };
 
-        return convertLongToBigNumber(
-          transfer(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              assetId: input.data.amount.asset.id,
-              recipient: processAliasOrAddress(input.data.recipient, chainId),
-              amount: input.data.amount.getCoins(),
-              attachment: input.data.attachment
-                ? base58Encode(fromRawIn(input.data.attachment))
-                : '',
-              fee: input.data.fee?.getCoins(),
-              feeAssetId: input.data.fee?.asset.id,
-              timestamp: input.data.timestamp,
-              chainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(transfer(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
       case TRANSACTION_TYPE.REISSUE: {
         const quantity = input.data.quantity || input.data.amount;
         const assetId =
           quantity instanceof Money ? quantity.asset.id : input.data.assetId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          assetId,
+          quantity:
+            quantity instanceof Money
+              ? quantity.getCoins()
+              : new BigNumber(quantity),
+          reissuable: input.data.reissuable,
+          chainId: input.data.chainId || defaultChainId,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+        };
 
-        return convertLongToBigNumber(
-          reissue(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              assetId,
-              quantity:
-                quantity instanceof Money
-                  ? quantity.getCoins()
-                  : new BigNumber(quantity),
-              reissuable: input.data.reissuable,
-              chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(reissue(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
       case TRANSACTION_TYPE.BURN: {
         const quantity = input.data.quantity || input.data.amount;
         const assetId =
           quantity instanceof Money ? quantity.asset.id : input.data.assetId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          assetId,
+          amount:
+            quantity instanceof Money
+              ? quantity.getCoins()
+              : new BigNumber(quantity),
+          chainId: input.data.chainId || defaultChainId,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+        };
 
-        return convertLongToBigNumber(
-          burn(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              assetId,
-              amount:
-                quantity instanceof Money
-                  ? quantity.getCoins()
-                  : new BigNumber(quantity),
-              chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(burn(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
       case TRANSACTION_TYPE.LEASE: {
         const chainId = input.data.chainId || defaultChainId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          amount:
+            input.data.amount instanceof Money
+              ? input.data.amount.getCoins()
+              : new BigNumber(input.data.amount),
+          recipient: processAliasOrAddress(input.data.recipient, chainId),
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+          chainId,
+        };
 
-        return convertLongToBigNumber(
-          lease(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              amount:
-                input.data.amount instanceof Money
-                  ? input.data.amount.getCoins()
-                  : new BigNumber(input.data.amount),
-              recipient: processAliasOrAddress(input.data.recipient, chainId),
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-              chainId,
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(lease(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
-      case TRANSACTION_TYPE.CANCEL_LEASE:
-        return convertLongToBigNumber(
-          cancelLease(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              leaseId: input.data.leaseId,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              chainId: input.data.chainId || defaultChainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
-      case TRANSACTION_TYPE.ALIAS:
-        return convertLongToBigNumber(
-          alias(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              alias: input.data.alias,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              chainId: input.data.chainId || defaultChainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+      case TRANSACTION_TYPE.CANCEL_LEASE: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          leaseId: input.data.leaseId,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          chainId: input.data.chainId || defaultChainId,
+          proofs: input.data.proofs || [],
+        };
+
+        try {
+          return convertLongToBigNumber(
+            cancelLease(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
+      case TRANSACTION_TYPE.ALIAS: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          alias: input.data.alias,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          chainId: input.data.chainId || defaultChainId,
+          proofs: input.data.proofs || [],
+        };
+
+        try {
+          return convertLongToBigNumber(alias(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
       case TRANSACTION_TYPE.MASS_TRANSFER: {
         const chainId = input.data.chainId || defaultChainId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          assetId: input.data.totalAmount.asset.id,
+          transfers: input.data.transfers.map(transfer => ({
+            amount: new BigNumber(transfer.amount),
+            recipient: processAliasOrAddress(transfer.recipient, chainId),
+          })),
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          attachment: input.data.attachment
+            ? base58Encode(fromRawIn(input.data.attachment))
+            : '',
+          proofs: input.data.proofs || [],
+          chainId,
+        };
 
-        return convertLongToBigNumber(
-          massTransfer(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              assetId: input.data.totalAmount.asset.id,
-              transfers: input.data.transfers.map(transfer => ({
-                amount: new BigNumber(transfer.amount),
-                recipient: processAliasOrAddress(transfer.recipient, chainId),
-              })),
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              attachment: input.data.attachment
-                ? base58Encode(fromRawIn(input.data.attachment))
-                : '',
-              proofs: input.data.proofs || [],
-              chainId,
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(
+            massTransfer(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
-      case TRANSACTION_TYPE.DATA:
-        return convertLongToBigNumber(
-          data(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-              chainId: input.data.chainId || defaultChainId,
-              data: input.data.data.map(item =>
-                item.type === 'integer'
-                  ? { ...item, value: new BigNumber(item.value) }
-                  : item
-              ),
-            })
-          )
-        );
-      case TRANSACTION_TYPE.SET_SCRIPT:
-        return convertLongToBigNumber(
-          setScript(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-              script: input.data.script || null,
-            })
-          )
-        );
-      case TRANSACTION_TYPE.SPONSORSHIP:
-        return convertLongToBigNumber(
-          sponsorship(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
-              assetId: input.data.minSponsoredAssetFee.asset.id,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              chainId: input.data.chainId || defaultChainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
-      case TRANSACTION_TYPE.SET_ASSET_SCRIPT:
-        return convertLongToBigNumber(
-          setAssetScript(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              assetId: input.data.assetId,
-              chainId: input.data.chainId || defaultChainId,
-              fee: input.data.fee?.getCoins(),
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-              script: input.data.script,
-            })
-          )
-        );
+      case TRANSACTION_TYPE.DATA: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+          chainId: input.data.chainId || defaultChainId,
+          data: input.data.data.map(item =>
+            item.type === 'integer'
+              ? { ...item, value: new BigNumber(item.value) }
+              : item
+          ),
+        };
+
+        try {
+          return convertLongToBigNumber(data(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
+      case TRANSACTION_TYPE.SET_SCRIPT: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          chainId: input.data.chainId || defaultChainId,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+          script: input.data.script || null,
+        };
+
+        try {
+          return convertLongToBigNumber(setScript(convertBigNumberToLong(tx)));
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
+      case TRANSACTION_TYPE.SPONSORSHIP: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          minSponsoredAssetFee: input.data.minSponsoredAssetFee.getCoins(),
+          assetId: input.data.minSponsoredAssetFee.asset.id,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          chainId: input.data.chainId || defaultChainId,
+          proofs: input.data.proofs || [],
+        };
+
+        try {
+          return convertLongToBigNumber(
+            sponsorship(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
+      case TRANSACTION_TYPE.SET_ASSET_SCRIPT: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          assetId: input.data.assetId,
+          chainId: input.data.chainId || defaultChainId,
+          fee: input.data.fee?.getCoins(),
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+          script: input.data.script,
+        };
+
+        try {
+          return convertLongToBigNumber(
+            setAssetScript(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
       case TRANSACTION_TYPE.INVOKE_SCRIPT: {
         const chainId = input.data.chainId || defaultChainId;
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          dApp: processAliasOrAddress(input.data.dApp, chainId),
+          call: input.data.call
+            ? {
+                ...input.data.call,
+                args: input.data.call.args.map(convertArg),
+              }
+            : undefined,
+          payment: input.data.payment.map(payment => ({
+            amount: payment.getCoins(),
+            assetId: payment.asset.id,
+          })),
+          fee: input.data.fee?.getCoins(),
+          feeAssetId: input.data.fee?.asset.id,
+          timestamp: input.data.timestamp,
+          chainId,
+          proofs: input.data.proofs || [],
+        };
 
-        return convertLongToBigNumber(
-          invokeScript(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              dApp: processAliasOrAddress(input.data.dApp, chainId),
-              call: input.data.call
-                ? {
-                    ...input.data.call,
-                    args: input.data.call.args.map(convertArg),
-                  }
-                : undefined,
-              payment: input.data.payment.map(payment => ({
-                amount: payment.getCoins(),
-                assetId: payment.asset.id,
-              })),
-              fee: input.data.fee?.getCoins(),
-              feeAssetId: input.data.fee?.asset.id,
-              timestamp: input.data.timestamp,
-              chainId,
-              proofs: input.data.proofs || [],
-            })
-          )
-        );
+        try {
+          return convertLongToBigNumber(
+            invokeScript(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
       }
-      case TRANSACTION_TYPE.UPDATE_ASSET_INFO:
-        return convertLongToBigNumber(
-          updateAssetInfo(
-            convertBigNumberToLong({
-              version: input.data.version || fallbackVersion,
-              senderPublicKey: input.data.senderPublicKey,
-              name: input.data.name,
-              description: input.data.description,
-              assetId: input.data.assetId,
-              fee: input.data.fee?.getCoins().toNumber(),
-              feeAssetId: input.data.fee?.asset.id,
-              timestamp: input.data.timestamp,
-              proofs: input.data.proofs || [],
-              chainId: input.data.chainId || defaultChainId,
-            })
-          )
-        );
+      case TRANSACTION_TYPE.UPDATE_ASSET_INFO: {
+        const tx = {
+          version: input.data.version || fallbackVersion,
+          senderPublicKey: input.data.senderPublicKey,
+          name: input.data.name,
+          description: input.data.description,
+          assetId: input.data.assetId,
+          fee: input.data.fee?.getCoins().toNumber(),
+          feeAssetId: input.data.fee?.asset.id,
+          timestamp: input.data.timestamp,
+          proofs: input.data.proofs || [],
+          chainId: input.data.chainId || defaultChainId,
+        };
+
+        try {
+          return convertLongToBigNumber(
+            updateAssetInfo(convertBigNumberToLong(tx))
+          );
+        } catch (e) {
+          throw ERRORS.REQUEST_ERROR(e.message, input);
+        }
+      }
       default:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        throw new Error(`Unexpected type: ${(input as any).type}`);
+        throw ERRORS.REQUEST_ERROR(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          `unexpected type: ${(input as any).type}`,
+          input
+        );
     }
   },
   auth: (input: SaAuth): NativeAuth => ({

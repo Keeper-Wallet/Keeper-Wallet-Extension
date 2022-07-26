@@ -60,17 +60,19 @@ export class NotificationsController extends EventEmitter {
     const { title, message } = data;
 
     if (!title) {
-      throw ERRORS.NOTIFICATION_DATA_ERROR(`title is required`);
+      throw ERRORS.NOTIFICATION_DATA_ERROR(undefined, `title is required`);
     }
 
     if (title && title.length > notification_title_max) {
       throw ERRORS.NOTIFICATION_DATA_ERROR(
+        undefined,
         `title has more than ${notification_title_max} characters`
       );
     }
 
     if (message && message.length > notification_message_max) {
       throw ERRORS.NOTIFICATION_DATA_ERROR(
+        undefined,
         `message has more than ${notification_message_max} characters`
       );
     }
