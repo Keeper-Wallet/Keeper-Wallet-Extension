@@ -1,18 +1,3 @@
-/**
- * @type {
- * {
- *  "8": {msg: string, name: string},
- *  "9": {msg: string, name: string},
- *  "11": {msg: string, name: string},
- *  "12": {msg: string, name: string},
- *  "13": {msg: string, name: string},
- *  "14": {msg: string, name: string},
- *  "15": {msg: string, name: string},
- *  "16": {msg: string, name: string},
- *  "17": {msg: string, name: string},
- *  "10": {msg: string, name: string}
- *  }}
- */
 export const ERRORS_DATA = {
   8: { msg: 'Invalid data format', name: 'INVALID_FORMAT' },
   9: { msg: 'Invalid request data', name: 'REQUEST_ERROR' },
@@ -46,28 +31,10 @@ class KeeperError extends Error {
   }
 }
 
-/**
- * @type {
- *  {
- *    "INVALID_FORMAT": (function(*=): KeeperError)
- *    "REQUEST_ERROR": (function(*=): KeeperError)
- *    "USER_DENIED": (function(*=): KeeperError)
- *    "UNKNOWN": (function(*=): KeeperError)
- *    "API_DENIED": (function(*=): KeeperError)
- *    "INIT_KEEPER": (function(*=): KeeperError)
- *    "EMPTY_KEEPER": (function(*=): KeeperError)
- *    "UNKNOWN_IDLE": (function(*=): KeeperError)
- *    "FAILED_MSG": (function(*=): KeeperError)
- *    "UNKNOWN_TX": (function(*=): KeeperError)
- *    "NOTIFICATION_ERROR": (function(*=): KeeperError)
- *    "NOTIFICATION_DATA_ERROR": (function(*=): KeeperError)
- *  }
- * }
- */
 export const ERRORS = Object.entries(ERRORS_DATA).reduce(
   (acc, [code, data]) => {
     const { msg, name } = data;
-    acc[name] = (message, data) =>
+    acc[name] = (message: unknown, data: unknown) =>
       new KeeperError(message ? `${msg}: ${message}` : msg, code, data);
     return acc;
   },

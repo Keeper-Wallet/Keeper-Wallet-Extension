@@ -4,10 +4,10 @@ import { BigNumber } from '@waves/bignumber';
 import { Loader } from '../loader';
 import { connect } from 'react-redux';
 import { getAsset } from '../../../actions';
-import { AssetDetail } from 'ui/services/Background';
 import { UsdAmount } from '../UsdAmount';
 import * as styles from './Balance.module.css';
 import { AppState } from 'ui/store';
+import { AssetDetail } from 'assets/types';
 
 const SEPARATOR = '.';
 
@@ -19,7 +19,7 @@ const Loading = ({ children }: { children: React.ReactNode }) => (
 );
 
 interface Props {
-  balance: Money | string | BigNumber;
+  balance: Money | string | BigNumber | undefined;
   assetId?: string;
   split?: boolean;
   showAsset?: boolean;
@@ -28,7 +28,7 @@ interface Props {
   children?: React.ReactNode;
   addSign?: string;
   className?: string;
-  assets?: Record<string, AssetDetail>;
+  assets: Record<string, AssetDetail>;
   getAsset: (id: string) => void;
 }
 
@@ -36,7 +36,7 @@ const BalanceComponent = ({
   balance,
   split,
   getAsset,
-  addSign = null,
+  addSign,
   className,
   showAsset,
   showUsdAmount,

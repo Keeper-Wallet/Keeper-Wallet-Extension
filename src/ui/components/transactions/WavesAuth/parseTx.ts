@@ -17,6 +17,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: unknown, type: string) {
+export function isMe(tx: unknown, type: string | null) {
   return type === messageType;
 }

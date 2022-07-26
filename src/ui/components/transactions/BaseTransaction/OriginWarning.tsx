@@ -1,17 +1,15 @@
 import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps } from 'ui/components/transactions/BaseTransaction/index';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { MessageComponentProps } from '../types';
 
 class OriginWarningComponent extends React.PureComponent<
-  Pick<ComponentProps, 't' | 'message'>
+  Pick<MessageComponentProps, 'message'> & WithTranslation
 > {
-  render(): React.ReactNode {
+  render() {
     const { t, message } = this.props;
-    const {
-      account: { network },
-    } = message;
+    const { network } = message.account;
 
     if (!message.origin) {
       return null;

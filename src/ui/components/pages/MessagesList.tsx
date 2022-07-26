@@ -16,9 +16,12 @@ import { NotificationCard } from '../notifications';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Button } from '../ui';
-import { AssetDetail } from 'ui/services/Background';
-import { Account } from 'accounts/types';
-import { Message } from 'ui/components/transactions/BaseTransaction';
+import { AppState } from 'ui/store';
+import { PageComponentProps } from 'ui/pageConfig';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { MessageStoreItem } from 'messages/types';
+import { AssetDetail } from 'assets/types';
 
 const Messages = ({ messages, assets, onSelect }: IProps) => {
   return (
@@ -46,50 +49,78 @@ const Messages = ({ messages, assets, onSelect }: IProps) => {
 };
 
 interface IProps {
-  messages: Message[];
+  messages: MessageStoreItem[];
   assets: Record<string, AssetDetail>;
-  onSelect: (...args: unknown[]) => void;
-  onReject: (...args: unknown[]) => void;
+  onSelect: (message: MessageStoreItem | null) => void;
+  onReject: (messageId: string) => void;
 }
 
-const Notifications = ({ notifications, onShow, onDelete }) => {
-  return notifications.map(items => {
-    const group = [...items].reverse();
-    try {
-      return (
-        <div key={group[0].origin} className={styles.cardItem}>
-          <NotificationCard
-            onShow={onShow}
-            notifications={group}
-            collapsed={true}
-            deleteNotifications={onDelete}
-          />
-        </div>
-      );
-    } catch (e) {
-      return null;
-    }
-  });
+const Notifications = ({
+  notifications,
+  onShow,
+  onDelete,
+}: {
+  notifications: NotificationsStoreItem[][];
+  onShow: (notification: NotificationsStoreItem[] | null) => void;
+  onDelete: (ids: string[]) => void;
+}) => {
+  return (
+    <>
+      {notifications.map(items => {
+        const group = [...items].reverse();
+        try {
+          return (
+            <div key={group[0].origin} className={styles.cardItem}>
+              <NotificationCard
+                onShow={onShow}
+                notifications={group}
+                collapsed={true}
+                deleteNotifications={onDelete}
+              />
+            </div>
+          );
+        } catch (e) {
+          return null;
+        }
+      })}
+    </>
+  );
 };
 
-interface Props extends WithTranslation {
-  selectedAccount: Account;
-  messages: unknown[];
+interface StateProps {
+  balance: unknown;
+  selectedAccount: Partial<PreferencesAccount>;
   assets: Record<string, AssetDetail>;
-  notifications: unknown[];
-
-  getAsset: (assetId: string) => void;
-  setActiveMessage: (message: unknown) => void;
-  deleteNotifications: (ids: string[]) => void;
-  setActiveNotification: (notification: unknown) => void;
-  reject: (id: string) => void;
+  messages: MessageStoreItem[];
+  notifications: NotificationsStoreItem[][];
+  hasNewMessages: boolean;
 }
 
-class MessageListComponent extends React.Component<Props> {
-  readonly state = { loading: true };
-  readonly props;
+interface DispatchProps {
+  setActiveNotification: (
+    notification: NotificationsStoreItem[] | null
+  ) => void;
+  setActiveMessage: (message: MessageStoreItem | null) => void;
+  deleteNotifications: (ids: string[]) => void;
+  getAsset: (assetId: string) => void;
+  reject: (messageId: string) => void;
+}
 
-  static getDerivedStateFromProps(props) {
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
+interface State {
+  messages?: Props['messages'];
+  assets?: Props['assets'];
+  notifications?: Props['notifications'];
+  loading: boolean;
+}
+
+class MessageListComponent extends React.Component<Props, State> {
+  state: State = { loading: true };
+
+  static getDerivedStateFromProps(
+    props: Readonly<Props>
+  ): Partial<State> | null {
     const { messages, assets, notifications } = props;
     const needAssets = MessageListComponent.getAssets(messages, assets);
     needAssets.forEach(id => props.getAsset(id));
@@ -101,7 +132,10 @@ class MessageListComponent extends React.Component<Props> {
     return { messages, assets, notifications, loading: false };
   }
 
-  static getAssets(messages = [], assetsHash) {
+  static getAssets(
+    messages: MessageStoreItem[] = [],
+    assetsHash: Record<string, AssetDetail>
+  ) {
     const assets = messages.reduce((acc, message) => {
       const { data } = message;
       const tx = data.data || data;
@@ -118,23 +152,24 @@ class MessageListComponent extends React.Component<Props> {
     return Object.keys(assets);
   }
 
-  readonly selectMessageHandler = message => {
+  readonly selectMessageHandler = (message: MessageStoreItem | null) => {
     this.props.setActiveMessage(message);
   };
 
-  readonly deleteNotifications = ids => {
+  readonly deleteNotifications = (ids: string[]) => {
     this.props.deleteNotifications(ids);
   };
 
   readonly deleteAll = () => {
     const ids = this.props.notifications.reduce((acc, item) => {
       return [...acc, ...item.map(({ id }) => id)];
-    }, []);
+    }, [] as string[]);
     this.props.deleteNotifications(ids);
   };
 
-  readonly selectNotificationHandler = notification =>
-    this.props.setActiveNotification(notification);
+  readonly selectNotificationHandler = (
+    notification: NotificationsStoreItem[] | null
+  ) => this.props.setActiveNotification(notification);
 
   render() {
     if (this.state.loading) {
@@ -210,9 +245,10 @@ class MessageListComponent extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
-    balance: store.balances[store.selectedAccount.address],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    balance: store.balances[store.selectedAccount.address!],
     selectedAccount: store.selectedAccount,
     assets: store.assets,
     messages: store.messages,

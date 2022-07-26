@@ -22,13 +22,14 @@ const apis = [
   'webNavigation',
   'webRequest',
   'windows',
-];
+] as const;
 
 const hasChrome = typeof chrome !== 'undefined';
 const hasWindow = typeof window !== 'undefined';
 const hasBrowser = typeof browser !== 'undefined';
 
-function Extension() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function Extension(this: any) {
   const _this = this;
 
   apis.forEach(function (api) {
@@ -36,8 +37,10 @@ function Extension() {
 
     if (hasChrome) {
       try {
-        if (chrome[api]) {
-          _this[api] = chrome[api];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((chrome as any)[api]) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          _this[api] = (chrome as any)[api];
         }
       } catch (e) {
         // do nothing
@@ -46,8 +49,10 @@ function Extension() {
 
     if (hasWindow) {
       try {
-        if (window[api]) {
-          _this[api] = window[api];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((window as any)[api]) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          _this[api] = (window as any)[api];
         }
       } catch (e) {
         // do nothing
@@ -56,14 +61,17 @@ function Extension() {
 
     if (hasBrowser) {
       try {
-        if (browser[api]) {
-          _this[api] = browser[api];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((browser as any)[api]) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          _this[api] = (browser as any)[api];
         }
       } catch (e) {
         // do nothing
       }
       try {
-        _this.api = browser.extension[api];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        _this.api = (browser.extension as any)[api];
       } catch (e) {
         // do nothing
       }
@@ -89,4 +97,6 @@ function Extension() {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const extension = new Extension();

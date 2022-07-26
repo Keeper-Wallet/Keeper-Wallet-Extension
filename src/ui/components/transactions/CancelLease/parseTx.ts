@@ -3,7 +3,10 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 export const messageType = 'cancel-leasing';
 export const txType = 'transaction';
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(tx: {
+  fee?: { assetId?: string };
+  feeAssetId?: string;
+}) {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const amountAssetId = 'WAVES';
@@ -17,7 +20,7 @@ export function getAssetsId(tx): Array<string> {
 
 export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAmount(tx) {
+export function getAmount(tx?: { lease?: { amount: string } }) {
   if (!tx?.lease) {
     return { coins: null, assetId: 'WAVES' };
   }
@@ -29,6 +32,6 @@ export function getAmountSign() {
   return '+' as const;
 }
 
-export function isMe(tx, type: string) {
+export function isMe(tx: { type?: unknown }, type: string | null) {
   return tx.type === TRANSACTION_TYPE.CANCEL_LEASE && type === 'transaction';
 }

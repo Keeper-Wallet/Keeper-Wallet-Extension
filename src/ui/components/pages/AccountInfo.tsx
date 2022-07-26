@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './styles/accountInfo.styl';
 import { Avatar, Balance, Button, CopyText, Error, Input, Modal } from '../ui';
-import background, { AssetDetail } from '../../services/Background';
+import background from '../../services/Background';
 import { getAsset } from '../../actions';
 import { Asset, Money } from '@waves/data-entities';
 import { PAGES } from '../../pageConfig';
@@ -11,36 +11,53 @@ import { getAccountLink } from '../../urls';
 import { BigNumber } from '@waves/bignumber';
 import { AppState } from 'ui/store';
 import { NotificationsState } from 'ui/reducers/localState';
-import { Account } from 'accounts/types';
+import { PreferencesAccount } from 'preferences/types';
+import { NetworkName } from 'networks/types';
+import { AssetDetail } from 'assets/types';
 
-interface Props extends WithTranslation {
-  selectedAccount: Account;
+interface StateProps {
   assets: Record<string, AssetDetail>;
-  balances: unknown;
+  balances: Record<string, { available: string; leasedOut: string }>;
+  currentNetwork: NetworkName;
+  customCodes: Partial<Record<NetworkName, string | null>>;
+  network: NetworkName;
+  networks: { name: string; code: string; server: string; matcher: string }[];
   notifications: NotificationsState;
-  network: string;
+  selectedAccount: PreferencesAccount | undefined;
+}
+
+interface DispatchProps {
   getAsset: (assetId: string) => void;
+}
+
+interface Props extends WithTranslation, StateProps, DispatchProps {
   setTab: (tab: string) => void;
 }
 
 interface State {
-  balance: Money | string | BigNumber;
+  balance?: Money | string | BigNumber | null;
   leaseBalance?: Money;
-  balances: unknown;
+  balances?: unknown;
   changeNameNotify?: boolean;
-  password: string;
+  password?: string;
   passwordError?: boolean;
   showPassword?: boolean;
   showCopied?: boolean;
 }
 
 class AccountInfoComponent extends React.Component<Props, State> {
-  readonly props;
-  readonly state = {} as State;
-  copiedTimer;
-  deffer;
+  state: State = {};
+  copiedTimer: ReturnType<typeof setTimeout> | undefined;
+  deffer:
+    | {
+        reject: () => void;
+        resolve: (password: string) => void;
+      }
+    | undefined;
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(
+    props: Readonly<Props>
+  ): Partial<State> | null {
     const { selectedAccount, assets, balances } = props;
     const asset = assets['WAVES'];
 
@@ -49,8 +66,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
       return { balance: null };
     }
     const assetInstance = new Asset(asset);
-    const balancesMoney = {};
-    const leaseMoney = {};
+    const balancesMoney: Record<string, Money> = {};
+    const leaseMoney: Record<string, Money> = {};
 
     Object.entries<{ available: string; leasedOut: string }>(balances).forEach(
       ([key, balance]) => {
@@ -69,14 +86,16 @@ class AccountInfoComponent extends React.Component<Props, State> {
     return { balance, leaseBalance, balances: balancesMoney, changeNameNotify };
   }
 
-  confirmPassword = e => {
+  confirmPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    this.deffer.resolve(this.state.password);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.deffer!.resolve(this.state.password!);
   };
 
-  rejectPassword = () => this.deffer.reject();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  rejectPassword = () => this.deffer!.reject();
 
-  inputPassword = event =>
+  inputPassword = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ password: event.target.value, passwordError: false });
 
   editNameHandler = () => this.props.setTab(PAGES.CHANGE_ACCOUNT_NAME);
@@ -102,7 +121,6 @@ class AccountInfoComponent extends React.Component<Props, State> {
       address,
       type: accType,
       name,
-      username,
       publicKey,
       networkCode,
     } = selectedAccount;
@@ -133,7 +151,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
                 <Balance
                   split={true}
                   showAsset={true}
-                  balance={this.state.balance}
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  balance={this.state.balance!}
                   showUsdAmount
                 />
 
@@ -253,7 +272,7 @@ class AccountInfoComponent extends React.Component<Props, State> {
               </div>
               <div className={`input-like tag1 ${styles.ellipsis}`}>
                 <CopyText
-                  text={username}
+                  text={selectedAccount.username}
                   showCopy={true}
                   showText={true}
                   onCopy={onCopyHandler}
@@ -362,7 +381,10 @@ class AccountInfoComponent extends React.Component<Props, State> {
   }
 
   setCopiedModal() {
-    clearTimeout(this.copiedTimer);
+    if (this.copiedTimer != null) {
+      clearTimeout(this.copiedTimer);
+    }
+
     this.setState({ showCopied: true });
     this.copiedTimer = setTimeout(
       () => this.setState({ showCopied: false }),
@@ -405,7 +427,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
       copyCallback,
       request: password =>
         background.getAccountSeed(
-          this.props.selectedAccount.address,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          this.props.selectedAccount!.address,
           this.props.network,
           password
         ),
@@ -419,7 +442,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
       request: password =>
         background
           .getAccountEncodedSeed(
-            this.props.selectedAccount.address,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.props.selectedAccount!.address,
             this.props.network,
             password
           )
@@ -433,7 +457,8 @@ class AccountInfoComponent extends React.Component<Props, State> {
       copyCallback,
       request: password =>
         background.getAccountPrivateKey(
-          this.props.selectedAccount.address,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          this.props.selectedAccount!.address,
           this.props.network,
           password
         ),
@@ -442,7 +467,7 @@ class AccountInfoComponent extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = function (store: AppState) {
+const mapStateToProps = function (store: AppState): StateProps {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address

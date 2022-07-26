@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../../ui';
 import * as React from 'react';
 import { useAppSelector } from '../../../store';
+import { NetworkName } from 'networks/types';
 
-const baseByNetwork = {
-  mainnet: 'https://waves.exchange',
-  testnet: 'https://testnet.waves.exchange',
+const baseByNetwork: Partial<Record<NetworkName, string>> = {
+  [NetworkName.Mainnet]: 'https://waves.exchange',
+  [NetworkName.Testnet]: 'https://testnet.waves.exchange',
 };
 
 interface Props {
   className?: string;
-  userData: { username: string; password: string };
+  userData: { username: string; password: string } | undefined;
   signIn: (username: string, password: string) => void;
 }
 
@@ -83,7 +84,8 @@ export function SignInForm({ className, userData, signIn }: Props) {
 
       try {
         await signIn(email, password);
-      } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
         let errMessage = err?.message;
 
         switch (errMessage) {

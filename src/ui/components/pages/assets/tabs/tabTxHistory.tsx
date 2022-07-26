@@ -28,7 +28,7 @@ const Row = ({
   data: {
     historyWithGroups: Array<TransactionFromNode | { groupName: string }>;
     hasMore: boolean;
-    hasFilters: boolean;
+    hasFilters: string | number | boolean | undefined;
     historyLink: string;
   };
   index: number;
@@ -89,10 +89,14 @@ export function TabTxHistory() {
   );
   const address = useAppSelector(state => state.selectedAccount.address);
   const aliases = useAppSelector(
-    state => state.balances[address]?.aliases || []
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[address!]?.aliases || []
   );
   const addressOrAlias = [address, ...aliases];
-  const txHistory = useAppSelector(state => state.balances[address]?.txHistory);
+  const txHistory = useAppSelector(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[address!]?.txHistory
+  );
 
   const thisYear = new Date().getFullYear();
   const thisMonth = new Date().getMonth();
@@ -101,22 +105,22 @@ export function TabTxHistory() {
   const [filters, setFilters] = useUiState('txHistoryFilters');
   const [term, setTerm] = [
     filters?.term,
-    value => setFilters({ ...filters, term: value }),
+    (value: string) => setFilters({ ...filters, term: value }),
   ];
   const [type, setType] = [
     filters?.type,
-    value => setFilters({ ...filters, type: value }),
+    (value: number) => setFilters({ ...filters, type: value }),
   ];
   const [onlyIn, setOnlyIn] = [
     filters?.onlyIncoming,
-    value => setFilters({ ...filters, onlyIncoming: value }),
+    (value: boolean) => setFilters({ ...filters, onlyIncoming: value }),
   ];
   const [onlyOut, setOnlyOut] = [
     filters?.onlyOutgoing,
-    value => setFilters({ ...filters, onlyOutgoing: value }),
+    (value: boolean) => setFilters({ ...filters, onlyOutgoing: value }),
   ];
 
-  const listRef = React.useRef<VariableSizeList>();
+  const listRef = React.useRef<VariableSizeList | null>(null);
 
   React.useEffect(() => {
     listRef.current && listRef.current.resetAfterIndex(0);
@@ -134,7 +138,8 @@ export function TabTxHistory() {
       .concat(stateChanges?.invokes ?? [])
       .concat(
         (stateChanges?.invokes ?? []).reduce(
-          (result, el) => result.concat(flat(el.stateChanges)),
+          (result: unknown[], el: { stateChanges: unknown[] }) =>
+            result.concat(flat(el.stateChanges)),
           []
         )
       );
@@ -177,7 +182,7 @@ export function TabTxHistory() {
           );
           const hasInvokePayments = (tx.payment ?? []).length !== 0;
           const hasInvokePaymentsAsset = (tx.payment ?? []).reduce(
-            (hasPayments, el) =>
+            (hasPayments: unknown, el: { assetId: string }) =>
               hasPayments ||
               el.assetId === term ||
               icontains(assets[el.assetId]?.displayName ?? '', term),
@@ -253,7 +258,7 @@ export function TabTxHistory() {
           value={term ?? ''}
           onInput={e => {
             listRef.current && listRef.current.resetAfterIndex(0);
-            setTerm(e.target.value);
+            setTerm(e.currentTarget.value);
           }}
           onClear={() => {
             listRef.current && listRef.current.resetAfterIndex(0);
@@ -374,12 +379,15 @@ export function TabTxHistory() {
                       historyWithGroups,
                       hasMore,
                       hasFilters: term || type || onlyIn || onlyOut,
-                      historyLink: getTxHistoryLink(networkCode, address),
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      historyLink: getTxHistoryLink(networkCode!, address!),
                     }}
                     itemKey={(index, { historyWithGroups }) =>
                       'groupName' in historyWithGroups[index]
-                        ? `g:${historyWithGroups[index].groupName}`
-                        : `a:${historyWithGroups[index].id}`
+                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          `g:${(historyWithGroups[index] as any).groupName}`
+                        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          `a:${(historyWithGroups[index] as any).id}`
                     }
                   >
                     {Row}

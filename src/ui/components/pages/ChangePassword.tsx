@@ -6,15 +6,31 @@ import { Button, Error, Input, Modal } from '../ui';
 import background from '../../services/Background';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
+import { PageComponentProps } from 'ui/pageConfig';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
 
-interface Props extends WithTranslation {
+interface DispatchProps {
   changePassword: (p1: string, p2: string) => void;
 }
 
-class ChangePasswordComponent extends React.PureComponent<Props> {
-  state = {
+type Props = PageComponentProps & WithTranslation & DispatchProps;
+
+interface State {
+  firstValue: string;
+  secondValue: string;
+  oldValue: string;
+  oldError: string | { error: string } | null | undefined;
+  firstError: string | { error: string } | null | undefined;
+  secondError: string | { error: string } | null;
+  buttonDisabled: boolean | { error: string };
+  passwordError: boolean;
+  showChanged: boolean;
+  oldEqualNewError: boolean | '';
+}
+
+class ChangePasswordComponent extends React.PureComponent<Props, State> {
+  state: State = {
     firstValue: '',
     secondValue: '',
     oldValue: '',
@@ -30,10 +46,13 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
   onFirstBlur = () => this._onBlur();
   onSecondBlur = () => this._onBlur();
   onOldBlur = () => this._onBlur();
-  onChangeFist = e => this._onChangeFist(e);
-  onChangeSecond = e => this._onChangeSecond(e);
-  onChangeOld = e => this._onChangeOld(e);
-  onSubmit = e => this._onSubmit(e);
+  onChangeFist = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this._onChangeFist(e);
+  onChangeSecond = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this._onChangeSecond(e);
+  onChangeOld = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this._onChangeOld(e);
+  onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
 
   render() {
     const { t } = this.props;
@@ -114,7 +133,8 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
           <Button
             type="submit"
             view="submit"
-            disabled={this.state.buttonDisabled}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            disabled={this.state.buttonDisabled as any}
           >
             {t('changePassword.create')}
           </Button>
@@ -131,7 +151,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
     );
   }
 
-  _onSubmit(e) {
+  _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (this.state.firstValue) {
@@ -161,7 +181,7 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
     this._checkValues();
   }
 
-  _onChange(oldValue, firstValue, secondValue) {
+  _onChange(oldValue: string, firstValue: string, secondValue: string) {
     const buttonDisabled = this._isDisabledButton(
       oldValue,
       firstValue,
@@ -170,25 +190,25 @@ class ChangePasswordComponent extends React.PureComponent<Props> {
     this.setState({ oldValue, firstValue, secondValue, buttonDisabled });
   }
 
-  _onChangeFist(e) {
+  _onChangeFist(e: React.ChangeEvent<HTMLInputElement>) {
     const firstValue = e.target.value;
     const { oldValue, secondValue } = this.state;
     this._onChange(oldValue, firstValue, secondValue);
   }
 
-  _onChangeSecond(e) {
+  _onChangeSecond(e: React.ChangeEvent<HTMLInputElement>) {
     const secondValue = e.target.value;
     const { oldValue, firstValue } = this.state;
     this._onChange(oldValue, firstValue, secondValue);
   }
 
-  _onChangeOld(e) {
+  _onChangeOld(e: React.ChangeEvent<HTMLInputElement>) {
     const oldValue = e.target.value;
     const { secondValue, firstValue } = this.state;
     this._onChange(oldValue, firstValue, secondValue);
   }
 
-  _isDisabledButton(oldValue, firstValue, secondValue) {
+  _isDisabledButton(oldValue: string, firstValue: string, secondValue: string) {
     if (!oldValue || !firstValue || !secondValue) {
       return true;
     }

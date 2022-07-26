@@ -14,8 +14,9 @@ const ContentScript = ({
   script,
   getScriptRef,
 }: {
-  script: unknown;
-  getScriptRef: (...args: unknown[]) => unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  script: any;
+  getScriptRef: (node: HTMLPreElement | null) => unknown;
 }) => (
   <pre ref={getScriptRef} className={cn(styles.codeScript, 'body3')}>
     {script}
@@ -25,14 +26,15 @@ const ContentScript = ({
 export type EntryWithKey = {
   key: string;
   type: string;
-  value: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any;
 };
 const Data = ({
   data,
   getScriptRef,
 }: {
   data: Array<EntryWithKey>;
-  getScriptRef: (...args: unknown[]) => unknown;
+  getScriptRef: (node: HTMLDivElement | null) => unknown;
 }) => {
   const { t } = useTranslation();
 
@@ -87,7 +89,7 @@ const DataNoKey = ({
   getScriptRef,
 }: {
   data: Array<EntryNoKey>;
-  getScriptRef: (...args: unknown[]) => unknown;
+  getScriptRef: (node: HTMLDivElement | null) => unknown;
 }) => {
   const { t } = useTranslation();
 
@@ -152,20 +154,25 @@ interface Props extends WithTranslation {
   hideScript?: boolean;
 }
 
-class ShowScriptComponent extends React.PureComponent<Props> {
-  readonly props;
-  readonly state = {
+interface State {
+  showAllScript: boolean;
+  showCopied: boolean;
+  showResizeBtn: boolean;
+}
+
+class ShowScriptComponent extends React.PureComponent<Props, State> {
+  state: State = {
     showAllScript: false,
     showCopied: false,
     showResizeBtn: false,
   };
-  protected scriptEl: HTMLDivElement;
-  protected _t;
+  protected scriptEl: HTMLElement | null | undefined;
+  protected _t: ReturnType<typeof setTimeout> | undefined;
 
   toggleShowScript = () =>
     this.setState({ showAllScript: !this.state.showAllScript });
   onCopy = () => this._onCopy();
-  getScriptRef = ref => (this.scriptEl = ref);
+  getScriptRef = (ref: HTMLElement | null) => (this.scriptEl = ref);
 
   componentDidMount() {
     const { script, optional, hideScript, data } = this.props;
@@ -256,7 +263,11 @@ class ShowScriptComponent extends React.PureComponent<Props> {
     }
 
     this.setState({ showCopied: true });
-    clearTimeout(this._t);
+
+    if (this._t != null) {
+      clearTimeout(this._t);
+    }
+
     this._t = setTimeout(() => this.setState({ showCopied: false }), 1000);
   }
 }

@@ -24,8 +24,9 @@ export function SignWrapper({ onConfirm, children }: Props) {
   const [showModal, setShowModal] = React.useState(false);
   const [pending, setPending] = React.useState(false);
 
-  let onReadyHandler;
-  const onReady = React.useCallback(() => onReadyHandler(), [onReadyHandler]);
+  let onReadyHandler: (() => void) | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const onReady = React.useCallback(() => onReadyHandler!(), [onReadyHandler]);
 
   const onPrepare = React.useCallback(
     (...args: unknown[]) => {
@@ -44,7 +45,8 @@ export function SignWrapper({ onConfirm, children }: Props) {
           }
 
           background
-            .identityRestore(account.uuid)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            .identityRestore(account.uuid!)
             .then(() => {
               onConfirm(...args);
               setPending(false);
@@ -64,7 +66,8 @@ export function SignWrapper({ onConfirm, children }: Props) {
             };
           }
 
-          ledgerService.updateStatus(account.networkCode).then(() => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          ledgerService.updateStatus(account.networkCode!).then(() => {
             if (ledgerService.status === LedgerServiceStatus.Ready) {
               setPending(false);
               onConfirm(...args);
@@ -104,7 +107,8 @@ export function SignWrapper({ onConfirm, children }: Props) {
               </h2>
 
               <Login
-                userData={{ username: account.username, password: '' }}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                userData={{ username: account.username!, password: '' }}
                 onConfirm={onReady}
               />
             </div>
@@ -115,7 +119,8 @@ export function SignWrapper({ onConfirm, children }: Props) {
       {account.type === 'ledger' && (
         <Modal animation={Modal.ANIMATION.FLASH} showModal={showModal}>
           <LedgerConnectModal
-            networkCode={account.networkCode}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            networkCode={account.networkCode!}
             onClose={() => {
               setShowModal(false);
               setPending(false);

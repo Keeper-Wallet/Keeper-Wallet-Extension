@@ -1,7 +1,8 @@
 import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuth } from '@waves/waves-transactions/dist/transactions';
-import { AccountOfType, NetworkName } from 'accounts/types';
+import { NetworkName } from 'networks/types';
 import { Wallet } from 'wallets/wallet';
+import { WalletPrivateDataOfType } from './types';
 
 export interface DebugWalletInput {
   address: string;
@@ -10,20 +11,28 @@ export interface DebugWalletInput {
   networkCode: string;
 }
 
-type TestWalletData = AccountOfType<'debug'> & {
-  address: string;
-};
-
-export class DebugWallet extends Wallet<TestWalletData> {
+export class DebugWallet extends Wallet<WalletPrivateDataOfType<'debug'>> {
   constructor({ address, name, network, networkCode }: DebugWalletInput) {
     super({
       address,
       name,
       network,
       networkCode,
-      publicKey: null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      publicKey: null as any,
       type: 'debug',
     });
+  }
+
+  getAccount() {
+    return {
+      address: this.data.address,
+      name: this.data.name,
+      network: this.data.network,
+      networkCode: this.data.networkCode,
+      publicKey: this.data.publicKey,
+      type: this.data.type,
+    };
   }
 
   getSeed(): string {

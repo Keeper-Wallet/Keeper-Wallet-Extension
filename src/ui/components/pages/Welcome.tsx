@@ -3,21 +3,22 @@ import * as React from 'react';
 import { BigLogo } from '../head';
 import { useTranslation } from 'react-i18next';
 import { Button, LangsSelect } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAppSelector } from 'ui/store';
 import background from 'ui/services/Background';
 
-interface Props {
-  setTab(tab: string): void;
-}
-
-export function Welcome({ setTab }: Props) {
+export function Welcome({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const tabMode = useAppSelector(state => state.localState?.tabMode);
 
   React.useEffect(() => {
     if (window.location.hash.split('#')[1] === PAGES.NEW) {
-      history.replaceState(history.state, null, window.location.pathname);
+      history.replaceState(
+        history.state,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        null as any,
+        window.location.pathname
+      );
       setTab(PAGES.NEW);
     }
   }, [setTab]);

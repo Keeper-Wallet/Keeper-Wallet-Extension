@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { UnknownCard } from './UnknownCard';
 import { UnknownInfo } from './UnknownInfo';
 import { ApproveBtn, Button } from '../../ui';
-import { ComponentProps, TxHeader } from '../BaseTransaction';
+import { TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function Unknown(props: ComponentProps) {
+export function Unknown(props: MessageComponentProps) {
   const { t } = useTranslation();
 
   const { message, assets } = props;

@@ -1,2 +1,4 @@
-export const icontains = (source, target) =>
-  (source ?? '').toLowerCase().includes((target ?? '').toLowerCase());
+export const icontains = (
+  source: string | null | undefined,
+  target: string | null | undefined
+) => (source ?? '').toLowerCase().includes((target ?? '').toLowerCase());

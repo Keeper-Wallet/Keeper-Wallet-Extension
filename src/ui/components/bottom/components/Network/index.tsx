@@ -14,11 +14,13 @@ import {
   setNetwork,
 } from 'ui/actions';
 import { Modal } from 'ui/components/ui';
-import { NetworkSettings } from '../NetworkSettings';
+import { INetworkData, NetworkSettings } from '../NetworkSettings';
 import * as styles from './network.styl';
 import { Tooltip } from 'ui/components/ui/tooltip';
+import { AppState } from 'ui/store';
+import { NetworkName } from 'networks/types';
 
-const key = key => `bottom.${key}`;
+const key = (key: string) => `bottom.${key}`;
 
 const Networks = ({
   isShow,
@@ -26,10 +28,10 @@ const Networks = ({
   selectedNet,
   networks,
 }: {
-  isShow: boolean;
+  isShow: boolean | undefined;
   selectedNet: string;
-  networks: Array<{ name: string }>;
-  onSelect: (...args: unknown[]) => unknown;
+  networks: INetwork[];
+  onSelect: (item: INetwork) => unknown;
 }) => {
   const { t } = useTranslation();
 
@@ -52,8 +54,8 @@ const Networks = ({
         });
 
         const onSelectNet = selected
-          ? null
-          : ev => {
+          ? undefined
+          : (ev: React.MouseEvent<HTMLDivElement>) => {
               ev.stopPropagation();
               onSelect(net);
             };
@@ -70,8 +72,54 @@ const Networks = ({
   );
 };
 
-class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
-  state = {
+interface StateProps {
+  currentNetwork: string;
+  customCodes: Partial<Record<NetworkName, string | null>>;
+  customMatcher: Record<string, unknown>;
+  customNodes: Record<string, unknown>;
+  networks: Array<INetwork>;
+}
+
+interface DispatchProps {
+  setNetwork: (net: NetworkName) => void;
+  loading: (show: boolean) => void;
+  setCustomNode: (payload: {
+    node: string;
+    network: NetworkName | null | undefined;
+  }) => void;
+  setCustomMatcher: (payload: {
+    matcher: string;
+    network: NetworkName | null | undefined;
+  }) => void;
+  setCustomCode: (payload: {
+    code: string;
+    network: NetworkName | null | undefined;
+  }) => void;
+}
+
+type Props = WithTranslation &
+  StateProps &
+  DispatchProps & {
+    noChangeNetwork: boolean | undefined;
+  };
+
+interface INetwork {
+  name: string;
+  code: string;
+  server: string;
+  matcher: string;
+}
+
+interface IState {
+  networkHash: { [name: string]: INetwork } | null;
+  net?: INetwork | null;
+  showNetworks?: boolean;
+  showEdit?: boolean;
+  showSettings?: boolean;
+}
+
+class NetworkComponent extends React.PureComponent<Props, IState> {
+  state: IState = {
     showNetworks: false,
     net: null,
     showEdit: false,
@@ -79,7 +127,10 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     showSettings: false,
   };
 
-  static getDerivedStateFromProps(props: INetworkProps, state: IState): IState {
+  static getDerivedStateFromProps(
+    props: Readonly<Props>,
+    state: IState
+  ): IState {
     const networkHash = props.networks.reduce((acc, network) => {
       const { code, matcher, name, server } = network;
       const { customMatcher, customNodes } = props;
@@ -105,25 +156,27 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     this.setState({ showNetworks: !this.props.noChangeNetwork, net: null });
   };
 
-  selectHandler = ({ name }) => {
+  selectHandler = ({ name }: INetwork) => {
     this.clickOutHandler();
 
-    const net = this.state.networkHash[name];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const net = this.state.networkHash![name];
 
     if (net && (!net.server || !net.matcher)) {
       this.setState({ net, showSettings: true });
     } else {
-      this.setNewNetwork(name);
+      this.setNewNetwork(name as NetworkName);
     }
   };
 
   editClickHandler = () =>
     this.setState({
       showSettings: !this.props.noChangeNetwork,
-      net: this.state.networkHash[this.props.currentNetwork],
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      net: this.state.networkHash![this.props.currentNetwork],
     });
 
-  setNewNetwork = net => {
+  setNewNetwork = (net: NetworkName | null | undefined) => {
     if (net) {
       this.props.loading(true);
       setTimeout(() => this.props.loading(false), 1000);
@@ -131,7 +184,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
     }
   };
 
-  saveSettingsHandler = ({ matcher, node, code, name }) => {
+  saveSettingsHandler = ({ matcher, node, code, name }: INetworkData) => {
     if (matcher) {
       this.props.setCustomMatcher({ matcher, network: name });
     }
@@ -192,7 +245,8 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
       showEdit,
     } = this.state;
     const currentNetwork = this.props.currentNetwork || 'mainnet';
-    const net = selectedNet ? networkHash[selectedNet.name] : null;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const net = selectedNet ? networkHash![selectedNet.name] : null;
 
     return (
       <Tooltip
@@ -239,7 +293,7 @@ class NetworkComponent extends React.PureComponent<INetworkProps, IState> {
             >
               <NetworkSettings
                 node={net && net.server}
-                name={net && net.name}
+                name={net && (net.name as NetworkName)}
                 matcher={net && net.matcher}
                 networkCode={net && net.code}
                 onClose={this.closeSettingsHandler}
@@ -259,7 +313,7 @@ const mapStateToProps = ({
   customNodes,
   customMatcher,
   customCodes,
-}) => ({
+}: AppState): StateProps => ({
   currentNetwork,
   customMatcher,
   customCodes,
@@ -279,32 +333,3 @@ export const Network = connect(
   mapStateToProps,
   actions
 )(withTranslation()(NetworkComponent));
-
-interface INetworkProps extends WithTranslation {
-  className?: string;
-  noChangeNetwork: boolean;
-  currentNetwork: string;
-  networks: Array<INetwork>;
-  customNodes;
-  customMatcher;
-  setNetwork: (net: string) => void;
-  loading: (show: boolean) => void;
-  setCustomNode: (payload: { node: string; network: string }) => void;
-  setCustomMatcher: (payload: { matcher: string; network: string }) => void;
-  setCustomCode: (payload: { code: string; network: string }) => void;
-}
-
-interface INetwork {
-  name: string;
-  code: string;
-  server: string;
-  matcher: string;
-}
-
-interface IState {
-  networkHash: { [name: string]: INetwork };
-  net?: INetwork;
-  showNetworks?: boolean;
-  showEdit?: boolean;
-  showSettings?: boolean;
-}

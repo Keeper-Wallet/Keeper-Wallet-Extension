@@ -8,9 +8,10 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { Input } from 'ui/components/ui/input';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { BalanceAssets } from 'ui/reducers/updateState';
-import { AssetDetail } from 'ui/services/Background';
 import { useAssetLogo } from './utils';
 import * as styles from './selectModal.module.css';
+import { NetworkName } from 'networks/types';
+import { AssetDetail } from './types';
 
 export interface AssetSelectModalOption extends AssetDetail {
   disabled?: boolean;
@@ -20,7 +21,7 @@ export interface AssetSelectModalOption extends AssetDetail {
 interface ItemProps {
   className?: string;
   asset: AssetSelectModalOption;
-  network: string;
+  network: NetworkName;
   balance: Money;
   onSelect: (assetId: string) => void;
 }
@@ -81,7 +82,7 @@ function AssetSelectItem({
 interface Props {
   assetBalances: BalanceAssets;
   assets: AssetSelectModalOption[];
-  network: string;
+  network: NetworkName;
   onClose: () => void;
   onSelect: (assetId: string) => void;
 }

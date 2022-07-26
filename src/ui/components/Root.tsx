@@ -5,41 +5,64 @@ import { addBackTab, loading, removeBackTab, setTab } from '../actions';
 import { Menu } from './menu';
 import { Bottom } from './bottom';
 import { PAGES, PAGES_CONF } from '../pageConfig';
-import { Account } from 'accounts/types';
 import { AppState } from 'ui/store';
+import { ActivePopupState } from 'ui/reducers/notifications';
+import { PreferencesAccount } from 'preferences/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { MessageStoreItem } from 'messages/types';
 
 const NO_USER_START_PAGE = PAGES.WELCOME;
 const USER_START_PAGE = PAGES.LOGIN;
 
-class RootComponent extends React.Component {
-  props: IProps;
-  state = { tab: null, loading: true };
+interface StateProps {
+  accounts: PreferencesAccount[];
+  activePopup: ActivePopupState | null;
+  backTabs: string[];
+  currentLocale: string;
+  initialized: boolean | null | undefined;
+  loading: boolean;
+  locked: boolean | null | undefined;
+  messages: MessageStoreItem[];
+  notifications: NotificationsStoreItem[][];
+  tab: string;
+}
 
-  constructor(props: IProps) {
+interface DispatchProps {
+  addBackTab: (tab: string | null) => void;
+  removeBackTab: () => void;
+  setLoading: (enable: boolean) => void;
+  setTab: (tab: string | null) => void;
+}
+
+type Props = StateProps & DispatchProps;
+
+interface State {
+  loading: boolean;
+  tab: string | null;
+}
+
+class RootComponent extends React.Component<Props, State> {
+  state: State = { tab: null, loading: true };
+
+  constructor(props: Props) {
     super(props);
     setTimeout(() => props.setLoading(false), 200);
   }
 
-  static getDerivedStateFromProps(nextProps: IProps, state) {
-    /**
-     * Loading page
-     */
+  static getDerivedStateFromProps(
+    nextProps: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     if (nextProps.loading) {
       return { tab: PAGES.INTRO };
     }
 
     let tab = nextProps.tab || PAGES.ROOT;
 
-    /**
-     * Intro page on load
-     */
     if (!tab && nextProps.locked == null) {
       tab = PAGES.INTRO;
     }
 
-    /**
-     * Has notify - show confirm page
-     */
     const { messages, notifications, activePopup, accounts } = nextProps;
 
     if (
@@ -56,9 +79,6 @@ class RootComponent extends React.Component {
       }
     }
 
-    /**
-     * Start page on locked keeper
-     */
     if (!tab && nextProps.locked) {
       tab = NO_USER_START_PAGE;
     }
@@ -79,14 +99,18 @@ class RootComponent extends React.Component {
       });
 
       if (tab === PAGES.MESSAGES) {
-        const { msg } = activePopup;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const { msg } = activePopup!;
 
         const data: Record<string, string> = {
-          type: msg.type,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          type: msg!.type,
         };
 
-        if (msg.type === 'transaction') {
-          data.transactionType = msg.data.type;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (msg!.type === 'transaction') {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          data.transactionType = msg!.data.type;
         }
 
         Sentry.addBreadcrumb({
@@ -101,14 +125,14 @@ class RootComponent extends React.Component {
     return { tab };
   }
 
-  static getStateTab(props) {
+  static getStateTab(props: Props) {
     if (props.locked) {
       return props.initialized ? USER_START_PAGE : NO_USER_START_PAGE;
     }
     return props.accounts.length ? PAGES.ASSETS : PAGES.IMPORT_POPUP;
   }
 
-  static canUseTab(props, tab) {
+  static canUseTab(props: Props, tab: string) {
     switch (tab) {
       case PAGES.NEW:
       case PAGES.INTRO:
@@ -141,7 +165,7 @@ class RootComponent extends React.Component {
         (typeof pageConf.menu.back === 'string' || !!pageConf.menu.back),
     };
 
-    const setTab = tab => {
+    const setTab = (tab: string | null) => {
       this.props.addBackTab(currentTab);
       this.props.setTab(tab);
     };
@@ -174,7 +198,7 @@ class RootComponent extends React.Component {
   }
 }
 
-const mapStateToProps = function (store: AppState) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
     currentLocale: store.currentLocale,
     loading: store.localState.loading,
@@ -196,25 +220,4 @@ const actions = {
   removeBackTab,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Root = connect(mapStateToProps, actions)(RootComponent as any);
-
-interface IProps {
-  currentLocale: string;
-  locked: boolean;
-  initialized: boolean;
-  accounts: Array<Account>;
-  setTab: (tab: string) => void;
-  addBackTab: (tab: string) => void;
-  removeBackTab: () => void;
-  setLoading: (enable: boolean) => void;
-  tab: string;
-  backTabs: Array<string>;
-  messages: Array<unknown>;
-  notifications: Array<unknown>;
-  activePopup: {
-    msg: { type: string; data: { type: string } } | null;
-    notify: Array<unknown> | null;
-  } | null;
-  loading: boolean;
-}
+export const Root = connect(mapStateToProps, actions)(RootComponent);

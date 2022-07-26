@@ -1,4 +1,4 @@
-export const duckColors = {
+export const duckColors: Record<string, string> = {
   B: 'ADD8E6',
   R: 'FFA07A',
   Y: 'F8EE9D',
@@ -6,7 +6,7 @@ export const duckColors = {
   U: 'CD6F86',
 };
 
-export const duckGenerationNames = {
+export const duckGenerationNames: Record<string, string> = {
   H: 'Hero',
   I: 'Ideal',
   J: 'Jackpot',
@@ -18,7 +18,10 @@ export const duckGenerationNames = {
   G: 'Genesis',
 };
 
-export const duckNames = {
+export const duckNames: Record<
+  string,
+  { name: string; unique?: boolean } | string[]
+> = {
   AAAAAAAA: { name: 'Elon' },
   BBBBBBBB: { name: 'Satoshi' },
   CCCCCCCC: { name: 'Doge' },

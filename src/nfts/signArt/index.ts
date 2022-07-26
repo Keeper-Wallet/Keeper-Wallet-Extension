@@ -11,7 +11,7 @@ export interface SignArtInfo extends BaseInfo {
 }
 
 export class SignArt extends BaseNft<SignArtInfo> {
-  get creator(): string {
+  get creator() {
     if (!this.info) {
       const match = super.description?.match(/creator: (\w+)/i);
       return match && match[1];
@@ -20,16 +20,16 @@ export class SignArt extends BaseNft<SignArtInfo> {
     return this.info.creator;
   }
 
-  get displayCreator(): string {
+  get displayCreator() {
     return this.info?.userName ? `@${this.info.userName}` : this.creator;
   }
 
-  get creatorUrl(): string {
+  get creatorUrl() {
     return this.creator && `https://mainnet.sign-art.app/user/${this.creator}`;
   }
 
-  get marketplaceUrl(): string {
-    let artworkId = this.info?.artworkId;
+  get marketplaceUrl() {
+    let artworkId: string | null | undefined = this.info?.artworkId;
 
     if (!this.info) {
       const match = super.description?.match(/artid: (\w+)/i);
@@ -43,15 +43,15 @@ export class SignArt extends BaseNft<SignArtInfo> {
     );
   }
 
-  get displayName(): string {
+  get displayName() {
     return this.info?.name ?? super.displayName;
   }
 
-  get description(): string {
+  get description() {
     return this.info?.description ?? super.description;
   }
 
-  get foreground(): string {
+  get foreground() {
     if (!this.info?.cid) return null;
 
     const [domain, filename] = this.info.cid.split('/');

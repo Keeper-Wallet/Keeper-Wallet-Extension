@@ -7,7 +7,7 @@ import { useAppSelector } from '../../../store';
 import { useTranslation } from 'react-i18next';
 import { Asset, Money } from '@waves/data-entities';
 import { BigNumber } from '@waves/bignumber';
-import { TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
+import { Long, TransactionFromNode, TRANSACTION_TYPE } from '@waves/ts-types';
 import { Tooltip } from '../../ui/tooltip';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { getTxDetailLink } from '../../../urls';
@@ -24,23 +24,25 @@ export function HistoryItem({ tx, className }: Props) {
     state => state.selectedAccount.networkCode
   );
   const chainId = useAppSelector(state =>
-    state.selectedAccount.networkCode.charCodeAt(0)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state.selectedAccount.networkCode!.charCodeAt(0)
   );
   const assets = useAppSelector(state => state.assets);
-  const aliases = useAppSelector(state => state.balances[address]?.aliases);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const aliases = useAppSelector(state => state.balances[address!]?.aliases);
   const addressAlias = [address, ...(aliases || [])];
 
-  let tooltip, label, info, messageType, addSign;
+  let tooltip, label, info, messageType: string, addSign;
   const isTxFailed =
     'applicationStatus' in tx &&
     tx.applicationStatus &&
     tx.applicationStatus !== 'succeeded';
 
-  const fromCoins = (amount, assetId) =>
+  const fromCoins = (amount: Long | BigNumber, assetId?: string | null) =>
     assets[assetId ?? 'WAVES'] &&
     Money.fromCoins(amount, new Asset(assets[assetId ?? 'WAVES']));
 
-  const fromTokens = (amount, assetId) =>
+  const fromTokens = (amount: Long | BigNumber, assetId?: string | null) =>
     assets[assetId ?? 'WAVES'] &&
     Money.fromTokens(amount, new Asset(assets[assetId ?? 'WAVES']));
 
@@ -282,10 +284,7 @@ export function HistoryItem({ tx, className }: Props) {
       addSign = '+';
       let balance = fromCoins(
         tx.transfers.reduce(
-          (
-            result: BigNumber,
-            transfer: { amount: number; recipient: string }
-          ) =>
+          (result, transfer) =>
             result.add(
               addressAlias.includes(transfer.recipient) ? transfer.amount : 0
             ),
@@ -330,7 +329,8 @@ export function HistoryItem({ tx, className }: Props) {
         <Balance
           split
           showAsset
-          balance={fromCoins(tx.minSponsoredAssetFee, tx.assetId)}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          balance={fromCoins(tx.minSponsoredAssetFee!, tx.assetId)}
         />
       );
 
@@ -348,15 +348,17 @@ export function HistoryItem({ tx, className }: Props) {
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
       if (
         (tx.dApp === '3P8eoZF8RTpcrVXwYcDaNs7WBGMbrBR8d3u' &&
-          tx.call.function === 'swap') ||
+          tx.call?.function === 'swap') ||
         (tx.dApp === '3P5UKXpQbom7GB2WGdPG5yGQPeQQuM3hFmw' &&
+          tx.call &&
           ['testSeq', 'swap', 'swopfiSwap'].includes(tx.call.function)) ||
         (tx.dApp === '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU' &&
-          tx.call.function === 'swapWithReferral')
+          tx.call?.function === 'swapWithReferral')
       ) {
         tooltip = t('historyCard.swap');
 
-        const payment = tx.payment[0];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const payment = tx.payment![0];
         const fromBalance =
           payment && fromCoins(payment.amount, payment.assetId);
 
@@ -492,7 +494,8 @@ export function HistoryItem({ tx, className }: Props) {
             type="button"
             onClick={() => {
               window.open(
-                getTxDetailLink(networkCode, tx.id),
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                getTxDetailLink(networkCode!, tx.id),
                 '_blank',
                 'noopener'
               );

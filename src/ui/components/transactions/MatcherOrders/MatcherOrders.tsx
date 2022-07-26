@@ -3,9 +3,10 @@ import * as React from 'react';
 
 import { MatcherCard } from './MatcherCard';
 import { MatcherInfo } from './MatcherInfo';
-import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function MatcherOrders(props: ComponentProps) {
+export function MatcherOrders(props: MessageComponentProps) {
   const { message, assets } = props;
 
   return (

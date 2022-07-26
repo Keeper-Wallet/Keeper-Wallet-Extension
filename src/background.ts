@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
-import LocalStore, { backup } from 'lib/localStore';
+import LocalStore, { backup, StoreLocalState } from 'lib/localStore';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
@@ -16,7 +16,7 @@ import { MessageController } from './controllers/message';
 import { NetworkController } from './controllers/network';
 import { NftInfoController } from './controllers/NftInfoController';
 import { NotificationsController } from './controllers/notifications';
-import { PermissionsController, PERMISSIONS } from './controllers/permissions';
+import { PermissionsController } from './controllers/permissions';
 import { PreferencesController } from './controllers/preferences';
 import { RemoteConfigController } from './controllers/remoteConfig';
 import { StatisticsController } from './controllers/statistics';
@@ -34,6 +34,19 @@ import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
 import { TabsManager } from 'lib/tabsManager';
 import ExtensionStore from 'lib/localStore';
+import { UiState } from 'ui/reducers/updateState';
+import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { NetworkName } from 'networks/types';
+import { PERMISSIONS } from 'permissions/constants';
+import { PermissionObject } from 'permissions/types';
+import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
+import {
+  MessageInput,
+  MessageInputOfType,
+  MessageStoreItem,
+} from 'messages/types';
+import { CreateWalletInput } from 'wallets/types';
+import pump from 'pump';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -52,13 +65,14 @@ Sentry.init({
   },
   beforeSend: async (event, hint) => {
     const message =
+      hint &&
       hint.originalException &&
       typeof hint.originalException === 'object' &&
       'message' in hint.originalException &&
       typeof hint.originalException.message === 'string' &&
       hint.originalException.message
         ? hint.originalException.message
-        : String(hint.originalException);
+        : String(hint?.originalException);
 
     const backgroundService = await bgPromise;
 
@@ -80,41 +94,49 @@ Sentry.init({
   },
 });
 
-extension.runtime.onConnect.addListener(async remotePort => {
-  const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
+extension.runtime.onConnect.addListener(
+  async (remotePort: browser.runtime.Port) => {
+    const bgService = await bgPromise;
+    const portStream = new PortStream(remotePort);
 
-  if (remotePort.name === 'contentscript') {
-    const origin = new URL(remotePort.sender.url).hostname;
-    bgService.setupPageConnection(portStream, origin);
-  } else {
-    bgService.setupUiConnection(portStream);
+    if (remotePort.name === 'contentscript') {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const origin = new URL(remotePort.sender!.url!).hostname;
+      bgService.setupPageConnection(portStream, origin);
+    } else {
+      bgService.setupUiConnection(portStream);
+    }
   }
-});
+);
 
-extension.runtime.onConnectExternal.addListener(async remotePort => {
-  const bgService = await bgPromise;
-  const portStream = new PortStream(remotePort);
-  const origin = new URL(remotePort.sender.url).hostname;
-  bgService.setupPageConnection(portStream, origin);
-});
+extension.runtime.onConnectExternal.addListener(
+  async (remotePort: browser.runtime.Port) => {
+    const bgService = await bgPromise;
+    const portStream = new PortStream(remotePort);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const origin = new URL(remotePort.sender!.url!).hostname;
+    bgService.setupPageConnection(portStream, origin);
+  }
+);
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
   await backup();
   await extension.runtime.reload();
 });
 
-extension.runtime.onInstalled.addListener(async details => {
-  const bgService = await bgPromise;
+extension.runtime.onInstalled.addListener(
+  async (details: browser.runtime._OnInstalledDetails) => {
+    const bgService = await bgPromise;
 
-  if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-    bgService.messageController.clearUnusedMessages();
-    bgService.assetInfoController.addTickersForExistingAssets();
-    bgService.vaultController.migrate();
-    bgService.addressBookController.migrate();
-    bgService.localStore.clear();
+    if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+      bgService.messageController.clearUnusedMessages();
+      bgService.assetInfoController.addTickersForExistingAssets();
+      bgService.vaultController.migrate();
+      bgService.addressBookController.migrate();
+      bgService.localStore.clear();
+    }
   }
-});
+);
 
 async function setupBackgroundService() {
   const localStore = new LocalStore();
@@ -175,30 +197,55 @@ async function setupBackgroundService() {
   return backgroundService;
 }
 
+type NewMessageFnArgs<T extends MessageInput['type']> = [
+  data: MessageInputOfType<T>['data'],
+  type: MessageInputOfType<T>['type'],
+  options: MessageInputOfType<T>['options'],
+  broadcast: MessageInputOfType<T>['broadcast'],
+  title?: MessageInputOfType<T>['title']
+];
+
+type NewMessageFn = {
+  (...args: NewMessageFnArgs<'auth'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'cancelOrder'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'customData'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'order'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'request'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'transaction'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'transactionPackage'>): Promise<unknown>;
+  (...args: NewMessageFnArgs<'wavesAuth'>): Promise<unknown>;
+};
+
 class BackgroundService extends EventEmitter {
-  localStore: ExtensionStore;
+  localStore;
 
-  addressBookController: AddressBookController;
-  assetInfoController: AssetInfoController;
-  currentAccountController: CurrentAccountController;
-  identityController: IdentityController;
-  idleController: IdleController;
-  messageController: MessageController;
-  networkController: NetworkController;
-  nftInfoController: NftInfoController;
-  notificationsController: NotificationsController;
-  permissionsController: PermissionsController;
-  preferencesController: PreferencesController;
-  remoteConfigController: RemoteConfigController;
-  statisticsController: StatisticsController;
-  swapController: SwapController;
-  trash: TrashController;
-  txinfoController: TxInfoController;
-  uiStateController: UiStateController;
-  vaultController: VaultController;
-  walletController: WalletController;
+  addressBookController;
+  assetInfoController;
+  currentAccountController;
+  identityController;
+  idleController;
+  messageController;
+  networkController;
+  nftInfoController;
+  notificationsController;
+  permissionsController;
+  preferencesController;
+  remoteConfigController;
+  statisticsController;
+  swapController;
+  trash;
+  txinfoController;
+  uiStateController;
+  vaultController;
+  walletController;
 
-  constructor({ localStore, initLangCode }) {
+  constructor({
+    localStore,
+    initLangCode,
+  }: {
+    localStore: ExtensionStore;
+    initLangCode: string | null | undefined;
+  }) {
     super();
 
     this.localStore = localStore;
@@ -241,7 +288,6 @@ class BackgroundService extends EventEmitter {
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
-      getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
     });
 
     // On network change
@@ -274,9 +320,6 @@ class BackgroundService extends EventEmitter {
     this.walletController = new WalletController({
       localStore: this.localStore,
       assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
-      ),
       getNetworkCode: this.networkController.getNetworkCode.bind(
         this.networkController
       ),
@@ -383,9 +426,6 @@ class BackgroundService extends EventEmitter {
     });
 
     this.txinfoController = new TxInfoController({
-      getNetwork: this.networkController.getNetwork.bind(
-        this.networkController
-      ),
       getNode: this.networkController.getNode.bind(this.networkController),
     });
 
@@ -466,9 +506,8 @@ class BackgroundService extends EventEmitter {
     });
   }
 
-  getState(params = undefined) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const state: any = this.localStore.getState(params);
+  getState<K extends keyof StoreLocalState>(params?: K | K[]) {
+    const state = this.localStore.getState(params);
     const { selectedAccount } = this.localStore.getState('selectedAccount');
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
@@ -484,9 +523,10 @@ class BackgroundService extends EventEmitter {
     // RPC API object. Only async functions allowed
     return {
       // state
-      getState: async params => this.getState(params),
+      getState: async <K extends keyof StoreLocalState>(params?: K[]) =>
+        this.getState(params),
       updateIdle: async () => this.idleController.update(),
-      setIdleOptions: async ({ type }) => {
+      setIdleOptions: async ({ type }: { type: IdleOptions['type'] }) => {
         const config = this.remoteConfigController.getIdleConfig();
         if (!Object.keys(config).includes(type)) {
           throw ERRORS.UNKNOWN_IDLE();
@@ -495,51 +535,72 @@ class BackgroundService extends EventEmitter {
       },
 
       // preferences
-      setCurrentLocale: async key =>
+      setCurrentLocale: async (key: string) =>
         this.preferencesController.setCurrentLocale(key),
-      selectAccount: async (address, network) =>
+      selectAccount: async (address: string, network: NetworkName) =>
         this.preferencesController.selectAccount(address, network),
-      editWalletName: async (address, name, network) =>
-        this.preferencesController.addLabel(address, name, network),
+      editWalletName: async (
+        address: string,
+        name: string,
+        network: NetworkName
+      ) => this.preferencesController.addLabel(address, name, network),
 
       // ui state
-      setUiState: async state => this.uiStateController.setUiState(state),
+      setUiState: async (state: UiState) =>
+        this.uiStateController.setUiState(state),
 
       // wallets
-      addWallet: async account => this.walletController.addWallet(account),
-      removeWallet: async (address, network) =>
+      addWallet: async (
+        account: Omit<CreateWalletInput, 'networkCode'> & {
+          networkCode?: string;
+        }
+      ) => this.walletController.addWallet(account),
+      removeWallet: async (address: string, network: NetworkName) =>
         this.walletController.removeWallet(address, network),
       lock: async () => this.vaultController.lock(),
-      unlock: async password => this.vaultController.unlock(password),
-      initVault: async password => {
+      unlock: async (password: string) => this.vaultController.unlock(password),
+      initVault: async (password: string) => {
         this.vaultController.init(password);
         this.statisticsController.addEvent('initVault');
       },
       deleteVault: async () => {
-        await this.messageController.clearMessages();
-        await this.vaultController.clear();
+        this.messageController.clearMessages();
+        this.vaultController.clear();
       },
-      newPassword: async (oldPassword, newPassword) =>
+      newPassword: async (oldPassword: string, newPassword: string) =>
         this.vaultController.update(oldPassword, newPassword),
-      checkPassword: async password =>
+      checkPassword: async (password: string) =>
         this.walletController.checkPassword(password),
-      getAccountSeed: async (address, network, password) =>
-        this.walletController.getAccountSeed(address, network, password),
-      getAccountEncodedSeed: async (address, network, password) =>
+      getAccountSeed: async (
+        address: string,
+        network: NetworkName,
+        password: string
+      ) => this.walletController.getAccountSeed(address, network, password),
+      getAccountEncodedSeed: async (
+        address: string,
+        network: NetworkName,
+        password: string
+      ) =>
         this.walletController.getAccountEncodedSeed(address, network, password),
-      getAccountPrivateKey: async (address, network, password) =>
+      getAccountPrivateKey: async (
+        address: string,
+        network: NetworkName,
+        password: string
+      ) =>
         this.walletController.getAccountPrivateKey(address, network, password),
-      encryptedSeed: async (address, network) =>
+      encryptedSeed: async (address: string, network: NetworkName) =>
         this.walletController.encryptedSeed(address, network),
 
       // messages
-      getMessageById: async id => this.messageController.getMessageById(id),
+      getMessageById: async (id: string) =>
+        this.messageController.getMessageById(id),
       clearMessages: async () => this.messageController.clearMessages(),
-      deleteMessage: async id => this.messageController.deleteMessage(id),
-      approve: async (messageId, address) => {
+      deleteMessage: async (id: string) =>
+        this.messageController.deleteMessage(id),
+      approve: async (messageId: string, account: PreferencesAccount) => {
         const [error, message] = await this.messageController.approve(
           messageId,
-          address
+          account
         );
 
         if (error) return error;
@@ -547,32 +608,37 @@ class BackgroundService extends EventEmitter {
         this.statisticsController.sendTxEvent(message);
         return message.result;
       },
-      reject: async (messageId, forever) =>
+      reject: async (messageId: string, forever?: boolean) =>
         this.messageController.reject(messageId, forever),
       updateTransactionFee: this.messageController.updateTransactionFee.bind(
         this.messageController
       ),
       // notifications
-      setReadNotification: async id =>
+      setReadNotification: async (id: string) =>
         this.notificationsController.setMessageStatus(
           id,
           MSG_STATUSES.SHOWED_NOTIFICATION
         ),
-      deleteNotifications: async ids =>
+      deleteNotifications: async (ids: string[]) =>
         this.notificationsController.deleteNotifications(ids),
 
       // network
-      setNetwork: async network => this.networkController.setNetwork(network),
+      setNetwork: async (network: NetworkName) =>
+        this.networkController.setNetwork(network),
       getNetworks: async () => this.networkController.getNetworks(),
-      setCustomNode: async (url, network) =>
-        this.networkController.setCustomNode(url, network),
-      setCustomCode: async (code, network) => {
+      setCustomNode: async (
+        url: string | null | undefined,
+        network: NetworkName
+      ) => this.networkController.setCustomNode(url, network),
+      setCustomCode: async (code: string | undefined, network: NetworkName) => {
         this.walletController.updateNetworkCode(network, code);
         this.networkController.setCustomCode(code, network);
         this.currentAccountController.restartPolling();
       },
-      setCustomMatcher: async (url, network) =>
-        this.networkController.setCustomMatcher(url, network),
+      setCustomMatcher: async (
+        url: string | null | undefined,
+        network: NetworkName
+      ) => this.networkController.setCustomMatcher(url, network),
 
       // asset information
       assetInfo: this.assetInfoController.assetInfo.bind(
@@ -585,21 +651,22 @@ class BackgroundService extends EventEmitter {
         this.assetInfoController
       ),
       // addresses
-      setAddress: async (address, name) =>
+      setAddress: async (address: string, name: string) =>
         this.addressBookController.setAddress(address, name),
-      setAddresses: async addresses =>
+      setAddresses: async (addresses: Record<string, string>) =>
         this.addressBookController.setAddresses(addresses),
-      removeAddress: async address =>
+      removeAddress: async (address: string) =>
         this.addressBookController.removeAddress(address),
       // window control
       closeNotificationWindow: async () => this.emit('Close notification'),
-      resizeNotificationWindow: async (width, height) =>
+      resizeNotificationWindow: async (width: number, height: number) =>
         this.emit('Resize notification', width, height),
 
-      showTab: async (url, name) => this.emit('Show tab', url, name),
+      showTab: async (url: string, name: string) =>
+        this.emit('Show tab', url, name),
 
       // origin settings
-      allowOrigin: async origin => {
+      allowOrigin: async (origin: string) => {
         this.statisticsController.addEvent('allowOrigin', { origin });
         this.messageController.rejectByOrigin(origin);
         this.permissionsController.deletePermission(
@@ -609,7 +676,7 @@ class BackgroundService extends EventEmitter {
         this.permissionsController.setPermission(origin, PERMISSIONS.APPROVED);
       },
 
-      disableOrigin: async origin => {
+      disableOrigin: async (origin: string) => {
         this.statisticsController.addEvent('disableOrigin', { origin });
         this.permissionsController.deletePermission(
           origin,
@@ -618,45 +685,62 @@ class BackgroundService extends EventEmitter {
         this.permissionsController.setPermission(origin, PERMISSIONS.REJECTED);
       },
 
-      deleteOrigin: async origin => {
+      deleteOrigin: async (origin: string) => {
         this.permissionsController.deletePermissions(origin);
       },
       // extended permission autoSign
-      setAutoSign: async ({ origin, params }) => {
+      setAutoSign: async ({
+        origin,
+        params,
+      }: {
+        origin: string;
+        params: Pick<PermissionObject, 'interval' | 'totalAmount'>;
+      }) => {
         this.permissionsController.setAutoApprove(origin, params);
       },
-      setNotificationPermissions: async ({ origin, canUse }) => {
+      setNotificationPermissions: async ({
+        origin,
+        canUse,
+      }: {
+        origin: string;
+        canUse: boolean;
+      }) => {
         this.permissionsController.setNotificationPermissions(
           origin,
           canUse,
           0
         );
       },
-      sendEvent: async (event, properties) =>
+      sendEvent: async (event: string, properties: Record<string, unknown>) =>
         this.statisticsController.addEvent(event, properties),
       updateBalances: this.currentAccountController.updateBalances.bind(
         this.currentAccountController
       ),
       swapAssets: this.swapController.swapAssets.bind(this.swapController),
-      signAndPublishTransaction: data =>
-        newMessage(data, 'transaction', undefined, true),
-      getExtraFee: (address, network) =>
+      signAndPublishTransaction: (
+        data: MessageInputOfType<'transaction'>['data']
+      ) => newMessage(data, 'transaction', undefined, true),
+      getExtraFee: (address: string, network: NetworkName) =>
         getExtraFee(address, this.networkController.getNode(network)),
 
-      shouldIgnoreError: async (context, message) =>
+      shouldIgnoreError: async (context: string, message: string) =>
         this.remoteConfigController.shouldIgnoreError(context, message),
 
-      identitySignIn: async (username, password) =>
+      identitySignIn: async (username: string, password: string) =>
         this.identityController.signIn(username, password),
-      identityConfirmSignIn: async code =>
+      identityConfirmSignIn: async (code: string) =>
         this.identityController.confirmSignIn(code),
       identityUser: async () => this.identityController.getIdentityUser(),
-      identityRestore: async userId =>
+      identityRestore: async (userId: string) =>
         this.identityController.restoreSession(userId),
       identityUpdate: async () => this.identityController.updateSession(),
       identityClear: async () => this.identityController.clearSession(),
 
-      ledgerSignResponse: async (requestId, err, signature) => {
+      ledgerSignResponse: async (
+        requestId: string,
+        err: string | null,
+        signature: string | undefined
+      ) => {
         this.emit(
           `ledger:signResponse:${requestId}`,
           err ? new Error(err) : null,
@@ -666,7 +750,7 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  async validatePermission(origin) {
+  async validatePermission(origin: string) {
     const { selectedAccount } = this.getState('selectedAccount');
 
     if (!selectedAccount) throw ERRORS.EMPTY_KEEPER();
@@ -696,7 +780,7 @@ class BackgroundService extends EventEmitter {
       }
 
       if (!messageId) {
-        const messageData = {
+        const messageData: MessageInput = {
           origin,
           title: null,
           options: {},
@@ -713,7 +797,8 @@ class BackgroundService extends EventEmitter {
       this.emit('Show notification');
 
       await this.messageController
-        .getMessageResult(messageId)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .getMessageResult(messageId!)
         .then(() => {
           this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
         })
@@ -730,11 +815,12 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getNewMessageFn(origin = undefined) {
+  getNewMessageFn(origin?: string): NewMessageFn {
     return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
-        data = data.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data = data.data as any;
         data.isRequest = true;
       }
 
@@ -751,8 +837,10 @@ class BackgroundService extends EventEmitter {
         origin,
         options,
         broadcast,
-        account: selectedAccount,
-      });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        account: selectedAccount!,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
       if (noSign) {
         return result;
@@ -760,8 +848,10 @@ class BackgroundService extends EventEmitter {
 
       if (origin) {
         if (
-          selectedAccount.type !== 'ledger' &&
-          (await this.permissionsController.canApprove(origin, data))
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          selectedAccount!.type !== 'ledger' &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (await this.permissionsController.canApprove(origin, data as any))
         ) {
           this.messageController.approve(result.id);
         } else {
@@ -773,16 +863,24 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  getInpageApi(origin) {
+  getInpageApi(origin: string) {
     const newMessage = this.getNewMessageFn(origin);
 
-    const newNotification = async data => {
+    const newNotification = async (
+      data:
+        | {
+            message?: string;
+            title?: string;
+          }
+        | undefined
+    ) => {
       const { selectedAccount } = this.getState('selectedAccount');
       const myData = { ...data };
       const result = this.notificationsController.newNotification({
-        address: selectedAccount.address,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        address: selectedAccount!.address,
         message: myData.message,
-        origin: origin,
+        origin,
         status: MSG_STATUSES.NEW_NOTIFICATION,
         timestamp: Date.now(),
         title: myData.title,
@@ -799,22 +897,41 @@ class BackgroundService extends EventEmitter {
     return {
       // api
 
-      signOrder: async (data, options) => {
+      signOrder: async (
+        data: MessageInputOfType<'order'>['data'],
+        options: MessageInputOfType<'order'>['options']
+      ) => {
         return await newMessage(data, 'order', options, false);
       },
-      signAndPublishOrder: async (data, options) => {
+      signAndPublishOrder: async (
+        data: MessageInputOfType<'order'>['data'],
+        options: MessageInputOfType<'order'>['options']
+      ) => {
         return await newMessage(data, 'order', options, true);
       },
-      signCancelOrder: async (data, options) => {
+      signCancelOrder: async (
+        data: MessageInputOfType<'cancelOrder'>['data'],
+        options: MessageInputOfType<'cancelOrder'>['options']
+      ) => {
         return await newMessage(data, 'cancelOrder', options, false);
       },
-      signAndPublishCancelOrder: async (data, options) => {
+      signAndPublishCancelOrder: async (
+        data: MessageInputOfType<'cancelOrder'>['data'],
+        options: MessageInputOfType<'cancelOrder'>['options']
+      ) => {
         return await newMessage(data, 'cancelOrder', options, true);
       },
-      signTransaction: async (data, options) => {
+      signTransaction: async (
+        data: MessageInputOfType<'transaction'>['data'],
+        options: MessageInputOfType<'transaction'>['options']
+      ) => {
         return await newMessage(data, 'transaction', options, false);
       },
-      signTransactionPackage: async (data, title, options) => {
+      signTransactionPackage: async (
+        data: MessageInputOfType<'transactionPackage'>['data'],
+        title: string | undefined,
+        options: MessageInputOfType<'transactionPackage'>['options']
+      ) => {
         return await newMessage(
           data,
           'transactionPackage',
@@ -823,13 +940,22 @@ class BackgroundService extends EventEmitter {
           title
         );
       },
-      signAndPublishTransaction: async (data, options) => {
+      signAndPublishTransaction: async (
+        data: MessageInputOfType<'transaction'>['data'],
+        options: MessageInputOfType<'transaction'>['options']
+      ) => {
         return await newMessage(data, 'transaction', options, true);
       },
-      auth: async (data, options) => {
+      auth: async (
+        data: MessageInputOfType<'auth'>['data'],
+        options: MessageInputOfType<'auth'>['options']
+      ) => {
         return await newMessage(data, 'auth', options, false);
       },
-      wavesAuth: async (data, options) => {
+      wavesAuth: async (
+        data: MessageInputOfType<'wavesAuth'>['data'],
+        options: MessageInputOfType<'wavesAuth'>['options']
+      ) => {
         const publicKey = data && data.publicKey;
         const timestamp = (data && data.timestamp) || Date.now();
         return await newMessage(
@@ -839,14 +965,20 @@ class BackgroundService extends EventEmitter {
           false
         );
       },
-      signRequest: async (data, options) => {
+      signRequest: async (
+        data: MessageInputOfType<'request'>['data'],
+        options: MessageInputOfType<'request'>['options']
+      ) => {
         return await newMessage(data, 'request', options, false);
       },
-      signCustomData: async (data, options) => {
+      signCustomData: async (
+        data: MessageInputOfType<'customData'>['data'],
+        options: MessageInputOfType<'customData'>['options']
+      ) => {
         return await newMessage(data, 'customData', options, false);
       },
-      verifyCustomData: async data => verifyCustomData(data),
-      notification: async data => {
+      verifyCustomData: async (data: TSignedData) => verifyCustomData(data),
+      notification: async (data?: { message?: string; title?: string }) => {
         const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
@@ -890,7 +1022,7 @@ class BackgroundService extends EventEmitter {
         );
       },
 
-      getKEK: async (publicKey, prefix) => {
+      getKEK: async (publicKey: string, prefix: string) => {
         const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
@@ -918,7 +1050,11 @@ class BackgroundService extends EventEmitter {
         );
       },
 
-      encryptMessage: async (message, publicKey, prefix) => {
+      encryptMessage: async (
+        message: string,
+        publicKey: string,
+        prefix: string
+      ) => {
         const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
@@ -947,7 +1083,11 @@ class BackgroundService extends EventEmitter {
         );
       },
 
-      decryptMessage: async (message, publicKey, prefix) => {
+      decryptMessage: async (
+        message: string,
+        publicKey: string,
+        prefix: string
+      ) => {
         const { selectedAccount, initialized } = this.getState([
           'selectedAccount',
           'initialized',
@@ -978,11 +1118,12 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  setupUiConnection(connectionStream) {
+  setupUiConnection(connectionStream: pump.Stream) {
     const api = this.getApi();
     const dnode = setupDnode(connectionStream, api, 'api');
 
-    const remoteHandler = remote => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const remoteHandler = (remote: any) => {
       const ledgerSignRequest = remote.ledgerSignRequest.bind(remote);
       this.on('ledger:signRequest', ledgerSignRequest);
 
@@ -1000,12 +1141,12 @@ class BackgroundService extends EventEmitter {
     dnode.on('remote', remoteHandler);
   }
 
-  setupPageConnection(connectionStream, origin) {
+  setupPageConnection(connectionStream: pump.Stream, origin: string) {
     const inpageApi = this.getInpageApi(origin);
     setupDnode(connectionStream, inpageApi, 'inpageApi');
   }
 
-  _getCurrentNetwork(account) {
+  _getCurrentNetwork(account: PreferencesAccount | undefined) {
     const networks = {
       code: this.networkController.getNetworkCode(),
       server: this.networkController.getNode(),
@@ -1014,13 +1155,20 @@ class BackgroundService extends EventEmitter {
     return !account ? null : networks;
   }
 
-  _publicState(originReq) {
+  _publicState(originReq: string) {
     let account = null;
-    let msg = [];
+
+    let msg: Array<{
+      id: MessageStoreItem['id'];
+      status: MessageStoreItem['status'];
+      uid: MessageStoreItem['ext_uuid'];
+    }> = [];
+
     const canIUse = this.permissionsController.hasPermission(
       originReq,
       PERMISSIONS.APPROVED
     );
+
     const { selectedAccount, balances, messages, initialized, locked } =
       this.getState([
         'selectedAccount',
@@ -1057,7 +1205,7 @@ class BackgroundService extends EventEmitter {
     };
   }
 
-  ledgerSign(type, data) {
+  ledgerSign(type: string, data: unknown) {
     return new Promise<string>((resolve, reject) => {
       const requestId = uuidv4();
 
@@ -1076,3 +1224,5 @@ class BackgroundService extends EventEmitter {
     });
   }
 }
+
+export type __BackgroundUiApiDirect = ReturnType<BackgroundService['getApi']>;

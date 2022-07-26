@@ -29,7 +29,7 @@ export function Login({
 }: LoginProps) {
   const [loginState, setLoginState] = React.useState<LoginStateType>('sign-in');
   const [codeDelivery, setCodeDelivery] = React.useState<CodeDelivery>();
-  const userRef = React.useRef<UserData>(userData);
+  const userRef = React.useRef<UserData | undefined>(userData);
 
   React.useEffect(() => {
     background.identityClear();
@@ -37,7 +37,8 @@ export function Login({
 
   const handleSuccess = React.useCallback(() => {
     background.identityUser().then(identityUser => {
-      const [name, domain] = userRef.current.username.split('@');
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const [name, domain] = userRef.current!.username.split('@');
       onConfirm({
         name: `${name[0]}*******@${domain}`,
         ...identityUser,
@@ -76,7 +77,8 @@ export function Login({
       try {
         await background.identityConfirmSignIn(code);
         handleSuccess();
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
         if (e && e.code === 'NotAuthorizedException' && userRef.current) {
           await signIn(userRef.current.username, userRef.current.password);
         } else {

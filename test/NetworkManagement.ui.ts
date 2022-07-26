@@ -7,7 +7,7 @@ import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 describe('Network management', function () {
   this.timeout(60 * 1000);
 
-  let tabKeeper;
+  let tabKeeper: string;
 
   before(async function () {
     await App.initVault.call(this);

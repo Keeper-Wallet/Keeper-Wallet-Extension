@@ -1,3 +1,4 @@
+import * as mocha from 'mocha';
 import { App, CreateNewAccount, Settings } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
@@ -16,9 +17,9 @@ const SPENDING_LIMIT = '1',
 describe('Settings', function () {
   this.timeout(BROWSER_TIMEOUT_DELAY + 60 * 1000);
 
-  let tabKeeper;
+  let tabKeeper: string;
 
-  async function performLogin(password: string) {
+  async function performLogin(this: mocha.Context, password: string) {
     const passwordEls = await this.driver.findElements(
       By.css('input#loginPassword')
     );
@@ -407,15 +408,18 @@ describe('Settings', function () {
     });
 
     describe('Custom list', function () {
-      async function publicStateFromOrigin(origin: string) {
+      async function publicStateFromOrigin(
+        this: mocha.Context,
+        origin: string
+      ) {
         // this requests permission first
         const permissionRequest = () => {
           KeeperWallet.initialPromise.then(api => {
             api.publicState().then(
-              resolved => {
+              (resolved: unknown) => {
                 window.result = resolved;
               },
-              rejected => {
+              (rejected: unknown) => {
                 window.result = rejected;
               }
             );
@@ -1044,7 +1048,7 @@ describe('Settings', function () {
     });
 
     describe('Delete accounts', function () {
-      async function clickDeleteAllBtn() {
+      async function clickDeleteAllBtn(this: mocha.Context) {
         await this.driver
           .wait(
             until.elementLocated(

@@ -1,14 +1,17 @@
 import * as styles from './cancelLease.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Balance } from '../../ui';
 import { getMoney } from '../../../utils/converters';
 import { getAmount, messageType } from './parseTx';
+import { MessageCardComponentProps } from '../types';
 
-class CancelLeaseCardComponent extends React.PureComponent<ComponentProps> {
+class CancelLeaseCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const className = cn(
       styles.cancelLeaseTransactionCard,
@@ -19,7 +22,7 @@ class CancelLeaseCardComponent extends React.PureComponent<ComponentProps> {
     );
 
     const { t, message, assets } = this.props;
-    const { data = {} as MessageData } = message;
+    const { data = {} } = message;
 
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);

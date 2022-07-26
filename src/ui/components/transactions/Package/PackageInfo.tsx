@@ -1,24 +1,19 @@
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './package.styl';
 import { getTransactionData } from './parseTx';
-import {
-  ComponentProps,
-  Message,
-  MessageData,
-  TxIcon,
-  TxInfo,
-} from '../BaseTransaction';
-import { AssetDetail } from 'ui/services/Background';
-import { ComponentConfig } from 'ui/components/transactions/index';
+import { TxIcon, TxInfo } from '../BaseTransaction';
+import { AssetDetail } from 'assets/types';
+import { MessageComponentProps, MessageConfig } from '../types';
 
 const MessageItem = ({
   message,
   config,
   assets,
 }: {
-  message: Message;
-  config: ComponentConfig;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  message: any;
+  config: MessageConfig;
   assets: Record<string, AssetDetail>;
 }) => {
   const Card = config.card;
@@ -30,20 +25,24 @@ const MessageItem = ({
   );
 };
 
-class PackageInfoComponent extends React.PureComponent<
-  Pick<ComponentProps, 't' | 'message' | 'assets'> & {
-    message: Message & { data: MessageData[]; lease?: unknown };
-    onToggle?: (isOpen: boolean) => void;
-  }
-> {
-  readonly state = { isOpened: false };
+interface State {
+  isOpened: boolean;
+}
+
+type Props = Pick<MessageComponentProps, 'message' | 'assets'> &
+  WithTranslation & {
+    onToggle: (isOpen: boolean) => void;
+  };
+
+class PackageInfoComponent extends React.PureComponent<Props, State> {
+  state: State = { isOpened: false };
 
   toggleHandler = () => {
     const isOpened = !this.state.isOpened;
     this.setState({ isOpened });
   };
 
-  componentDidUpdate(_, prevState): void {
+  componentDidUpdate(_: Props, prevState: State): void {
     if (this.state.isOpened !== prevState.isOpened) {
       this.props.onToggle(this.state.isOpened);
     }
@@ -52,8 +51,9 @@ class PackageInfoComponent extends React.PureComponent<
   render() {
     const { t, message, assets } = this.props;
     const { isOpened } = this.state;
-    const { data = [] as MessageData[] } = message;
-    const txs = data.map(getTransactionData);
+    const { data = [] } = message;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const txs = (data as any[]).map(getTransactionData);
     const hashes = message.messageHash;
     return (
       <div>
@@ -61,7 +61,8 @@ class PackageInfoComponent extends React.PureComponent<
           ? txs.map(({ config, tx }, index) => {
               const message = {
                 data: { ...tx, data: tx },
-                messageHash: hashes[index],
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                messageHash: hashes![index],
                 type: 'transaction',
               };
               return (

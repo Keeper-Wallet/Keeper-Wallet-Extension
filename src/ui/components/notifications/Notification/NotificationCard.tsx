@@ -3,17 +3,17 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Button } from '../../ui';
 import cn from 'classnames';
-import { Notification } from 'ui/components/pages';
+import { NotificationsStoreItem } from 'notifications/types';
 
 class NotificationCardComponent extends React.PureComponent<INotification> {
-  deleteHandler = event => {
+  deleteHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
     const ids = this.props.notifications.map(({ id }) => id);
     this.props.deleteNotifications(ids);
   };
 
-  showHandler = event => {
+  showHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     event.preventDefault();
     this.props.onShow && this.props.onShow(this.props.notifications);
@@ -73,8 +73,8 @@ interface INotification extends WithTranslation {
   collapsed?: boolean;
   className?: string;
   deleteNotifications: (ids: string[]) => void;
-  onShow?: (item) => void;
-  notifications?: Notification[];
+  onShow?: (item: NotificationsStoreItem[] | null) => void;
+  notifications: NotificationsStoreItem[];
 }
 
 export const NotificationCard = withTranslation()(NotificationCardComponent);

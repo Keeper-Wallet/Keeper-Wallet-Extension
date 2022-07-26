@@ -58,7 +58,7 @@ describe('Account creation', function () {
     await this.driver.switchTo().window(tabAccounts);
   }
 
-  let tabKeeper, tabAccounts;
+  let tabKeeper: string, tabAccounts: string;
 
   before(async function () {
     await App.initVault.call(this);
@@ -233,7 +233,7 @@ describe('Account creation', function () {
                 By.xpath("//div[contains(@class, 'newwallet-greyLine')]")
               )
             );
-            let prevAddress = null;
+            let prevAddress: string | null = null;
             const avatarList = await this.driver.findElements(
               By.xpath("//div[contains(@class, 'avatar-avatar-')]")
             );
@@ -620,7 +620,7 @@ describe('Account creation', function () {
           });
 
           it('Any change in the seed changes the address', async function () {
-            let lastAddress: string = null,
+            let lastAddress: string | null = null,
               currentAddress: string;
             // input seed
             await seedTextarea.sendKeys(ACCOUNTS.MORE_24_CHARS.SEED);

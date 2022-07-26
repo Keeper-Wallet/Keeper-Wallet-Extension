@@ -1,12 +1,14 @@
 import * as styles from './setScript.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { ShowScript } from '../../ui';
 import { SetScriptCardHeader } from './SetScriptCardHeader';
-import { ComponentProps, MessageData } from '../BaseTransaction';
+import { MessageCardComponentProps } from '../types';
 
-class SetScriptCardComponent extends React.PureComponent<ComponentProps> {
+class SetScriptCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const className = cn(
       styles.setScriptTransactionCard,
@@ -17,7 +19,7 @@ class SetScriptCardComponent extends React.PureComponent<ComponentProps> {
     );
 
     const { t, message, collapsed } = this.props;
-    const { data = {} as MessageData } = message;
+    const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const script = tx.script;
     return (

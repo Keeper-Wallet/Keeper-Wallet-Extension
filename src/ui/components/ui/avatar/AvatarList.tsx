@@ -4,7 +4,7 @@ import { Avatar } from './Avatar';
 import * as styles from './AvatarList.module.css';
 
 interface AvatarListItem {
-  address: string;
+  address: string | null;
 }
 
 interface Props<T extends AvatarListItem> {

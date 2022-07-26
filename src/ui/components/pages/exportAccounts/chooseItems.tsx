@@ -1,4 +1,4 @@
-import { Account, NetworkName } from 'accounts/types';
+import { NetworkName } from 'networks/types';
 import cn from 'classnames';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { Button } from 'ui/components/ui/buttons/Button';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { Ellipsis } from 'ui/components/ui/ellipsis/Ellipsis';
 import * as styles from './chooseItems.styl';
+import { PreferencesAccount } from 'preferences/types';
 
 const allNetworks: NetworkName[] = Object.values(NetworkName);
 
@@ -31,25 +32,26 @@ interface Props<T> {
   onSubmit: (items: T[]) => void;
 }
 
-export function isExportable(item: Account | Contact) {
+export function isExportable(item: PreferencesAccount | Contact) {
   return (
     !('type' in item) ||
     ['seed', 'encodedSeed', 'privateKey', 'debug'].includes(item.type)
   );
 }
 
-export function ExportKeystoreChooseItems<T extends Account | Contact>({
-  items,
-  type,
-  onSubmit,
-}: Props<T>) {
+export function ExportKeystoreChooseItems<
+  T extends PreferencesAccount | Contact
+>({ items, type, onSubmit }: Props<T>) {
   const { t } = useTranslation();
 
   const [selected, setSelected] = React.useState(
     () => new Set(items.filter(isExportable).map(({ address }) => address))
   );
 
-  function toggleSelected(items: (Account | Contact)[], isSelected: boolean) {
+  function toggleSelected(
+    items: (PreferencesAccount | Contact)[],
+    isSelected: boolean
+  ) {
     setSelected(prevSelected => {
       const newSelected = new Set(prevSelected);
 
@@ -95,7 +97,7 @@ export function ExportKeystoreChooseItems<T extends Account | Contact>({
 
       <div className={styles.accounts}>
         {allNetworks
-          .map<[NetworkName, (Account | Contact)[]]>(network => [
+          .map<[NetworkName, (PreferencesAccount | Contact)[]]>(network => [
             network,
             items.filter(acc => acc.network === network),
           ])

@@ -1,43 +1,40 @@
 import * as Sentry from '@sentry/react';
-import { compareAccountsByLastUsed } from 'accounts/utils';
+import { compareAccountsByLastUsed } from 'preferences/utils';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
 import ExtensionStore from 'lib/localStore';
 import { NetworkController } from './network';
-import { RemoteConfigController } from './remoteConfig';
-
-type GetNetworkConfig = RemoteConfigController['getNetworkConfig'];
-type GetNetwork = NetworkController['getNetwork'];
+import { IdleOptions } from 'preferences/types';
+import { WalletAccount } from 'wallets/types';
+import { NetworkName } from 'networks/types';
 
 export class PreferencesController extends EventEmitter {
-  store: ObservableStore;
-  getNetwork: GetNetwork;
-  getNetworkConfig: GetNetworkConfig;
+  store;
+  private getNetwork;
 
   constructor({
     localStore,
     initLangCode,
     getNetwork,
-    getNetworkConfig,
   }: {
     localStore: ExtensionStore;
-    initLangCode: string;
-    getNetwork: GetNetwork;
-    getNetworkConfig: GetNetworkConfig;
+    initLangCode: string | null | undefined;
+    getNetwork: NetworkController['getNetwork'];
   }) {
     super();
 
-    const defaults = {
-      currentLocale: initLangCode || 'en',
-      idleOptions: { type: 'idle', interval: 0 },
-      accounts: [],
-      currentNetworkAccounts: [],
-      selectedAccount: undefined,
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        currentLocale: initLangCode || 'en',
+        idleOptions: { type: 'idle', interval: 0 },
+        accounts: [],
+        currentNetworkAccounts: [],
+        selectedAccount: undefined,
+      })
+    );
+
     localStore.subscribe(this.store);
 
-    this.getNetworkConfig = getNetworkConfig;
     this.getNetwork = getNetwork;
   }
 
@@ -45,15 +42,15 @@ export class PreferencesController extends EventEmitter {
     return this.store.getState().selectedAccount;
   }
 
-  setCurrentLocale(key) {
+  setCurrentLocale(key: string) {
     this.store.updateState({ currentLocale: key });
   }
 
-  setIdleOptions(options) {
+  setIdleOptions(options: IdleOptions) {
     this.store.updateState({ idleOptions: options });
   }
 
-  syncAccounts(fromKeyrings) {
+  syncAccounts(fromKeyrings: WalletAccount[]) {
     const oldAccounts = this.store.getState().accounts;
     const accounts = fromKeyrings.map((account, i) => {
       return Object.assign(
@@ -88,7 +85,7 @@ export class PreferencesController extends EventEmitter {
           account.network === selectedAccount.network
       )
     ) {
-      let addressToSelect;
+      let addressToSelect: string | undefined;
 
       if (currentNetworkAccounts.length > 0) {
         const sortedAccounts = currentNetworkAccounts.sort(
@@ -102,7 +99,7 @@ export class PreferencesController extends EventEmitter {
     }
   }
 
-  addLabel(address, label, network) {
+  addLabel(address: string, label: string, network: NetworkName) {
     const accounts = this.store.getState().accounts;
     const index = accounts.findIndex(
       current => current.address === address && current.network === network
@@ -116,7 +113,7 @@ export class PreferencesController extends EventEmitter {
     this.store.updateState({ accounts });
   }
 
-  selectAccount(address, network) {
+  selectAccount(address: string | undefined, network: string) {
     const { accounts, selectedAccount } = this.store.getState();
 
     if (

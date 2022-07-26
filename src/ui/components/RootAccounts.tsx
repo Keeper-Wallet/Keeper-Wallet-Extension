@@ -30,7 +30,7 @@ export function RootAccounts() {
       tab = PAGES.WELCOME;
     }
 
-    let canUseTab = !state.state?.locked;
+    let canUseTab: boolean | null | undefined = !state.state?.locked;
 
     switch (tab) {
       case PAGES.NEW:

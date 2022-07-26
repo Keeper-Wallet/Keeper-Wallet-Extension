@@ -33,7 +33,8 @@ export function TxDetailTabs({ children }: Props) {
           <PlateCollapsable showExpand showCopy>
             <Highlight
               className={cn('json', 'body3', styles.code)}
-              data={message.json}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              data={message!.json!}
             />
           </PlateCollapsable>
         </TabPanel>

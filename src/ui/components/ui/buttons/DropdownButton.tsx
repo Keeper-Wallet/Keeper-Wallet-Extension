@@ -13,9 +13,9 @@ interface State {
 }
 
 export class DropdownButton extends React.PureComponent<Props, State> {
-  private element: HTMLDivElement;
+  private element: HTMLDivElement | null | undefined;
 
-  getRef = element => (this.element = element);
+  getRef = (element: HTMLDivElement | null) => (this.element = element);
 
   clickHandler = () => {
     const showList = this.state.showList;
@@ -29,8 +29,8 @@ export class DropdownButton extends React.PureComponent<Props, State> {
     this.setState({ showList: !this.state.showList });
   };
 
-  clickOutHandler = e => {
-    let el = e.target;
+  clickOutHandler = (e: MouseEvent) => {
+    let el = e.target as Node | null;
 
     while (el) {
       if (el === this.element) {
@@ -65,9 +65,9 @@ export class DropdownButton extends React.PureComponent<Props, State> {
     };
   }
 
-  render(): React.ReactNode {
+  render() {
     const { children, placement = 'bottom', className } = this.props;
-    const [defaultItem, ...otherItems] = children;
+    const [defaultItem, ...otherItems] = children as React.ReactElement[];
 
     return (
       <div

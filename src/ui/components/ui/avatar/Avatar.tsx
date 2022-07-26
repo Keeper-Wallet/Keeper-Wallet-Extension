@@ -1,26 +1,25 @@
-import { AccountType } from 'accounts/types';
 import cn from 'classnames';
 import * as avatar from 'identity-img';
+import { PreferencesAccount } from 'preferences/types';
 import * as React from 'react';
 import * as styles from './avatar.styl';
 
 const SIZE = 67;
 
 interface Props {
-  address: string;
+  address: string | null;
   className?: string;
   size: number;
-  type?: AccountType;
+  type?: PreferencesAccount['type'];
 }
 
 interface State {
-  address?: string;
+  address?: string | null;
   src?: string;
 }
 
 export class Avatar extends React.Component<Props, State> {
   state: State = {};
-  props: Props;
 
   static getDerivedStateFromProps(
     nextProps: Props,

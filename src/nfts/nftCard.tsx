@@ -15,13 +15,13 @@ export function NftCover({ className, nft }: { className?: string; nft: Nft }) {
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
       onLoad={() => nft?.foreground && setLoading(false)}
     >
-      <source src={nft?.foreground} type="video/mp4" />
+      <source src={nft?.foreground as string | undefined} type="video/mp4" />
     </video>
   ) : (
     <img
-      src={nft?.foreground}
+      src={nft?.foreground as string | undefined}
       className={cn(styles.cover, className, isLoading && 'skeleton-glow')}
-      style={nft?.background}
+      style={nft?.background as React.CSSProperties | undefined}
       onLoad={() => nft?.foreground && setLoading(false)}
     />
   );

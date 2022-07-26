@@ -8,6 +8,7 @@ import { Balance } from 'ui/components/ui/balance/Balance';
 import { useAppSelector } from 'ui/store';
 import { SwapLayout } from './layout';
 import * as styles from './result.module.css';
+import { NetworkName } from 'networks/types';
 
 interface Props {
   fromMoney: Money;
@@ -34,9 +35,10 @@ type TxStatus =
     };
 
 const explorerBaseUrlsByNetwork = {
-  mainnet: 'wavesexplorer.com',
-  testnet: 'testnet.wavesexplorer.com',
-  stagenet: 'stagenet.wavesexplorer.com',
+  [NetworkName.Mainnet]: 'wavesexplorer.com',
+  [NetworkName.Testnet]: 'testnet.wavesexplorer.com',
+  [NetworkName.Stagenet]: 'stagenet.wavesexplorer.com',
+  [NetworkName.Custom]: undefined,
 };
 
 export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
@@ -47,7 +49,8 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
 
   const server = useAppSelector(
     state =>
-      state.networks.find(net => net.name === state.currentNetwork).server
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      state.networks.find(net => net.name === state.currentNetwork)!.server
   );
 
   const [swapStatus, setSwapStatus] = React.useState(SwapStatus.Pending);
@@ -62,7 +65,7 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
     let timeout: number;
     let txInfoAttempts = 0;
 
-    async function updateStatus(prevTxStatus: TxStatus) {
+    async function updateStatus(prevTxStatus: TxStatus | null) {
       const [txStatus] = (await fetch(txStatusUrl.toString()).then(res =>
         res.json()
       )) as TxStatus[];
@@ -93,9 +96,10 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
               };
             };
 
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const transfer = txInfo.stateChanges.transfers.find(
               t => t.address === selectedAccount.address
-            );
+            )!;
 
             setReceivedMoney(
               new Money(
@@ -204,7 +208,8 @@ export function SwapResult({ fromMoney, transactionId, onClose }: Props) {
                     addSign="+"
                     split
                     showAsset
-                    balance={receivedMoney}
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    balance={receivedMoney!}
                   />
                 )}
               </div>

@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { AuthCard } from './AuthCard';
 import { AuthInfo } from './AuthInfo';
 import { ApproveBtn, Button } from '../../ui';
-import { ComponentProps, TxHeader } from '../BaseTransaction';
+import { TxHeader } from '../BaseTransaction';
 import { SignWrapper } from '../../pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
+import { MessageComponentProps } from '../types';
 
-export function Auth(props: ComponentProps) {
+export function Auth(props: MessageComponentProps) {
   const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 
@@ -31,7 +32,10 @@ export function Auth(props: ComponentProps) {
         <Button id="reject" onClick={props.reject} type="button" view="warning">
           {t('sign.reject')}
         </Button>
-        <SignWrapper onConfirm={props.approve}>
+        <SignWrapper
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onConfirm={props.approve as any}
+        >
           {({ onPrepare, pending }) => (
             <ApproveBtn
               id="approve"

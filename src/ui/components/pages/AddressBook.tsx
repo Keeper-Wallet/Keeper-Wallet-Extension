@@ -166,7 +166,7 @@ export function AddressBook() {
           <SearchInput
             className={styles.searchInput}
             value={search}
-            onInput={e => setSearch(e.target.value)}
+            onInput={e => setSearch(e.currentTarget.value)}
             onClear={() => setSearch('')}
           />
           <div className={styles.cardList}>

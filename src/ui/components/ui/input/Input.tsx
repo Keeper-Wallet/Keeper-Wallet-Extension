@@ -4,27 +4,36 @@ import cn from 'classnames';
 
 type View = 'default' | 'password';
 
-interface Props {
-  wrapperClassName?: string;
-  className?: string;
-  error?: boolean;
-  multiLine?: boolean;
-  view?: View;
-  type?: string;
-  forwardRef?: React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement>;
+interface InputEvents<E extends HTMLTextAreaElement | HTMLInputElement> {
+  onBlur?: (event: React.FocusEvent<E>) => void;
+  onChange?: (event: React.ChangeEvent<E>) => void;
+  onFocus?: (event: React.FocusEvent<E>) => void;
+  onKeyDown?: (event: React.KeyboardEvent<E>) => void;
+  onInput?: (event: React.FormEvent<E>) => void;
 }
 
-export type InputProps = Props &
-  React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
+export type InputProps = {
+  autoComplete?: string;
+  autoFocus?: boolean;
+  checked?: boolean;
+  className?: string;
+  disabled?: boolean;
+  error?: unknown;
+  forwardRef?: React.MutableRefObject<
+    HTMLInputElement | HTMLTextAreaElement | null
   >;
-
-export type TextareaProps = Props &
-  React.DetailedHTMLProps<
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    HTMLTextAreaElement
-  >;
+  id?: string;
+  maxLength?: number;
+  placeholder?: string;
+  spellCheck?: boolean;
+  type?: string;
+  value?: string | readonly string[] | number;
+  view?: View;
+  wrapperClassName?: string;
+} & (
+  | ({ multiLine: true; rows?: number } & InputEvents<HTMLTextAreaElement>)
+  | ({ multiLine?: false | undefined } & InputEvents<HTMLInputElement>)
+);
 
 export function Input({
   wrapperClassName,
@@ -35,14 +44,14 @@ export function Input({
   type,
   forwardRef,
   ...props
-}: InputProps | TextareaProps) {
+}: InputProps) {
   const [rootType, setRootType] = React.useState(type);
 
   const rootRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(
     null
   );
   const getRef = React.useCallback(
-    (element: HTMLInputElement | HTMLTextAreaElement) => {
+    (element: HTMLInputElement | HTMLTextAreaElement | null) => {
       forwardRef && (forwardRef.current = element);
       rootRef.current = element;
     },
@@ -60,14 +69,14 @@ export function Input({
       {multiLine ? (
         <textarea
           className={cn(styles.input, className)}
-          {...(props as TextareaProps)}
+          {...(props as Extract<InputProps, { multiLine: true }>)}
           ref={getRef}
         />
       ) : (
         <>
           <input
             className={cn(styles.input, className)}
-            {...(props as InputProps)}
+            {...(props as Extract<InputProps, { multiLine?: false }>)}
             type={rootType}
             ref={getRef}
           />

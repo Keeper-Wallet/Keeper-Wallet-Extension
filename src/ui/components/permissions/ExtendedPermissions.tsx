@@ -3,7 +3,14 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './settings.styl';
 import { Input, Select } from 'ui/components/ui';
 
-const CONFIG = {
+const CONFIG: {
+  list: Array<{
+    id: string;
+    i18nKey: string;
+    text: string;
+    value: number | null;
+  }>;
+} = {
   list: [
     {
       id: '0m',
@@ -33,7 +40,7 @@ const CONFIG = {
 };
 
 class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
-  state = {
+  state: IState = {
     origin: null,
     interval: null,
     totalAmount: null,
@@ -43,7 +50,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     showNotify: false,
   };
 
-  static _getAutoSign(autoSign: TAutoAuth): TAutoAuth {
+  static _getAutoSign(autoSign: TAutoAuth | null): TAutoAuth {
     if (!autoSign || typeof autoSign === 'string') {
       return { type: 'allowAutoSign', totalAmount: null, interval: null };
     }
@@ -52,7 +59,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
   }
 
   static getDerivedStateFromProps(
-    props: IProps,
+    props: Readonly<IProps>,
     state: IState
   ): Partial<IState> {
     const { originName, autoSign, showNotify } = props;
@@ -64,7 +71,8 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     const { interval = null, totalAmount } =
       ExtendedPermissionsComponent._getAutoSign(autoSign);
 
-    const selected = CONFIG.list.find(({ value }) => value === interval).id;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const selected = CONFIG.list.find(({ value }) => value === interval)!.id;
     return {
       ...state,
       interval,
@@ -75,7 +83,11 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     };
   }
 
-  changeHandler = (newInterval, newTotalAmount, showNotify) => {
+  changeHandler = (
+    newInterval: number | null,
+    newTotalAmount: string | null,
+    showNotify: boolean | null
+  ) => {
     newTotalAmount = newInterval ? newTotalAmount : '';
     this.props.onChangePerms({
       type: 'allowAutoSign',
@@ -85,19 +97,20 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
     });
   };
 
-  changeShowNotifyHandler = event => {
+  changeShowNotifyHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const showNotify = event.target.checked;
     this.setState({ showNotify });
     this.changeHandler(this.state.interval, this.state.totalAmount, showNotify);
   };
 
-  selectTimeHandler = time => {
-    const { value } = CONFIG.list.find(({ id }) => id === time);
+  selectTimeHandler = (time: string | number) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { value } = CONFIG.list.find(({ id }) => id === time)!;
     this.setState({ interval: value, selected: time });
     this.changeHandler(value, this.state.totalAmount, this.state.showNotify);
   };
 
-  amountHandler = event => {
+  amountHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     const parsedValue = value
       .replace(/[^0-9.]/g, '')
@@ -136,7 +149,8 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
           className={styles.selectTime}
           fill
           selectList={timeList}
-          selected={this.state.selected}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          selected={this.state.selected!}
           description={t('permissionSettings.modal.time')}
           onSelectItem={this.selectTimeHandler}
         />
@@ -159,7 +173,8 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
           <Input
             id="checkbox_noshow"
             type={'checkbox'}
-            checked={this.state.showNotify}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            checked={this.state.showNotify!}
             onChange={this.changeShowNotifyHandler}
           />
           <label htmlFor="checkbox_noshow">
@@ -177,24 +192,26 @@ export const ExtendedPermission = withTranslation()(
 
 interface IProps extends WithTranslation {
   className?: string;
-  autoSign: TAutoAuth;
+  autoSign: TAutoAuth | null;
   showNotify: boolean;
-  originName: string;
-  onChangePerms?: (permission: TAutoAuth) => void;
+  originName: string | undefined;
+  onChangePerms: (permission: TAutoAuth) => void;
 }
 
 type TAutoAuth = {
   type: 'allowAutoSign';
-  totalAmount: number;
-  interval: number;
+  totalAmount: string | null;
+  interval: number | null;
   approved?: Array<unknown>;
-  showNotify?: boolean;
+  showNotify?: boolean | null;
 };
 
 interface IState {
   interval: number | null;
-  totalAmount: number | null;
-  selected: string;
+  totalAmount: string | null;
+  selected: string | number | null;
   origin: string | null;
+  canSave: boolean;
+  edited: boolean;
   showNotify: boolean | null;
 }

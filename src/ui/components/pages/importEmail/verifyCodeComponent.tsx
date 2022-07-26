@@ -45,7 +45,8 @@ export function VerifyCodeComponent({
           setIsIncorrectCode(true);
         })
         .then(() => {
-          refs[0].current.focus();
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          refs[0].current!.focus();
           setValues(refs.map(() => ''));
         });
     } else {
@@ -75,7 +76,8 @@ export function VerifyCodeComponent({
       const nextIndex = Math.min(index + filledValues.length, codeLength - 1);
       const el =
         (refs[nextIndex] && refs[nextIndex].current) || refs[index].current;
-      el.focus();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      el!.focus();
 
       setValues(newValues);
     },
@@ -87,9 +89,9 @@ export function VerifyCodeComponent({
   }, []);
 
   const onChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>): void => {
-      const value = e.target.value;
-      const index = Number(e.target.dataset.index);
+    (e: React.FormEvent<HTMLInputElement>): void => {
+      const value = e.currentTarget.value;
+      const index = Number(e.currentTarget.dataset.index);
 
       changeHandler(value, index);
     },

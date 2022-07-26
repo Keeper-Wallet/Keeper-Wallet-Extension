@@ -6,7 +6,7 @@ import background from 'ui/services/Background';
 import { addBackTab, setTab } from '../../actions';
 import { PAGES } from '../../pageConfig';
 import { Button } from '../ui';
-import { downloadKeystore } from '../../utils/keystore';
+import { downloadKeystore } from '../../../keystore/utils';
 import { ExportPasswordModal } from '../pages/exportAccounts/passwordModal';
 import { isExportable } from '../pages/exportAccounts/chooseItems';
 

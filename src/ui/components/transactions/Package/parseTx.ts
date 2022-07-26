@@ -2,17 +2,24 @@ import { BigNumber } from '@waves/bignumber';
 import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getConfigByTransaction } from '../index';
 import { Money } from '@waves/data-entities';
+import { AssetDetail } from 'assets/types';
 
 export const messageType = 'transactionPackage';
 export const txType = 'transactionPackage';
 
-export function getTransactionData(item) {
+export interface PackageItem {
+  type: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+}
+
+export function getTransactionData(item: PackageItem) {
   const tx = { type: item.type, ...(item.data ? item.data : item) };
   const config = getConfigByTransaction({ data: item, type: 'transaction' });
   return { tx, config };
 }
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(tx: PackageItem[]): Array<string> {
   if (!Array.isArray(tx)) {
     return ['WAVES'];
   }
@@ -32,7 +39,10 @@ export function getFee() {
 
 type AnyMoney = IMoneyLike | BigNumber | Money | string | number;
 
-export function getFees(tx, assets) {
+export function getFees(
+  tx: PackageItem[],
+  assets: Record<string, AssetDetail>
+) {
   if (!Array.isArray(tx)) {
     return {};
   }
@@ -59,7 +69,10 @@ export function getFees(tx, assets) {
   }, Object.create(null));
 }
 
-export function getPackageAmounts(tx = null, assets) {
+export function getPackageAmounts(
+  tx: PackageItem[],
+  assets: Record<string, AssetDetail>
+) {
   if (!Array.isArray(tx)) {
     return [];
   }
@@ -70,16 +83,19 @@ export function getPackageAmounts(tx = null, assets) {
 
       function addAmount(amount: IMoneyLike | Money) {
         const money = getMoney(amount, assets);
-        if (money.getTokens().gt(0)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (money!.getTokens().gt(0)) {
           const sign = config.getAmountSign(tx);
-          acc.push({ amount: money, sign });
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          acc.push({ amount: money!, sign });
         }
       }
 
       if (config.getAmount) {
         addAmount(config.getAmount(tx, item));
       } else {
-        config.getAmounts(tx).forEach(addAmount);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        config.getAmounts!(tx).forEach(addAmount);
       }
 
       return acc;
@@ -96,6 +112,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: unknown, type: string) {
+export function isMe(tx: unknown, type: string | null) {
   return type === txType;
 }

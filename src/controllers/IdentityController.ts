@@ -8,9 +8,15 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
-import LocalStore from '../lib/localStore';
+import LocalStore, {
+  StoreLocalState,
+  StoreSessionState,
+} from '../lib/localStore';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
-import { Account, NetworkName } from 'accounts/types';
+import { PreferencesController } from './preferences';
+import { NetworkController } from './network';
+import { RemoteConfigController } from './remoteConfig';
+import { NetworkName } from 'networks/types';
 
 export type CodeDelivery = {
   type: 'SMS' | 'EMAIL' | string;
@@ -23,7 +29,7 @@ function startsWith(source: string, target: string, flags = 'i'): boolean {
 
 const fetch = global.fetch;
 global.fetch = (
-  endpoint: RequestInfo,
+  endpoint: RequestInfo | URL,
   { headers = {}, ...options }: RequestInit = {}
 ) => {
   if (
@@ -74,27 +80,25 @@ export type IdentityConfig = {
   };
 };
 
-type IdentityState = {
-  cognitoSessions: string;
-};
+type IdentityState = Pick<StoreLocalState, 'cognitoSessions'>;
 
-class IdentityStorage extends ObservableStore implements ICognitoStorage {
-  public getState: () => IdentityState;
-  public putState: (newState: Partial<IdentityState>) => void;
-  public updateState: (partial: Partial<IdentityState>) => void;
-  private memo = {};
-  private password: string;
+class IdentityStorage
+  extends ObservableStore<IdentityState>
+  implements ICognitoStorage
+{
+  private memo: Record<string, string | null> | undefined = {};
+  private password: string | null | undefined;
   private _setSession: (session: Record<string, unknown>) => void;
 
   constructor(
-    initState: Partial<IdentityState>,
-    initSession: Record<string, unknown>,
+    initState: IdentityState,
+    initSession: StoreSessionState,
     setSession: (session: Record<string, unknown>) => void
   ) {
     super(initState);
 
     this.memo = initSession.memo;
-    this.password = initSession.password as string;
+    this.password = initSession.password;
     this._setSession = setSession;
   }
 
@@ -106,32 +110,38 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     this._setPassword(password);
   }
 
-  getItem(key: string): string | null {
-    return this.memo[key];
+  getItem(key: string) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.memo![key];
   }
 
-  removeItem(key: string): void {
-    delete this.memo[key];
+  removeItem(key: string) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    delete this.memo![key];
     this._updateMemo();
   }
 
-  setItem(key: string, value: string): void {
-    this.memo[key] = value;
+  setItem(key: string, value: string) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.memo![key] = value;
     this._updateMemo();
   }
 
-  clear(): void {
+  clear() {
     this.memo = {};
     this._updateMemo();
   }
 
-  purge(): void {
+  purge() {
     this.updateState({ cognitoSessions: undefined });
     this.clear();
   }
 
   restore(userId: string) {
-    const cognitoSessions = this.decrypt();
+    const cognitoSessions = this.decrypt() as Record<
+      string,
+      Record<string, string>
+    >;
     this.memo = cognitoSessions[userId] || {};
     this._updateMemo();
   }
@@ -157,14 +167,15 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
     this._setSession({ memo: this.memo });
   }
 
-  private _setPassword(password?: string) {
+  private _setPassword(password?: string | null) {
     this.password = password;
     this._setSession({ password });
   }
 
-  private encrypt(object): string {
+  private encrypt(object: unknown): string {
     const jsonObj = JSON.stringify(object);
-    return seedUtils.encryptSeed(jsonObj, this.password);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return seedUtils.encryptSeed(jsonObj, this.password!);
   }
 
   private decrypt(): Record<string, unknown> {
@@ -174,7 +185,11 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
       if (!encryptedText) {
         return {};
       }
-      const decryptedJson = seedUtils.decryptSeed(encryptedText, this.password);
+      const decryptedJson = seedUtils.decryptSeed(
+        encryptedText,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.password!
+      );
       return JSON.parse(decryptedJson);
     } catch (e) {
       throw new Error('Invalid password');
@@ -182,22 +197,15 @@ class IdentityStorage extends ObservableStore implements ICognitoStorage {
   }
 }
 
-interface Options {
-  localStore: LocalStore;
-  getNetwork: () => NetworkName;
-  getSelectedAccount: () => Partial<Account>;
-  getIdentityConfig: () => IdentityConfig;
-}
-
 export interface IdentityApi {
   signBytes: (bytes: Array<number> | Uint8Array) => Promise<string>;
 }
 
 export class IdentityController implements IdentityApi {
-  protected getNetwork: () => NetworkName;
-  protected getSelectedAccount: () => Partial<Account>;
-  protected getIdentityConfig: (network: NetworkName) => IdentityConfig;
-  private network: NetworkName;
+  protected getNetwork;
+  protected getSelectedAccount;
+  protected getIdentityConfig;
+  private network: NetworkName | undefined;
   // identity properties
   private readonly seed = seedUtils.Seed.create();
   private userPool: CognitoUserPool | undefined = undefined;
@@ -205,14 +213,19 @@ export class IdentityController implements IdentityApi {
   private userData: { username: string; password: string } | undefined =
     undefined;
   private identity: IdentityUser | undefined = undefined;
-  store: IdentityStorage;
+  private store;
 
   constructor({
     localStore,
     getNetwork,
     getSelectedAccount,
     getIdentityConfig,
-  }: Options) {
+  }: {
+    localStore: LocalStore;
+    getNetwork: NetworkController['getNetwork'];
+    getSelectedAccount: PreferencesController['getSelectedAccount'];
+    getIdentityConfig: RemoteConfigController['getIdentityConfig'];
+  }) {
     this.store = new IdentityStorage(
       localStore.getInitState({ cognitoSessions: undefined }),
       localStore.getInitSession(),
@@ -250,7 +263,8 @@ export class IdentityController implements IdentityApi {
   }
 
   getConfig(): IdentityConfig {
-    return this.getIdentityConfig(this.network);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.getIdentityConfig(this.network!);
   }
 
   configure() {
@@ -307,13 +321,17 @@ export class IdentityController implements IdentityApi {
         {
           onSuccess: async () => {
             this.identity = await this.fetchIdentityUser();
-            this.identity.uuid = this.user.getUsername();
-            this.identity.username = this.userData.username;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.identity.uuid = this.user!.getUsername();
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.identity.username = this.userData!.username;
             this.user = undefined;
             this.userData = undefined;
 
-            delete user['challengeName'];
-            delete user['challengeParam'];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            delete (user as any)['challengeName'];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            delete (user as any)['challengeParam'];
             resolve(user);
           },
 
@@ -321,36 +339,48 @@ export class IdentityController implements IdentityApi {
             reject(err);
           },
           customChallenge: function (challengeParam) {
-            user['challengeName'] = 'CUSTOM_CHALLENGE';
-            user['challengeParam'] = challengeParam;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = 'CUSTOM_CHALLENGE';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = challengeParam;
             resolve(user);
           },
           mfaRequired: function (challengeName, challengeParam) {
-            user['challengeName'] = challengeName;
-            user['challengeParam'] = challengeParam;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = challengeName;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = challengeParam;
             resolve(user);
           },
           mfaSetup: function (challengeName, challengeParam) {
-            user['challengeName'] = challengeName;
-            user['challengeParam'] = challengeParam;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = challengeName;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = challengeParam;
             resolve(user);
           },
           newPasswordRequired: function (userAttributes, requiredAttributes) {
-            user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
-            user['challengeParam'] = {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = 'NEW_PASSWORD_REQUIRED';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = {
               userAttributes: userAttributes,
               requiredAttributes: requiredAttributes,
             };
             resolve(user);
           },
           totpRequired: function (challengeName, challengeParam) {
-            user['challengeName'] = challengeName;
-            user['challengeParam'] = challengeParam;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = challengeName;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = challengeParam;
             resolve(user);
           },
           selectMFAType: function (challengeName, challengeParam) {
-            user['challengeName'] = challengeName;
-            user['challengeParam'] = challengeParam;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeName'] = challengeName;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (user as any)['challengeParam'] = challengeParam;
             resolve(user);
           },
         }
@@ -372,14 +402,18 @@ export class IdentityController implements IdentityApi {
         {
           onSuccess: async session => {
             if (this.user) {
-              delete this.user['challengeName'];
-              delete this.user['challengeParam'];
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              delete (this.user as any)['challengeName'];
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              delete (this.user as any)['challengeParam'];
             }
 
             if (session && !this.identity) {
               this.identity = await this.fetchIdentityUser();
-              this.identity.uuid = this.user.getUsername();
-              this.identity.username = this.userData.username;
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              this.identity.uuid = this.user!.getUsername();
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              this.identity.username = this.userData!.username;
               this.user = undefined;
               this.userData = undefined;
 
@@ -410,8 +444,9 @@ export class IdentityController implements IdentityApi {
     }).then(response => response.json());
   }
 
-  getIdentityUser(): IdentityUser {
-    return this.identity;
+  getIdentityUser() {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.identity!;
   }
 
   persistSession(uuid: string) {
@@ -421,7 +456,7 @@ export class IdentityController implements IdentityApi {
   updateSession() {
     const selectedAccount = this.getSelectedAccount();
 
-    if (selectedAccount.type !== 'wx') {
+    if (selectedAccount?.type !== 'wx') {
       throw new Error('selectedAccount is not a wx account');
     }
 
@@ -433,13 +468,15 @@ export class IdentityController implements IdentityApi {
     this.clearSession();
     // set current user session
     this.store.restore(this.getUserId(uuid));
-    this.user = this.userPool.getCurrentUser();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.user = this.userPool!.getCurrentUser()!;
     // restores user session tokens from storage
     return new Promise((resolve, reject) => {
       if (!this.user) {
         return reject(new Error('Not authenticated'));
       }
-      this.user.getSession(err => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.user.getSession((err: any) => {
         if (err) {
           return reject(err);
         }
@@ -534,7 +571,7 @@ export class IdentityController implements IdentityApi {
   async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
     const selectedAccount = this.getSelectedAccount();
 
-    if (selectedAccount.type !== 'wx') {
+    if (selectedAccount?.type !== 'wx') {
       throw new Error('selectedAccount is not a wx account');
     }
 
@@ -590,7 +627,8 @@ export class IdentityController implements IdentityApi {
   }
 
   private getUserId(uuid: string) {
-    const clientId = this.userPool.getClientId();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const clientId = this.userPool!.getClientId();
     return `${clientId}.${uuid}`;
   }
 }

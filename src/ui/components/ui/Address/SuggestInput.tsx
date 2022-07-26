@@ -4,16 +4,16 @@ import { libs, validators } from '@waves/waves-transactions';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
 import { icontains } from 'ui/components/pages/assets/helpers';
-import { Account } from 'accounts/types';
 import { AddressTooltip } from '../Address/Tooltip';
 import { AddressInput } from './Input';
 import { Modal, Button, SearchInput, InputProps, Backdrop } from '..';
+import { PreferencesAccount } from 'preferences/types';
 
 interface SuggestProps {
   className?: string;
   paddingRight?: number;
   paddingLeft?: number;
-  accounts: Account[];
+  accounts: PreferencesAccount[];
   addresses: [string, string][];
   setValue: (value: string) => void;
   setAddress: (value: string) => void;
@@ -137,7 +137,7 @@ export function SuggestModal(props: ModalProps) {
             className={styles.modalSearchInput}
             value={search}
             autoFocus
-            onInput={e => setSearch(e.target.value)}
+            onInput={e => setSearch(e.currentTarget.value)}
             onClear={() => setSearch('')}
           />
           {accounts.length > 0 ? (
@@ -167,15 +167,16 @@ export function SuggestModal(props: ModalProps) {
   );
 }
 
-export interface Props extends InputProps {
+export type Props = Extract<InputProps, { multiLine?: false }> & {
   onSuggest: (value?: string) => void;
-}
+};
 
 export function AddressSuggestInput({ onSuggest, ...props }: Props) {
   const { t } = useTranslation();
 
   const chainId = useAppSelector(state =>
-    state.selectedAccount.networkCode.charCodeAt(0)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state.selectedAccount.networkCode!.charCodeAt(0)
   );
   const accounts = useAppSelector(state => state.accounts);
   const addresses = useAppSelector<Record<string, string>>(state =>

@@ -1,12 +1,15 @@
-import { NftInfo } from 'nfts';
+import { AssetDetail } from 'assets/types';
+import { MessageStoreItem } from 'messages/types';
+import { NetworkName } from 'networks/types';
 import { equals } from 'ramda';
-import { Message } from 'ui/components/transactions/BaseTransaction';
-import { FeeConfig } from '../../constants';
-import { AssetDetail } from '../services/Background';
+import {
+  BackgroundGetStateResult,
+  BackgroundUiApi,
+} from 'ui/services/Background';
 import { UiStore } from '../store';
 import { ACTION } from './constants';
 
-function getParam<S>(param: S, defaultParam: S) {
+function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
     return param;
   }
@@ -14,44 +17,11 @@ function getParam<S>(param: S, defaultParam: S) {
   return param === null ? defaultParam : undefined;
 }
 
-interface Account {
-  address: string;
-  network: string;
-}
-
-interface UpdateStateInput {
-  addresses: Record<string, string>;
-  assets: Record<string, Record<string, AssetDetail>>;
-  nfts: Record<string, Record<string, NftInfo>>;
-  accounts?: Account[];
-  balances?: Record<
-    string,
-    {
-      available: string;
-      leasedOut: string;
-    }
-  >;
-  config?: unknown;
-  currentLocale: string;
-  currentNetwork?: string;
-  currentNetworkAccounts: Account[];
-  customCodes?: unknown;
-  customMatchers?: unknown;
-  customNodes?: unknown;
-  feeConfig?: FeeConfig;
-  idleOptions?: unknown;
-  initialized: boolean;
-  assetLogos: Record<string, string>;
-  locked: boolean;
-  messages?: Message[];
-  networks?: unknown[];
-  myNotifications?: unknown[];
-  origins?: unknown;
-  selectedAccount?: { address?: string; network?: string } | null;
-  assetTickers: Record<string, string>;
-  uiState?: unknown;
-  usdPrices: Record<string, string>;
-}
+type UpdateStateInput = Partial<
+  BackgroundGetStateResult & {
+    networks: Awaited<ReturnType<BackgroundUiApi['getNetworks']>>;
+  }
+>;
 
 export function createUpdateState(store: UiStore) {
   return (state: UpdateStateInput) => {
@@ -130,10 +100,7 @@ export function createUpdateState(store: UiStore) {
     }
 
     const currentNetwork = getParam(state.currentNetwork, '');
-    if (
-      currentNetwork !== undefined &&
-      currentNetwork !== currentState.currentNetwork
-    ) {
+    if (currentNetwork && currentNetwork !== currentState.currentNetwork) {
       store.dispatch({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,
@@ -148,7 +115,7 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    function isMyMessages(msg) {
+    function isMyMessages(msg: MessageStoreItem) {
       try {
         const account = state.selectedAccount || currentState.selectedAccount;
         return (
@@ -175,7 +142,8 @@ export function createUpdateState(store: UiStore) {
     ) {
       store.dispatch({
         type: ACTION.UPDATE_MESSAGES,
-        payload: { unapprovedMessages, messages },
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        payload: { unapprovedMessages, messages: messages! },
       });
 
       toUpdateActiveNotify.messages = unapprovedMessages;
@@ -254,7 +222,11 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const assets = getParam(state.assets, {});
+    const assets = getParam<
+      BackgroundGetStateResult['assets'] | undefined,
+      Partial<Record<NetworkName, Record<string, AssetDetail>>>
+    >(state.assets, {});
+
     const network = state.currentNetwork || currentState.currentNetwork;
     if (
       assets &&
@@ -263,7 +235,8 @@ export function createUpdateState(store: UiStore) {
     ) {
       store.dispatch({
         type: ACTION.SET_ASSETS,
-        payload: assets[network],
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        payload: assets[network]!,
       });
     }
 

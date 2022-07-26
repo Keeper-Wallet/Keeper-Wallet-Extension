@@ -1,4 +1,7 @@
+import { BackgroundGetStateResult } from 'ui/services/Background';
 import { ACTION } from '../actions';
 import { simpleFabric } from './utils';
 
-export const config = simpleFabric({})(ACTION.REMOTE_CONFIG.SET_CONFIG);
+export const config = simpleFabric(
+  {} as BackgroundGetStateResult['config'] | Record<never, unknown>
+)(ACTION.REMOTE_CONFIG.SET_CONFIG);

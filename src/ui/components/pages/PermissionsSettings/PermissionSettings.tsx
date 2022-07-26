@@ -11,25 +11,52 @@ import {
 } from 'ui/actions';
 import cn from 'classnames';
 import { Loader, Modal } from 'ui/components/ui';
-import { List, OriginSettings, Tabs } from './components';
+import {
+  List,
+  OriginSettings,
+  Tabs,
+  TAutoAuth,
+  TPermission,
+} from './components';
 import { BigNumber } from '@waves/bignumber';
+import { AppState } from 'ui/store';
+import { PageComponentProps } from 'ui/pageConfig';
 
-interface Props extends WithTranslation {
-  origins?: { [key: string]: Array<string | IAutoAuth> };
+interface StateProps {
+  origins?: { [key: string]: TAutoAuth[] };
   pending?: boolean;
   allowed?: boolean;
   disallowed?: boolean;
   deleted?: boolean;
-
-  deleteOrigin?: (origin: string) => void;
-  allowOrigin?: (origin: string) => void;
-  disableOrigin?: (origin: string) => void;
-  setAutoOrigin?: (permissions: unknown) => void;
-  setShowNotification?: (permissions: unknown) => void;
 }
 
-class PermissionsSettingsComponent extends React.PureComponent<Props> {
-  readonly state = {
+interface DispatchProps {
+  allowOrigin: (origin: string) => void;
+  deleteOrigin: (origin: string) => void;
+  disableOrigin: (origin: string) => void;
+  setAutoOrigin: (permissions: {
+    origin: string;
+    params: Partial<TAutoAuth>;
+  }) => void;
+  setShowNotification: (permissions: {
+    origin: string;
+    canUse: boolean | null;
+  }) => void;
+}
+
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
+interface State {
+  showSettings: boolean;
+  originsList: string;
+  origin: string | null;
+  permissions: TPermission[];
+  autoSign: TAutoAuth | null;
+  originalAutoSign: TAutoAuth | null;
+}
+
+class PermissionsSettingsComponent extends React.PureComponent<Props, State> {
+  state: State = {
     showSettings: false,
     originsList: 'customList',
     origin: null,
@@ -37,21 +64,20 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
     autoSign: null,
     originalAutoSign: null,
   };
-  readonly props;
 
-  deleteHandler = origin => {
+  deleteHandler = (origin: string) => {
     this.props.deleteOrigin(origin);
     this.closeSettingsHandler();
   };
 
   showSettingsHandler = (origin: string) => {
-    const [, permissions] = Object.entries(this.props.origins).find(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const [, permissions] = Object.entries(this.props.origins!).find(
       ([name]) => name === origin
-    );
+    )!;
     const autoSign =
-      ((permissions as unknown[]) || []).find(
-        ({ type }) => type === 'allowAutoSign'
-      ) || Object.create(null);
+      (permissions || []).find(({ type }) => type === 'allowAutoSign') ||
+      Object.create(null);
     const amount = new BigNumber(autoSign.totalAmount).div(10 ** 8);
     autoSign.totalAmount = amount.isNaN() ? 0 : amount.toFormat();
     this.setState({
@@ -71,11 +97,15 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
     }
   };
 
-  onChangeOriginSettings = autoSign => {
+  onChangeOriginSettings = (autoSign: TAutoAuth) => {
     this.setState({ autoSign });
   };
 
-  saveSettingsHandler = (params, origin, canShowNotifications) => {
+  saveSettingsHandler = (
+    params: Partial<TAutoAuth>,
+    origin: string,
+    canShowNotifications: boolean | null
+  ) => {
     this.props.setAutoOrigin({ origin, params });
     this.props.setShowNotification({ origin, canUse: canShowNotifications });
     this.closeSettingsHandler();
@@ -112,7 +142,8 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
         />
 
         <List
-          origins={this.props.origins}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          origins={this.props.origins!}
           showType={this.state.originsList as TTabTypes}
           showSettings={this.showSettingsHandler}
           toggleApprove={this.toggleApproveHandler}
@@ -124,11 +155,15 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
           onExited={this.resetSettingsHandler}
         >
           <OriginSettings
-            originName={this.state.origin}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            originName={this.state.origin!}
             permissions={this.state.permissions}
-            origins={origins}
-            autoSign={this.state.autoSign}
-            originalAutoSign={this.state.originalAutoSign}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            origins={origins!}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            autoSign={this.state.autoSign!}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            originalAutoSign={this.state.originalAutoSign!}
             onSave={this.saveSettingsHandler}
             onChangePerms={this.onChangeOriginSettings}
             onClose={this.closeSettingsHandler}
@@ -151,9 +186,11 @@ class PermissionsSettingsComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
     origins: store.origins,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     ...store.permissions,
   };
 };
@@ -170,12 +207,5 @@ export const PermissionsSettings = connect(
   mapStateToProps,
   actions
 )(withTranslation()(PermissionsSettingsComponent));
-
-export interface IAutoAuth {
-  type: 'allowAutoSign';
-  totalAmount: number;
-  interval: number;
-  approved: Array<unknown>;
-}
 
 export type TTabTypes = 'customList' | 'whiteList' | 'blackList';

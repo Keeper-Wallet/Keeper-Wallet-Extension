@@ -15,13 +15,12 @@ import {
   TabPanels,
   Tabs,
 } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import * as styles from './importSeed.module.css';
 import { InlineButton } from '../ui/buttons/inlineButton';
 
-interface Props {
+interface Props extends PageComponentProps {
   isNew?: boolean;
-  setTab: (newTab: string) => void;
 }
 
 const SEED_MIN_LENGTH = 24;
@@ -77,7 +76,8 @@ export function ImportSeed({ isNew, setTab }: Props) {
 
   const networkCode =
     customCodes[currentNetwork] ||
-    networks.find(n => currentNetwork === n.name).code;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    networks.find(n => currentNetwork === n.name)!.code;
 
   let address: string | null = null;
   let validationError: React.ReactElement | string | null = null;

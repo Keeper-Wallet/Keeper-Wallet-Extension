@@ -3,8 +3,9 @@ import * as React from 'react';
 
 import { ReissueCard } from './ReissueCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function Reissue(props) {
+export function Reissue(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

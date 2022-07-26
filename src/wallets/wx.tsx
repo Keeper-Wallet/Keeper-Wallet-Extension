@@ -8,8 +8,7 @@ import {
 import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { validate } from '@waves/waves-transactions/dist/validators';
-import create from 'parse-json-bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
+import * as create from 'parse-json-bignumber';
 import { IdentityApi } from 'controllers/IdentityController';
 import {
   convertFromSa,
@@ -21,6 +20,8 @@ import {
   SaTransaction,
 } from 'transactions/utils';
 import { Wallet } from './wallet';
+import { NetworkName } from 'networks/types';
+import { WalletPrivateDataOfType } from './types';
 
 const { stringify } = create({ BigNumber });
 
@@ -34,14 +35,7 @@ export interface WxWalletInput {
   username: string;
 }
 
-type WxWalletData = AccountOfType<'wx'> & {
-  publicKey: string;
-  address: string;
-  uuid: string;
-  username: string;
-};
-
-export class WxWallet extends Wallet<WxWalletData> {
+export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
   private identity: IdentityApi;
 
   constructor(
@@ -70,10 +64,14 @@ export class WxWallet extends Wallet<WxWalletData> {
     this.identity = identity;
   }
 
-  getAccount(): WxWalletData {
+  getAccount() {
     return {
-      ...super.getAccount(),
-      type: 'wx',
+      address: this.data.address,
+      name: this.data.name,
+      network: this.data.network,
+      networkCode: this.data.networkCode,
+      publicKey: this.data.publicKey,
+      type: this.data.type,
       uuid: this.data.uuid,
       username: this.data.username,
     };

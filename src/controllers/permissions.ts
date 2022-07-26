@@ -4,28 +4,26 @@ import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { RemoteConfigController } from './remoteConfig';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore, { StoreLocalState } from 'lib/localStore';
 import { PreferencesController } from './preferences';
 import { IdentityController } from './IdentityController';
+import { IMoneyLike } from 'ui/utils/converters';
+import {
+  PermissionObject,
+  PermissionType,
+  PermissionValue,
+} from 'permissions/types';
+import { PERMISSIONS } from 'permissions/constants';
 
-export const PERMISSIONS = {
-  ALL: 'all',
-  USE_API: 'useApi',
-  USE_NOTIFICATION: 'useNotifications',
-  REJECTED: 'rejected',
-  APPROVED: 'approved',
-  AUTO_SIGN: 'allowAutoSign',
-  GET_MESSAGES: 'allowMessages',
-};
+const findPermissionFabric =
+  (permission: PermissionType) => (item: PermissionValue) => {
+    if (typeof item === 'string') {
+      return item === permission;
+    }
 
-const findPermissionFabric = permission => item => {
-  if (typeof item === 'string') {
-    return item === permission;
-  }
-
-  const { type } = item;
-  return type === permission;
-};
+    const { type } = item;
+    return type === permission;
+  };
 
 interface Identity {
   restoreSession: (
@@ -33,11 +31,16 @@ interface Identity {
   ) => ReturnType<IdentityController['restoreSession']>;
 }
 
+type PermissionsStoreState = Pick<
+  StoreLocalState,
+  'origins' | 'blacklist' | 'whitelist' | 'inPending'
+>;
+
 export class PermissionsController {
-  store: ObservableStore;
-  remoteConfig: RemoteConfigController;
-  getSelectedAccount: PreferencesController['getSelectedAccount'];
-  identity: Identity;
+  private store;
+  private remoteConfig;
+  private getSelectedAccount;
+  private identity;
 
   constructor({
     localStore,
@@ -50,13 +53,15 @@ export class PermissionsController {
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     identity: Identity;
   }) {
-    const defaults = {
-      origins: {},
-      blacklist: [],
-      whitelist: [],
-      inPending: {},
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        origins: {},
+        blacklist: [],
+        whitelist: [],
+        inPending: {},
+      })
+    );
+
     localStore.subscribe(this.store);
 
     this.remoteConfig = remoteConfig;
@@ -65,16 +70,16 @@ export class PermissionsController {
     this.identity = identity;
   }
 
-  getMessageIdAccess(origin) {
+  getMessageIdAccess(origin: string) {
     const { inPending } = this.store.getState();
     return inPending[origin] || null;
   }
 
-  setMessageIdAccess(origin, messageId) {
+  setMessageIdAccess(origin: string, messageId: string | null) {
     this.updateState({ inPending: { [origin]: messageId } });
   }
 
-  getPermissions(origin) {
+  getPermissions(origin: string) {
     const { origins, blacklist, whitelist } = this.store.getState();
     const permissions = origins[origin] || [];
     if (blacklist.includes(origin)) {
@@ -88,7 +93,7 @@ export class PermissionsController {
     return permissions;
   }
 
-  getPermission(origin, permission) {
+  getPermission(origin: string, permission: PermissionValue) {
     const permissions = this.getPermissions(origin);
     const permissionType =
       typeof permission === 'string' ? permission : permission.type;
@@ -96,7 +101,7 @@ export class PermissionsController {
     return permissions.find(findPermission);
   }
 
-  hasPermission(origin, permission) {
+  hasPermission(origin: string, permission: PermissionValue) {
     const permissions = this.getPermissions(origin);
 
     if (!permissions.length) {
@@ -117,7 +122,7 @@ export class PermissionsController {
     return !!this.getPermission(origin, permission);
   }
 
-  deletePermissions(origin) {
+  deletePermissions(origin: string) {
     const { origins, ...other } = this.store.getState();
     const { whitelist, blacklist } = other;
 
@@ -132,12 +137,12 @@ export class PermissionsController {
     this.store.updateState({ ...other, origins });
   }
 
-  setPermissions(origin, permissions) {
+  setPermissions(origin: string, permissions: PermissionValue[]) {
     this.setMessageIdAccess(origin, null);
     this.updateState({ origins: { [origin]: permissions } });
   }
 
-  setPermission(origin, permission) {
+  setPermission(origin: string, permission: PermissionValue) {
     if (this.hasPermission(origin, permission)) {
       return null;
     }
@@ -147,7 +152,7 @@ export class PermissionsController {
     this.setPermissions(origin, permissions);
   }
 
-  deletePermission(origin, permission) {
+  deletePermission(origin: string, permission: PermissionValue) {
     const permissionType =
       typeof permission === 'string' ? permission : permission.type;
     const findPermission = findPermissionFabric(permissionType);
@@ -157,7 +162,7 @@ export class PermissionsController {
     this.setPermissions(origin, permissions);
   }
 
-  setNotificationPermissions(origin, canUse, time = 0) {
+  setNotificationPermissions(origin: string, canUse: boolean, time = 0) {
     this.updatePermission(origin, {
       type: PERMISSIONS.USE_NOTIFICATION,
       time,
@@ -165,7 +170,13 @@ export class PermissionsController {
     });
   }
 
-  setAutoApprove(origin, { interval, totalAmount }) {
+  setAutoApprove(
+    origin: string,
+    {
+      interval,
+      totalAmount,
+    }: Pick<PermissionObject, 'interval' | 'totalAmount'>
+  ) {
     if (!interval || !totalAmount) {
       this.deletePermission(origin, PERMISSIONS.AUTO_SIGN);
       return null;
@@ -184,31 +195,58 @@ export class PermissionsController {
       return null;
     }
 
-    const newAutoSign = { ...autoSign, interval, totalAmount };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newAutoSign = { ...(autoSign as any), interval, totalAmount };
     this.updatePermission(origin, newAutoSign);
   }
 
-  matcherOrdersAllow(origin, tx) {
+  matcherOrdersAllow(
+    origin: string,
+    tx:
+      | {
+          type: number;
+          data: {
+            amount?: IMoneyLike | undefined;
+            fee?: IMoneyLike | undefined;
+            totalAmount: { assetId: string };
+            transfers: Array<{ amount: IMoneyLike }>;
+          };
+        }
+      | Array<{
+          type: number;
+          data: {
+            amount?: IMoneyLike | undefined;
+            fee?: IMoneyLike | undefined;
+            totalAmount: IMoneyLike;
+            transfers: { amount: IMoneyLike }[];
+          };
+        }>
+  ) {
     if (!allowMatcher.filter(item => origin.includes(item)).length) {
       return false;
     }
 
-    return ['1001', '1002', '1003'].includes(String(tx.type).trim());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return ['1001', '1002', '1003'].includes(String((tx as any).type).trim());
   }
 
-  canUseNotification(origin, time_interval) {
+  canUseNotification(origin: string, time_interval: number) {
     const useApi = this.getPermission(origin, PERMISSIONS.APPROVED);
     const { whitelist = [] } = this.store.getState();
     const isInWhiteList = whitelist.includes(origin);
     const permission = this.getPermission(origin, PERMISSIONS.USE_NOTIFICATION);
-    const hasPermission = !!permission && permission.canUse != null;
+
+    const hasPermission =
+      !!permission && (permission as PermissionObject).canUse != null;
+
     const allowByPermission =
-      (hasPermission && permission.canUse) || (!hasPermission && isInWhiteList);
+      (hasPermission && (permission as PermissionObject).canUse) ||
+      (!hasPermission && isInWhiteList);
 
     if (!useApi || !allowByPermission) {
       throw ERRORS.API_DENIED();
     }
-    const time = (permission && permission.time) || 0;
+    const time = (permission && (permission as PermissionObject).time) || 0;
     const delta = Date.now() - time;
     const minInterval = time_interval;
     const waitTime = minInterval - delta;
@@ -224,9 +262,30 @@ export class PermissionsController {
     return true;
   }
 
-  async canApprove(origin, tx) {
+  async canApprove(
+    origin: string,
+    tx:
+      | {
+          type: number;
+          data: {
+            amount?: IMoneyLike | undefined;
+            fee?: IMoneyLike | undefined;
+            totalAmount: { assetId: string };
+            transfers: Array<{ amount: IMoneyLike }>;
+          };
+        }
+      | Array<{
+          type: number;
+          data: {
+            amount?: IMoneyLike | undefined;
+            fee?: IMoneyLike | undefined;
+            totalAmount: IMoneyLike;
+            transfers: { amount: IMoneyLike }[];
+          };
+        }>
+  ) {
     const account = this.getSelectedAccount();
-    switch (account.type) {
+    switch (account?.type) {
       case 'wx':
         try {
           await this.identity.restoreSession(account.uuid);
@@ -255,7 +314,12 @@ export class PermissionsController {
       return false;
     }
 
-    let { totalAmount = 0, interval = 0, approved = [] } = permission;
+    let {
+      totalAmount = 0,
+      interval = 0,
+      approved = [],
+    } = permission as PermissionObject;
+
     const currentTime = Date.now();
     approved = approved.filter(({ time }) => currentTime - time < interval);
     const total = new BigNumber(totalAmount);
@@ -269,12 +333,17 @@ export class PermissionsController {
     }
 
     approved.push({ time: currentTime, amount: txAmount.toString() });
-    this.updatePermission(origin, { ...permission, approved });
+    this.updatePermission(origin, {
+      ...(permission as PermissionObject),
+      approved,
+    });
     return true;
   }
 
-  updatePermission(origin, permission) {
-    const findPermission = findPermissionFabric(permission.type || permission);
+  updatePermission(origin: string, permission: PermissionValue) {
+    const findPermission = findPermissionFabric(
+      (permission as PermissionObject).type || permission
+    );
     const permissions = [
       ...this.getPermissions(origin).filter(item => !findPermission(item)),
       permission,
@@ -282,7 +351,7 @@ export class PermissionsController {
     this.setPermissions(origin, permissions);
   }
 
-  updateState(state) {
+  updateState(state: Partial<PermissionsStoreState>) {
     const {
       origins: oldOrigins,
       inPending: oldInPending,
@@ -313,7 +382,11 @@ export class PermissionsController {
     this._updatePermissionByList(blacklist, PERMISSIONS.REJECTED, 'blackList');
   }
 
-  _updatePermissionByList(list, permission, type) {
+  _updatePermissionByList(
+    list: string[],
+    permission: PermissionType,
+    type: 'whiteList' | 'blackList'
+  ) {
     const { origins } = this.store.getState();
     const newOrigins = list.reduce(
       (acc, origin) => {
@@ -321,8 +394,10 @@ export class PermissionsController {
         if (!permissions.includes(permission)) {
           permissions.push(permission);
         }
-        if (!permissions.includes(type)) {
-          permissions.push(type);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (!permissions.includes(type as any)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          permissions.push(type as any);
         }
         acc[origin] = permissions;
         return acc;
@@ -343,8 +418,37 @@ export class PermissionsController {
   }
 }
 
-const getTxAmount = tx => {
-  let result = {
+const getTxAmount = (
+  tx:
+    | {
+        type: number;
+        data: {
+          amount?: IMoneyLike | undefined;
+          fee?: IMoneyLike | undefined;
+          totalAmount: { assetId: string };
+          transfers: Array<{ amount: IMoneyLike }>;
+        };
+      }
+    | Array<{
+        type: number;
+        data: {
+          amount?: IMoneyLike | undefined;
+          fee?: IMoneyLike | undefined;
+          totalAmount: IMoneyLike;
+          transfers: { amount: IMoneyLike }[];
+        };
+      }>
+) => {
+  let result: {
+    fee: {
+      amount: BigNumber | null;
+      assetId: string | null;
+    };
+    amount: {
+      amount: BigNumber | null;
+      assetId: string | null;
+    };
+  } = {
     fee: { amount: null, assetId: null },
     amount: { amount: null, assetId: null },
   };
@@ -363,15 +467,28 @@ const getTxAmount = tx => {
     result.fee.assetId === result.amount.assetId &&
     result.fee.assetId === 'WAVES'
   ) {
-    return result.fee.amount.add(result.amount.amount);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return result.fee.amount!.add(result.amount.amount!);
   }
 
   return null;
 };
 
-const getTxReceiveAmount = tx => {
-  const fee = { amount: null, assetId: null };
-  const amount = { amount: null, assetId: null };
+const getTxReceiveAmount = (tx: {
+  data: {
+    amount?: IMoneyLike;
+    fee?: IMoneyLike;
+  };
+}) => {
+  const fee: { amount: BigNumber | null; assetId: string | null } = {
+    amount: null,
+    assetId: null,
+  };
+
+  const amount: { amount: BigNumber | null; assetId: string | null } = {
+    amount: null,
+    assetId: null,
+  };
 
   if (tx.data.fee) {
     fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
@@ -386,9 +503,22 @@ const getTxReceiveAmount = tx => {
   return { amount, fee };
 };
 
-const getTxMassReceiveAmount = tx => {
-  const fee = { amount: null, assetId: null };
-  const amount = { amount: null, assetId: null };
+const getTxMassReceiveAmount = (tx: {
+  data: {
+    assetId?: string;
+    fee?: IMoneyLike;
+    totalAmount: { assetId: string };
+    transfers: Array<{ amount: IMoneyLike }>;
+  };
+}) => {
+  const fee: { amount: BigNumber | null; assetId: string | null } = {
+    amount: null,
+    assetId: null,
+  };
+  const amount: { amount: BigNumber | null; assetId: string | null } = {
+    amount: null,
+    assetId: null,
+  };
 
   if (tx.data.fee) {
     fee.amount = moneyLikeToBigNumber(tx.data.fee, 8);
@@ -403,8 +533,12 @@ const getTxMassReceiveAmount = tx => {
   return { amount, fee };
 };
 
-const getTxDataAmount = tx => {
-  const fee = { amount: null, assetId: null };
+const getTxDataAmount = (tx: { data: { fee?: IMoneyLike } }) => {
+  const fee: { amount: BigNumber | null; assetId: string | null } = {
+    amount: null,
+    assetId: null,
+  };
+
   const amount = { amount: new BigNumber(0), assetId: 'WAVES' };
 
   if (tx.data.fee) {
@@ -415,12 +549,31 @@ const getTxDataAmount = tx => {
   return { amount, fee };
 };
 
-const getPackAmount = txs => {
+const getPackAmount = (
+  txs: Array<{
+    type?: number;
+    data: {
+      amount?: IMoneyLike;
+      fee?: IMoneyLike;
+      totalAmount: IMoneyLike;
+      transfers: Array<{ amount: IMoneyLike }>;
+    };
+  }>
+) => {
   const fee = { amount: new BigNumber(0), assetId: 'WAVES' };
-  const amount = { amount: new BigNumber(0), assetId: null };
+
+  const amount: {
+    amount: BigNumber;
+    assetId: string | null;
+  } = { amount: new BigNumber(0), assetId: null };
 
   for (const tx of txs) {
-    let result;
+    let result:
+      | ReturnType<typeof getTxReceiveAmount>
+      | ReturnType<typeof getTxMassReceiveAmount>
+      | ReturnType<typeof getTxDataAmount>
+      | null
+      | undefined;
 
     if (tx.type === 4) {
       result = getTxReceiveAmount(tx);
@@ -432,22 +585,30 @@ const getPackAmount = txs => {
 
     if (
       (result && result.fee.assetId !== result.amount.assetId) ||
-      result.fee.assetId !== 'WAVES'
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      result!.fee.assetId !== 'WAVES'
     ) {
       return { amount, fee: { assetId: null, amount: null } };
     }
 
-    amount.assetId = result.amount.assetId;
-    fee.assetId = result.fee.assetId;
-    amount.amount = amount.amount.add(result.amount.amount);
-    fee.amount = fee.amount.add(result.fee.amount);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    amount.assetId = result!.amount.assetId;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    fee.assetId = result!.fee.assetId;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    amount.amount = amount.amount.add(result!.amount.amount!);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    fee.amount = fee.amount.add(result!.fee.amount!);
     result = null;
   }
 
   return { fee, amount };
 };
 
-const moneyLikeToBigNumber = (moneyLike, precession) => {
+const moneyLikeToBigNumber = (
+  moneyLike: IMoneyLike | string | number,
+  precession: number
+) => {
   if (typeof moneyLike === 'string' || typeof moneyLike === 'number') {
     const sum = new BigNumber(moneyLike);
     return sum.isNaN() ? new BigNumber(0) : sum;
@@ -455,7 +616,8 @@ const moneyLikeToBigNumber = (moneyLike, precession) => {
 
   const { coins = 0, tokens = 0 } = moneyLike;
   const tokensAmount = new BigNumber(tokens).mul(10 ** precession);
-  const coinsAmount = new BigNumber(coins);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const coinsAmount = new BigNumber(coins as any);
 
   if (!coinsAmount.isNaN() && coinsAmount.gt(0)) {
     return coinsAmount;

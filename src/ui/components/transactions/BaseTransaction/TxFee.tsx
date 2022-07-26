@@ -3,8 +3,8 @@ import {
   getSpendingAmountsForSponsorableTx,
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from 'fee/utils';
+import { MessageStoreItem } from 'messages/types';
 import * as React from 'react';
-import { Message } from 'ui/components/transactions/BaseTransaction/index';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { updateTransactionFee } from '../../../actions';
 import { getMoney } from '../../../utils/converters';
@@ -12,7 +12,7 @@ import { Balance, Select, SelectItem } from '../../ui';
 import { getFee } from './parseTx';
 
 interface Props {
-  message?: Message;
+  message?: MessageStoreItem | null;
 }
 
 export function TxFee({ message: messageProp }: Props) {
@@ -20,7 +20,8 @@ export function TxFee({ message: messageProp }: Props) {
   const assets = useAppSelector(state => state.assets);
 
   const balance = useAppSelector(
-    state => state.balances[state.selectedAccount.address]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[state.selectedAccount.address!]
   );
 
   const messageFromState = useAppSelector(state => state.activePopup?.msg);
@@ -31,12 +32,15 @@ export function TxFee({ message: messageProp }: Props) {
 
   const spendingAmounts = getSpendingAmountsForSponsorableTx({
     assets,
-    message,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    message: message!,
   });
 
   let feeOptions = useFeeOptions({
-    initialFee,
-    txType: message.data.type,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    initialFee: initialFee!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    txType: message!.data.type,
   }).filter(option =>
     isEnoughBalanceForFeeAndSpendingAmounts({
       assetBalance: option.assetBalance,
@@ -45,10 +49,15 @@ export function TxFee({ message: messageProp }: Props) {
     })
   );
 
-  if (feeOptions.findIndex(opt => opt.money.asset.id === fee.asset.id) === -1) {
+  if (
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    feeOptions.findIndex(opt => opt.money.asset.id === fee!.asset.id) === -1
+  ) {
     feeOptions = feeOptions.concat({
-      assetBalance: balance.assets[fee.asset.id],
-      money: fee,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      assetBalance: balance.assets[fee!.asset.id],
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      money: fee!,
     });
   }
 
@@ -68,10 +77,12 @@ export function TxFee({ message: messageProp }: Props) {
               }`,
             })
           )}
-          selected={fee.asset.id}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          selected={fee!.asset.id}
           onSelectItem={(id, tokens) => {
             dispatch(
-              updateTransactionFee(message.id, {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              updateTransactionFee(message!.id, {
                 tokens: tokens,
                 assetId: id as string,
               })

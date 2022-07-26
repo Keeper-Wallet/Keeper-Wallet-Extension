@@ -1,4 +1,4 @@
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore, { StoreLocalState } from 'lib/localStore';
 
 const CONTROLLERS_STATE = {
   AssetInfoController: ['assets'],
@@ -47,7 +47,7 @@ async function reverseMigrateFlatState(this: ExtensionStore) {
     Object.entries(CONTROLLERS_STATE).reduce(
       (acc, [controller, fields]) => ({
         ...acc,
-        [controller]: fields.reduce(
+        [controller]: (fields as Array<keyof StoreLocalState>).reduce(
           (controllerAcc, field) => ({
             ...controllerAcc,
             [field]: state[field],
@@ -56,7 +56,7 @@ async function reverseMigrateFlatState(this: ExtensionStore) {
         ),
       }),
       {}
-    )
+    ) as StoreLocalState
   );
 }
 

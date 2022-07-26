@@ -3,17 +3,18 @@ import { setUiState } from '../../../../actions';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { UiState } from '../../../../reducers/updateState';
 import * as React from 'react';
-import { AssetDetail } from '../../../../services/Background';
 import { equals } from 'ramda';
 import { Nft } from 'nfts/utils';
 import { NftVendorKeys } from 'nfts';
+import { TFunction } from 'react-i18next';
+import { AssetDetail } from 'assets/types';
 
 export function useUiState<T extends keyof UiState>(
   key: T
-): [UiState[T], (newState: UiState[T]) => void] {
+): [UiState[T] | null, (newState: UiState[T] | null) => void] {
   const dispatch = useAppDispatch();
   const initialValue = useAppSelector(state => state.uiState[key]);
-  const [state, setState] = React.useState(initialValue);
+  const [state, setState] = React.useState<UiState[T] | null>(initialValue);
   return [
     state,
     newState => {
@@ -29,7 +30,7 @@ export function useUiState<T extends keyof UiState>(
 export function sortAssetEntries<T>(
   assetEntries: Array<[string, T]>,
   assets: Record<string, AssetDetail>,
-  showSuspiciousAssets: boolean
+  showSuspiciousAssets: boolean | undefined
 ): Array<[string, T]> {
   return assetEntries
     .filter(
@@ -53,7 +54,7 @@ export function sortAndFilterNfts<T extends Nft>(
   nfts: T[],
   filters: {
     term?: string;
-    creator?: string;
+    creator?: string | null;
   }
 ) {
   const { creator, term } = filters;
@@ -66,8 +67,10 @@ export function sortAndFilterNfts<T extends Nft>(
     nfts = nfts.filter(
       nft =>
         nft.id.toLowerCase() === term.toLowerCase() ||
-        nft.creator.toLowerCase() === term.toLowerCase() ||
-        nft.displayCreator.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nft.creator!.toLowerCase() === term.toLowerCase() ||
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nft.displayCreator!.toLowerCase().indexOf(term.toLowerCase()) !== -1 ||
         nft.displayName.toLowerCase().indexOf(term.toLowerCase()) !== -1
     );
   }
@@ -92,7 +95,7 @@ export const MONTH = [
   'Dec',
 ];
 
-export const buildTxTypeOptions = t => [
+export const buildTxTypeOptions = (t: TFunction<'translation', undefined>) => [
   {
     id: 0,
     value: 0,

@@ -4,20 +4,23 @@ import * as styles from './pills.styl';
 import cn from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-export class Pills extends React.PureComponent {
-  props: {
-    className?: string;
-    id?: number;
-    selected?: boolean;
-    list: Array<{
-      id: number;
-      text: string;
-      selected: boolean;
-      hidden: boolean;
-    }>;
-    onSelect: (...args: unknown[]) => unknown;
-  };
-  onSelect = item => this._onSelect(item);
+export interface PillsListItem {
+  id: number;
+  text: string;
+  selected?: boolean;
+  hidden?: boolean;
+}
+
+interface Props {
+  className?: string;
+  id?: number;
+  selected?: boolean;
+  list: PillsListItem[];
+  onSelect: (item: PillsListItem) => void;
+}
+
+export class Pills extends React.PureComponent<Props> {
+  onSelect = (item: PillsListItem) => this._onSelect(item);
 
   render() {
     const { className, onSelect, list, ...props } = this.props;
@@ -40,7 +43,7 @@ export class Pills extends React.PureComponent {
     );
   }
 
-  private _onSelect(item) {
+  private _onSelect(item: PillsListItem) {
     if (this.props.onSelect) {
       this.props.onSelect(item);
     }

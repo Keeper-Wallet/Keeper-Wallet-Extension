@@ -6,9 +6,8 @@ import cn from 'classnames';
 const DEFAULT_HIDDEN_CONTENT =
   '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••';
 
-export class CopyText extends React.PureComponent {
+export class CopyText extends React.PureComponent<IProps> {
   readonly state = { showText: false };
-  readonly props: IProps;
 
   showTextHandler = () => {
     this.setState({
@@ -16,7 +15,8 @@ export class CopyText extends React.PureComponent {
     });
   };
 
-  onCopyHandler = event => this._copyText(event);
+  onCopyHandler = (event: React.MouseEvent<HTMLDivElement>) =>
+    this._copyText(event);
 
   render() {
     const iconClass = cn(styles.firstIcon, {
@@ -25,7 +25,10 @@ export class CopyText extends React.PureComponent {
 
     const copyIcon = cn(styles.lastIcon, 'copy-icon');
 
-    const toggleHandler = this.props.toggleText ? this.showTextHandler : null;
+    const toggleHandler = this.props.toggleText
+      ? this.showTextHandler
+      : undefined;
+
     const showText = this.props.toggleText
       ? this.state.showText
       : this.props.showText;
@@ -47,7 +50,7 @@ export class CopyText extends React.PureComponent {
     );
   }
 
-  private _copyText(event) {
+  private _copyText(event: React.MouseEvent<HTMLDivElement>) {
     if (event) {
       event.stopPropagation();
       event.preventDefault();
@@ -59,10 +62,11 @@ export class CopyText extends React.PureComponent {
     }
 
     const text = this.props.text;
-    this.copy(text);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.copy(text!);
   }
 
-  private copy(text) {
+  private copy(text: string) {
     const result = copy(text, this.props.copyOptions);
     if (this.props.onCopy) {
       this.props.onCopy(text, result);
@@ -72,8 +76,8 @@ export class CopyText extends React.PureComponent {
 
 interface IProps {
   text?: string;
-  getText?: (cb) => void;
-  onCopy?: (...args) => void;
+  getText?: (cb: (text: string) => void) => void;
+  onCopy?: (...args: unknown[]) => void;
 
   toggleText?: boolean;
   copyOptions?: {

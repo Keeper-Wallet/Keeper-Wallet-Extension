@@ -1,7 +1,7 @@
 import { NftList } from 'nfts/nftList';
 import { DisplayMode } from 'nfts';
 import * as React from 'react';
-import { PAGES } from 'ui/pageConfig';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import * as styles from './nftCollection.module.css';
 import { Button, Ellipsis, SearchInput } from 'ui/components/ui';
 import { useAppDispatch, useAppSelector } from 'ui/store';
@@ -23,38 +23,34 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
     } as Nft)
 );
 
-export function NftCollection({
-  setTab,
-  onBack,
-}: {
-  setTab: (newTab: string) => void;
-  onBack: () => void;
-}) {
+export function NftCollection({ setTab, onBack }: PageComponentProps) {
   const { t } = useTranslation();
 
   const currentAddress = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  const myNfts = useAppSelector(state => state.balances[currentAddress]?.nfts);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const dispatch = useAppDispatch();
 
   const setCurrentAsset = React.useCallback(
-    (assetId: Nft) => dispatch(setUiState({ currentAsset: assetId })),
+    (assetId: Nft | null) => dispatch(setUiState({ currentAsset: assetId })),
     [dispatch]
   );
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
     filters?.term,
-    value => setFilters({ ...filters, term: value }),
+    (value: string) => setFilters({ ...filters, term: value }),
   ];
   const creator = filters?.creator;
 
   const getNftDetails = React.useCallback(
-    nft => createNft(nft, nfts[nft.id], currentAddress),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    nft => createNft(nft, nfts![nft.id], currentAddress),
     [nfts, currentAddress]
   );
 
@@ -66,7 +62,8 @@ export function NftCollection({
 
   const creatorUrl =
     creatorRef.current.creatorUrl ||
-    getAccountLink(networkCode, creatorRef.current.creator);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    getAccountLink(networkCode!, creatorRef.current.creator);
 
   return (
     <div className={styles.root}>
@@ -109,7 +106,7 @@ export function NftCollection({
             autoFocus
             className={styles.searchInput}
             value={term ?? ''}
-            onInput={e => setTerm(e.target.value)}
+            onInput={e => setTerm(e.currentTarget.value)}
             onClear={() => setTerm('')}
           />
         </div>

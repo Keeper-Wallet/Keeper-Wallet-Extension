@@ -5,7 +5,10 @@ const explorerUrls = new Map([
   ['custom', 'wavesexplorer.com/custom'],
 ]);
 
-export function getAccountLink(networkCode: string, address: string) {
+export function getAccountLink(
+  networkCode: string,
+  address: string | null | undefined
+) {
   const explorer = explorerUrls.get(
     explorerUrls.has(networkCode) ? networkCode : 'custom'
   );

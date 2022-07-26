@@ -7,22 +7,31 @@ import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
 import { NetworkController } from './network';
 import ExtensionStore from 'lib/localStore';
+import { MessageStoreItem } from 'messages/types';
+
+interface StatistictsEvent {
+  user_id: unknown;
+  app_version: unknown;
+  platform: unknown;
+  language: unknown;
+  ip: unknown;
+  time: number;
+  user_properties: unknown;
+  event_properties: unknown;
+  event_type: unknown;
+}
 
 export class StatisticsController {
-  events = [];
-  sended = Promise.resolve();
+  private events: StatistictsEvent[] = [];
+  private sended = Promise.resolve();
   _idle = 0;
 
-  store: ObservableStore;
-  networkController: NetworkController;
-  version: unknown;
-  id: unknown;
+  private store;
+  private networkController;
+  private version;
+  private id;
 
-  browser: {
-    name: unknown;
-    os: unknown;
-    version: string;
-  };
+  private browser;
 
   constructor({
     localStore,
@@ -31,15 +40,14 @@ export class StatisticsController {
     localStore: ExtensionStore;
     networkController: NetworkController;
   }) {
-    const defaults = {
+    const initState = localStore.getInitState({
       lastIdleKeeper: undefined,
       lastInstallKeeper: undefined,
       lastOpenKeeper: undefined,
       userId: undefined,
-    };
-    const initState = localStore.getInitState(defaults);
-    const userId =
-      (initState.userId as string) || StatisticsController.createUserId();
+    });
+
+    const userId = initState.userId || StatisticsController.createUserId();
     Sentry.setUser({ id: userId });
     this.store = new ObservableStore({ ...initState, userId });
     localStore.subscribe(this.store);
@@ -51,7 +59,8 @@ export class StatisticsController {
     this.sendInstallEvent();
     this.sendIdleEvent();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       if (name === 'idleEvent') {
         this.sendIdleEvent();
       }
@@ -66,16 +75,19 @@ export class StatisticsController {
     );
   }
 
-  addEvent(event_type, event_properties = {}) {
+  addEvent(event_type: string, event_properties = {}) {
     const userId = this.store.getState().userId;
     const network = this.networkController.getNetwork();
     const networkCode = this.networkController.getNetworkCode(network);
 
     const user_properties = {
-      browser_name: this.browser.name,
-      browser_version: this.browser.version,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      browser_name: this.browser!.name,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      browser_version: this.browser!.version,
       browser_version_major:
-        this.browser.version && this.browser.version.split('.')[0],
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.browser!.version && this.browser!.version.split('.')[0],
       environment: KEEPERWALLET_ENV,
       network: network,
       chainId: networkCode ? networkCode.charCodeAt(0) : undefined,
@@ -85,7 +97,8 @@ export class StatisticsController {
     this.events.push({
       user_id: userId,
       app_version: this.version,
-      platform: this.browser.os,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      platform: this.browser!.os,
       language:
         (navigator.languages && navigator.languages[0]) ||
         navigator.language ||
@@ -169,34 +182,29 @@ export class StatisticsController {
       });
   }
 
-  /**
-     Sends `eventType` at most once per `ms`.
-     The last sent timestamp is stored in `store[storeKey].
-
-     @param {string} eventType
-     @param {number} [ms] in ms, by default is 1 hour
-     @param {string} [storeKey] by default is `last{EventType}`
-     **/
-  addEventOnce(eventType, ms = undefined, storeKey = undefined) {
+  addEventOnce(eventType: string, ms?: number, storeKey?: string) {
     ms = ms || 60 * 60 * 1000; // default 1 event per hour
     storeKey =
       storeKey ||
       'last' + eventType.charAt(0).toUpperCase() + eventType.slice(1);
     const state = this.store.getState();
     const dateNow = new Date().getTime();
-    const dateLast = state[storeKey]
-      ? new Date(state[storeKey]).getTime()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dateLast = (state as any)[storeKey]
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        new Date((state as any)[storeKey]).getTime()
       : dateNow - ms;
 
     if (dateNow - dateLast >= ms) {
-      const partial = {};
+      const partial: Record<string, number> = {};
       partial[storeKey] = dateNow.valueOf();
       this.addEvent(eventType);
-      this.store.updateState(partial);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.store.updateState(partial as any);
     }
   }
 
-  sendTxEvent(message) {
+  sendTxEvent(message: MessageStoreItem) {
     try {
       if (message.type === 'transactionPackage') {
         (message.data || []).forEach(data => {

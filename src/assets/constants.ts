@@ -1,11 +1,7 @@
+import { NetworkName } from 'networks/types';
 import { SwapVendor } from 'swap/constants';
 
-export const assetIds: {
-  custom: Record<string, string>;
-  mainnet: Record<string, string>;
-  stagenet: Record<string, string>;
-  testnet: Record<string, string>;
-} = {
+export const assetIds: Record<NetworkName, Record<string, string>> = {
   mainnet: {
     WAVES: 'WAVES',
     BAG: 'Euz5HtYcj3nVTZxppA7wdabwTe5BzHFiu4QG1EJtzeUx',
@@ -239,11 +235,11 @@ const swappableAssetTickers = Array.from(
   )
 );
 
-export const swappableAssetIds = {
+export const swappableAssetIds: Record<NetworkName.Mainnet, string[]> = {
   mainnet: swappableAssetTickers.map(assetName => assetIds.mainnet[assetName]),
 };
 
-const logosByName = {
+const logosByName: Record<string, string> = {
   BAG: require('./logos/BAG.svg'),
   BCH: require('./logos/BCH.svg'),
   BNB: require('./logos/BNB.svg'),

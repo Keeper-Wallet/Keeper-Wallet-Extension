@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
-import { MSG_STATUSES } from '../constants';
+import { MsgStatus, MSG_STATUSES } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
@@ -8,23 +8,15 @@ import { ERRORS } from '../lib/keeperError';
 import ExtensionStore from 'lib/localStore';
 import { RemoteConfigController } from './remoteConfig';
 import { PermissionsController } from './permissions';
-
-type GetMessagesConfig = RemoteConfigController['getMessagesConfig'];
-type CanShowNotification = PermissionsController['canUseNotification'];
-type SetNotificationPermissions =
-  PermissionsController['setNotificationPermissions'];
-
-interface Notification {
-  address: string;
-  origin: string;
-}
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
 
 export class NotificationsController extends EventEmitter {
-  notifications: { notifications: Notification[] };
-  store: ObservableStore;
-  getMessagesConfig: GetMessagesConfig;
-  canShowNotification: CanShowNotification;
-  setNotificationPermissions: SetNotificationPermissions;
+  private notifications;
+  private store;
+  private getMessagesConfig;
+  private canShowNotification;
+  private setNotificationPermissions;
 
   constructor({
     localStore,
@@ -33,17 +25,16 @@ export class NotificationsController extends EventEmitter {
     setNotificationPermissions,
   }: {
     localStore: ExtensionStore;
-    getMessagesConfig: GetMessagesConfig;
-    canShowNotification: CanShowNotification;
-    setNotificationPermissions: SetNotificationPermissions;
+    getMessagesConfig: RemoteConfigController['getMessagesConfig'];
+    canShowNotification: PermissionsController['canUseNotification'];
+    setNotificationPermissions: PermissionsController['setNotificationPermissions'];
   }) {
     super();
 
-    const defaults = {
+    this.notifications = localStore.getInitState({
       notifications: [],
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.notifications = localStore.getInitState(defaults) as any;
+    });
+
     this.store = new ObservableStore(this.notifications);
     localStore.subscribe(this.store);
 
@@ -52,25 +43,18 @@ export class NotificationsController extends EventEmitter {
     this.setNotificationPermissions = setNotificationPermissions;
 
     this.deleteAllByTime();
-    extension.alarms.onAlarm.addListener(({ name }) => {
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       if (name === 'deleteMessages') {
         this.deleteAllByTime();
       }
     });
   }
 
-  /**
-   *
-   * @param data
-   * @param {string} data.message
-   * @param {string} data.title
-   * @param {string} data.origin
-   * @param {string} data.type
-   * @param {string} data.timestamp
-   * @param {string} data.address
-   * @param {string} data.status
-   */
-  validateNotification(data) {
+  validateNotification(
+    data: { message?: string; origin?: string; title?: string } | null
+  ): asserts data is { message: string; origin: string; title: string } {
     const config = this.getMessagesConfig();
     const {
       notification_title_max,
@@ -105,19 +89,15 @@ export class NotificationsController extends EventEmitter {
     this.canShowNotification(data.origin, notification_interval_min);
   }
 
-  /**
-   * @title New notification
-   * @param data
-   * @param {string} data.message
-   * @param {string} data.title
-   * @param {string} data.origin
-   * @param {string} data.type
-   * @param {string} data.timestamp
-   * @param {string} data.address
-   * @param {string} data.status
-   * @return {Promise<{ id }>}
-   */
-  newNotification(data) {
+  newNotification(data: {
+    address: string;
+    message?: string;
+    origin: string;
+    status: MsgStatus;
+    timestamp: number;
+    title?: string;
+    type: 'simple';
+  }) {
     log.debug(`New notification ${data.type}: ${JSON.stringify(data)}`);
 
     this.validateNotification(data);
@@ -139,18 +119,11 @@ export class NotificationsController extends EventEmitter {
     return { id: notification.id };
   }
 
-  /**
-   * @param {Array<string>} ids
-   */
-  deleteNotifications(ids) {
+  deleteNotifications(ids: string[]) {
     this._deleteMessages(ids);
   }
 
-  /**
-   * @param {object} account
-   * @return {T[]}
-   */
-  getNotificationsByAccount(account) {
+  getNotificationsByAccount(account: PreferencesAccount | undefined) {
     if (!account || !account.address) {
       return [];
     }
@@ -159,37 +132,31 @@ export class NotificationsController extends EventEmitter {
     );
   }
 
-  /**
-   * @param account
-   * @return {Array}
-   */
-  getGroupNotificationsByAccount(account) {
+  getGroupNotificationsByAccount(account: PreferencesAccount | undefined) {
     const notifications = this.getNotificationsByAccount(account);
-    return [...notifications]
-      .reverse()
-      .reduce<{ items: unknown[]; hash: Record<string, Notification[]> }>(
-        (acc, item) => {
-          if (!acc.hash[item.origin]) {
-            acc.hash[item.origin] = [];
-            acc.items.push(acc.hash[item.origin]);
-          }
+    return [...notifications].reverse().reduce<{
+      items: Array<NotificationsStoreItem[]>;
+      hash: Record<string, NotificationsStoreItem[]>;
+    }>(
+      (acc, item) => {
+        if (!acc.hash[item.origin]) {
+          acc.hash[item.origin] = [];
+          acc.items.push(acc.hash[item.origin]);
+        }
 
-          acc.hash[item.origin].push(item);
+        acc.hash[item.origin].push(item);
 
-          return acc;
-        },
-        { items: [], hash: {} }
-      ).items;
+        return acc;
+      },
+      { items: [], hash: {} }
+    ).items;
   }
 
-  /**
-   * @return {void}
-   */
   deleteAllByTime() {
     const { message_expiration_ms } = this.getMessagesConfig();
     const time = Date.now();
     const { notifications } = this.store.getState();
-    const toDelete = [];
+    const toDelete: string[] = [];
     notifications.forEach(({ id, timestamp }) => {
       if (time - timestamp > message_expiration_ms) {
         toDelete.push(id);
@@ -200,11 +167,7 @@ export class NotificationsController extends EventEmitter {
     this._updateMessagesByTimeout();
   }
 
-  /**
-   * @param {string} id
-   * @param {"showed_notify" | "new_notify"} status
-   */
-  setMessageStatus(id, status) {
+  setMessageStatus(id: string, status: NotificationsStoreItem['status']) {
     const { notifications } = this.store.getState();
     const index = notifications.findIndex(msg => msg.id === id);
     if (index > -1) {
@@ -213,25 +176,25 @@ export class NotificationsController extends EventEmitter {
     }
   }
 
-  /**
-   * @param {string} id
-   */
-  deleteMsg(id) {
+  deleteMsg(id: string) {
     this._deleteMessages([id]);
   }
 
-  /**
-   * @param data
-   * @param {string} data.message
-   * @param {string} data.title
-   * @param {string} data.origin
-   * @param {string} data.type
-   * @param {string} data.timestamp
-   * @param {string} data.address
-   * @return {any}
-   * @private
-   */
-  _generateMessage({ address, origin, title, type, timestamp, message }) {
+  _generateMessage({
+    address,
+    origin,
+    title,
+    type,
+    timestamp,
+    message,
+  }: {
+    address: NotificationsStoreItem['address'];
+    origin: NotificationsStoreItem['origin'];
+    title: NotificationsStoreItem['title'];
+    type: NotificationsStoreItem['type'];
+    timestamp: NotificationsStoreItem['timestamp'];
+    message: NotificationsStoreItem['message'];
+  }): NotificationsStoreItem {
     return {
       type,
       title,
@@ -244,11 +207,7 @@ export class NotificationsController extends EventEmitter {
     };
   }
 
-  /**
-   * @param {string} {[]} ids
-   * @private
-   */
-  _deleteMessages(ids) {
+  _deleteMessages(ids: string[]) {
     const { notifications } = this.store.getState();
     const newNotifications = notifications.filter(
       ({ id }) => !ids.includes(id)
@@ -258,8 +217,11 @@ export class NotificationsController extends EventEmitter {
     }
   }
 
-  _deleteNotificationsByLimit(notifications, limit) {
-    const toDelete = [];
+  _deleteNotificationsByLimit(
+    notifications: NotificationsStoreItem[],
+    limit: number
+  ) {
+    const toDelete: string[] = [];
 
     while (notifications.length > limit) {
       const oldest = notifications.sort((a, b) => a.timestamp - b.timestamp)[0];
@@ -273,21 +235,13 @@ export class NotificationsController extends EventEmitter {
     this._deleteMessages(toDelete);
   }
 
-  /**
-   * @param {[]} notifications
-   * @private
-   */
-  _updateStore(notifications) {
+  _updateStore(notifications: NotificationsStoreItem[]) {
     const data = { ...this.store.getState(), notifications };
     this.store.updateState(data);
     this.notifications = data;
     this.emit('Update badge');
   }
 
-  /**
-   * @return {void}
-   * @private
-   */
   _updateMessagesByTimeout() {
     const { update_messages_ms } = this.getMessagesConfig();
     extension.alarms.create('deleteMessages', {

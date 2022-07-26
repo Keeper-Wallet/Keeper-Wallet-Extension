@@ -1,41 +1,46 @@
 import * as Sentry from '@sentry/react';
+import ExtensionStore from 'lib/localStore';
+import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { RemoteConfigController } from './remoteConfig';
 
-type GetNetworkConfig = RemoteConfigController['getNetworkConfig'];
-type GetNetworks = RemoteConfigController['getNetworks'];
-
 export class NetworkController {
-  store: ObservableStore;
+  store;
+  private configApi;
 
-  configApi: {
-    getNetworkConfig: GetNetworkConfig;
-    getNetworks: GetNetworks;
-  };
+  constructor({
+    localStore,
+    getNetworkConfig,
+    getNetworks,
+  }: {
+    localStore: ExtensionStore;
+    getNetworkConfig: RemoteConfigController['getNetworkConfig'];
+    getNetworks: RemoteConfigController['getNetworks'];
+  }) {
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        currentNetwork: NetworkName.Mainnet,
+        customNodes: {
+          mainnet: null,
+          stagenet: null,
+          testnet: null,
+          custom: null,
+        },
+        customMatchers: {
+          mainnet: null,
+          testnet: null,
+          stagenet: null,
+          custom: null,
+        },
+        customCodes: {
+          mainnet: null,
+          testnet: null,
+          stagenet: null,
+          custom: null,
+        },
+      })
+    );
 
-  constructor({ localStore, getNetworkConfig, getNetworks }) {
-    const defaults = {
-      currentNetwork: 'mainnet',
-      customNodes: {
-        mainnet: null,
-        stagenet: null,
-        testnet: null,
-        custom: null,
-      },
-      customMatchers: {
-        mainnet: null,
-        testnet: null,
-        stagenet: null,
-        custom: null,
-      },
-      customCodes: {
-        mainnet: null,
-        testnet: null,
-        stagenet: null,
-        custom: null,
-      },
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
     localStore.subscribe(this.store);
 
     this.configApi = { getNetworkConfig, getNetworks };
@@ -49,7 +54,7 @@ export class NetworkController {
       .map(name => ({ ...networks[name], name }));
   }
 
-  setNetwork(network) {
+  setNetwork(network: NetworkName) {
     Sentry.setTag('network', network);
 
     Sentry.addBreadcrumb({
@@ -66,19 +71,22 @@ export class NetworkController {
     return this.store.getState().currentNetwork;
   }
 
-  setCustomNode(url, network = 'mainnet') {
+  setCustomNode(url: string | null | undefined, network = NetworkName.Mainnet) {
     const { customNodes } = this.store.getState();
     customNodes[network] = url;
     this.store.updateState({ customNodes });
   }
 
-  setCustomMatcher(url, network = 'mainnet') {
+  setCustomMatcher(
+    url: string | null | undefined,
+    network = NetworkName.Mainnet
+  ) {
     const { customMatchers } = this.store.getState();
     customMatchers[network] = url;
     this.store.updateState({ customMatchers });
   }
 
-  setCustomCode(code, network = 'mainnet') {
+  setCustomCode(code: string | undefined, network = NetworkName.Mainnet) {
     const { customCodes } = this.store.getState();
     customCodes[network] = code;
     this.store.updateState({ customCodes });
@@ -88,7 +96,7 @@ export class NetworkController {
     return this.store.getState().customCodes;
   }
 
-  getNetworkCode(network = undefined) {
+  getNetworkCode(network?: NetworkName) {
     const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
     return this.getCustomCodes()[network] || networks[network].code;
@@ -98,7 +106,7 @@ export class NetworkController {
     return this.store.getState().customNodes;
   }
 
-  getNode(network = undefined) {
+  getNode(network?: NetworkName) {
     const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
     return this.getCustomNodes()[network] || networks[network].server;
@@ -108,7 +116,7 @@ export class NetworkController {
     return this.store.getState().customMatchers;
   }
 
-  getMatcher(network = undefined) {
+  getMatcher(network?: NetworkName) {
     network = network || this.getNetwork();
     return (
       this.getCustomMatchers()[network] ||
@@ -117,7 +125,7 @@ export class NetworkController {
   }
 
   async getMatcherPublicKey() {
-    const keyMap = {};
+    const keyMap: Record<string, string> = {};
     const url = new URL('/matcher', this.getMatcher()).toString();
     if (keyMap[url] == null) {
       const resp = await fetch(url);
@@ -127,7 +135,12 @@ export class NetworkController {
     return keyMap[url];
   }
 
-  async broadcast(message) {
+  async broadcast(message: {
+    amountAsset?: string;
+    priceAsset?: string;
+    type: string;
+    result: string;
+  }) {
     const { result, type } = message;
     let API_BASE, url;
 

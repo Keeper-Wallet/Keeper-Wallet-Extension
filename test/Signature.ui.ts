@@ -57,7 +57,7 @@ const { parse } = create();
 describe('Signature', function () {
   this.timeout(5 * 60 * 1000);
 
-  let tabKeeper, tabOrigin;
+  let tabKeeper: string, tabOrigin: string;
 
   const senderPublicKey = 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV';
 
@@ -107,7 +107,8 @@ describe('Signature', function () {
 
   function checkAnyTransaction(
     txFormLocator: By,
-    checkApproveResult?: (approveResult: unknown) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    checkApproveResult?: (approveResult: any) => void,
     wait?: number
   ) {
     it('Is shown', async function () {
@@ -198,7 +199,7 @@ describe('Signature', function () {
       );
 
       await this.driver.switchTo().window(tabOrigin);
-      const approveResult = await this.driver.executeScript<string>(
+      const approveResult = await this.driver.executeScript(
         () => window.approveResult
       );
       await this.driver.switchTo().window(tabKeeper);
@@ -214,13 +215,14 @@ describe('Signature', function () {
       "//div[contains(@class, 'originAuth-transaction')]"
     );
     const REJECT_FOREVER = 'Reject forever';
-    let lastOrigin;
+    let lastOrigin: string;
 
     beforeEach(async function () {
       await this.driver.switchTo().window(tabOrigin);
 
       const origin =
-        this.currentTest.title != REJECT_FOREVER
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.currentTest!.title != REJECT_FOREVER
           ? CUSTOMLIST[0]
           : CUSTOMLIST[1];
       if (origin !== lastOrigin) {
@@ -331,7 +333,7 @@ describe('Signature', function () {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(
-        (senderPublicKey, timestamp) => {
+        (senderPublicKey: string, timestamp: number) => {
           KeeperWallet.initialPromise
             .then(api =>
               api.signRequest({
@@ -372,13 +374,12 @@ describe('Signature', function () {
   });
 
   describe('Transactions', function () {
-    async function performSignTransaction(
-      this: mocha.Context,
-      tx: WavesKeeper.TSignTransactionData
-    ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function performSignTransaction(this: mocha.Context, tx: any) {
       await this.driver.switchTo().window(tabOrigin);
 
-      await this.driver.executeScript(tx => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await this.driver.executeScript((tx: any) => {
         KeeperWallet.initialPromise
           .then(api => api.signTransaction(tx))
           .then(
@@ -1859,7 +1860,11 @@ describe('Signature', function () {
 
     describe('InvokeScript with legacy serialization', function () {
       beforeEach(async function () {
-        await performSignTransaction.call(this, setTxVersion(INVOKE_SCRIPT, 1));
+        await performSignTransaction.call(
+          this,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setTxVersion(INVOKE_SCRIPT as any, 1)
+        );
       });
 
       checkAnyTransaction(
@@ -1945,7 +1950,8 @@ describe('Signature', function () {
       await App.restartServiceWorker.call(this);
     });
 
-    const createOrder = tx => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const createOrder = (tx: any) => {
       KeeperWallet.initialPromise
         .then(api => api.signOrder(tx))
         .then(
@@ -1957,7 +1963,8 @@ describe('Signature', function () {
           }
         );
     };
-    const cancelOrder = tx => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cancelOrder = (tx: any) => {
       KeeperWallet.initialPromise
         .then(api => api.signCancelOrder(tx))
         .then(
@@ -1971,8 +1978,10 @@ describe('Signature', function () {
     };
 
     async function performSignOrder(
+      this: mocha.Context,
       script: (tx: WavesKeeper.TSignTransactionData) => void,
-      tx: WavesKeeper.TSignTransactionData
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tx: any
     ) {
       await this.driver.switchTo().window(tabOrigin);
 
@@ -2122,13 +2131,14 @@ describe('Signature', function () {
 
   describe('Multiple transactions package', function () {
     async function performSignTransactionPackage(
+      this: mocha.Context,
       tx: WavesKeeper.TSignTransactionData[],
       name: string
     ) {
       await this.driver.switchTo().window(tabOrigin);
 
       await this.driver.executeScript(
-        (tx, name) => {
+        (tx: WavesKeeper.TSignTransactionData[], name: string) => {
           KeeperWallet.initialPromise
             .then(api => api.signTransactionPackage(tx, name))
             .then(
@@ -2154,7 +2164,12 @@ describe('Signature', function () {
     });
 
     beforeEach(async function () {
-      await performSignTransactionPackage.call(this, PACKAGE, 'Test package');
+      await performSignTransactionPackage.call(
+        this,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        PACKAGE as any,
+        'Test package'
+      );
     });
 
     checkAnyTransaction(
@@ -2377,14 +2392,12 @@ describe('Signature', function () {
   });
 
   describe('Custom data', function () {
-    async function performSignCustomData(
-      data:
-        | WavesKeeper.TSignCustomDataParamsV1
-        | WavesKeeper.TSignCustomDataParamsV2
-    ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function performSignCustomData(this: mocha.Context, data: any) {
       await this.driver.switchTo().window(tabOrigin);
 
-      await this.driver.executeScript(data => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await this.driver.executeScript((data: any) => {
         KeeperWallet.initialPromise
           .then(api => api.signCustomData(data))
           .then(

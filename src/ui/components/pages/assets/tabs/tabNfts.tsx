@@ -27,18 +27,21 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  const myNfts = useAppSelector(state => state.balances[address]?.nfts);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const myNfts = useAppSelector(state => state.balances[address!]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
     filters?.term,
-    value => setFilters({ ...filters, term: value }),
+    (value: string) => setFilters({ ...filters, term: value }),
   ];
-  const setCreator = value => setFilters({ ...filters, creator: value });
+  const setCreator = (value: string | null | undefined) =>
+    setFilters({ ...filters, creator: value });
 
   const getNftDetails = React.useCallback(
-    nft => createNft(nft, nfts[nft.id], address),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    nft => createNft(nft, nfts![nft.id], address),
     [nfts, address]
   );
 
@@ -52,12 +55,15 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
   >(
     ([creatorNfts, creatorCounts], current) => {
       const creator = current.creator;
-      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator)) {
-        creatorCounts[creator] += 1;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (Object.prototype.hasOwnProperty.call(creatorCounts, creator!)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        creatorCounts[creator!] += 1;
         return [creatorNfts, creatorCounts];
       }
 
-      creatorCounts[creator] = 1;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      creatorCounts[creator!] = 1;
       creatorNfts.push(current);
 
       return [creatorNfts, creatorCounts];
@@ -70,7 +76,7 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => setTerm(e.target.value)}
+          onInput={e => setTerm(e.currentTarget.value)}
           onClear={() => setTerm('')}
         />
       </div>
@@ -123,7 +129,8 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
                 </div>
                 <a
                   className="blue link"
-                  href={getNftsLink(networkCode, address)}
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  href={getNftsLink(networkCode!, address!)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

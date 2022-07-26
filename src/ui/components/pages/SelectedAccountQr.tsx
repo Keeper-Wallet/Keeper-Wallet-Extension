@@ -13,11 +13,12 @@ export function SelectedAccountQr() {
   const address = selectedAccount?.address;
   const name = selectedAccount?.name;
 
-  const [qrSrc, setQrSrc] = React.useState<string | null>(null);
+  const [qrSrc, setQrSrc] = React.useState<string>();
   const qrSize = 200;
 
   React.useEffect(() => {
-    QrCode.toDataURL(address, {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    QrCode.toDataURL(address!, {
       errorCorrectionLevel: 'H',
       margin: 1,
       rendererOpts: { quality: 1 },
@@ -43,8 +44,13 @@ export function SelectedAccountQr() {
 
       <Button
         className={styles.downloadQr}
+        disabled={!qrSrc}
         view="submitTiny"
         onClick={() => {
+          if (!qrSrc) {
+            return;
+          }
+
           const link = document.createElement('a');
           link.setAttribute('href', qrSrc);
           link.setAttribute('download', `${selectedAccount.address}.png`);

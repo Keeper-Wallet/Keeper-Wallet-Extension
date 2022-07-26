@@ -1,9 +1,15 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { IMoneyLike } from 'ui/utils/converters';
 
 export const messageType = 'reissue';
 export const txType = 'transaction';
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(tx: {
+  assetId?: string;
+  fee?: { assetId?: string };
+  feeAssetId?: string;
+  quantity?: { assetId?: string };
+}): Array<string> {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const amountAssetId =
@@ -13,12 +19,16 @@ export function getAssetsId(tx): Array<string> {
     return [amountAssetId];
   }
 
-  return [amountAssetId, feeAssetId];
+  return [amountAssetId as string, feeAssetId];
 }
 
 export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAmount(tx = null) {
+export function getAmount(tx: {
+  amount?: IMoneyLike | string;
+  assetId: string;
+  quantity?: IMoneyLike | string;
+}) {
   const quantity = tx.quantity || tx.amount;
 
   if (typeof quantity === 'object') {
@@ -34,6 +44,6 @@ export function getAmountSign() {
   return '+' as const;
 }
 
-export function isMe(tx, type: string) {
+export function isMe(tx: { type?: unknown }, type: string | null) {
   return tx.type === TRANSACTION_TYPE.REISSUE && type === 'transaction';
 }

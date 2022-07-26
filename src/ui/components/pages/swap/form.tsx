@@ -9,6 +9,8 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { AssetAmountInput } from 'assets/amountInput';
 import { AssetSelect, AssetSelectOption } from 'assets/assetSelect';
 import { swappableAssetTickersByVendor } from 'assets/constants';
+import { AssetDetail } from 'assets/types';
+import { BalancesItem } from 'balances/types';
 import cn from 'classnames';
 import { useDebouncedValue } from 'common/useDebouncedValue';
 import { useFeeOptions } from 'fee/useFeeOptions';
@@ -24,15 +26,13 @@ import { Modal } from 'ui/components/ui/modal/Modal';
 import { Select } from 'ui/components/ui/select/Select';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { UsdAmount } from 'ui/components/ui/UsdAmount';
-import { AccountBalance } from 'ui/reducers/updateState';
-import { AssetDetail } from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import * as styles from './form.module.css';
 import { SwapLayout } from './layout';
 
 const SLIPPAGE_TOLERANCE_OPTIONS = [0.1, 0.5, 1, 3];
 
-function getAssetBalance(asset: Asset, accountBalance: AccountBalance) {
+function getAssetBalance(asset: Asset, accountBalance: BalancesItem) {
   return asset.id === 'WAVES'
     ? new Money(accountBalance.available, asset)
     : new Money(accountBalance.assets?.[asset.id]?.balance || '0', asset);
@@ -54,7 +54,7 @@ interface Props {
   initialFromAssetId: string;
   initialToAssetId: string;
   isSwapInProgress: boolean;
-  swapErrorMessage: string;
+  swapErrorMessage: string | null;
   swappableAssets: AssetDetail[];
   wavesFeeCoins: number;
   onSwap: (params: OnSwapParams) => void;
@@ -120,7 +120,8 @@ export function SwapForm({
   const assets = useAppSelector(state => state.assets);
   const usdPrices = useAppSelector(state => state.usdPrices);
   const accountBalance = useAppSelector(
-    state => state.balances[state.selectedAccount.address]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[state.selectedAccount.address!]
   );
 
   const currentNetwork = useAppSelector(state => state.currentNetwork);
@@ -316,7 +317,8 @@ export function SwapForm({
     });
   }, [swapClient, swapParams, t, toAsset]);
 
-  const sponsoredAssetFee = accountBalance.assets[feeAssetId]
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const sponsoredAssetFee = accountBalance.assets![feeAssetId]
     ? convertFeeToAsset(wavesFee, feeAsset, feeConfig)
     : null;
 
@@ -365,9 +367,9 @@ export function SwapForm({
 
   const [nonProfitVendor, profitVendor] = (
     Object.keys(swapInfo) as SwapVendor[]
-  ).reduce<[SwapVendor, SwapVendor]>(
+  ).reduce<[SwapVendor | null, SwapVendor]>(
     ([nonProfit, profit], next) => {
-      const nonProfitInfo = swapInfo[nonProfit];
+      const nonProfitInfo = swapInfo[nonProfit as SwapVendor];
       const minAmount =
         nonProfitInfo?.type === 'data'
           ? nonProfitInfo.toAmountTokens
@@ -402,14 +404,16 @@ export function SwapForm({
   const fromSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
-        .filter(tickersSet => tickersSet.has(toAsset.ticker))
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .filter(tickersSet => tickersSet.has(toAsset.ticker!))
         .flatMap(tickersSet => Array.from(tickersSet))
     );
 
     return swappableAssets
       .filter(asset => asset.id !== toAsset.id)
       .map((asset): AssetSelectOption => {
-        const isAvailable = availableTickers.has(asset.ticker);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const isAvailable = availableTickers.has(asset.ticker!);
 
         return {
           ...asset,
@@ -427,14 +431,16 @@ export function SwapForm({
   const toSwappableAssets = React.useMemo(() => {
     const availableTickers = new Set(
       Object.values(swappableAssetTickersByVendor)
-        .filter(tickersSet => tickersSet.has(fromAsset.ticker))
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .filter(tickersSet => tickersSet.has(fromAsset.ticker!))
         .flatMap(tickersSet => Array.from(tickersSet))
     );
 
     return swappableAssets
       .filter(asset => asset.id !== fromAsset.id)
       .map((asset): AssetSelectOption => {
-        const isAvailable = availableTickers.has(asset.ticker);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const isAvailable = availableTickers.has(asset.ticker!);
 
         return {
           ...asset,
@@ -457,7 +463,7 @@ export function SwapForm({
           onSubmit={event => {
             event.preventDefault();
 
-            if (swapVendorInfo.type !== 'data') {
+            if (swapVendorInfo.type !== 'data' || !minReceived) {
               return;
             }
 
@@ -481,7 +487,8 @@ export function SwapForm({
           }}
         >
           <AssetAmountInput
-            assetBalances={accountBalance.assets}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            assetBalances={accountBalance.assets!}
             assetOptions={fromSwappableAssets}
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
@@ -498,7 +505,8 @@ export function SwapForm({
 
               if (
                 feeAssetId === fromAssetId &&
-                accountBalance.assets[feeAssetId]
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                accountBalance.assets![feeAssetId]
               ) {
                 const fee = convertFeeToAsset(
                   wavesFee,
@@ -566,7 +574,8 @@ export function SwapForm({
 
             <div className={styles.toAmountSelect}>
               <AssetSelect
-                assetBalances={accountBalance.assets}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                assetBalances={accountBalance.assets!}
                 network={currentNetwork}
                 options={toSwappableAssets}
                 value={toAssetId}
@@ -609,7 +618,7 @@ export function SwapForm({
                   }
                 );
 
-                const nextInfo = swapInfo[nonProfitVendor];
+                const nextInfo = swapInfo[nonProfitVendor as SwapVendor];
 
                 const profitTokens =
                   info.type === 'data' &&
@@ -723,7 +732,7 @@ export function SwapForm({
               </div>
 
               <div className={styles.summaryValue}>
-                {swapVendorInfo.type === 'loading' ? (
+                {swapVendorInfo.type === 'loading' || !minReceived ? (
                   <Loader />
                 ) : swapVendorInfo.type === 'data' ? (
                   <div>

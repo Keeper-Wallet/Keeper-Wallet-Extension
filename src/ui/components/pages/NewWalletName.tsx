@@ -11,9 +11,9 @@ import { Button, Error, Input } from 'ui/components/ui';
 import { CONFIG } from 'ui/appConfig';
 import { WalletTypes } from 'ui/services/Background';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
-import { PAGES } from 'ui/pageConfig';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 
-export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
+export function NewWalletName({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -21,7 +21,7 @@ export function NewWalletName({ setTab }: { setTab: (tab: string) => void }) {
   const accounts = useAccountsSelector(state => state.accounts);
   const [accountName, setAccountName] = React.useState<string>();
   const [pending, setPending] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string>('');
+  const [error, setError] = React.useState<string | null>('');
 
   const existedAccount = accounts.find(
     ({ address }) => address === account.address

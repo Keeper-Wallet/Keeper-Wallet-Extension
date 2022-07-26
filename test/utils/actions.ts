@@ -1,8 +1,3 @@
-/**
- * Basic actions for tests.
- *
- * NOTE: Each of them needs to bind `this` from test.
- */
 import { seedUtils } from '@waves/waves-transactions';
 import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
@@ -144,7 +139,8 @@ export const App = {
     password = DEFAULT_PASSWORD
   ) {
     const encryptedVault = await this.driver.executeAsyncScript<string>(
-      function (...args) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      function (...args: any[]) {
         const cb = args[args.length - 1];
 
         chrome.storage.local.get('WalletController', ({ WalletController }) =>
@@ -468,7 +464,7 @@ export const Network = {
       .click();
 
     await this.driver.executeScript(
-      el => el.click(),
+      (el: HTMLElement) => el.click(),
       await this.driver.wait(
         until.elementLocated(
           By.xpath(
