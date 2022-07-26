@@ -27,6 +27,11 @@ export class VaultController {
 
     this.wallet = wallet;
     this.identity = identity;
+
+    const { vault } = wallet.store.getState().WalletController;
+    if (vault) {
+      this.store.updateState({ initialized: true });
+    }
   }
 
   private get locked(): boolean {
@@ -99,10 +104,6 @@ export class VaultController {
       delete state.locked;
       delete state.initialized;
       this.wallet.store.putState(state);
-    }
-
-    if (state.vault) {
-      this.store.updateState({ initialized: true });
     }
   }
 }
