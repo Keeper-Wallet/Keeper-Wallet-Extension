@@ -1,4 +1,5 @@
 module.exports = {
+  reportUnusedDisableDirectives: true,
   root: true,
   env: {
     es6: true,

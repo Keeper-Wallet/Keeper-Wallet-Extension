@@ -238,7 +238,7 @@ export default class ExtensionStore {
     keys?: K | K[]
   ): Pick<StoreLocalState, K> {
     if (!keys) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this._state as any;
     }
 
