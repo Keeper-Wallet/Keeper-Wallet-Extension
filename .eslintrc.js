@@ -61,6 +61,7 @@ module.exports = {
       extends: 'plugin:@typescript-eslint/recommended-requiring-type-checking',
       rules: {
         '@typescript-eslint/await-thenable': 'off',
+        '@typescript-eslint/consistent-type-assertions': 'warn',
         '@typescript-eslint/no-floating-promises': 'off',
         '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/no-unsafe-argument': 'off',
