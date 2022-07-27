@@ -10,7 +10,7 @@ import {
 } from './utils/constants';
 
 describe('Messages', function () {
-  this.timeout(2 * 60 * 1000);
+  this.timeout(5 * 60 * 1000);
 
   const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
   let tabKeeper: string;
