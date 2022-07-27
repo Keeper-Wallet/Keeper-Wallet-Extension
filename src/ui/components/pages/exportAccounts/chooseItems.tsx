@@ -49,7 +49,7 @@ export function ExportKeystoreChooseItems<
   );
 
   function toggleSelected(
-    items: (PreferencesAccount | Contact)[],
+    items: Array<PreferencesAccount | Contact>,
     isSelected: boolean
   ) {
     setSelected(prevSelected => {
@@ -97,7 +97,7 @@ export function ExportKeystoreChooseItems<
 
       <div className={styles.accounts}>
         {allNetworks
-          .map<[NetworkName, (PreferencesAccount | Contact)[]]>(network => [
+          .map<[NetworkName, Array<PreferencesAccount | Contact>]>(network => [
             network,
             items.filter(acc => acc.network === network),
           ])

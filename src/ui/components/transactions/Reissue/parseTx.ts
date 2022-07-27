@@ -9,7 +9,7 @@ export function getAssetsId(tx: {
   fee?: { assetId?: string };
   feeAssetId?: string;
   quantity?: { assetId?: string };
-}): Array<string> {
+}): string[] {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const amountAssetId =

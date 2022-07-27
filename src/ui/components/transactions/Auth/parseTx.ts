@@ -1,7 +1,7 @@
 export const messageType = 'auth';
 export const txType = 'auth';
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return ['WAVES'];
 }
 

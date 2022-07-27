@@ -104,7 +104,7 @@ export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function reduceDataEntries(entries: Array<DataTransactionEntry>) {
+export function reduceDataEntries(entries: DataTransactionEntry[]) {
   return entries.reduce((data, item) => {
     data[item.key] = item.value;
     return data;

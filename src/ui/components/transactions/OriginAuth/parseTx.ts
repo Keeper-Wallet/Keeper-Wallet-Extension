@@ -1,7 +1,7 @@
 export const messageType = 'authOrigin';
 export const txType = 'authOrigin';
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return ['WAVES'];
 }
 

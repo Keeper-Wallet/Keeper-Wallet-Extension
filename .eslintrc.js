@@ -39,6 +39,7 @@ module.exports = {
         destructuring: 'all',
       },
     ],
+    '@typescript-eslint/array-type': ['warn', { default: 'array-simple' }],
     '@typescript-eslint/no-unused-vars': [
       'error',
       { ignoreRestSiblings: true },

@@ -135,7 +135,7 @@ export class NotificationsController extends EventEmitter {
   getGroupNotificationsByAccount(account: PreferencesAccount | undefined) {
     const notifications = this.getNotificationsByAccount(account);
     return [...notifications].reverse().reduce<{
-      items: Array<NotificationsStoreItem[]>;
+      items: NotificationsStoreItem[][];
       hash: Record<string, NotificationsStoreItem[]>;
     }>(
       (acc, item) => {

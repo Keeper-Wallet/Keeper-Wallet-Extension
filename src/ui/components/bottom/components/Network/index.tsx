@@ -77,7 +77,7 @@ interface StateProps {
   customCodes: Partial<Record<NetworkName, string | null>>;
   customMatcher: Record<string, unknown>;
   customNodes: Record<string, unknown>;
-  networks: Array<INetwork>;
+  networks: INetwork[];
 }
 
 interface DispatchProps {

@@ -198,7 +198,7 @@ class IdentityStorage
 }
 
 export interface IdentityApi {
-  signBytes: (bytes: Array<number> | Uint8Array) => Promise<string>;
+  signBytes: (bytes: number[] | Uint8Array) => Promise<string>;
 }
 
 export class IdentityController implements IdentityApi {
@@ -568,7 +568,7 @@ export class IdentityController implements IdentityApi {
     this.persistSession(uuid);
   }
 
-  async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
+  async signBytes(bytes: number[] | Uint8Array): Promise<string> {
     const selectedAccount = this.getSelectedAccount();
 
     if (selectedAccount?.type !== 'wx') {

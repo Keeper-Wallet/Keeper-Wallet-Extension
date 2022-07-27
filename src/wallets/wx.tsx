@@ -93,7 +93,7 @@ export class WxWallet extends Wallet<WalletPrivateDataOfType<'wx'>> {
     throw new Error('Unable to decrypt message with this account type');
   }
 
-  private async signBytes(bytes: Array<number> | Uint8Array): Promise<string> {
+  private async signBytes(bytes: number[] | Uint8Array): Promise<string> {
     return this.identity.signBytes(bytes);
   }
 

@@ -23,7 +23,7 @@ export function VerifyCodeComponent({
   const refs = React.useMemo((): Array<React.RefObject<HTMLInputElement>> => {
     return new Array(codeLength).fill(undefined).map(() => React.createRef());
   }, [codeLength]);
-  const [values, setValues] = React.useState<Array<string>>(refs.map(() => ''));
+  const [values, setValues] = React.useState<string[]>(refs.map(() => ''));
 
   React.useEffect(() => {
     if (values.length < codeLength || values.some(v => !v)) {

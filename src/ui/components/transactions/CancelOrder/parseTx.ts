@@ -1,7 +1,7 @@
 export const messageType = 'cancel-order';
 export const txType = 'cancelOrder';
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return ['WAVES'];
 }
 

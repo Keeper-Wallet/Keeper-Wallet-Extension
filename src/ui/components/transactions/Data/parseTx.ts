@@ -6,7 +6,7 @@ export const txType = 'transaction';
 export function getAssetsId(tx: {
   fee?: { assetId?: string };
   feeAssetId?: string;
-}): Array<string> {
+}): string[] {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   return [feeAssetId];

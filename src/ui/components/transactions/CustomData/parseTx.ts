@@ -1,7 +1,7 @@
 export const messageType = 'customData';
 export const txType = messageType;
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return [];
 }
 

@@ -218,7 +218,7 @@ export class PermissionsController {
             amount?: IMoneyLike | undefined;
             fee?: IMoneyLike | undefined;
             totalAmount: IMoneyLike;
-            transfers: { amount: IMoneyLike }[];
+            transfers: Array<{ amount: IMoneyLike }>;
           };
         }>
   ) {
@@ -280,7 +280,7 @@ export class PermissionsController {
             amount?: IMoneyLike | undefined;
             fee?: IMoneyLike | undefined;
             totalAmount: IMoneyLike;
-            transfers: { amount: IMoneyLike }[];
+            transfers: Array<{ amount: IMoneyLike }>;
           };
         }>
   ) {
@@ -435,7 +435,7 @@ const getTxAmount = (
           amount?: IMoneyLike | undefined;
           fee?: IMoneyLike | undefined;
           totalAmount: IMoneyLike;
-          transfers: { amount: IMoneyLike }[];
+          transfers: Array<{ amount: IMoneyLike }>;
         };
       }>
 ) => {

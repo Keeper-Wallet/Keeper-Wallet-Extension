@@ -21,7 +21,12 @@ interface StateProps {
   currentNetwork: NetworkName;
   customCodes: Partial<Record<NetworkName, string | null>>;
   network: NetworkName;
-  networks: { name: string; code: string; server: string; matcher: string }[];
+  networks: Array<{
+    name: string;
+    code: string;
+    server: string;
+    matcher: string;
+  }>;
   notifications: NotificationsState;
   selectedAccount: PreferencesAccount | undefined;
 }

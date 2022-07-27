@@ -71,7 +71,7 @@ interface DispatchProps {
       type: 'allowAutoSign';
       totalAmount: string | null;
       interval: number | null;
-      approved?: Array<unknown>;
+      approved?: unknown[];
     }>;
   }) => void;
   setShowNotification: (options: {

@@ -356,7 +356,7 @@ export type UiAction =
           type: 'allowAutoSign';
           totalAmount: string | null;
           interval: number | null;
-          approved?: Array<unknown>;
+          approved?: unknown[];
         }>;
       };
       meta?: never;

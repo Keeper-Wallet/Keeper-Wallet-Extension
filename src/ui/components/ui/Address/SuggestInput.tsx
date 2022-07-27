@@ -14,7 +14,7 @@ interface SuggestProps {
   paddingRight?: number;
   paddingLeft?: number;
   accounts: PreferencesAccount[];
-  addresses: [string, string][];
+  addresses: Array<[string, string]>;
   setValue: (value: string) => void;
   setAddress: (value: string) => void;
   setShowSuggest: (show: boolean) => void;

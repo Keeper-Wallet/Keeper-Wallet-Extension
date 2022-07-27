@@ -35,9 +35,7 @@ class CustomDataCardComponent extends React.PureComponent<
           <ShowScript
             className={styles.dataScript}
             data={
-              (dataToShow as unknown as
-                | Array<EntryWithKey>
-                | Array<EntryNoKey>) || []
+              (dataToShow as unknown as EntryWithKey[] | EntryNoKey[]) || []
             }
             script={binary || ''}
             isData={!!dataToShow}

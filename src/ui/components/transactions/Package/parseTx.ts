@@ -19,7 +19,7 @@ export function getTransactionData(item: PackageItem) {
   return { tx, config };
 }
 
-export function getAssetsId(tx: PackageItem[]): Array<string> {
+export function getAssetsId(tx: PackageItem[]): string[] {
   if (!Array.isArray(tx)) {
     return ['WAVES'];
   }

@@ -21,7 +21,7 @@ export function getAssetsId(tx: {
   fee?: { assetId?: string };
   feeAssetId?: string;
   payment?: Array<{ assetId?: string } | string | number | null>;
-}): Array<string> {
+}): string[] {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const amountAssetId = (tx.payment || []).map(item => {

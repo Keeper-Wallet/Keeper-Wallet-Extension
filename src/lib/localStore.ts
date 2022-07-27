@@ -193,7 +193,7 @@ export default class ExtensionStore {
 
     const keysToRemove =
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (Object.keys(this._initState!) as (keyof StoreLocalState)[]).reduce<
+      (Object.keys(this._initState!) as Array<keyof StoreLocalState>).reduce<
         string[]
       >(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

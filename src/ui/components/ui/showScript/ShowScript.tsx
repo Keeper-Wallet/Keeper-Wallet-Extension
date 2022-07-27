@@ -33,7 +33,7 @@ const Data = ({
   data,
   getScriptRef,
 }: {
-  data: Array<EntryWithKey>;
+  data: EntryWithKey[];
   getScriptRef: (node: HTMLDivElement | null) => unknown;
 }) => {
   const { t } = useTranslation();
@@ -88,7 +88,7 @@ const DataNoKey = ({
   data,
   getScriptRef,
 }: {
-  data: Array<EntryNoKey>;
+  data: EntryNoKey[];
   getScriptRef: (node: HTMLDivElement | null) => unknown;
 }) => {
   const { t } = useTranslation();
@@ -216,7 +216,7 @@ class ShowScriptComponent extends React.PureComponent<Props, State> {
             )}
             {isData && !noKey && (
               <Data
-                data={data as Array<EntryWithKey>}
+                data={data as EntryWithKey[]}
                 getScriptRef={this.getScriptRef}
               />
             )}

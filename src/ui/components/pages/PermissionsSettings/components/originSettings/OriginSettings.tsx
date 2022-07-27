@@ -321,7 +321,7 @@ interface IProps extends WithTranslation {
   origins: Record<string, unknown[]>;
   autoSign: TAutoAuth;
   originalAutoSign: TAutoAuth;
-  permissions: Array<TPermission>;
+  permissions: TPermission[];
   originName: string;
   onSave: (
     params: Partial<TAutoAuth>,
@@ -339,7 +339,7 @@ export type TAutoAuth = {
   type: 'allowAutoSign';
   totalAmount: string | null;
   interval: number | null;
-  approved?: Array<unknown>;
+  approved?: unknown[];
 };
 
 type TNotification = {

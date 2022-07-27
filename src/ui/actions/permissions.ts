@@ -14,7 +14,7 @@ export const setAutoOrigin = (origin: {
     type: 'allowAutoSign';
     totalAmount: string | null;
     interval: number | null;
-    approved?: Array<unknown>;
+    approved?: unknown[];
   }>;
 }): UiActionOfType<typeof ACTION.PERMISSIONS.SET_AUTO> => ({
   type: ACTION.PERMISSIONS.SET_AUTO,

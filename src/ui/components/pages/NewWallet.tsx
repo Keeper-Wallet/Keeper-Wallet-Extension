@@ -47,7 +47,7 @@ interface State {
 class NewWalletComponent extends React.Component<Props, State> {
   state: State;
 
-  static list: Array<SeedAccountData> = [];
+  static list: SeedAccountData[] = [];
 
   constructor(props: Props) {
     super(props);
