@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "webpack --watch --mode development",
     "dist": "webpack --mode production",
-    "lint:eslint": "eslint --ext .ts,.tsx,.js .",
+    "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
     "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
     "lint:prettier:fix": "prettier . --write",

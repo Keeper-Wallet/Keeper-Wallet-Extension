@@ -52,5 +52,27 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 0,
       },
     },
+    {
+      files: ['**/*.ts'],
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+      extends: 'plugin:@typescript-eslint/recommended-requiring-type-checking',
+      rules: {
+        '@typescript-eslint/await-thenable': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/require-await': 'off',
+        '@typescript-eslint/restrict-plus-operands': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
+        '@typescript-eslint/unbound-method': 'off',
+      },
+    },
   ],
 };

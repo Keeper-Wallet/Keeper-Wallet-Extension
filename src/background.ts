@@ -797,8 +797,7 @@ class BackgroundService extends EventEmitter {
       this.emit('Show notification');
 
       await this.messageController
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        .getMessageResult(messageId!)
+        .getMessageResult(messageId)
         .then(() => {
           this.messageController.setPermission(origin, PERMISSIONS.APPROVED);
         })
