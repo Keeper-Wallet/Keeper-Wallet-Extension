@@ -1,6 +1,6 @@
 import { extension } from 'lib/extension';
 import LocalStore from 'lib/localStore';
-import * as ObservableStore from 'obs-store';
+import ObservableStore from 'obs-store';
 
 interface Tab {
   active: boolean;

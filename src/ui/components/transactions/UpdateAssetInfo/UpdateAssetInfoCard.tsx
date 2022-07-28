@@ -12,7 +12,7 @@ class UpdateAssetInfoCardComponent extends React.PureComponent<ComponentProps> {
       styles.updateAssetInfoTransactionCard,
       this.props.className,
       {
-        [styles.updateAssetInfoCard_collapsed]: this.props.collapsed,
+        [styles.updateAssetInfoCardCollapsed]: this.props.collapsed,
       }
     );
 

@@ -21,7 +21,7 @@ export const ExportButton = ({ className }: Props) => {
   return accounts.length !== 0 || Object.keys(addresses).length !== 0 ? (
     <>
       <div
-        className={`${styles.export} ${className}`}
+        className={`${styles.exportWrapper} ${className}`}
         onClick={() => {
           setShowExportModal(true);
         }}

@@ -1,4 +1,4 @@
-import * as QrCode from 'qrcode';
+import QrCode from 'qrcode';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';

@@ -56,7 +56,7 @@ export function ImportEmail({ setTab }: Props) {
         {t('importEmail.importEmailTitle')}
       </h2>
 
-      <p className={cn(styles.centered, 'margin1', 'tag1', 'disabled500')}>
+      <p className="margin1 tag1 disabled500">
         {t('importEmail.importEmailDesc')}
       </p>
 

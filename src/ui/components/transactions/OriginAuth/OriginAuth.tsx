@@ -62,7 +62,6 @@ class OriginAuthComponent extends SignClass {
             scrollElement={this.state.el}
           >
             <ExtendedPermission
-              className={styles.collapsedContent}
               originName={message.origin}
               autoSign={null}
               showNotify={false}

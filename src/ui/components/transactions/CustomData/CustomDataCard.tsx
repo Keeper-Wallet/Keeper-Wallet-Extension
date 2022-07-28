@@ -8,7 +8,7 @@ import { EntryNoKey, EntryWithKey, ShowScript } from '../../ui';
 class CustomDataCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.dataTransactionCard, this.props.className, {
-      [styles.dataCard_collapsed]: this.props.collapsed,
+      [styles.dataCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message } = this.props;

@@ -3,7 +3,7 @@ import { address, publicKey, signBytes } from '@waves/ts-lib-crypto';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
-import * as create from 'parse-json-bignumber';
+import create from 'parse-json-bignumber';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import {
   convertFromSa,

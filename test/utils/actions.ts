@@ -99,7 +99,7 @@ export const App = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-menu-settingsIcon')]")
+          By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
         ),
         this.wait
       )
@@ -108,7 +108,7 @@ export const App = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-settings-deleteAccounts')]")
+          By.xpath("//div[contains(@class, 'settings-deleteAccounts')]")
         ),
         this.wait
       )
@@ -364,7 +364,7 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-menu-settingsIcon')]")
+          By.xpath("//div[contains(@class, 'menu-settingsIcon')]")
         ),
         this.wait
       )
@@ -388,7 +388,7 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath("//div[contains(@class, '-Select-module-trigger')]")
+          By.xpath("//div[contains(@class, 'Select-module-trigger')]")
         ),
         this.wait
       )
@@ -398,9 +398,7 @@ export const Settings = {
     await this.driver
       .wait(
         until.elementLocated(
-          By.xpath(
-            `//div[contains(@class, '-Select-module-item')][${position}]`
-          )
+          By.xpath(`//div[contains(@class, 'Select-module-item')][${position}]`)
         ),
         this.wait
       )
@@ -431,10 +429,10 @@ export const Settings = {
     await Settings.permissionSettings.call(this);
 
     for (const originEl of await this.driver.findElements(
-      By.xpath("//div[contains(@class, '-list-permissionItem')]")
+      By.xpath("//div[contains(@class, 'list-permissionItem')]")
     )) {
       await originEl
-        .findElement(By.xpath("//button[contains(@class, '-list-settings')]"))
+        .findElement(By.xpath("//button[contains(@class, 'list-settings')]"))
         .click();
 
       const originSettingsModal = this.driver.wait(
@@ -460,7 +458,7 @@ export const Network = {
         until.elementIsVisible(
           this.driver.wait(
             until.elementLocated(
-              By.xpath("//i[contains(@class, '-network-networkIcon')]")
+              By.xpath("//i[contains(@class, 'network-networkIcon')]")
             ),
             this.wait
           )
@@ -474,8 +472,8 @@ export const Network = {
       await this.driver.wait(
         until.elementLocated(
           By.xpath(
-            `//div[contains(@class, '-network-chooseNetwork')][contains(text(), '${network}')]` +
-              "//i[contains(@class, '-network-networkIcon')]"
+            `//div[contains(@class, 'network-chooseNetwork')][contains(text(), '${network}')]` +
+              "//i[contains(@class, 'network-networkIcon')]"
           )
         ),
         this.wait
@@ -484,9 +482,7 @@ export const Network = {
   },
   checkNetwork: async function (this: mocha.Context, network: string) {
     await this.driver.wait(
-      until.elementLocated(
-        By.xpath("//div[contains(@class, '-intro-loader')]")
-      ),
+      until.elementLocated(By.xpath("//div[contains(@class, 'intro-loader')]")),
       this.wait
     );
 
@@ -502,7 +498,7 @@ export const Network = {
         .wait(
           until.elementLocated(
             By.xpath(
-              "//div[contains(@class, '-network-network')]" +
+              "//div[contains(@class, 'network-network')]" +
                 "//span[contains(@class, 'network-networkBottom')]"
             )
           ),

@@ -12,7 +12,7 @@ class WavesAuthCardComponent extends React.PureComponent<ComponentProps> {
       styles.wavesAuthTransactionCard,
       this.props.className,
       {
-        [styles.wavesAuthCard_collapsed]: this.props.collapsed,
+        [styles.wavesAuthCardCollapsed]: this.props.collapsed,
       }
     );
 

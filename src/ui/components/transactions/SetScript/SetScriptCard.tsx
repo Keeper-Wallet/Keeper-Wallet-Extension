@@ -12,7 +12,7 @@ class SetScriptCardComponent extends React.PureComponent<ComponentProps> {
       styles.setScriptTransactionCard,
       this.props.className,
       {
-        [styles.setScriptCard_collapsed]: this.props.collapsed,
+        [styles.setScriptCardCollapsed]: this.props.collapsed,
       }
     );
 

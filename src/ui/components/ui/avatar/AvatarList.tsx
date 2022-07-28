@@ -26,7 +26,7 @@ export function AvatarList<T extends AvatarListItem>({
         <div
           key={item.address}
           className={cn(styles.avatarListItem, {
-            [styles.avatarListItem_selected]: selected.address === item.address,
+            [styles.avatarListItemSelected]: selected.address === item.address,
           })}
           onClick={() => {
             onSelect(item);

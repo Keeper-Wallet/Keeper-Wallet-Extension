@@ -262,7 +262,6 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
 
               <Button
                 id="save"
-                className={styles.test}
                 type="submit"
                 view="submit"
                 disabled={!this.state.canSave}
@@ -274,7 +273,6 @@ class OriginSettingsComponent extends React.PureComponent<IProps, IState> {
           ) : (
             <Button
               id="save"
-              className={styles.test}
               type="submit"
               view="submit"
               disabled={!this.state.canSave}

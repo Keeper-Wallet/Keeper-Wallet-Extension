@@ -60,7 +60,7 @@ class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
       styles.massTransferTransactionCard,
       this.props.className,
       {
-        [styles.massTransferCard_collapsed]: this.props.collapsed,
+        [styles.massTransferCardCollapsed]: this.props.collapsed,
       }
     );
 

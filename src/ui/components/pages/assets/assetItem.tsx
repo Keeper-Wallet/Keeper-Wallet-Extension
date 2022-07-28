@@ -86,7 +86,7 @@ export function AssetItem({
           )}
         </div>
 
-        <div className={styles.balance}>
+        <div>
           <Balance
             isShortFormat={false}
             split={true}

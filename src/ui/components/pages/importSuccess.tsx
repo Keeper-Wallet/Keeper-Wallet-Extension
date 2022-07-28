@@ -66,9 +66,7 @@ export function ImportSuccess() {
             {t('newAccountName.accountAddress')}
           </div>
 
-          <div className={`${styles.greyLine} grey-line`}>
-            {account.address}
-          </div>
+          <div className="grey-line">{account.address}</div>
         </>
       )}
 

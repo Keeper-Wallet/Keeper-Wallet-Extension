@@ -13,7 +13,7 @@ class SponsorshipCardComponent extends React.PureComponent<ComponentProps> {
       styles.sponsorshipTransactionCard,
       this.props.className,
       {
-        [styles.sponsorshipCard_collapsed]: this.props.collapsed,
+        [styles.sponsorshipCardCollapsed]: this.props.collapsed,
       }
     );
 

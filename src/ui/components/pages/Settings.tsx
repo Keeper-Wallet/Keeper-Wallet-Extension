@@ -105,7 +105,7 @@ class SettingsComponent extends React.Component<Props> {
             </Button>
           </div>
 
-          <div className={`${styles.settingsMenuItem} ${styles.export}`}>
+          <div className={`${styles.settingsMenuItem} ${styles.exportButton}`}>
             <Button
               data-testid="exportMenuItem"
               id="settingsExport"

@@ -16,9 +16,7 @@ class ListComponent extends React.PureComponent<IProps> {
       return (
         <div className={styles.emptyBlock}>
           <div className={styles.icon} />
-          <div
-            className={`body3 margin-main-top basic500 center ${styles.emptyBlockDescription}`}
-          >
+          <div className="body3 margin-main-top basic500 center">
             {t('permissionsSettings.empty')}
           </div>
         </div>

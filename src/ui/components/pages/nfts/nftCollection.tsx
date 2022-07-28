@@ -79,7 +79,7 @@ export function NftCollection({
             creatorRef.current?.displayCreator
           )}
         </div>
-        <div className={styles.creator}>
+        <div>
           <Tooltip content={t('nftInfo.creatorUrlTooltip')}>
             {props => (
               <a

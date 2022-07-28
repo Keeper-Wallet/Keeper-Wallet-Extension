@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 
 import { KEEPERWALLET_DEBUG } from '../constants';
 import { cbToPromise, setupDnode, transformMethods } from 'lib/dnode-util';
-import * as PortStream from 'lib/port-stream.js';
+import PortStream from 'lib/port-stream.js';
 import { setLangs, setTabMode } from 'ui/actions';
 import { createUpdateState } from './updateState';
 import { RootAccounts } from 'ui/components/RootAccounts';

@@ -12,7 +12,7 @@ class AssetScriptCardComponent extends React.PureComponent<ComponentProps> {
       styles.assetScriptTransactionCard,
       this.props.className,
       {
-        [styles.assetScriptCard_collapsed]: this.props.collapsed,
+        [styles.assetScriptCardCollapsed]: this.props.collapsed,
       }
     );
 

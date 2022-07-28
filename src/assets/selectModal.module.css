@@ -39,12 +39,12 @@
   cursor: pointer;
 }
 
-.listItem_selected,
-.listItem:not(.listItem_disabled):hover {
+.listItemSelected,
+.listItem:not(.listItemDisabled):hover {
   background: var(--color-basic100);
 }
 
-.listItem_disabled {
+.listItemDisabled {
   cursor: not-allowed;
   opacity: 0.5;
 }

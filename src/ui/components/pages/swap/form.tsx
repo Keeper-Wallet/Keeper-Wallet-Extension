@@ -625,7 +625,7 @@ export function SwapForm({
                   <button
                     key={vendor}
                     className={cn(styles.toAmountCard, {
-                      [styles.toAmountCard_selected]: swapVendor === vendor,
+                      [styles.toAmountCardSelected]: swapVendor === vendor,
                     })}
                     type="button"
                     onClick={() => {
@@ -851,7 +851,7 @@ export function SwapForm({
               </div>
             </div>
 
-            <div className={cn(styles.summaryRow, styles.summaryRow_center)}>
+            <div className={cn(styles.summaryRow, styles.summaryRowCenter)}>
               <div className={styles.summaryLabel}>
                 <Tooltip
                   className={styles.tooltipContent}

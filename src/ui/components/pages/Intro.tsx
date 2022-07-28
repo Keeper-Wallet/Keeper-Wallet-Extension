@@ -25,7 +25,7 @@ export function Intro() {
 
       {showReset && (
         <div className={styles.footer}>
-          <ExportButton className={styles.export} />
+          <ExportButton className={styles.exportButton} />
           <ResetButton className={styles.reset} />
         </div>
       )}

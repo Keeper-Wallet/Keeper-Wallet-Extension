@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import cn from 'classnames';
 import * as styles from './settings.styl';
 import { Input, Select } from 'ui/components/ui';
 
@@ -125,7 +124,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
       };
     });
 
-    const className = cn(styles.settings, styles.inModal, this.props.className);
+    const className = this.props.className;
     const value = (this.state.interval ? this.state.totalAmount : '') || '';
     return (
       <div className={className}>
@@ -134,7 +133,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
         </div>
 
         <Select
-          className={cn(styles.selectTime, styles.margin12)}
+          className={styles.selectTime}
           fill
           selectList={timeList}
           selected={this.state.selected}
@@ -142,7 +141,7 @@ class ExtendedPermissionsComponent extends React.PureComponent<IProps, IState> {
           onSelectItem={this.selectTimeHandler}
         />
 
-        <div className={cn(styles.amount, styles.margin12)}>
+        <div className={styles.amount}>
           <div className="left input-title basic500 tag1">
             {t('permissionSettings.modal.amount')}
           </div>

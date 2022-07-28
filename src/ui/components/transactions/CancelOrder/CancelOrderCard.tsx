@@ -20,7 +20,7 @@ class CancelOrderCardComponent extends React.PureComponent<IProps> {
       styles.cancelOrderTransactionCard,
       this.props.className,
       {
-        [styles.cancelOrderCard_collapsed]: this.props.collapsed,
+        [styles.cancelOrderCardCollapsed]: this.props.collapsed,
       }
     );
 

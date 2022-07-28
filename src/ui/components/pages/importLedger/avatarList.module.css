@@ -17,7 +17,7 @@
   cursor: pointer;
 }
 
-.item_selected {
+.itemSelected {
   background-color: rgba(31, 90, 246, 0.1);
   border-color: var(--color-submit400);
 }

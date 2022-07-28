@@ -10,12 +10,12 @@ class MatcherCardComponent extends React.PureComponent<ComponentProps> {
     const { t, message, collapsed } = this.props;
     const { origin } = message;
     const className = cn(styles.matcherTransactionCard, this.props.className, {
-      [styles.matcherCard_collapsed]: this.props.collapsed,
+      [styles.matcherCardCollapsed]: this.props.collapsed,
     });
 
     return (
       <div className={className}>
-        <div className={styles.matcherHeader}>
+        <div>
           {collapsed ? (
             <React.Fragment>
               <div className={styles.smallCardContent}>

@@ -1,4 +1,4 @@
-import * as ObservableStore from 'obs-store';
+import ObservableStore from 'obs-store';
 import { NetworkName } from 'accounts/types';
 import { fetchAllNfts } from 'nfts/utils';
 import { NftDetails, NftInfo } from 'nfts';

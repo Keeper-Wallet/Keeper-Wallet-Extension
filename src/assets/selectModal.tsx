@@ -263,8 +263,8 @@ export function AssetSelectModal({
             {filteredAndSortedItems.map(({ asset, balance }, index) => (
               <AssetSelectItem
                 className={cn(styles.listItem, {
-                  [styles.listItem_selected]: index === selectedIndex,
-                  [styles.listItem_disabled]: asset.disabled,
+                  [styles.listItemSelected]: index === selectedIndex,
+                  [styles.listItemDisabled]: asset.disabled,
                 })}
                 network={network}
                 asset={asset}

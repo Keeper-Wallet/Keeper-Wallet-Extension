@@ -14,7 +14,7 @@ class CancelLeaseCardComponent extends React.PureComponent<ComponentProps> {
       styles.cancelLeaseTransactionCard,
       this.props.className,
       {
-        [styles.cancelLeaseCard_collapsed]: this.props.collapsed,
+        [styles.cancelLeaseCardCollapsed]: this.props.collapsed,
       }
     );
 

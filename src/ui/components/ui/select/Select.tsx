@@ -15,9 +15,9 @@ type ListPlacement = 'top' | 'bottom';
 type Theme = 'compact' | 'solid' | 'underlined';
 
 const themeClassNames: Record<Theme, string> = {
-  compact: styles.theme_compact,
-  solid: styles.theme_solid,
-  underlined: styles.theme_underlined,
+  compact: styles.themeCompact,
+  solid: styles.themeSolid,
+  underlined: styles.themeUnderlined,
 };
 
 interface Props<T> {
@@ -90,7 +90,7 @@ export function Select<T>({
   return (
     <div
       className={cn(className, styles.root, themeClassNames[theme], {
-        [styles.root_fill]: fill,
+        [styles.rootFill]: fill,
       })}
       ref={getRef}
     >
@@ -114,8 +114,8 @@ export function Select<T>({
           className={cn(
             styles.list,
             {
-              bottom: styles.list_placement_bottom,
-              top: styles.list_placement_top,
+              bottom: styles.listPlacementBottom,
+              top: styles.listPlacementTop,
             }[listPlacement]
           )}
         >

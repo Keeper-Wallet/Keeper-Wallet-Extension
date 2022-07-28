@@ -12,7 +12,7 @@ import { readAttachment } from '../../../utils/waves';
 class TransferCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.transferTransactionCard, this.props.className, {
-      [styles.transferCard_collapsed]: this.props.collapsed,
+      [styles.transferCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;

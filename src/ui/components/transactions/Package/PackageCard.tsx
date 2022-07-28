@@ -38,7 +38,7 @@ class PackageCardComponent extends React.PureComponent<
     const fees = getFees(tx, assets);
     const amounts = getPackageAmounts(tx, assets);
     const myClassName = cn(styles.dataTransactionCard, className, {
-      [styles.dataCard_collapsed]: collapsed,
+      [styles.dataCardCollapsed]: collapsed,
     });
 
     return (

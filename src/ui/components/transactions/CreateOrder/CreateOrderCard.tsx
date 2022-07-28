@@ -20,7 +20,7 @@ class CreateOrderCardComponent extends React.PureComponent<ComponentProps> {
       styles.createOrderTransactionCard,
       this.props.className,
       {
-        [styles.createOrderCard_collapsed]: this.props.collapsed,
+        [styles.createOrderCardCollapsed]: this.props.collapsed,
       }
     );
 

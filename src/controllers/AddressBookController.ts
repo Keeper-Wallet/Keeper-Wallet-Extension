@@ -1,4 +1,4 @@
-import * as ObservableStore from 'obs-store';
+import ObservableStore from 'obs-store';
 import LocalStore from '../lib/localStore';
 import {
   fromEthereumToWavesAddress,

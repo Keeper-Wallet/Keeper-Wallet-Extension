@@ -18,9 +18,7 @@ const OriginWarning = ({ message }: { message: Message }) => {
       <div className={cn(styles.originAddress, 'flex')}>{message.origin}</div>
       <div className={cn(styles.originNetwork, 'flex')}>
         <i className={cn(styles.originNetworkIcon, 'networkIcon')}> </i>
-        <span className={styles.networkBottom}>
-          {t(`bottom.${message?.account?.network}`)}
-        </span>
+        <span>{t(`bottom.${message?.account?.network}`)}</span>
       </div>
     </>
   );

@@ -23,7 +23,7 @@ function Arrow({ direction }: ArrowProps) {
   return (
     <svg
       className={cn(styles.avatarListArrowSvg, {
-        [styles.avatarListArrowSvg_left]: direction === 'left',
+        [styles.avatarListArrowSvgLeft]: direction === 'left',
       })}
       width="14"
       height="14"
@@ -225,7 +225,7 @@ export function ImportLedger({ setTab }: Props) {
           </p>
 
           <div className={styles.avatarList}>
-            <div className={styles.avatarListItems}>
+            <div>
               {isCurPageLoaded ? (
                 <LedgerAvatarList
                   selectedId={selectedUserId}
@@ -249,7 +249,7 @@ export function ImportLedger({ setTab }: Props) {
               <button
                 className={cn(
                   styles.avatarListArrow,
-                  styles.avatarListArrow_left
+                  styles.avatarListArrowLeft
                 )}
                 disabled={!isCurPageLoaded}
                 type="button"
@@ -265,7 +265,7 @@ export function ImportLedger({ setTab }: Props) {
               <button
                 className={cn(
                   styles.avatarListArrow,
-                  styles.avatarListArrow_right
+                  styles.avatarListArrowRight
                 )}
                 disabled={!isCurPageLoaded}
                 type="button"

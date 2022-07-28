@@ -47,7 +47,6 @@ export const ResetButton = ({ className }: Props) => {
             ) : (
               <Button
                 view="submit"
-                className={styles.resetModalButton}
                 onClick={() => {
                   reset();
                   setLoading(true);

@@ -23,7 +23,7 @@ export function LedgerAvatarList({ selectedId, size, users, onSelect }: Props) {
         <div
           key={item.address}
           className={cn(styles.item, {
-            [styles.item_selected]: selectedId === item.id,
+            [styles.itemSelected]: selectedId === item.id,
           })}
           onClick={() => {
             onSelect(item.id);

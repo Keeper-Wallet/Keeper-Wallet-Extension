@@ -13,7 +13,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> 
       styles.scriptInvocationTransactionCard,
       this.props.className,
       {
-        [styles.scriptInvocationCard_collapsed]: this.props.collapsed,
+        [styles.scriptInvocationCardCollapsed]: this.props.collapsed,
       }
     );
 

@@ -19,7 +19,7 @@ const Error = ({ approveError }: { approveError: { error: unknown } }) => {
   const { t } = useTranslation();
 
   return (
-    <div className={`plate ${styles.finalTxPlate} ${styles.finalTxPlateError}`}>
+    <div className={`plate ${styles.finalTxPlate}`}>
       <div
         className={`headline2Bold margin-main-big error-icon ${styles.finalTxTitle}`}
       >

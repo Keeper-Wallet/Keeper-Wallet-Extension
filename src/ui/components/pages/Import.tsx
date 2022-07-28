@@ -4,7 +4,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
-import * as keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
+import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
 import { PAGES } from '../../pageConfig';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';

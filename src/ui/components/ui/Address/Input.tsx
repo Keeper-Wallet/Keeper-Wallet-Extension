@@ -16,13 +16,7 @@ export function AddressInput({
 }: Props) {
   return (
     <div className={styles.container}>
-      <Input
-        wrapperClassName={styles.wrapper}
-        className={styles.input}
-        error={!!addressError}
-        value={value}
-        {...props}
-      />
+      <Input error={!!addressError} value={value} {...props} />
       <Error className={styles.error} show={!!addressError}>
         {addressError}
       </Error>

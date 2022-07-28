@@ -10,7 +10,7 @@ import { getAmount, messageType } from './parseTx';
 class ReissueCardComponent extends React.PureComponent<ComponentProps> {
   render() {
     const className = cn(styles.reissueTransactionCard, this.props.className, {
-      [styles.reissueCard_collapsed]: this.props.collapsed,
+      [styles.reissueCardCollapsed]: this.props.collapsed,
     });
 
     const { t, message, assets } = this.props;
