@@ -5,6 +5,11 @@
 
 /dist*
 /builds
+#atqa-framework
+/atqa-framework/output*
+/atqa-framework/node_modules*
+/atqa-framework/.env
+/atqa-framework/yarn-error.log
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
