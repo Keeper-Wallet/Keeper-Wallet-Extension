@@ -28,8 +28,6 @@ export function ExportPasswordModal({
   const [passwordError, setPasswordError] = React.useState(false);
   const [encrypted, setEncrypted] = React.useState(true);
 
-  const [encrypted, setEncrypted] = React.useState(true);
-
   const [loading, setLoading] = React.useState(false);
 
   React.useLayoutEffect(() => {
