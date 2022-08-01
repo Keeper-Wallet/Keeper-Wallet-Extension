@@ -2,7 +2,8 @@ import { BasePage } from './BasePage';
 
 export class AccountPage extends BasePage {
   public SELECTORS = {
-    GET_STARTED_BUTTON: '$getStartedBtn',
+    // GET_STARTED_BUTTON: '$getStartedBtn',
+    GET_STARTED_BUTTON: locate('button').withText('Get Started'),
     CREATE_PASSWORD_INPUT: {
       CREATE_PASSWORD: { xpath: '(//input)[1]' },
       CONFIRM_PASSWORD: { id: 'second' },

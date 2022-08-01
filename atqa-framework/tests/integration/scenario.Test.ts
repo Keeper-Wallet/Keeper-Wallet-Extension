@@ -17,12 +17,13 @@ Background(async () => {
 });
 
 Scenario('Init scenario', async () => {
-  I.waitForClickable(
+  //I.wait(clockUnit.MINUTES * 30);
+  I.waitForEnabled(
     accountPage.SELECTORS.GET_STARTED_BUTTON,
     clockUnit.SECONDS * 30
   );
+  I.doubleClick(accountPage.SELECTORS.GET_STARTED_BUTTON);
   I.wait(clockUnit.SECONDS * 10);
-  I.click(accountPage.SELECTORS.GET_STARTED_BUTTON);
   I.waitForElement(
     accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CREATE_PASSWORD,
     clockUnit.SECONDS * 30
