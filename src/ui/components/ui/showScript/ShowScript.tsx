@@ -68,7 +68,9 @@ const Data = ({
                   title={String(item.value)}
                   className={styles.dataItemDataLast}
                 >
-                  {item.value ? item.value : 'Key Deletion'}
+                  {item.type === null && item.value === null
+                    ? 'Key Deletion'
+                    : item.value}
                 </td>
               </tr>
             </tbody>
