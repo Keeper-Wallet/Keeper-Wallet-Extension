@@ -257,6 +257,9 @@ export default class ExtensionStore {
   async _migrateFlatState() {
     const storageState = extension.storage.local;
 
+    // this should potentially fix FILE_ERROR_NO_SPACE error
+    await this._remove(storageState, ['AssetInfoController']);
+
     const state = await this._get(storageState);
     const migrateFields = CONTROLLERS.filter(controller => state[controller]);
 
