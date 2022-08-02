@@ -160,12 +160,6 @@ export class RemoteConfigController extends EventEmitter {
     }
   }
 
-  fetchConfig() {
-    return fetch(CONFIG_URL)
-      .then(resp => resp.text())
-      .then(txt => JSON.parse(txt));
-  }
-
   updateState(state = {}) {
     const currentState = this.store.getState();
     this.store.updateState({ ...currentState, ...state });
@@ -173,30 +167,38 @@ export class RemoteConfigController extends EventEmitter {
 
   async _getConfig() {
     try {
-      const {
-        blacklist = [],
-        whitelist = [],
-        networks = DEFAULT_CONFIG.NETWORKS,
-        network_config = DEFAULT_CONFIG.NETWORK_CONFIG,
-        messages_config = DEFAULT_CONFIG.MESSAGES_CONFIG,
-        idle = DEFAULT_CONFIG.IDLE,
-        pack_config = DEFAULT_CONFIG.PACK_CONFIG,
-      } = await this.fetchConfig();
+      const response = await fetch(CONFIG_URL);
 
-      this.updateState({
-        blacklist,
-        whitelist,
-        config: {
-          idle,
-          networks,
-          network_config,
-          messages_config,
-          pack_config,
-        },
-        status: STATUS.UPDATED,
-      });
+      if (response.ok) {
+        const {
+          blacklist = [],
+          whitelist = [],
+          networks = DEFAULT_CONFIG.NETWORKS,
+          network_config = DEFAULT_CONFIG.NETWORK_CONFIG,
+          messages_config = DEFAULT_CONFIG.MESSAGES_CONFIG,
+          idle = DEFAULT_CONFIG.IDLE,
+          pack_config = DEFAULT_CONFIG.PACK_CONFIG,
+        } = await response.json();
+
+        this.updateState({
+          blacklist,
+          whitelist,
+          config: {
+            idle,
+            networks,
+            network_config,
+            messages_config,
+            pack_config,
+          },
+          status: STATUS.UPDATED,
+        });
+      } else if (response.status < 500) {
+        throw new Error(await response.text());
+      }
     } catch (e) {
       this.updateState({ status: STATUS.ERROR });
+
+      throw new Error(`Could not fetch waves_keeper_blacklist.json: ${e}`);
     }
 
     extension.alarms.create('updateConfig', {
@@ -208,23 +210,21 @@ export class RemoteConfigController extends EventEmitter {
     const { ignoreErrorsConfig } = this.store.getState();
 
     try {
-      const ignoreErrorsConfigResponse = await fetch(
-        IGNORE_ERRORS_CONFIG_URL
-      ).then(resp =>
-        resp.ok
-          ? resp.json()
-          : resp.text().then(text => Promise.reject(new Error(text)))
-      );
+      const response = await fetch(IGNORE_ERRORS_CONFIG_URL);
 
-      this.store.updateState({
-        ignoreErrorsConfig: Object.assign(
-          {},
-          ignoreErrorsConfig,
-          ignoreErrorsConfigResponse
-        ),
-      });
+      if (response.ok) {
+        this.store.updateState({
+          ignoreErrorsConfig: Object.assign(
+            {},
+            ignoreErrorsConfig,
+            await response.json()
+          ),
+        });
+      } else if (response.status < 500) {
+        throw new Error(await response.text());
+      }
     } catch (err) {
-      // ignore
+      throw new Error(`Could not fetch keeper-ignore-errors.json: ${err}`);
     } finally {
       extension.alarms.create('updateIgnoreErrorsConfig', {
         delayInMinutes: IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
@@ -303,11 +303,15 @@ export class RemoteConfigController extends EventEmitter {
 
   async _fetchFeeConfig() {
     try {
-      const feeConfig = await fetch(DEFAULT_FEE_CONFIG_URL).then(res =>
-        res.json()
-      );
+      const response = await fetch(DEFAULT_FEE_CONFIG_URL);
 
-      this.store.updateState({ feeConfig });
+      if (response.ok) {
+        this.store.updateState({ feeConfig: await response.json() });
+      } else if (response.status < 500) {
+        throw new Error(await response.text());
+      }
+    } catch (err) {
+      throw new Error(`Could not fetch fee.json: ${err}`);
     } finally {
       extension.alarms.create('fetchFeeConfig', {
         delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
