@@ -1,9 +1,7 @@
 import { ClockUnit } from '../../utils/clockUnit';
-import { BasePage } from '../pages/BasePage';
 import { ExtensionInitHandler } from '../../utils/ExtensionInitHandler';
 import { AccountPage } from '../pages/AccountPage';
 
-const basePage = new BasePage();
 const clockUnit = new ClockUnit();
 const extensionInitHandler = new ExtensionInitHandler();
 const accountPage = new AccountPage();
@@ -16,7 +14,7 @@ Background(async () => {
   return extensionInitHandler.extensionInit();
 });
 
-Scenario('Init scenario', async () => {
+Scenario('Debug scenario', async () => {
   //I.wait(clockUnit.MINUTES * 30);
   I.waitForEnabled(
     accountPage.SELECTORS.GET_STARTED_BUTTON,

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "report:open": "allure serve output",
-    "report:remove": "rm -rf output/*",
+    "report:remove": "rm -rf /atqa-framework/output*",
     "run:tests": "yarn report:remove ; codeceptjs run -c codecept.conf.js run-workers 3",
     "run:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose"
   },
