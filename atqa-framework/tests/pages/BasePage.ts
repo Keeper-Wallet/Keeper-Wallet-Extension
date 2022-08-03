@@ -5,7 +5,7 @@ const clockUnit = new ClockUnit();
 const { I } = inject();
 
 export class BasePage {
-  public BROWSER_URLS = {
+  BROWSER_URLS = {
     CHROMIUM: (id: string) => ({
       POPUP_URI: `chrome-extension://${id}/popup.html`,
     }),
@@ -17,7 +17,7 @@ export class BasePage {
     FIREFOX_EXTENSIONS_PAGE: 'about:debugging#/runtime/this-firefox',
   };
 
-  public BROWSER_SELECTORS = {
+  BROWSER_SELECTORS = {
     CHROMIUM_EXTENSION_VALUE_BUTTON: { id: 'extensions-value-btn' },
     CHROMIUM_EXTENSIONS_LIST: { xpath: '(//div[@class="stat-value"])[5]' },
     CHROMIUM: {
@@ -46,7 +46,7 @@ export class BasePage {
   };
 
   //TODO: Make it workable and init as main method for getId (now the elements on the system page can't be found for some reason)
-  public getChromeExtensionId = async (): Promise<string> => {
+  getChromeExtensionId = async (): Promise<string> => {
     I.amOnPage(this.BROWSER_URLS.CHROME_SYSTEM);
     I.seeElement({
       xpath: '//*[@id="extensions-value"]',
@@ -67,7 +67,7 @@ export class BasePage {
     return id;
   };
 
-  public getExtensionId = async (element: Locator): Promise<string> => {
+  getExtensionId = async (element: Locator): Promise<string> => {
     const devModeSelector: Locator =
       this.BROWSER_SELECTORS.CHROMIUM.DEV_MODE_TOGGLE;
     const detailButtonSelector: Locator =

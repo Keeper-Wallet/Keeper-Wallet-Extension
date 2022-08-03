@@ -11,14 +11,14 @@ const { I } = inject();
 const args = process.env.BROWSER_INIT_NAME;
 
 export class ExtensionInitHandler {
-  public installAddOnHelper = async (path: string): Promise<void> => {
+  installAddOnHelper = async (path: string): Promise<void> => {
     I.useWebDriverTo('Install Gecko AddOn', async ({ browser }) => {
       const extension = await fs.readFile(path);
       browser.installAddOn(extension.toString('base64'), true);
     });
   };
 
-  public extensionInit = async (): Promise<void> => {
+  extensionInit = async (): Promise<void> => {
     const chromiumExtensionId: Locator =
       extensionInitPage.SELECTORS.CHROMIUM.EXTENSION_ID;
     const edgeExtensionId: Locator =
