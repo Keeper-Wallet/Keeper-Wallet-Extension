@@ -1,7 +1,7 @@
 import { BasePage } from './BasePage';
 
 export class ExtensionInitPage extends BasePage {
-  public SELECTORS = {
+  SELECTORS = {
     CHROMIUM: {
       EXTENSION_ID: {
         shadow: [
