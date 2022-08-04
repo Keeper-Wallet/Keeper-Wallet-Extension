@@ -100,17 +100,30 @@ export class PreferencesController extends EventEmitter {
   }
 
   addLabel(address: string, label: string, network: NetworkName) {
-    const accounts = this.store.getState().accounts;
-    const index = accounts.findIndex(
+    const { accounts, selectedAccount } = this.store.getState();
+
+    const account = accounts.find(
       current => current.address === address && current.network === network
     );
-    if (index === -1) {
+
+    if (!account) {
       throw new Error(
         `Account with address "${address}" in ${network} not found`
       );
     }
-    accounts[index].name = label;
-    this.store.updateState({ accounts });
+
+    account.name = label;
+
+    this.store.updateState({
+      accounts,
+
+      // selectedAccount can point to a separate object, not an accounts array
+      // item, so we need to update it explicitly
+      selectedAccount:
+        selectedAccount && address === selectedAccount.address
+          ? account
+          : selectedAccount,
+    });
   }
 
   selectAccount(address: string | undefined, network: string) {
