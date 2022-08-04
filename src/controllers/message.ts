@@ -10,9 +10,9 @@ import { address } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
-import { ERRORS, ERRORS_DATA } from '../lib/KeeperError';
-import { PERMISSIONS } from './PermissionsController';
-import { calculateFeeFabric } from './CalculateFeeController';
+import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
+import { PERMISSIONS, PermissionsController } from './permissions';
+import { calculateFeeFabric } from './calculateFee';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
 import {
@@ -21,14 +21,63 @@ import {
   isEnoughBalanceForFeeAndSpendingAmounts,
 } from '../fee/utils';
 import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
-import { getMoney } from '../ui/utils/converters';
+import { getMoney, IMoneyLike } from '../ui/utils/converters';
 import { getTxVersions } from '../wallets';
+import ExtensionStore from 'lib/localStore';
+import { WalletController } from './wallet';
+import { AssetInfoController } from './assetInfo';
+import { NetworkController } from './network';
+import { RemoteConfigController } from './remoteConfig';
+import { TxInfoController } from './txInfo';
+import { CurrentAccountController } from './currentAccount';
 
 const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
+type SignTx = WalletController['signTx'];
+type SignOrder = WalletController['signOrder'];
+type SignCancelOrder = WalletController['signCancelOrder'];
+type SignWavesAuth = WalletController['signWavesAuth'];
+type SignCustomData = WalletController['signCustomData'];
+type Auth = WalletController['auth'];
+type SignRequest = WalletController['signRequest'];
+type GetMatcherPublicKey = NetworkController['getMatcherPublicKey'];
+type GetMessagesConfig = RemoteConfigController['getMessagesConfig'];
+type GetPackConfig = RemoteConfigController['getPackConfig'];
+type GetTxInfo = TxInfoController['txInfo'];
+type SetPermission = PermissionsController['setPermission'];
+type GetAccountBalance = CurrentAccountController['getAccountBalance'];
+type GetFeeConfig = RemoteConfigController['getFeeConfig'];
+
+interface Message {
+  result: unknown;
+  status: string;
+}
+
 export class MessageController extends EventEmitter {
+  messages: { messages: Message[] };
+  store: ObservableStore;
+  signTx: SignTx;
+  signOrder: SignOrder;
+  signCancelOrder: SignCancelOrder;
+  signWavesAuth: SignWavesAuth;
+  signCustomData: SignCustomData;
+  auth: Auth;
+  signRequest: SignRequest;
+  broadcast: NetworkController['broadcast'];
+  getMatcherPublicKey: GetMatcherPublicKey;
+  networkController: NetworkController;
+  getMessagesConfig: GetMessagesConfig;
+  getPackConfig: GetPackConfig;
+  assetInfo: AssetInfoController['assetInfo'];
+  assetInfoController: AssetInfoController;
+  txInfo: GetTxInfo;
+  setPermission: SetPermission;
+  getFee: ReturnType<typeof calculateFeeFabric>;
+  getFeeConfig: GetFeeConfig;
+  getAccountBalance: GetAccountBalance;
+
   constructor({
     localStore,
     signTx,
@@ -45,16 +94,34 @@ export class MessageController extends EventEmitter {
     getPackConfig,
     txInfo,
     setPermission,
-    canAutoApprove,
     getAccountBalance,
     getFeeConfig,
+  }: {
+    localStore: ExtensionStore;
+    signTx: SignTx;
+    signOrder: SignOrder;
+    signCancelOrder: SignCancelOrder;
+    signWavesAuth: SignWavesAuth;
+    signCustomData: SignCustomData;
+    auth: Auth;
+    signRequest: SignRequest;
+    assetInfoController: AssetInfoController;
+    networkController: NetworkController;
+    getMatcherPublicKey: GetMatcherPublicKey;
+    getMessagesConfig: GetMessagesConfig;
+    getPackConfig: GetPackConfig;
+    txInfo: GetTxInfo;
+    setPermission: SetPermission;
+    getAccountBalance: GetAccountBalance;
+    getFeeConfig: GetFeeConfig;
   }) {
     super();
 
     const defaults = {
       messages: [],
     };
-    this.messages = localStore.getInitState(defaults);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.messages = localStore.getInitState(defaults) as any;
     this.store = new ObservableStore(this.messages);
     localStore.subscribe(this.store);
 
@@ -83,7 +150,6 @@ export class MessageController extends EventEmitter {
 
     // permissions
     this.setPermission = setPermission;
-    this.canAutoApprove = canAutoApprove;
 
     this.getFee = calculateFeeFabric(assetInfoController, networkController);
     this.getFeeConfig = getFeeConfig;
@@ -211,7 +277,7 @@ export class MessageController extends EventEmitter {
    * @param {object} [account] - Account, approving this tx
    * @returns {Promise<object>}
    */
-  approve(id, account) {
+  approve(id, account = undefined) {
     const message = this._getMessageById(id);
     message.account = account || message.account;
     if (!message.account)
@@ -219,7 +285,7 @@ export class MessageController extends EventEmitter {
         'Message has empty account filed and no address is provided',
       ]);
 
-    return new Promise((resolve, reject) => {
+    return new Promise<[null, Message]>((resolve, reject) => {
       this._fillSignableData(message)
         .then(this._signMessage.bind(this))
         .then(this._broadcastMessage.bind(this))
@@ -246,7 +312,7 @@ export class MessageController extends EventEmitter {
    * @param {string} id - message id
    * @param {boolean} forever - reject forever flag
    */
-  reject(id, forever) {
+  reject(id, forever = undefined) {
     const message = this._getMessageById(id);
     message.status = !forever
       ? MSG_STATUSES.REJECTED
@@ -270,7 +336,7 @@ export class MessageController extends EventEmitter {
   }
 
   updateBadge() {
-    this._updateBadge(this.store.getState().messages);
+    this._updateBadge();
   }
 
   rejectByOrigin(byOrigin) {
@@ -302,7 +368,7 @@ export class MessageController extends EventEmitter {
    * Deletes all messages
    * @param {array} [ids] - message id
    */
-  clearMessages(ids) {
+  clearMessages(ids = undefined) {
     if (typeof ids === 'string') {
       this._deleteMessage(ids);
     } else if (ids && ids.length > 0) {
@@ -832,7 +898,7 @@ export class MessageController extends EventEmitter {
   }
 
   async _getDefaultTxFee(message, signData) {
-    let fee = await this._getFee(message, signData);
+    let fee: IMoneyLike = await this._getFee(message, signData);
 
     const assets = this.assetInfoController.getAssets();
     const balance = this.getAccountBalance();
@@ -1023,7 +1089,8 @@ export class MessageController extends EventEmitter {
   async _prepareOrder(orderParams, account) {
     const defaultFee = Money.fromCoins(
       0,
-      new Asset(this.assetInfoController.getWavesAsset())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      new Asset(this.assetInfoController.getWavesAsset() as any)
     );
 
     const orderDefaults = {

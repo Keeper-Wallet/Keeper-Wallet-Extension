@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable no-undef */
 const apis = [
   'action',
   'alarms',

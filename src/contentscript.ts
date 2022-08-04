@@ -1,43 +1,21 @@
 import { extension } from 'lib/extension';
 import LocalMessageDuplexStream from 'post-message-stream';
-import PortStream from './lib/port-stream.js';
+import { PortStream } from './lib/portStream';
 
 if (shouldInject()) {
   injectBundle();
   setupConnection();
 }
 
-// function initKeeper() {
-//     let cbs = [];
-//     window.KeeperWallet = window.Waves = {
-//         on: function (event, cb) { cbs.push({ event, cb }) },
-//         _inited: function (api) {
-//             cbs.forEach(function ({ event, cb }) {
-//                 api.on(event, cb);
-//             });
-//             cbs = [];
-//         }
-//     };
-// }
-
 function injectBundle() {
-  try {
-    // inject in-page script
-    // const script = document.createElement('script');
-    const container = document.head || document.documentElement;
-    // script.innerHTML = '(' + initKeeper.toString() + ')()';
-    // container.insertBefore(script, container.children[0]);
+  const container = document.head || document.documentElement;
+  const script = document.createElement('script');
+  script.src = extension.runtime.getURL('inpage.js');
+  container.insertBefore(script, container.children[0]);
 
-    const script2 = document.createElement('script');
-    script2.src = extension.runtime.getURL('inpage.js');
-    container.insertBefore(script2, container.children[0]);
-
-    script2.onload = () => {
-      script2.parentElement.removeChild(script2);
-    };
-  } catch (e) {
-    console.error('Injection failed.', e);
-  }
+  script.onload = () => {
+    script.parentElement.removeChild(script);
+  };
 }
 
 function setupConnection() {
@@ -58,10 +36,14 @@ function setupConnection() {
 
     pageStream.pipe(pluginStream).pipe(pageStream);
 
-    const onDisconnect = port => {
+    const onDisconnect = (port: browser.runtime.Port) => {
       port.onDisconnect.removeListener(onDisconnect);
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       pageStream.unpipe(pluginStream);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       pluginStream.unpipe(pageStream);
 
       pluginStream.destroy();

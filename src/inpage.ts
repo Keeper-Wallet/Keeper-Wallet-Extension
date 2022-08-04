@@ -1,20 +1,25 @@
 import LocalMessageDuplexStream from 'post-message-stream';
-import { setupDnode, transformMethods, cbToPromise } from './lib/dnode-util';
+import { setupDnode, transformMethods, cbToPromise } from './lib/dnodeUtil';
 import { equals } from 'ramda';
-import log from 'loglevel';
 import EventEmitter from 'events';
 
-const createDeffer = () => {
-  const def = {};
-  def.promise = new Promise((res, rej) => {
-    def.resolve = res;
-    def.reject = rej;
+function createDeffer<T>() {
+  let resolve: (value: T) => void;
+  let reject: (reason?: unknown) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
   });
 
-  return def;
-};
+  return {
+    promise,
+    resolve,
+    reject,
+  };
+}
 
-setupInpageApi().catch(e => log.error(e));
+setupInpageApi();
 
 async function setupInpageApi() {
   let cbs = {};
@@ -60,9 +65,11 @@ async function setupInpageApi() {
     },
   };
 
-  global.KeeperWallet =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).KeeperWallet =
     global.WavesKeeper =
-    global.Waves =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).Waves =
       new Proxy(wavesApp, proxyApi);
 
   const connectionStream = new LocalMessageDuplexStream({
@@ -83,7 +90,8 @@ async function setupInpageApi() {
     });
   });
 
-  Object.entries(args).forEach(([prop, data]) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Object.entries(args).forEach(([prop, data]: [string, any]) => {
     if (data.def) {
       inpageApi[prop](...data.args).then(data.def.resolve, data.def.reject);
     } else {
@@ -95,19 +103,27 @@ async function setupInpageApi() {
   cbs = {};
   Object.assign(wavesApi, inpageApi);
   wavesAppDef.resolve(wavesApi);
-  global.KeeperWallet = global.WavesKeeper = global.Waves = wavesApi;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).KeeperWallet =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).WavesKeeper =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).Waves =
+      wavesApi;
   let publicState = {};
   connectionStream.on('data', async ({ name }) => {
     if (name !== 'updatePublicState') {
       return;
     }
 
-    const isApproved = await wavesApi.resourceIsApproved();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isApproved = await (wavesApi as any).resourceIsApproved();
     if (!isApproved) {
       return;
     }
 
-    const updatedPublicState = await wavesApi.publicState();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedPublicState = await (wavesApi as any).publicState();
     if (!equals(updatedPublicState, publicState)) {
       publicState = updatedPublicState;
       eventEmitter.emit('update', updatedPublicState);

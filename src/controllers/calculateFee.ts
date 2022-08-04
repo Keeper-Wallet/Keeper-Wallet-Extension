@@ -1,8 +1,11 @@
 import { BigNumber } from '@waves/bignumber';
+import * as crypto from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { libs } from '@waves/waves-transactions';
+import { FeeConfig } from '../constants';
 import { path } from 'ramda';
 import { convertFromSa, makeBytes } from '../transactions/utils';
+import { AssetInfoController } from './assetInfo';
+import { NetworkController } from './network';
 
 const FEE_TYPES = [
   2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1002,
@@ -20,7 +23,7 @@ const isAccountHasExtraFee = async (address, node) => {
   }
 };
 
-export async function getExtraFee(address, node) {
+export async function getExtraFee(address: string, node: string) {
   const json = await fetch(
     new URL(`/addresses/scriptInfo/${address}`, node).toString()
   ).then(res => res.json());
@@ -41,7 +44,8 @@ function getAssetIds(signData, chainId, accountType) {
   if (signData.type === 1002) {
     const order = convertFromSa.order(signData);
 
-    hash[normalizeAssetId(order.matcherFeeAssetId)] = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hash[normalizeAssetId((order as any).matcherFeeAssetId)] = true;
     hash[normalizeAssetId(order.assetPair.amountAsset)] = true;
     hash[normalizeAssetId(order.assetPair.priceAsset)] = true;
   } else {
@@ -61,7 +65,7 @@ function getAssetIds(signData, chainId, accountType) {
       case TRANSACTION_TYPE.TRANSFER:
         hash[normalizeAssetId(transaction.assetId)] = true;
         break;
-      case TRANSACTION_TYPE.SCRIPT_INVOCATION:
+      case TRANSACTION_TYPE.INVOKE_SCRIPT:
         transaction.payment.forEach(payment => {
           hash[normalizeAssetId(payment.assetId)] = true;
         });
@@ -155,7 +159,7 @@ function getDataFee(bytes, tx, config) {
 }
 
 function getScriptFee(tx, config) {
-  const bytes = libs.crypto.base64Decode(
+  const bytes = crypto.base64Decode(
     tx.script.toString().startsWith('base64:') ? tx.script.slice(7) : tx.script
   );
   const kbPrice = getConfigProperty(tx.type, 'price_per_kb', config) || 0;
@@ -166,7 +170,7 @@ function getMassTransferFee(tx, config, smartAssetIdList) {
   const transferPrice = new BigNumber(
     getConfigProperty(tx.type, 'price_per_transfer', config) || 0
   );
-  const transfersCount = path(['transfers', 'length'], tx) || 0;
+  const transfersCount = (path(['transfers', 'length'], tx) as number) || 0;
   const smartAssetExtraFee =
     tx.assetId && smartAssetIdList.includes(tx.assetId)
       ? new BigNumber(config.smart_asset_extra_fee)
@@ -186,7 +190,12 @@ function getMassTransferFee(tx, config, smartAssetIdList) {
   return price.add(smartAssetExtraFee);
 }
 
-function getConfigProperty(type, propertyName, config) {
+function getConfigProperty(
+  type: string,
+  propertyName: string,
+  config: FeeConfig
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
   const value = path(['calculate_fee_rules', type, propertyName], config);
   return value == null
     ? path(['calculate_fee_rules', 'default', propertyName], config)
@@ -223,7 +232,10 @@ function getFee(
 }
 
 export const calculateFeeFabric =
-  (assetInfoController, networkController) =>
+  (
+    assetInfoController: AssetInfoController,
+    networkController: NetworkController
+  ) =>
   async (signData, chainId, account, feeConfig) => {
     const { type } = signData;
 
@@ -241,8 +253,9 @@ export const calculateFeeFabric =
 
     if (type === 1002) {
       const minOrderFee = new BigNumber(300000);
-      const matcherAddress = libs.crypto.address(
-        { public: signData.data.matcherPublicKey },
+      const matcherAddress = crypto.address(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { public: signData.data.matcherPublicKey } as any,
         networkController.getNetworkCode().charCodeAt(0)
       );
       const extraFee = await isAccountHasExtraFee(matcherAddress, node);

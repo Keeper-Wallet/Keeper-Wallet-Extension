@@ -15,6 +15,7 @@ import {
 } from '../constants';
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
+import ExtensionStore from 'lib/localStore';
 
 const extendValues = (defaultValues, newValues) => {
   return Object.entries(defaultValues).reduce(
@@ -43,7 +44,9 @@ const extendValues = (defaultValues, newValues) => {
 };
 
 export class RemoteConfigController extends EventEmitter {
-  constructor({ localStore }) {
+  store: ObservableStore;
+
+  constructor({ localStore }: { localStore: ExtensionStore }) {
     super();
 
     const defaults = {

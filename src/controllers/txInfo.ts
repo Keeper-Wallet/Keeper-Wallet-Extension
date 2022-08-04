@@ -1,5 +1,13 @@
+import { NetworkController } from './network';
+
+type GetNode = NetworkController['getNode'];
+type GetNetwork = NetworkController['getNetwork'];
+
 export class TxInfoController {
-  constructor(options = {}) {
+  getNode: GetNode;
+  getNetwork: GetNetwork;
+
+  constructor(options: { getNode?: GetNode; getNetwork?: GetNetwork } = {}) {
     this.getNode = options.getNode;
     this.getNetwork = options.getNetwork;
   }

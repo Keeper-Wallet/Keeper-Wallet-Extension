@@ -3,39 +3,37 @@ import log from 'loglevel';
 import EventEmitter from 'events';
 import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
-import { ERRORS } from 'lib/KeeperError';
-import PortStream from 'lib/port-stream.js';
+import { ERRORS } from 'lib/keeperError';
+import { PortStream } from 'lib/portStream';
 import LocalStore, { backup } from 'lib/localStore';
-import { getFirstLangCode } from 'lib/get-first-lang-code';
+import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
-import {
-  AssetInfoController,
-  CurrentAccountController,
-  IdentityController,
-  IdleController,
-  MessageController,
-  NetworkController,
-  NftInfoController,
-  NotificationsController,
-  PERMISSIONS,
-  PermissionsController,
-  PreferencesController,
-  RemoteConfigController,
-  StatisticsController,
-  TrashController,
-  TxInfoController,
-  UiStateController,
-  WalletController,
-} from './controllers';
+import { AssetInfoController } from './controllers/assetInfo';
+import { CurrentAccountController } from './controllers/currentAccount';
+import { IdentityController } from './controllers/IdentityController';
+import { IdleController } from './controllers/idle';
+import { MessageController } from './controllers/message';
+import { NetworkController } from './controllers/network';
+import { NftInfoController } from './controllers/NftInfoController';
+import { NotificationsController } from './controllers/notifications';
+import { PermissionsController, PERMISSIONS } from './controllers/permissions';
+import { PreferencesController } from './controllers/preferences';
+import { RemoteConfigController } from './controllers/remoteConfig';
+import { StatisticsController } from './controllers/statistics';
+import { TrashController } from './controllers/trash';
+import { TxInfoController } from './controllers/txInfo';
+import { UiStateController } from './controllers/uiState';
+import { WalletController } from './controllers/wallet';
 import { AddressBookController } from './controllers/AddressBookController';
 import { SwapController } from './controllers/SwapController';
-import { getExtraFee } from './controllers/CalculateFeeController';
-import { setupDnode } from './lib/dnode-util';
-import { WindowManager } from './lib/WindowManager';
+import { getExtraFee } from './controllers/calculateFee';
+import { setupDnode } from './lib/dnodeUtil';
+import { WindowManager } from './lib/windowManager';
 import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
 import { TabsManager } from 'lib/tabsManager';
+import ExtensionStore from 'lib/localStore';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -126,7 +124,8 @@ async function setupBackgroundService() {
 
   // global access to service on debug
   if (KEEPERWALLET_DEBUG) {
-    global.background = backgroundService;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (global as any).background = backgroundService;
   }
 
   const updateBadge = async () => {
@@ -177,6 +176,28 @@ async function setupBackgroundService() {
 }
 
 class BackgroundService extends EventEmitter {
+  localStore: ExtensionStore;
+
+  addressBookController: AddressBookController;
+  assetInfoController: AssetInfoController;
+  currentAccountController: CurrentAccountController;
+  identityController: IdentityController;
+  idleController: IdleController;
+  messageController: MessageController;
+  networkController: NetworkController;
+  nftInfoController: NftInfoController;
+  notificationsController: NotificationsController;
+  permissionsController: PermissionsController;
+  preferencesController: PreferencesController;
+  remoteConfigController: RemoteConfigController;
+  statisticsController: StatisticsController;
+  swapController: SwapController;
+  trash: TrashController;
+  txinfoController: TxInfoController;
+  uiStateController: UiStateController;
+  vaultController: VaultController;
+  walletController: WalletController;
+
   constructor({ localStore, initLangCode }) {
     super();
 
@@ -445,8 +466,9 @@ class BackgroundService extends EventEmitter {
     });
   }
 
-  getState(params) {
-    const state = this.localStore.getState(params);
+  getState(params = undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const state: any = this.localStore.getState(params);
     const { selectedAccount } = this.localStore.getState('selectedAccount');
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
@@ -708,7 +730,7 @@ class BackgroundService extends EventEmitter {
     }
   }
 
-  getNewMessageFn(origin) {
+  getNewMessageFn(origin = undefined) {
     return async (data, type, options, broadcast, title = '') => {
       if (data.type === 1000) {
         type = 'auth';
@@ -1036,18 +1058,21 @@ class BackgroundService extends EventEmitter {
   }
 
   ledgerSign(type, data) {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const requestId = uuidv4();
 
       this.emit('ledger:signRequest', { id: requestId, type, data });
 
-      this.once(`ledger:signResponse:${requestId}`, (err, signature) => {
-        if (err) {
-          return reject(err);
-        }
+      this.once(
+        `ledger:signResponse:${requestId}`,
+        (err: unknown, signature: string) => {
+          if (err) {
+            return reject(err);
+          }
 
-        resolve(signature);
-      });
+          resolve(signature);
+        }
+      );
     });
   }
 }

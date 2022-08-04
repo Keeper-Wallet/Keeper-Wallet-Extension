@@ -1,10 +1,30 @@
 import { extension } from 'lib/extension';
+import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
+import { PreferencesController } from './preferences';
+import { VaultController } from './VaultController';
 
 const IDLE_INTERVAL = 60;
 
 export class IdleController {
-  constructor({ localStore, preferencesController, vaultController }) {
+  options: {
+    type: string;
+    interval: number;
+  };
+  preferencesController: PreferencesController;
+  vaultController: VaultController;
+  store: ObservableStore;
+  lastUpdateIdle: number;
+
+  constructor({
+    localStore,
+    preferencesController,
+    vaultController,
+  }: {
+    localStore: ExtensionStore;
+    preferencesController: PreferencesController;
+    vaultController: VaultController;
+  }) {
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
     this.options = {
       type: 'idle',
