@@ -596,11 +596,38 @@ export const convertFromSa = {
           timestamp: input.data.timestamp,
           proofs: input.data.proofs || [],
           chainId: input.data.chainId || defaultChainId,
-          data: input.data.data.map(item =>
-            item.type === 'integer'
-              ? { ...item, value: new BigNumber(item.value) }
-              : item
-          ),
+          data: input.data.data.map(item => {
+            if (item.type === 'integer') {
+              const { value } = item;
+
+              const valueForErr =
+                typeof value === 'string'
+                  ? value === ''
+                    ? '<empty string>'
+                    : `'${value}'`
+                  : String(value);
+
+              if (typeof value !== 'string' && typeof value !== 'number') {
+                throw ERRORS.REQUEST_ERROR(
+                  `expected string or number for '${item.key}' data key, received: ${valueForErr}`,
+                  input
+                );
+              }
+
+              const valueBn = new BigNumber(value);
+
+              if (!valueBn.isInt()) {
+                throw ERRORS.REQUEST_ERROR(
+                  `'${item.key}' data key value must be a string or number representing an integer, received: ${valueForErr}`,
+                  input
+                );
+              }
+
+              return { ...item, value: valueBn };
+            }
+
+            return item;
+          }),
         };
 
         try {
