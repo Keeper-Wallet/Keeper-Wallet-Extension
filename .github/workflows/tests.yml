@@ -27,6 +27,9 @@ jobs:
       - name: Check code formatting
         run: yarn run lint:prettier
 
+      - name: Create empty config.json
+        run: echo '{}' > config.json
+
       - name: Check types
         run: yarn run lint:typescript
 
@@ -37,9 +40,7 @@ jobs:
         run: yarn run lint:stylelint
 
       - name: Build
-        run: |
-          echo '{}' > config.json
-          yarn run dist
+        run: yarn run dist
 
       - name: Run tests
         run: yarn test

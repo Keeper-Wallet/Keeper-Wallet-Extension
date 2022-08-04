@@ -4,6 +4,14 @@ import {
   messageEncrypt,
   sharedKey,
 } from '@waves/ts-lib-crypto';
+import {
+  TCustomData,
+  TSignedData,
+} from '@waves/waves-transactions/dist/requests/custom-data';
+import {
+  IWavesAuth,
+  IWavesAuthParams,
+} from '@waves/waves-transactions/dist/transactions';
 import { Account } from 'accounts/types';
 import {
   SaAuth,
@@ -70,4 +78,6 @@ export abstract class Wallet<TData extends Account> {
   abstract signRequest(auth: SaRequest): Promise<string>;
   abstract signOrder(auth: SaOrder): Promise<string>;
   abstract signCancelOrder(auth: SaCancelOrder): Promise<string>;
+  abstract signWavesAuth(data: IWavesAuthParams): Promise<IWavesAuth>;
+  abstract signCustomData(data: TCustomData): Promise<TSignedData>;
 }

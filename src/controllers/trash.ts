@@ -1,9 +1,12 @@
+import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
 
 const MAX_ITEMS = 200;
 
 export class TrashController {
-  constructor({ localStore }) {
+  store: ObservableStore;
+
+  constructor({ localStore }: { localStore: ExtensionStore }) {
     const defaults = { data: [] };
     this.store = new ObservableStore(localStore.getInitState(defaults));
     localStore.subscribe(this.store);

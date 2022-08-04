@@ -1,3 +1,5 @@
+import { TSignedData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { IWavesAuth } from '@waves/waves-transactions/dist/transactions';
 import { AccountOfType, NetworkName } from 'accounts/types';
 import { Wallet } from 'wallets/wallet';
 
@@ -54,5 +56,11 @@ export class DebugWallet extends Wallet<TestWalletData> {
   }
   async signCancelOrder(): Promise<string> {
     throw new Error('Unable to sign cancel order with this account type');
+  }
+  async signWavesAuth(): Promise<IWavesAuth> {
+    throw new Error('Unable to sign waves auth with this account type');
+  }
+  async signCustomData(): Promise<TSignedData> {
+    throw new Error('Unable to sign custom data with this account type');
   }
 }

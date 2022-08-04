@@ -2,9 +2,29 @@ import * as Sentry from '@sentry/react';
 import { compareAccountsByLastUsed } from 'accounts/utils';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
+import ExtensionStore from 'lib/localStore';
+import { NetworkController } from './network';
+import { RemoteConfigController } from './remoteConfig';
+
+type GetNetworkConfig = RemoteConfigController['getNetworkConfig'];
+type GetNetwork = NetworkController['getNetwork'];
 
 export class PreferencesController extends EventEmitter {
-  constructor({ localStore, initLangCode, getNetwork, getNetworkConfig }) {
+  store: ObservableStore;
+  getNetwork: GetNetwork;
+  getNetworkConfig: GetNetworkConfig;
+
+  constructor({
+    localStore,
+    initLangCode,
+    getNetwork,
+    getNetworkConfig,
+  }: {
+    localStore: ExtensionStore;
+    initLangCode: string;
+    getNetwork: GetNetwork;
+    getNetworkConfig: GetNetworkConfig;
+  }) {
     super();
 
     const defaults = {

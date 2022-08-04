@@ -32,7 +32,14 @@ const DEF_CODE = 11;
 const DEF_ERR = ERRORS_DATA[DEF_CODE].msg;
 
 class KeeperError extends Error {
-  constructor(text = DEF_ERR, code = DEF_CODE, data = null) {
+  code: number | string;
+  data: unknown;
+
+  constructor(
+    text: string = DEF_ERR,
+    code: number | string = DEF_CODE,
+    data: unknown = null
+  ) {
     super(text);
     this.data = data;
     this.code = code;

@@ -1,7 +1,18 @@
 import * as Sentry from '@sentry/react';
 import ObservableStore from 'obs-store';
+import { RemoteConfigController } from './remoteConfig';
+
+type GetNetworkConfig = RemoteConfigController['getNetworkConfig'];
+type GetNetworks = RemoteConfigController['getNetworks'];
 
 export class NetworkController {
+  store: ObservableStore;
+
+  configApi: {
+    getNetworkConfig: GetNetworkConfig;
+    getNetworks: GetNetworks;
+  };
+
   constructor({ localStore, getNetworkConfig, getNetworks }) {
     const defaults = {
       currentNetwork: 'mainnet',
@@ -77,7 +88,7 @@ export class NetworkController {
     return this.store.getState().customCodes;
   }
 
-  getNetworkCode(network) {
+  getNetworkCode(network = undefined) {
     const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
     return this.getCustomCodes()[network] || networks[network].code;
@@ -87,7 +98,7 @@ export class NetworkController {
     return this.store.getState().customNodes;
   }
 
-  getNode(network) {
+  getNode(network = undefined) {
     const networks = this.configApi.getNetworkConfig();
     network = network || this.getNetwork();
     return this.getCustomNodes()[network] || networks[network].server;
@@ -97,7 +108,7 @@ export class NetworkController {
     return this.store.getState().customMatchers;
   }
 
-  getMatcher(network) {
+  getMatcher(network = undefined) {
     network = network || this.getNetwork();
     return (
       this.getCustomMatchers()[network] ||

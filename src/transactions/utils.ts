@@ -37,7 +37,7 @@ import {
   TTransactionType,
   WithSender,
 } from '@waves/waves-transactions/dist/transactions';
-import { ERRORS } from '../lib/KeeperError';
+import { ERRORS } from '../lib/keeperError';
 import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';

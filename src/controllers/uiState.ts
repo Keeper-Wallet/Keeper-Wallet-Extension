@@ -1,7 +1,10 @@
+import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
 
 export class UiStateController {
-  constructor({ localStore }) {
+  store: ObservableStore;
+
+  constructor({ localStore }: { localStore: ExtensionStore }) {
     const defaults = {
       uiState: {},
     };
