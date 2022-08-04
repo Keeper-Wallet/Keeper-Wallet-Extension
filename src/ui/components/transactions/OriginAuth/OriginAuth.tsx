@@ -1,6 +1,6 @@
 import * as styles from './originAuth.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 import { OriginAuthCard } from './OriginAuthCard';
 import { OriginAuthInfo } from './OriginAuthInfo';
@@ -14,10 +14,21 @@ import { ExtendedPermission } from 'ui/components/permissions';
 import { connect } from 'react-redux';
 import { BigNumber } from '@waves/bignumber';
 import { TxHeader } from '../BaseTransaction';
+import { AppState } from 'ui/store';
+import { TAutoAuth } from 'ui/components/pages/PermissionsSettings/components';
+import { MessageComponentProps } from '../types';
 import { SignClass } from '../SignClass';
 
-class OriginAuthComponent extends SignClass {
-  getRef = el => this.setState({ el });
+interface State extends Partial<TAutoAuth> {
+  el?: HTMLDivElement | null;
+  showNotify?: boolean | null;
+}
+
+class OriginAuthComponent extends SignClass<
+  MessageComponentProps & WithTranslation,
+  State
+> {
+  getRef = (el: HTMLDivElement | null) => this.setState({ el });
 
   render() {
     const { t, message, assets } = this.props;
@@ -28,7 +39,8 @@ class OriginAuthComponent extends SignClass {
     );
 
     const { interval, type, totalAmount, showNotify } = this.state;
-    const bnAmount = new BigNumber(totalAmount).mul(10 ** 8);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const bnAmount = new BigNumber(totalAmount!).mul(10 ** 8);
     const amount = bnAmount.isNaN() ? null : bnAmount.toFixed(8);
     const approvePermissions =
       !this.state.interval || !amount
@@ -106,7 +118,7 @@ class OriginAuthComponent extends SignClass {
   }
 }
 
-const mapsToProps = state => ({
+const mapsToProps = (state: AppState) => ({
   origins: state.origins,
 });
 

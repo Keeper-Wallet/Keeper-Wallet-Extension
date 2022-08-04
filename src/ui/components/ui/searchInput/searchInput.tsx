@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 interface Props extends React.HTMLProps<HTMLInputElement> {
   className?: string;
-  onInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInput: (e: React.FormEvent<HTMLInputElement>) => void;
   onClear?: () => void;
 }
 
@@ -35,7 +35,8 @@ export function SearchInput({
           type="button"
           view="custom"
           onClick={() => {
-            inputRef.current.focus();
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            inputRef.current!.focus();
             onClear();
           }}
           data-testid="searchClear"

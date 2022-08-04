@@ -12,9 +12,7 @@ import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data
 import { serializeWavesAuthData } from '@waves/waves-transactions/dist/requests/wavesAuth';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
 import { validate } from '@waves/waves-transactions/dist/validators';
-import create from 'parse-json-bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
-import { AssetDetail } from 'ui/services/Background';
+import * as create from 'parse-json-bignumber';
 import {
   convertFromSa,
   makeBytes,
@@ -25,6 +23,9 @@ import {
   SaTransaction,
 } from 'transactions/utils';
 import { Wallet } from './wallet';
+import { NetworkName } from 'networks/types';
+import { WalletPrivateDataOfType } from './types';
+import { AssetInfoController } from 'controllers/assetInfo';
 
 const { stringify } = create({ BigNumber });
 
@@ -37,10 +38,6 @@ export interface LedgerWalletInput {
   publicKey: string;
 }
 
-type LedgerWalletData = AccountOfType<'ledger'> & {
-  id: number;
-};
-
 export interface LedgerApi {
   signOrder: (data: ISignOrderData) => Promise<string>;
   signRequest: (data: ISignData) => Promise<string>;
@@ -48,16 +45,14 @@ export interface LedgerApi {
   signTransaction: (data: ISignTxData) => Promise<string>;
 }
 
-type GetAssetInfo = (assetId: string | null) => Promise<AssetDetail>;
-
-export class LedgerWallet extends Wallet<LedgerWalletData> {
-  private getAssetInfo: GetAssetInfo;
-  private readonly ledger: LedgerApi;
+export class LedgerWallet extends Wallet<WalletPrivateDataOfType<'ledger'>> {
+  private getAssetInfo;
+  private readonly ledger;
 
   constructor(
     { address, id, name, network, networkCode, publicKey }: LedgerWalletInput,
     ledger: LedgerApi,
-    getAssetInfo: GetAssetInfo
+    getAssetInfo: AssetInfoController['assetInfo']
   ) {
     super({
       address,
@@ -73,13 +68,15 @@ export class LedgerWallet extends Wallet<LedgerWalletData> {
     this.ledger = ledger;
   }
 
-  getAccount(): LedgerWalletData {
-    const { id } = this.data;
-
+  getAccount() {
     return {
-      ...super.getAccount(),
-      type: 'ledger',
-      id,
+      address: this.data.address,
+      name: this.data.name,
+      network: this.data.network,
+      networkCode: this.data.networkCode,
+      publicKey: this.data.publicKey,
+      type: this.data.type,
+      id: this.data.id,
     };
   }
 

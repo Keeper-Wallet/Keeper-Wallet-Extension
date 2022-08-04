@@ -2,13 +2,17 @@ import * as styles from './styles/backupSeed.styl';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Copy, Modal } from '../ui';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAccountsSelector } from 'accounts/store';
+import { NewAccountState } from 'ui/reducers/localState';
 
-export function BackUpSeed({ setTab }: { setTab: (tab: string) => void }) {
+export function BackUpSeed({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const [showCopy, setShowCopy] = React.useState<boolean>(false);
-  const newAccount = useAccountsSelector(state => state.localState.newAccount);
+  const newAccount = useAccountsSelector(
+    state =>
+      state.localState.newAccount as Extract<NewAccountState, { type: 'seed' }>
+  );
 
   return (
     <div className={styles.content}>

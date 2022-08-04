@@ -16,15 +16,12 @@ export function Bottom({ className, noChangeNetwork, hide }: Props) {
     state => state.state?.locked || !state.state?.initialized
   );
 
-  return (
-    !isLocked &&
-    !hide && (
-      <div className={cn(styles.bottom, className)}>
-        <Network noChangeNetwork={noChangeNetwork} />
-        <div className="version basic500" data-testid="currentVersion">
-          v {version}
-        </div>
+  return !isLocked && !hide ? (
+    <div className={cn(styles.bottom, className)}>
+      <Network noChangeNetwork={noChangeNetwork} />
+      <div className="version basic500" data-testid="currentVersion">
+        v {version}
       </div>
-    )
-  );
+    </div>
+  ) : null;
 }

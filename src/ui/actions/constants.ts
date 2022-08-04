@@ -1,3 +1,5 @@
+import { UiAction, UiActionPayload } from 'ui/store';
+
 export const ACTION = {
   CHANGE_LNG: 'CHANGE_LNG',
   CHANGE_MENU: 'CHANGE_MENU',
@@ -116,4 +118,9 @@ export const ACTION = {
   },
 } as const;
 
-export const createAction = type => (payload?: unknown) => ({ type, payload });
+export const createAction =
+  <TActionType extends UiAction['type']>(type: TActionType) =>
+  (payload: UiActionPayload<TActionType>) => ({
+    type,
+    payload,
+  });

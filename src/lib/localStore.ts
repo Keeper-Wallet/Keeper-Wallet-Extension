@@ -6,6 +6,24 @@ import log from 'loglevel';
 import { extension } from 'lib/extension';
 import { createStreamSink } from 'lib/createStreamSink';
 import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
+import type ObservableStore from 'obs-store';
+import { NftInfo } from 'nfts';
+import {
+  DEFAULT_CONFIG,
+  DEFAULT_IDENTITY_CONFIG,
+  DEFAULT_IGNORE_ERRORS_CONFIG,
+  FeeConfig,
+} from '../constants';
+import { TrashItem } from 'controllers/trash';
+import { UiState } from 'ui/reducers/updateState';
+import { Tab } from './tabsManager';
+import { IdleOptions, PreferencesAccount } from 'preferences/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PermissionValue } from 'permissions/types';
+import { BalancesItem } from 'balances/types';
+import { NetworkName } from 'networks/types';
+import { MessageStoreItem } from 'messages/types';
+import { AssetDetail } from 'assets/types';
 
 const CURRENT_MIGRATION_VERSION = 1;
 
@@ -59,7 +77,7 @@ const SAFE_FIELDS = new Set([
 export async function reset() {
   const state = await extension.storage.local.get();
   await extension.storage.local.remove(
-    Object.keys(state).reduce(
+    Object.keys(state).reduce<string[]>(
       (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
       []
     )
@@ -67,10 +85,70 @@ export async function reset() {
   await extension.runtime.reload();
 }
 
+export interface StoreLocalState {
+  accounts: PreferencesAccount[];
+  addresses: Record<string, string>;
+  assetLogos: Record<string, string>;
+  assets: Record<NetworkName, Record<string, AssetDetail>>;
+  assetTickers: Record<string, string>;
+  backup: string;
+  balances: Record<string, BalancesItem>;
+  blacklist: string[];
+  config: {
+    networks: typeof DEFAULT_CONFIG.NETWORKS;
+    network_config: typeof DEFAULT_CONFIG.NETWORK_CONFIG;
+    messages_config: typeof DEFAULT_CONFIG.MESSAGES_CONFIG;
+    pack_config: typeof DEFAULT_CONFIG.PACK_CONFIG;
+    idle: typeof DEFAULT_CONFIG.IDLE;
+  };
+  cognitoSessions: string | undefined;
+  currentLocale: string;
+  currentNetwork: NetworkName;
+  currentNetworkAccounts: PreferencesAccount[];
+  customCodes: Record<NetworkName, string | null | undefined>;
+  customMatchers: Record<NetworkName, string | null | undefined>;
+  customNodes: Record<NetworkName, string | null | undefined>;
+  data: TrashItem[];
+  feeConfig: FeeConfig;
+  identityConfig: typeof DEFAULT_IDENTITY_CONFIG;
+  idleOptions: IdleOptions;
+  ignoreErrorsConfig: typeof DEFAULT_IGNORE_ERRORS_CONFIG;
+  initialized: boolean | null;
+  inPending: Record<string, string | null>;
+  inShowMode: boolean | undefined;
+  lastIdleKeeper: number | undefined;
+  lastInstallKeeper: number | undefined;
+  lastOpenKeeper: number | undefined;
+  lastUpdateIdle: number;
+  locked: boolean | null;
+  messages: MessageStoreItem[];
+  migrationVersion: number;
+  nfts: Record<string, NftInfo>;
+  notifications: NotificationsStoreItem[];
+  notificationWindowId: string | undefined;
+  origins: Record<string, PermissionValue[]>;
+  selectedAccount: PreferencesAccount | undefined;
+  status: number;
+  suspiciousAssets: string[];
+  tabs: Record<string, Tab>;
+  uiState: UiState;
+  usdPrices: Record<string, string>;
+  userId: string | undefined;
+  WalletController: {
+    vault: string | undefined;
+  };
+  whitelist: string[];
+}
+
+export interface StoreSessionState {
+  memo?: Record<string, string | null>;
+  password?: string | null | undefined;
+}
+
 export default class ExtensionStore {
-  private _state: Record<string, unknown>;
-  private _initState: Record<string, unknown>;
-  private _initSession: Record<string, unknown>;
+  private _state: Partial<StoreLocalState> | undefined;
+  private _initState: StoreLocalState | undefined;
+  private _initSession: StoreSessionState | undefined;
 
   async create() {
     await this._migrate();
@@ -84,45 +162,53 @@ export default class ExtensionStore {
     };
   }
 
-  getInitState(
-    defaults?: Record<string, unknown>,
-    forced?: Record<string, unknown>
-  ) {
-    if (!defaults) {
-      return this._initState;
-    }
-
-    const defaultsInitState = Object.keys(defaults).reduce(
+  getInitState<
+    K extends keyof StoreLocalState,
+    F extends keyof StoreLocalState
+  >(
+    defaults: Pick<StoreLocalState, K> | StoreLocalState,
+    forced?: Pick<StoreLocalState, F> | StoreLocalState
+  ): Pick<StoreLocalState, K> {
+    const defaultsInitState = (Object.keys(defaults) as K[]).reduce(
       (acc, key) =>
         Object.prototype.hasOwnProperty.call(this._initState, key)
-          ? { ...acc, [key]: this._initState[key] }
+          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            { ...acc, [key]: this._initState![key] }
           : acc,
       {}
     );
+
     const initState = { ...defaults, ...defaultsInitState, ...(forced || {}) };
     this._state = { ...this._state, ...initState };
     return initState;
   }
 
   getInitSession() {
-    return this._initSession;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this._initSession!;
   }
 
   async clear() {
     const storageState = extension.storage.local;
 
-    const keysToRemove = Object.keys(this._initState).reduce(
-      (acc, key) => (this._state[key] ? acc : [...acc, key]),
-      []
-    );
+    const keysToRemove =
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      (Object.keys(this._initState!) as Array<keyof StoreLocalState>).reduce<
+        string[]
+      >(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (acc, key) => (this._state![key] ? acc : [...acc, key]),
+        []
+      );
     await this._remove(storageState, keysToRemove);
   }
 
-  subscribe(store) {
+  subscribe(store: ObservableStore<unknown>) {
     pump(
       asStream(store),
       debounceStream(200),
-      createStreamSink(async state => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      createStreamSink(async (state: any) => {
         if (!state) {
           throw new Error('Updated state is missing');
         }
@@ -135,7 +221,7 @@ export default class ExtensionStore {
                 [key]: value === undefined ? null : value,
               }),
               {}
-            )
+            ) as StoreLocalState
           );
         } catch (err) {
           // log error so we dont break the pipeline
@@ -148,28 +234,39 @@ export default class ExtensionStore {
     );
   }
 
-  getState(keys?: string | string[]) {
+  getState<K extends keyof StoreLocalState>(
+    keys?: K | K[]
+  ): Pick<StoreLocalState, K> {
     if (!keys) {
-      return this._state;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return this._state as any;
     }
 
     if (typeof keys === 'string') {
-      return { [keys]: this._state[keys] };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+      return { [keys]: this._state![keys] } as any;
     }
 
     return keys.reduce(
       (acc, key) =>
-        this._state[key] ? { ...acc, [key]: this._state[key] } : acc,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this._state![key] ? { ...acc, [key]: this._state![key] } : acc,
       {}
-    );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any;
   }
 
-  async get(keys?: string | string[]) {
+  async get<K extends keyof StoreLocalState>(
+    keys?: K | K[]
+  ): Promise<Pick<StoreLocalState, K>> {
     const storageState = extension.storage.local;
-    return await this._get(storageState, keys);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (await this._get(storageState, keys)) as any;
   }
 
-  async getSession(keys?: string | string[]) {
+  private async getSession(
+    keys?: string | string[]
+  ): Promise<StoreSessionState> {
     const storageState = extension.storage.session;
 
     if (!storageState) return {};
@@ -177,27 +274,30 @@ export default class ExtensionStore {
     return await this._get(storageState, keys);
   }
 
-  async set(state: Record<string, unknown>) {
+  async set(state: StoreLocalState) {
     const storageState = extension.storage.local;
     this._state = { ...this._state, ...state };
-    return this._set(storageState, state);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this._set(storageState, state as any);
   }
 
-  async setSession(state: Record<string, unknown>) {
+  async setSession(state: StoreSessionState) {
     const storageState = extension.storage.session;
 
     if (!storageState) return;
 
-    return this._set(storageState, state);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this._set(storageState, state as any);
   }
 
-  _get(
+  private _get(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     storageState: any,
     keys?: string | string[]
   ): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      storageState.get(keys, result => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      storageState.get(keys, (result: any) => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -208,8 +308,11 @@ export default class ExtensionStore {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _set(storageState: any, state: Record<string, unknown>): Promise<void> {
+  private _set(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storageState: any,
+    state: Record<string, unknown>
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       storageState.set(state, () => {
         const err = extension.runtime.lastError;
@@ -222,7 +325,7 @@ export default class ExtensionStore {
     });
   }
 
-  async _migrate() {
+  private async _migrate() {
     try {
       const storageState = extension.storage.local;
 
@@ -254,7 +357,7 @@ export default class ExtensionStore {
     }
   }
 
-  async _migrateFlatState() {
+  private async _migrateFlatState() {
     const storageState = extension.storage.local;
 
     // this should potentially fix FILE_ERROR_NO_SPACE error
@@ -281,14 +384,16 @@ export default class ExtensionStore {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _remove(storageState: any, keys: string | string[]): Promise<void> {
+  private _remove(storageState: any, keys: string | string[]) {
     if (typeof keys === 'string') {
-      delete this._state[keys];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (this._state as any)[keys];
     } else {
-      keys.forEach(key => delete this._state[key]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      keys.forEach(key => delete (this._state as any)[key]);
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       storageState.remove(keys, () => {
         const err = extension.runtime.lastError;
         if (err) {

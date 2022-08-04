@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { TxStatus } from '../BaseTransaction';
 import { useTranslation } from 'react-i18next';
+import { MessageFinalComponentProps } from '../types';
 
-export function AuthFinal(props) {
+export function AuthFinal(props: MessageFinalComponentProps) {
   const { t } = useTranslation();
 
   return (

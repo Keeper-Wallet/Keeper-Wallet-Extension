@@ -3,14 +3,10 @@ import * as React from 'react';
 
 import { CreateOrderCard } from './CreateOrderCard';
 import { CreateOrderInfo } from './CreateOrderInfo';
-import {
-  ComponentProps,
-  TxDetailTabs,
-  TxFooter,
-  TxHeader,
-} from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function CreateOrder(props: ComponentProps) {
+export function CreateOrder(props: MessageComponentProps) {
   const { message, assets } = props;
 
   return (

@@ -2,25 +2,17 @@ import { extension } from 'lib/extension';
 import LocalStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
 
-interface Tab {
+export interface Tab {
   active: boolean;
   id: number;
   url: string;
   autoDiscardable: boolean;
 }
 
-interface State {
-  tabs: { [tabName: string]: Tab };
-}
-
-interface Options {
-  localStore: LocalStore;
-}
-
 export class TabsManager {
-  store: ObservableStore<State>;
+  private store;
 
-  constructor({ localStore }: Options) {
+  constructor({ localStore }: { localStore: LocalStore }) {
     this.store = new ObservableStore(localStore.getInitState({ tabs: {} }));
     localStore.subscribe(this.store);
   }
@@ -36,7 +28,7 @@ export class TabsManager {
 
     return new Promise<void>((resolve, reject) => {
       try {
-        extension.tabs.get(currentTab?.id, tab => {
+        extension.tabs.get(currentTab?.id, (tab: Tab) => {
           if (!tab) {
             reject(new Error("Tab doesn't exists"));
           }
@@ -46,7 +38,7 @@ export class TabsManager {
         reject(err);
       }
     }).catch(() =>
-      extension.tabs.create({ url: url }, tab => {
+      extension.tabs.create({ url: url }, (tab: Tab) => {
         this.store.updateState({ tabs: { ...tabs, [key]: { ...tab, url } } });
       })
     );

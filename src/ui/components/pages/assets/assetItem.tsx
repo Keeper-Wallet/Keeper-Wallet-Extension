@@ -47,7 +47,8 @@ export function AssetItem({
         className={cn(styles.assetIcon, isLoading && 'skeleton-glow')}
         assetId={assetId}
         name={displayName}
-        hasSponsorship={balance?.asset?.minSponsoredFee.isPositive()}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        hasSponsorship={balance?.asset?.minSponsoredFee!.isPositive()}
         hasScript={balance?.asset?.hasScript}
       />
 

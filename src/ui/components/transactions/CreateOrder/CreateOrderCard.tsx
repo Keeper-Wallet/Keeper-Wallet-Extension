@@ -1,7 +1,7 @@
 import * as styles from './createOrder.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps, TxIcon } from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Asset, Balance, DateFormat } from '../../ui';
 import { getMoney } from '../../../utils/converters';
@@ -13,8 +13,11 @@ import {
   getPriceSign,
   messageType,
 } from './parseTx';
+import { MessageCardComponentProps } from '../types';
 
-class CreateOrderCardComponent extends React.PureComponent<ComponentProps> {
+class CreateOrderCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const className = cn(
       styles.createOrderTransactionCard,
@@ -41,8 +44,16 @@ class CreateOrderCardComponent extends React.PureComponent<ComponentProps> {
             <div className="basic500 body3 margin-min">
               {t(isSell ? 'transactions.orderSell' : 'transactions.orderBuy')}
               <span>
-                : <Asset assetId={amount.asset.id} />/
-                <Asset assetId={price.asset.id} />
+                :{' '}
+                <Asset
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  assetId={amount!.asset.id}
+                />
+                /
+                <Asset
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  assetId={price!.asset.id}
+                />
               </span>
             </div>
             <h1 className="headline1 margin-min">

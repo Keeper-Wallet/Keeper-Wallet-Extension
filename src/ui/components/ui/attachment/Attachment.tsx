@@ -28,6 +28,6 @@ export const Attachment: React.FunctionComponent<IAttachment> = ({
 };
 
 interface IAttachment {
-  attachment: string | Array<number> | Uint8Array;
+  attachment: string | number[] | Uint8Array;
   className?: string;
 }

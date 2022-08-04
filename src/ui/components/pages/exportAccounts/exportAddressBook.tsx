@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from 'ui/store';
 import { addBackTab, setTab } from '../../../actions';
 import { PAGES } from '../../../pageConfig';
 import { getNetworkByAddress } from 'ui/utils/waves';
-import { downloadKeystore } from '../../../utils/keystore';
+import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
 
@@ -11,7 +11,10 @@ export function ExportAddressBook() {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
 
-  const [addressesToExport, setAddressesToExport] = React.useState(null);
+  const [addressesToExport, setAddressesToExport] = React.useState<Record<
+    string,
+    string
+  > | null>(null);
 
   return (
     <>
@@ -27,7 +30,7 @@ export function ExportAddressBook() {
           }))}
         type="contacts"
         onSubmit={async contacts => {
-          const addressesSelected = contacts.reduce(
+          const addressesSelected = contacts.reduce<Record<string, string>>(
             (acc, contact) => ({ ...acc, [contact.address]: contact.name }),
             {}
           );

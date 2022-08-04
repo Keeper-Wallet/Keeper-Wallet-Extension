@@ -4,17 +4,23 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { deleteActiveAccount } from '../../actions';
+import { PageComponentProps } from 'ui/pageConfig';
 
-interface Props extends WithTranslation {
-  deleteActiveAccount: (payload: unknown) => void;
+interface DispatchProps {
+  deleteActiveAccount: () => void;
 }
 
-class DeleteActiveAccountComponent extends React.Component<Props> {
-  state = { disable: false };
-  props;
+type Props = PageComponentProps & WithTranslation & DispatchProps;
+
+interface State {
+  disable: boolean;
+}
+
+class DeleteActiveAccountComponent extends React.Component<Props, State> {
+  state: State = { disable: false };
 
   onClickHandler = () => {
-    this.props.deleteActiveAccount(null);
+    this.props.deleteActiveAccount();
     this.setState({ disable: false });
   };
 
@@ -44,7 +50,7 @@ const actions = {
   deleteActiveAccount,
 };
 
-const mapStateToProps = function () {
+const mapStateToProps = () => {
   return {};
 };
 

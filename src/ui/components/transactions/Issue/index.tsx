@@ -1,9 +1,10 @@
+import { MessageConfig } from '../types';
 import { Issue } from './Issue';
 import { IssueCard } from './IssueCard';
 import { IssueFinal } from './IssueFinal';
 import * as utils from './parseTx';
 
-const issue = {
+const issue: MessageConfig = {
   type: utils.messageType,
   message: Issue,
   card: IssueCard,

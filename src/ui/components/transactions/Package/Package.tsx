@@ -1,33 +1,42 @@
 import * as styles from './package.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 import { PackageCard } from './PackageCard';
 import { PackageInfo } from './PackageInfo';
 import { TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 import { SignClass } from '../SignClass';
 
-class PackageComponent extends SignClass {
-  readonly state = { needScroll: false };
-  container: HTMLDivElement;
-  needScroll: false;
+interface State {
+  needScroll: boolean;
+}
 
-  getContainerRef = ref => {
+class PackageComponent extends SignClass<
+  MessageComponentProps & WithTranslation
+> {
+  readonly state: State = { needScroll: false };
+  container: HTMLDivElement | null | undefined;
+  needScroll: false | undefined;
+
+  getContainerRef = (ref: HTMLDivElement | null) => {
     this.container = ref;
   };
 
-  autoScrollHandler = isShow => {
+  autoScrollHandler = (isShow: boolean) => {
     this.setState({ needScroll: isShow });
   };
 
   componentDidUpdate(): void {
     if (!this.state.needScroll) {
-      return null;
+      return;
     }
 
-    const element = this.container.querySelector('.autoScrollToo');
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const element = this.container!.querySelector('.autoScrollToo')!;
     const to = element.getBoundingClientRect().top;
-    this.container.scroll({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.container!.scroll({
       top: to - 60,
       behavior: 'smooth',
     });

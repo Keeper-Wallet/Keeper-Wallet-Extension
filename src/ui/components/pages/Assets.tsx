@@ -8,7 +8,7 @@ import {
   setActiveAccount,
   setSwapScreenInitialState,
 } from 'ui/actions';
-import { PAGES } from 'ui/pageConfig';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { Asset, Money } from '@waves/data-entities';
 import BigNumber from '@waves/bignumber';
 import { Modal, Tab, TabList, TabPanels, Tabs } from 'ui/components/ui';
@@ -19,12 +19,10 @@ import { TabAssets } from './assets/tabs/tabAssets';
 import { TabNfts } from './assets/tabs/tabNfts';
 import { TabTxHistory } from './assets/tabs/tabTxHistory';
 import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
+import { PreferencesAccount } from 'preferences/types';
+import { AssetDetail } from 'assets/types';
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function Assets({ setTab }: Props) {
+export function Assets({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -49,13 +47,14 @@ export function Assets({ setTab }: Props) {
 
   React.useEffect(() => {
     setCurrentAsset(null);
-    if (!balances[address]) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!balances[address!]) {
       dispatch(getBalances());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  const onSelectHandler = account => {
+  const onSelectHandler = (account: PreferencesAccount) => {
     dispatch(setActiveAccount(account));
     setTab(PAGES.ACCOUNT_INFO);
   };
@@ -64,8 +63,10 @@ export function Assets({ setTab }: Props) {
     return <Intro />;
   }
 
-  const amountInUsd = balances[address]?.assets
-    ? Object.entries(balances[address].assets).reduce(
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const amountInUsd = balances[address!]?.assets
+    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      Object.entries(balances[address!].assets).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id] && usdPrices[id]) {
             const tokens = new Money(
@@ -89,7 +90,8 @@ export function Assets({ setTab }: Props) {
           wavesBalance={
             assets['WAVES'] &&
             new Money(
-              balances[address]?.available || 0,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              balances[address!]?.available || 0,
               new Asset(assets['WAVES'])
             )
           }
@@ -165,7 +167,8 @@ export function Assets({ setTab }: Props) {
         onExited={() => setCurrentAsset(null)}
       >
         <AssetInfo
-          asset={currentAsset}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          asset={currentAsset! as AssetDetail}
           onCopy={() => {
             setShowCopy(true);
             setTimeout(() => setShowCopy(false), 1000);

@@ -3,8 +3,7 @@ import { address, publicKey, signBytes } from '@waves/ts-lib-crypto';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
-import create from 'parse-json-bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
+import * as create from 'parse-json-bignumber';
 import {
   convertFromSa,
   makeBytes,
@@ -15,6 +14,8 @@ import {
   SaTransaction,
 } from 'transactions/utils';
 import { Wallet } from './wallet';
+import { NetworkName } from 'networks/types';
+import { WalletPrivateDataOfType } from './types';
 
 const { stringify } = create({ BigNumber });
 
@@ -25,11 +26,9 @@ export interface PrivateKeyWalletInput {
   privateKey: string;
 }
 
-type PrivateKeyWalletData = AccountOfType<'privateKey'> & {
-  privateKey: string;
-};
-
-export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
+export class PrivateKeyWallet extends Wallet<
+  WalletPrivateDataOfType<'privateKey'>
+> {
   constructor({
     name,
     network,
@@ -47,6 +46,17 @@ export class PrivateKeyWallet extends Wallet<PrivateKeyWalletData> {
       publicKey: publicKeyValue,
       type: 'privateKey',
     });
+  }
+
+  getAccount() {
+    return {
+      address: this.data.address,
+      name: this.data.name,
+      network: this.data.network,
+      networkCode: this.data.networkCode,
+      publicKey: this.data.publicKey,
+      type: this.data.type,
+    };
   }
 
   getSeed(): string {

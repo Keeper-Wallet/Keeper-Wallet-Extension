@@ -1,14 +1,19 @@
 import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
+import { PreferencesAccount } from 'preferences/types';
 
 const MAX_ITEMS = 200;
 
+export interface TrashItem {
+  walletsData: string | PreferencesAccount;
+  address: string;
+}
+
 export class TrashController {
-  store: ObservableStore;
+  private store;
 
   constructor({ localStore }: { localStore: ExtensionStore }) {
-    const defaults = { data: [] };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(localStore.getInitState({ data: [] }));
     localStore.subscribe(this.store);
   }
 
@@ -16,7 +21,7 @@ export class TrashController {
     return this.store.getState().data;
   }
 
-  addData(saveData) {
+  addData(saveData: TrashItem) {
     const { data } = this.store.getState();
     const dataToSave = [...data, saveData];
     if (dataToSave.length > MAX_ITEMS) {
@@ -25,7 +30,7 @@ export class TrashController {
     this._saveData(dataToSave);
   }
 
-  _saveData(data) {
+  _saveData(data: TrashItem[]) {
     this.store.updateState({ data });
   }
 }

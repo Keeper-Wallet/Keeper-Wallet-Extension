@@ -30,7 +30,7 @@ interface IPlateCollapsableProps extends WithTranslation {
 
 interface IPlateCollapsableState {
   isExpanded: boolean;
-  showExpand: boolean;
+  showExpand: boolean | undefined;
   isCopied: boolean;
 }
 
@@ -39,11 +39,11 @@ class PlateCollapsableComponent extends React.PureComponent<
   IPlateCollapsableState
 > {
   state = { showExpand: false, isExpanded: false, isCopied: false };
-  childrenEl: HTMLDivElement;
-  resizeObserver: ResizeObserver;
-  _t;
+  childrenEl: HTMLDivElement | null | undefined;
+  resizeObserver: ResizeObserver | undefined;
+  _t: ReturnType<typeof setTimeout> | undefined;
 
-  getChildrenRef = ref => (this.childrenEl = ref);
+  getChildrenRef = (ref: HTMLDivElement | null) => (this.childrenEl = ref);
 
   toggleExpand = () => {
     this.setState({ isExpanded: !this.state.isExpanded });
@@ -51,7 +51,11 @@ class PlateCollapsableComponent extends React.PureComponent<
 
   onCopy = () => {
     this.setState({ isCopied: true });
-    clearTimeout(this._t);
+
+    if (this._t != null) {
+      clearTimeout(this._t);
+    }
+
     this._t = setTimeout(() => this.setState({ isCopied: false }), 1000);
   };
 
@@ -63,16 +67,19 @@ class PlateCollapsableComponent extends React.PureComponent<
             this.props.showExpand &&
             (this.state.isExpanded ||
               (!this.state.isExpanded &&
-                entry.target.scrollHeight > this.childrenEl.offsetHeight)),
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                entry.target.scrollHeight > this.childrenEl!.offsetHeight)),
         });
       }
     });
 
-    this.resizeObserver.observe(this.childrenEl);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.resizeObserver.observe(this.childrenEl!);
   }
 
   componentWillUnmount() {
-    this.resizeObserver.disconnect();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.resizeObserver!.disconnect();
   }
 
   render() {
@@ -89,7 +96,7 @@ class PlateCollapsableComponent extends React.PureComponent<
 
         <div className="buttons-wrapper">
           {showCopy && (
-            <Copy text={textToCopy} onCopy={this.onCopy}>
+            <Copy text={textToCopy as string} onCopy={this.onCopy}>
               <Button type="button">{t('plateComponent.copy')}</Button>
             </Copy>
           )}

@@ -1,16 +1,12 @@
 import * as styles from './package.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
-import {
-  ComponentProps,
-  Message,
-  MessageData,
-  TxIcon,
-} from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { getFees, getPackageAmounts, messageType } from './parseTx';
 import { Balance } from '../../ui';
 import { Money } from '@waves/data-entities';
+import { MessageCardComponentProps } from '../types';
 
 const Fees = ({ fees }: { fees: Record<string, Money> }) => {
   const moneys = Object.values(fees);
@@ -29,11 +25,11 @@ const Fees = ({ fees }: { fees: Record<string, Money> }) => {
 };
 
 class PackageCardComponent extends React.PureComponent<
-  ComponentProps & { message: Message & { data: MessageData[] } }
+  MessageCardComponentProps & WithTranslation
 > {
   render() {
     const { t, message, assets, collapsed, className } = this.props;
-    const { data = [] as MessageData[], title = '' } = message;
+    const { data = [], title = '' } = message;
     const tx = [...data];
     const fees = getFees(tx, assets);
     const amounts = getPackageAmounts(tx, assets);

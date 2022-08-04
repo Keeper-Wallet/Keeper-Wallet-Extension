@@ -114,7 +114,7 @@ export const DucklingAdjectives = [
   'zen',
 ];
 
-export const DucklingsDescription = {
+export const DucklingsDescription: Record<string, string> = {
   agnesi:
     'Maria Gaetana Agnesi - Italian mathematician, philosopher, theologian and humanitarian. She was the first woman to write a mathematics handbook and the first woman appointed as a Mathematics Professor at a University.',
   albattani:

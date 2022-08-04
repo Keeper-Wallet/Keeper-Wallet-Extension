@@ -2,13 +2,13 @@ import * as React from 'react';
 import { CSSProperties } from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { AssetDetail } from 'ui/services/Background';
 import * as styles from './nftList.module.css';
 import { nftRowFullHeight } from 'nfts/constants';
 import cn from 'classnames';
 import { NftCard } from 'nfts/nftCard';
 import { Nft } from 'nfts/utils';
-import { DisplayMode } from 'nfts/index';
+import { BaseInfo, BaseNft, DisplayMode } from 'nfts/index';
+import { Duckling } from './ducklings';
 
 const Row = ({
   data,
@@ -30,11 +30,13 @@ const Row = ({
 
   const leftIndex = 2 * index;
   const leftNft = rows[leftIndex];
-  const leftCount = counts[leftNft?.creator] || 0;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+  const leftCount = counts[leftNft?.creator!] || 0;
 
   const rightIndex = leftIndex + 1;
   const rightNft = rows[rightIndex];
-  const rightCount = counts[rightNft?.creator] || 0;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+  const rightCount = counts[rightNft?.creator!] || 0;
 
   return (
     <div style={style}>
@@ -71,7 +73,7 @@ export function NftList({
   renderMore,
 }: {
   mode: DisplayMode;
-  nfts: AssetDetail[];
+  nfts: Array<Duckling | BaseNft<BaseInfo>>;
   counters?: Record<string, number>;
   hasMore?: boolean;
   onClick: (asset: Nft) => void;
@@ -94,7 +96,8 @@ export function NftList({
                 mode,
                 len,
                 onClick,
-                renderMore,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                renderMore: renderMore as any,
               }}
               itemKey={(index, { rows }) => rows[index].id}
             >

@@ -1,18 +1,13 @@
 import { NetworkController } from './network';
 
-type GetNode = NetworkController['getNode'];
-type GetNetwork = NetworkController['getNetwork'];
-
 export class TxInfoController {
-  getNode: GetNode;
-  getNetwork: GetNetwork;
+  private getNode;
 
-  constructor(options: { getNode?: GetNode; getNetwork?: GetNetwork } = {}) {
+  constructor(options: { getNode: NetworkController['getNode'] }) {
     this.getNode = options.getNode;
-    this.getNetwork = options.getNetwork;
   }
 
-  async txInfo(txId) {
+  async txInfo(txId: string) {
     const API_BASE = this.getNode();
     const url = new URL(`transactions/info/${txId}`, API_BASE).toString();
 

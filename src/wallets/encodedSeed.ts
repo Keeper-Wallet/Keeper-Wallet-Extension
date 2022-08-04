@@ -9,8 +9,7 @@ import {
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
 import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
-import create from 'parse-json-bignumber';
-import { AccountOfType, NetworkName } from 'accounts/types';
+import * as create from 'parse-json-bignumber';
 import {
   convertFromSa,
   makeBytes,
@@ -21,6 +20,8 @@ import {
   SaTransaction,
 } from 'transactions/utils';
 import { Wallet } from './wallet';
+import { NetworkName } from 'networks/types';
+import { WalletPrivateDataOfType } from './types';
 
 const { stringify } = create({ BigNumber });
 
@@ -31,11 +32,9 @@ export interface EncodedSeedWalletInput {
   networkCode: string;
 }
 
-type EncodedSeedWalletData = AccountOfType<'encodedSeed'> & {
-  encodedSeed: string;
-};
-
-export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
+export class EncodedSeedWallet extends Wallet<
+  WalletPrivateDataOfType<'encodedSeed'>
+> {
   constructor({
     encodedSeed,
     name,
@@ -54,6 +53,17 @@ export class EncodedSeedWallet extends Wallet<EncodedSeedWalletData> {
       publicKey: publicKey(decodedSeed),
       type: 'encodedSeed',
     });
+  }
+
+  getAccount() {
+    return {
+      address: this.data.address,
+      name: this.data.name,
+      network: this.data.network,
+      networkCode: this.data.networkCode,
+      publicKey: this.data.publicKey,
+      type: this.data.type,
+    };
   }
 
   getSeed(): string {

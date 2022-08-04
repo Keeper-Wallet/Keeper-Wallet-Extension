@@ -6,13 +6,13 @@ import { Avatar } from '../ui/avatar/Avatar';
 import { Balance } from '../ui/balance/Balance';
 import * as styles from './accountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
-import { Account } from '../../../accounts/types';
+import { PreferencesAccount } from 'preferences/types';
 
 interface Props {
-  account: Account;
+  account: PreferencesAccount;
   balance: string | BigNumber | Money;
-  onClick: (account: Account) => void;
-  onInfoClick: (account: Account) => void;
+  onClick: (account: PreferencesAccount) => void;
+  onInfoClick: (account: PreferencesAccount) => void;
 }
 
 export function AccountCard({ account, balance, onClick, onInfoClick }: Props) {

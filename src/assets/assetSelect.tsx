@@ -1,5 +1,5 @@
-import { NetworkName } from 'accounts/types';
 import ColorHash from 'color-hash';
+import { NetworkName } from 'networks/types';
 import * as React from 'react';
 import { Modal } from 'ui/components/ui/modal/Modal';
 import { BalanceAssets } from 'ui/reducers/updateState';
@@ -25,7 +25,8 @@ export function AssetSelect({
   onChange,
 }: Props) {
   const logoSrc = useAssetLogo(network, value);
-  const asset = options.find(o => o.id === value);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const asset = options.find(o => o.id === value)!;
 
   const [showModal, setShowModal] = React.useState(false);
 

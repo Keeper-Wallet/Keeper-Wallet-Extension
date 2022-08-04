@@ -6,7 +6,7 @@ import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 describe('Others', function () {
   this.timeout(60 * 1000);
 
-  let tabKeeper;
+  let tabKeeper: string;
 
   before(async function () {
     await App.initVault.call(this);
@@ -144,9 +144,12 @@ describe('Others', function () {
       await amountInput.sendKeys('123123123.123');
 
       expect(
-        await this.driver.executeScript(function (amountInput) {
+        await this.driver.executeScript(function (
+          amountInput: HTMLInputElement
+        ) {
           return amountInput.value;
-        }, amountInput)
+        },
+        amountInput)
       ).to.equal('123 123 123.123');
 
       await amountInput.clear();

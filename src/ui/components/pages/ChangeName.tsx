@@ -5,22 +5,32 @@ import { changeAccountName } from '../../actions';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Error, Input } from '../ui';
 import { CONFIG } from '../../appConfig';
-import { Account } from 'accounts/types';
+import { PageComponentProps } from 'ui/pageConfig';
+import { AppState } from 'ui/store';
+import { PreferencesAccount } from 'preferences/types';
 
-interface Props extends WithTranslation {
-  account: Account;
-  accounts: Account[];
-
-  changeAccountName: (updateAccount: Account) => void;
-  onBack: () => void;
+interface StateProps {
+  account: PreferencesAccount | undefined;
+  accounts: PreferencesAccount[];
 }
 
-class ChangeAccountNameComponent extends React.PureComponent<Props> {
-  readonly props;
-  readonly state = { newName: '', error: false, errors: [] };
+interface DispatchProps {
+  changeAccountName: (updateAccount: { name: string; address: string }) => void;
+}
 
-  static validateName(name: string, accounts) {
-    const errors = [];
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
+interface State {
+  error: boolean | Array<{ code: number; key: string; msg: string }> | null;
+  errors: Array<{ code: number; key: string; msg: string }>;
+  newName: string;
+}
+
+class ChangeAccountNameComponent extends React.PureComponent<Props, State> {
+  state: State = { newName: '', error: false, errors: [] };
+
+  static validateName(name: string, accounts: PreferencesAccount[]) {
+    const errors: Array<{ code: number; key: string; msg: string }> = [];
     const names = accounts.map(({ name }) => name);
 
     if (name.length < CONFIG.NAME_MIN_LENGTH) {
@@ -42,21 +52,24 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
     return errors;
   }
 
-  setNewNameHandler = event => this.setNewName(event);
-  onSubmit = event => this.changeName(event);
+  setNewNameHandler = (event: React.FormEvent<HTMLInputElement>) =>
+    this.setNewName(event);
+  onSubmit = (event: React.FormEvent<HTMLFormElement>) =>
+    this.changeName(event);
 
   blurHandler = () => this.onBlur();
 
-  changeName(event) {
+  changeName(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const name = this.state.newName;
-    const address = this.props.account.address;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const address = this.props.account!.address;
     this.props.changeAccountName({ name, address });
     this.props.onBack();
   }
 
-  setNewName(event) {
-    const newName = event.target.value;
+  setNewName(event: React.FormEvent<HTMLInputElement>) {
+    const newName = event.currentTarget.value;
     const errors = ChangeAccountNameComponent.validateName(
       newName,
       this.props.accounts
@@ -75,7 +88,10 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
         </div>
 
         <div id="currentAccountName" className="body1 font400 margin-main-big">
-          {this.props.account.name}
+          {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.props.account!.name
+          }
         </div>
 
         <div className="separator margin-main-big"> </div>
@@ -123,7 +139,7 @@ class ChangeAccountNameComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapToProps = store => {
+const mapToProps = (store: AppState): StateProps => {
   const activeAccount = store.selectedAccount.address;
   const selected = store.localState.assets.account
     ? store.localState.assets.account.address

@@ -1,13 +1,16 @@
 import * as styles from './scriptInvocation.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { Balance, PlateCollapsable, ShowScript } from '../../ui';
 import { getAmounts, messageType } from './parseTx';
 import { getMoney } from '../../../utils/converters';
+import { MessageCardComponentProps } from '../types';
 
-class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> {
+class ScriptInvocationCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const className = cn(
       styles.scriptInvocationTransactionCard,
@@ -18,7 +21,7 @@ class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> 
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} as MessageData } = message;
+    const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const functionName = (tx.call && tx.call.function) || 'default';
     const amounts = getAmounts(tx).map(item => getMoney(item, assets));
@@ -93,7 +96,8 @@ class ScriptInvocationCardComponent extends React.PureComponent<ComponentProps> 
                         <Balance
                           isShortFormat
                           balance={amount}
-                          assetId={amount.asset.id}
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                          assetId={amount!.asset.id}
                           showAsset
                           showUsdAmount
                         />

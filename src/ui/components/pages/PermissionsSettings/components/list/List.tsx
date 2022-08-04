@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { TFunction, withTranslation, WithTranslation } from 'react-i18next';
 import { ListItem } from './ListItem';
 import * as styles from './list.styl';
-import {
-  IAutoAuth,
-  TTabTypes,
-} from 'ui/components/pages/PermissionsSettings/PermissionSettings';
+import { TTabTypes } from 'ui/components/pages/PermissionsSettings/PermissionSettings';
+import { TAutoAuth } from '../originSettings';
 
 class ListComponent extends React.PureComponent<IProps> {
   render(): React.ReactNode {
@@ -39,9 +37,12 @@ class ListComponent extends React.PureComponent<IProps> {
     );
   }
 
-  getPermissionsText(t, perms) {
+  getPermissionsText(
+    t: TFunction<'translation', undefined>,
+    perms: Array<string | TAutoAuth>
+  ) {
     let hasApproved = false;
-    let hasAuto = false;
+    let hasAuto: string | boolean | TAutoAuth | undefined = false;
 
     if (perms.length) {
       hasApproved = perms.includes('approved');
@@ -68,7 +69,7 @@ class ListComponent extends React.PureComponent<IProps> {
 }
 
 const getFilteredOrigins = (
-  origins: Record<string, Array<string | IAutoAuth>>,
+  origins: Record<string, Array<string | TAutoAuth>>,
   attr: TTabTypes
 ) => {
   return Object.keys(origins)
@@ -90,7 +91,7 @@ const getFilteredOrigins = (
 };
 
 interface IProps extends WithTranslation {
-  origins: Record<string, Array<string | IAutoAuth>>;
+  origins: Record<string, Array<string | TAutoAuth>>;
   showType: TTabTypes;
   showSettings: (origin: string) => void;
   toggleApprove: (origin: string, enable: boolean) => void;

@@ -1,8 +1,13 @@
 import { AccountsStore } from './store';
 import { ACTION } from 'ui/actions/constants';
 import { equals } from 'ramda';
+import {
+  BackgroundGetStateResult,
+  BackgroundUiApi,
+} from 'ui/services/Background';
+import { UiAction } from 'ui/store';
 
-function getParam<S>(param: S, defaultParam: S) {
+function getParam<S, D>(param: S, defaultParam: D) {
   if (param) {
     return param;
   }
@@ -10,30 +15,15 @@ function getParam<S>(param: S, defaultParam: S) {
   return param === null ? defaultParam : undefined;
 }
 
-interface Account {
-  address: string;
-  network: string;
-}
-
-interface UpdateStateInput {
-  addresses: Record<string, string>;
-  accounts?: Account[];
-  currentLocale: string;
-  currentNetwork?: string;
-  currentNetworkAccounts: Account[];
-  customCodes?: unknown;
-  customNodes?: unknown;
-  idleOptions?: unknown;
-  initialized: boolean;
-  locked: boolean;
-  networks?: unknown[];
-  selectedAccount?: { address?: string; network?: string } | null;
-  uiState: unknown;
-}
+type UpdateStateInput = Partial<
+  BackgroundGetStateResult & {
+    networks: Awaited<ReturnType<BackgroundUiApi['getNetworks']>>;
+  }
+>;
 
 export function createUpdateState(store: AccountsStore) {
   return (state: UpdateStateInput) => {
-    const actions = [];
+    const actions: UiAction[] = [];
     const currentState = store.getState();
 
     if (state.networks && state.networks.length) {
@@ -86,10 +76,7 @@ export function createUpdateState(store: AccountsStore) {
     }
 
     const currentNetwork = getParam(state.currentNetwork, '');
-    if (
-      currentNetwork !== undefined &&
-      currentNetwork !== currentState.currentNetwork
-    ) {
+    if (currentNetwork && currentNetwork !== currentState.currentNetwork) {
       actions.push({
         type: ACTION.UPDATE_CURRENT_NETWORK,
         payload: currentNetwork,

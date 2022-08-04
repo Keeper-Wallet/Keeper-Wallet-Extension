@@ -3,9 +3,10 @@ import * as React from 'react';
 
 import { CustomDataCard } from './CustomDataCard';
 import { CustomDataInfo } from './CustomDataInfo';
-import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function CustomData(props: ComponentProps) {
+export function CustomData(props: MessageComponentProps) {
   const { message, assets } = props;
 
   return (

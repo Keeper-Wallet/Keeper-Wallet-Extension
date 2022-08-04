@@ -32,6 +32,10 @@ export function ExportPasswordModal({
   const [loading, setLoading] = React.useState(false);
 
   React.useLayoutEffect(() => {
+    if (!passwordInputRef.current) {
+      return;
+    }
+
     passwordInputRef.current.focus();
   }, []);
 

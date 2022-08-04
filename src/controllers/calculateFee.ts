@@ -6,12 +6,13 @@ import { path } from 'ramda';
 import { convertFromSa, makeBytes } from '../transactions/utils';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
+import { PreferencesAccount } from 'preferences/types';
 
 const FEE_TYPES = [
   2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1002,
 ];
 
-const isAccountHasExtraFee = async (address, node) => {
+const isAccountHasExtraFee = async (address: string, node: string) => {
   try {
     const response = await fetch(
       new URL(`/addresses/scriptInfo/${address}`, node).toString()
@@ -24,20 +25,25 @@ const isAccountHasExtraFee = async (address, node) => {
 };
 
 export async function getExtraFee(address: string, node: string) {
-  const json = await fetch(
+  const json = (await fetch(
     new URL(`/addresses/scriptInfo/${address}`, node).toString()
-  ).then(res => res.json());
+  ).then(res => res.json())) as { extraFee: number };
 
   return json.extraFee;
 }
 
 const WAVES_ID = 'WAVES';
 
-function normalizeAssetId(assetId) {
+function normalizeAssetId(assetId: string | null) {
   return assetId || WAVES_ID;
 }
 
-function getAssetIds(signData, chainId, accountType) {
+function getAssetIds(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  signData: any,
+  chainId: number,
+  accountType: PreferencesAccount['type']
+) {
   const hash = Object.create(null);
   hash[WAVES_ID] = true;
 
@@ -66,7 +72,8 @@ function getAssetIds(signData, chainId, accountType) {
         hash[normalizeAssetId(transaction.assetId)] = true;
         break;
       case TRANSACTION_TYPE.INVOKE_SCRIPT:
-        transaction.payment.forEach(payment => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        transaction.payment.forEach((payment: any) => {
           hash[normalizeAssetId(payment.assetId)] = true;
         });
         break;
@@ -76,8 +83,9 @@ function getAssetIds(signData, chainId, accountType) {
   return Object.keys(hash);
 }
 
-function currentCreateOrderFactory(config, minOrderFee) {
-  return (order, hasScript = false, smartAssetIdList = []) => {
+function currentCreateOrderFactory(config: FeeConfig, minOrderFee: BigNumber) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (order: any, hasScript = false, smartAssetIdList: unknown[] = []) => {
     const accountFee = hasScript
       ? new BigNumber(config.smart_account_extra_fee)
       : new BigNumber(0);
@@ -93,8 +101,15 @@ function currentCreateOrderFactory(config, minOrderFee) {
   };
 }
 
-function currentFeeFactory(config) {
-  return (tx, bytes, hasAccountScript, smartAssetIdList) => {
+function currentFeeFactory(config: FeeConfig) {
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bytes: any,
+    hasAccountScript: boolean,
+    smartAssetIdList: string[]
+  ) => {
     const accountFee = hasAccountScript
       ? new BigNumber(config.smart_account_extra_fee)
       : new BigNumber(0);
@@ -131,14 +146,16 @@ function currentFeeFactory(config) {
   };
 }
 
-function isNFT(tx) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isNFT(tx: any) {
   const { quantity, precision, decimals, reissuable } = tx;
   const nftQuantity = new BigNumber(quantity).eq(1);
   const nftPrecision = new BigNumber(precision || decimals || 0).eq(0);
   return !reissuable && nftPrecision && nftQuantity;
 }
 
-function getIssueFee(tx, accountFee, config) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getIssueFee(tx: any, accountFee: any, config: FeeConfig) {
   const minFee = accountFee.add(getConfigProperty(tx.type, 'fee', config));
   if (isNFT(tx)) {
     return accountFee.add(getConfigProperty(tx.type, 'nftFee', config));
@@ -147,18 +164,24 @@ function getIssueFee(tx, accountFee, config) {
   }
 }
 
-function getSmartAssetFeeByAssetId(assetId, config, smartAssetIdList) {
+function getSmartAssetFeeByAssetId(
+  assetId: string,
+  config: FeeConfig,
+  smartAssetIdList: string[]
+) {
   return assetId && smartAssetIdList.includes(assetId)
     ? new BigNumber(config.smart_asset_extra_fee)
     : new BigNumber(0);
 }
 
-function getDataFee(bytes, tx, config) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getDataFee(bytes: any, tx: any, config: FeeConfig) {
   const kbPrice = getConfigProperty(tx.type, 'price_per_kb', config) || 0;
   return new BigNumber(kbPrice).mul(Math.floor(1 + (bytes.length - 1) / 1024));
 }
 
-function getScriptFee(tx, config) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getScriptFee(tx: any, config: FeeConfig) {
   const bytes = crypto.base64Decode(
     tx.script.toString().startsWith('base64:') ? tx.script.slice(7) : tx.script
   );
@@ -166,7 +189,12 @@ function getScriptFee(tx, config) {
   return new BigNumber(Math.ceil(bytes.length / 1024) * kbPrice);
 }
 
-function getMassTransferFee(tx, config, smartAssetIdList) {
+function getMassTransferFee(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: any,
+  config: FeeConfig,
+  smartAssetIdList: string[]
+) {
   const transferPrice = new BigNumber(
     getConfigProperty(tx.type, 'price_per_transfer', config) || 0
   );
@@ -203,11 +231,12 @@ function getConfigProperty(
 }
 
 function getOrderFee(
-  signData,
-  config,
-  minOrderFee,
-  hasMatcherScript,
-  smartAssetIdList
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  signData: any,
+  config: FeeConfig,
+  minOrderFee: BigNumber,
+  hasMatcherScript: boolean,
+  smartAssetIdList: string[]
 ) {
   const currentFee = currentCreateOrderFactory(config, minOrderFee);
   return currentFee(
@@ -218,12 +247,13 @@ function getOrderFee(
 }
 
 function getFee(
-  signData,
-  config,
-  hasScript,
-  smartAssetIdList,
-  chainId,
-  accountType
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  signData: any,
+  config: FeeConfig,
+  hasScript: boolean,
+  smartAssetIdList: string[],
+  chainId: number,
+  accountType: PreferencesAccount['type']
 ) {
   const currentFee = currentFeeFactory(config);
   const txData = convertFromSa.transaction(signData, chainId, accountType);
@@ -236,7 +266,13 @@ export const calculateFeeFabric =
     assetInfoController: AssetInfoController,
     networkController: NetworkController
   ) =>
-  async (signData, chainId, account, feeConfig) => {
+  async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    signData: any,
+    chainId: number,
+    account: PreferencesAccount,
+    feeConfig: FeeConfig
+  ) => {
     const { type } = signData;
 
     if (!FEE_TYPES.includes(type)) {

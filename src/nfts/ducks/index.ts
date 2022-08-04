@@ -8,13 +8,13 @@ import {
   ducksDAppBreeder,
   ducksDAppIncubator,
 } from 'nfts/ducks/constants';
-import { AssetDetail } from 'ui/services/Background';
 import * as React from 'react';
+import { AssetDetail } from 'assets/types';
 
 export class Duck extends BaseNft<DuckInfo> {
   protected genoType: string;
   protected generationColor: string;
-  protected druck: string;
+  protected druck: string | null;
 
   constructor(asset: AssetDetail, info: DuckInfo) {
     super(asset, info);
@@ -31,7 +31,7 @@ export class Duck extends BaseNft<DuckInfo> {
       : null;
   }
 
-  get displayCreator(): string {
+  get displayCreator() {
     switch (this.creator) {
       case ducksDAppBreeder:
         return 'Ducks Breeder';
@@ -42,10 +42,11 @@ export class Duck extends BaseNft<DuckInfo> {
 
   get displayName(): string {
     const name = duckNames[this.genoType]
-      ? duckNames[this.genoType].name
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (duckNames[this.genoType] as any).name
       : this.genoType
           .split('')
-          .map((gene, index) => duckNames[gene]?.[index])
+          .map((gene, index) => (duckNames[gene] as string[])?.[index])
           .join('')
           .toLowerCase();
 
@@ -59,7 +60,7 @@ export class Duck extends BaseNft<DuckInfo> {
     return `https://wavesducks.com/duck/${this.id}`;
   }
 
-  get description(): string {
+  get description() {
     return null;
   }
 
@@ -74,8 +75,9 @@ export class Duck extends BaseNft<DuckInfo> {
   get background(): React.CSSProperties {
     return {
       backgroundImage:
-        this.genoType === 'WWWWLUCK' &&
-        'url("https://wavesducks.com/ducks/pokras-background.svg")',
+        this.genoType === 'WWWWLUCK'
+          ? 'url("https://wavesducks.com/ducks/pokras-background.svg")'
+          : undefined,
       backgroundColor:
         this.generationColor[1] && `#${duckColors[this.generationColor[1]]}`,
     };

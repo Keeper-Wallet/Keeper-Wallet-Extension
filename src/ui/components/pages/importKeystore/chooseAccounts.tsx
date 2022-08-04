@@ -4,12 +4,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui/components/ui/avatar/Avatar';
 import { Button } from 'ui/components/ui';
-import {
-  Account,
-  KeystoreAccount,
-  KeystoreProfiles,
-  NetworkName,
-} from 'accounts/types';
+import { PreferencesAccount } from 'preferences/types';
+import { NetworkName } from 'networks/types';
+import { KeystoreAccount, KeystoreProfiles } from 'keystore/types';
 
 const allNetworks: NetworkName[] = Object.values(NetworkName);
 
@@ -21,7 +18,7 @@ const networkLabels: Record<NetworkName, string> = {
 };
 
 interface Props {
-  allNetworksAccounts: Account[];
+  allNetworksAccounts: PreferencesAccount[];
   profiles: KeystoreProfiles;
   onSkip: () => void;
   onSubmit: (selectedAccounts: KeystoreAccount[]) => void;

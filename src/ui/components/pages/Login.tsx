@@ -5,23 +5,34 @@ import { connect } from 'react-redux';
 import { BigLogo } from '../head';
 import { Button, Error, Input } from '../ui';
 import { login } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
+import { AppState } from 'ui/store';
 
-interface Props extends WithTranslation {
-  error: unknown;
-  login: (password: string) => void;
-  setTab: (tab: string) => void;
+interface StateProps {
+  error?: unknown;
 }
 
-class LoginComponent extends React.Component<Props> {
-  state = {
+interface DispatchProps {
+  login: (password: string) => void;
+}
+
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
+interface State {
+  passwordError: boolean;
+  password: string;
+}
+
+class LoginComponent extends React.Component<Props, State> {
+  state: State = {
     passwordError: false,
     password: '',
   };
 
-  readonly props;
-
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(
+    props: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     const { passwordError } = state;
     const { error } = props;
 
@@ -32,9 +43,9 @@ class LoginComponent extends React.Component<Props> {
     return null;
   }
 
-  onChange = e => this._onChange(e);
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => this._onChange(e);
 
-  onSubmit = e => this._onSubmit(e);
+  onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
 
   forgotHandler = () => this.props.setTab(PAGES.FORGOT);
 
@@ -85,12 +96,12 @@ class LoginComponent extends React.Component<Props> {
     );
   }
 
-  _onChange(e) {
+  _onChange(e: React.ChangeEvent<HTMLInputElement>) {
     const password = e.target.value;
     this.setState({ password, passwordError: false });
   }
 
-  _onSubmit(e) {
+  _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     this.props.login(this.state.password);
   }
@@ -100,7 +111,7 @@ const actions = {
   login,
 };
 
-const mapStateToProps = function ({ localState }) {
+const mapStateToProps = function ({ localState }: AppState): StateProps {
   return {
     ...localState.login,
   };

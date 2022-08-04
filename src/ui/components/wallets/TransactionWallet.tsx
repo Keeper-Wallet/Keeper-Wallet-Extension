@@ -4,21 +4,21 @@ import cn from 'classnames';
 import * as styles from './wallet.styl';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from '../ui/tooltip';
-import { Account } from '../../../accounts/types';
+import { PreferencesAccount } from 'preferences/types';
 
 export const TransactionWallet = ({
   className = '',
-  onSelect = null,
-  onActive = null,
-  account = null,
+  onSelect,
+  onActive,
+  account,
   active = false,
   hideButton = false,
-  children = null,
+  children,
   type = 'small',
 }: ITransactionWalletProps) => {
   const { t } = useTranslation();
   const [showCopied, setCopied] = React.useState(false);
-  let copyTimeout;
+  let copyTimeout: ReturnType<typeof setTimeout>;
   const onCopy = () => {
     clearTimeout(copyTimeout);
     setCopied(true);
@@ -40,7 +40,7 @@ export const TransactionWallet = ({
       onSelect(account);
     }
   };
-  const selectHandler = e => {
+  const selectHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (onActive) {
       e.preventDefault();
       e.stopPropagation();
@@ -53,7 +53,8 @@ export const TransactionWallet = ({
       <div className={styles.avatar}>
         <Avatar
           size={avatarSize}
-          address={account.address}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          address={account.address!}
           type={account.type}
         />
       </div>
@@ -99,9 +100,9 @@ export const TransactionWallet = ({
 
 interface ITransactionWalletProps {
   className?: string;
-  onSelect?: (account: Account) => void;
-  onActive?: (account: Account) => void;
-  account: Account;
+  onSelect?: (account: Partial<PreferencesAccount>) => void;
+  onActive?: (account: Partial<PreferencesAccount>) => void;
+  account: Partial<PreferencesAccount>;
   active?: boolean;
   hideButton?: boolean;
   children?: React.ReactNode;

@@ -2,8 +2,9 @@ import { Transfer } from './Transfer';
 import { TransferCard } from './TransferCard';
 import { TransferFinal } from './TransferFinal';
 import * as utils from './parseTx';
+import { MessageConfig } from '../types';
 
-const transfer = {
+const transfer: MessageConfig = {
   type: utils.messageType,
   message: Transfer,
   card: TransferCard,

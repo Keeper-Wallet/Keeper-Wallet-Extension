@@ -1,9 +1,9 @@
-import { AssetDetail } from 'ui/services/Background';
 import * as React from 'react';
 import { DuckInfo } from 'nfts/ducks/utils';
 import { DucklingInfo } from 'nfts/ducklings';
 import { DucksArtefactInfo } from 'nfts/duckArtifacts';
 import { SignArtInfo } from 'nfts/signArt';
+import { AssetDetail } from 'assets/types';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
@@ -30,7 +30,7 @@ export interface BaseInfo {
   vendor: NftVendor;
 }
 
-export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
+export class BaseNft<TypedInfo extends BaseInfo> {
   protected asset: AssetDetail;
   protected info: TypedInfo | null;
 
@@ -38,7 +38,7 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
     this.asset = asset;
     this.info = info;
   }
-  get foreground(): string {
+  get foreground(): string | null {
     return null;
   }
   get background(): React.CSSProperties | null {
@@ -53,16 +53,16 @@ export class BaseNft<TypedInfo extends BaseInfo> implements AssetDetail {
   get issuer(): AssetDetail['issuer'] {
     return this.asset.issuer;
   }
-  get displayCreator(): string {
+  get displayCreator() {
     return this.creator;
   }
-  get creator(): string {
+  get creator(): string | null | undefined {
     return this.asset.issuer;
   }
-  get creatorUrl(): string {
+  get creatorUrl(): string | null | undefined {
     return null;
   }
-  get marketplaceUrl(): string {
+  get marketplaceUrl(): string | null | undefined {
     return null;
   }
   get vendor(): TypedInfo['vendor'] {

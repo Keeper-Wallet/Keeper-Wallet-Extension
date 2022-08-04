@@ -2,7 +2,7 @@ import * as styles from './auth.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { Message } from 'ui/components/transactions/BaseTransaction';
+import { MessageCardComponentProps } from '../types';
 
 const Icon = ({
   icon,
@@ -31,20 +31,22 @@ const Icon = ({
   </div>
 );
 
-interface IProps extends WithTranslation {
-  className?: string;
-  collapsed?: boolean;
-  message?: Message;
+interface State {
+  canUseIcon: boolean;
+  icon: string | null;
 }
 
-class AuthCardComponent extends React.PureComponent<IProps> {
-  readonly state = { canUseIcon: false, icon: null };
+class AuthCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation,
+  State
+> {
+  readonly state: State = { canUseIcon: false, icon: null };
 
   componentDidMount(): void {
     const { message } = this.props;
     const { data, origin } = message;
     const tx = data.data;
-    let icon;
+    let icon: string | null;
 
     try {
       icon = new URL(tx.icon, data.referrer || `https://${origin}`).href;
@@ -54,7 +56,8 @@ class AuthCardComponent extends React.PureComponent<IProps> {
 
     const img = document.createElement('img');
     img.onload = () => this.setState({ icon, canUseIcon: true });
-    img.src = icon;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    img.src = icon!;
   }
 
   render() {
@@ -74,7 +77,12 @@ class AuthCardComponent extends React.PureComponent<IProps> {
             <React.Fragment>
               <div className={styles.smallCardContent}>
                 <div>
-                  <Icon icon={icon} canUseIcon={canUseIcon} small={true} />
+                  <Icon
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    icon={icon!}
+                    canUseIcon={canUseIcon}
+                    small={true}
+                  />
                 </div>
                 <div>
                   <div className="basic500 body3 margin-min origin-ellipsis">
@@ -88,7 +96,11 @@ class AuthCardComponent extends React.PureComponent<IProps> {
             </React.Fragment>
           ) : (
             <div>
-              <Icon icon={icon} canUseIcon={canUseIcon} />
+              <Icon
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                icon={icon!}
+                canUseIcon={canUseIcon}
+              />
               <div>
                 <div className="body1 font600 margin-min">{name}</div>
               </div>

@@ -5,15 +5,11 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import keeperWalletLock from '../../assets/img/keeper-wallet-lock.svg';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { useAppSelector } from '../../store';
 import background from 'ui/services/Background';
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function Import({ setTab }: Props) {
+export function Import({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const currentNetwork = useAppSelector(state => state.currentNetwork);
   const tabMode = useAppSelector(state => state.localState?.tabMode);

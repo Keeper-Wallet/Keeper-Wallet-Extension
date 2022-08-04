@@ -12,7 +12,8 @@ export function useFeeOptions({
   const assets = useAppSelector(state => state.assets);
 
   const balance = useAppSelector(
-    state => state.balances[state.selectedAccount.address]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[state.selectedAccount.address!]
   );
 
   const feeConfig = useAppSelector(state => state.feeConfig);

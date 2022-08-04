@@ -34,7 +34,7 @@ export function LangsSelect() {
           return;
         }
 
-        dispatch(setLocale(locale));
+        dispatch(setLocale(locale as string));
       }}
     />
   );

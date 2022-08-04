@@ -1,11 +1,14 @@
 import * as styles from './matcher.styl';
 import * as React from 'react';
 import cn from 'classnames';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps, TxIcon } from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import { messageType } from './parseTx';
+import { MessageCardComponentProps } from '../types';
 
-class MatcherCardComponent extends React.PureComponent<ComponentProps> {
+class MatcherCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const { t, message, collapsed } = this.props;
     const { origin } = message;

@@ -99,7 +99,32 @@ export const PAGES = {
   NFT_INFO: 'nft_details',
 };
 
-export const PAGES_CONF = {
+export interface PageComponentProps {
+  setTab: (tab: string | null) => void;
+  onBack: () => void;
+}
+
+interface PageMenuConfig {
+  hasLogo: boolean;
+  hasSettings?: boolean;
+  back: string | boolean | null;
+  deleteAccount?: boolean;
+  close?: unknown;
+}
+
+interface PageBottomConfig {
+  hide?: boolean;
+  noChangeNetwork?: boolean;
+}
+
+interface PageConfig {
+  component: React.ComponentType<PageComponentProps>;
+  bottom?: PageBottomConfig;
+  menu: PageMenuConfig;
+  props?: Record<never, unknown>;
+}
+
+export const PAGES_CONF: Record<string, PageConfig> = {
   [PAGES.WELCOME]: {
     component: Welcome,
     bottom: {

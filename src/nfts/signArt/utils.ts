@@ -1,5 +1,5 @@
 import { signArtDataUrl, signArtUserDataUrl } from 'nfts/signArt/constants';
-import { NftDetails, NftVendor } from 'nfts/index';
+import { NftVendor } from 'nfts/index';
 import { SignArtInfo } from 'nfts/signArt/index';
 import { reduceDataEntries } from 'nfts/utils';
 
@@ -11,7 +11,7 @@ function nftIdKey(id: string) {
 
 export async function fetchAll(
   nodeUrl: string,
-  nfts: NftDetails[]
+  nfts: Array<{ assetId: string }>
 ): Promise<SignArtInfo[]> {
   if (nfts.length === 0) {
     return [];
@@ -38,7 +38,10 @@ export async function fetchAll(
     .then(dataEntries =>
       nftIds.map(id => {
         const value = dataEntries[nftIdKey(id)];
-        const [, artworkId, creator] = value.match(artworkInfoMask);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const [, artworkId, creator] = (value as string).match(
+          artworkInfoMask
+        )!;
         return { artworkId, creator };
       })
     )

@@ -6,13 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { Login } from './login';
 import { newAccountSelect } from '../../../actions';
-import { PAGES } from '../../../pageConfig';
+import { PageComponentProps, PAGES } from '../../../pageConfig';
+import { IdentityUser } from 'controllers/IdentityController';
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function ImportEmail({ setTab }: Props) {
+export function ImportEmail({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -32,7 +29,7 @@ export function ImportEmail({ setTab }: Props) {
   );
 
   const handleConfirm = React.useCallback(
-    userData => {
+    (userData: IdentityUser & { name: string }) => {
       dispatch(
         newAccountSelect({
           type: 'wx',

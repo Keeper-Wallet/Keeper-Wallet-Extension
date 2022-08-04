@@ -1,6 +1,6 @@
+import { MessageStoreItem } from 'messages/types';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Message } from 'ui/components/transactions/BaseTransaction/index';
 import { useAppSelector } from 'ui/store';
 import * as styles from '../../pages/styles/transactions.styl';
 import { DateFormat } from '../../ui';
@@ -24,7 +24,7 @@ export interface BalanceAsset {
 }
 
 interface Props {
-  message?: Message;
+  message?: MessageStoreItem;
   sponsoredBalance?: BalanceAssets;
 }
 
@@ -51,7 +51,12 @@ export function TxInfo({ message: messageProp }: Props) {
 
       <div className={styles.txRow}>
         <div className="tx-title tag1 basic500">{t('transactions.txid')}</div>
-        <div className={styles.txValue}>{message.messageHash}</div>
+        <div className={styles.txValue}>
+          {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            message!.messageHash
+          }
+        </div>
       </div>
     </div>
   );

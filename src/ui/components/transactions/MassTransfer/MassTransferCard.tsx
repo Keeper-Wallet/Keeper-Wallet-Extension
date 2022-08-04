@@ -1,57 +1,81 @@
 import * as styles from './massTransfer.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { validators } from '@waves/waves-transactions';
 import { processAliasOrAddress } from 'transactions/utils';
-import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { AddressRecipient } from '../../ui/Address/Recipient';
 import { Attachment, Balance, Spoiler } from '../../ui';
-import { getMoney } from '../../../utils/converters';
+import { getMoney, IMoneyLike } from '../../../utils/converters';
 import { getAmount, getTransferAmount, messageType } from './parseTx';
 import { readAttachment } from '../../../utils/waves';
+import { Money } from '@waves/data-entities';
+import { MessageCardComponentProps } from '../types';
 
-const showAliasWarning = (transfers, chainId) =>
+interface ITransfer {
+  recipient: string;
+  amount: IMoneyLike | string;
+}
+
+const showAliasWarning = (transfers: ITransfer[], chainId: number) =>
   transfers.some(({ recipient }) =>
     validators.isValidAlias(processAliasOrAddress(recipient, chainId))
   );
 
 const MIN_COUNT = 0;
 
-const Transfers = ({ transfers, totalAmount, chainId, count = MIN_COUNT }) => {
+const Transfers = ({
+  transfers,
+  totalAmount,
+  chainId,
+  count = MIN_COUNT,
+}: {
+  transfers: ITransfer[];
+  totalAmount: Money;
+  chainId: number;
+  count?: number;
+}) => {
   const assets = { [totalAmount.asset.id]: totalAmount.asset };
 
-  return transfers.slice(0, count).map(({ recipient, amount }) => {
-    const money = getMoney(
-      getTransferAmount(amount, totalAmount.asset.id),
-      assets
-    );
+  return (
+    <>
+      {transfers.slice(0, count).map(({ recipient, amount }) => {
+        const money = getMoney(
+          getTransferAmount(amount, totalAmount.asset.id),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          assets as any
+        );
 
-    return (
-      <div key={recipient} className={styles.massTransferItem}>
-        <AddressRecipient
-          className={styles.massTransferRecipient}
-          recipient={recipient}
-          chainId={chainId}
-          showAliasWarning={false}
-        />
-        <div className="body3 submit400">
-          <Balance
-            isShortFormat={true}
-            balance={money}
-            showAsset={false}
-            showUsdAmount
-          />
-        </div>
-      </div>
-    );
-  });
+        return (
+          <div key={recipient} className={styles.massTransferItem}>
+            <AddressRecipient
+              className={styles.massTransferRecipient}
+              recipient={recipient}
+              chainId={chainId}
+              showAliasWarning={false}
+            />
+            <div className="body3 submit400">
+              <Balance
+                isShortFormat={true}
+                balance={money}
+                showAsset={false}
+                showUsdAmount
+              />
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
 };
 
-class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
-  readonly state = Object.create(null);
+class MassTransferCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
+  state = Object.create(null);
 
-  toggleShowRecipients = count => {
+  private toggleShowRecipients = (count: unknown) => {
     this.setState({ count });
   };
 
@@ -65,7 +89,7 @@ class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
     );
 
     const { t, message, assets, collapsed } = this.props;
-    const { data = {} as MessageData } = message;
+    const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const amount = getMoney(getAmount(tx), assets);
 
@@ -105,7 +129,8 @@ class MassTransferCardComponent extends React.PureComponent<ComponentProps> {
               <Transfers
                 transfers={tx.transfers}
                 chainId={tx.chainId}
-                totalAmount={amount}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                totalAmount={amount!}
                 count={tx.transfers.length}
               />
             </Spoiler>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './ExportButton.module.css';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'ui/store';
-import { downloadKeystore } from '../../../utils/keystore';
+import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportPasswordModal } from '../../pages/exportAccounts/passwordModal';
 import { isExportable } from '../../pages/exportAccounts/chooseItems';
 

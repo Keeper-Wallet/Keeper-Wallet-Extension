@@ -9,13 +9,18 @@ import { Button } from '../../ui';
 import cn from 'classnames';
 import oauth from '../OriginAuth';
 import { isMe as isOrder } from '../CreateOrder/parseTx';
-import { Message, TxHeader } from '../BaseTransaction';
-import { Account } from 'accounts/types';
-import { AssetDetail } from 'ui/services/Background';
-import { ComponentConfig } from 'ui/components/transactions/index';
+import { TxHeader } from '../BaseTransaction';
 import { TransactionStatusState } from 'ui/reducers/localState';
+import { PreferencesAccount } from 'preferences/types';
+import { MessageStoreItem } from 'messages/types';
+import { AssetDetail } from 'assets/types';
+import { MessageConfig } from '../types';
 
-const Error = ({ approveError }: { approveError: { error: unknown } }) => {
+const Error = ({
+  approveError,
+}: {
+  approveError: { error: unknown } | boolean | undefined;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -26,7 +31,10 @@ const Error = ({ approveError }: { approveError: { error: unknown } }) => {
         {t('sign.someError')}
       </div>
       <div className={`body3 ${styles.finalTxPlate}`}>
-        {JSON.stringify(approveError.error, null, 4)}
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          JSON.stringify((approveError as any).error, null, 4)
+        }
       </div>
     </div>
   );
@@ -34,20 +42,18 @@ const Error = ({ approveError }: { approveError: { error: unknown } }) => {
 
 interface Props extends WithTranslation {
   transactionStatus: TransactionStatusState;
-  selectedAccount: Account;
-  messages: Message[];
+  selectedAccount: Partial<PreferencesAccount>;
+  messages: MessageStoreItem[];
   notifications: unknown[];
-  message: Message;
+  message: MessageStoreItem;
   onClose: (...args: unknown[]) => void;
   onNext: (...args: unknown[]) => void;
   onList: (...args: unknown[]) => void;
   assets: Record<string, AssetDetail>;
-  config: ComponentConfig;
+  config: MessageConfig;
 }
 
 class FinalTransactionComponent extends React.PureComponent<Props> {
-  readonly props;
-
   render() {
     const {
       t,
@@ -86,7 +92,8 @@ class FinalTransactionComponent extends React.PureComponent<Props> {
       ['custom', 'wavesexplorer.com/custom'],
     ]);
     const explorer = explorerUrls.get(
-      explorerUrls.has(network) ? network : 'custom'
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      explorerUrls.has(network!) ? network! : 'custom'
     );
     const txLink = `https://${explorer}/tx/${message.messageHash}`;
 

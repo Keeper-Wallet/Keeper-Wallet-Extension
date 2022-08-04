@@ -1,10 +1,18 @@
-import { getMoney } from '../../../utils/converters';
+import { AssetDetail } from 'assets/types';
+import { getMoney, IMoneyLike } from '../../../utils/converters';
 
 export const messageType = 'create-order';
 export const txType = 'order';
 
-export function getAssetsId(tx): Array<string> {
-  const assets = {};
+export function getAssetsId(tx: {
+  amount?: { assetId?: string };
+  amountAssetId?: string;
+  feeAssetId?: string;
+  matcherFee?: { assetId?: string };
+  price?: { assetId?: string };
+  priceAssetId?: string;
+}) {
+  const assets: Record<string, null> = {};
   const feeAssetId =
     tx.matcherFee && tx.matcherFee.assetId
       ? tx.matcherFee.assetId
@@ -25,38 +33,45 @@ export function getAssetsId(tx): Array<string> {
   return Object.keys(assets);
 }
 
-export function getFee(tx) {
+export function getFee(tx: { matcherFee?: IMoneyLike | string }) {
   return typeof tx.matcherFee === 'object'
     ? tx.matcherFee
     : { coins: tx.matcherFee, assetId: 'WAVES' };
 }
 
-export function getAmount(tx = null) {
+export function getAmount(tx: { amount?: IMoneyLike | string }) {
   return typeof tx.amount === 'object'
     ? tx.amount
     : { coins: tx.amount, assetId: 'WAVES' };
 }
 
-export function getAmountSign(tx) {
+export function getAmountSign(tx: { orderType?: unknown }) {
   return tx.orderType === 'sell' ? '-' : '+';
 }
 
-export function getPrice(tx = null) {
+export function getPrice(tx: { price: IMoneyLike | string }) {
   return typeof tx.price === 'object'
     ? tx.price
     : { coins: tx.price, assetId: 'WAVES' };
 }
 
-export function getPriceSign(tx) {
+export function getPriceSign(tx: { orderType: string }) {
   return tx.orderType === 'buy' ? '-' : '+';
 }
 
-export function getPriceAmount(tx, assets) {
+export function getPriceAmount(
+  tx: {
+    amount: IMoneyLike | string;
+    price: IMoneyLike | string;
+  },
+  assets: Record<string, AssetDetail>
+) {
   const amount = getMoney(getAmount(tx), assets);
   const price = getMoney(getPrice(tx), assets);
-  return amount.convertTo(price.asset, price.getTokens());
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return amount!.convertTo(price!.asset, price!.getTokens());
 }
 
-export function isMe(tx, type: string) {
+export function isMe(tx: { type?: unknown }, type: string | null) {
   return tx.type === 1002 && type === txType;
 }

@@ -1,12 +1,11 @@
 import { Money } from '@waves/data-entities';
-import { Account } from 'accounts/types';
+import { AssetDetail } from 'assets/types';
+import { BalancesItem } from 'balances/types';
+import { MessageStoreItem } from 'messages/types';
+import { PreferencesAccount } from 'preferences/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  AccountBalance,
-  TransactionStatusState,
-} from 'ui/reducers/updateState';
-import { AssetDetail } from 'ui/services/Background';
+import { TransactionStatusState } from 'ui/reducers/updateState';
 import { AppState } from 'ui/store';
 import {
   approve,
@@ -18,23 +17,19 @@ import {
   setAutoOrigin,
   setShowNotification,
 } from '../../actions';
-import { PAGES } from '../../pageConfig';
-import {
-  ComponentConfig,
-  FinalTransaction,
-  getConfigByTransaction,
-} from '../transactions';
-import { Message } from '../transactions/BaseTransaction';
+import { PageComponentProps, PAGES } from '../../pageConfig';
+import { FinalTransaction, getConfigByTransaction } from '../transactions';
 import { Intro } from './Intro';
+import { MessageComponentProps, MessageConfig } from '../transactions/types';
 
 interface StateProps {
-  activeMessage: Message;
+  activeMessage: MessageStoreItem | null;
   assets: Record<string, AssetDetail>;
   autoClickProtection?: boolean;
-  balance: AccountBalance;
-  messages: Message[];
+  balance: BalancesItem;
+  messages: MessageStoreItem[];
   notifications: unknown[];
-  selectedAccount: Account;
+  selectedAccount: Partial<PreferencesAccount>;
   transactionStatus: TransactionStatusState;
 }
 
@@ -43,7 +38,8 @@ const mapStateToProps = function (state: AppState): StateProps {
     activeMessage: state.activePopup && state.activePopup.msg,
     assets: state.assets,
     autoClickProtection: state.uiState && state.uiState.autoClickProtection,
-    balance: state.balances[state.selectedAccount.address],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    balance: state.balances[state.selectedAccount.address!],
     messages: state.messages,
     notifications: state.notifications,
     selectedAccount: state.selectedAccount,
@@ -69,32 +65,39 @@ interface DispatchProps {
   getAsset: (assetId: string) => void;
   reject: (id: string) => void;
   rejectForever: (id: string) => void;
-  setAutoOrigin: (permissions: unknown) => void;
-  setShowNotification: (permissions: unknown) => void;
+  setAutoOrigin: (permissions: {
+    origin: string | undefined;
+    params: Partial<{
+      type: 'allowAutoSign';
+      totalAmount: string | null;
+      interval: number | null;
+      approved?: unknown[];
+    }>;
+  }) => void;
+  setShowNotification: (options: {
+    origin: string | undefined;
+    canUse: boolean;
+  }) => void;
 }
 
-interface OwnProps {
-  setTab: (tab: string) => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = PageComponentProps & StateProps & DispatchProps;
 
 interface State {
-  activeMessage: Message;
+  activeMessage: MessageStoreItem;
   approvePending: boolean;
   assets: Record<string, AssetDetail>;
-  config: ComponentConfig;
+  config: MessageConfig;
   loading: boolean;
-  messages: Message[];
+  messages: MessageStoreItem[];
   notifications: unknown[];
-  selectedAccount: Account;
+  selectedAccount: Partial<PreferencesAccount>;
   transactionStatus: TransactionStatusState;
-  txHash: string;
+  txHash: string | string[];
 }
 
 class MessagesComponent extends React.Component<Props, State> {
   readonly state = {} as State;
-  hasApproved: boolean;
+  hasApproved: boolean | undefined;
 
   static getDerivedStateFromProps(
     nextProps: Props,
@@ -133,7 +136,8 @@ class MessagesComponent extends React.Component<Props, State> {
       };
     }
 
-    const sourceSignData = activeMessage.data || {};
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const sourceSignData = activeMessage!.data || {};
     const parsedData = MessagesComponent.getAssetsAndMoneys(sourceSignData);
 
     const needGetAssets = new Set(
@@ -147,12 +151,15 @@ class MessagesComponent extends React.Component<Props, State> {
     }
 
     loading = false;
-    const txHash = activeMessage.messageHash;
-    const config = getConfigByTransaction(activeMessage);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const txHash = activeMessage!.messageHash;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const config = getConfigByTransaction(activeMessage!);
     return {
       transactionStatus,
       selectedAccount,
-      activeMessage,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      activeMessage: activeMessage!,
       config,
       txHash,
       assets,
@@ -162,17 +169,23 @@ class MessagesComponent extends React.Component<Props, State> {
     };
   }
 
-  static getAssetsAndMoneys(data) {
-    const moneys = [];
-    const assets = {};
-    const work = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static getAssetsAndMoneys(data: any) {
+    const moneys: Array<{ path: unknown }> = [];
+    const assets: Record<string, true> = {};
+
+    const work: Array<{
+      path: unknown[];
+      data: { amountAsset?: string; assetId?: string; priceAsset?: string };
+    }> = [];
 
     if (data && typeof data === 'object') {
       work.push({ path: [], data });
     }
 
     while (work.length) {
-      const { path: currentPath, data: currentData } = work.pop();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { path: currentPath, data: currentData } = work.pop()!;
 
       if (currentData == null || typeof currentData !== 'object') {
         continue;
@@ -215,20 +228,21 @@ class MessagesComponent extends React.Component<Props, State> {
     return { assets, moneys };
   }
 
-  rejectHandler = e => this.reject(e);
+  rejectHandler = (e: unknown) => this.reject(e);
 
-  rejectForeverHandler = e => this.rejectForever(e);
+  rejectForeverHandler = (e: unknown) => this.rejectForever(e);
 
-  approveHandler = (e, params) => this.approve(e, params);
+  approveHandler: MessageComponentProps['approve'] = (e, params) =>
+    this.approve(e, params);
 
-  closeHandler = e => {
+  closeHandler = (e: unknown) => {
     this.updateActiveMessages(e);
     this.props.closeNotificationWindow();
   };
 
-  toListHandler = e => this.updateActiveMessages(e);
+  toListHandler = (e: unknown) => this.updateActiveMessages(e);
 
-  nextHandler = e => this.updateActiveMessages(e, true);
+  nextHandler = (e: unknown) => this.updateActiveMessages(e, true);
 
   selectAccountHandler = () => this.props.setTab(PAGES.CHANGE_TX_ACCOUNT);
 
@@ -247,7 +261,8 @@ class MessagesComponent extends React.Component<Props, State> {
       return (
         <FinalTransaction
           selectedAccount={this.props.selectedAccount}
-          message={this.props.activeMessage}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          message={this.props.activeMessage!}
           assets={this.props.assets}
           messages={this.props.messages}
           notifications={this.props.notifications}
@@ -285,7 +300,10 @@ class MessagesComponent extends React.Component<Props, State> {
     );
   }
 
-  approve(e, params?) {
+  approve(
+    e: Parameters<MessageComponentProps['approve']>[0],
+    params: Parameters<MessageComponentProps['approve']>[1]
+  ) {
     e?.preventDefault();
 
     if (this.hasApproved) {
@@ -305,25 +323,32 @@ class MessagesComponent extends React.Component<Props, State> {
     }
 
     this.hasApproved = true;
-    this.props.approve(this.state.activeMessage.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.props.approve(this.state.activeMessage.id!);
   }
 
-  reject(e = null) {
+  reject(e: unknown = null) {
     if (e) {
-      e.preventDefault();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (e as any).preventDefault();
     }
-    this.props.reject(this.state.activeMessage.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.props.reject(this.state.activeMessage.id!);
   }
 
-  rejectForever(e = null) {
-    if (e) e.preventDefault();
-    this.props.rejectForever(this.state.activeMessage.id);
+  rejectForever(e: unknown = null) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (e) (e as any).preventDefault();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.props.rejectForever(this.state.activeMessage.id!);
   }
 
-  updateActiveMessages(e, isNext = false) {
+  updateActiveMessages(e: unknown, isNext = false) {
     if (e) {
-      e.preventDefault();
-      e.stopPropagation();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (e as any).preventDefault();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (e as any).stopPropagation();
     }
 
     this.props.clearMessagesStatus(!isNext);

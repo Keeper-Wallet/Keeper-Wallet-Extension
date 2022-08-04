@@ -11,33 +11,51 @@ import {
   reject,
   updateActiveState,
 } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import { Intro } from './Intro';
-import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { MessageStoreItem } from 'messages/types';
 
-interface Props extends WithTranslation {
-  selectAccount: Account;
-  activeMessage: unknown;
-  messages: unknown[];
-  activeNotification: unknown;
-  notifications: unknown[];
+interface StateProps {
+  selectAccount: Partial<PreferencesAccount>;
+  messages: MessageStoreItem[];
+  notifications: NotificationsStoreItem[][];
+  activeMessage: MessageStoreItem | null;
+  activeNotification: NotificationsStoreItem[] | null;
+}
 
-  onBack: () => void;
-  setTab: (tab: string) => void;
-  updateActiveState: () => void;
-  clearMessages: () => void;
-  clearMessagesStatus: () => void;
-  deleteNotifications: (ids: unknown[]) => void;
+interface DispatchProps {
   closeNotificationWindow: () => void;
+  updateActiveState: () => void;
+  deleteNotifications: (
+    ids:
+      | string[]
+      | {
+          ids: string[];
+          next: NotificationsStoreItem[] | null;
+        }
+  ) => void;
+  clearMessagesStatus: () => void;
+  clearMessages: () => void;
   reject: (id: string) => void;
 }
 
-class SelectTxAccountComponent extends React.PureComponent<Props> {
-  readonly state = { loading: false };
-  readonly props;
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
 
-  static getDerivedStateFromProps(props, state) {
+interface State {
+  loading: boolean;
+}
+
+class SelectTxAccountComponent extends React.PureComponent<Props, State> {
+  state: State = { loading: false };
+
+  static getDerivedStateFromProps(
+    props: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     const { activeMessage, messages, activeNotification, notifications } =
       props;
 
@@ -57,7 +75,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props> {
   deleteNotifications = () => {
     const ids = this.props.notifications.reduce((acc, item) => {
       return [...acc, ...item.map(({ id }) => id)];
-    }, []);
+    }, [] as string[]);
     this.props.deleteNotifications(ids);
   };
 
@@ -105,7 +123,7 @@ class SelectTxAccountComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: AppState): StateProps => {
   return {
     selectAccount: state.selectedAccount,
     messages: state.messages,

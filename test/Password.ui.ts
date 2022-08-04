@@ -1,3 +1,4 @@
+import * as mocha from 'mocha';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { clear } from './utils';
@@ -11,7 +12,7 @@ describe('Password management', () => {
     NEW: 'verystrongpassword',
   };
   let currentPassword: string;
-  let tabKeeper, tabAccounts;
+  let tabKeeper: string, tabAccounts: string;
 
   after(async function () {
     await App.closeBgTabs.call(this, tabKeeper);
@@ -270,7 +271,7 @@ describe('Password management', () => {
     this.timeout(60 * 1000);
     let loginForm: WebElement, loginButton: WebElement, loginInput: WebElement;
 
-    async function performLogout() {
+    async function performLogout(this: mocha.Context) {
       await this.driver
         .wait(
           until.elementLocated(
@@ -295,7 +296,7 @@ describe('Password management', () => {
       );
     }
 
-    async function performLogin(password: string) {
+    async function performLogin(this: mocha.Context, password: string) {
       await this.driver
         .wait(until.elementLocated(By.css('input#loginPassword')), this.wait)
         .sendKeys(password);

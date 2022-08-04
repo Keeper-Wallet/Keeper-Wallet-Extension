@@ -1,14 +1,24 @@
-import { Message } from 'ui/components/transactions/BaseTransaction';
+import { MessageStoreItem } from 'messages/types';
+import { NotificationsStoreItem } from 'notifications/types';
+import { UiAction } from 'ui/store';
 import { ACTION } from '../actions';
 
-const createSimpleReducer =
-  (def, type) =>
-  (store = def, action) =>
-    type === action.type ? action.payload : store;
+export function notifications(
+  state: NotificationsStoreItem[][] = [],
+  action: UiAction
+) {
+  switch (action.type) {
+    case ACTION.NOTIFICATIONS.SET:
+      return action.payload;
+    default:
+      return state;
+  }
+}
 
-export const notifications = createSimpleReducer([], ACTION.NOTIFICATIONS.SET);
-
-export const activeNotification = (store = null, { type, payload }) => {
+export const activeNotification = (
+  store: NotificationsStoreItem[] | null | undefined = null,
+  { type, payload }: UiAction
+) => {
   switch (type) {
     case ACTION.NOTIFICATIONS.SET:
       if (!store && payload.length === 1) {
@@ -22,7 +32,6 @@ export const activeNotification = (store = null, { type, payload }) => {
           return newItem;
         }
       }
-
       break;
     case ACTION.NOTIFICATIONS.SET_ACTIVE:
       return payload;
@@ -31,34 +40,14 @@ export const activeNotification = (store = null, { type, payload }) => {
   return store;
 };
 
-interface ActivePopupState {
-  msg: Message;
-  notify: unknown;
+export interface ActivePopupState {
+  msg: MessageStoreItem | null;
+  notify: NotificationsStoreItem[] | null;
 }
 
 export const activePopup = (
   state: ActivePopupState | null = null,
-  action:
-    | {
-        type: typeof ACTION.MESSAGES.SET_ACTIVE_AUTO;
-        payload: {
-          allMessages: Message[];
-          messages: Message[];
-          notifications: unknown[];
-        };
-      }
-    | {
-        type: typeof ACTION.MESSAGES.UPDATE_ACTIVE;
-        payload: null;
-      }
-    | {
-        type: typeof ACTION.MESSAGES.SET_ACTIVE_MESSAGE;
-        payload: Message;
-      }
-    | {
-        type: typeof ACTION.MESSAGES.SET_ACTIVE_NOTIFICATION;
-        payload: unknown;
-      }
+  action: UiAction
 ): ActivePopupState | null => {
   switch (action.type) {
     case ACTION.MESSAGES.SET_ACTIVE_AUTO:
@@ -81,15 +70,16 @@ export const activePopup = (
 
 const getActiveFromState = (
   state: ActivePopupState | null,
-  messages: Message[] = [],
-  allMessages: Message[] = [],
-  notifications: unknown[] = []
+  messages: MessageStoreItem[] = [],
+  allMessages: MessageStoreItem[] = [],
+  notifications: NotificationsStoreItem[][] = []
 ): ActivePopupState | null => {
   // Can activeMessage
   if (state != null && (state.msg || state.notify)) {
     // Update from messages
     if (state.msg) {
-      const msgItem = allMessages.find(item => item.id === state.msg.id);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const msgItem = allMessages.find(item => item.id === state.msg!.id);
       state.msg = msgItem || state.msg;
     }
 

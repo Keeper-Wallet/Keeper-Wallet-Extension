@@ -1,27 +1,24 @@
 import ObservableStore from 'obs-store';
-import { NetworkName } from 'accounts/types';
 import { fetchAllNfts } from 'nfts/utils';
-import { NftDetails, NftInfo } from 'nfts';
 import ExtensionStore from 'lib/localStore';
+import { NetworkController } from './network';
+import { NetworkName } from 'networks/types';
 
 export class NftInfoController {
-  store: ObservableStore<{
-    nfts: Record<string, NftInfo>;
-  }>;
-  protected getNetwork: () => NetworkName;
-  protected getNode: (network?: NetworkName) => string;
+  private store;
+  private getNetwork;
+  private getNode;
 
   constructor({
     localStore,
     getNetwork,
     getNode,
   }: {
-    localStore?: ExtensionStore;
-    getNetwork?: () => NetworkName;
-    getNode?: (network?: NetworkName) => string;
-  } = {}) {
-    const defaults = { nfts: {} };
-    const initState = localStore.getInitState(defaults);
+    localStore: ExtensionStore;
+    getNetwork: NetworkController['getNetwork'];
+    getNode: NetworkController['getNode'];
+  }) {
+    const initState = localStore.getInitState({ nfts: {} });
     this.store = new ObservableStore(initState);
     localStore.subscribe(this.store);
 
@@ -33,7 +30,9 @@ export class NftInfoController {
     return this.store.getState().nfts;
   }
 
-  async updateNfts(nfts: Array<NftDetails>) {
+  async updateNfts(
+    nfts: Array<{ assetId: string; issuer: string | undefined }>
+  ) {
     if (nfts.length === 0) {
       return;
     }

@@ -3,9 +3,10 @@ import * as React from 'react';
 
 import { WavesAuthCard } from './WavesAuthCard';
 import { WavesAuthInfo } from './WavesAuthInfo';
-import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function WavesAuth(props: ComponentProps) {
+export function WavesAuth(props: MessageComponentProps) {
   const { message, assets } = props;
 
   return (

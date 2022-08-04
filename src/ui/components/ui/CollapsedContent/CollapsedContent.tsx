@@ -7,7 +7,7 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
 
   myRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.myRef = React.createRef<HTMLDivElement>();
   }
@@ -56,7 +56,8 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
         return;
       }
 
-      this.props.scrollElement.scrollTo({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.props.scrollElement!.scrollTo({
         top: this.myRef.current.offsetTop,
         behavior: 'smooth',
       });
@@ -64,7 +65,7 @@ export class CollapsedContent extends React.PureComponent<IProps, IState> {
 }
 
 interface IProps extends React.ComponentProps<'div'> {
-  scrollElement: HTMLElement;
+  scrollElement: HTMLElement | null | undefined;
   titleElement: string | React.ReactElement;
   onOpen?: () => void;
   onClose?: () => void;

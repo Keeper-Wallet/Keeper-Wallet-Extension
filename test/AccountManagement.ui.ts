@@ -1,4 +1,3 @@
-import * as mocha from 'mocha';
 import {
   App,
   Assets,
@@ -14,7 +13,7 @@ import { DEFAULT_ANIMATION_DELAY, DEFAULT_PASSWORD } from './utils/constants';
 describe('Account management', function () {
   this.timeout(60 * 1000);
 
-  let tabKeeper, tabAccounts;
+  let tabKeeper: string, tabAccounts: string;
 
   before(async function () {
     await App.initVault.call(this, DEFAULT_PASSWORD);
@@ -220,7 +219,7 @@ describe('Account management', function () {
     });
   });
 
-  function accountPropertiesShouldBeRight(this: mocha.Context) {
+  function accountPropertiesShouldBeRight() {
     describe('Address', function () {
       it('Is displayed', async function () {
         expect(

@@ -10,7 +10,7 @@ import { Copy } from '../ui/copy/Copy';
 import * as styles from './activeAccountCard.module.css';
 import { Tooltip } from '../ui/tooltip';
 import { Loader } from '../ui/loader';
-import { Account } from '../../../accounts/types';
+import { PreferencesAccount } from 'preferences/types';
 
 const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
   amount !== null ? (
@@ -20,10 +20,10 @@ const UsdAmount = ({ amount }: { amount: BigNumber | null }) =>
   );
 
 interface Props {
-  account: Account;
+  account: PreferencesAccount;
   wavesBalance?: string | BigNumber | Money;
   amountInUsd: BigNumber | null;
-  onClick: (account: Account) => void;
+  onClick: (account: PreferencesAccount) => void;
   onCopy: () => void;
   onOtherAccountsClick: () => void;
   onShowQr: () => void;

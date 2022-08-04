@@ -38,10 +38,10 @@ import {
   WithSender,
 } from '@waves/waves-transactions/dist/transactions';
 import { ERRORS } from '../lib/keeperError';
-import { AccountType } from 'accounts/types';
 import Long from 'long';
 import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
+import { PreferencesAccount } from 'preferences/types';
 
 type RawStringIn = Exclude<TRawStringIn, TRawStringInDiscriminator>;
 
@@ -330,7 +330,7 @@ export interface SaAuth {
 
 export interface SaRequest {
   data: {
-    senderPublicKey?: string;
+    senderPublicKey: string;
     timestamp: number;
   };
 }
@@ -349,7 +349,8 @@ function createDeepConverter<TFrom, TTo>(
   predicate: (value: unknown) => value is TFrom,
   converter: (value: TFrom) => TTo
 ) {
-  function deepConvert(value: unknown) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function deepConvert(value: any): any {
     if (predicate(value)) {
       return converter(value);
     }
@@ -380,7 +381,8 @@ const convertLongToBigNumber = createDeepConverter(
   value => new BigNumber(value.toString())
 );
 
-function convertArg(arg: InvokeScriptCallArgument) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function convertArg(arg: InvokeScriptCallArgument): any {
   return arg.type === 'integer'
     ? { ...arg, value: new BigNumber(arg.value) }
     : arg.type === 'list'
@@ -392,7 +394,7 @@ export const convertFromSa = {
   transaction: (
     input: SaTransaction,
     defaultChainId: number,
-    accountType: AccountType
+    accountType: PreferencesAccount['type']
   ) => {
     const fallbackVersion = getTxVersions(accountType)[input.type][0];
 
@@ -415,7 +417,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(issue(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -439,7 +442,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(transfer(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -464,7 +468,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(reissue(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -479,7 +484,8 @@ export const convertFromSa = {
           amount:
             quantity instanceof Money
               ? quantity.getCoins()
-              : new BigNumber(quantity),
+              : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                new BigNumber(quantity!),
           chainId: input.data.chainId || defaultChainId,
           fee: input.data.fee?.getCoins(),
           timestamp: input.data.timestamp,
@@ -488,7 +494,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(burn(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -510,7 +517,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(lease(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -529,7 +537,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             cancelLease(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -546,7 +555,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(alias(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -573,7 +583,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             massTransfer(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -594,7 +605,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(data(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -611,7 +623,8 @@ export const convertFromSa = {
 
         try {
           return convertLongToBigNumber(setScript(convertBigNumberToLong(tx)));
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -631,7 +644,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             sponsorship(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -651,7 +665,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             setAssetScript(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -664,7 +679,8 @@ export const convertFromSa = {
           call: input.data.call
             ? {
                 ...input.data.call,
-                args: input.data.call.args.map(convertArg),
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+                args: input.data.call.args!.map(convertArg as any),
               }
             : undefined,
           payment: input.data.payment.map(payment => ({
@@ -682,7 +698,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             invokeScript(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }
@@ -704,7 +721,8 @@ export const convertFromSa = {
           return convertLongToBigNumber(
             updateAssetInfo(convertBigNumberToLong(tx))
           );
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, input);
         }
       }

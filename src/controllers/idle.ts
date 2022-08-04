@@ -1,20 +1,18 @@
 import { extension } from 'lib/extension';
 import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
+import { IdleOptions } from 'preferences/types';
 import { PreferencesController } from './preferences';
 import { VaultController } from './VaultController';
 
 const IDLE_INTERVAL = 60;
 
 export class IdleController {
-  options: {
-    type: string;
-    interval: number;
-  };
-  preferencesController: PreferencesController;
-  vaultController: VaultController;
-  store: ObservableStore;
-  lastUpdateIdle: number;
+  private options: IdleOptions;
+  private preferencesController;
+  private vaultController;
+  private store;
+  private lastUpdateIdle;
 
   constructor({
     localStore,
@@ -27,7 +25,11 @@ export class IdleController {
   }) {
     extension.idle.setDetectionInterval(IDLE_INTERVAL);
     this.options = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       type: 'idle',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       interval: 15 * 60 * 1000,
       ...preferencesController.store.getState().idleOptions,
     };
@@ -40,14 +42,15 @@ export class IdleController {
     localStore.subscribe(this.store);
     this.start();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       if (name === 'idle') {
         this.start();
       }
     });
   }
 
-  setOptions(options) {
+  setOptions(options: IdleOptions) {
     this.options = { ...this.options, ...options };
     this.preferencesController.setIdleOptions(this.options);
     this.start();
@@ -87,7 +90,7 @@ export class IdleController {
     }
   }
 
-  _lock = state => {
+  _lock = (state: string) => {
     if (['idle', 'locked'].indexOf(state) > -1) {
       this.vaultController.lock();
     }

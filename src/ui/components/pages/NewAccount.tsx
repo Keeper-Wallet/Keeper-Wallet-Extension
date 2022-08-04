@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Button, Error, Input, LangsSelect } from '../ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONFIG } from '../../appConfig';
+import { PageComponentProps } from 'ui/pageConfig';
 import { AppState } from 'ui/store';
 
 const MIN_LENGTH = CONFIG.PASSWORD_MIN_LENGTH;
@@ -15,13 +16,14 @@ const mapStateToProps = function (store: AppState) {
   };
 };
 
-interface INewAccountComponentProps extends WithTranslation {
-  createNew(pass: string): void;
-
-  setTab(tab: string): void;
+interface DispatchProps {
+  createNew: (pass: string) => void;
+  setTab: (tab: string | null) => void;
 }
 
-class NewAccountComponent extends React.PureComponent<INewAccountComponentProps> {
+class NewAccountComponent extends React.PureComponent<
+  PageComponentProps & WithTranslation & DispatchProps
+> {
   state = {
     firstValue: '',
     secondValue: '',
@@ -34,7 +36,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
   };
 
   static _isDisabledButton(
-    { firstValue, secondValue },
+    { firstValue, secondValue }: { firstValue: string; secondValue: string },
     termsAccepted: boolean,
     conditionsAccepted: boolean
   ) {
@@ -55,7 +57,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     return isFirstError || isSecondError;
   }
 
-  static _validateFirst(firstValue) {
+  static _validateFirst(firstValue: string) {
     if (!firstValue) {
       return null;
     }
@@ -65,7 +67,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     }
   }
 
-  static _validateSecond(firstValue, secondValue) {
+  static _validateSecond(firstValue: string, secondValue: string) {
     if (!secondValue || !firstValue) {
       return null;
     }
@@ -81,10 +83,10 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
 
   onSecondBlur = () => this._onSecondBlur();
 
-  onChangeFist = e =>
+  onChangeFist = (e: React.ChangeEvent<HTMLInputElement>) =>
     this._onChangeInputs(e.target.value, this.state.secondValue);
 
-  onChangeSecond = e =>
+  onChangeSecond = (e: React.ChangeEvent<HTMLInputElement>) =>
     this._onChangeInputs(this.state.firstValue, e.target.value);
 
   handleTermsAcceptedChange = (
@@ -103,7 +105,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     });
   };
 
-  onSubmit = e => {
+  onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (!this.state.passwordError && this.state.firstValue) {
@@ -234,12 +236,12 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
     this._checkValues(this.state.firstValue, this.state.secondValue);
   }
 
-  _onChangeInputs(firstValue, secondValue) {
+  _onChangeInputs(firstValue: string, secondValue: string) {
     this.setState({ firstValue, secondValue });
     this._checkValues(firstValue, secondValue);
   }
 
-  _checkValues(firstValue, secondValue) {
+  _checkValues(firstValue: string, secondValue: string) {
     const { termsAccepted, conditionsAccepted } = this.state;
     const firstError = NewAccountComponent._validateFirst(firstValue);
     const secondError = NewAccountComponent._validateSecond(
@@ -260,6 +262,7 @@ class NewAccountComponent extends React.PureComponent<INewAccountComponentProps>
   }
 }
 
-export const NewAccount = connect(mapStateToProps, { createNew, setTab })(
-  withTranslation()(NewAccountComponent)
-);
+export const NewAccount = connect(mapStateToProps, {
+  createNew,
+  setTab,
+})(withTranslation()(NewAccountComponent));

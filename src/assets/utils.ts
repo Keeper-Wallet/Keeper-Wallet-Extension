@@ -1,8 +1,8 @@
 import { assetIds, assetLogosByNetwork, swappableAssetIds } from './constants';
 import { useAppSelector } from 'ui/store';
-import { NetworkName } from '../accounts/types';
+import { NetworkName } from 'networks/types';
 
-export function useAssetLogo(network: string, assetId: string) {
+export function useAssetLogo(network: NetworkName, assetId: string) {
   const logos = useAppSelector(state => state.assetLogos);
 
   if (network !== NetworkName.Mainnet) {
@@ -12,7 +12,7 @@ export function useAssetLogo(network: string, assetId: string) {
   return logos[assetId] || assetLogosByNetwork[network]?.[assetId];
 }
 
-export function useAssetIdByTicker(network: string, ticker: string) {
+export function useAssetIdByTicker(network: NetworkName, ticker: string) {
   const tickers = useAppSelector(state => state.assetTickers);
 
   if (network !== NetworkName.Mainnet) {
@@ -25,6 +25,9 @@ export function useAssetIdByTicker(network: string, ticker: string) {
   );
 }
 
-export function isSwappableAsset(network: string, assetId: string) {
+export function isSwappableAsset(
+  network: NetworkName.Mainnet,
+  assetId: string
+) {
   return swappableAssetIds[network]?.includes(assetId) ?? false;
 }

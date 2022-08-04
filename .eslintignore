@@ -1,7 +1,2 @@
-.eslintrc.js
-
-node_modules/
-dist/
-
-*.proto.compiled.d.ts
-*.proto.compiled.js
+/dist
+/src/_sentryHelpersReplacement.js

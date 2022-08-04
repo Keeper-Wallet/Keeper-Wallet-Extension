@@ -19,7 +19,10 @@ import { createUpdateState } from './ui/actions/updateState';
 import { Root } from 'ui/components/Root';
 import { Error } from 'ui/components/pages/Error';
 import { LANGS } from './ui/i18n';
-import backgroundService from './ui/services/Background';
+import backgroundService, {
+  BackgroundGetStateResult,
+  BackgroundUiApi,
+} from './ui/services/Background';
 import { createUiStore } from './ui/store';
 import { initUiSentry } from 'sentry';
 
@@ -54,25 +57,29 @@ async function startUi() {
 
   const onChanged =
     extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(async changes => {
-    const stateChanges = await backgroundService.getState([
-      'initialized',
-      'locked',
-      ...('currentNetwork' in changes ? ['assets'] : []), // assets change when the network changes
-    ]);
+  onChanged.addListener(
+    async (changes: Record<string, browser.storage.StorageChange>) => {
+      const stateChanges: Partial<Record<string, unknown>> &
+        Partial<BackgroundGetStateResult> = await backgroundService.getState([
+        'initialized',
+        'locked',
+        ...('currentNetwork' in changes ? (['assets'] as const) : []), // assets change when the network changes
+      ]);
 
-    for (const key in changes) {
-      stateChanges[key] = changes[key].newValue;
+      for (const key in changes) {
+        stateChanges[key] = changes[key].newValue;
+      }
+
+      updateState(stateChanges);
     }
-
-    updateState(stateChanges);
-  });
+  );
 
   const emitterApi = {
     closePopupWindow: async () => {
-      const popup = extension.extension
-        .getViews({ type: 'popup' })
-        .find(w => w.location.pathname === '/popup.html');
+      const popup = (
+        extension.extension.getViews({ type: 'popup' }) as Window[]
+      ).find(w => w.location.pathname === '/popup.html');
+
       if (popup) {
         popup.close();
       }
@@ -97,10 +104,10 @@ async function startUi() {
     const connectionStream = new PortStream(port);
     const dnode = setupDnode(connectionStream, emitterApi, 'api');
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return await new Promise<any>(resolve => {
-      dnode.once('remote', background => {
-        resolve(transformMethods(cbToPromise, background));
+    return await new Promise<BackgroundUiApi>(resolve => {
+      dnode.once('remote', (background: Record<string, unknown>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolve(transformMethods(cbToPromise, background) as any);
       });
     });
   };

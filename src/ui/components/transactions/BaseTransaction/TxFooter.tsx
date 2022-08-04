@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ApproveBtn, Button } from 'ui/components/ui';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
 import { useAppSelector } from 'ui/store';
-import { ComponentProps } from 'ui/components/transactions/BaseTransaction/index';
+import { MessageComponentProps } from '../types';
 
 export function TxFooter({
   message,
@@ -12,7 +12,7 @@ export function TxFooter({
   reject,
   hideApprove,
   autoClickProtection,
-}: ComponentProps & { hideApprove?: boolean }) {
+}: MessageComponentProps & { hideApprove?: boolean }) {
   const { t } = useTranslation();
   const status = useAppSelector(state => state.localState.transactionStatus);
 
@@ -30,7 +30,8 @@ export function TxFooter({
         {t('sign.reject')}
       </Button>
       {!hideApprove && (
-        <SignWrapper onConfirm={approve}>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        <SignWrapper onConfirm={approve as any}>
           {({ onPrepare, pending }) => (
             <ApproveBtn
               id="approve"
