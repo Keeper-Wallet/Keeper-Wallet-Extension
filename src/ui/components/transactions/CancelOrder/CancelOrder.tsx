@@ -3,9 +3,10 @@ import * as React from 'react';
 
 import { CancelOrderCard } from './CancelOrderCard';
 import { CancelOrderInfo } from './CancelOrderInfo';
-import { ComponentProps, TxFooter, TxHeader } from '../BaseTransaction';
+import { TxFooter, TxHeader } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function CancelOrder(props: ComponentProps) {
+export function CancelOrder(props: MessageComponentProps) {
   const { message, assets } = props;
 
   return (

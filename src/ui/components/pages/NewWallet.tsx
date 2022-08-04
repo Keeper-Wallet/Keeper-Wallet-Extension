@@ -1,32 +1,53 @@
 import { seedUtils } from '@waves/waves-transactions';
-import { Account } from 'accounts/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AppState } from 'ui/store';
 import { newAccountSelect } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { AvatarList, Button } from '../ui';
 import * as styles from './styles/newwallet.styl';
+import { NewAccountState } from 'ui/reducers/localState';
 
 interface Network {
   code: string;
   name: string;
 }
 
-interface Props extends WithTranslation {
-  account: Account;
-  currentNetwork: string;
-  customCodes: unknown;
-  isGenerateNew?: boolean;
-  networks: Network[];
-  newAccountSelect: (newAccount: Account & { hasBackup: boolean }) => void;
-  setTab: (newTab: string) => void;
+interface SeedAccountData {
+  seed: string;
+  address: string | null;
+  type: 'seed';
 }
 
-class NewWalletComponent extends React.Component<Props> {
-  static list = [];
-  state;
+interface StateProps {
+  account: Extract<NewAccountState, { type: 'seed' }>;
+  customCodes: Record<string, string | null>;
+  networks: Network[];
+  currentNetwork: string;
+}
+
+interface DispatchProps {
+  newAccountSelect: (
+    newAccount: SeedAccountData & { name: string; hasBackup: boolean }
+  ) => void;
+}
+
+type Props = PageComponentProps &
+  WithTranslation &
+  StateProps &
+  DispatchProps & {
+    isGenerateNew?: boolean;
+  };
+
+interface State {
+  list: SeedAccountData[];
+}
+
+class NewWalletComponent extends React.Component<Props, State> {
+  state: State;
+
+  static list: SeedAccountData[] = [];
 
   constructor(props: Props) {
     super(props);
@@ -35,8 +56,10 @@ class NewWalletComponent extends React.Component<Props> {
 
     const networkCode =
       this.props.customCodes[this.props.currentNetwork] ||
-      this.props.networks.find(({ name }) => this.props.currentNetwork === name)
-        .code ||
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.props.networks.find(
+        ({ name }) => this.props.currentNetwork === name
+      )!.code ||
       '';
     if (isGenerateNew) {
       NewWalletComponent.list = NewWalletComponent.getNewWallets(networkCode);
@@ -51,8 +74,8 @@ class NewWalletComponent extends React.Component<Props> {
     this.state = { list };
   }
 
-  static getNewWallets(networkCode) {
-    const list = [];
+  static getNewWallets(networkCode: string) {
+    const list: SeedAccountData[] = [];
     for (let i = 0; i < 5; i++) {
       const seedData = seedUtils.Seed.create();
       const seed = seedData.phrase;
@@ -62,9 +85,9 @@ class NewWalletComponent extends React.Component<Props> {
     return list;
   }
 
-  onSelect = (account: Account) => this._onSelect(account);
+  onSelect = (account: SeedAccountData) => this._onSelect(account);
 
-  onSubmit = e => this._onSubmit(e);
+  onSubmit = (e: React.FormEvent<HTMLFormElement>) => this._onSubmit(e);
 
   render() {
     const { t } = this.props;
@@ -105,7 +128,7 @@ class NewWalletComponent extends React.Component<Props> {
     );
   }
 
-  _onSelect(account: Account) {
+  _onSelect(account: SeedAccountData) {
     this.props.newAccountSelect({
       name: '',
       ...account,
@@ -114,7 +137,7 @@ class NewWalletComponent extends React.Component<Props> {
     });
   }
 
-  _onSubmit(e) {
+  _onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     e.stopPropagation();
     this.props.setTab(PAGES.SAVE_BACKUP);
@@ -125,9 +148,12 @@ const actions = {
   newAccountSelect,
 };
 
-const mapStateToProps = function (store: AppState) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
-    account: store.localState.newAccount,
+    account: store.localState.newAccount as Extract<
+      NewAccountState,
+      { type: 'seed' }
+    >,
     customCodes: store.customCodes,
     networks: store.networks,
     currentNetwork: store.currentNetwork,

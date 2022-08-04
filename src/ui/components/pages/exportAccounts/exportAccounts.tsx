@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Account } from 'accounts/types';
 import { useAppSelector, useAppDispatch } from 'ui/store';
 import { addBackTab, setTab } from '../../../actions';
 import { PAGES } from '../../../pageConfig';
-import { downloadKeystore } from '../../../utils/keystore';
+import { downloadKeystore } from '../../../../keystore/utils';
 import { ExportKeystoreChooseItems } from './chooseItems';
 import { ExportPasswordModal } from './passwordModal';
+import { PreferencesAccount } from 'preferences/types';
 
 export function ExportAccounts() {
   const dispatch = useAppDispatch();
@@ -14,7 +14,7 @@ export function ExportAccounts() {
   );
 
   const [accountsToExport, setAccountsToExport] = React.useState<
-    Account[] | null
+    PreferencesAccount[] | null
   >(null);
 
   return (

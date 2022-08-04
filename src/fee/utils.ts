@@ -5,10 +5,9 @@ import { getMoney } from 'ui/utils/converters';
 import * as invokeScriptParseTx from '../ui/components/transactions/ScriptInvocation/parseTx';
 import * as transferParseTx from '../ui/components/transactions/Transfer/parseTx';
 import { FeeConfig } from '../constants';
-import { Message } from 'ui/components/transactions/BaseTransaction';
-import { AssetDetail } from 'ui/services/Background';
-import { AccountBalance, AssetBalance } from 'ui/reducers/updateState';
 import { SPONSORED_FEE_TX_TYPES } from './constants';
+import { AssetBalance, BalancesItem } from 'balances/types';
+import { AssetDetail } from 'assets/types';
 
 export function convertFeeToAsset(
   fee: Money,
@@ -23,8 +22,10 @@ export function convertFeeToAsset(
   return new Money(
     fee
       .getCoins()
-      .mul(minSponsoredFee(asset))
-      .div(minSponsoredFee(fee.asset))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .mul(minSponsoredFee(asset)!)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .div(minSponsoredFee(fee.asset)!)
       .roundTo(0, BigNumber.ROUND_MODE.ROUND_UP),
     asset
   );
@@ -39,7 +40,7 @@ export function getFeeOptions({
   usdPrices,
 }: {
   assets: Record<string, AssetDetail>;
-  balance: AccountBalance;
+  balance: BalancesItem;
   feeConfig: FeeConfig;
   initialFee: Money;
   txType: number;
@@ -107,15 +108,20 @@ export function getSpendingAmountsForSponsorableTx({
   message,
 }: {
   assets: Record<string, AssetDetail>;
-  message: Message;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  message: any;
 }): Money[] {
   switch (message.data.type) {
     case TRANSACTION_TYPE.TRANSFER:
-      return [getMoney(transferParseTx.getAmount(message.data.data), assets)];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return [getMoney(transferParseTx.getAmount(message.data.data), assets)!];
     case TRANSACTION_TYPE.INVOKE_SCRIPT:
-      return invokeScriptParseTx
-        .getAmounts(message.data.data)
-        .map(amount => getMoney(amount, assets));
+      return (
+        invokeScriptParseTx
+          .getAmounts(message.data.data)
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          .map(amount => getMoney(amount, assets)!)
+      );
     default:
       return [];
   }

@@ -1,28 +1,23 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
-import { AccountType } from 'accounts/types';
-import { SeedWallet, SeedWalletInput } from './seed';
-import { EncodedSeedWallet, EncodedSeedWalletInput } from './encodedSeed';
-import { PrivateKeyWallet, PrivateKeyWalletInput } from './privateKey';
-import { LedgerApi, LedgerWallet, LedgerWalletInput } from './ledger';
-import { AssetDetail } from 'ui/services/Background';
-import { WxWallet, WxWalletInput } from './wx';
+import { SeedWallet } from './seed';
+import { EncodedSeedWallet } from './encodedSeed';
+import { PrivateKeyWallet } from './privateKey';
+import { LedgerApi, LedgerWallet } from './ledger';
+import { WxWallet } from './wx';
 import { IdentityApi } from '../controllers/IdentityController';
-import { DebugWallet, DebugWalletInput } from 'wallets/debug';
+import { DebugWallet } from 'wallets/debug';
+import { CreateWalletInput } from './types';
+import { AssetInfoController } from 'controllers/assetInfo';
+import { PreferencesAccount } from 'preferences/types';
 
 export function createWallet(
-  input:
-    | ({ type: 'seed' } & SeedWalletInput)
-    | ({ type: 'encodedSeed' } & EncodedSeedWalletInput)
-    | ({ type: 'privateKey' } & PrivateKeyWalletInput)
-    | ({ type: 'wx' } & WxWalletInput)
-    | ({ type: 'ledger' } & LedgerWalletInput)
-    | ({ type: 'debug' } & DebugWalletInput),
+  input: CreateWalletInput,
   {
     getAssetInfo,
     identity,
     ledger,
   }: {
-    getAssetInfo: (assetId: string | null) => Promise<AssetDetail>;
+    getAssetInfo: AssetInfoController['assetInfo'];
     identity: IdentityApi;
     ledger: LedgerApi;
   }
@@ -88,7 +83,9 @@ export function createWallet(
   }
 }
 
-export function getTxVersions(accountType: AccountType) {
+export function getTxVersions(
+  accountType: PreferencesAccount['type']
+): Record<number, number[]> {
   switch (accountType) {
     case 'ledger':
       return {

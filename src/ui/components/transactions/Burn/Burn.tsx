@@ -3,8 +3,9 @@ import * as React from 'react';
 
 import { BurnCard } from './BurnCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function Burn(props) {
+export function Burn(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

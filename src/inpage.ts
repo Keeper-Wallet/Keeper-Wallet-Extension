@@ -14,42 +14,49 @@ function createDeffer<T>() {
 
   return {
     promise,
-    resolve,
-    reject,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    resolve: resolve!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    reject: reject!,
   };
 }
 
 setupInpageApi();
 
 async function setupInpageApi() {
-  let cbs = {};
-  let args = {};
+  let cbs: Record<string, unknown> = {};
+  let args: Record<string, unknown[]> | unknown[] = {};
   const wavesAppDef = createDeffer();
   const wavesApp = {};
   const eventEmitter = new EventEmitter();
-  const wavesApi = {
+  const wavesApi: Record<string, unknown> = {
     initialPromise: wavesAppDef.promise,
     on: eventEmitter.on.bind(eventEmitter),
   };
   const proxyApi = {
-    get(_, prop) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get(_: any, prop: string) {
       if (wavesApi[prop]) {
         return wavesApi[prop];
       }
 
       if (!cbs[prop] && prop !== 'on') {
-        cbs[prop] = function (...args) {
+        cbs[prop] = function (...args: unknown[]) {
           const def = createDeffer();
-          args[prop] = args[prop] || [];
-          args[prop].push({ args, def });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (args as any)[prop] = (args as any)[prop] || [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (args as any)[prop].push({ args, def });
           return def.promise;
         };
       }
 
       if (!cbs[prop] && prop === 'on') {
-        cbs[prop] = function (...args) {
-          args[prop] = args[prop] || [];
-          args[prop].push({ args });
+        cbs[prop] = function (...args: unknown[]) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (args as any)[prop] = (args as any)[prop] || [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (args as any)[prop].push({ args });
         };
       }
 
@@ -84,8 +91,10 @@ async function setupInpageApi() {
     'updatePublicState'
   );
 
-  const inpageApi = await new Promise(resolve => {
-    dnode.on('remote', inpageApi => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const inpageApi = await new Promise<any>(resolve => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dnode.on('remote', (inpageApi: any) => {
       resolve(transformMethods(cbToPromise, inpageApi));
     });
   });
@@ -132,7 +141,8 @@ async function setupInpageApi() {
   setupClickInterceptor(inpageApi);
 }
 
-function setupClickInterceptor(inpageApi) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function setupClickInterceptor(inpageApi: any) {
   const excludeSites = ['waves.exchange'];
 
   if (excludeSites.includes(location.host)) {
@@ -155,13 +165,15 @@ function setupClickInterceptor(inpageApi) {
   });
 }
 
-function checkForPaymentApiLink(e) {
+function checkForPaymentApiLink(e: MouseEvent) {
   let node = e.target;
 
-  const check = node => {
-    const href = node.href;
+  const check = (node: EventTarget) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const href = (node as any).href;
 
-    if (!node.href) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!(node as any).href) {
       return false;
     }
 
@@ -203,18 +215,20 @@ function checkForPaymentApiLink(e) {
     if (result) {
       return result;
     }
-    node = node.parentElement;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    node = (node as any).parentElement;
   }
 
   return false;
 }
 
-function processPaymentAPILink({ type, hash }, inpageApi) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function processPaymentAPILink({ type, hash }: any, inpageApi: any) {
   const apiData = hash
     .split('?')[1]
     .split('&')
     .reduce(
-      (obj, data) => {
+      (obj: Record<string, string>, data: string) => {
         const item = data.split('=');
         obj[item[0]] = decodeURIComponent(item[1].trim());
         return obj;

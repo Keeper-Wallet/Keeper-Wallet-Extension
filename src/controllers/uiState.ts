@@ -1,14 +1,16 @@
 import ExtensionStore from 'lib/localStore';
 import ObservableStore from 'obs-store';
+import { UiState } from 'ui/reducers/updateState';
 
 export class UiStateController {
-  store: ObservableStore;
+  private store;
 
   constructor({ localStore }: { localStore: ExtensionStore }) {
-    const defaults = {
-      uiState: {},
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        uiState: {},
+      })
+    );
     localStore.subscribe(this.store);
   }
 
@@ -16,7 +18,7 @@ export class UiStateController {
     return this.store.getState().uiState;
   }
 
-  setUiState(uiState) {
+  setUiState(uiState: UiState) {
     this.store.updateState({ uiState });
     return this.getUiState();
   }

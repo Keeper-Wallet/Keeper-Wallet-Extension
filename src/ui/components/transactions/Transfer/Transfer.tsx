@@ -2,15 +2,10 @@ import * as styles from './transfer.styl';
 import * as React from 'react';
 
 import { TransferCard } from './TransferCard';
-import {
-  ComponentProps,
-  TxDetailTabs,
-  TxFooter,
-  TxHeader,
-  TxInfo,
-} from '../BaseTransaction';
+import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function Transfer(props: ComponentProps) {
+export function Transfer(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

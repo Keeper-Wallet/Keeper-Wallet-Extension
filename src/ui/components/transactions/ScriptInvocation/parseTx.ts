@@ -5,7 +5,10 @@ import { IMoneyLike } from 'ui/utils/converters';
 export const messageType = 'script_invocation';
 export const txType = 'transaction';
 
-export function getTransferAmount(amount, assetId) {
+export function getTransferAmount(
+  amount: { assetId?: string } | string,
+  assetId: string
+) {
   if (typeof amount === 'object') {
     amount.assetId = assetId;
     return amount;
@@ -14,7 +17,11 @@ export function getTransferAmount(amount, assetId) {
   return { coins: amount, assetId };
 }
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(tx: {
+  fee?: { assetId?: string };
+  feeAssetId?: string;
+  payment?: Array<{ assetId?: string } | string | number | null>;
+}): string[] {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const amountAssetId = (tx.payment || []).map(item => {
@@ -33,7 +40,7 @@ export function getAssetsId(tx): Array<string> {
 
 export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAmounts(tx) {
+export function getAmounts(tx: { payment?: IMoneyLike[] }) {
   const amounts: IMoneyLike[] = [];
 
   (tx.payment || []).forEach(item => {
@@ -46,7 +53,7 @@ export function getAmounts(tx) {
     } else if (item && item.amount) {
       coins = coins.add(item.amount);
     } else {
-      const parse = new BigNumber(item);
+      const parse = new BigNumber(item as unknown as string);
       if (!parse.isNaN()) {
         coins = coins.add(parse);
       }
@@ -63,6 +70,6 @@ export function getAmountSign() {
   return '-' as const;
 }
 
-export function isMe(tx, type: string) {
+export function isMe(tx: { type?: unknown }, type: string | null) {
   return tx.type === TRANSACTION_TYPE.INVOKE_SCRIPT && type === txType;
 }

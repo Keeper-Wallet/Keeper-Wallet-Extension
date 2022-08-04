@@ -6,7 +6,7 @@ import { newAccountSelect } from 'ui/actions/localState';
 import { Button } from 'ui/components/ui/buttons/Button';
 import { Error } from 'ui/components/ui/error';
 import { Input } from 'ui/components/ui/input';
-import { PAGES } from 'ui/pageConfig';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { LedgerAvatarList } from './avatarList';
 import * as styles from './importLedger.module.css';
@@ -45,11 +45,7 @@ interface LedgerUser {
   statusCode: string;
 }
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function ImportLedger({ setTab }: Props) {
+export function ImportLedger({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -128,7 +124,8 @@ export function ImportLedger({ setTab }: Props) {
 
   const networkCode =
     customCodes[currentNetwork] ||
-    networks.find(n => currentNetwork === n.name).code;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    networks.find(n => currentNetwork === n.name)!.code;
 
   const connectToLedger = React.useCallback(async () => {
     setConnectionError(null);
@@ -138,7 +135,8 @@ export function ImportLedger({ setTab }: Props) {
 
     if (ledgerService.status === LedgerServiceStatus.Ready) {
       if (ledgerUsersPages[0] == null) {
-        const users = await ledgerService.ledger.getPaginationUsersData(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const users = await ledgerService.ledger!.getPaginationUsersData(
           0,
           USERS_PER_PAGE - 1
         );
@@ -186,8 +184,12 @@ export function ImportLedger({ setTab }: Props) {
     setGetUsersError(null);
 
     getUsersPromiseRef.current = getUsersPromiseRef.current.then(() =>
-      ledgerService.ledger
-        .getPaginationUsersData(page * USERS_PER_PAGE, USERS_PER_PAGE - 1)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ledgerService
+        .ledger!.getPaginationUsersData(
+          page * USERS_PER_PAGE,
+          USERS_PER_PAGE - 1
+        )
         .then(
           users => {
             setLedgerUsersPages(prevState => ({ ...prevState, [page]: users }));

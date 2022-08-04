@@ -13,7 +13,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { BalanceAssets } from 'ui/reducers/updateState';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import cn from 'classnames';
-import { AssetDetail } from 'ui/services/Background';
+import { AssetDetail } from 'assets/types';
 
 const Row = ({
   data,
@@ -48,9 +48,9 @@ const Row = ({
   );
 };
 
-const PLACEHOLDERS = [...Array(4).keys()].map<[number, BalanceAssets[string]]>(
+const PLACEHOLDERS = [...Array(4).keys()].map<[string, BalanceAssets[string]]>(
   key => [
-    key,
+    String(key),
     {
       balance: '0',
       sponsorBalance: '0',
@@ -72,20 +72,21 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
     state => state.uiState?.showSuspiciousAssets
   );
   const address = useAppSelector(state => state.selectedAccount.address);
-  const myAssets = useAppSelector(state => state.balances[address]?.assets);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const myAssets = useAppSelector(state => state.balances[address!]?.assets);
 
   const [filters, setFilters] = useUiState('assetFilters');
   const [term, setTerm] = [
     filters?.term,
-    value => setFilters({ ...filters, term: value }),
+    (value: string) => setFilters({ ...filters, term: value }),
   ];
   const [onlyMy, setOnlyMy] = [
     filters?.onlyMy,
-    value => setFilters({ ...filters, onlyMy: value }),
+    (value: boolean) => setFilters({ ...filters, onlyMy: value }),
   ];
   const [onlyFav, setOnlyFav] = [
     filters?.onlyFavorites,
-    value => setFilters({ ...filters, onlyFavorites: value }),
+    (value: boolean) => setFilters({ ...filters, onlyFavorites: value }),
   ];
 
   const assetEntries = myAssets
@@ -108,7 +109,7 @@ export function TabAssets({ onInfoClick, onSendClick, onSwapClick }: Props) {
       <div className={styles.filterContainer}>
         <SearchInput
           value={term ?? ''}
-          onInput={e => setTerm(e.target.value)}
+          onInput={e => setTerm(e.currentTarget.value)}
           onClear={() => setTerm('')}
         />
         <Tooltip content={t('assets.onlyFavorites')}>

@@ -1,6 +1,6 @@
+import { AssetDetail } from 'assets/types';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { AssetDetail } from 'ui/services/Background';
 import { AppState } from 'ui/store';
 import { getAsset } from '../../../actions';
 import { Loader } from '../loader';
@@ -39,6 +39,6 @@ interface IProps {
   assetId: string;
   children?: React.ReactNode;
   className?: string;
-  assets?: Record<string, AssetDetail>;
+  assets: Record<string, AssetDetail>;
   getAsset: (id: string) => void;
 }

@@ -1,5 +1,5 @@
 import { ducklingsDataUrl } from 'nfts/ducklings/constants';
-import { NftDetails, NftVendor } from 'nfts/index';
+import { NftVendor } from 'nfts/index';
 import { DucklingInfo } from 'nfts/ducklings/index';
 import { reduceDataEntries } from 'nfts/utils';
 
@@ -9,7 +9,7 @@ function ducklingLevelKey(id: string) {
 
 export async function fetchAll(
   nodeUrl: string,
-  nfts: NftDetails[]
+  nfts: Array<{ assetId: string }>
 ): Promise<DucklingInfo[]> {
   if (nfts.length === 0) {
     return [];
@@ -37,7 +37,8 @@ export async function fetchAll(
     .then(reduceDataEntries)
     .then(dataEntries =>
       nftIds.map(id => {
-        const level = parseInt(dataEntries[ducklingLevelKey(id)] ?? 0);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const level = parseInt((dataEntries[ducklingLevelKey(id)] as any) ?? 0);
         const growthLevel = level > 0 ? level / 1e14 : 0;
 
         return {

@@ -2,6 +2,10 @@ import { BigNumber } from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { SwapClientInvokeTransaction } from '@keeper-wallet/swap-client';
+import { AssetInfoController } from './assetInfo';
+import { NetworkController } from './network';
+import { PreferencesController } from './preferences';
+import { WalletController } from './wallet';
 
 export interface SwapAssetsParams {
   feeCoins: string;
@@ -24,6 +28,11 @@ export class SwapController {
     networkController,
     preferencesController,
     walletController,
+  }: {
+    assetInfoController: AssetInfoController;
+    networkController: NetworkController;
+    preferencesController: PreferencesController;
+    walletController: WalletController;
   }) {
     this.assetInfoController = assetInfoController;
     this.networkController = networkController;
@@ -39,7 +48,8 @@ export class SwapController {
     const [feeAssetInfo, ...paymentAssetInfos] = await Promise.all([
       this.assetInfoController.assetInfo(feeAssetId),
       ...tx.payment.map(payment =>
-        this.assetInfoController.assetInfo(payment.assetId)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.assetInfoController.assetInfo(payment.assetId!)
       ),
     ]);
 
@@ -47,7 +57,8 @@ export class SwapController {
     const selectedAccount = this.preferencesController.getSelectedAccount();
 
     const signedTx = await this.walletController.signTx(
-      selectedAccount.address,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      selectedAccount!.address,
       {
         type: TRANSACTION_TYPE.INVOKE_SCRIPT,
         data: {

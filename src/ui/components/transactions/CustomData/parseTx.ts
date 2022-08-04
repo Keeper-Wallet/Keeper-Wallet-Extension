@@ -1,7 +1,7 @@
 export const messageType = 'customData';
 export const txType = messageType;
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return [];
 }
 
@@ -17,6 +17,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: unknown, type: string) {
+export function isMe(tx: unknown, type: string | null) {
   return type === txType;
 }

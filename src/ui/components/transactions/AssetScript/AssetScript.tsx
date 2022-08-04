@@ -2,8 +2,9 @@ import * as styles from './assetScript.styl';
 import * as React from 'react';
 import { AssetScriptCard } from './AssetScriptCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function AssetScript(props) {
+export function AssetScript(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

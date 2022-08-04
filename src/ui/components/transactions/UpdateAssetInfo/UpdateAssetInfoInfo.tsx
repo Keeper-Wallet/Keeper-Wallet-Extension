@@ -1,20 +1,17 @@
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as styles from './index.styl';
 import { Balance, DateFormat } from '../../ui';
 import { getFee } from './parseTx';
 import { getMoney } from '../../../utils/converters';
-import {
-  ComponentProps,
-  MessageData,
-} from 'ui/components/transactions/BaseTransaction';
+import { MessageComponentProps } from '../types';
 
 class UpdateAssetInfoInfoComponent extends React.PureComponent<
-  Pick<ComponentProps, 't' | 'message' | 'assets'>
+  Pick<MessageComponentProps, 'message' | 'assets'> & WithTranslation
 > {
   render() {
     const { t, message, assets } = this.props;
-    const { messageHash, data = {} as MessageData } = message;
+    const { messageHash, data = {} } = message;
     const tx = { type: data.type, ...data.data };
 
     const fee = getMoney(getFee(tx), assets);

@@ -5,20 +5,22 @@ import { Button, Error, Input } from 'ui/components/ui';
 import { deleteAccount } from 'ui/actions';
 import cn from 'classnames';
 import { useAppDispatch } from 'ui/store';
+import { PageComponentProps } from 'ui/pageConfig';
 
-export function DeleteAllAccounts({ onBack }: { onBack: () => void }) {
+export function DeleteAllAccounts({ onBack }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [phrase, setPhrase] = React.useState(null);
+  const [phrase, setPhrase] = React.useState<string | null>(null);
   const [isBlur, setBlur] = React.useState(false);
 
   const defaultPhrase = t('forgotPassword.phrase');
-  const isCorrectLength = phrase?.length >= defaultPhrase.length;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+  const isCorrectLength = phrase?.length! >= defaultPhrase.length;
   const hasError = phrase !== defaultPhrase;
 
-  function handleInput(event) {
-    setPhrase(event.target.value);
+  function handleInput(event: React.FormEvent<HTMLInputElement>) {
+    setPhrase(event.currentTarget.value);
     setBlur(false);
   }
 

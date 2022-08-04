@@ -1,4 +1,3 @@
-import { AssetDetail } from 'ui/services/Background';
 import { fetchAll as fetchAllSignArts } from 'nfts/signArt/utils';
 import { DuckInfo, fetchAll as fetchAllDucks } from 'nfts/ducks/utils';
 import { fetchAll as fetchAllDucklings } from 'nfts/ducklings/utils';
@@ -8,13 +7,14 @@ import { ducksDApps } from 'nfts/ducks/constants';
 import { ducklingsDApp } from 'nfts/ducklings/constants';
 import { ducksArtefactsDApp } from 'nfts/duckArtifacts/constants';
 import { fetchAll as fetchAllArtefacts } from 'nfts/duckArtifacts/utils';
-import { BaseNft, NftDetails, NftInfo, NftVendor } from 'nfts/index';
+import { BaseNft, NftInfo, NftVendor } from 'nfts/index';
 import { Duckling, DucklingInfo } from 'nfts/ducklings';
 import { Duck } from 'nfts/ducks';
 import { SignArt, SignArtInfo } from 'nfts/signArt';
 import { DucksArtefact } from 'nfts/duckArtifacts';
 import { MyNFT, Unknown } from 'nfts/unknown';
-import { DataTransactionEntry } from '@waves/ts-types';
+import { DataTransactionEntry, Long } from '@waves/ts-types';
+import { AssetDetail } from 'assets/types';
 
 export type Nft = ReturnType<typeof createNft>;
 
@@ -43,11 +43,12 @@ export function createNft(
   }
 }
 
-export function nftType(nft: AssetDetail): NftVendor {
+export function nftType(nft: { issuer?: string }): NftVendor {
   if (nft.issuer === signArtDApp) {
     return NftVendor.SignArt;
   }
-  if (ducksDApps.includes(nft.issuer)) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (ducksDApps.includes(nft.issuer!)) {
     return NftVendor.Ducks;
   }
   if (nft.issuer === ducklingsDApp) {
@@ -61,12 +62,12 @@ export function nftType(nft: AssetDetail): NftVendor {
 
 export async function fetchAllNfts(
   nodeUrl: string,
-  nfts: NftDetails[]
-): Promise<Array<NftInfo>> {
-  const ducks = [];
-  const babyDucks = [];
-  const ducksArtefacts = [];
-  const signArts = [];
+  nfts: Array<{ assetId: string; issuer: string | undefined }>
+) {
+  const ducks: typeof nfts = [];
+  const babyDucks: typeof nfts = [];
+  const ducksArtefacts: typeof nfts = [];
+  const signArts: typeof nfts = [];
 
   for (const nft of nfts) {
     switch (nftType(nft)) {
@@ -92,7 +93,7 @@ export async function fetchAllNfts(
       fetchAllArtefacts(ducksArtefacts).catch(() => []),
       fetchAllDucklings(nodeUrl, babyDucks).catch(() => []),
     ])
-  );
+  ) as NftInfo[];
 }
 
 export function capitalize(str: string): string {
@@ -103,9 +104,9 @@ export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function reduceDataEntries(entries: Array<DataTransactionEntry>) {
+export function reduceDataEntries(entries: DataTransactionEntry[]) {
   return entries.reduce((data, item) => {
     data[item.key] = item.value;
     return data;
-  }, {});
+  }, {} as Record<string, boolean | Long | null | undefined>);
 }

@@ -20,9 +20,10 @@ export class Copy extends React.PureComponent<Props> {
     text: '',
   };
 
-  props;
-
-  onClick = event => {
+  onClick = (event: {
+    stopPropagation: () => void;
+    preventDefault: () => void;
+  }) => {
     const { text, onCopy, children, options } = this.props;
 
     event.stopPropagation();
@@ -36,8 +37,12 @@ export class Copy extends React.PureComponent<Props> {
       onCopy(text, result);
     }
 
-    if (elem && elem.props && typeof elem.props.onClick === 'function') {
-      elem.props.onClick(event);
+    if (
+      elem &&
+      (elem as React.ReactElement).props &&
+      typeof (elem as React.ReactElement).props.onClick === 'function'
+    ) {
+      (elem as React.ReactElement).props.onClick(event);
     }
   };
 
@@ -45,6 +50,9 @@ export class Copy extends React.PureComponent<Props> {
     const { text, onCopy, options, children, ...props } = this.props;
     const elem = React.Children.only(children);
 
-    return React.cloneElement(elem, { ...props, onClick: this.onClick });
+    return React.cloneElement(elem as React.ReactElement, {
+      ...props,
+      onClick: this.onClick,
+    });
   }
 }

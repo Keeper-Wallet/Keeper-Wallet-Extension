@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 export function TxIcon({
   txType,
-  small = null,
+  small,
   className = '',
   children = null,
 }: {

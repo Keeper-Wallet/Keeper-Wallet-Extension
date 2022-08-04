@@ -17,7 +17,9 @@ export const MSG_STATUSES = {
   REJECTED_FOREVER: 'rejected_forever',
   SHOWED_NOTIFICATION: 'showed_notify',
   NEW_NOTIFICATION: 'new_notify',
-};
+} as const;
+
+export type MsgStatus = typeof MSG_STATUSES[keyof typeof MSG_STATUSES];
 
 export const STATUS = {
   ERROR: -1,
@@ -132,9 +134,9 @@ export const DEFAULT_IGNORE_ERRORS_CONFIG = {
     'No device selected',
     'The operation was aborted',
   ],
-  beforeSendAccounts: [],
-  beforeSendBackground: [],
-  beforeSendPopup: [],
+  beforeSendAccounts: [] as string[],
+  beforeSendBackground: [] as string[],
+  beforeSendPopup: [] as string[],
   contentScriptApprove: [] as string[],
   popupApprove: [] as string[],
 };

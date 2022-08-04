@@ -8,26 +8,22 @@ import { WalletController } from './wallet';
 import { NetworkController } from './network';
 import { PreferencesController } from './preferences';
 import { VaultController } from './VaultController';
+import { TransactionFromNode } from '@waves/ts-types';
+import { AssetBalance, BalancesItem } from 'balances/types';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
 const PERIOD_IN_SECONDS = 10;
 
-type GetAccounts = WalletController['getAccounts'];
-type GetNetwork = NetworkController['getNetwork'];
-type GetNode = NetworkController['getNode'];
-type GetSelectedAccount = PreferencesController['getSelectedAccount'];
-type IsLocked = VaultController['isLocked'];
-
 export class CurrentAccountController {
-  store: ObservableStore;
-  assetInfoController: AssetInfoController;
-  nftInfoController: NftInfoController;
-  getAccounts: GetAccounts;
-  getNetwork: GetNetwork;
-  getNode: GetNode;
-  getSelectedAccount: GetSelectedAccount;
-  isLocked: IsLocked;
+  private store;
+  private assetInfoController;
+  private nftInfoController;
+  private getAccounts;
+  private getNetwork;
+  private getNode;
+  private getSelectedAccount;
+  private isLocked;
 
   constructor({
     localStore,
@@ -42,16 +38,13 @@ export class CurrentAccountController {
     localStore: ExtensionStore;
     assetInfoController: AssetInfoController;
     nftInfoController: NftInfoController;
-    getAccounts: GetAccounts;
-    getNetwork: GetNetwork;
-    getNode: GetNode;
-    getSelectedAccount: GetSelectedAccount;
-    isLocked: IsLocked;
+    getAccounts: WalletController['getAccounts'];
+    getNetwork: NetworkController['getNetwork'];
+    getNode: NetworkController['getNode'];
+    getSelectedAccount: PreferencesController['getSelectedAccount'];
+    isLocked: VaultController['isLocked'];
   }) {
-    const defaults = {
-      balances: {},
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(localStore.getInitState({ balances: {} }));
     localStore.subscribe(this.store);
 
     this.assetInfoController = assetInfoController;
@@ -62,7 +55,8 @@ export class CurrentAccountController {
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       if (name === 'updateBalances') {
         this.updateBalances();
       }
@@ -76,7 +70,7 @@ export class CurrentAccountController {
     });
   }
 
-  getByUrl(url) {
+  getByUrl(url: string) {
     let accept = 'application/json;';
     if (url.match(/^(assets|transactions)/))
       accept += 'large-significand-format=string';
@@ -88,7 +82,8 @@ export class CurrentAccountController {
   getAccountBalance() {
     const activeAccount = this.getSelectedAccount();
 
-    return this.store.getState().balances[activeAccount.address];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.store.getState().balances[activeAccount!.address];
   }
 
   async updateBalances() {
@@ -102,13 +97,14 @@ export class CurrentAccountController {
 
     const oldBalances = this.store.getState().balances;
     const data = await Promise.all(
-      accounts.map(async account => {
+      accounts.map(async (account): Promise<[string, BalancesItem] | null> => {
         try {
           const address = account.address;
-          const isActiveAddress = address === activeAccount.address;
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const isActiveAddress = address === activeAccount!.address;
 
           const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
-            await Promise.all(
+            (await Promise.all(
               [
                 `addresses/balance/details/${address}`,
                 ...(isActiveAddress
@@ -120,27 +116,59 @@ export class CurrentAccountController {
                     ]
                   : []),
               ].map(url => this.getByUrl(url))
-            );
+            )) as [
+              { available: string; regular: string },
+              {
+                address: string;
+                balances: Array<{
+                  assetId: string;
+                  balance: string;
+                  minSponsoredAssetFee: string | null;
+                  sponsorBalance: string;
+                }>;
+              },
+              Array<{
+                assetId: string;
+                decimals: number;
+                description: string;
+                issueHeight: string;
+                issuer: string;
+                issuerPublicKey: string;
+                issueTimestamp: number;
+                minSponsoredAssetFee: string | null;
+                name: string;
+                originTransactionId: string;
+                quantity: string;
+                reissuable: boolean;
+                scripted: boolean;
+              }>,
+              unknown[],
+              [TransactionFromNode[]]
+            ];
 
           if (isActiveAddress) {
             const assets = this.assetInfoController.getAssets();
-            const assetExists = assetId => !!assets[assetId];
-            const isMaxAgeExceeded = assetId =>
+            const assetExists = (assetId: string) => !!assets[assetId];
+            const isMaxAgeExceeded = (assetId: string) =>
               this.assetInfoController.isMaxAgeExceeded(
                 assets[assetId] && assets[assetId].lastUpdated
               );
 
-            const isSponsorshipUpdated = balanceAsset =>
+            const isSponsorshipUpdated = (balanceAsset: {
+              assetId: string;
+              minSponsoredAssetFee: string | null;
+            }) =>
               balanceAsset.minSponsoredAssetFee !==
               assets[balanceAsset.assetId].minSponsoredFee;
 
-            const fetchAssetIds = myAssets.balances
-              .filter(
+            const fetchAssetIds = (
+              myAssets.balances.filter(
                 info =>
                   !assetExists(info.assetId) ||
                   isSponsorshipUpdated(info) ||
                   isMaxAgeExceeded(info.assetId)
-              )
+              ) as Array<{ assetId: string }>
+            )
               .concat(
                 myNfts.filter(
                   info =>
@@ -150,8 +178,9 @@ export class CurrentAccountController {
               .map(info => info.assetId)
               .concat(
                 txHistory[0]
-                  .reduce(
-                    (ids, tx) => [
+                  .reduce<string[]>(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (ids, tx: any) => [
                       ...ids,
                       tx.assetId,
                       ...(tx.order1
@@ -160,9 +189,13 @@ export class CurrentAccountController {
                             tx.order1.assetPair.priceAsset,
                           ]
                         : []),
-                      ...(tx.payment ? tx.payment.map(x => x.assetId) : []),
+                      ...(tx.payment
+                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          tx.payment.map((x: any) => x.assetId)
+                        : []),
                       ...(tx.stateChanges
-                        ? tx.stateChanges.transfers.map(x => x.asset)
+                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          tx.stateChanges.transfers.map((x: any) => x.asset)
                         : []),
                     ],
                     []
@@ -190,7 +223,9 @@ export class CurrentAccountController {
                 ? {
                     aliases: aliases,
                     txHistory: txHistory[0],
-                    assets: myAssets.balances.reduce(
+                    assets: myAssets.balances.reduce<
+                      Record<string, AssetBalance>
+                    >(
                       (assets, info) => {
                         assets[info.assetId] = {
                           minSponsoredAssetFee: info.minSponsoredAssetFee,
@@ -214,13 +249,14 @@ export class CurrentAccountController {
                       description: nft.description,
                       height: nft.issueHeight,
                       timestamp: new Date(
-                        parseInt(nft.issueTimestamp)
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        parseInt(nft.issueTimestamp as any)
                       ).toJSON(),
                       sender: nft.issuer,
                       quantity: nft.quantity,
                       reissuable: nft.reissuable,
                       hasScript: nft.scripted,
-                      displayName: nft.ticker || nft.name,
+                      displayName: nft.name,
                       minSponsoredFee: nft.minSponsoredAssetFee,
                       originTransactionId: nft.originTransactionId,
                       issuer: nft.issuer,
@@ -242,7 +278,12 @@ export class CurrentAccountController {
       balances: Object.assign(
         {},
         oldBalances,
-        Object.fromEntries(data.filter(entry => entry != null))
+        Object.fromEntries<BalancesItem>(
+          data.filter(
+            (entry): entry is Exclude<typeof entry, undefined | null> =>
+              entry != null
+          )
+        )
       ),
     });
   }

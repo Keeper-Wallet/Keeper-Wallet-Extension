@@ -1,9 +1,10 @@
+import { MessageConfig } from '../types';
 import { MassTransfer } from './MassTransfer';
 import { MassTransferCard } from './MassTransferCard';
 import { MassTransferFinal } from './MassTransferFinal';
 import * as utils from './parseTx';
 
-const massTransfer = {
+const massTransfer: MessageConfig = {
   type: utils.messageType,
   message: MassTransfer,
   card: MassTransferCard,

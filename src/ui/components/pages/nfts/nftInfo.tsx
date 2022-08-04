@@ -5,19 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Nft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
-import { PAGES } from 'ui/pageConfig';
-import { AssetDetail } from 'ui/services/Background';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { setUiState } from 'ui/actions';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
+import { Duckling } from 'nfts/ducklings';
+import { BaseInfo, BaseNft } from 'nfts';
+import { AssetDetail } from 'assets/types';
 
-export function NftInfo({
-  setTab,
-  onBack,
-}: {
-  setTab: (newTab: string) => void;
-  onBack: () => void;
-}) {
+export function NftInfo({ setTab, onBack }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -27,14 +23,17 @@ export function NftInfo({
   const nft = useAppSelector(state => state.uiState?.currentAsset) as Nft;
 
   const setCurrentAsset = React.useCallback(
-    (assetId: AssetDetail) => dispatch(setUiState({ currentAsset: assetId })),
+    (assetId: AssetDetail | Duckling | BaseNft<BaseInfo> | null) =>
+      dispatch(setUiState({ currentAsset: assetId })),
     [dispatch]
   );
 
   const creatorUrl =
     nft?.creatorUrl ||
-    (nft?.creator && getAccountLink(networkCode, nft.creator));
-  const nftUrl = nft && getAssetDetailLink(networkCode, nft.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    (nft?.creator && getAccountLink(networkCode!, nft.creator));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const nftUrl = nft && getAssetDetailLink(networkCode!, nft.id);
 
   return (
     <div className={styles.root}>
@@ -86,7 +85,7 @@ export function NftInfo({
                   rel="noopener noreferrer"
                   className="link"
                   target="_blank"
-                  href={creatorUrl}
+                  href={creatorUrl as string | undefined}
                   {...props}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16">

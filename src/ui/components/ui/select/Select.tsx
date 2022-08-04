@@ -57,7 +57,8 @@ export function Select<T>({
     function handleDocumentClick(event: MouseEvent) {
       if (
         event.target instanceof HTMLElement &&
-        rootRef.current.contains(event.target)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        rootRef.current!.contains(event.target)
       ) {
         return;
       }

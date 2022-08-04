@@ -3,8 +3,9 @@ import * as React from 'react';
 
 import { MassTransferCard } from './MassTransferCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function MassTransfer(props) {
+export function MassTransfer(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

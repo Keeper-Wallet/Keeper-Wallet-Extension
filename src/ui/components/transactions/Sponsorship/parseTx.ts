@@ -1,4 +1,5 @@
 import { TRANSACTION_TYPE } from '@waves/ts-types';
+import { IMoneyLike } from 'ui/utils/converters';
 
 export const messageType = 'sponsorship';
 export const txType = 'transaction';
@@ -7,7 +8,11 @@ export const SPONSOR_MODE = {
   disable: 'sponsor_disable',
 };
 
-export function getAssetsId(tx): Array<string> {
+export function getAssetsId(tx: {
+  fee?: { assetId?: string };
+  feeAssetId?: string;
+  minSponsoredAssetFee?: { assetId?: string };
+}): string[] {
   const feeAssetId =
     tx.fee && tx.fee.assetId ? tx.fee.assetId : tx.feeAssetId || 'WAVES';
   const sponsoredAssetId =
@@ -17,7 +22,10 @@ export function getAssetsId(tx): Array<string> {
 
 export { getFee } from '../BaseTransaction/parseTx';
 
-export function getAssetFee(tx) {
+export function getAssetFee(tx: {
+  assetId: string;
+  minSponsoredAssetFee: IMoneyLike | string;
+}) {
   const amount = tx.minSponsoredAssetFee;
   return typeof amount === 'object'
     ? amount
@@ -32,6 +40,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx, type: string) {
+export function isMe(tx: { type?: unknown }, type: string | null) {
   return tx.type === TRANSACTION_TYPE.SPONSORSHIP && type === txType;
 }

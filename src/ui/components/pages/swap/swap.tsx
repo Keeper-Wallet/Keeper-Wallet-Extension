@@ -3,6 +3,7 @@ import BigNumber from '@waves/bignumber';
 import { Asset, Money } from '@waves/data-entities';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { swappableAssetIds } from 'assets/constants';
+import { AssetDetail } from 'assets/types';
 import { useAssetIdByTicker } from 'assets/utils';
 import { convertFeeToAsset } from 'fee/utils';
 import * as React from 'react';
@@ -10,18 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { updateAssets } from 'ui/actions/assets';
 import { resetSwapScreenInitialState } from 'ui/actions/localState';
 import { SignWrapper } from 'ui/components/pages/importEmail/signWrapper';
-import { PAGES } from 'ui/pageConfig';
-import background, { AssetDetail } from 'ui/services/Background';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import background from 'ui/services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { SwapForm, OnSwapParams } from './form';
 import { SwapResult } from './result';
 import * as styles from './swap.module.css';
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function Swap({ setTab }: Props) {
+export function Swap({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
@@ -64,7 +61,8 @@ export function Swap({ setTab }: Props) {
     let timeout: number;
 
     background
-      .getExtraFee(selectedAccount.address, currentNetwork)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .getExtraFee(selectedAccount.address!, currentNetwork)
       .then(feeExtra => {
         if (!cancelled) {
           setWavesFeeCoins(minimumFee + feeExtra);
@@ -84,13 +82,11 @@ export function Swap({ setTab }: Props) {
 
   const swappableAssetEntries = React.useMemo(
     () =>
-      swappableAssetIds[currentNetwork as 'mainnet'].map(
-        (assetId): [string, AssetDetail | undefined] => [
-          assetId,
-          assets[assetId],
-        ]
-      ),
-    [assets, currentNetwork]
+      swappableAssetIds.mainnet.map((assetId): [string, AssetDetail] => [
+        assetId,
+        assets[assetId],
+      ]),
+    [assets]
   );
 
   React.useEffect(() => {
@@ -108,7 +104,8 @@ export function Swap({ setTab }: Props) {
   }, [swappableAssetEntries, dispatch]);
 
   const accountBalance = useAppSelector(
-    state => state.balances[state.selectedAccount.address]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[state.selectedAccount.address!]
   );
 
   const [performedSwapData, setPerformedSwapData] = React.useState<{
@@ -136,167 +133,171 @@ export function Swap({ setTab }: Props) {
 
   return (
     <SignWrapper
-      onConfirm={async ({
-        feeAssetId,
-        fromAssetId,
-        fromCoins,
-        minReceivedCoins,
-        slippageTolerance,
-        toAssetId,
-        toCoins,
-        tx,
-        vendor,
-      }: OnSwapParams) => {
-        setSwapErrorMessage(null);
-        setIsSwapInProgress(true);
+      onConfirm={
+        (async ({
+          feeAssetId,
+          fromAssetId,
+          fromCoins,
+          minReceivedCoins,
+          slippageTolerance,
+          toAssetId,
+          toCoins,
+          tx,
+          vendor,
+        }: OnSwapParams) => {
+          setSwapErrorMessage(null);
+          setIsSwapInProgress(true);
 
-        const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
-        const fee = convertFeeToAsset(
-          wavesFee,
-          new Asset(assets[feeAssetId]),
-          feeConfig
-        );
+          const wavesFee = new Money(wavesFeeCoins, new Asset(assets['WAVES']));
+          const fee = convertFeeToAsset(
+            wavesFee,
+            new Asset(assets[feeAssetId]),
+            feeConfig
+          );
 
-        try {
-          const swapResult = await background.swapAssets({
-            feeAssetId,
-            feeCoins: fee.toCoins(),
-            tx,
-          });
+          try {
+            const swapResult = await background.swapAssets({
+              feeAssetId,
+              feeCoins: fee.toCoins(),
+              tx,
+            });
 
-          background.sendEvent('swapAssets', {
-            fromAssetId,
-            fromCoins: fromCoins.toFixed(),
-            minReceivedCoins: minReceivedCoins.toFixed(),
-            slippageTolerance,
-            status: 'success',
-            toAssetId,
-            toCoins: toCoins.toFixed(),
-            vendor,
-          });
+            background.sendEvent('swapAssets', {
+              fromAssetId,
+              fromCoins: fromCoins.toFixed(),
+              minReceivedCoins: minReceivedCoins.toFixed(),
+              slippageTolerance,
+              status: 'success',
+              toAssetId,
+              toCoins: toCoins.toFixed(),
+              vendor,
+            });
 
-          setPerformedSwapData({
-            fromMoney: new Money(fromCoins, new Asset(assets[fromAssetId])),
-            transactionId: swapResult.transactionId,
-          });
-        } catch (err) {
-          const errMessage = err?.message;
-          let capture = true;
+            setPerformedSwapData({
+              fromMoney: new Money(fromCoins, new Asset(assets[fromAssetId])),
+              transactionId: swapResult.transactionId,
+            });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (err: any) {
+            const errMessage = err?.message;
+            let capture = true;
 
-          if (typeof errMessage === 'string') {
-            // errors from nested invokes
-            let match = errMessage.match(
-              /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
-            );
-
-            if (match) {
-              let msg = match[1];
-
-              if (
-                /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
-                  msg
-                )
-              ) {
-                msg = t('swap.amountToSendError');
-                capture = false;
-              } else if (
-                /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
-                  msg
-                )
-              ) {
-                capture = false;
-              }
-
-              setSwapErrorMessage(msg);
-              setIsSwapInProgress(false);
-
-              if (capture) {
-                Sentry.captureException(new Error(msg));
-              }
-              return;
-            }
-
-            // errors from contract itself
-            match = errMessage.match(
-              /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
-            );
-
-            if (match) {
-              const msg = match[1];
-
-              setSwapErrorMessage(msg);
-              setIsSwapInProgress(false);
-
-              match = msg.match(
-                /Swap result (\d+) is less then expected (\d+)/i
+            if (typeof errMessage === 'string') {
+              // errors from nested invokes
+              let match = errMessage.match(
+                /error\s+while\s+executing\s+account-script:\s*\w+\(code\s*=\s*(?:.+),\s*error\s*=\s*([\s\S]+)\s*,\s*log\s*=/im
               );
 
               if (match) {
-                capture = false;
+                let msg = match[1];
 
-                const actualAmountCoins = new BigNumber(match[1]);
-                const expectedAmountCoins = new BigNumber(match[2]);
+                if (
+                  /something\s+went\s+wrong\s+while\s+working\s+with\s+amountToSend/i.test(
+                    msg
+                  )
+                ) {
+                  msg = t('swap.amountToSendError');
+                  capture = false;
+                } else if (
+                  /only\s+swap\s+of\s+[\d.]+\s+or\s+more\s+tokens\s+is\s+allowed/i.test(
+                    msg
+                  )
+                ) {
+                  capture = false;
+                }
 
-                background.sendEvent('swapAssets', {
-                  actualAmountCoins: actualAmountCoins.toFixed(),
-                  expectedAmountCoins: expectedAmountCoins.toFixed(),
-                  expectedActualDelta: expectedAmountCoins
-                    .sub(actualAmountCoins)
-                    .toFixed(),
-                  fromAssetId,
-                  fromCoins: fromCoins.toFixed(),
-                  minReceivedCoins: minReceivedCoins.toFixed(),
-                  slippageTolerance,
-                  status: 'lessThanExpected',
-                  toAssetId,
-                  toCoins: toCoins.toFixed(),
-                  vendor,
-                });
+                setSwapErrorMessage(msg);
+                setIsSwapInProgress(false);
+
+                if (capture) {
+                  Sentry.captureException(new Error(msg));
+                }
+                return;
               }
 
-              match = msg.match(
-                /amount to receive is lower than expected one (\d+)/i
+              // errors from contract itself
+              match = errMessage.match(
+                /error\s+while\s+executing\s+account-script:\s*([\s\S]+)/im
               );
 
               if (match) {
-                capture = false;
+                const msg = match[1];
 
-                const expectedAmountCoins = new BigNumber(match[1]);
+                setSwapErrorMessage(msg);
+                setIsSwapInProgress(false);
 
-                background.sendEvent('swapAssets', {
-                  expectedAmountCoins: expectedAmountCoins.toFixed(),
-                  fromAssetId,
-                  fromCoins: fromCoins.toFixed(),
-                  minReceivedCoins: minReceivedCoins.toFixed(),
-                  slippageTolerance,
-                  status: 'lessThanExpected',
-                  toAssetId,
-                  toCoins: toCoins.toFixed(),
-                  vendor,
-                });
+                match = msg.match(
+                  /Swap result (\d+) is less then expected (\d+)/i
+                );
+
+                if (match) {
+                  capture = false;
+
+                  const actualAmountCoins = new BigNumber(match[1]);
+                  const expectedAmountCoins = new BigNumber(match[2]);
+
+                  background.sendEvent('swapAssets', {
+                    actualAmountCoins: actualAmountCoins.toFixed(),
+                    expectedAmountCoins: expectedAmountCoins.toFixed(),
+                    expectedActualDelta: expectedAmountCoins
+                      .sub(actualAmountCoins)
+                      .toFixed(),
+                    fromAssetId,
+                    fromCoins: fromCoins.toFixed(),
+                    minReceivedCoins: minReceivedCoins.toFixed(),
+                    slippageTolerance,
+                    status: 'lessThanExpected',
+                    toAssetId,
+                    toCoins: toCoins.toFixed(),
+                    vendor,
+                  });
+                }
+
+                match = msg.match(
+                  /amount to receive is lower than expected one (\d+)/i
+                );
+
+                if (match) {
+                  capture = false;
+
+                  const expectedAmountCoins = new BigNumber(match[1]);
+
+                  background.sendEvent('swapAssets', {
+                    expectedAmountCoins: expectedAmountCoins.toFixed(),
+                    fromAssetId,
+                    fromCoins: fromCoins.toFixed(),
+                    minReceivedCoins: minReceivedCoins.toFixed(),
+                    slippageTolerance,
+                    status: 'lessThanExpected',
+                    toAssetId,
+                    toCoins: toCoins.toFixed(),
+                    vendor,
+                  });
+                }
+
+                if (capture) {
+                  Sentry.captureException(new Error(msg));
+                }
+                return;
               }
 
-              if (capture) {
-                Sentry.captureException(new Error(msg));
+              if (/Request is rejected on ledger/i.test(errMessage)) {
+                setSwapErrorMessage(errMessage);
+                setIsSwapInProgress(false);
+                return;
               }
-              return;
             }
 
-            if (/Request is rejected on ledger/i.test(errMessage)) {
-              setSwapErrorMessage(errMessage);
-              setIsSwapInProgress(false);
-              return;
+            setSwapErrorMessage(errMessage || t('swap.failMessage'));
+            setIsSwapInProgress(false);
+
+            if (capture) {
+              Sentry.captureException(new Error(errMessage));
             }
           }
-
-          setSwapErrorMessage(errMessage || t('swap.failMessage'));
-          setIsSwapInProgress(false);
-
-          if (capture) {
-            Sentry.captureException(new Error(errMessage));
-          }
-        }
-      }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }) as any
+      }
     >
       {({ onPrepare, pending }) => (
         <SwapForm

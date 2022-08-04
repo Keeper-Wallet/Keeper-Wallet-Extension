@@ -1,10 +1,11 @@
-import { Account, NetworkName } from 'accounts/types';
 import { ACTION } from '../actions';
-import { AssetDetail } from '../services/Background';
-import { TransactionFromNode } from '@waves/ts-types';
-import { NftInfo } from 'nfts';
 import { Nft } from 'nfts/utils';
-import { Message } from 'ui/components/transactions/BaseTransaction';
+import { UiAction, UiActionPayload } from 'ui/store';
+import { PreferencesAccount } from 'preferences/types';
+import { AssetBalance } from 'balances/types';
+import { NetworkName } from 'networks/types';
+import { MessageStoreItem } from 'messages/types';
+import { AssetDetail } from 'assets/types';
 
 export * from './localState';
 export * from './feeConfig';
@@ -13,14 +14,16 @@ export * from './notifications';
 
 const MAX_HISTORY = 10;
 
-function createSimpleReducer<
-  TState = unknown,
-  TActionType extends string = string
->(initialState: TState, actionType: TActionType) {
+function createSimpleReducer<TActionType extends UiAction['type']>(
+  initialState: UiActionPayload<TActionType>,
+  actionType: TActionType
+) {
   return (
     state = initialState,
-    action: { type: TActionType; payload: TState }
-  ) => (actionType === action.type ? action.payload : state);
+    action: UiAction
+  ): UiActionPayload<TActionType> =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (actionType === action.type ? action.payload : state) as any;
 }
 
 export const tab = createSimpleReducer(null, ACTION.CHANGE_TAB);
@@ -32,7 +35,7 @@ export type AssetFilters = {
 };
 export type NftFilters = {
   term?: string;
-  creator?: string;
+  creator?: string | null;
 };
 export type TxHistoryFilters = {
   term?: string;
@@ -46,27 +49,26 @@ export interface UiState {
   assetFilters?: AssetFilters;
   assetsTab?: number;
   autoClickProtection?: boolean;
-  currentAsset?: AssetDetail | Nft;
+  currentAsset?: AssetDetail | Nft | null;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
   slippageToleranceIndex?: number;
   txHistoryFilters?: TxHistoryFilters;
 }
 
-export const uiState = createSimpleReducer<UiState>({}, ACTION.UPDATE_UI_STATE);
-export const accounts = createSimpleReducer<Account[]>(
-  [],
-  ACTION.UPDATE_ACCOUNTS
-);
-export const allNetworksAccounts = createSimpleReducer<Account[]>(
+export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
+export const accounts = createSimpleReducer([], ACTION.UPDATE_ACCOUNTS);
+
+export const allNetworksAccounts = createSimpleReducer(
   [],
   ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS
 );
+
 export const state = createSimpleReducer(null, ACTION.UPDATE_APP_STATE);
 
 export function selectedAccount(
-  state: Account = {} as Account,
-  action: { type: string; payload: Account }
+  state: Partial<PreferencesAccount> = {},
+  action: UiAction
 ) {
   switch (action.type) {
     case ACTION.SELECT_ACCOUNT:
@@ -77,59 +79,34 @@ export function selectedAccount(
   }
 }
 
-export const networks = createSimpleReducer<
-  Array<{
-    code: string;
-    matcher: string;
-    name: string;
-    server: string;
-  }>
->([], ACTION.UPDATE_NETWORKS);
+export const networks = createSimpleReducer([], ACTION.UPDATE_NETWORKS);
 
-export const currentNetwork = createSimpleReducer<
-  NetworkName,
-  typeof ACTION.UPDATE_CURRENT_NETWORK
->(NetworkName.Mainnet, ACTION.UPDATE_CURRENT_NETWORK);
-
-export interface AssetBalance {
-  balance: string;
-  sponsorBalance: string;
-  minSponsoredAssetFee: string;
-}
+export const currentNetwork = createSimpleReducer(
+  NetworkName.Mainnet,
+  ACTION.UPDATE_CURRENT_NETWORK
+);
 
 export type BalanceAssets = {
   [assetId: string]: AssetBalance;
 };
 
-export interface AccountBalance {
-  available: string;
-  leasedOut: string;
-  assets?: BalanceAssets;
-  aliases: string[];
-  nfts: AssetDetail[];
-  txHistory: Array<TransactionFromNode>;
-}
-
-export const balances = createSimpleReducer<{
-  [address: string]: AccountBalance;
-}>({}, ACTION.UPDATE_BALANCES);
+export const balances = createSimpleReducer({}, ACTION.UPDATE_BALANCES);
 
 export const currentLocale = createSimpleReducer('en', ACTION.UPDATE_FROM_LNG);
 export const customNodes = createSimpleReducer({}, ACTION.UPDATE_NODES);
-export const customCodes = createSimpleReducer<
-  Partial<Record<NetworkName, string>>
->({}, ACTION.UPDATE_CODES);
+export const customCodes = createSimpleReducer({}, ACTION.UPDATE_CODES);
 export const customMatcher = createSimpleReducer({}, ACTION.UPDATE_MATCHER);
 export const langs = createSimpleReducer([], ACTION.UPDATE_LANGS);
 export const origins = createSimpleReducer({}, ACTION.UPDATE_ORIGINS);
+
 export const idleOptions = createSimpleReducer(
   {},
   ACTION.REMOTE_CONFIG.UPDATE_IDLE
 );
 
 export const messages = (
-  state: Message[] = [],
-  action: { type: string; payload: { unapprovedMessages: Message[] } }
+  state: MessageStoreItem[] = [],
+  action: { type: string; payload: { unapprovedMessages: MessageStoreItem[] } }
 ) => {
   if (action.type === ACTION.UPDATE_MESSAGES) {
     return [...action.payload.unapprovedMessages];
@@ -138,39 +115,16 @@ export const messages = (
   return state;
 };
 
-export const assets = createSimpleReducer<Record<string, AssetDetail>>(
-  {},
-  ACTION.SET_ASSETS
-);
-
-export const usdPrices = createSimpleReducer<Record<string, string>>(
-  {},
-  ACTION.SET_USD_PRICES
-);
-
-export const assetLogos = createSimpleReducer<Record<string, string>>(
-  {},
-  ACTION.SET_ASSET_LOGOS
-);
-
-export const assetTickers = createSimpleReducer<Record<string, string>>(
-  {},
-  ACTION.SET_ASSET_TICKERS
-);
-
-export const addresses = createSimpleReducer<Record<string, string>>(
-  {},
-  ACTION.UPDATE_ADDRESSES
-);
-
-export const nfts = createSimpleReducer<Record<string, NftInfo>>(
-  null,
-  ACTION.UPDATE_NFTS
-);
+export const assets = createSimpleReducer({}, ACTION.SET_ASSETS);
+export const usdPrices = createSimpleReducer({}, ACTION.SET_USD_PRICES);
+export const assetLogos = createSimpleReducer({}, ACTION.SET_ASSET_LOGOS);
+export const assetTickers = createSimpleReducer({}, ACTION.SET_ASSET_TICKERS);
+export const addresses = createSimpleReducer({}, ACTION.UPDATE_ADDRESSES);
+export const nfts = createSimpleReducer(null, ACTION.UPDATE_NFTS);
 
 export const backTabs = (
-  state: unknown[] = [],
-  { type, payload }: { type: string; payload: unknown }
+  state: string[] = [],
+  { type, payload }: { type: string; payload: string }
 ) => {
   if (type === ACTION.ADD_BACK_TAB) {
     state = [...state, payload].slice(-MAX_HISTORY);

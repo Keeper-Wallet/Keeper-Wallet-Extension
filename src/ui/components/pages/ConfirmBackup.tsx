@@ -2,21 +2,30 @@ import * as styles from './styles/confirmBackup.styl';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { Button, Error, Pills } from '../ui';
+import { Button, Error, Pills, PillsListItem } from '../ui';
 import { AppState } from 'ui/store';
-import { PAGES } from 'ui/pageConfig';
-import { Account } from 'accounts/types';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
+import { NewAccountState } from 'ui/reducers/localState';
 
 const SHUFFLE_COUNT = 500;
 
-interface Props extends WithTranslation {
-  account: Account;
-  setTab: (tab: string) => void;
+interface StateProps {
+  account: Extract<NewAccountState, { type: 'seed' }>;
 }
 
-class ConfirmBackupComponent extends React.Component<Props> {
-  props;
-  state = {
+type Props = WithTranslation & PageComponentProps & StateProps;
+
+interface State {
+  seed: string | null;
+  list: PillsListItem[];
+  selectedList: PillsListItem[];
+  wrongSeed: boolean;
+  complete: boolean;
+  disabled: boolean;
+}
+
+class ConfirmBackupComponent extends React.Component<Props, State> {
+  state: State = {
     seed: null,
     list: [],
     selectedList: [],
@@ -25,7 +34,10 @@ class ConfirmBackupComponent extends React.Component<Props> {
     disabled: false,
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(
+    props: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     const { seed } = props.account;
 
     if (seed == state.seed) {
@@ -46,13 +58,13 @@ class ConfirmBackupComponent extends React.Component<Props> {
     return { ...state, list, seed };
   }
 
-  onSelect = list => this._onSelect(list);
+  onSelect = (list: PillsListItem) => this._onSelect(list);
 
-  onUnSelect = list => this._onUnSelect(list);
+  onUnSelect = (list: PillsListItem) => this._onUnSelect(list);
 
   onClear = () => this._onClear();
 
-  onSubmit = e => this._onSubmit(e);
+  onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => this._onSubmit(e);
 
   render() {
     const { t } = this.props;
@@ -110,23 +122,23 @@ class ConfirmBackupComponent extends React.Component<Props> {
     );
   }
 
-  private _onSubmit(event) {
+  private _onSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     this.setState({ disabled: true });
     this.props.setTab(PAGES.ACCOUNT_NAME);
   }
 
-  private _onSelect({ text, id }) {
+  private _onSelect({ text, id }: PillsListItem) {
     const selected = [...this.state.selectedList, { text, id }];
     this._setSelected(selected);
   }
 
-  private _onUnSelect({ id }) {
+  private _onUnSelect({ id }: PillsListItem) {
     const selected = this.state.selectedList.filter(item => item.id !== id);
     this._setSelected(selected);
   }
 
-  private _setSelected(selected) {
+  private _setSelected(selected: PillsListItem[]) {
     const list = this.state.list;
     const selectedTextsList = selected.map(item => item.text);
     const selectedIdsList = selected.map(item => item.id);
@@ -149,9 +161,12 @@ class ConfirmBackupComponent extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = function (state: AppState) {
+const mapStateToProps = (state: AppState): StateProps => {
   return {
-    account: state.localState.newAccount,
+    account: state.localState.newAccount as Extract<
+      NewAccountState,
+      { type: 'seed' }
+    >,
   };
 };
 

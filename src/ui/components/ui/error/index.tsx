@@ -7,8 +7,8 @@ const Errors = ({
   errors,
   show,
 }: {
-  errors: Array<{ key: string; msg: string }>;
-  show: boolean;
+  errors: Array<{ key: string; msg: string }> | undefined;
+  show: unknown;
 }) => {
   const { t } = useTranslation();
 
@@ -28,20 +28,20 @@ const Errors = ({
 
 interface Props {
   type?: string;
-  show?: boolean;
+  show?: unknown;
   children?: React.ReactNode;
   className?: string;
   hideByClick?: boolean;
-  onClick?: (...args) => void;
+  onClick?: (...args: unknown[]) => void;
   errors?: Array<{ code: number; key: string; msg: string }>;
 }
 
 interface State {
-  showed: boolean;
+  hidden?: boolean;
+  showed: unknown;
 }
 
-export class Error extends React.PureComponent<Props> {
-  props: Props;
+export class Error extends React.PureComponent<Props, State> {
   state: State = { showed: false };
 
   static getDerivedStateFromProps(props: Props, state: State): State | null {
@@ -55,7 +55,7 @@ export class Error extends React.PureComponent<Props> {
     return null;
   }
 
-  onClick = e => this._onClick(e);
+  onClick = (e: unknown) => this._onClick(e);
 
   render() {
     const { showed } = this.state;
@@ -87,7 +87,7 @@ export class Error extends React.PureComponent<Props> {
     );
   }
 
-  _onClick(e) {
+  _onClick(e: unknown) {
     if (this.props.onClick) {
       this.props.onClick(e);
       return null;

@@ -7,7 +7,7 @@ import * as mocha from 'mocha';
 describe('Tabs manipulation', function () {
   this.timeout(60 * 1000);
 
-  let tabKeeper, tabAccounts;
+  let tabKeeper: string, tabAccounts: string;
 
   after(async function () {
     await App.open.call(this);
@@ -169,7 +169,11 @@ describe('Tabs manipulation', function () {
       ).not.to.be.throw;
     });
 
-    async function importAccountUntilSuccess(this: mocha.Context, name, seed) {
+    async function importAccountUntilSuccess(
+      this: mocha.Context,
+      name: string,
+      seed: string
+    ) {
       await this.driver
         .wait(
           until.elementIsVisible(

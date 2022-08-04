@@ -12,15 +12,18 @@ import { getBalances, setUiState } from 'ui/actions';
 import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
 import { AssetAmountInput } from '../../../assets/amountInput';
+import { AssetDetail } from 'assets/types';
 
 export function Send() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const chainId = useAppSelector(state =>
-    state.selectedAccount.networkCode.charCodeAt(0)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state.selectedAccount.networkCode!.charCodeAt(0)
   );
   const accountBalance = useAppSelector(
-    state => state.balances[state.selectedAccount.address]
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    state => state.balances[state.selectedAccount.address!]
   );
   const assetBalances = accountBalance?.assets;
   const assets = useAppSelector(state => state.assets);
@@ -40,7 +43,7 @@ export function Send() {
   const currentBalance = currentAsset
     ? Money.fromCoins(
         !isNft ? assetBalances[currentAsset.id]?.balance : 1,
-        new Asset(currentAsset)
+        new Asset(currentAsset as AssetDetail)
       )
     : null;
 
@@ -93,7 +96,8 @@ export function Send() {
             type: 4,
             data: {
               amount: {
-                assetId: currentAsset.id,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                assetId: currentAsset!.id,
                 tokens: amountValue,
               },
               recipient: recipientValue,
@@ -127,7 +131,8 @@ export function Send() {
                 setRecipientValue(event.currentTarget.value);
               }}
               onSuggest={value => {
-                setRecipientValue(value);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                setRecipientValue(value!);
               }}
             />
 
@@ -137,21 +142,26 @@ export function Send() {
           {!isNft && (
             <>
               <div className="margin-main-big">
-                {!currentAsset || !assetBalances[currentAsset.id] ? (
+                {!currentAsset ||
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                !assetBalances![currentAsset.id] ? (
                   <Loader />
                 ) : (
                   (() => {
                     const balance = new Money(
-                      new BigNumber(assetBalances[currentAsset.id].balance),
-                      new Asset(currentAsset)
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      new BigNumber(assetBalances![currentAsset.id].balance),
+                      new Asset(currentAsset as AssetDetail)
                     );
 
                     return (
                       <>
                         <AssetAmountInput
-                          assetBalances={assetBalances}
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                          assetBalances={assetBalances!}
                           assetOptions={Object.values(assets).filter(
-                            asset => assetBalances[asset.id] != null
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            asset => assetBalances![asset.id] != null
                           )}
                           balance={balance}
                           label={t('send.amountInputLabel')}

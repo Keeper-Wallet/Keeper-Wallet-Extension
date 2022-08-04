@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { setAddresses } from 'ui/actions';
-import { PAGES } from '../../../pageConfig';
+import { PageComponentProps, PAGES } from '../../../pageConfig';
 import { WalletTypes } from '../../../services/Background';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import {
@@ -37,9 +37,9 @@ function parseAddressBook(json: string): EncryptedAddressBook | null {
 
 const suffixRe = /\((\d+)\)$/;
 
-export function getFormattedAddresses(
+function getFormattedAddresses(
   addresses: Record<string, string>,
-  keystoreAddresses?: Record<string, string>
+  keystoreAddresses: Record<string, string>
 ) {
   return Object.entries(keystoreAddresses).reduce(
     (acc, [keystoreAddress, keystoreName]) => {
@@ -75,11 +75,7 @@ export function getFormattedAddresses(
   );
 }
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function ImportAddressBook({ setTab }: Props) {
+export function ImportAddressBook({ setTab }: PageComponentProps) {
   const dispatch = useAppDispatch();
   const addresses = useAppSelector(state => state.addresses);
   const { t } = useTranslation();

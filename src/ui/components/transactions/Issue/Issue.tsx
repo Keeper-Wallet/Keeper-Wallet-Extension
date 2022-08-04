@@ -3,8 +3,9 @@ import * as React from 'react';
 
 import { IssueCard } from './IssueCard';
 import { TxDetailTabs, TxFooter, TxHeader, TxInfo } from '../BaseTransaction';
+import { MessageComponentProps } from '../types';
 
-export function Issue(props) {
+export function Issue(props: MessageComponentProps) {
   return (
     <div className={styles.transaction}>
       <TxHeader {...props} />

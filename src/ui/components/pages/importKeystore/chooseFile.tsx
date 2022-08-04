@@ -52,7 +52,7 @@ export function ImportKeystoreChooseFile({
         try {
           setShowPassword(
             !Object.values(JSON.parse(reader.result)).every(
-              (text: string) => !!JSON.parse(decodeURIComponent(atob(text)))
+              text => !!JSON.parse(decodeURIComponent(atob(text as string)))
             )
           );
         } catch {
@@ -88,7 +88,8 @@ export function ImportKeystoreChooseFile({
             type="file"
             value=""
             onChange={event => {
-              setKeystoreFile(event.currentTarget.files[0] || null);
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              setKeystoreFile(event.currentTarget.files![0] || null);
             }}
           />
           {t('importKeystore.browse')}

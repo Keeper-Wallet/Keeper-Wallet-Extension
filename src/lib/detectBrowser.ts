@@ -314,8 +314,8 @@ export function getNodeVersion(): NodeInfo | null {
   return isNode ? new NodeInfo(process.version.slice(1)) : null;
 }
 
-function createVersionParts(count: number): string[] {
-  const output = [];
+function createVersionParts(count: number) {
+  const output: string[] = [];
   for (let ii = 0; ii < count; ii++) {
     output.push('0');
   }

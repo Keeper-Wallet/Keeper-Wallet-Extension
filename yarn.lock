@@ -1426,6 +1426,11 @@
     "@types/filesystem" "*"
     "@types/har-format" "*"
 
+"@types/color-hash@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/color-hash/-/color-hash-1.0.2.tgz#22aec4c488929804c875bd4ef6827499fce00151"
+  integrity sha512-QJCVXSVRse+mMvzWQ8vH6AcKxtqCgHPHf5abAdGn86DEeQdUpSJnKAeCa1+hZuohaUF3l4RhigC9akRx82Bwig==
+
 "@types/docker-modem@*":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/docker-modem/-/docker-modem-3.0.2.tgz#c49c902e17364fc724e050db5c1d2b298c6379d4"
@@ -1635,6 +1640,20 @@
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.3.tgz#b0994da0a7023d67dbb4a8910a62112bc00d5688"
   integrity sha512-fUx5muOWSYP8Bw2BUQ9M9RK9+W1XBK/7FLJ8PTQpnpTEkn0ccyMffyEQvan4C3h53gHdx7KE5Qrxi/LnUGQtdg==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-virtualized-auto-sizer@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react-virtualized-auto-sizer/-/react-virtualized-auto-sizer-1.0.1.tgz#b3187dae1dfc4c15880c9cfc5b45f2719ea6ebd4"
+  integrity sha512-GH8sAnBEM5GV9LTeiz56r4ZhMOUSrP43tAQNSRVxNexDjcNKLCEtnxusAItg1owFUFE6k0NslV26gqVClVvong==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-window@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@types/react-window/-/react-window-1.8.5.tgz#285fcc5cea703eef78d90f499e1457e9b5c02fc1"
+  integrity sha512-V9q3CvhC9Jk9bWBOysPGaWy/Z0lxYcTXLtLipkt2cnRj1JOSFNF7wqGpkScSXMgBwC+fnVRg/7shwgddBG5ICw==
   dependencies:
     "@types/react" "*"
 

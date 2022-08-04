@@ -1,3 +1,4 @@
+import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
 import { App, CreateNewAccount, Settings } from './utils/actions';
@@ -9,12 +10,12 @@ import {
 } from './utils/constants';
 
 describe('Messages', function () {
-  this.timeout(2 * 60 * 1000);
+  this.timeout(5 * 60 * 1000);
 
   const NOTIFICATION_POLL_INTERVAL = 5 * 1000;
-  let tabKeeper;
+  let tabKeeper: string;
 
-  const sendMessage = (...args) => {
+  const sendMessage = (...args: unknown[]) => {
     const done = args[args.length - 1];
 
     KeeperWallet.initialPromise.then(api => {
@@ -26,6 +27,7 @@ describe('Messages', function () {
   };
 
   async function sendMessageFromOrigin(
+    this: mocha.Context,
     origin: string,
     isWhitelisted = true,
     reload = true
@@ -38,7 +40,8 @@ describe('Messages', function () {
       return await this.driver.executeAsyncScript(sendMessage);
     }
 
-    return await this.driver.executeScript(sendMessage);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return await this.driver.executeScript<any>(sendMessage);
   }
 
   before(async function () {

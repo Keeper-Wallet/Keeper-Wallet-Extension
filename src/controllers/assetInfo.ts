@@ -1,10 +1,11 @@
+import { AssetDetail } from 'assets/types';
 import { extension } from 'lib/extension';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore, { StoreLocalState } from 'lib/localStore';
+import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
-import { NetworkName } from '../accounts/types';
 import { NetworkController } from './network';
 
-const WAVES = {
+const WAVES: AssetDetail = {
   quantity: '10000000000000000',
   ticker: 'WAVES',
   id: 'WAVES',
@@ -12,11 +13,13 @@ const WAVES = {
   precision: 8,
   description: '',
   height: 0,
-  timestamp: '2016-04-11T21:00:00.000Z',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  timestamp: '2016-04-11T21:00:00.000Z' as any,
   sender: '',
   reissuable: false,
   displayName: 'WAVES',
 };
+
 const SUSPICIOUS_LIST_URL =
   'https://raw.githubusercontent.com/wavesplatform/waves-community/master/Scam%20tokens%20according%20to%20the%20opinion%20of%20Waves%20Community.csv';
 const SUSPICIOUS_PERIOD_IN_MINUTES = 60;
@@ -157,7 +160,7 @@ const defaultAssetTickers = {
   BrjUWjndUanm5VsJkbUip8VRYy6LWJePtxya3FNv4TQa: 'ZEC',
 };
 
-function binarySearch(sortedArray, key) {
+function binarySearch<T>(sortedArray: T[], key: T) {
   let start = 0;
   let end = sortedArray.length - 1;
 
@@ -176,13 +179,25 @@ function binarySearch(sortedArray, key) {
   return -1;
 }
 
-type GetNode = NetworkController['getNode'];
-type GetNetwork = NetworkController['getNetwork'];
+interface AssetInfoResponseItem {
+  assetId: string;
+  name: string;
+  decimals: number;
+  description: string;
+  issueHeight: number;
+  issueTimestamp: string;
+  issuer: string;
+  quantity: string;
+  reissuable: boolean;
+  scripted: boolean;
+  minSponsoredAssetFee: string | null;
+  originTransactionId: string;
+}
 
 export class AssetInfoController {
-  store: ObservableStore;
-  getNode: GetNode;
-  getNetwork: GetNetwork;
+  private store;
+  private getNode;
+  private getNetwork;
 
   constructor({
     localStore,
@@ -190,21 +205,21 @@ export class AssetInfoController {
     getNetwork,
   }: {
     localStore: ExtensionStore;
-    getNode: GetNode;
-    getNetwork: GetNetwork;
+    getNode: NetworkController['getNode'];
+    getNetwork: NetworkController['getNetwork'];
   }) {
-    const defaults = {
+    const initState = localStore.getInitState({
       assets: {
-        mainnet: {
+        [NetworkName.Mainnet]: {
           WAVES,
         },
-        stagenet: {
+        [NetworkName.Stagenet]: {
           WAVES,
         },
-        testnet: {
+        [NetworkName.Testnet]: {
           WAVES,
         },
-        custom: {
+        [NetworkName.Custom]: {
           WAVES,
         },
       },
@@ -212,16 +227,14 @@ export class AssetInfoController {
       usdPrices: {},
       assetLogos: {},
       assetTickers: defaultAssetTickers,
-    };
-    const initState = localStore.getInitState(defaults);
+    });
     this.store = new ObservableStore(initState);
     localStore.subscribe(this.store);
 
     this.getNode = getNode;
     this.getNetwork = getNetwork;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((initState.suspiciousAssets as any).length === 0) {
+    if (initState.suspiciousAssets.length === 0) {
       this.updateSuspiciousAssets();
     }
 
@@ -246,7 +259,8 @@ export class AssetInfoController {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();
@@ -297,13 +311,13 @@ export class AssetInfoController {
     return this.store.getState().usdPrices;
   }
 
-  isMaxAgeExceeded(lastUpdated) {
+  isMaxAgeExceeded(lastUpdated: number | undefined) {
     return (
       new Date().getTime() - new Date(lastUpdated || 0).getTime() > MAX_AGE
     );
   }
 
-  isSuspiciousAsset(assetId) {
+  isSuspiciousAsset(assetId: string) {
     const { assets, suspiciousAssets } = this.store.getState();
     const network = this.getNetwork();
     const asset = assets[network][assetId] || {};
@@ -313,7 +327,7 @@ export class AssetInfoController {
       : asset.isSuspicious;
   }
 
-  async assetInfo(assetId) {
+  async assetInfo(assetId: string) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -333,18 +347,20 @@ export class AssetInfoController {
       const resp = await fetch(url);
       switch (resp.status) {
         case 200: {
-          const assetInfo = await resp
+          const assetInfo = (await resp
             .text()
             .then(text =>
               JSON.parse(
                 text.replace(/(".+?"[ \t\n]*:[ \t\n]*)(\d{15,})/gm, '$1"$2"')
               )
-            );
+            )) as AssetInfoResponseItem;
+
           assets[network] = assets[network] || {};
           assets[network][assetId] = {
             ...assets[network][assetId],
             ...this.toAssetDetails(assetInfo),
-          };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any;
           this.store.updateState({ assets });
           break;
         }
@@ -362,7 +378,7 @@ export class AssetInfoController {
     return assets[network][assetId];
   }
 
-  toAssetDetails(info) {
+  toAssetDetails(info: AssetInfoResponseItem) {
     const { assetTickers } = this.store.getState();
 
     return {
@@ -386,7 +402,7 @@ export class AssetInfoController {
     };
   }
 
-  async toggleAssetFavorite(assetId) {
+  async toggleAssetFavorite(assetId: string) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
     const asset = assets[network] && assets[network][assetId];
@@ -399,12 +415,7 @@ export class AssetInfoController {
     this.store.updateState({ assets });
   }
 
-  /**
-   * Force-updates storage asset info by assetId list
-   * @param {Array<string>} assetIds
-   * @returns {Promise<void>}
-   */
-  async updateAssets(assetIds) {
+  async updateAssets(assetIds: string[]) {
     const { assets } = this.store.getState();
     const network = this.getNetwork();
 
@@ -426,14 +437,16 @@ export class AssetInfoController {
 
     switch (resp.status) {
       case 200: {
-        const assetInfos = await resp.json();
+        const assetInfos = (await resp.json()) as AssetInfoResponseItem[];
 
         assetInfos.forEach(assetInfo => {
-          if (!assetInfo.error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (!(assetInfo as any).error) {
             assets[network][assetInfo.assetId] = {
               ...assets[network][assetInfo.assetId],
               ...this.toAssetDetails(assetInfo),
-            };
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any;
           }
         });
         this.store.updateState({ assets });
@@ -475,17 +488,25 @@ export class AssetInfoController {
       const resp = await fetch(new URL('/api/tickers', MARKETDATA_URL));
 
       if (resp.ok) {
-        const tickers = await resp.json();
-        const usdPrices = tickers.reduce((acc, ticker) => {
-          if (
-            !stablecoinAssetIds.has(ticker.amountAssetID) &&
-            ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
-          ) {
-            acc[ticker.amountAssetID] = ticker['24h_close'];
-          }
+        const tickers = (await resp.json()) as Array<{
+          '24h_close': string;
+          amountAssetID: string;
+          priceAssetID: string;
+        }>;
 
-          return acc;
-        }, {});
+        const usdPrices = tickers.reduce<Record<string, string>>(
+          (acc, ticker) => {
+            if (
+              !stablecoinAssetIds.has(ticker.amountAssetID) &&
+              ticker.priceAssetID === MARKETDATA_USD_ASSET_ID
+            ) {
+              acc[ticker.amountAssetID] = ticker['24h_close'];
+            }
+
+            return acc;
+          },
+          {}
+        );
 
         stablecoinAssetIds.forEach(ticker => {
           usdPrices[ticker] = '1';
@@ -503,7 +524,11 @@ export class AssetInfoController {
       const resp = await fetch(new URL('/assets', STATIC_SERVICE_URL));
 
       if (resp.ok) {
-        const assets = await resp.json();
+        const assets = (await resp.json()) as Array<{
+          id: string;
+          ticker: string;
+          uri: string;
+        }>;
 
         this.store.updateState(
           assets.reduce(
@@ -514,7 +539,10 @@ export class AssetInfoController {
               },
               assetTickers: { ...acc.assetTickers, [id]: ticker },
             }),
-            {}
+            {} as {
+              assetLogos: StoreLocalState['assetLogos'];
+              assetTickers: StoreLocalState['assetTickers'];
+            }
           )
         );
       }

@@ -5,16 +5,10 @@ import {
   isEthereumAddress,
 } from 'ui/utils/ethereum';
 
-type AddressBookState = { addresses: Record<string, string> };
-
-type Options = {
-  localStore: LocalStore;
-};
-
 export class AddressBookController {
-  store: ObservableStore<AddressBookState>;
+  private store;
 
-  constructor({ localStore }: Options) {
+  constructor({ localStore }: { localStore: LocalStore }) {
     this.store = new ObservableStore(
       localStore.getInitState({ addresses: {} })
     );

@@ -47,7 +47,8 @@ export function Error({ error, componentStack, resetError }: Props) {
               data={componentStack}
             />
             <Copy
-              text={componentStack}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              text={componentStack!}
               onCopy={() => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1000);

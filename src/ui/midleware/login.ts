@@ -1,8 +1,9 @@
 import { ACTION } from '../actions/constants';
 import { loginUpdate, loginPending } from '../actions';
 import background from '../services/Background';
+import { UiMiddleware } from 'ui/store';
 
-export const login = store => next => action => {
+export const login: UiMiddleware = store => next => action => {
   if (action.type === ACTION.LOGIN) {
     store.dispatch(loginPending());
     background

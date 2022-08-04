@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { extension } from 'lib/extension';
-import { MSG_STATUSES } from '../constants';
+import { MsgStatus, MSG_STATUSES } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
@@ -11,7 +11,7 @@ import { TRANSACTION_TYPE } from '@waves/ts-types';
 import { customData, wavesAuth } from '@waves/waves-transactions';
 import { networkByteFromAddress } from '../lib/cryptoUtil';
 import { ERRORS, ERRORS_DATA } from '../lib/keeperError';
-import { PERMISSIONS, PermissionsController } from './permissions';
+import { PermissionsController } from './permissions';
 import { calculateFeeFabric } from './calculateFee';
 import { clone } from 'ramda';
 import create from 'parse-json-bignumber';
@@ -30,53 +30,36 @@ import { NetworkController } from './network';
 import { RemoteConfigController } from './remoteConfig';
 import { TxInfoController } from './txInfo';
 import { CurrentAccountController } from './currentAccount';
+import { PERMISSIONS } from 'permissions/constants';
+import { PreferencesAccount } from 'preferences/types';
+import { MessageInput, MessageStoreItem } from 'messages/types';
 
 const { stringify } = create({ BigNumber });
 
 // msg statuses: unapproved, signed, published, rejected, failed
 
-type SignTx = WalletController['signTx'];
-type SignOrder = WalletController['signOrder'];
-type SignCancelOrder = WalletController['signCancelOrder'];
-type SignWavesAuth = WalletController['signWavesAuth'];
-type SignCustomData = WalletController['signCustomData'];
-type Auth = WalletController['auth'];
-type SignRequest = WalletController['signRequest'];
-type GetMatcherPublicKey = NetworkController['getMatcherPublicKey'];
-type GetMessagesConfig = RemoteConfigController['getMessagesConfig'];
-type GetPackConfig = RemoteConfigController['getPackConfig'];
-type GetTxInfo = TxInfoController['txInfo'];
-type SetPermission = PermissionsController['setPermission'];
-type GetAccountBalance = CurrentAccountController['getAccountBalance'];
-type GetFeeConfig = RemoteConfigController['getFeeConfig'];
-
-interface Message {
-  result: unknown;
-  status: string;
-}
-
 export class MessageController extends EventEmitter {
-  messages: { messages: Message[] };
-  store: ObservableStore;
-  signTx: SignTx;
-  signOrder: SignOrder;
-  signCancelOrder: SignCancelOrder;
-  signWavesAuth: SignWavesAuth;
-  signCustomData: SignCustomData;
-  auth: Auth;
-  signRequest: SignRequest;
-  broadcast: NetworkController['broadcast'];
-  getMatcherPublicKey: GetMatcherPublicKey;
-  networkController: NetworkController;
-  getMessagesConfig: GetMessagesConfig;
-  getPackConfig: GetPackConfig;
-  assetInfo: AssetInfoController['assetInfo'];
-  assetInfoController: AssetInfoController;
-  txInfo: GetTxInfo;
-  setPermission: SetPermission;
-  getFee: ReturnType<typeof calculateFeeFabric>;
-  getFeeConfig: GetFeeConfig;
-  getAccountBalance: GetAccountBalance;
+  private messages;
+  private store;
+  private signTx;
+  private signOrder;
+  private signCancelOrder;
+  private signWavesAuth;
+  private signCustomData;
+  private auth;
+  private signRequest;
+  private broadcast: NetworkController['broadcast'];
+  private getMatcherPublicKey;
+  private networkController;
+  private getMessagesConfig;
+  private getPackConfig;
+  private assetInfo;
+  private assetInfoController;
+  private txInfo;
+  setPermission;
+  private getFee;
+  private getFeeConfig;
+  private getAccountBalance;
 
   constructor({
     localStore,
@@ -98,30 +81,29 @@ export class MessageController extends EventEmitter {
     getFeeConfig,
   }: {
     localStore: ExtensionStore;
-    signTx: SignTx;
-    signOrder: SignOrder;
-    signCancelOrder: SignCancelOrder;
-    signWavesAuth: SignWavesAuth;
-    signCustomData: SignCustomData;
-    auth: Auth;
-    signRequest: SignRequest;
+    signTx: WalletController['signTx'];
+    signOrder: WalletController['signOrder'];
+    signCancelOrder: WalletController['signCancelOrder'];
+    signWavesAuth: WalletController['signWavesAuth'];
+    signCustomData: WalletController['signCustomData'];
+    auth: WalletController['auth'];
+    signRequest: WalletController['signRequest'];
     assetInfoController: AssetInfoController;
     networkController: NetworkController;
-    getMatcherPublicKey: GetMatcherPublicKey;
-    getMessagesConfig: GetMessagesConfig;
-    getPackConfig: GetPackConfig;
-    txInfo: GetTxInfo;
-    setPermission: SetPermission;
-    getAccountBalance: GetAccountBalance;
-    getFeeConfig: GetFeeConfig;
+    getMatcherPublicKey: NetworkController['getMatcherPublicKey'];
+    getMessagesConfig: RemoteConfigController['getMessagesConfig'];
+    getPackConfig: RemoteConfigController['getPackConfig'];
+    txInfo: TxInfoController['txInfo'];
+    setPermission: PermissionsController['setPermission'];
+    getAccountBalance: CurrentAccountController['getAccountBalance'];
+    getFeeConfig: RemoteConfigController['getFeeConfig'];
   }) {
     super();
 
-    const defaults = {
+    this.messages = localStore.getInitState({
       messages: [],
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.messages = localStore.getInitState(defaults) as any;
+    });
+
     this.store = new ObservableStore(this.messages);
     localStore.subscribe(this.store);
 
@@ -156,7 +138,9 @@ export class MessageController extends EventEmitter {
     this.getAccountBalance = getAccountBalance;
 
     this.rejectAllByTime();
-    extension.alarms.onAlarm.addListener(({ name }) => {
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       if (name === 'rejectMessages') {
         this.rejectAllByTime();
       }
@@ -165,12 +149,7 @@ export class MessageController extends EventEmitter {
     this._updateBadge();
   }
 
-  /**
-   * Generates message with metadata. Add tx to pipeline
-   * @param {object} messageData - message data
-   * @returns {Promise<Object>} id - message id
-   */
-  async newMessage(messageData) {
+  async newMessage(messageData: MessageInput) {
     log.debug(
       `New message ${messageData.type}: ${JSON.stringify(messageData.data)}`
     );
@@ -178,8 +157,11 @@ export class MessageController extends EventEmitter {
     let message;
     try {
       message = await this._generateMessage(messageData);
-    } catch (e) {
-      throw ERRORS_DATA[e.code] ? e : ERRORS.UNKNOWN(e.message, e.stack);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      throw ERRORS_DATA[e.code as keyof typeof ERRORS_DATA]
+        ? e
+        : ERRORS.UNKNOWN(e.message, e.stack);
     }
 
     const messages = this.store.getState().messages;
@@ -215,14 +197,8 @@ export class MessageController extends EventEmitter {
     return { id: message.id };
   }
 
-  // Todo: Find appropriate name. What if message has already been finished?
-  /**
-   * Get message result once it has been approved or rejected
-   * @param {string} id - message id
-   * @returns {Promise<object>}
-   */
-  getMessageResult(id) {
-    let message;
+  getMessageResult(id: string) {
+    let message: MessageStoreItem;
 
     try {
       message = this._getMessageById(id);
@@ -263,21 +239,15 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  getMessageById(id) {
+  getMessageById(id: string) {
     return this._getMessageById(id);
   }
 
-  deleteMessage(id) {
+  deleteMessage(id: string) {
     return this._deleteMessage(id);
   }
 
-  /**
-   * Approves message
-   * @param {string} id - message id
-   * @param {object} [account] - Account, approving this tx
-   * @returns {Promise<object>}
-   */
-  approve(id, account = undefined) {
+  approve(id: string, account?: PreferencesAccount) {
     const message = this._getMessageById(id);
     message.account = account || message.account;
     if (!message.account)
@@ -285,7 +255,7 @@ export class MessageController extends EventEmitter {
         'Message has empty account filed and no address is provided',
       ]);
 
-    return new Promise<[null, Message]>((resolve, reject) => {
+    return new Promise<[null, MessageStoreItem]>((resolve, reject) => {
       this._fillSignableData(message)
         .then(this._signMessage.bind(this))
         .then(this._broadcastMessage.bind(this))
@@ -307,12 +277,7 @@ export class MessageController extends EventEmitter {
     });
   }
 
-  /**
-   * Rejects message
-   * @param {string} id - message id
-   * @param {boolean} forever - reject forever flag
-   */
-  reject(id, forever = undefined) {
+  reject(id: string, forever?: boolean) {
     const message = this._getMessageById(id);
     message.status = !forever
       ? MSG_STATUSES.REJECTED
@@ -321,15 +286,11 @@ export class MessageController extends EventEmitter {
     this.emit(`${message.id}:finished`, message);
   }
 
-  /**
-   * Update transaction fee
-   * @param {string} id - message id
-   * @param {IMoneyLike} fee
-   */
-  async updateTransactionFee(id, fee) {
+  async updateTransactionFee(id: string, fee: IMoneyLike) {
     const message = this._getMessageById(id);
     message.data.data.fee = fee;
-    const updatedMsg = await this._generateMessage(message);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedMsg = await this._generateMessage(message as any);
     updatedMsg.id = id;
     this._updateMessage(updatedMsg);
     return updatedMsg;
@@ -339,7 +300,7 @@ export class MessageController extends EventEmitter {
     this._updateBadge();
   }
 
-  rejectByOrigin(byOrigin) {
+  rejectByOrigin(byOrigin: string) {
     const { messages } = this.store.getState();
     messages.forEach(({ id, origin }) => {
       if (byOrigin === origin) {
@@ -363,12 +324,7 @@ export class MessageController extends EventEmitter {
     this._updateMessagesByTimeout();
   }
 
-  // for debug purposes
-  /**
-   * Deletes all messages
-   * @param {array} [ids] - message id
-   */
-  clearMessages(ids = undefined) {
+  clearMessages(ids?: string | string[]) {
     if (typeof ids === 'string') {
       this._deleteMessage(ids);
     } else if (ids && ids.length > 0) {
@@ -378,19 +334,16 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  /**
-   * Removes unused messages in final states from previous versions of Keeper Wallet
-   */
   clearUnusedMessages() {
-    const unusedStatuses = [
+    const unusedStatuses: MsgStatus[] = [
       MSG_STATUSES.REJECTED,
       MSG_STATUSES.REJECTED_FOREVER,
       MSG_STATUSES.SIGNED,
       MSG_STATUSES.PUBLISHED,
       MSG_STATUSES.FAILED,
     ];
-    const unusedMessages = [],
-      actualMessages = [];
+    const unusedMessages: MessageStoreItem[] = [];
+    const actualMessages: MessageStoreItem[] = [];
 
     this.messages.messages.forEach(message => {
       const { status } = message;
@@ -419,7 +372,7 @@ export class MessageController extends EventEmitter {
     });
   }
 
-  _updateMessage(message) {
+  _updateMessage(message: MessageStoreItem) {
     const messages = this.store.getState().messages;
     const id = message.id;
     const index = messages.findIndex(message => message.id === id);
@@ -427,7 +380,7 @@ export class MessageController extends EventEmitter {
     this._updateStore(messages);
   }
 
-  _getMessageById(id) {
+  _getMessageById(id: string) {
     const result = this.store
       .getState()
       .messages.find(message => message.id === id);
@@ -435,7 +388,7 @@ export class MessageController extends EventEmitter {
     return result;
   }
 
-  _deleteMessage(id) {
+  _deleteMessage(id: string) {
     const { messages } = this.store.getState();
     const index = messages.findIndex(message => message.id === id);
     if (index > -1) {
@@ -444,7 +397,7 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  _updateStore(messages) {
+  _updateStore(messages: MessageStoreItem[]) {
     this.messages = { ...this.store.getState(), messages };
     this.store.updateState(this.messages);
     this._updateBadge();
@@ -454,7 +407,8 @@ export class MessageController extends EventEmitter {
     this.emit('Update badge');
   }
 
-  async _transformData(data) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _transformData(data: any) {
     if (
       !data ||
       typeof data !== 'object' ||
@@ -499,20 +453,23 @@ export class MessageController extends EventEmitter {
           Object.prototype.hasOwnProperty.call(field, 'assetId')
         ) {
           const asset = await this.assetInfo(data[key].assetId);
-          data[key] = Money.fromTokens(field.tokens, asset);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data[key] = Money.fromTokens(field.tokens, asset as any);
         } else if (
           Object.prototype.hasOwnProperty.call(field, 'coins') &&
           Object.prototype.hasOwnProperty.call(field, 'assetId')
         ) {
           const asset = await this.assetInfo(data[key].assetId);
-          data[key] = Money.fromCoins(field.coins, asset);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data[key] = Money.fromCoins(field.coins, asset as any);
         } else if (
           Object.prototype.hasOwnProperty.call(field, 'amount') &&
           Object.prototype.hasOwnProperty.call(field, 'assetId') &&
           Object.keys(field).length === 2
         ) {
           const asset = await this.assetInfo(data[key].assetId);
-          data[key] = Money.fromCoins(field.amount, asset);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data[key] = Money.fromCoins(field.amount, asset as any);
         } else {
           data[key] = await this._transformData(field);
         }
@@ -522,7 +479,8 @@ export class MessageController extends EventEmitter {
     return data;
   }
 
-  async _fillSignableData(message) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _fillSignableData(message: any) {
     switch (message.type) {
       case 'order':
       case 'cancelOrder':
@@ -531,7 +489,8 @@ export class MessageController extends EventEmitter {
         return message;
       case 'transactionPackage':
         message.data = await Promise.all(
-          message.data.map(async data => await this._transformData(data))
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          message.data.map(async (data: any) => await this._transformData(data))
         );
         return message;
       default:
@@ -539,7 +498,8 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  async _signMessage(message) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _signMessage(message: any) {
     let signedData;
     switch (message.type) {
       case 'transaction':
@@ -551,7 +511,8 @@ export class MessageController extends EventEmitter {
         break;
       case 'transactionPackage':
         signedData = await Promise.all(
-          message.data.map(txParams => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          message.data.map((txParams: any) => {
             return this.signTx(
               message.account.address,
               txParams,
@@ -615,7 +576,7 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  async _broadcastMessage(message) {
+  async _broadcastMessage(message: MessageStoreItem) {
     if (
       !message.broadcast ||
       ['transaction', 'order', 'cancelOrder'].indexOf(message.type) === -1
@@ -629,7 +590,8 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  async _processSuccessPath(message) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _processSuccessPath(message: any) {
     if (message.successPath) {
       const url = new URL(message.successPath);
       switch (message.type) {
@@ -649,7 +611,7 @@ export class MessageController extends EventEmitter {
     return message;
   }
 
-  async _generateMessage(messageData) {
+  async _generateMessage(messageData: MessageInput) {
     const message = {
       ...messageData,
       id: uuidv4(),
@@ -662,7 +624,7 @@ export class MessageController extends EventEmitter {
       throw ERRORS.REQUEST_ERROR('should contain a data field', message);
     }
 
-    const result = { ...message };
+    const result = { ...message } as unknown as MessageStoreItem;
 
     if (message.data.successPath) {
       result.successPath = message.data.successPath;
@@ -675,7 +637,8 @@ export class MessageController extends EventEmitter {
           message.data.publicKey || message.account.publicKey;
         try {
           result.messageHash = wavesAuth(message.data, 'fake user').hash;
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
         break;
@@ -712,7 +675,8 @@ export class MessageController extends EventEmitter {
       case 'transactionPackage': {
         const { max, allow_tx } = this.getPackConfig();
 
-        const msgs = message.data.length;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const msgs = (message.data as any).length;
 
         if (!msgs || msgs > max) {
           throw ERRORS.REQUEST_ERROR(
@@ -721,8 +685,10 @@ export class MessageController extends EventEmitter {
           );
         }
 
-        const unavailableTx = message.data.filter(
-          ({ type }) => !allow_tx.includes(type)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const unavailableTx = (message.data as any).filter(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ({ type }: any) => !allow_tx.includes(type)
         );
 
         if (unavailableTx.length) {
@@ -732,37 +698,41 @@ export class MessageController extends EventEmitter {
           );
         }
 
-        const ids = [];
+        const ids: string[] = [];
 
-        const dataPromises = message.data.map(async txParams => {
-          this._validateTx(txParams, message.account);
-          const data = this._prepareTx(txParams.data, message.account);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dataPromises = (message.data as any).map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          async (txParams: any) => {
+            this._validateTx(txParams, message.account);
+            const data = this._prepareTx(txParams.data, message.account);
 
-          const fee =
-            txParams.data.fee ||
-            (await this._getDefaultTxFee(message, { ...txParams, data }));
+            const fee =
+              txParams.data.fee ||
+              (await this._getDefaultTxFee(message, { ...txParams, data }));
 
-          const readyData = { ...txParams, data: { ...data, fee } };
+            const readyData = { ...txParams, data: { ...data, fee } };
 
-          const id = getHash.transaction(
-            makeBytes.transaction(
-              convertFromSa.transaction(
-                await this._transformData(clone(readyData)),
-                this.networkController.getNetworkCode().charCodeAt(0),
-                message.account.type
+            const id = getHash.transaction(
+              makeBytes.transaction(
+                convertFromSa.transaction(
+                  await this._transformData(clone(readyData)),
+                  this.networkController.getNetworkCode().charCodeAt(0),
+                  message.account.type
+                )
               )
-            )
-          );
+            );
 
-          ids.push(id);
-          readyData.id = id;
+            ids.push(id);
+            readyData.id = id;
 
-          if (txParams.type === 9 && txParams.data.leaseId) {
-            readyData.data.lease = await this.txInfo(txParams.data.leaseId);
+            if (txParams.type === 9 && txParams.data.leaseId) {
+              readyData.data.lease = await this.txInfo(txParams.data.leaseId);
+            }
+
+            return readyData;
           }
-
-          return readyData;
-        });
+        );
         result.data = await Promise.all(dataPromises);
         result.messageHash = ids;
         break;
@@ -869,18 +839,24 @@ export class MessageController extends EventEmitter {
           message.data.publicKey || message.account.publicKey;
         try {
           result.messageHash = customData(result.data, 'fake user').hash;
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
           throw ERRORS.REQUEST_ERROR(e.message, message);
         }
         break;
       default:
-        throw ERRORS.REQUEST_ERROR(`incorrect type "${message.type}"`, message);
+        throw ERRORS.REQUEST_ERROR(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          `incorrect type "${(message as any).type}"`,
+          message
+        );
     }
 
     return result;
   }
 
-  async _getFee(message, signData) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _getFee(message: any, signData: any) {
     const signableData = await this._transformData({ ...signData });
     const chainId = this.networkController.getNetworkCode().charCodeAt(0);
 
@@ -897,7 +873,8 @@ export class MessageController extends EventEmitter {
     };
   }
 
-  async _getDefaultTxFee(message, signData) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _getDefaultTxFee(message: any, signData: any) {
     let fee: IMoneyLike = await this._getFee(message, signData);
 
     const assets = this.assetInfoController.getAssets();
@@ -911,8 +888,10 @@ export class MessageController extends EventEmitter {
 
     if (
       !isEnoughBalanceForFeeAndSpendingAmounts({
-        assetBalance: balance.assets[feeMoney.asset.id],
-        fee: feeMoney,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        assetBalance: balance.assets[feeMoney!.asset.id],
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fee: feeMoney!,
         spendingAmounts,
       })
     ) {
@@ -920,7 +899,8 @@ export class MessageController extends EventEmitter {
         assets,
         balance,
         feeConfig: this.getFeeConfig(),
-        initialFee: feeMoney,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        initialFee: feeMoney!,
         txType: message.data.type,
         usdPrices: this.assetInfoController.getUsdPrices(),
       });
@@ -941,7 +921,8 @@ export class MessageController extends EventEmitter {
     return fee;
   }
 
-  _getMoneyLikeValue(moneyLike) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _getMoneyLikeValue(moneyLike: any) {
     for (const key of ['tokens', 'coins', 'amount']) {
       if (key in moneyLike) {
         return moneyLike[key];
@@ -951,13 +932,14 @@ export class MessageController extends EventEmitter {
     return null;
   }
 
-  _isNumberLikePositive(numberLike) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _isNumberLikePositive(numberLike: any) {
     const bn = new BigNumber(numberLike);
 
     return bn.isFinite() && bn.gt(0);
   }
 
-  _isMoneyLikeValuePositive(moneyLike) {
+  _isMoneyLikeValuePositive(moneyLike: unknown) {
     if (typeof moneyLike !== 'object' || moneyLike === null) {
       return false;
     }
@@ -971,7 +953,8 @@ export class MessageController extends EventEmitter {
     return this._isNumberLikePositive(value);
   }
 
-  _validateTx(tx, account) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _validateTx(tx: any, account: any) {
     if ('fee' in tx.data && !this._isMoneyLikeValuePositive(tx.data.fee)) {
       throw ERRORS.REQUEST_ERROR('fee is not valid', tx);
     }
@@ -1029,7 +1012,8 @@ export class MessageController extends EventEmitter {
         }
         break;
       case TRANSACTION_TYPE.MASS_TRANSFER:
-        tx.data.transfers.forEach(({ amount }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tx.data.transfers.forEach(({ amount }: any) => {
           if (
             !this._isMoneyLikeValuePositive(amount) &&
             !this._isNumberLikePositive(amount)
@@ -1049,7 +1033,8 @@ export class MessageController extends EventEmitter {
       }
       case TRANSACTION_TYPE.INVOKE_SCRIPT:
         if (tx.data.payment) {
-          tx.data.payment.forEach(payment => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          tx.data.payment.forEach((payment: any) => {
             if (!this._isMoneyLikeValuePositive(payment)) {
               throw ERRORS.REQUEST_ERROR('payment is not valid', tx);
             }
@@ -1059,7 +1044,8 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  _prepareTx(txParams, account) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _prepareTx(txParams: any, account: any) {
     return {
       timestamp: Date.now(),
       senderPublicKey: account.publicKey,
@@ -1068,7 +1054,8 @@ export class MessageController extends EventEmitter {
     };
   }
 
-  _validateOrder(order) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _validateOrder(order: any) {
     if (order.type !== 1002) {
       throw ERRORS.REQUEST_ERROR('unexpected type', order);
     }
@@ -1086,11 +1073,11 @@ export class MessageController extends EventEmitter {
     }
   }
 
-  async _prepareOrder(orderParams, account) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async _prepareOrder(orderParams: any, account: any) {
     const defaultFee = Money.fromCoins(
       0,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      new Asset(this.assetInfoController.getWavesAsset() as any)
+      new Asset(this.assetInfoController.getWavesAsset())
     );
 
     const orderDefaults = {

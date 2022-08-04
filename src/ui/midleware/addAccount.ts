@@ -1,8 +1,9 @@
 import { ACTION, addBackTab, selectAccount, setTab } from '../actions';
 import background, { WalletTypes } from '../services/Background';
 import { PAGES } from 'ui/pageConfig';
+import { UiMiddleware } from 'ui/store';
 
-export const addAccount = store => next => action => {
+export const addAccount: UiMiddleware = store => next => action => {
   const { type, payload, meta } = action;
   const { currentNetwork, networks, tab: currentTab } = store.getState();
 
@@ -12,7 +13,11 @@ export const addAccount = store => next => action => {
     ).code;
 
     background
-      .addWallet({ ...payload, networkCode, network: currentNetwork })
+      .addWallet({
+        ...payload,
+        networkCode,
+        network: currentNetwork,
+      })
       .then(lastAccount => {
         store.dispatch(selectAccount(lastAccount));
 

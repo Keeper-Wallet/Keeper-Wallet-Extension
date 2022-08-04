@@ -1,19 +1,26 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
+import ExtensionStore from './localStore';
 
 const height = 622;
 const width = 357;
 
-export class WindowManager {
-  store: ObservableStore;
+interface ExtensionWindow {
+  id: string;
+  type: string;
+}
 
-  constructor({ localStore }) {
+export class WindowManager {
+  private store;
+
+  constructor({ localStore }: { localStore: ExtensionStore }) {
     this.store = new ObservableStore(
       localStore.getInitState({
         notificationWindowId: undefined,
         inShowMode: undefined,
       })
     );
+
     localStore.subscribe(this.store);
   }
 
@@ -40,7 +47,7 @@ export class WindowManager {
             width,
             height,
           },
-          window => {
+          (window: { id: string }) => {
             this.store.updateState({ notificationWindowId: window.id });
             resolve();
           }
@@ -51,7 +58,7 @@ export class WindowManager {
     this.store.updateState({ inShowMode: false });
   }
 
-  async resizeWindow(width, height) {
+  async resizeWindow(width: number, height: number) {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow) {
       await extension.windows.update(notificationWindow.id, { width, height });
@@ -68,11 +75,10 @@ export class WindowManager {
 
   async _getNotificationWindow() {
     // get all extension windows
-    const windows = await new Promise<Array<{ id: unknown; type: string }>>(
-      resolve =>
-        extension.windows.getAll({}, windows => {
-          resolve(windows || []);
-        })
+    const windows = await new Promise<ExtensionWindow[]>(resolve =>
+      extension.windows.getAll({}, (windows: ExtensionWindow[]) => {
+        resolve(windows || []);
+      })
     );
 
     const { notificationWindowId } = this.store.getState();

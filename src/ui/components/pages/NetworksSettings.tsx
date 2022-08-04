@@ -5,31 +5,77 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, Copy, Error, Input, Modal } from '../ui';
 import * as styles from './styles/settings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
+import { AppState } from 'ui/store';
+import { PageComponentProps } from 'ui/pageConfig';
+import { NetworkName } from 'networks/types';
 
-interface Props extends WithTranslation {
-  networks: unknown[];
-  currentNetwork: string;
-  customNodes: unknown;
-  customMatcher: unknown;
-
-  setCustomCode: (payload: unknown) => void;
-  setCustomNode: (payload: unknown) => void;
-  setCustomMatcher: (payload: unknown) => void;
+interface StateProps {
+  networks: Array<{
+    code: string;
+    matcher: string;
+    name: unknown;
+    server: string;
+  }>;
+  currentNetwork: NetworkName;
+  customNodes: Partial<Record<NetworkName, string | null>>;
+  customMatcher: Partial<Record<NetworkName, string | null>>;
 }
 
-class NetworksSettingsComponent extends React.PureComponent<Props> {
-  readonly props;
-  readonly state;
-  _tCopy;
-  _tSave;
-  _tSetDefault;
+interface DispatchProps {
+  setCustomNode: (payload: {
+    node: string | null | undefined;
+    network: NetworkName;
+  }) => void;
+  setCustomMatcher: (payload: {
+    network: NetworkName;
+    matcher: string | null | undefined;
+  }) => void;
+  setCustomCode: (payload: {
+    code: string | undefined;
+    network: NetworkName;
+  }) => void;
+}
 
-  static getDerivedStateFromProps(props, state) {
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
+interface State {
+  currentMatcher?: string | null;
+  currentNode?: string | null;
+  defaultMatcher?: string;
+  defaultNode?: string;
+  hasChanges?: string | boolean;
+  hasChangesMatcher?: string | boolean;
+  isCurrent?: boolean | '' | null;
+  isCurrentMatcher?: boolean | '' | null;
+  isDefault?: boolean;
+  isDefaultMatcher?: boolean;
+  newCode?: string;
+  node?: string;
+  nodeError?: boolean;
+  matcher?: string;
+  matcherError?: boolean;
+  showCopied?: boolean;
+  showSaved?: boolean;
+  showSetDefault?: boolean;
+  showSetDefaultBtn?: boolean;
+  validateData?: boolean;
+}
+
+class NetworksSettingsComponent extends React.PureComponent<Props, State> {
+  _tCopy: ReturnType<typeof setTimeout> | undefined;
+  _tSave: ReturnType<typeof setTimeout> | undefined;
+  _tSetDefault: ReturnType<typeof setTimeout> | undefined;
+
+  static getDerivedStateFromProps(
+    props: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     state = { ...state };
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const defaultServers = props.networks.find(
       item => item.name === props.currentNetwork
-    );
+    )!;
 
     const defaultNode = defaultServers.server;
     const currentNode = props.customNodes[props.currentNetwork];
@@ -71,10 +117,10 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
     };
   }
 
-  onInputHandler = event =>
+  onInputHandler = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ node: event.target.value, nodeError: false });
 
-  onInputMatcherHandler = event =>
+  onInputMatcherHandler = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.setState({ matcher: event.target.value, matcherError: false });
 
   onSaveNodeHandler = async () => {
@@ -103,10 +149,12 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
     let hasErrors = false;
     const { node, matcher } = this.state;
     const { networks, currentNetwork } = this.props;
-    const { code } = networks.find(({ name }) => name === currentNetwork);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { code } = networks.find(({ name }) => name === currentNetwork)!;
 
     try {
-      const newCode = await getNetworkByte(node);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const newCode = await getNetworkByte(node!);
       this.setState({ newCode });
       if (code && code !== newCode) {
         throw new window.Error('Incorrect node network byte');
@@ -117,7 +165,8 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
     }
 
     try {
-      await getMatcherPublicKey(matcher);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      await getMatcherPublicKey(matcher!);
     } catch (e) {
       this.setState({ matcherError: true });
       hasErrors = true;
@@ -271,7 +320,8 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
 
   saveCode() {
     const { networks, currentNetwork } = this.props;
-    const { code } = networks.find(({ name }) => name === currentNetwork);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { code } = networks.find(({ name }) => name === currentNetwork)!;
     if (!code) {
       this.props.setCustomCode({
         code: this.state.newCode,
@@ -297,19 +347,28 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
   }
 
   onCopy() {
-    clearTimeout(this._tCopy);
+    if (this._tCopy != null) {
+      clearTimeout(this._tCopy);
+    }
+
     this.setState({ showCopied: true });
     this._tCopy = setTimeout(() => this.setState({ showCopied: false }), 1000);
   }
 
   onSave() {
-    clearTimeout(this._tSave);
+    if (this._tSave != null) {
+      clearTimeout(this._tSave);
+    }
+
     this.setState({ showSaved: true });
     this._tSave = setTimeout(() => this.setState({ showSaved: false }), 1000);
   }
 
   onSaveDefault() {
-    clearTimeout(this._tSetDefault);
+    if (this._tSetDefault != null) {
+      clearTimeout(this._tSetDefault);
+    }
+
     this.setState({ showSetDefault: true });
     this._tSetDefault = setTimeout(
       () => this.setState({ showSetDefault: false }),
@@ -318,7 +377,7 @@ class NetworksSettingsComponent extends React.PureComponent<Props> {
   }
 }
 
-const mapToProps = store => {
+const mapToProps = (store: AppState): StateProps => {
   return {
     networks: store.networks,
     currentNetwork: store.currentNetwork,

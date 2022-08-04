@@ -1,6 +1,9 @@
 export const ducksArtefactsDApp = '3P5E9xamcWoymiqLx8ZdmR7o4fJSRMGp1WR';
 
-export const ArtefactNames = {
+export const ArtefactNames: Record<
+  string,
+  { title: string; description: string }
+> = {
   art_lake: {
     title: 'Lake',
     description:

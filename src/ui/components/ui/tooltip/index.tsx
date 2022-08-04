@@ -25,10 +25,10 @@ export function Tooltip({
   placement = 'top-end',
   ...props
 }: Props) {
-  const [el, setEl] = React.useState<HTMLDivElement>(null);
+  const [el, setEl] = React.useState<HTMLDivElement | null>(null);
   const elRef = React.useRef(null);
   const popperRef = React.useRef(null);
-  const [arrowRef, setArrowRef] = React.useState(null);
+  const [arrowRef, setArrowRef] = React.useState<HTMLElement | null>(null);
   const { styles: stylesP, attributes: attributesP } = Popper.usePopper(
     elRef.current,
     popperRef.current,
@@ -53,14 +53,17 @@ export function Tooltip({
   const [showPopper, setShowPopper] = React.useState(false);
 
   React.useEffect(() => {
-    const root = document.getElementById('app-modal');
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const root = document.getElementById('app-modal')!;
 
     const child = document.createElement('div');
     child.classList.add(modal.modalWrapper);
     root.appendChild(child);
     setEl(child);
 
-    return () => root.removeChild(child);
+    return () => {
+      root.removeChild(child);
+    };
   }, []);
 
   return (

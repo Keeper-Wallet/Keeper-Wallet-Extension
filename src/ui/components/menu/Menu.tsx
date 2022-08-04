@@ -12,7 +12,7 @@ const Settings = ({
   leftClick,
   rightClick,
 }: {
-  hasSettings: boolean;
+  hasSettings?: boolean;
   leftClick: (event: React.MouseEvent<HTMLElement>) => void;
   rightClick: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
@@ -28,7 +28,7 @@ const Buttons = ({
   deleteAccount,
   onDelete,
 }: {
-  deleteAccount: boolean;
+  deleteAccount: boolean | undefined;
   onDelete: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
   return (
@@ -95,10 +95,10 @@ export const Menu = ({
 
 interface IProps {
   hasLogo: boolean;
-  hasSettings: boolean;
+  hasSettings?: boolean;
   hasBack: boolean;
   hasClose: boolean;
-  deleteAccount: boolean;
+  deleteAccount: boolean | undefined;
   setTab: (tab: string) => void;
   onBack: () => void;
   onDelete: () => void;

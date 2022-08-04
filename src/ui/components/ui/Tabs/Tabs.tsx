@@ -28,7 +28,7 @@ interface TabListProps {
   activeIndex?: number;
   children: React.ReactElement | React.ReactElement[];
   className?: string;
-  onActiveTab?: (index) => void;
+  onActiveTab?: (index: number) => void;
 }
 
 export function TabList({
@@ -42,7 +42,8 @@ export function TabList({
       {React.Children.map(children, (child, index) =>
         React.cloneElement(child, {
           isActive: index == activeIndex,
-          onActivate: () => onActiveTab(index),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          onActivate: () => onActiveTab!(index),
         })
       )}
     </ol>
@@ -62,7 +63,8 @@ export function TabPanels({
 }: TabPanelsProps) {
   const childArray = React.Children.toArray(children);
 
-  return <div className={className}>{childArray[activeIndex]}</div>;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return <div className={className}>{childArray[activeIndex!]}</div>;
 }
 
 interface TabPanelProps {
@@ -75,9 +77,9 @@ export function TabPanel({ children, className }: TabPanelProps) {
 }
 
 interface TabsProps {
-  activeTab?: number;
+  activeTab?: number | null;
   children: [React.ReactElement, React.ReactElement];
-  onTabChange?: (activeIndex) => void;
+  onTabChange?: (activeIndex: number) => void;
 }
 
 export function Tabs({
@@ -100,7 +102,7 @@ export function Tabs({
           case TabList:
             return React.cloneElement(child, {
               activeIndex: activeTab,
-              onActiveTab: activeIndex => {
+              onActiveTab: (activeIndex: number) => {
                 if (onTabChange) {
                   onTabChange(activeIndex);
                 }

@@ -1,7 +1,7 @@
 export const messageType = 'wavesAuth';
 export const txType = 'request';
 
-export function getAssetsId(): Array<string> {
+export function getAssetsId(): string[] {
   return ['WAVES'];
 }
 
@@ -17,6 +17,6 @@ export function getAmountSign() {
   return '' as const;
 }
 
-export function isMe(tx: unknown, type: string) {
+export function isMe(tx: unknown, type: string | null) {
   return type === messageType;
 }

@@ -16,8 +16,11 @@ import {
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
 import ExtensionStore from 'lib/localStore';
+import { IdentityConfig } from './IdentityController';
+import { NetworkName } from 'networks/types';
 
-const extendValues = (defaultValues, newValues) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const extendValues = (defaultValues: any, newValues: any) => {
   return Object.entries(defaultValues).reduce(
     (acc, [key, value]) => {
       try {
@@ -43,28 +46,38 @@ const extendValues = (defaultValues, newValues) => {
   );
 };
 
+interface NetworkConfigItem {
+  code: string;
+  server: string;
+  matcher: string;
+}
+
+type NetworkConfig = Record<string, NetworkConfigItem>;
+
 export class RemoteConfigController extends EventEmitter {
-  store: ObservableStore;
+  store;
 
   constructor({ localStore }: { localStore: ExtensionStore }) {
     super();
 
-    const defaults = {
-      blacklist: [],
-      whitelist: [],
-      config: {
-        networks: DEFAULT_CONFIG.NETWORKS,
-        network_config: DEFAULT_CONFIG.NETWORK_CONFIG,
-        messages_config: DEFAULT_CONFIG.MESSAGES_CONFIG,
-        pack_config: DEFAULT_CONFIG.PACK_CONFIG,
-        idle: DEFAULT_CONFIG.IDLE,
-      },
-      ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
-      identityConfig: DEFAULT_IDENTITY_CONFIG,
-      feeConfig: DEFAULT_FEE_CONFIG,
-      status: STATUS.PENDING,
-    };
-    this.store = new ObservableStore(localStore.getInitState(defaults));
+    this.store = new ObservableStore(
+      localStore.getInitState({
+        blacklist: [],
+        whitelist: [],
+        config: {
+          networks: DEFAULT_CONFIG.NETWORKS,
+          network_config: DEFAULT_CONFIG.NETWORK_CONFIG,
+          messages_config: DEFAULT_CONFIG.MESSAGES_CONFIG,
+          pack_config: DEFAULT_CONFIG.PACK_CONFIG,
+          idle: DEFAULT_CONFIG.IDLE,
+        },
+        ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
+        identityConfig: DEFAULT_IDENTITY_CONFIG,
+        feeConfig: DEFAULT_FEE_CONFIG,
+        status: STATUS.PENDING,
+      })
+    );
+
     localStore.subscribe(this.store);
 
     this._getConfig();
@@ -72,7 +85,8 @@ export class RemoteConfigController extends EventEmitter {
     this._fetchIdentityConfig();
     this._fetchFeeConfig();
 
-    extension.alarms.onAlarm.addListener(({ name }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extension.alarms.onAlarm.addListener(({ name }: any) => {
       switch (name) {
         case 'updateConfig':
           this._getConfig();
@@ -145,7 +159,7 @@ export class RemoteConfigController extends EventEmitter {
     }
   }
 
-  getNetworkConfig() {
+  getNetworkConfig(): NetworkConfig {
     try {
       const { network_config } = this.store.getState().config;
       return extendValues(DEFAULT_CONFIG.NETWORK_CONFIG, network_config);
@@ -235,12 +249,13 @@ export class RemoteConfigController extends EventEmitter {
     }
   }
 
-  shouldIgnoreError(context, message) {
+  shouldIgnoreError(context: string, message: string) {
     const { ignoreErrorsConfig } = this.store.getState();
 
     return (
       ignoreErrorsConfig.ignoreAll ||
-      ignoreErrorsConfig[context].some(str => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (ignoreErrorsConfig as any)[context].some((str: string) => {
         const re = new RegExp(str);
 
         return re.test(message);
@@ -250,7 +265,7 @@ export class RemoteConfigController extends EventEmitter {
 
   async _fetchIdentityConfig() {
     const { identityConfig } = this.store.getState();
-    const networks = ['mainnet', 'testnet'];
+    const networks = [NetworkName.Mainnet, NetworkName.Testnet];
 
     fetch('https://configs.waves.exchange/web/networks.json')
       .then(resp =>
@@ -258,26 +273,36 @@ export class RemoteConfigController extends EventEmitter {
           ? resp.json()
           : resp.text().then(text => Promise.reject(new Error(text)))
       )
-      .then(wavesNetworks =>
-        Promise.all(
-          networks.map(async network => {
-            const envNetworkConfig = wavesNetworks.find(
-              c => c.name === network
-            );
-            if (!envNetworkConfig) {
-              throw new Error(`No network configuration found for ${network}`);
-            }
+      .then(
+        (
+          wavesNetworks: Array<{
+            configService: { url: string; featuresConfigUrl: string };
+            name: string;
+          }>
+        ) =>
+          Promise.all(
+            networks.map(async network => {
+              const envNetworkConfig = wavesNetworks.find(
+                c => c.name === network
+              );
+              if (!envNetworkConfig) {
+                throw new Error(
+                  `No network configuration found for ${network}`
+                );
+              }
 
-            return fetch(
-              `${envNetworkConfig.configService.url}/` +
-                `${envNetworkConfig.configService.featuresConfigUrl}`
-            ).then(response =>
-              response.ok
-                ? response.json()
-                : response.text().then(text => Promise.reject(new Error(text)))
-            );
-          })
-        )
+              return fetch(
+                `${envNetworkConfig.configService.url}/` +
+                  `${envNetworkConfig.configService.featuresConfigUrl}`
+              ).then(response =>
+                response.ok
+                  ? response.json()
+                  : response
+                      .text()
+                      .then(text => Promise.reject(new Error(text)))
+              );
+            })
+          )
       )
       .then(networkConfigs => {
         const fetchedConfig = Object.fromEntries(
@@ -299,9 +324,14 @@ export class RemoteConfigController extends EventEmitter {
       );
   }
 
-  getIdentityConfig(network) {
+  getIdentityConfig(network: NetworkName): IdentityConfig {
     const { identityConfig } = this.store.getState();
-    return identityConfig[network === 'testnet' ? 'testnet' : 'mainnet'];
+
+    return identityConfig[
+      network === NetworkName.Testnet
+        ? NetworkName.Testnet
+        : NetworkName.Mainnet
+    ];
   }
 
   async _fetchFeeConfig() {

@@ -3,14 +3,20 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/idea.css';
 
 interface Props {
-  data: string;
+  data: string | null;
   className: string;
 }
 
 export function Highlight({ data, className }: Props) {
-  const preRef = React.useRef<HTMLPreElement>();
+  const preRef = React.useRef<HTMLPreElement | null>(null);
 
-  React.useLayoutEffect(() => hljs.highlightElement(preRef.current), []);
+  React.useLayoutEffect(() => {
+    if (!preRef.current) {
+      return;
+    }
+
+    hljs.highlightElement(preRef.current);
+  }, []);
 
   return (
     <pre ref={preRef} className={className}>

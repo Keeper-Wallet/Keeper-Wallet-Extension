@@ -1,5 +1,3 @@
-import { ComponentType } from 'react';
-import { IMoneyLike } from 'ui/utils/converters';
 import auth from './Auth';
 import alias from './Alias';
 import originAuth from './OriginAuth';
@@ -23,29 +21,8 @@ import unknown from './Unknown';
 import customData from './CustomData';
 import updateAssetInfo from './UpdateAssetInfo';
 import wavesAuth from './WavesAuth';
-import { Money } from '@waves/data-entities';
-import { ComponentProps } from 'ui/components/transactions/BaseTransaction';
-import { WithTranslation } from 'react-i18next';
 
-export interface ComponentConfig {
-  card: ComponentType<{
-    assets?: unknown;
-    className?: string;
-    collapsed?: boolean;
-    message?: unknown;
-  }>;
-  getAmount?: (tx: unknown, item: unknown) => IMoneyLike | Money;
-  getAmounts?: (tx: unknown) => IMoneyLike[];
-  getAmountSign: (tx: unknown) => '-' | '+' | '';
-  getAssetsId: (tx: unknown) => string[];
-  getFee: (tx: unknown) => IMoneyLike;
-  isMe: (tx: unknown, type: unknown) => boolean;
-  message: ComponentType<Omit<ComponentProps, keyof WithTranslation>>;
-  type: string;
-  messageType: string;
-}
-
-const MESSAGES: ComponentConfig[] = [
+const MESSAGES = [
   auth,
   alias,
   originAuth,
@@ -75,6 +52,9 @@ export { FinalTransaction } from './FinalTransaction';
 export function getConfigByTransaction({
   data: tx,
   type = null,
-}): ComponentConfig {
+}: {
+  data: { type?: unknown };
+  type: string | null;
+}) {
   return MESSAGES.find(config => config.isMe(tx, type)) || unknown;
 }

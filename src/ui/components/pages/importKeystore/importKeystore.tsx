@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { seedUtils } from '@waves/waves-transactions';
-import { KeystoreProfiles } from 'accounts/types';
+import { KeystoreProfiles } from 'keystore/types';
 import { getNetworkByNetworkCode } from 'ui/utils/waves';
-import { PAGES } from '../../../pageConfig';
+import { PageComponentProps, PAGES } from '../../../pageConfig';
 import { ImportKeystoreChooseFile } from './chooseFile';
 import { ImportKeystoreChooseAccounts } from './chooseAccounts';
 import { batchAddAccounts } from 'ui/actions/user';
@@ -30,7 +30,7 @@ type ExchangeKeystoreAccount = {
 
 interface EncryptedKeystore {
   type: WalletTypes;
-  decrypt: (password: string) => KeystoreProfiles;
+  decrypt: (password: string) => KeystoreProfiles | null;
 }
 
 function parseKeystore(json: string): EncryptedKeystore | null {
@@ -113,11 +113,7 @@ function parseKeystore(json: string): EncryptedKeystore | null {
 
 const suffixRe = /\((\d+)\)$/;
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function ImportKeystore({ setTab }: Props) {
+export function ImportKeystore({ setTab }: PageComponentProps) {
   const dispatch = useAppDispatch();
   const allNetworksAccounts = useAppSelector(
     state => state.allNetworksAccounts
@@ -150,7 +146,8 @@ export function ImportKeystore({ setTab }: Props) {
               return;
             }
 
-            const newProfiles = keystore.decrypt(password);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const newProfiles = keystore.decrypt(password!);
 
             if (!newProfiles) {
               setError(t('importKeystore.errorDecrypt'));
@@ -219,7 +216,8 @@ export function ImportKeystore({ setTab }: Props) {
               ...acc,
               network: getNetworkByNetworkCode(acc.networkCode),
             })),
-            walletType
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            walletType!
           )
         );
       }}

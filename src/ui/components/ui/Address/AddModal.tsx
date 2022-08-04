@@ -134,7 +134,7 @@ export function AddModal({ showModal, setShowModal, address }: Props) {
                 {t('address.subtitle')}
               </p>
               <AddressInput
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={e => {
                   setAddressValue(e.target.value);
                   setAddressError('');
                 }}

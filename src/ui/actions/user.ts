@@ -1,9 +1,14 @@
 import { ACTION } from './constants';
 import { WalletTypes } from '../services/Background';
+import { NetworkName } from 'networks/types';
+import { UiActionPayload } from 'ui/store';
 
 export const deleteAccount = () => ({ type: ACTION.DELETE_ACCOUNT });
 
-export function createAccount(account, type: WalletTypes) {
+export function createAccount(
+  account: UiActionPayload<typeof ACTION.SAVE_NEW_ACCOUNT>,
+  type: WalletTypes
+) {
   return {
     type: ACTION.SAVE_NEW_ACCOUNT,
     payload: account,
@@ -11,18 +16,32 @@ export function createAccount(account, type: WalletTypes) {
   };
 }
 
-export function batchAddAccounts(
-  accounts: Array<
+export type BatchAddAccountsPayload = Array<
+  {
+    name: string;
+    network: NetworkName;
+  } & (
     | {
-        name: string;
-        network: string;
-      } & (
-        | { type: 'seed'; seed: string }
-        | { type: 'encodedSeed'; encodedSeed: string }
-        | { type: 'privateKey'; privateKey: string }
-        | { type: 'debug'; address: string }
-      )
-  >,
+        type: 'seed';
+        seed: string;
+      }
+    | {
+        type: 'encodedSeed';
+        encodedSeed: string;
+      }
+    | {
+        type: 'privateKey';
+        privateKey: string;
+      }
+    | {
+        type: 'debug';
+        address: string;
+      }
+  )
+>;
+
+export function batchAddAccounts(
+  accounts: BatchAddAccountsPayload,
   type: WalletTypes
 ) {
   return {
@@ -34,12 +53,12 @@ export function batchAddAccounts(
 
 export const lock = () => ({ type: ACTION.LOCK });
 
-export const setLocale = locale => ({
+export const setLocale = (locale: string) => ({
   type: ACTION.CHANGE_LNG,
   payload: locale,
 });
 
-export const changePassword = (oldPassword, newPassword) => ({
+export const changePassword = (oldPassword: string, newPassword: string) => ({
   type: ACTION.CHANGE_PASSWORD,
   payload: { oldPassword, newPassword },
 });

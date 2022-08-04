@@ -1,12 +1,15 @@
 import * as styles from './assetScript.styl';
 import * as React from 'react';
-import { withTranslation } from 'react-i18next';
-import { ComponentProps, MessageData, TxIcon } from '../BaseTransaction';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { TxIcon } from '../BaseTransaction';
 import cn from 'classnames';
 import { messageType } from './parseTx';
 import { Asset, ShowScript } from '../../ui';
+import { MessageCardComponentProps } from '../types';
 
-class AssetScriptCardComponent extends React.PureComponent<ComponentProps> {
+class AssetScriptCardComponent extends React.PureComponent<
+  MessageCardComponentProps & WithTranslation
+> {
   render() {
     const className = cn(
       styles.assetScriptTransactionCard,
@@ -17,7 +20,7 @@ class AssetScriptCardComponent extends React.PureComponent<ComponentProps> {
     );
 
     const { t, message, collapsed } = this.props;
-    const { data = {} as MessageData } = message;
+    const { data = {} } = message;
     const tx = { type: data.type, ...data.data };
     const script = tx.script;
     return (

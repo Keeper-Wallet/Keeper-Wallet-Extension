@@ -2,12 +2,14 @@ import * as React from 'react';
 import * as styles from './pills.styl';
 import cn from 'classnames';
 
-const _onClick = cb => id => cb && cb(id);
+const _onClick =
+  (cb: (...args: unknown[]) => unknown) => (id: number | undefined) =>
+    cb && cb(id);
 
 interface Props {
   className?: string;
   id?: number;
-  text?: unknown;
+  text?: string;
   hidden?: boolean;
   selected?: boolean;
   onSelect: (...args: unknown[]) => unknown;

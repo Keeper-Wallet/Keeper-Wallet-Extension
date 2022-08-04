@@ -9,14 +9,25 @@ import { TrashController } from './trash';
 import { LedgerApi } from 'wallets/ledger';
 import { Wallet } from 'wallets/wallet';
 import { IdentityApi } from './IdentityController';
-import { Account } from 'accounts/types';
+import {
+  SaAuth,
+  SaCancelOrder,
+  SaOrder,
+  SaRequest,
+  SaTransaction,
+} from 'transactions/utils';
+import { IWavesAuthParams } from '@waves/waves-transactions/dist/transactions';
+import { TCustomData } from '@waves/waves-transactions/dist/requests/custom-data';
+import { TBinaryIn } from '@waves/ts-lib-crypto';
+import { NetworkName } from 'networks/types';
+import { CreateWalletInput, WalletPrivateData } from 'wallets/types';
 
-function encrypt(object, password) {
+function encrypt(object: unknown, password: string) {
   const jsonObj = JSON.stringify(object);
   return seedUtils.encryptSeed(jsonObj, password);
 }
 
-function decrypt(ciphertext, password) {
+function decrypt(ciphertext: string, password: string) {
   try {
     const decryptedJson = seedUtils.decryptSeed(ciphertext, password);
     return JSON.parse(decryptedJson);
@@ -25,28 +36,21 @@ function decrypt(ciphertext, password) {
   }
 }
 
-type GetAssetInfo = AssetInfoController['assetInfo'];
-type GetNetwork = NetworkController['getNetwork'];
-type GetNetworks = NetworkController['getNetworks'];
-type GetNetworkCode = NetworkController['getNetworkCode'];
-
 export class WalletController extends EventEmitter {
-  store: ObservableStore;
-  password: string | undefined;
-  _setSession: ExtensionStore['setSession'];
-  wallets: Array<Wallet<Account>>;
-  assetInfo: GetAssetInfo;
-  getNetwork: GetNetwork;
-  getNetworks: GetNetworks;
-  getNetworkCode: GetNetworkCode;
-  ledger: LedgerApi;
-  trashControl: TrashController;
-  identity: IdentityApi;
+  store;
+  private password: string | null | undefined;
+  private _setSession;
+  private wallets: Array<Wallet<WalletPrivateData>>;
+  private assetInfo;
+  private getNetworks;
+  private getNetworkCode;
+  private ledger;
+  private trashControl;
+  private identity;
 
   constructor({
     localStore,
     assetInfo,
-    getNetwork,
     getNetworks,
     getNetworkCode,
     ledger,
@@ -54,10 +58,9 @@ export class WalletController extends EventEmitter {
     identity,
   }: {
     localStore: ExtensionStore;
-    assetInfo: GetAssetInfo;
-    getNetwork: GetNetwork;
-    getNetworks: GetNetworks;
-    getNetworkCode: GetNetworkCode;
+    assetInfo: AssetInfoController['assetInfo'];
+    getNetworks: NetworkController['getNetworks'];
+    getNetworkCode: NetworkController['getNetworkCode'];
     ledger: LedgerApi;
     trash: TrashController;
     identity: IdentityApi;
@@ -71,13 +74,11 @@ export class WalletController extends EventEmitter {
     );
     localStore.subscribe(this.store);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.password = localStore.getInitSession().password as any;
+    this.password = localStore.getInitSession().password;
     this._setSession = localStore.setSession.bind(localStore);
 
     this.wallets = [];
     this.assetInfo = assetInfo;
-    this.getNetwork = getNetwork;
     this.getNetworks = getNetworks;
     this.getNetworkCode = getNetworkCode;
     this.ledger = ledger;
@@ -88,17 +89,25 @@ export class WalletController extends EventEmitter {
   }
 
   // Public
-  addWallet(options) {
+  addWallet(
+    options: Omit<CreateWalletInput, 'networkCode'> & {
+      networkCode?: string;
+    }
+  ) {
     const networkCode =
       options.networkCode || this.getNetworkCode(options.network);
 
-    const wallet = this._createWallet({ ...options, networkCode });
+    const wallet = this._createWallet({
+      ...options,
+      networkCode,
+    } as CreateWalletInput);
 
     const foundWallet = this.getWalletsByNetwork(options.network).find(
       item => item.getAccount().address === wallet.getAccount().address
     );
+
     if (foundWallet) {
-      return foundWallet;
+      return foundWallet.getAccount();
     }
 
     this.wallets.push(wallet);
@@ -107,7 +116,7 @@ export class WalletController extends EventEmitter {
     return wallet.getAccount();
   }
 
-  removeWallet(address, network) {
+  removeWallet(address: string, network: NetworkName) {
     const wallet = this.getWalletsByNetwork(network).find(
       wallet => wallet.getAccount().address === address
     );
@@ -128,13 +137,13 @@ export class WalletController extends EventEmitter {
     this.wallets = [];
   }
 
-  unlock(password) {
+  unlock(password: string) {
     this._restoreWallets(password);
     this._setPassword(password);
     this._migrateWalletsNetwork();
   }
 
-  initVault(password) {
+  initVault(password: string) {
     if (!password || typeof password !== 'string') {
       throw new Error('Password is needed to init vault');
     }
@@ -151,7 +160,7 @@ export class WalletController extends EventEmitter {
     this.store.updateState({ WalletController: { vault: undefined } });
   }
 
-  newPassword(oldPassword, newPassword) {
+  newPassword(oldPassword: string, newPassword: string) {
     if (
       !oldPassword ||
       !newPassword ||
@@ -165,44 +174,47 @@ export class WalletController extends EventEmitter {
     this._saveWallets();
   }
 
-  checkPassword(password) {
+  checkPassword(password: string) {
     return password === this.password;
   }
 
-  getAccountSeed(address, network, password) {
+  getAccountSeed(address: string, network: NetworkName, password: string) {
     if (!password) throw new Error('Password is required');
     this._restoreWallets(password);
 
     return this._findWallet(address, network).getSeed();
   }
 
-  getAccountEncodedSeed(address, network, password) {
+  getAccountEncodedSeed(
+    address: string,
+    network: NetworkName,
+    password: string
+  ) {
     if (!password) throw new Error('Password is required');
     this._restoreWallets(password);
 
     return this._findWallet(address, network).getEncodedSeed();
   }
 
-  getAccountPrivateKey(address, network, password) {
+  getAccountPrivateKey(
+    address: string,
+    network: NetworkName,
+    password: string
+  ) {
     if (!password) throw new Error('Password is required');
     this._restoreWallets(password);
 
     return this._findWallet(address, network).getPrivateKey();
   }
 
-  /**
-   * Returns encrypted with current password account seed
-   * @param {string} address - wallet address
-   * @param network
-   * @returns {string} encrypted seed
-   */
-  encryptedSeed(address, network) {
+  encryptedSeed(address: string, network: NetworkName) {
     const wallet = this._findWallet(address, network);
     const seed = wallet.getSeed();
-    return seedUtils.Seed.encryptSeedPhrase(seed, this.password);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return seedUtils.Seed.encryptSeedPhrase(seed, this.password!);
   }
 
-  updateNetworkCode(network, code) {
+  updateNetworkCode(network: NetworkName, code: string | undefined) {
     let changed = false;
 
     this.wallets.forEach((wallet, index) => {
@@ -213,7 +225,8 @@ export class WalletController extends EventEmitter {
 
         this.wallets[index] = this._createWallet({
           ...wallet.serialize(),
-          networkCode: code,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          networkCode: code!,
         });
       }
     });
@@ -223,20 +236,21 @@ export class WalletController extends EventEmitter {
     }
   }
 
-  getWalletsByNetwork(network) {
+  getWalletsByNetwork(network: NetworkName) {
     return this.wallets.filter(
       wallet => wallet.getAccount().network === network
     );
   }
 
-  _walletToTrash(wallet) {
+  _walletToTrash(wallet: Wallet<WalletPrivateData> | undefined) {
     const walletsData = wallet && wallet.serialize && wallet.serialize();
     if (walletsData) {
       const saveData = {
         walletsData: this.password
           ? encrypt(walletsData, this.password)
           : walletsData,
-        address: wallet.address,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        address: (wallet as any).address,
       };
       this.trashControl.addData(saveData);
     }
@@ -267,14 +281,7 @@ export class WalletController extends EventEmitter {
     this._saveWallets();
   }
 
-  /**
-   * Signs transaction
-   * @param {string} address - wallet address
-   * @param {object} tx - transaction to sign
-   * @param {object} network
-   * @returns {Promise<string>} signed transaction as json string
-   */
-  async signTx(address, tx, network) {
+  async signTx(address: string, tx: SaTransaction, network: NetworkName) {
     const wallet = this._findWallet(address, network);
 
     return await wallet.signTx({
@@ -283,17 +290,10 @@ export class WalletController extends EventEmitter {
         senderPublicKey: wallet.getAccount().publicKey,
         ...tx.data,
       },
-    });
+    } as SaTransaction);
   }
 
-  /**
-   * Signs order
-   * @param {string} address - wallet address
-   * @param {object} order - order to sign
-   * @param {object} network
-   * @returns {Promise<string>} signed order as json string
-   */
-  async signOrder(address, order, network) {
+  async signOrder(address: string, order: SaOrder, network: NetworkName) {
     const wallet = this._findWallet(address, network);
 
     return await wallet.signOrder({
@@ -305,48 +305,43 @@ export class WalletController extends EventEmitter {
     });
   }
 
-  /**
-   * Signs order cancellation request
-   * @param {string} address - wallet address
-   * @param {object} cancelOrder - order cancellation request to sign
-   * @param {object} network
-   * @returns {Promise<string>} signed order cancellation request as json string
-   */
-  async signCancelOrder(address, cancelOrder, network) {
+  async signCancelOrder(
+    address: string,
+    cancelOrder: SaCancelOrder,
+    network: NetworkName
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.signCancelOrder(cancelOrder);
   }
 
-  async signWavesAuth(data, address, network) {
+  async signWavesAuth(
+    data: IWavesAuthParams,
+    address: string,
+    network: NetworkName
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.signWavesAuth(data);
   }
 
-  async signCustomData(data, address, network) {
+  async signCustomData(
+    data: TCustomData,
+    address: string,
+    network: NetworkName
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.signCustomData(data);
   }
 
-  /**
-   * Signs request
-   * @param {string} address - wallet address
-   * @param {object} request - transaction to sign
-   * @param network
-   * @returns {Promise<string>} signature
-   */
-  async signRequest(address, request, network) {
+  async signRequest(address: string, request: SaRequest, network: NetworkName) {
     const wallet = this._findWallet(address, network);
     return wallet.signRequest(request);
   }
 
-  /**
-   * Signs request
-   * @param {string} address - wallet address
-   * @param {object} authData - object, representing auth request
-   * @param network
-   * @returns {Promise<object>} object, representing auth response
-   */
-  async auth(address, authData, network) {
+  async auth(
+    address: string,
+    authData: SaAuth & { data: { name: unknown } },
+    network: NetworkName
+  ) {
     const wallet = this._findWallet(address, network);
     const signature = await wallet.signAuth(authData);
     const { host, name, prefix, version } = authData.data;
@@ -361,17 +356,34 @@ export class WalletController extends EventEmitter {
     };
   }
 
-  async getKEK(address, network, publicKey, prefix) {
+  async getKEK(
+    address: string,
+    network: NetworkName,
+    publicKey: string,
+    prefix: string
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.getKEK(publicKey, prefix);
   }
 
-  async encryptMessage(address, network, message, publicKey, prefix) {
+  async encryptMessage(
+    address: string,
+    network: NetworkName,
+    message: string,
+    publicKey: TBinaryIn,
+    prefix: string | undefined
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.encryptMessage(message, publicKey, prefix);
   }
 
-  async decryptMessage(address, network, message, publicKey, prefix) {
+  async decryptMessage(
+    address: string,
+    network: NetworkName,
+    message: TBinaryIn,
+    publicKey: TBinaryIn,
+    prefix: string | undefined
+  ) {
     const wallet = this._findWallet(address, network);
     return await wallet.decryptMessage(message, publicKey, prefix);
   }
@@ -379,22 +391,23 @@ export class WalletController extends EventEmitter {
   _saveWallets() {
     const walletsData = this.wallets.map(wallet => wallet.serialize());
     this.store.updateState({
-      WalletController: { vault: encrypt(walletsData, this.password) },
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      WalletController: { vault: encrypt(walletsData, this.password!) },
     });
   }
 
-  _restoreWallets(password) {
+  _restoreWallets(password: string | null | undefined) {
     const vault = this.store.getState().WalletController.vault;
 
     if (!vault || !password) {
       return;
     }
 
-    const decryptedData = decrypt(vault, password);
+    const decryptedData = decrypt(vault, password) as CreateWalletInput[];
     this.wallets = decryptedData.map(user => this._createWallet(user));
   }
 
-  _createWallet(user) {
+  _createWallet(user: CreateWalletInput) {
     return createWallet(user, {
       getAssetInfo: this.assetInfo,
       identity: this.identity,
@@ -402,7 +415,7 @@ export class WalletController extends EventEmitter {
     });
   }
 
-  _findWallet(address, network) {
+  _findWallet(address: string, network: NetworkName) {
     const wallet = this.getWalletsByNetwork(network).find(
       wallet => wallet.getAccount().address === address
     );
@@ -410,7 +423,7 @@ export class WalletController extends EventEmitter {
     return wallet;
   }
 
-  _setPassword(password) {
+  _setPassword(password: string | null) {
     this.password = password;
     this._setSession({ password });
   }

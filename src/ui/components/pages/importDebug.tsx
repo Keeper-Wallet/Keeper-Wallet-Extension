@@ -16,7 +16,8 @@ export function ImportDebug() {
   const networks = useAppSelector(state => state.networks);
   const networkCode =
     customCodes[currentNetwork] ||
-    networks.find(n => currentNetwork === n.name).code;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    networks.find(n => currentNetwork === n.name)!.code;
 
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');

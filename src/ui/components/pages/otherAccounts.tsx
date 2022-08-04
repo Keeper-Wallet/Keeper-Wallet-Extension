@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from 'ui/store';
 import { Asset, Money } from '@waves/data-entities';
-import { compareAccountsByLastUsed } from 'accounts/utils';
+import { compareAccountsByLastUsed } from 'preferences/utils';
 import { setActiveAccount } from 'ui/actions/assets';
-import { PAGES } from 'ui/pageConfig';
+import { PageComponentProps, PAGES } from 'ui/pageConfig';
 import { selectAccount } from 'ui/actions/localState';
 import { AccountCard } from '../accounts/accountCard';
 import * as styles from './otherAccounts.module.css';
@@ -12,11 +12,7 @@ import { SearchInput } from 'ui/components/ui/searchInput/searchInput';
 import background from 'ui/services/Background';
 import { setTab as resetTab } from 'ui/actions';
 
-interface Props {
-  setTab: (newTab: string) => void;
-}
-
-export function OtherAccountsPage({ setTab }: Props) {
+export function OtherAccountsPage({ setTab }: PageComponentProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const accounts = useAppSelector(state => state.accounts);
@@ -68,7 +64,7 @@ export function OtherAccountsPage({ setTab }: Props) {
           <SearchInput
             autoFocus
             value={term ?? ''}
-            onInput={e => setTerm(e.target.value)}
+            onInput={e => setTerm(e.currentTarget.value)}
             onClear={() => setTerm('')}
             data-testid="accountsSearchInput"
           />

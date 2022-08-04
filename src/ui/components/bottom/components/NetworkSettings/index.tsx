@@ -3,19 +3,40 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import * as styles from './networkSettings.styl';
 import { getMatcherPublicKey, getNetworkByte } from 'ui/utils/waves';
 import { Button, Error, Input } from 'ui/components/ui';
+import { NetworkName } from 'networks/types';
 
-const key = key => `bottom.${key}`;
+const key = (key: string | null | undefined) => `bottom.${key}`;
 
-class NetworkSettingsComponent extends React.PureComponent<
-  INetworkSettings,
-  IState
-> {
-  state = {} as IState;
+interface Props extends WithTranslation {
+  name: NetworkName | null;
+  networkCode: string | null;
+  node: string | null;
+  matcher: string | null;
+  onSave: (netConfig: INetworkData) => void;
+  onClose: () => void;
+}
+
+export interface INetworkData {
+  name: NetworkName | null | undefined;
+  code: string | null | undefined;
+  node: string | null | undefined;
+  matcher: string | null | undefined;
+}
+
+interface State extends Partial<Props> {
+  nodeError?: boolean;
+  matcherError?: boolean;
+  validating?: boolean;
+  filledData?: boolean;
+}
+
+class NetworkSettingsComponent extends React.PureComponent<Props, State> {
+  state: State = {};
 
   static getDerivedStateFromProps(
-    props: INetworkSettings,
-    state: IState
-  ): IState {
+    props: Readonly<Props>,
+    state: State
+  ): Partial<State> | null {
     const { matcher, name, networkCode, node, onSave, onClose } = props;
 
     return {
@@ -29,7 +50,7 @@ class NetworkSettingsComponent extends React.PureComponent<
     };
   }
 
-  render(): React.ReactNode {
+  render() {
     const { t } = this.props;
     const { name } = this.state;
 
@@ -117,10 +138,15 @@ class NetworkSettingsComponent extends React.PureComponent<
     );
   }
 
-  private changeHandler = (valueName, errorName) => event => {
-    const { target } = event;
-    this.setState({ [valueName]: target.value, [errorName]: false } as unknown);
-  };
+  private changeHandler =
+    (valueName: 'matcher' | 'node', errorName: 'matcherError' | 'nodeError') =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { target } = event;
+      this.setState({
+        [valueName]: target.value,
+        [errorName]: false,
+      });
+    };
 
   private saveHandler = () => {
     this.setState({ validating: true });
@@ -154,7 +180,8 @@ class NetworkSettingsComponent extends React.PureComponent<
   private validateNode() {
     const { node } = this.state;
 
-    return getNetworkByte(node)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return getNetworkByte(node!)
       .then(networkCode => this.setState({ nodeError: false, networkCode }))
       .catch(() => {
         this.setState({ nodeError: true });
@@ -177,29 +204,6 @@ class NetworkSettingsComponent extends React.PureComponent<
         return Promise.reject();
       });
   }
-}
-
-interface INetworkSettings extends WithTranslation {
-  name: string;
-  networkCode: string;
-  node: string;
-  matcher: string;
-  onSave: (netConfig: INetworkData) => void;
-  onClose: () => void;
-}
-
-interface INetworkData {
-  name: string;
-  code: string;
-  node: string;
-  matcher: string;
-}
-
-interface IState extends INetworkSettings {
-  nodeError: boolean;
-  matcherError: boolean;
-  validating: boolean;
-  filledData: boolean;
 }
 
 export const NetworkSettings = withTranslation()(NetworkSettingsComponent);

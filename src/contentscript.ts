@@ -14,7 +14,8 @@ function injectBundle() {
   container.insertBefore(script, container.children[0]);
 
   script.onload = () => {
-    script.parentElement.removeChild(script);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    script.parentElement!.removeChild(script);
   };
 }
 
@@ -60,11 +61,6 @@ function shouldInject() {
   return doctypeCheck() && suffixCheck() && documentElementCheck();
 }
 
-/**
- * Checks the doctype of the current document if it exists
- *
- * @returns {boolean} {@code true} if the doctype is html or if none exists
- */
 function doctypeCheck() {
   const doctype = window.document.doctype;
   if (doctype) {
@@ -74,11 +70,6 @@ function doctypeCheck() {
   }
 }
 
-/**
- * Checks the current document extension
- *
- * @returns {boolean} {@code true} if the current extension is not prohibited
- */
 function suffixCheck() {
   const prohibitedTypes = ['xml', 'pdf'];
   const currentUrl = window.location.href;
@@ -92,11 +83,6 @@ function suffixCheck() {
   return true;
 }
 
-/**
- * Checks the documentElement of the current document
- *
- * @returns {boolean} {@code true} if the documentElement is an html node or if none exists
- */
 function documentElementCheck() {
   const documentElement = document.documentElement.nodeName;
   if (documentElement) {

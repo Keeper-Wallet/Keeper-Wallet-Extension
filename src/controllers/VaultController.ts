@@ -3,20 +3,20 @@ import { WalletController } from './wallet';
 import { IdentityController } from './IdentityController';
 import LocalStore from '../lib/localStore';
 
-type VaultState = { locked: boolean; initialized: boolean };
-
-type Options = {
-  localStore: LocalStore;
-  wallet: WalletController;
-  identity: IdentityController;
-};
-
 export class VaultController {
-  store: ObservableStore<VaultState>;
-  private wallet: WalletController;
-  private identity: IdentityController;
+  store;
+  private wallet;
+  private identity;
 
-  constructor({ localStore, wallet, identity }: Options) {
+  constructor({
+    localStore,
+    wallet,
+    identity,
+  }: {
+    localStore: LocalStore;
+    wallet: WalletController;
+    identity: IdentityController;
+  }) {
     this.store = new ObservableStore(
       localStore.getInitState(
         { locked: null, initialized: null },
@@ -34,7 +34,7 @@ export class VaultController {
     }
   }
 
-  private get locked(): boolean {
+  private get locked() {
     return this.store.getState().locked;
   }
 
@@ -44,7 +44,7 @@ export class VaultController {
     }
   }
 
-  private get initialized(): boolean {
+  private get initialized() {
     return this.store.getState().initialized;
   }
 
@@ -96,14 +96,19 @@ export class VaultController {
   migrate() {
     const state = this.wallet.store.getState().WalletController;
 
-    if (state.initialized != null) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((state as any).initialized != null) {
       this.store.updateState({
-        initialized: state.initialized,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initialized: (state as any).initialized,
       });
 
-      delete state.locked;
-      delete state.initialized;
-      this.wallet.store.putState(state);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (state as any).locked;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (state as any).initialized;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.wallet.store.putState(state as any);
     }
   }
 }

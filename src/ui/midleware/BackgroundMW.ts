@@ -9,8 +9,10 @@ import {
 } from '../actions';
 import background from '../services/Background';
 import i18n from '../i18n';
+import { UiMiddleware } from 'ui/store';
+import { NotificationsStoreItem } from 'notifications/types';
 
-export const changeLang = store => next => action => {
+export const changeLang: UiMiddleware = store => next => action => {
   if (
     action.type === ACTION.CHANGE_LNG &&
     action.payload !== store.getState().currentLocale
@@ -20,20 +22,25 @@ export const changeLang = store => next => action => {
   return next(action);
 };
 
-export const deleteNotifications = store => next => action => {
+export const deleteNotifications: UiMiddleware = store => next => action => {
   if (action.type !== ACTION.NOTIFICATIONS.DELETE) {
     return next(action);
   }
 
-  const ids = action.payload.length ? action.payload : action.payload.ids;
-  const nextNotify = action.payload.length ? null : action.payload.next;
+  const ids = (action.payload as string[]).length
+    ? (action.payload as string[])
+    : (action.payload as { ids: string[] }).ids;
+
+  const nextNotify = (action.payload as string[]).length
+    ? null
+    : (action.payload as { next: NotificationsStoreItem[] | null }).next;
 
   return background.deleteNotifications(ids).then(() => {
     store.dispatch(setActiveNotification(nextNotify));
   });
 };
 
-export const setNotificationPerms = () => next => action => {
+export const setNotificationPerms: UiMiddleware = () => next => action => {
   if (action.type !== ACTION.NOTIFICATIONS.SET_PERMS) {
     return next(action);
   }
@@ -41,7 +48,7 @@ export const setNotificationPerms = () => next => action => {
   background.setNotificationPermissions(action.payload);
 };
 
-export const setIdle = () => next => action => {
+export const setIdle: UiMiddleware = () => next => action => {
   if (action.type !== ACTION.REMOTE_CONFIG.SET_IDLE) {
     return next(action);
   }
@@ -49,7 +56,7 @@ export const setIdle = () => next => action => {
   background.setIdleOptions({ type: action.payload });
 };
 
-export const updateLang = store => next => action => {
+export const updateLang: UiMiddleware = store => next => action => {
   if (
     action.type === ACTION.UPDATE_FROM_LNG &&
     action.payload !== store.getState().currentLocale
@@ -59,7 +66,7 @@ export const updateLang = store => next => action => {
   return next(action);
 };
 
-export const updateBalances = () => next => action => {
+export const updateBalances: UiMiddleware = () => next => action => {
   if (action.type === ACTION.GET_BALANCES) {
     background.updateBalances();
   }
@@ -67,7 +74,7 @@ export const updateBalances = () => next => action => {
   return next(action);
 };
 
-export const selectAccount = store => next => action => {
+export const selectAccount: UiMiddleware = store => next => action => {
   if (
     action.type === ACTION.SELECT_ACCOUNT &&
     store.getState().selectedAccount.address !== action.payload.address
@@ -84,14 +91,15 @@ export const selectAccount = store => next => action => {
   return next(action);
 };
 
-export const deleteActiveAccount = store => next => action => {
+export const deleteActiveAccount: UiMiddleware = store => next => action => {
   if (action.type === ACTION.DELETE_ACTIVE_ACCOUNT) {
     const { selectedAccount, localState, currentNetwork } = store.getState();
     const selected = localState.assets.account
       ? localState.assets.account.address
       : selectedAccount.address;
 
-    background.removeWallet(selected, currentNetwork).then(() => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    background.removeWallet(selected!, currentNetwork).then(() => {
       store.dispatch(notificationDelete(true));
       setTimeout(() => {
         store.dispatch(notificationDelete(false));
@@ -104,14 +112,14 @@ export const deleteActiveAccount = store => next => action => {
   return next(action);
 };
 
-export const closeNotificationWindow = () => next => action => {
+export const closeNotificationWindow: UiMiddleware = () => next => action => {
   if (action.type === ACTION.CLOSE_WINDOW) {
     background.closeNotificationWindow();
   }
   return next(action);
 };
 
-export const deleteAccountMw = store => next => action => {
+export const deleteAccountMw: UiMiddleware = store => next => action => {
   if (action.type === ACTION.DELETE_ACCOUNT) {
     background.deleteVault().then(() => {
       store.dispatch(updateActiveState());
@@ -123,7 +131,7 @@ export const deleteAccountMw = store => next => action => {
   return next(action);
 };
 
-export const uiState = store => next => action => {
+export const uiState: UiMiddleware = store => next => action => {
   if (action.type === ACTION.SET_UI_STATE) {
     const ui = store.getState().uiState;
     const newState = { ...ui, ...action.payload };
@@ -146,7 +154,7 @@ export const uiState = store => next => action => {
   return next(action);
 };
 
-export const changeNetwork = store => next => action => {
+export const changeNetwork: UiMiddleware = store => next => action => {
   if (action.type === ACTION.CHANGE_NETWORK) {
     background
       .setNetwork(action.payload)
@@ -162,7 +170,7 @@ export const changeNetwork = store => next => action => {
   return next(action);
 };
 
-export const getAsset = () => next => action => {
+export const getAsset: UiMiddleware = () => next => action => {
   if (action.type === ACTION.GET_ASSETS) {
     background.assetInfo(action.payload);
   }
@@ -170,7 +178,7 @@ export const getAsset = () => next => action => {
   return next(action);
 };
 
-export const updateAssets = () => next => action => {
+export const updateAssets: UiMiddleware = () => next => action => {
   if (action.type === ACTION.UPDATE_ASSETS) {
     background.updateAssets(action.payload);
   }
@@ -178,7 +186,7 @@ export const updateAssets = () => next => action => {
   return next(action);
 };
 
-export const setAddress = () => next => action => {
+export const setAddress: UiMiddleware = () => next => action => {
   if (action.type === ACTION.SET_ADDRESS) {
     const { address, name } = action.payload;
     background.setAddress(address, name);
@@ -187,7 +195,7 @@ export const setAddress = () => next => action => {
   return next(action);
 };
 
-export const setAddresses = () => next => action => {
+export const setAddresses: UiMiddleware = () => next => action => {
   if (action.type === ACTION.SET_ADDRESSES) {
     background.setAddresses(action.payload);
   }
@@ -195,7 +203,7 @@ export const setAddresses = () => next => action => {
   return next(action);
 };
 
-export const removeAddress = () => next => action => {
+export const removeAddress: UiMiddleware = () => next => action => {
   if (action.type === ACTION.REMOVE_ADDRESS) {
     const { address } = action.payload;
     background.removeAddress(address);
@@ -204,14 +212,14 @@ export const removeAddress = () => next => action => {
   return next(action);
 };
 
-export const favoriteAsset = () => next => action => {
+export const favoriteAsset: UiMiddleware = () => next => action => {
   if (action.type === ACTION.FAVORITE_ASSET) {
     background.toggleAssetFavorite(action.payload);
   }
   return next(action);
 };
 
-export const changeName = store => next => action => {
+export const changeName: UiMiddleware = store => next => action => {
   if (action.type === ACTION.CHANGE_ACCOUNT_NAME) {
     const { address, name } = action.payload;
     const { currentNetwork } = store.getState();
@@ -226,7 +234,7 @@ export const changeName = store => next => action => {
   return next(action);
 };
 
-export const setCustomNode = () => next => action => {
+export const setCustomNode: UiMiddleware = () => next => action => {
   if (ACTION.CHANGE_NODE === action.type) {
     const { node, network } = action.payload;
     background.setCustomNode(node, network);
@@ -236,7 +244,7 @@ export const setCustomNode = () => next => action => {
   return next(action);
 };
 
-export const setCustomCode = () => next => action => {
+export const setCustomCode: UiMiddleware = () => next => action => {
   if (ACTION.CHANGE_NETWORK_CODE === action.type) {
     const { code, network } = action.payload;
     background.setCustomCode(code, network);
@@ -246,7 +254,7 @@ export const setCustomCode = () => next => action => {
   return next(action);
 };
 
-export const setCustomMatcher = () => next => action => {
+export const setCustomMatcher: UiMiddleware = () => next => action => {
   if (ACTION.CHANGE_MATCHER === action.type) {
     const { matcher, network } = action.payload;
     background.setCustomMatcher(matcher, network);
@@ -256,7 +264,7 @@ export const setCustomMatcher = () => next => action => {
   return next(action);
 };
 
-export const lock = () => next => action => {
+export const lock: UiMiddleware = () => next => action => {
   if (action.type === ACTION.LOCK) {
     background.lock();
     return null;
@@ -264,7 +272,7 @@ export const lock = () => next => action => {
   return next(action);
 };
 
-export const signAndPublishTransaction = () => next => action => {
+export const signAndPublishTransaction: UiMiddleware = () => next => action => {
   if (action.type === ACTION.SIGN_AND_PUBLISH_TRANSACTION) {
     background.signAndPublishTransaction(action.payload).catch(err => {
       if (

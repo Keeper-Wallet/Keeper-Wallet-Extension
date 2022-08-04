@@ -12,22 +12,21 @@ import {
   setActiveNotification,
   setShowNotification,
 } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { TransactionWallet } from '../wallets/TransactionWallet';
 import * as styles from './styles/messageList.styl';
 import { Intro } from './Intro';
-import { Message } from 'ui/components/transactions/BaseTransaction';
-import { Account } from 'accounts/types';
+import { AppState } from 'ui/store';
+import { NotificationsStoreItem } from 'notifications/types';
+import { PreferencesAccount } from 'preferences/types';
+import { PermissionObject, PermissionValue } from 'permissions/types';
+import { MessageStoreItem } from 'messages/types';
 
-export interface Notification {
-  id: string;
-  origin: string;
-  title: string;
-  message: string;
-  timestamp: number;
-}
-
-const NotificationItem = ({ notification }: { notification: Notification }) => {
+const NotificationItem = ({
+  notification,
+}: {
+  notification: NotificationsStoreItem;
+}) => {
   const { t } = useTranslation();
   return (
     <div className={`margin-main-big`}>
@@ -53,50 +52,67 @@ const NotificationItem = ({ notification }: { notification: Notification }) => {
   );
 };
 
-interface Props extends WithTranslation {
-  selectedAccount: Account;
-  origins: unknown;
-  activeNotification: Notification;
-  messages: unknown[];
-  notifications: Notification[];
-
-  setTab: (tab: string) => void;
-  closeNotificationWindow: () => void;
-  setShowNotification: (permissions: unknown) => void;
-  deleteNotifications: (ids: unknown[]) => void;
+interface StateProps {
+  selectedAccount: Partial<PreferencesAccount>;
+  activeNotification: NotificationsStoreItem[] | null;
+  origins: Record<string, PermissionValue[]>;
+  messages: MessageStoreItem[];
+  notifications: NotificationsStoreItem[][];
 }
 
+interface DispatchProps {
+  closeNotificationWindow: () => void;
+  setShowNotification: (permissions: {
+    origin: string;
+    canUse: boolean | null;
+  }) => void;
+  deleteNotifications: (
+    ids:
+      | string[]
+      | {
+          ids: string[];
+          next: NotificationsStoreItem[] | null;
+        }
+  ) => void;
+}
+
+type Props = PageComponentProps & WithTranslation & StateProps & DispatchProps;
+
 interface State {
-  canShowNotify: boolean;
-  messages: Message[];
-  activeNotification: unknown[];
-  showToList: boolean;
-  origin: unknown;
-  hasMessages: boolean;
-  hasNotifications: boolean;
-  notifications: unknown[];
-  showClose: boolean;
-  loading: boolean;
+  canShowNotify?: boolean;
+  messages?: MessageStoreItem[];
+  activeNotification?: NotificationsStoreItem[] | null;
+  showToList?: boolean;
+  origin?: string;
+  hasMessages?: boolean;
+  hasNotifications?: boolean;
+  notifications?: NotificationsStoreItem[][];
+  showClose?: boolean;
+  loading?: boolean;
 }
 
 class NotificationsComponent extends React.Component<Props, State> {
-  readonly state = {} as State;
-  readonly props;
+  state: State = {};
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(
+    props: Readonly<Props>
+  ): Partial<State> | null {
     const { origins, activeNotification, messages, notifications } = props;
     if (!activeNotification && notifications.length) {
       props.setTab(PAGES.MESSAGES_LIST);
       return { loading: true };
     }
 
-    const origin = activeNotification[0].origin;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const origin = activeNotification![0].origin;
     const perms = origins[origin] || [];
     const useNotifications = perms.find(
-      item => item && item.type === 'useNotifications'
+      item => item && (item as PermissionObject).type === 'useNotifications'
     );
-    const inWhiteList = (origins[origin] || []).includes('whiteList');
-    const useNotify = useNotifications && useNotifications.canUse;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const inWhiteList = (origins[origin] || []).includes('whiteList' as any);
+    const useNotify =
+      useNotifications && (useNotifications as PermissionObject).canUse;
     const canShowNotify = useNotify || (useNotify == null && inWhiteList);
     const hasMessages = messages.length > 0;
     const hasNotifications =
@@ -124,18 +140,20 @@ class NotificationsComponent extends React.Component<Props, State> {
   };
 
   toListHandler = () => {
-    this._deleteMessages(null).then(() =>
+    (this._deleteMessages(null) as unknown as Promise<void>).then(() =>
       this.props.setTab(PAGES.MESSAGES_LIST)
     );
   };
 
-  toggleCanShowHandler = e => {
+  toggleCanShowHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const canUse = e.target.checked;
-    this.props.setShowNotification({ origin: this.state.origin, canUse });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.props.setShowNotification({ origin: this.state.origin!, canUse });
   };
 
   nextHandler = () => {
-    const nextNotification = this.state.notifications.filter(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const nextNotification = this.state.notifications!.filter(
       ([item]) => item.origin !== this.state.origin
     )[0];
     this._deleteMessages(nextNotification || null);
@@ -173,12 +191,15 @@ class NotificationsComponent extends React.Component<Props, State> {
         </div>
 
         <div className={styles.messageListScrollBox}>
-          {activeNotification.map((notification: Notification) => (
-            <NotificationItem
-              notification={notification}
-              key={notification.id}
-            />
-          ))}
+          {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            activeNotification!.map(notification => (
+              <NotificationItem
+                notification={notification}
+                key={notification.id}
+              />
+            ))
+          }
 
           <div
             className={`margin-main-big margin-main-big-top flex ${styles.allowNotification}`}
@@ -230,15 +251,16 @@ class NotificationsComponent extends React.Component<Props, State> {
     );
   }
 
-  _deleteMessages(nexActive) {
+  _deleteMessages(nexActive: NotificationsStoreItem[] | null) {
     return this.props.deleteNotifications({
-      ids: this.state.activeNotification.map(({ id }) => id),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ids: this.state.activeNotification!.map(({ id }) => id),
       next: nexActive,
     });
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
     selectedAccount: store.selectedAccount,
     activeNotification: store.activePopup && store.activePopup.notify,

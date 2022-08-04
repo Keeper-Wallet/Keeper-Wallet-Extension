@@ -28,7 +28,7 @@ export function TxStatus({ isApprove, isReject, isSend, messages }: IProps) {
 interface IProps {
   isApprove: boolean;
   isReject: boolean;
-  isSend: boolean;
+  isSend: boolean | undefined;
   messages?: {
     approve?: string;
     reject?: string;

@@ -1,22 +1,21 @@
 import { libs } from '@waves/waves-transactions';
-import { concat, identity, ifElse, isNil, pipe } from 'ramda';
-import { NetworkName } from 'accounts/types';
+import { NetworkName } from 'networks/types';
 
 function getNetworkByteByAddress(address: string): string {
   return String.fromCharCode(libs.crypto.base58Decode(address)[1]);
 }
 
-const networkCodeToNetworkMap: Record<
-  'S' | 'T' | 'W',
-  Exclude<NetworkName, 'custom'>
-> = {
-  S: NetworkName.Stagenet,
-  T: NetworkName.Testnet,
-  W: NetworkName.Mainnet,
-};
-
 export function getNetworkByNetworkCode(networkCode: string): NetworkName {
-  return networkCodeToNetworkMap[networkCode] || 'custom';
+  switch (networkCode) {
+    case 'S':
+      return NetworkName.Stagenet;
+    case 'T':
+      return NetworkName.Testnet;
+    case 'W':
+      return NetworkName.Mainnet;
+    default:
+      return NetworkName.Custom;
+  }
 }
 
 export function getNetworkByAddress(address: string): NetworkName {
@@ -73,7 +72,7 @@ async function getUrl(
   return fetch(url.href);
 }
 
-function byteArrayToString(bytes: Uint8Array): string {
+function byteArrayToString(bytes: Uint8Array): string | null {
   const extraByteMap = [1, 1, 1, 1, 2, 2, 3, 0];
   const count = bytes.length;
   let str = '';
@@ -102,13 +101,7 @@ function byteArrayToString(bytes: Uint8Array): string {
 const bytesToBase58 = libs.crypto.base58Encode;
 const bytesToString = byteArrayToString;
 
-const bytesToSafeString = ifElse(
-  pipe(identity, bytesToString, isNil),
-  pipe(identity, bytesToBase58, concat('base58:')),
-  pipe(identity, bytesToString)
-);
-
-export function readAttachment(data) {
+export function readAttachment(data: Uint8Array | string | null | undefined) {
   if (!data) {
     return '';
   }
@@ -117,5 +110,5 @@ export function readAttachment(data) {
     return data;
   }
 
-  return bytesToSafeString(data);
+  return bytesToString(data) ?? `base58:${bytesToBase58(data)}`;
 }

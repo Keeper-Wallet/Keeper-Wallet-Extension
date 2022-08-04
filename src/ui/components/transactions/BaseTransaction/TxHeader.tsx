@@ -3,10 +3,10 @@ import * as styles from '../../pages/styles/transactions.styl';
 import * as React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Account } from 'accounts/types';
-import { Message } from 'ui/components/transactions/BaseTransaction/index';
+import { PreferencesAccount } from 'preferences/types';
+import { MessageStoreItem } from 'messages/types';
 
-const OriginWarning = ({ message }: { message: Message }) => {
+const OriginWarning = ({ message }: { message: MessageStoreItem }) => {
   const { t } = useTranslation();
 
   if (!message.origin && !message.account?.network) {
@@ -30,20 +30,24 @@ export function TxHeader({
   message,
   hideButton = false,
 }: {
-  selectedAccount?: Account;
-  message?: Message;
+  selectedAccount?: Partial<PreferencesAccount>;
+  message?: MessageStoreItem;
   hideButton?: boolean;
-  selectAccount?: (account: Account) => void;
+  selectAccount?: (account: Partial<PreferencesAccount>) => void;
 }) {
   return (
     <div className={styles.txHeader}>
       <div className="margin-main margin-main-top flex basic500">
-        <OriginWarning message={message} />
+        <OriginWarning
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          message={message!}
+        />
       </div>
 
       <TransactionWallet
         type="clean"
-        account={selectedAccount}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        account={selectedAccount!}
         hideButton={hideButton}
         onSelect={selectAccount}
       />

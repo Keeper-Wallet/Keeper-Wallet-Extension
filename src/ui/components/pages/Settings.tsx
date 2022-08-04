@@ -4,19 +4,23 @@ import { connect } from 'react-redux';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Button, PowerButton } from '../ui';
 import { lock, setUiState } from '../../actions';
-import { PAGES } from '../../pageConfig';
+import { PageComponentProps, PAGES } from '../../pageConfig';
 import { Tooltip } from '../ui/tooltip';
+import { AppState } from 'ui/store';
 
-interface Props extends WithTranslation {
+interface StateProps {
   autoClickProtection?: boolean;
   showSuspiciousAssets?: boolean;
-  setTab: (tab: string) => void;
+}
+
+interface DispatchProps {
   lock: () => void;
   setUiState: (payload: object) => void;
 }
 
+type Props = WithTranslation & PageComponentProps & StateProps & DispatchProps;
+
 class SettingsComponent extends React.Component<Props> {
-  readonly props;
   lock = () => {
     this.props.setTab(null);
     this.props.lock();
@@ -227,7 +231,7 @@ class SettingsComponent extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = function (store) {
+const mapStateToProps = function (store: AppState): StateProps {
   return {
     autoClickProtection: store.uiState && store.uiState.autoClickProtection,
     showSuspiciousAssets: store.uiState?.showSuspiciousAssets ?? false,

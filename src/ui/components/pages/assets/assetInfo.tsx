@@ -3,8 +3,8 @@ import { Balance, Button, Copy, DateFormat, Ellipsis } from '../../ui';
 import * as React from 'react';
 import { Asset, Money } from '@waves/data-entities';
 import { useAppSelector } from '../../../store';
-import { AssetDetail } from '../../../services/Background';
 import { getAssetDetailLink } from '../../../urls';
+import { AssetDetail } from 'assets/types';
 
 interface Props {
   asset: AssetDetail;
@@ -113,7 +113,8 @@ export function AssetInfo({ asset, onCopy, onClose }: Props) {
             <a
               rel="noopener noreferrer"
               className="link black"
-              href={getAssetDetailLink(networkCode, asset.originTransactionId)}
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              href={getAssetDetailLink(networkCode!, asset.originTransactionId)}
               target="_blank"
             >
               {t('assetInfo.viewDetailsInExplorer')}
