@@ -184,22 +184,26 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const currentNetworkAccounts = getParam(state.currentNetworkAccounts, []);
-    if (
-      currentNetworkAccounts &&
-      !equals(currentNetworkAccounts, currentState.accounts)
-    ) {
-      store.dispatch({
-        type: ACTION.UPDATE_ACCOUNTS,
-        payload: currentNetworkAccounts,
-      });
-    }
-
     const accounts = getParam(state.accounts, []);
     if (accounts && !equals(accounts, currentState.allNetworksAccounts)) {
       store.dispatch({
         type: ACTION.UPDATE_ALL_NETWORKS_ACCOUNTS,
         payload: accounts,
+      });
+    }
+
+    if (
+      (state.accounts != null &&
+        !equals(state.accounts, currentState.allNetworksAccounts)) ||
+      (state.currentNetwork != null &&
+        state.currentNetwork !== currentState.currentNetwork)
+    ) {
+      const accounts = state.accounts || currentState.allNetworksAccounts;
+      const network = state.currentNetwork || currentState.currentNetwork;
+
+      store.dispatch({
+        type: ACTION.UPDATE_ACCOUNTS,
+        payload: accounts.filter(account => account.network === network),
       });
     }
 
