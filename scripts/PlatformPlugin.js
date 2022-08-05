@@ -92,7 +92,7 @@ module.exports = class PlatformPlugin {
     if (this.performance) {
       compiler.hooks.done.tap('PerformanceSize', ({ compilation }) => {
         Object.entries(compilation.assets).forEach(([name, source]) => {
-          if (source.size() > MAX_ASSET_SIZE) {
+          if (name.endsWith('.js') && source.size() > MAX_ASSET_SIZE) {
             throw `${name} is larger than 4 MB`;
           }
         });
