@@ -383,25 +383,26 @@ export default class ExtensionStore {
     await this._remove(storageState, migrateFields);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _remove(storageState: any, keys: string | string[]) {
-    if (typeof keys === 'string') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (this._state as any)[keys];
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      keys.forEach(key => delete (this._state as any)[key]);
+  private async _remove(
+    storageState: browser.storage.StorageArea,
+    keys: string | string[]
+  ) {
+    const state = this._state;
+
+    if (state) {
+      if (typeof keys === 'string') {
+        if (keys in state) {
+          delete state[keys as keyof typeof state];
+        }
+      } else {
+        keys.forEach(key => {
+          if (key in state) {
+            delete state[key as keyof typeof state];
+          }
+        });
+      }
     }
 
-    return new Promise<void>((resolve, reject) => {
-      storageState.remove(keys, () => {
-        const err = extension.runtime.lastError;
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    await storageState.remove(keys);
   }
 }
