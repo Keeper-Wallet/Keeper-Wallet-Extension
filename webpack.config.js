@@ -202,9 +202,7 @@ module.exports = (_, { mode }) => {
       }),
       new MiniCssExtractPlugin(),
       new PlatformPlugin({
-        platforms: isProduction
-          ? ['chrome', 'firefox', 'opera', 'edge']
-          : ['chrome', 'firefox'],
+        platforms: ['chrome', 'firefox', 'opera', 'edge'],
         version,
         clear: isProduction,
         compress: isProduction,
