@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "webpack --watch --mode development",
-    "dist": "webpack --mode production",
+    "dist": "NODE_OPTIONS=--max-old-space-size=8192 webpack --mode production",
     "lint:eslint": "eslint --ext .ts,.tsx,.js --max-warnings 0 .",
     "lint:eslint:fix": "eslint --fix --ext .ts,.tsx,.js .",
     "lint:prettier": "prettier . --check",
