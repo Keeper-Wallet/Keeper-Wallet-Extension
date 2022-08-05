@@ -64,17 +64,16 @@ export class PreferencesController extends EventEmitter {
     });
     this.store.updateState({ accounts });
 
-    this.syncCurrentNetworkAccounts();
+    this.ensureSelectedAccountInCurrentNetwork();
   }
 
-  syncCurrentNetworkAccounts() {
+  ensureSelectedAccountInCurrentNetwork() {
     const network = this.getNetwork();
     const { accounts, selectedAccount } = this.store.getState();
     const currentNetworkAccounts = accounts.filter(
       account => account.network === network
     );
 
-    // Ensure we have selected account from current network
     if (
       !selectedAccount ||
       !currentNetworkAccounts.some(
