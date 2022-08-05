@@ -60,4 +60,13 @@ async function reverseMigrateFlatState(this: ExtensionStore) {
   );
 }
 
-export const REVERSE_MIGRATIONS = [reverseMigrateFlatState];
+async function reverseMigrateRemoveCurrentNetworkAccounts(
+  this: ExtensionStore
+) {
+  // noop, they're restored on unlock
+}
+
+export const REVERSE_MIGRATIONS = [
+  reverseMigrateFlatState,
+  reverseMigrateRemoveCurrentNetworkAccounts,
+];

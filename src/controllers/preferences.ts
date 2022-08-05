@@ -28,7 +28,6 @@ export class PreferencesController extends EventEmitter {
         currentLocale: initLangCode || 'en',
         idleOptions: { type: 'idle', interval: 0 },
         accounts: [],
-        currentNetworkAccounts: [],
         selectedAccount: undefined,
       })
     );
@@ -74,7 +73,6 @@ export class PreferencesController extends EventEmitter {
     const currentNetworkAccounts = accounts.filter(
       account => account.network === network
     );
-    this.store.updateState({ currentNetworkAccounts });
 
     // Ensure we have selected account from current network
     if (
