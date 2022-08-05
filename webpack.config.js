@@ -41,9 +41,6 @@ module.exports = (_, { mode }) => {
     },
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     stats: 'errors-warnings',
-    performance: {
-      maxAssetSize: 4000000,
-    },
     optimization: {
       minimizer: ['...', new CssMinimizerPlugin()],
       splitChunks: {
