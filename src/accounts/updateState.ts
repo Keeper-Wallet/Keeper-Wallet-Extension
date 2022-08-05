@@ -112,7 +112,7 @@ export function createUpdateState(store: AccountsStore) {
       const network = state.currentNetwork || currentState.currentNetwork;
 
       actions.push({
-        type: ACTION.UPDATE_ACCOUNTS,
+        type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
         payload: accounts.filter(account => account.network === network),
       });
     }

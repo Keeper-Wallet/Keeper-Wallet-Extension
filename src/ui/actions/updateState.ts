@@ -202,7 +202,7 @@ export function createUpdateState(store: UiStore) {
       const network = state.currentNetwork || currentState.currentNetwork;
 
       store.dispatch({
-        type: ACTION.UPDATE_ACCOUNTS,
+        type: ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS,
         payload: accounts.filter(account => account.network === network),
       });
     }
