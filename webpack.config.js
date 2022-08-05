@@ -39,11 +39,8 @@ module.exports = (_, { mode }) => {
         stream: require.resolve('stream-browserify'),
       },
     },
-    devtool: !isProduction && 'inline-source-map',
+    devtool: isProduction ? 'source-map' : 'inline-source-map',
     stats: 'errors-warnings',
-    performance: {
-      maxAssetSize: 4000000,
-    },
     optimization: {
       minimizer: ['...', new CssMinimizerPlugin()],
       splitChunks: {
@@ -205,9 +202,7 @@ module.exports = (_, { mode }) => {
       }),
       new MiniCssExtractPlugin(),
       new PlatformPlugin({
-        platforms: isProduction
-          ? ['chrome', 'firefox', 'opera', 'edge']
-          : ['chrome', 'firefox'],
+        platforms: ['chrome', 'firefox', 'opera', 'edge'],
         version,
         clear: isProduction,
         compress: isProduction,
