@@ -8,7 +8,7 @@
         "path": "/",
         "screenResolution": "1920x1080x24",
         "volumes": [
-          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+          "/home/runner/work/waves-keeper/waves-keeper/atqa-framework/extension/chrome:/home/selenium"
         ]
       }
     }
@@ -33,7 +33,7 @@
         "path": "/",
         "screenResolution": "1920x1080x24",
         "volumes": [
-          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+          "/home/runner/work/waves-keeper/waves-keeper/atqa-framework/extension/opera:/home/selenium"
         ]
       }
     }
@@ -47,7 +47,7 @@
         "path": "/",
         "screenResolution": "1920x1080x24",
         "volumes": [
-          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+          "/home/runner/work/waves-keeper/waves-keeper/atqa-framework/extension/edge:/home/selenium"
         ]
       }
     }

@@ -40,20 +40,11 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Check code formatting
-        run: yarn run lint:prettier
+      #      - name: Check code formatting
+      #        run: yarn run lint:prettier
 
       - name: Create empty config.json
         run: echo '{}' > config.json
-
-      - name: Check types
-        run: yarn run lint:typescript
-
-      - name: Check eslint
-        run: yarn run lint:eslint
-
-      - name: Check stylelint
-        run: yarn run lint:stylelint
 
       #Build master with tags
 
@@ -87,20 +78,8 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Check code formatting
-        run: yarn run lint:prettier
-
       - name: Create empty config.json
         run: echo '{}' > config.json
-
-      - name: Check types
-        run: yarn run lint:typescript
-
-      - name: Check eslint
-        run: yarn run lint:eslint
-
-      - name: Check stylelint
-        run: yarn run lint:stylelint
 
       #Build extension for current branch
 
@@ -127,8 +106,11 @@ jobs:
 
       - name: Setting up Selenoid ecosystem
         working-directory: ./atqa-framework
+        run: docker-compose up
+
+      - name: Pulling browser images
+        working-directory: ./atqa-framework
         run: |
-          docker-compose up
           docker pull selenoid/vnc_opera:88.0
           docker pull selenoid/vnc_chrome:102.0
           docker pull browsers/edge:103.0
@@ -142,16 +124,17 @@ jobs:
         env:
           BROWSER_INIT_NAME: 'chrome'
           BROWSER_VERSION: '102.0'
-#      - name: Run opera
-#        working-directory: ./atqa-framework
-#        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
-#        env:
-#          BROWSER_INIT_NAME: 'opera'
-#          BROWSER_VERSION: '88.0'
-#
-#      - name: Run MicrosoftEdge
-#        working-directory: ./atqa-framework
-#        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
-#        env:
-#          BROWSER_INIT_NAME: 'MicrosoftEdge'
-#          BROWSER_VERSION: '103.0'
+
+      #      - name: Run opera
+      #        working-directory: ./atqa-framework
+      #        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
+      #        env:
+      #          BROWSER_INIT_NAME: 'opera'
+      #          BROWSER_VERSION: '88.0'
+      #
+      #      - name: Run MicrosoftEdge
+      #        working-directory: ./atqa-framework
+      #        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
+      #        env:
+      #          BROWSER_INIT_NAME: 'MicrosoftEdge'
+      #          BROWSER_VERSION: '103.0'
