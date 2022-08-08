@@ -7,7 +7,9 @@
         "port": "4444",
         "path": "/",
         "screenResolution": "1920x1080x24",
-        "volumes": ["/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"]
+        "volumes": [
+          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+        ]
       }
     }
   },
@@ -30,7 +32,9 @@
         "port": "4444",
         "path": "/",
         "screenResolution": "1920x1080x24",
-        "volumes": ["/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"]
+        "volumes": [
+          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+        ]
       }
     }
   },
@@ -42,7 +46,9 @@
         "port": "4444",
         "path": "/",
         "screenResolution": "1920x1080x24",
-        "volumes": ["/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"]
+        "volumes": [
+          "/home/runner/work/waves-keeper/waves-keeper/dist:/home/selenium"
+        ]
       }
     }
   }
