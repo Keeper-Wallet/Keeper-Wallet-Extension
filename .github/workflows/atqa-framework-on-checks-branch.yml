@@ -1,4 +1,5 @@
-name: Run update keeper tests
+name: 'Run update keeper tests'
+
 on:
   push:
     branches:
