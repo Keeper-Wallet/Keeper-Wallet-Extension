@@ -61,7 +61,7 @@ jobs:
           ls -l ./atqa-framework/
           cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
 
-      - name: Save builded files
+      - name: Save dist files
         uses: actions/upload-artifact@v3
         with:
           name: extension-init-bins
@@ -123,6 +123,16 @@ jobs:
           docker pull selenoid/vnc_firefox:101.0
 
       #init DotEnv and start tests
+
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: extension-init-bins
+
+      - name: Check files
+        run: |
+          pwd
+          ls -l
 
       - name: Run chrome
         working-directory: ./atqa-framework
