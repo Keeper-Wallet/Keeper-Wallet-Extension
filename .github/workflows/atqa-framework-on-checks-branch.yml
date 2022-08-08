@@ -19,14 +19,14 @@ jobs:
 
       #Set up master with tag
 
-      - name: Find current Git tag
-        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
-        id: currentTag
-
-      - name: Get sources for current tag
-        uses: actions/checkout@v3
-        with:
-          ref: '${{ steps.currentTag.outputs.VALUE }}'
+#      - name: Find current Git tag
+#        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+#        id: currentTag
+#
+#      - name: Get sources for current tag
+#        uses: actions/checkout@v3
+#        with:
+#          ref: '${{ steps.currentTag.outputs.VALUE }}'
 
       - name: Read .nvmrc for keeper-wallet
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
