@@ -64,7 +64,9 @@ jobs:
 
       - name: Copy extension bins to buffer folder
         run: |
-          cp -R ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
+          pwd
+          ls -l
+          cp -R ~/dist/opera ~/dist/chrome ~/dist/edge ~/atqa-framework/extension/
           ls -l ./atqa-framework/extension
 
       #Set up current branch
