@@ -106,7 +106,7 @@ jobs:
 
       - name: Setting up Selenoid ecosystem
         working-directory: ./atqa-framework
-        run: docker-compose up
+        run: docker compose up -d
 
       - name: Pulling browser images
         working-directory: ./atqa-framework
