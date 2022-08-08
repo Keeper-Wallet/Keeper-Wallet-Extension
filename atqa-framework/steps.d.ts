@@ -7,9 +7,9 @@ declare namespace CodeceptJS {
   }
   interface Methods extends WebDriver {}
   interface CustomLocators {
-  shadowLocator: {
-    shadow: string | string[];
-    }
+    shadowLocator: {
+      shadow: string | string[];
+    };
   }
   interface I extends WithTranslation<Methods> {}
   namespace Translation {
