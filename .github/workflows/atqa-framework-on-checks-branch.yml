@@ -66,8 +66,9 @@ jobs:
         run: |
           pwd
           ls -l
-          ls -l ./atqa-framework
-          sudo cp -Rv ~/work/waves-keeper/waves-keeper/dist/opera ~/work/waves-keeper/waves-keeper/dist/chrome ~/work/waves-keeper/waves-keeper/dist/edge ~/work/waves-keeper/waves-keeper/atqa-framework/extension/
+          mkdir ./atqa-framework/extension
+          ls -l ./atqa-framework/
+          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
 
       #Set up current branch
 
