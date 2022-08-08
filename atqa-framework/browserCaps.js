@@ -33,7 +33,7 @@ const initBrowser = class BrowserCaps {
       case 'chrome':
         capabilities = Object.assign({}, capabilities, {
           'goog:chromeOptions': {
-            args: ['--load-extension=/ext/tmp/chrome', '--start-fullscreen'],
+            args: ['--load-extension=/home/selenium/chrome', '--start-fullscreen'],
           },
         });
         break;
