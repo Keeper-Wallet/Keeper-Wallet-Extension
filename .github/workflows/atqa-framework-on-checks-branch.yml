@@ -124,6 +124,7 @@ jobs:
         env:
           BROWSER_INIT_NAME: 'chrome'
           BROWSER_VERSION: '102.0'
+          SELENIUM_PORT: 4444
 
       #      - name: Run opera
       #        working-directory: ./atqa-framework
