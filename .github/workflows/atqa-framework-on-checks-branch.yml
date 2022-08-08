@@ -38,26 +38,27 @@ jobs:
           node-version: '${{ steps.nvm_keeper.outputs.NODE_VERSION }}'
 
       - name: Install dependencies
-        run: npm install
+        run: yarn --frozen-lockfile
 
       - name: Check code formatting
-        run: npm run lint:prettier
+        run: yarn run lint:prettier
+
+      - name: Create empty config.json
+        run: echo '{}' > config.json
 
       - name: Check types
-        run: npm run lint:typescript
+        run: yarn run lint:typescript
 
       - name: Check eslint
-        run: npm run lint:eslint
+        run: yarn run lint:eslint
 
       - name: Check stylelint
-        run: npm run lint:stylelint
+        run: yarn run lint:stylelint
 
-      #Build master with current tag
+      #Build master with tags
 
       - name: Build
-        run: |
-          echo '{}' > config.json
-          npm run dist
+        run: yarn run dist
 
       #Copy master with tag bins to buffer folder
 
@@ -81,28 +82,27 @@ jobs:
           node-version: '${{ steps.nvm_keeper_v2.outputs.NODE_VERSION }}'
 
       - name: Install dependencies
-        run: |
-          rm -rf ./node_modules/
-          npm install
+        run: yarn --frozen-lockfile
 
       - name: Check code formatting
-        run: npm run lint:prettier
+        run: yarn run lint:prettier
+
+      - name: Create empty config.json
+        run: echo '{}' > config.json
 
       - name: Check types
-        run: npm run lint:typescript
+        run: yarn run lint:typescript
 
       - name: Check eslint
-        run: npm run lint:eslint
+        run: yarn run lint:eslint
 
       - name: Check stylelint
-        run: npm run lint:stylelint
+        run: yarn run lint:stylelint
 
-      #Build extension bins for current branch
+      #Build extension for current branch
 
       - name: Build
-        run: |
-          echo '{}' > config.json
-          npm run dist
+        run: yarn run dist
 
       #Set up atqa-framework
 
