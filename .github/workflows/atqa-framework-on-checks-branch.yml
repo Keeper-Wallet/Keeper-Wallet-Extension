@@ -61,6 +61,12 @@ jobs:
           ls -l ./atqa-framework/
           cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
 
+      - name: Save builded files
+        uses: actions/upload-artifact@v3
+        with:
+          name: extension-init-bins
+          path: ./atqa-framework/extension/
+
       #Set up current branch
 
       - name: Get Current branch source
