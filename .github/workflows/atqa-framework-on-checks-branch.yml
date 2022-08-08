@@ -1,0 +1,164 @@
+name: Run update keeper tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  update-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get sources with full history
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      #Set up master with tag
+
+      - name: Find current Git tag
+        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --max-count=1`)
+        id: currentTag
+
+      - name: Get sources for current tag
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ steps.currentTag.outputs.VALUE }}'
+
+      - name: Read .nvmrc for keeper-wallet
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm_keeper
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.nvm_keeper.outputs.NODE_VERSION }}'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting
+        run: npm run lint:prettier
+
+      - name: Check types
+        run: npm run lint:typescript
+
+      - name: Check eslint
+        run: npm run lint:eslint
+
+      - name: Check stylelint
+        run: npm run lint:stylelint
+
+      #Build master with current tag
+
+      - name: Build
+        run: |
+          echo '{}' > config.json
+          npm run dist
+
+      #Copy master with tag bins to buffer folder
+
+      - name: Copy extension bins to buffer folder
+        run: |
+          cp -R ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension
+          ls -l ./atqa-framework/extension
+
+      #Set up current branch
+
+      - name: Get Current branch source
+        uses: actions/checkout@v3
+
+      - name: Read .nvmrc for keeper-wallet
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm_keeper
+
+      - name: Setup NodeJS for current branch
+        uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.nvm_keeper.outputs.NODE_VERSION }}'
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules/
+          npm ci
+
+      - name: Check code formatting
+        run: npm run lint:prettier
+
+      - name: Check types
+        run: npm run lint:typescript
+
+      - name: Check eslint
+        run: npm run lint:eslint
+
+      - name: Check stylelint
+        run: npm run lint:stylelint
+
+      #Build extension bins for current branch
+
+      - name: Build
+        run: |
+          echo '{}' > config.json
+          npm run dist
+
+      #Set up atqa-framework
+
+      - name: Prepare nvm for atqa-folder
+        working-directory: ./atqa-framework
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm_atqa_framework
+
+      - name: Setup NodeJS for atqa-framework
+        uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.nvm_atqa_framework.outputs.NODE_VERSION }}'
+
+      - name: Install dependencies
+        working-directory: ./atqa-framework
+        run: yarn --frozen-lockfile
+
+      - name: Check code formatting
+        run: npm run lint:prettier
+
+      - name: Check types
+        run: npm run lint:typescript
+
+      - name: Check eslint
+        run: npm run lint:eslint
+
+      - name: Check stylelint
+        run: npm run lint:stylelint
+
+        #Setting up Selenoid
+
+      - name: Setting up Selenoid ecosystem
+        working-directory: ./atqa-framework
+        run: |
+          docker-compose up
+          docker pull selenoid/vnc_opera:88.0
+          docker pull selenoid/vnc_chrome:102.0
+          docker pull browsers/edge:103.0
+          docker pull selenoid/vnc_firefox:101.0
+
+      #init DotEnv and start tests
+
+      - name: Run chrome
+        working-directory: ./atqa-framework
+        run: yarn codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
+        env:
+          BROWSER_INIT_NAME: 'chrome'
+          BROWSER_VERSION: '102.0'
+
+#      - name: Run opera
+#        working-directory: ./atqa-framework
+#        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
+#        env:
+#          BROWSER_INIT_NAME: 'opera'
+#          BROWSER_VERSION: '88.0'
+#
+#      - name: Run MicrosoftEdge
+#        working-directory: ./atqa-framework
+#        run: yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
+#        env:
+#          BROWSER_INIT_NAME: 'MicrosoftEdge'
+#          BROWSER_VERSION: '103.0'
