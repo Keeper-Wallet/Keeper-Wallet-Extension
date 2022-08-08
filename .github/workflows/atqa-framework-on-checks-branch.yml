@@ -129,10 +129,14 @@ jobs:
         with:
           name: extension-init-bins
 
-      - name: Check files
+      - name: Copy artifacts to buffer folder
         run: |
           pwd
           ls -l
+          mkdir ./atqa-framework/extension
+          ls -l ./atqa-framework/
+          mv ./opera/ ./chrome/ ./edge/ ./atqa-framework/extension/
+          ls -l ./atqa-framework/extension/
 
       - name: Run chrome
         working-directory: ./atqa-framework
