@@ -1,9 +1,11 @@
 import { ClockUnit } from '../../utils/clockUnit';
+// import { BasePage } from '../pages/BasePage';
 import { ExtensionInitHandler } from '../../utils/ExtensionInitHandler';
 import { AccountPage } from '../pages/AccountPage';
 import { ResourcesProvider } from '../../testData/res/ResourcesProvider';
 import { copyDir } from '../../utils/copyDirHandler';
 
+// const basePage = new BasePage();
 const clockUnit = new ClockUnit();
 const extensionInitHandler = new ExtensionInitHandler();
 const accountPage = new AccountPage();
@@ -20,7 +22,7 @@ Background(async () => {
   return extensionInitHandler.extensionInit();
 });
 
-Scenario('Debug scenario', async () => {
+Scenario('Init scenario', async () => {
   //I.wait(clockUnit.MINUTES * 30);
   I.waitForEnabled(
     accountPage.SELECTORS.GET_STARTED_BUTTON,
