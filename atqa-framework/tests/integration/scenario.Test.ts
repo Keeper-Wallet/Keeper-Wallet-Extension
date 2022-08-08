@@ -16,10 +16,10 @@ const { I } = inject();
 Feature('Initial Test');
 
 Background(async () => {
-  const dirSrc = await resourcesProvider.prepareDir('chrome_dir');
-  const dirDest = await resourcesProvider.prepareDir('buffer_dir');
-  copyDir(dirSrc, dirDest);
-  await extensionInitHandler.extensionInit();
+  // const dirSrc = await resourcesProvider.prepareDir('chrome_dir');
+  // const dirDest = await resourcesProvider.prepareDir('buffer_dir');
+  // copyDir(dirSrc, dirDest);
+  return extensionInitHandler.extensionInit();
 });
 
 Scenario('Init scenario', async () => {
