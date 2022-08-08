@@ -6,6 +6,11 @@ declare namespace CodeceptJS {
     I: I;
   }
   interface Methods extends WebDriver {}
+  interface CustomLocators {
+  shadowLocator: {
+    shadow: string | string[];
+    }
+  }
   interface I extends WithTranslation<Methods> {}
   namespace Translation {
     interface Actions {}
