@@ -81,7 +81,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm -rf node_modules/
+          rm -rf ./node_modules/
           npm ci
 
       - name: Check code formatting
@@ -118,18 +118,6 @@ jobs:
       - name: Install dependencies
         working-directory: ./atqa-framework
         run: yarn --frozen-lockfile
-
-      - name: Check code formatting
-        run: npm run lint:prettier
-
-      - name: Check types
-        run: npm run lint:typescript
-
-      - name: Check eslint
-        run: npm run lint:eslint
-
-      - name: Check stylelint
-        run: npm run lint:stylelint
 
         #Setting up Selenoid
 
