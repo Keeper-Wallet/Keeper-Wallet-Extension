@@ -127,13 +127,13 @@ jobs:
         working-directory: ./atqa-framework
         run: sudo chmod -R 777 output/
 
-      - name: Download extension bins to buffer and init folder
+      - name: Download extension bins to buffer folder
         uses: actions/download-artifact@v3
         with:
           name: extension-init-bins
           path: ./atqa-framework/buffer
 
-      - name: Copy extension bins to init folder
+      - name: Copy extension bins from buffer to init folder
         working-directory: ./atqa-framework
         run: cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/
 
