@@ -123,13 +123,15 @@ jobs:
 
       #init DotEnv and start tests
 
-      - name: Download dist files
+      - name: Init buffer folder
         working-directory: ./atqa-framework
         run: |
           pwd
           ls -l
           mkdir extension/
           ls -l
+
+      - name: Download extension bins
         uses: actions/download-artifact@v3
         with:
           name: extension-init-bins
