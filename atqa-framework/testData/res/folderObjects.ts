@@ -2,28 +2,43 @@ import { Folder } from '../../interfaces/Folder.interface';
 
 export const ExtensionFolders: Folder[] = [
   {
-    path: 'dist/opera',
-    type: 'opera_dir',
-    bufferPath: 'extension/chrome',
+    sourcePath: 'buffer/opera',
+    type: 'opera_dir_init',
+    destinationPath: 'extension/opera',
   },
   {
-    path: 'dist/chrome',
-    type: 'chrome_dir',
-    bufferPath: 'extension/opera',
+    sourcePath: 'buffer/chrome',
+    type: 'chrome_dir_init',
+    destinationPath: 'extension/chrome',
   },
   {
-    path: 'dist/firefox',
-    type: 'firefox_dir',
-    bufferPath: 'extension/firefox',
+    sourcePath: 'buffer/firefox',
+    type: 'firefox_dir_init',
+    destinationPath: 'extension/firefox',
   },
   {
-    path: 'dist/edge',
-    type: 'edge_dir',
-    bufferPath: 'extension/edge',
+    sourcePath: 'buffer/edge',
+    type: 'edge_dir_init',
+    destinationPath: 'extension/edge',
   },
   {
-    path: 'atqa-framework/extension',
-    type: 'buffer_dir',
-    bufferPath: 'extension/chrome',
+    sourcePath: 'dist/chrome',
+    type: 'chrome_dir_update',
+    destinationPath: 'extension/chrome',
+  },
+  {
+    sourcePath: 'dist/opera',
+    type: 'opera_dir_update',
+    destinationPath: 'extension/opera',
+  },
+  {
+    sourcePath: 'dist/firefox',
+    type: 'firefox_dir_update',
+    destinationPath: 'extension/firefox',
+  },
+  {
+    sourcePath: 'dist/edge',
+    type: 'edge_dir_update',
+    destinationPath: 'extension/edge',
   },
 ];

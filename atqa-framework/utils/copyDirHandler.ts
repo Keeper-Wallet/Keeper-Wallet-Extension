@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import { Folder } from '../interfaces/Folder.interface';
 
-export const copyDir = (dirSrc: Folder, dirDest: Folder): void => {
+export const copyDir = (dir: Folder): void => {
   try {
-    fs.copySync(dirSrc.path, dirDest.bufferPath, {
+    fs.copySync(dir.sourcePath, dir.destinationPath, {
       overwrite: true,
       recursive: true,
     });

@@ -36,13 +36,24 @@ export class ResourcesProvider {
     };
   };
 
-  prepareDir = async (dirType: string): Promise<Folder> => {
+  prepareInitDir = async (dirType: string): Promise<Folder> => {
     const dir = this.getFolderResource(dirType);
-    const srcPath = path.join(__dirname, '..', '..', '..', dir.path);
-    const dstPath = path.join(__dirname, '..', '..', dir.bufferPath);
+    const srcPath = path.join(__dirname, '..', '..', dir.sourcePath );
+    const dstPath = path.join(__dirname, '..', '..', dir.destinationPath);
     return {
-      path: srcPath,
-      bufferPath: dstPath,
+      sourcePath: srcPath,
+      destinationPath: dstPath,
     };
   };
+
+  prepareUpdateDir = async (dirType: string): Promise<Folder> => {
+    const dir = this.getFolderResource(dirType);
+    const srcPath = path.join(__dirname, '..', '..', '..', dir.sourcePath );
+    const dstPath = path.join(__dirname, '..', '..', dir.destinationPath);
+    return {
+      sourcePath: srcPath,
+      destinationPath: dstPath,
+    };
+  };
+
 }
