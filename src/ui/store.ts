@@ -141,7 +141,7 @@ export type UiAction =
       meta?: never;
     }
   | {
-      type: typeof ACTION.UPDATE_ACCOUNTS;
+      type: typeof ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS;
       payload: PreferencesAccount[];
       meta?: never;
     }
