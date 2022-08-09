@@ -132,8 +132,14 @@ jobs:
         run: |
           pwd
           ls -l
-          mkdir -m 777 extension/
-          chmod -R 777 output/
+          sudo mkdir -m 777 extension/
+          ls -l
+
+      - name: Change permission for output folder
+        working-directory: ./atqa-framework
+        run: |
+          ls -l
+          sudo chmod -R 777 output/
           ls -l
 
       - name: Download extension bins
