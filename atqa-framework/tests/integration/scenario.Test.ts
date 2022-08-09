@@ -16,9 +16,6 @@ const { I } = inject();
 Feature('Initial Test');
 
 Background(async () => {
-  // const dirSrc = await resourcesProvider.prepareDir('chrome_dir');
-  // const dirDest = await resourcesProvider.prepareDir('buffer_dir');
-  // copyDir(dirSrc, dirDest);
   return extensionInitHandler.extensionInit();
 });
 
@@ -81,7 +78,7 @@ Scenario('Init scenario', async () => {
 });
 
 Scenario('debugScenario @debug', async () => {
-  const dirSrc = await resourcesProvider.prepareDir('chrome_dir');
-  const dirDest = await resourcesProvider.prepareDir('buffer_dir');
-  copyDir(dirSrc, dirDest);
+  const updateChrome = await resourcesProvider.prepareUpdateDir('chrome_dir_update');
+  copyDir(updateChrome);
+  // I.wait(clockUnit.MINUTES * 2);
 });

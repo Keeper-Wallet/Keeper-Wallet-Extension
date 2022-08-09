@@ -26,6 +26,6 @@ services:
     network_mode: bridge
     links:
       - selenoid
-    command: ['--selenoid-uri', 'http://selenoid:4444']
+    command: ['--selenoid-uri', 'http://172.17.0.1:4444']
     ports:
       - '8888:8080'
