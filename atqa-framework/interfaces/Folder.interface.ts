@@ -1,5 +1,5 @@
 export interface Folder {
-  path: string;
+  sourcePath: string;
   type?: string;
-  bufferPath: string;
+  destinationPath: string;
 }
