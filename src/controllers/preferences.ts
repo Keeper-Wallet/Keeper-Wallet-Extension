@@ -28,7 +28,6 @@ export class PreferencesController extends EventEmitter {
         currentLocale: initLangCode || 'en',
         idleOptions: { type: 'idle', interval: 0 },
         accounts: [],
-        currentNetworkAccounts: [],
         selectedAccount: undefined,
       })
     );
@@ -65,18 +64,16 @@ export class PreferencesController extends EventEmitter {
     });
     this.store.updateState({ accounts });
 
-    this.syncCurrentNetworkAccounts();
+    this.ensureSelectedAccountInCurrentNetwork();
   }
 
-  syncCurrentNetworkAccounts() {
+  ensureSelectedAccountInCurrentNetwork() {
     const network = this.getNetwork();
     const { accounts, selectedAccount } = this.store.getState();
     const currentNetworkAccounts = accounts.filter(
       account => account.network === network
     );
-    this.store.updateState({ currentNetworkAccounts });
 
-    // Ensure we have selected account from current network
     if (
       !selectedAccount ||
       !currentNetworkAccounts.some(
@@ -100,17 +97,30 @@ export class PreferencesController extends EventEmitter {
   }
 
   addLabel(address: string, label: string, network: NetworkName) {
-    const accounts = this.store.getState().accounts;
-    const index = accounts.findIndex(
+    const { accounts, selectedAccount } = this.store.getState();
+
+    const account = accounts.find(
       current => current.address === address && current.network === network
     );
-    if (index === -1) {
+
+    if (!account) {
       throw new Error(
         `Account with address "${address}" in ${network} not found`
       );
     }
-    accounts[index].name = label;
-    this.store.updateState({ accounts });
+
+    account.name = label;
+
+    this.store.updateState({
+      accounts,
+
+      // selectedAccount can point to a separate object, not an accounts array
+      // item, so we need to update it explicitly
+      selectedAccount:
+        selectedAccount && address === selectedAccount.address
+          ? account
+          : selectedAccount,
+    });
   }
 
   selectAccount(address: string | undefined, network: string) {

@@ -57,7 +57,11 @@ export interface UiState {
 }
 
 export const uiState = createSimpleReducer({}, ACTION.UPDATE_UI_STATE);
-export const accounts = createSimpleReducer([], ACTION.UPDATE_ACCOUNTS);
+
+export const accounts = createSimpleReducer(
+  [],
+  ACTION.UPDATE_CURRENT_NETWORK_ACCOUNTS
+);
 
 export const allNetworksAccounts = createSimpleReducer(
   [],
