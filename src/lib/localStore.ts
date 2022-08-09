@@ -25,7 +25,7 @@ import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
 
-const CURRENT_MIGRATION_VERSION = 1;
+const CURRENT_MIGRATION_VERSION = 2;
 
 const CONTROLLERS = [
   'AssetInfoController',
@@ -104,7 +104,6 @@ export interface StoreLocalState {
   cognitoSessions: string | undefined;
   currentLocale: string;
   currentNetwork: NetworkName;
-  currentNetworkAccounts: PreferencesAccount[];
   customCodes: Record<NetworkName, string | null | undefined>;
   customMatchers: Record<NetworkName, string | null | undefined>;
   customNodes: Record<NetworkName, string | null | undefined>;
@@ -336,7 +335,10 @@ export default class ExtensionStore {
       const version = (migrationVersion as number) || 0;
 
       if (version < CURRENT_MIGRATION_VERSION) {
-        const migrations = [this._migrateFlatState.bind(this)];
+        const migrations = [
+          this._migrateFlatState.bind(this),
+          this._migrateRemoveCurrentNetworkAccounts.bind(this),
+        ];
         for (let i = version; i < CURRENT_MIGRATION_VERSION; i++) {
           await migrations[i]();
         }
@@ -381,6 +383,10 @@ export default class ExtensionStore {
       )
     );
     await this._remove(storageState, migrateFields);
+  }
+
+  private async _migrateRemoveCurrentNetworkAccounts() {
+    await this._remove(extension.storage.local, ['currentNetworkAccounts']);
   }
 
   private async _remove(

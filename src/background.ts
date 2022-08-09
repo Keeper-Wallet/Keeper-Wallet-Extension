@@ -292,8 +292,7 @@ class BackgroundService extends EventEmitter {
 
     // On network change
     this.networkController.store.subscribe(() => {
-      // select accounts of this network
-      this.preferencesController.syncCurrentNetworkAccounts();
+      this.preferencesController.ensureSelectedAccountInCurrentNetwork();
       // update cognito identity configuration
       this.identityController.configure();
     });
