@@ -133,7 +133,7 @@ jobs:
           pwd
           ls -l
           mkdir -m 777 extension/
-          mkdir -m 777 output/
+          chmod -R 777 output/
           ls -l
 
       - name: Download extension bins
