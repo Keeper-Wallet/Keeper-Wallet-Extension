@@ -40,9 +40,6 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      #      - name: Check code formatting
-      #        run: yarn run lint:prettier
-
       - name: Create empty config.json
         run: echo '{}' > config.json
 
@@ -53,15 +50,12 @@ jobs:
 
       #Copy master with tag bins to buffer folder
 
-      - name: Copy extension bins to buffer folder
+      - name: Prepare extension bins for uploading
         run: |
-          pwd
-          ls -l
           mkdir ./atqa-framework/extension
-          ls -l ./atqa-framework/
           cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
 
-      - name: Save dist files
+      - name: Save extension artifacts
         uses: actions/upload-artifact@v3
         with:
           name: extension-init-bins
@@ -112,11 +106,7 @@ jobs:
 
       - name: Setting up Selenoid ecosystem
         working-directory: ./atqa-framework
-        run: |
-          docker compose up -d
-          docker container ls
-          docker inspect atqa-framework-selenoid-1
-          curl http://localhost:4444/status
+        run: docker compose up -d
 
       - name: Pulling browser images
         working-directory: ./atqa-framework
@@ -127,44 +117,30 @@ jobs:
 
       #init DotEnv and start tests
 
-      - name: Init buffer folders
+      - name: Init buffer and extension init folders
         working-directory: ./atqa-framework
         run: |
-          pwd
-          ls -l
+          sudo mkdir buffer/
           sudo mkdir -m 777 extension/
-          ls -l
 
       - name: Change permission for output folder
         working-directory: ./atqa-framework
-        run: |
-          ls -l
-          sudo chmod -R 777 output/
-          ls -l
+        run: sudo chmod -R 777 output/
 
-      - name: Download extension bins
+      - name: Download extension bins to buffer and init folder
         uses: actions/download-artifact@v3
         with:
           name: extension-init-bins
-          path: ./atqa-framework/extension
+          path: ./atqa-framework/buffer
 
-      #      - name: Copy artifacts to buffer folder
-      #        run: |
-      #          pwd
-      #          ls -l
-      #          mkdir ./atqa-framework/extension
-      #          ls -l ./atqa-framework/
-      #          mv ./opera/ ./chrome/ ./edge/ ./atqa-framework/extension/
-      #          ls -l ./atqa-framework/extension/
+      - name: Copy extension bins to init folder
+        working-directory: ./atqa-framework
+        run: cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/
 
       - name: Run chrome
         working-directory: ./atqa-framework
         run: |
-          docker container ls
-          docker inspect atqa-framework-selenoid-1
           curl http://localhost:4444/status
-          pwd
-          ls -l extension/
           yarn codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'
         env:
           BROWSER_INIT_NAME: chrome
