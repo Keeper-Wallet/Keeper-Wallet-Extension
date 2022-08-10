@@ -19,12 +19,12 @@ export class Duck extends BaseNft<DuckInfo> {
 
   constructor({
     asset,
-    info = null,
+    info,
     config,
   }: {
     asset: AssetDetail;
-    info: DuckInfo | null;
-    config: NftConfig;
+    info?: DuckInfo | null;
+    config?: NftConfig | null;
   }) {
     super({ asset, info, config });
 
