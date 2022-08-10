@@ -13,7 +13,6 @@ import { App } from './actions';
 declare global {
   interface Window {
     result: unknown;
-    approveResult: unknown;
   }
 }
 
