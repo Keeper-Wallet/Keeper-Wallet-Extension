@@ -31,17 +31,17 @@ export interface BaseInfo {
 
 export class BaseNft<TypedInfo extends BaseInfo> {
   protected asset: AssetDetail;
-  protected info: TypedInfo | null;
-  protected config: NftConfig;
+  protected info: TypedInfo | null | undefined;
+  protected config: NftConfig | null | undefined;
 
   constructor({
     asset,
-    info = null,
+    info,
     config,
   }: {
     asset: AssetDetail;
     info?: TypedInfo | null;
-    config: NftConfig;
+    config?: NftConfig | null;
   }) {
     this.asset = asset;
     this.info = info;
