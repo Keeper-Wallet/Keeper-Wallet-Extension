@@ -13,6 +13,7 @@ import {
   DEFAULT_IDENTITY_CONFIG,
   DEFAULT_IGNORE_ERRORS_CONFIG,
   FeeConfig,
+  NftConfig,
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
@@ -122,6 +123,7 @@ export interface StoreLocalState {
   locked: boolean | null;
   messages: MessageStoreItem[];
   migrationVersion: number;
+  nftConfig: NftConfig;
   nfts: Record<string, NftInfo>;
   notifications: NotificationsStoreItem[];
   notificationWindowId: string | undefined;
