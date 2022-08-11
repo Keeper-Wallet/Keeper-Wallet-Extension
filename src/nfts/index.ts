@@ -30,9 +30,9 @@ export interface BaseInfo {
 }
 
 export class BaseNft<TypedInfo extends BaseInfo> {
-  protected asset: AssetDetail;
-  protected info: TypedInfo | null | undefined;
-  protected config: NftConfig | null | undefined;
+  protected asset;
+  protected info;
+  protected config;
 
   constructor({
     asset,
