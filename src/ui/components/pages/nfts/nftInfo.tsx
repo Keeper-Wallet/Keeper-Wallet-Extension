@@ -2,38 +2,42 @@ import * as React from 'react';
 import * as styles from './nftInfo.module.css';
 import { NftCover } from 'nfts/nftCard';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from 'ui/store';
-import { Nft } from 'nfts/utils';
+import { useAppSelector } from 'ui/store';
+import { createNft } from 'nfts/utils';
 import { Button, Ellipsis, Loader } from 'ui/components/ui';
 import { PageComponentProps, PAGES } from 'ui/pageConfig';
-import { setUiState } from 'ui/actions';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink, getAssetDetailLink } from 'ui/urls';
-import { Duckling } from 'nfts/ducklings';
-import { BaseInfo, BaseNft } from 'nfts';
-import { AssetDetail } from 'assets/types';
+import { useUiState } from 'ui/components/pages/assets/tabs/helpers';
 
 export function NftInfo({ setTab, onBack }: PageComponentProps) {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
 
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
-  const nft = useAppSelector(state => state.uiState?.currentAsset) as Nft;
-
-  const setCurrentAsset = React.useCallback(
-    (assetId: AssetDetail | Duckling | BaseNft<BaseInfo> | null) =>
-      dispatch(setUiState({ currentAsset: assetId })),
-    [dispatch]
+  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const [currentAsset, setCurrentAsset] = useUiState('currentAsset');
+  const nftInfo = useAppSelector(
+    state => currentAsset && state.nfts?.[currentAsset.id]
   );
+  const nftConfig = useAppSelector(state => state.nftConfig);
+
+  const nft =
+    currentAsset &&
+    createNft({
+      asset: currentAsset,
+      info: nftInfo,
+      currentAddress,
+      config: nftConfig,
+    });
 
   const creatorUrl =
     nft?.creatorUrl ||
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (nft?.creator && getAccountLink(networkCode!, nft.creator));
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const nftUrl = nft && getAssetDetailLink(networkCode!, nft.id);
+  const nftUrl = nft ? getAssetDetailLink(networkCode!, nft.id) : undefined;
 
   return (
     <div className={styles.root}>
@@ -123,7 +127,7 @@ export function NftInfo({ setTab, onBack }: PageComponentProps) {
           type="submit"
           view="submit"
           onClick={() => {
-            setCurrentAsset(nft);
+            setCurrentAsset(nft?.asset);
             setTab(PAGES.SEND);
           }}
         >
