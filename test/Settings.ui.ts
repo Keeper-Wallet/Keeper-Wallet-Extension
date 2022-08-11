@@ -126,6 +126,12 @@ describe('Settings', function () {
       await this.driver
         .findElement(By.css('[data-testid="verifyButton"]'))
         .click();
+      await this.driver.wait(
+        until.elementLocated(
+          By.xpath("//div[contains(@class, 'settings-content')]")
+        ),
+        this.wait
+      );
     });
   });
 
