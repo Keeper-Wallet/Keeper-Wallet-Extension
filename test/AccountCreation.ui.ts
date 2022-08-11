@@ -8,6 +8,7 @@ import {
   CreateNewAccount,
   Network,
   Settings,
+  Windows,
 } from './utils/actions';
 import {
   SEND_UPDATE_DEBOUNCE_DELAY,
@@ -64,29 +65,19 @@ describe('Account creation', function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
+    tabKeeper = await this.driver.getWindowHandle();
 
-    const handles = await this.driver.getAllWindowHandles();
-    tabKeeper = handles[0];
-
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
+        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
         this.wait
       )
-      .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
-    await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 3,
-      this.wait
-    );
-    for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-        tabAccounts = handle;
-        await this.driver.switchTo().window(tabAccounts);
-        await this.driver.navigate().refresh();
-        break;
-      }
-    }
+    [tabAccounts] = await waitForNewWindows(1);
+
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.navigate().refresh();
   });
 
   after(async function () {

@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
-import { App, CreateNewAccount, Network, Settings } from './utils/actions';
+import {
+  App,
+  CreateNewAccount,
+  Network,
+  Settings,
+  Windows,
+} from './utils/actions';
 import { DEFAULT_PAGE_LOAD_DELAY } from './utils/constants';
 
 describe('Others', function () {
@@ -12,6 +18,7 @@ describe('Others', function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
+    tabKeeper = await this.driver.getWindowHandle();
   });
 
   after(async function () {
@@ -50,27 +57,18 @@ describe('Others', function () {
     before(async function () {
       await Network.switchToAndCheck.call(this, 'Testnet');
 
-      // save popup and accounts refs
-      const handles = await this.driver.getAllWindowHandles();
-      tabKeeper = handles[0];
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver
         .wait(
-          until.elementLocated(By.css('[data-testid="importForm"]')),
+          until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
           this.wait
         )
-        .findElement(By.css('[data-testid="addAccountBtn"]'))
         .click();
-      await this.driver.wait(
-        async () => (await this.driver.getAllWindowHandles()).length === 3,
-        this.wait
-      );
-      for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-          await this.driver.switchTo().window(handle);
-          await this.driver.navigate().refresh();
-          break;
-        }
-      }
+      const [tabAccounts] = await waitForNewWindows(1);
+
+      await this.driver.switchTo().window(tabAccounts);
+      await this.driver.navigate().refresh();
+
       await CreateNewAccount.importAccount.call(
         this,
         'rich',

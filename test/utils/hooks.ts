@@ -131,7 +131,6 @@ export const mochaHooks = () => ({
     // this helps extension to be ready
     await this.driver.get('chrome://new-tab-page');
     await App.openServiceWorkerTab.call(this);
-    await App.open.call(this);
   },
 
   afterAll(this: mocha.Context, done: mocha.Done) {

@@ -11,7 +11,13 @@ import { cancelOrderParamsToBytes } from '@waves/waves-transactions/dist/request
 import { expect } from 'chai';
 import * as mocha from 'mocha';
 import * as create from 'parse-json-bignumber';
-import { App, CreateNewAccount, Network, Settings } from './utils/actions';
+import {
+  App,
+  CreateNewAccount,
+  Network,
+  Settings,
+  Windows,
+} from './utils/actions';
 import { CUSTOMLIST, WHITELIST } from './utils/constants';
 import { By, until } from 'selenium-webdriver';
 import {
@@ -62,29 +68,19 @@ describe('Signature', function () {
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
     await Network.switchToAndCheck.call(this, 'Testnet');
+    tabKeeper = await this.driver.getWindowHandle();
 
-    [tabKeeper] = await this.driver.getAllWindowHandles();
-
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
+        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
         this.wait
       )
-      .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
+    const [tabAccounts] = await waitForNewWindows(1);
 
-    await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 3,
-      this.wait
-    );
-
-    for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-        await this.driver.switchTo().window(handle);
-        await this.driver.navigate().refresh();
-        break;
-      }
-    }
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.navigate().refresh();
 
     await CreateNewAccount.importAccount.call(
       this,

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { clear } from './utils';
-import { App, CreateNewAccount, Network } from './utils/actions';
+import { App, CreateNewAccount, Network, Windows } from './utils/actions';
 import { By, until, WebElement } from 'selenium-webdriver';
 import { DEFAULT_ANIMATION_DELAY } from './utils/constants';
 
@@ -34,27 +34,22 @@ describe('Network management', function () {
       });
 
       it('Imported testnet account starts with 3N or 3M', async function () {
-        // save popup and accounts refs
-        const handles = await this.driver.getAllWindowHandles();
-        tabKeeper = handles[0];
+        tabKeeper = await this.driver.getWindowHandle();
+
+        const { waitForNewWindows } = await Windows.captureNewWindows.call(
+          this
+        );
         await this.driver
           .wait(
-            until.elementLocated(By.css('[data-testid="importForm"]')),
+            until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
             this.wait
           )
-          .findElement(By.css('[data-testid="addAccountBtn"]'))
           .click();
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        );
-        for (const handle of await this.driver.getAllWindowHandles()) {
-          if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-            await this.driver.switchTo().window(handle);
-            await this.driver.navigate().refresh();
-            break;
-          }
-        }
+        const [tabAccounts] = await waitForNewWindows(1);
+
+        await this.driver.switchTo().window(tabAccounts);
+        await this.driver.navigate().refresh();
+
         await CreateNewAccount.importAccount.call(
           this,
           'rich',

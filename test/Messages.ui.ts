@@ -1,7 +1,7 @@
 import * as mocha from 'mocha';
 import { By, until } from 'selenium-webdriver';
 import { expect } from 'chai';
-import { App, CreateNewAccount, Settings } from './utils/actions';
+import { App, CreateNewAccount, Settings, Windows } from './utils/actions';
 import {
   CUSTOMLIST,
   DEFAULT_ANIMATION_DELAY,
@@ -48,28 +48,19 @@ describe('Messages', function () {
     await App.initVault.call(this);
     await Settings.setMaxSessionTimeout.call(this);
     await App.open.call(this);
+    tabKeeper = await this.driver.getWindowHandle();
 
-    const handles = await this.driver.getAllWindowHandles();
-    tabKeeper = handles[0];
-
+    const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
     await this.driver
       .wait(
-        until.elementLocated(By.css('[data-testid="importForm"]')),
+        until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
         this.wait
       )
-      .findElement(By.css('[data-testid="addAccountBtn"]'))
       .click();
-    await this.driver.wait(
-      async () => (await this.driver.getAllWindowHandles()).length === 3,
-      this.wait
-    );
-    for (const handle of await this.driver.getAllWindowHandles()) {
-      if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-        await this.driver.switchTo().window(handle);
-        await this.driver.navigate().refresh();
-        break;
-      }
-    }
+    const [tabAccounts] = await waitForNewWindows(1);
+
+    await this.driver.switchTo().window(tabAccounts);
+    await this.driver.navigate().refresh();
 
     await CreateNewAccount.importAccount.call(
       this,
