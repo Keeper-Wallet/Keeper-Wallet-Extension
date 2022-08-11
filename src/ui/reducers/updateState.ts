@@ -9,6 +9,7 @@ import { AssetDetail } from 'assets/types';
 
 export * from './localState';
 export * from './feeConfig';
+export * from './nftConfig';
 export * from './remoteConfig';
 export * from './notifications';
 

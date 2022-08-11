@@ -15,31 +15,38 @@ import { DucksArtefact } from 'nfts/duckArtifacts';
 import { MyNFT, Unknown } from 'nfts/unknown';
 import { DataTransactionEntry, Long } from '@waves/ts-types';
 import { AssetDetail } from 'assets/types';
+import { NftConfig } from '../constants';
 
 export type Nft = ReturnType<typeof createNft>;
 
-export function createNft(
-  asset: AssetDetail,
-  info: NftInfo | { id: string; vendor: NftVendor.Unknown },
-  currentAccount?: string
-) {
+export function createNft({
+  asset,
+  info,
+  currentAddress,
+  config,
+}: {
+  asset: AssetDetail;
+  info: NftInfo | { id: string; vendor: NftVendor.Unknown } | null | undefined;
+  currentAddress?: string;
+  config: NftConfig;
+}) {
   switch (nftType(asset)) {
     case NftVendor.Ducklings:
-      return new Duckling(asset, info as DucklingInfo);
+      return new Duckling({ asset, info: info as DucklingInfo, config });
     case NftVendor.Ducks:
-      return new Duck(asset, info as DuckInfo);
+      return new Duck({ asset, info: info as DuckInfo, config });
     case NftVendor.DucksArtefact:
-      return new DucksArtefact(asset, info as DucksArtefact);
+      return new DucksArtefact({ asset, info: info as DucksArtefact, config });
     case NftVendor.SignArt:
-      return new SignArt(asset, info as SignArtInfo);
+      return new SignArt({ asset, info: info as SignArtInfo, config });
     case NftVendor.Unknown: {
-      if (asset.issuer === currentAccount) {
-        return new MyNFT(asset);
+      if (asset.issuer === currentAddress) {
+        return new MyNFT({ asset, config });
       }
-      return new Unknown(asset);
+      return new Unknown({ asset, config });
     }
     default:
-      return new BaseNft(asset);
+      return new BaseNft({ asset, config });
   }
 }
 

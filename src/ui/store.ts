@@ -7,22 +7,22 @@ import {
   MiddlewareAPI,
 } from 'redux';
 import * as reducers from './reducers/updateState';
-import * as middleware from './midleware';
-import { extension } from 'lib/extension';
-import { KEEPERWALLET_DEBUG } from './appConfig';
-import type { ACTION } from './actions/constants';
 import {
   NewAccountState,
   SwapScreenInitialState,
   TabMode,
   UiState,
 } from './reducers/updateState';
+import * as middleware from './midleware';
+import { extension } from 'lib/extension';
+import { KEEPERWALLET_DEBUG } from './appConfig';
+import type { ACTION } from './actions/constants';
 import {
   BackgroundGetStateResult,
   BackgroundUiApi,
   WalletTypes,
 } from './services/Background';
-import { FeeConfig } from '../constants';
+import { FeeConfig, NftConfig } from '../constants';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { PermissionValue } from 'permissions/types';
 import { NotificationsStoreItem } from 'notifications/types';
@@ -66,6 +66,11 @@ export type UiAction =
   | {
       type: typeof ACTION.UPDATE_FEE_CONFIG;
       payload: FeeConfig;
+      meta?: never;
+    }
+  | {
+      type: typeof ACTION.UPDATE_NFT_CONFIG;
+      payload: NftConfig;
       meta?: never;
     }
   | {

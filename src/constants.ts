@@ -78,7 +78,7 @@ export const DEFAULT_CONFIG = {
 };
 
 export const DEFAULT_FEE_CONFIG_URL =
-  'https://raw.githubusercontent.com/Waves-Keeper/configs/master/fee.json';
+  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/fee.json';
 
 export const FEE_CONFIG_UPDATE_INTERVAL = 1;
 
@@ -121,7 +121,7 @@ export const DEFAULT_FEE_CONFIG = {
 export type FeeConfig = typeof DEFAULT_FEE_CONFIG;
 
 export const IGNORE_ERRORS_CONFIG_URL =
-  'https://raw.githubusercontent.com/Waves-Keeper/configs/master/keeper-ignore-errors.json';
+  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/keeper-ignore-errors.json';
 
 export const IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL = 1;
 
@@ -161,3 +161,14 @@ export const DEFAULT_IDENTITY_CONFIG = {
 };
 
 export const IDENTITY_CONFIG_UPDATE_INTERVAL = 1;
+
+export const DEFAULT_NFT_CONFIG_URL =
+  'https://raw.githubusercontent.com/Keeper-Wallet/configs/master/nft.json';
+
+export const NFT_CONFIG_UPDATE_INTERVAL = 1;
+
+export const DEFAULT_NFT_CONFIG = {
+  signArtImgUrl: 'https://signart.infura-ipfs.io/ipfs/{domain}/{filename}',
+};
+
+export type NftConfig = typeof DEFAULT_NFT_CONFIG;

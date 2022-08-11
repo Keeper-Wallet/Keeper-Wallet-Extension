@@ -10,14 +10,23 @@ import {
 } from 'nfts/ducks/constants';
 import * as React from 'react';
 import { AssetDetail } from 'assets/types';
+import { NftConfig } from '../../constants';
 
 export class Duck extends BaseNft<DuckInfo> {
   protected genoType: string;
   protected generationColor: string;
   protected druck: string | null;
 
-  constructor(asset: AssetDetail, info: DuckInfo) {
-    super(asset, info);
+  constructor({
+    asset,
+    info,
+    config,
+  }: {
+    asset: AssetDetail;
+    info?: DuckInfo | null;
+    config: NftConfig;
+  }) {
+    super({ asset, info, config });
 
     const [, genoType, generationColor] = this.name.split('-');
     this.genoType = genoType;

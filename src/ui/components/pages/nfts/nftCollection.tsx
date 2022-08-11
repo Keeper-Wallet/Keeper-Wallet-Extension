@@ -48,10 +48,17 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
   ];
   const creator = filters?.creator;
 
+  const nftConfig = useAppSelector(state => state.nftConfig);
+
   const getNftDetails = React.useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    nft => createNft(nft, nfts![nft.id], currentAddress),
-    [nfts, currentAddress]
+    nft =>
+      createNft({
+        asset: nft,
+        info: nfts?.[nft.id],
+        currentAddress,
+        config: nftConfig,
+      }),
+    [nfts, currentAddress, nftConfig]
   );
 
   const creatorNfts = myNfts
