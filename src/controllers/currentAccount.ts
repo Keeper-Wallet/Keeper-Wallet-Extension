@@ -131,7 +131,7 @@ export class CurrentAccountController {
                 assetId: string;
                 decimals: number;
                 description: string;
-                issueHeight: string;
+                issueHeight: number;
                 issuer: string;
                 issuerPublicKey: string;
                 issueTimestamp: number;
@@ -249,15 +249,14 @@ export class CurrentAccountController {
                       description: nft.description,
                       height: nft.issueHeight,
                       timestamp: new Date(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        parseInt(nft.issueTimestamp as any)
-                      ).toJSON(),
+                        nft.issueTimestamp
+                      ).toJSON() as unknown as Date, // todo fixme please
                       sender: nft.issuer,
                       quantity: nft.quantity,
                       reissuable: nft.reissuable,
                       hasScript: nft.scripted,
                       displayName: nft.name,
-                      minSponsoredFee: nft.minSponsoredAssetFee,
+                      minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
                       originTransactionId: nft.originTransactionId,
                       issuer: nft.issuer,
                     })),

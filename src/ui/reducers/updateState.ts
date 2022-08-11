@@ -1,5 +1,4 @@
 import { ACTION } from '../actions';
-import { Nft } from 'nfts/utils';
 import { UiAction, UiActionPayload } from 'ui/store';
 import { PreferencesAccount } from 'preferences/types';
 import { AssetBalance } from 'balances/types';
@@ -50,7 +49,7 @@ export interface UiState {
   assetFilters?: AssetFilters;
   assetsTab?: number;
   autoClickProtection?: boolean;
-  currentAsset?: AssetDetail | Nft | null;
+  currentAsset?: AssetDetail | null;
   nftFilters?: NftFilters;
   showSuspiciousAssets?: boolean;
   slippageToleranceIndex?: number;
