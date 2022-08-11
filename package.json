@@ -22,6 +22,7 @@
     "test": "mocha"
   },
   "mocha": {
+    "bail": true,
     "extension": [
       "ts"
     ],
