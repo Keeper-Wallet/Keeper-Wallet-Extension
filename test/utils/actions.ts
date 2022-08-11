@@ -527,4 +527,15 @@ export const Windows = {
       },
     };
   },
+  async waitForWindowToClose(this: mocha.Context, windowHandle: string) {
+    await this.driver.wait(
+      async () => {
+        const handles = await this.driver.getAllWindowHandles();
+
+        return !handles.includes(windowHandle);
+      },
+      this.wait,
+      'waiting for window to close'
+    );
+  },
 };
