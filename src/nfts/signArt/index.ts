@@ -56,6 +56,8 @@ export class SignArt extends BaseNft<SignArtInfo> {
 
     const [domain, filename] = this.info.cid.split('/');
 
-    return `https://${domain}.ipfs.infura-ipfs.io/${filename}`;
+    return this.config.signArtImgUrl
+      .replace(/{domain}/g, domain)
+      .replace(/{filename}/g, filename);
   }
 }

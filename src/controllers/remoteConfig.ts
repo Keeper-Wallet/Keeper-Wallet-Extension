@@ -7,10 +7,13 @@ import {
   DEFAULT_FEE_CONFIG_URL,
   DEFAULT_IDENTITY_CONFIG,
   DEFAULT_IGNORE_ERRORS_CONFIG,
+  DEFAULT_NFT_CONFIG,
+  DEFAULT_NFT_CONFIG_URL,
   FEE_CONFIG_UPDATE_INTERVAL,
   IDENTITY_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_UPDATE_INTERVAL,
   IGNORE_ERRORS_CONFIG_URL,
+  NFT_CONFIG_UPDATE_INTERVAL,
   STATUS,
 } from '../constants';
 import { EventEmitter } from 'events';
@@ -74,6 +77,7 @@ export class RemoteConfigController extends EventEmitter {
         ignoreErrorsConfig: DEFAULT_IGNORE_ERRORS_CONFIG,
         identityConfig: DEFAULT_IDENTITY_CONFIG,
         feeConfig: DEFAULT_FEE_CONFIG,
+        nftConfig: DEFAULT_NFT_CONFIG,
         status: STATUS.PENDING,
       })
     );
@@ -84,6 +88,7 @@ export class RemoteConfigController extends EventEmitter {
     this._getIgnoreErrorsConfig();
     this._fetchIdentityConfig();
     this._fetchFeeConfig();
+    this._fetchNftConfig();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extension.alarms.onAlarm.addListener(({ name }: any) => {
@@ -99,6 +104,9 @@ export class RemoteConfigController extends EventEmitter {
           break;
         case 'fetchFeeConfig':
           this._fetchFeeConfig();
+          break;
+        case 'fetchNftConfig':
+          this._fetchNftConfig();
           break;
       }
     });
@@ -348,6 +356,24 @@ export class RemoteConfigController extends EventEmitter {
     } finally {
       extension.alarms.create('fetchFeeConfig', {
         delayInMinutes: FEE_CONFIG_UPDATE_INTERVAL,
+      });
+    }
+  }
+
+  async _fetchNftConfig() {
+    try {
+      const response = await fetch(DEFAULT_NFT_CONFIG_URL);
+
+      if (response.ok) {
+        this.store.updateState({ nftConfig: await response.json() });
+      } else if (response.status < 500) {
+        throw new Error(await response.text());
+      }
+    } catch (err) {
+      throw new Error(`Could not fetch nft.json: ${err}`);
+    } finally {
+      extension.alarms.create('fetchNftConfig', {
+        delayInMinutes: NFT_CONFIG_UPDATE_INTERVAL,
       });
     }
   }

@@ -23,12 +23,12 @@ const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
 export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
   const { t } = useTranslation();
 
-  const address = useAppSelector(state => state.selectedAccount.address);
+  const currentAddress = useAppSelector(state => state.selectedAccount.address);
   const networkCode = useAppSelector(
     state => state.selectedAccount.networkCode
   );
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const myNfts = useAppSelector(state => state.balances[address!]?.nfts);
+  const myNfts = useAppSelector(state => state.balances[currentAddress!]?.nfts);
   const nfts = useAppSelector(state => state.nfts);
 
   const [filters, setFilters] = useUiState('nftFilters');
@@ -39,10 +39,17 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
   const setCreator = (value: string | null | undefined) =>
     setFilters({ ...filters, creator: value });
 
+  const nftConfig = useAppSelector(state => state.nftConfig);
+
   const getNftDetails = React.useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    nft => createNft(nft, nfts![nft.id], address),
-    [nfts, address]
+    nft =>
+      createNft({
+        asset: nft,
+        info: nfts?.[nft.id],
+        currentAddress,
+        config: nftConfig,
+      }),
+    [nfts, currentAddress, nftConfig]
   );
 
   const sortedNfts =
@@ -130,7 +137,7 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
                 <a
                   className="blue link"
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  href={getNftsLink(networkCode!, address!)}
+                  href={getNftsLink(networkCode!, currentAddress!)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
