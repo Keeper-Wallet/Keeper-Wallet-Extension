@@ -4,6 +4,7 @@ import { DucklingInfo } from 'nfts/ducklings';
 import { DucksArtefactInfo } from 'nfts/duckArtifacts';
 import { SignArtInfo } from 'nfts/signArt';
 import { AssetDetail } from 'assets/types';
+import { NftConfig } from '../constants';
 
 export type NftInfo = DuckInfo | DucklingInfo | DucksArtefactInfo | SignArtInfo;
 
@@ -23,20 +24,28 @@ export enum NftVendor {
 
 export const NftVendorKeys = Object.values(NftVendor);
 
-export type NftDetails = AssetDetail & { assetId: string };
-
 export interface BaseInfo {
   id: string;
   vendor: NftVendor;
 }
 
 export class BaseNft<TypedInfo extends BaseInfo> {
-  protected asset: AssetDetail;
-  protected info: TypedInfo | null;
+  protected asset;
+  protected info;
+  protected config;
 
-  constructor(asset: AssetDetail, info: TypedInfo | null = null) {
+  constructor({
+    asset,
+    info,
+    config,
+  }: {
+    asset: AssetDetail;
+    info?: TypedInfo | null;
+    config: NftConfig;
+  }) {
     this.asset = asset;
     this.info = info;
+    this.config = config;
   }
   get foreground(): string | null {
     return null;

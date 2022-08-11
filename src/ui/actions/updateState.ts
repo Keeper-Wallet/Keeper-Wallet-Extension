@@ -49,6 +49,13 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
+    if (state.nftConfig && !equals(currentState.nftConfig, state.nftConfig)) {
+      store.dispatch({
+        type: ACTION.UPDATE_NFT_CONFIG,
+        payload: state.nftConfig,
+      });
+    }
+
     const idleOptions = getParam(state.idleOptions, {});
     if (idleOptions && !equals(currentState.idleOptions, idleOptions)) {
       store.dispatch({
