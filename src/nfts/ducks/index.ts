@@ -24,7 +24,7 @@ export class Duck extends BaseNft<DuckInfo> {
   }: {
     asset: AssetDetail;
     info?: DuckInfo | null;
-    config?: NftConfig | null;
+    config: NftConfig;
   }) {
     super({ asset, info, config });
 

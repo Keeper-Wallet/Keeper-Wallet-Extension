@@ -41,7 +41,7 @@ export class BaseNft<TypedInfo extends BaseInfo> {
   }: {
     asset: AssetDetail;
     info?: TypedInfo | null;
-    config?: NftConfig | null;
+    config: NftConfig;
   }) {
     this.asset = asset;
     this.info = info;
