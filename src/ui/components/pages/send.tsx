@@ -13,6 +13,7 @@ import { Error, Loader } from '../ui';
 import { signAndPublishTransaction } from 'ui/actions/transactions';
 import { AssetAmountInput } from '../../../assets/amountInput';
 import { AssetDetail } from 'assets/types';
+import { createNft } from 'nfts/utils';
 
 export function Send() {
   const { t } = useTranslation();
@@ -33,6 +34,30 @@ export function Send() {
     currentAsset.precision === 0 &&
     currentAsset.quantity == 1 &&
     !currentAsset.reissuable;
+
+  const currentAddress = useAppSelector(state => state.selectedAccount.address);
+  const nftInfo = useAppSelector(
+    state => currentAsset && state.nfts?.[currentAsset.id]
+  );
+  const nftConfig = useAppSelector(state => state.nftConfig);
+
+  const displayName = React.useMemo(() => {
+    if (!currentAsset) {
+      return null;
+    }
+    if (isNft) {
+      const nft = createNft({
+        asset: currentAsset,
+        info: nftInfo,
+        currentAddress,
+        config: nftConfig,
+      });
+
+      return nft.displayName;
+    }
+
+    return currentAsset.displayName;
+  }, [currentAddress, currentAsset, isNft, nftConfig, nftInfo]);
 
   React.useEffect(() => {
     if (!assetBalances) {
@@ -110,11 +135,7 @@ export function Send() {
       <div className={styles.wrapper}>
         <header className={styles.header}>
           <h1 className={styles.title}>
-            {!currentAsset ? (
-              <Loader />
-            ) : (
-              t('send.title', { name: currentAsset.displayName })
-            )}
+            {!displayName ? <Loader /> : t('send.title', { name: displayName })}
           </h1>
         </header>
 

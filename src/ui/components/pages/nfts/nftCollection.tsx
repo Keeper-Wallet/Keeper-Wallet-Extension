@@ -14,6 +14,7 @@ import {
 } from 'ui/components/pages/assets/tabs/helpers';
 import { Tooltip } from 'ui/components/ui/tooltip';
 import { getAccountLink } from 'ui/urls';
+import { AssetDetail } from 'assets/types';
 
 const PLACEHOLDERS = [...Array(4).keys()].map<Nft>(
   key =>
@@ -36,10 +37,8 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
 
   const dispatch = useAppDispatch();
 
-  const setCurrentAsset = React.useCallback(
-    (assetId: Nft | null) => dispatch(setUiState({ currentAsset: assetId })),
-    [dispatch]
-  );
+  const setCurrentAsset = (asset: AssetDetail | null) =>
+    dispatch(setUiState({ currentAsset: asset }));
 
   const [filters, setFilters] = useUiState('nftFilters');
   const [term, setTerm] = [
@@ -50,16 +49,13 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
 
   const nftConfig = useAppSelector(state => state.nftConfig);
 
-  const getNftDetails = React.useCallback(
-    nft =>
-      createNft({
-        asset: nft,
-        info: nfts?.[nft.id],
-        currentAddress,
-        config: nftConfig,
-      }),
-    [nfts, currentAddress, nftConfig]
-  );
+  const getNftDetails = (asset: AssetDetail) =>
+    createNft({
+      asset: asset,
+      info: nfts?.[asset.id],
+      currentAddress,
+      config: nftConfig,
+    });
 
   const creatorNfts = myNfts
     ? sortAndFilterNfts(myNfts.map(getNftDetails), { term, creator })
@@ -135,8 +131,8 @@ export function NftCollection({ setTab, onBack }: PageComponentProps) {
           <NftList
             mode={DisplayMode.Name}
             nfts={creatorNfts}
-            onClick={(asset: Nft) => {
-              setCurrentAsset(asset);
+            onClick={nft => {
+              setCurrentAsset(nft.asset);
               setTab(PAGES.NFT_INFO);
             }}
           />

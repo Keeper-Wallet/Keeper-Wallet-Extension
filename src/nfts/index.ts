@@ -30,7 +30,7 @@ export interface BaseInfo {
 }
 
 export class BaseNft<TypedInfo extends BaseInfo> {
-  protected asset;
+  readonly asset;
   protected info;
   protected config;
 
