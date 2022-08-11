@@ -1,5 +1,6 @@
 import { TransactionFromNode } from '@waves/ts-types';
 import { NetworkName } from 'networks/types';
+import { AssetDetail } from 'assets/types';
 
 export interface AssetBalance {
   balance: string;
@@ -13,6 +14,6 @@ export interface BalancesItem {
   available: string;
   leasedOut: string;
   network: NetworkName;
-  nfts: unknown[];
+  nfts: AssetDetail[];
   txHistory: TransactionFromNode[];
 }

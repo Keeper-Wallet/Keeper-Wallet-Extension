@@ -20,7 +20,7 @@ const Row = ({
     counts: Record<string, number>;
     mode: DisplayMode;
     len: number;
-    onClick: (asset: Nft) => void;
+    onClick: (nft: Nft) => void;
     renderMore: () => void;
   };
   index: number;
@@ -76,7 +76,7 @@ export function NftList({
   nfts: Array<Duckling | BaseNft<BaseInfo>>;
   counters?: Record<string, number>;
   hasMore?: boolean;
-  onClick: (asset: Nft) => void;
+  onClick: (nft: Nft) => void;
   renderMore?: () => void;
 }) {
   return (

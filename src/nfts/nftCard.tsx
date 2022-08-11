@@ -5,7 +5,13 @@ import { Ellipsis } from 'ui/components/ui';
 import { Nft } from 'nfts/utils';
 import { DisplayMode } from 'nfts/index';
 
-export function NftCover({ className, nft }: { className?: string; nft: Nft }) {
+export function NftCover({
+  className,
+  nft,
+}: {
+  className?: string;
+  nft: Nft | null | undefined;
+}) {
   const [isLoading, setLoading] = React.useState(true);
 
   return nft?.isVideo ? (
