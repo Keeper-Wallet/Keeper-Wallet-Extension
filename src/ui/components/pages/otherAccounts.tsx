@@ -55,7 +55,7 @@ export function OtherAccountsPage({ setTab }: PageComponentProps) {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-testid="otherAccountsPage">
       <header className={styles.header}>
         <h2 className={styles.title}>{t('otherAccounts.title')}</h2>
       </header>

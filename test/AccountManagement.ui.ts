@@ -64,13 +64,17 @@ describe('Account management', function () {
         )
         .click();
 
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="otherAccountsPage"]')),
+        this.wait
+      );
+
       await this.driver
         .wait(
           until.elementLocated(By.css('[data-testid="accountCard"]')),
           this.wait
         )
         .click();
-      await this.driver.sleep(DEFAULT_ANIMATION_DELAY);
 
       expect(await Assets.getActiveAccountName.call(this)).to.equal('poor');
     });
