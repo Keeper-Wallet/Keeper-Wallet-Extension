@@ -133,8 +133,9 @@ export const mochaHooks = () => ({
     await App.openServiceWorkerTab.call(this);
   },
 
-  afterAll(this: mocha.Context, done: mocha.Done) {
-    this.driver && this.driver.quit();
-    done();
+  async afterAll(this: mocha.Context) {
+    if (this.driver) {
+      await this.driver.quit();
+    }
   },
 });
