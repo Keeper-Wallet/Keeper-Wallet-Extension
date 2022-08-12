@@ -141,7 +141,7 @@ export interface StorageLocalState {
   whitelist: string[];
 }
 
-export interface StoreSessionState {
+export interface StorageSessionState {
   memo?: Record<string, string | null>;
   password?: string | null | undefined;
 }
@@ -149,7 +149,7 @@ export interface StoreSessionState {
 export default class ExtensionStore {
   private _state: Partial<StorageLocalState> | undefined;
   private _initState: StorageLocalState | undefined;
-  private _initSession: StoreSessionState | undefined;
+  private _initSession: StorageSessionState | undefined;
 
   async create() {
     await this._migrate();
@@ -267,7 +267,7 @@ export default class ExtensionStore {
 
   private async getSession(
     keys?: string | string[]
-  ): Promise<StoreSessionState> {
+  ): Promise<StorageSessionState> {
     const storageState = extension.storage.session;
 
     if (!storageState) return {};
@@ -282,7 +282,7 @@ export default class ExtensionStore {
     return this._set(storageState, state as any);
   }
 
-  async setSession(state: StoreSessionState) {
+  async setSession(state: StorageSessionState) {
     const storageState = extension.storage.session;
 
     if (!storageState) return;

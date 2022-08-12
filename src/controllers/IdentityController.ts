@@ -10,7 +10,7 @@ import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
 import LocalStore, {
   StorageLocalState,
-  StoreSessionState,
+  StorageSessionState,
 } from '../storage/storage';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import { PreferencesController } from './preferences';
@@ -92,7 +92,7 @@ class IdentityStorage
 
   constructor(
     initState: IdentityState,
-    initSession: StoreSessionState,
+    initSession: StorageSessionState,
     setSession: (session: Record<string, unknown>) => void
   ) {
     super(initState);
