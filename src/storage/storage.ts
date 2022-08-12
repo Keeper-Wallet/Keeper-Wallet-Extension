@@ -75,7 +75,7 @@ const SAFE_FIELDS = new Set([
   'userId',
 ]);
 
-export async function reset() {
+export async function resetStorage() {
   const state = await extension.storage.local.get();
   await extension.storage.local.remove(
     Object.keys(state).reduce<string[]>(
