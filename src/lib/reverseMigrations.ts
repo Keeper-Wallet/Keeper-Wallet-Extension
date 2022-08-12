@@ -1,6 +1,6 @@
-import { ExtensionStore, StorageLocalState } from '../storage/storage';
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 
-async function reverseMigrateFlatState(this: ExtensionStore) {
+async function reverseMigrateFlatState(this: ExtensionStorage) {
   const CONTROLLERS_STATE = {
     AssetInfoController: ['assets'],
     CurrentAccountController: ['balances'],
@@ -61,7 +61,7 @@ async function reverseMigrateFlatState(this: ExtensionStore) {
 }
 
 async function reverseMigrateRemoveCurrentNetworkAccounts(
-  this: ExtensionStore
+  this: ExtensionStorage
 ) {
   // noop, they're restored on unlock
 }

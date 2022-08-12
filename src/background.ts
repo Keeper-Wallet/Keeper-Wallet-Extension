@@ -6,7 +6,7 @@ import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
 import {
-  ExtensionStore as LocalStore,
+  ExtensionStorage,
   backupStorage,
   StorageLocalState,
 } from './storage/storage';
@@ -136,16 +136,20 @@ extension.runtime.onInstalled.addListener(
       bgService.assetInfoController.addTickersForExistingAssets();
       bgService.vaultController.migrate();
       bgService.addressBookController.migrate();
-      bgService.localStore.clear();
+      bgService.extensionStorage.clear();
     }
   }
 );
 
 async function setupBackgroundService() {
-  const localStore = new LocalStore();
-  await localStore.create();
+  const extensionStorage = new ExtensionStorage();
+  await extensionStorage.create();
   const initLangCode = await getFirstLangCode();
-  const backgroundService = new BackgroundService({ localStore, initLangCode });
+
+  const backgroundService = new BackgroundService({
+    extensionStorage,
+    initLangCode,
+  });
 
   // global access to service on debug
   if (KEEPERWALLET_DEBUG) {
@@ -155,7 +159,7 @@ async function setupBackgroundService() {
 
   const updateBadge = async () => {
     const { selectedAccount } =
-      backgroundService.localStore.getState('selectedAccount');
+      backgroundService.extensionStorage.getState('selectedAccount');
     const messages = backgroundService.messageController.getUnapproved();
     const notifications =
       backgroundService.notificationsController.getGroupNotificationsByAccount(
@@ -179,7 +183,7 @@ async function setupBackgroundService() {
   });
 
   // Notification window management
-  const windowManager = new WindowManager({ localStore });
+  const windowManager = new WindowManager({ extensionStorage });
   backgroundService.on(
     'Show notification',
     windowManager.showWindow.bind(windowManager)
@@ -191,7 +195,7 @@ async function setupBackgroundService() {
     windowManager.resizeWindow(width, height);
   });
   // Tabs manager
-  const tabsManager = new TabsManager({ localStore });
+  const tabsManager = new TabsManager({ extensionStorage });
   backgroundService.on('Show tab', async (url, name) => {
     backgroundService.emit('closePopupWindow');
     return tabsManager.getOrCreate(url, name);
@@ -220,7 +224,7 @@ type NewMessageFn = {
 };
 
 class BackgroundService extends EventEmitter {
-  localStore;
+  extensionStorage;
 
   addressBookController;
   assetInfoController;
@@ -243,23 +247,23 @@ class BackgroundService extends EventEmitter {
   walletController;
 
   constructor({
-    localStore,
+    extensionStorage,
     initLangCode,
   }: {
-    localStore: LocalStore;
+    extensionStorage: ExtensionStorage;
     initLangCode: string | null | undefined;
   }) {
     super();
 
-    this.localStore = localStore;
+    this.extensionStorage = extensionStorage;
 
     // Controllers
     this.trash = new TrashController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
     });
 
     this.remoteConfigController = new RemoteConfigController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
     });
 
     this.remoteConfigController.on('identityConfigChanged', () => {
@@ -268,7 +272,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.permissionsController = new PermissionsController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       remoteConfig: this.remoteConfigController,
       getSelectedAccount: () => this.preferencesController.getSelectedAccount(),
       identity: {
@@ -279,14 +283,14 @@ class BackgroundService extends EventEmitter {
 
     // Network. Works with blockchain
     this.networkController = new NetworkController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getNetworkConfig: () => this.remoteConfigController.getNetworkConfig(),
       getNetworks: () => this.remoteConfigController.getNetworks(),
     });
 
     // Preferences. Contains accounts, available accounts, selected language etc.
     this.preferencesController = new PreferencesController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       initLangCode,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
@@ -302,11 +306,11 @@ class BackgroundService extends EventEmitter {
 
     // Ui State. Provides storage for ui application
     this.uiStateController = new UiStateController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
     });
 
     this.identityController = new IdentityController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -320,7 +324,7 @@ class BackgroundService extends EventEmitter {
 
     // Wallet. Wallet creation, app locking, signing method
     this.walletController = new WalletController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       assetInfo: (...args) => this.assetInfoController.assetInfo(...args),
       getNetworkCode: this.networkController.getNetworkCode.bind(
         this.networkController
@@ -357,7 +361,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.vaultController = new VaultController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       wallet: this.walletController,
       identity: this.identityController,
     });
@@ -394,7 +398,7 @@ class BackgroundService extends EventEmitter {
 
     // AssetInfo. Provides information about assets
     this.assetInfoController = new AssetInfoController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -402,7 +406,7 @@ class BackgroundService extends EventEmitter {
     });
 
     this.nftInfoController = new NftInfoController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -411,7 +415,7 @@ class BackgroundService extends EventEmitter {
 
     // Balance. Polls balances for accounts
     this.currentAccountController = new CurrentAccountController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getNetwork: this.networkController.getNetwork.bind(
         this.networkController
       ),
@@ -432,14 +436,14 @@ class BackgroundService extends EventEmitter {
     });
 
     this.addressBookController = new AddressBookController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
     });
 
     // Messages. Transaction message pipeline. Adds new tx, user approve/reject tx.
     // Delegates different signing to walletController, broadcast and getMatcherPublicKey to networkController,
     // assetInfo for assetInfoController
     this.messageController = new MessageController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       signTx: this.walletController.signTx.bind(this.walletController),
       signOrder: this.walletController.signOrder.bind(this.walletController),
       signCancelOrder: this.walletController.signCancelOrder.bind(
@@ -476,7 +480,7 @@ class BackgroundService extends EventEmitter {
 
     // Notifications
     this.notificationsController = new NotificationsController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       getMessagesConfig: () => this.remoteConfigController.getMessagesConfig(),
       canShowNotification: (...args) =>
         this.permissionsController.canUseNotification(...args),
@@ -490,7 +494,7 @@ class BackgroundService extends EventEmitter {
 
     //Statistics
     this.statisticsController = new StatisticsController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       networkController: this.networkController,
     });
 
@@ -502,15 +506,16 @@ class BackgroundService extends EventEmitter {
     });
 
     this.idleController = new IdleController({
-      localStore: this.localStore,
+      extensionStorage: this.extensionStorage,
       preferencesController: this.preferencesController,
       vaultController: this.vaultController,
     });
   }
 
   getState<K extends keyof StorageLocalState>(params?: K | K[]) {
-    const state = this.localStore.getState(params);
-    const { selectedAccount } = this.localStore.getState('selectedAccount');
+    const state = this.extensionStorage.getState(params);
+    const { selectedAccount } =
+      this.extensionStorage.getState('selectedAccount');
     const myNotifications =
       this.notificationsController.getGroupNotificationsByAccount(
         selectedAccount

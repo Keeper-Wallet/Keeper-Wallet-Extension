@@ -1,6 +1,6 @@
 import { AssetDetail } from 'assets/types';
 import { extension } from 'lib/extension';
-import { ExtensionStore, StorageLocalState } from '../storage/storage';
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { NetworkController } from './network';
@@ -200,15 +200,15 @@ export class AssetInfoController {
   private getNetwork;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNode,
     getNetwork,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     getNode: NetworkController['getNode'];
     getNetwork: NetworkController['getNetwork'];
   }) {
-    const initState = localStore.getInitState({
+    const initState = extensionStorage.getInitState({
       assets: {
         [NetworkName.Mainnet]: {
           WAVES,
@@ -229,7 +229,7 @@ export class AssetInfoController {
       assetTickers: defaultAssetTickers,
     });
     this.store = new ObservableStore(initState);
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNode = getNode;
     this.getNetwork = getNetwork;

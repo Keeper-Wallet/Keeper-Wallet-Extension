@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
 import { ERRORS } from '../lib/keeperError';
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import { RemoteConfigController } from './remoteConfig';
 import { PermissionsController } from './permissions';
 import { NotificationsStoreItem } from 'notifications/types';
@@ -19,24 +19,24 @@ export class NotificationsController extends EventEmitter {
   private setNotificationPermissions;
 
   constructor({
-    localStore,
+    extensionStorage,
     getMessagesConfig,
     canShowNotification,
     setNotificationPermissions,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     getMessagesConfig: RemoteConfigController['getMessagesConfig'];
     canShowNotification: PermissionsController['canUseNotification'];
     setNotificationPermissions: PermissionsController['setNotificationPermissions'];
   }) {
     super();
 
-    this.notifications = localStore.getInitState({
+    this.notifications = extensionStorage.getInitState({
       notifications: [],
     });
 
     this.store = new ObservableStore(this.notifications);
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getMessagesConfig = getMessagesConfig;
     this.canShowNotification = canShowNotification;

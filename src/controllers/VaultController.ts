@@ -1,7 +1,7 @@
 import ObservableStore from 'obs-store';
 import { WalletController } from './wallet';
 import { IdentityController } from './IdentityController';
-import { ExtensionStore as LocalStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 
 export class VaultController {
   store;
@@ -9,21 +9,21 @@ export class VaultController {
   private identity;
 
   constructor({
-    localStore,
+    extensionStorage,
     wallet,
     identity,
   }: {
-    localStore: LocalStore;
+    extensionStorage: ExtensionStorage;
     wallet: WalletController;
     identity: IdentityController;
   }) {
     this.store = new ObservableStore(
-      localStore.getInitState(
+      extensionStorage.getInitState(
         { locked: null, initialized: null },
-        { locked: !localStore.getInitSession().password }
+        { locked: !extensionStorage.getInitSession().password }
       )
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.wallet = wallet;
     this.identity = identity;

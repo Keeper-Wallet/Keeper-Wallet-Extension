@@ -1,17 +1,17 @@
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { UiState } from 'ui/reducers/updateState';
 
 export class UiStateController {
   private store;
 
-  constructor({ localStore }: { localStore: ExtensionStore }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         uiState: {},
       })
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
   }
 
   getUiState() {

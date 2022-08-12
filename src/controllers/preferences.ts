@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
 import { IdleOptions } from 'preferences/types';
 import { WalletAccount } from 'wallets/types';
@@ -13,18 +13,18 @@ export class PreferencesController extends EventEmitter {
   private getNetwork;
 
   constructor({
-    localStore,
+    extensionStorage,
     initLangCode,
     getNetwork,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     initLangCode: string | null | undefined;
     getNetwork: NetworkController['getNetwork'];
   }) {
     super();
 
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         currentLocale: initLangCode || 'en',
         idleOptions: { type: 'idle', interval: 0 },
         accounts: [],
@@ -32,7 +32,7 @@ export class PreferencesController extends EventEmitter {
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
   }

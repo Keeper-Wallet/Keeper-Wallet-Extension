@@ -9,7 +9,7 @@ import {
 import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
 import {
-  ExtensionStore as LocalStore,
+  ExtensionStorage,
   StorageLocalState,
   StorageSessionState,
 } from '../storage/storage';
@@ -217,22 +217,22 @@ export class IdentityController implements IdentityApi {
   private store;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNetwork,
     getSelectedAccount,
     getIdentityConfig,
   }: {
-    localStore: LocalStore;
+    extensionStorage: ExtensionStorage;
     getNetwork: NetworkController['getNetwork'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     getIdentityConfig: RemoteConfigController['getIdentityConfig'];
   }) {
     this.store = new IdentityStorage(
-      localStore.getInitState({ cognitoSessions: undefined }),
-      localStore.getInitSession(),
-      localStore.setSession.bind(localStore)
+      extensionStorage.getInitState({ cognitoSessions: undefined }),
+      extensionStorage.getInitSession(),
+      extensionStorage.setSession.bind(extensionStorage)
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
     this.getSelectedAccount = getSelectedAccount;

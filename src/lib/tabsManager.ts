@@ -1,5 +1,5 @@
 import { extension } from 'lib/extension';
-import { ExtensionStore as LocalStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 
 export interface Tab {
@@ -12,9 +12,11 @@ export interface Tab {
 export class TabsManager {
   private store;
 
-  constructor({ localStore }: { localStore: LocalStore }) {
-    this.store = new ObservableStore(localStore.getInitState({ tabs: {} }));
-    localStore.subscribe(this.store);
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
+    this.store = new ObservableStore(
+      extensionStorage.getInitState({ tabs: {} })
+    );
+    extensionStorage.subscribe(this.store);
   }
 
   async getOrCreate(url: string, key: string) {

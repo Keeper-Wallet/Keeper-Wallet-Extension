@@ -23,7 +23,7 @@ import {
 import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
 import { getMoney, IMoneyLike } from '../ui/utils/converters';
 import { getTxVersions } from '../wallets';
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import { WalletController } from './wallet';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
@@ -62,7 +62,7 @@ export class MessageController extends EventEmitter {
   private getAccountBalance;
 
   constructor({
-    localStore,
+    extensionStorage,
     signTx,
     signOrder,
     signCancelOrder,
@@ -80,7 +80,7 @@ export class MessageController extends EventEmitter {
     getAccountBalance,
     getFeeConfig,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     signTx: WalletController['signTx'];
     signOrder: WalletController['signOrder'];
     signCancelOrder: WalletController['signCancelOrder'];
@@ -100,12 +100,12 @@ export class MessageController extends EventEmitter {
   }) {
     super();
 
-    this.messages = localStore.getInitState({
+    this.messages = extensionStorage.getInitState({
       messages: [],
     });
 
     this.store = new ObservableStore(this.messages);
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     // Signing methods from WalletController
     this.signTx = signTx;

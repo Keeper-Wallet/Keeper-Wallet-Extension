@@ -1,5 +1,5 @@
 import ObservableStore from 'obs-store';
-import { ExtensionStore as LocalStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
@@ -8,11 +8,11 @@ import {
 export class AddressBookController {
   private store;
 
-  constructor({ localStore }: { localStore: LocalStore }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
-      localStore.getInitState({ addresses: {} })
+      extensionStorage.getInitState({ addresses: {} })
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
   }
 
   setAddress(address: string, name: string) {

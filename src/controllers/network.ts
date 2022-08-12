@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { RemoteConfigController } from './remoteConfig';
@@ -9,16 +9,16 @@ export class NetworkController {
   private configApi;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNetworkConfig,
     getNetworks,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     getNetworkConfig: RemoteConfigController['getNetworkConfig'];
     getNetworks: RemoteConfigController['getNetworks'];
   }) {
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         currentNetwork: NetworkName.Mainnet,
         customNodes: {
           mainnet: null,
@@ -41,7 +41,7 @@ export class NetworkController {
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.configApi = { getNetworkConfig, getNetworks };
     Sentry.setTag('network', this.store.getState().currentNetwork);

@@ -4,7 +4,7 @@ import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { RemoteConfigController } from './remoteConfig';
-import { ExtensionStore, StorageLocalState } from '../storage/storage';
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { PreferencesController } from './preferences';
 import { IdentityController } from './IdentityController';
 import { IMoneyLike } from 'ui/utils/converters';
@@ -43,18 +43,18 @@ export class PermissionsController {
   private identity;
 
   constructor({
-    localStore,
+    extensionStorage,
     remoteConfig,
     getSelectedAccount,
     identity,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     remoteConfig: RemoteConfigController;
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     identity: Identity;
   }) {
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         origins: {},
         blacklist: [],
         whitelist: [],
@@ -62,7 +62,7 @@ export class PermissionsController {
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.remoteConfig = remoteConfig;
     this._updateByConfig();

@@ -1,6 +1,6 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
-import { ExtensionStore } from '../storage/storage';
+import { ExtensionStorage } from '../storage/storage';
 
 const height = 622;
 const width = 357;
@@ -13,15 +13,15 @@ interface ExtensionWindow {
 export class WindowManager {
   private store;
 
-  constructor({ localStore }: { localStore: ExtensionStore }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         notificationWindowId: undefined,
         inShowMode: undefined,
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
   }
 
   async showWindow() {
