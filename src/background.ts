@@ -5,7 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
-import LocalStore, { backupStorage, StoreLocalState } from './storage/storage';
+import LocalStore, {
+  backupStorage,
+  StorageLocalState,
+} from './storage/storage';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
@@ -504,7 +507,7 @@ class BackgroundService extends EventEmitter {
     });
   }
 
-  getState<K extends keyof StoreLocalState>(params?: K | K[]) {
+  getState<K extends keyof StorageLocalState>(params?: K | K[]) {
     const state = this.localStore.getState(params);
     const { selectedAccount } = this.localStore.getState('selectedAccount');
     const myNotifications =
@@ -521,7 +524,7 @@ class BackgroundService extends EventEmitter {
     // RPC API object. Only async functions allowed
     return {
       // state
-      getState: async <K extends keyof StoreLocalState>(params?: K[]) =>
+      getState: async <K extends keyof StorageLocalState>(params?: K[]) =>
         this.getState(params),
       updateIdle: async () => this.idleController.update(),
       setIdleOptions: async ({ type }: { type: IdleOptions['type'] }) => {

@@ -1,6 +1,6 @@
 import { AssetDetail } from 'assets/types';
 import { extension } from 'lib/extension';
-import ExtensionStore, { StoreLocalState } from '../storage/storage';
+import ExtensionStore, { StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { NetworkController } from './network';
@@ -540,8 +540,8 @@ export class AssetInfoController {
               assetTickers: { ...acc.assetTickers, [id]: ticker },
             }),
             {} as {
-              assetLogos: StoreLocalState['assetLogos'];
-              assetTickers: StoreLocalState['assetTickers'];
+              assetLogos: StorageLocalState['assetLogos'];
+              assetTickers: StorageLocalState['assetTickers'];
             }
           )
         );

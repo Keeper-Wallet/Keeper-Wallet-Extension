@@ -6,7 +6,7 @@ import { KEEPERWALLET_DEBUG } from '../../constants';
 import type { __BackgroundUiApiDirect } from 'background';
 import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
-import type { StoreLocalState } from '../../storage/storage';
+import type { StorageLocalState } from '../../storage/storage';
 import { NetworkName } from 'networks/types';
 import { AssetDetail } from 'assets/types';
 import { MessageInputOfType } from 'messages/types';
@@ -63,7 +63,7 @@ class Background {
     this._connect = connect;
   }
 
-  async getState<K extends keyof StoreLocalState>(params?: K[]) {
+  async getState<K extends keyof StorageLocalState>(params?: K[]) {
     try {
       await this.initPromise;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

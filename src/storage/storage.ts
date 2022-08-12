@@ -86,7 +86,7 @@ export async function resetStorage() {
   await extension.runtime.reload();
 }
 
-export interface StoreLocalState {
+export interface StorageLocalState {
   accounts: PreferencesAccount[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
@@ -147,8 +147,8 @@ export interface StoreSessionState {
 }
 
 export default class ExtensionStore {
-  private _state: Partial<StoreLocalState> | undefined;
-  private _initState: StoreLocalState | undefined;
+  private _state: Partial<StorageLocalState> | undefined;
+  private _initState: StorageLocalState | undefined;
   private _initSession: StoreSessionState | undefined;
 
   async create() {
@@ -164,12 +164,12 @@ export default class ExtensionStore {
   }
 
   getInitState<
-    K extends keyof StoreLocalState,
-    F extends keyof StoreLocalState
+    K extends keyof StorageLocalState,
+    F extends keyof StorageLocalState
   >(
-    defaults: Pick<StoreLocalState, K> | StoreLocalState,
-    forced?: Pick<StoreLocalState, F> | StoreLocalState
-  ): Pick<StoreLocalState, K> {
+    defaults: Pick<StorageLocalState, K> | StorageLocalState,
+    forced?: Pick<StorageLocalState, F> | StorageLocalState
+  ): Pick<StorageLocalState, K> {
     const defaultsInitState = (Object.keys(defaults) as K[]).reduce(
       (acc, key) =>
         Object.prototype.hasOwnProperty.call(this._initState, key)
@@ -194,7 +194,7 @@ export default class ExtensionStore {
 
     const keysToRemove =
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (Object.keys(this._initState!) as Array<keyof StoreLocalState>).reduce<
+      (Object.keys(this._initState!) as Array<keyof StorageLocalState>).reduce<
         string[]
       >(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -222,7 +222,7 @@ export default class ExtensionStore {
                 [key]: value === undefined ? null : value,
               }),
               {}
-            ) as StoreLocalState
+            ) as StorageLocalState
           );
         } catch (err) {
           // log error so we dont break the pipeline
@@ -235,9 +235,9 @@ export default class ExtensionStore {
     );
   }
 
-  getState<K extends keyof StoreLocalState>(
+  getState<K extends keyof StorageLocalState>(
     keys?: K | K[]
-  ): Pick<StoreLocalState, K> {
+  ): Pick<StorageLocalState, K> {
     if (!keys) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this._state as any;
@@ -257,9 +257,9 @@ export default class ExtensionStore {
     ) as any;
   }
 
-  async get<K extends keyof StoreLocalState>(
+  async get<K extends keyof StorageLocalState>(
     keys?: K | K[]
-  ): Promise<Pick<StoreLocalState, K>> {
+  ): Promise<Pick<StorageLocalState, K>> {
     const storageState = extension.storage.local;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (await this._get(storageState, keys)) as any;
@@ -275,7 +275,7 @@ export default class ExtensionStore {
     return await this._get(storageState, keys);
   }
 
-  async set(state: StoreLocalState) {
+  async set(state: StorageLocalState) {
     const storageState = extension.storage.local;
     this._state = { ...this._state, ...state };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

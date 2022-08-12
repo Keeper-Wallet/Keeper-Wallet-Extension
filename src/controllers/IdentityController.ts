@@ -9,7 +9,7 @@ import {
 import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
 import LocalStore, {
-  StoreLocalState,
+  StorageLocalState,
   StoreSessionState,
 } from '../storage/storage';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
@@ -80,7 +80,7 @@ export type IdentityConfig = {
   };
 };
 
-type IdentityState = Pick<StoreLocalState, 'cognitoSessions'>;
+type IdentityState = Pick<StorageLocalState, 'cognitoSessions'>;
 
 class IdentityStorage
   extends ObservableStore<IdentityState>
