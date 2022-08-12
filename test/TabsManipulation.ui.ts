@@ -1,5 +1,4 @@
 import { App, Assets, Windows } from '../test/utils/actions';
-import { expect } from 'chai';
 import { By, until } from 'selenium-webdriver';
 import { DEFAULT_PASSWORD } from './utils/constants';
 import * as mocha from 'mocha';
@@ -33,12 +32,10 @@ describe('Tabs manipulation', function () {
       await this.driver.switchTo().window(tabKeeper);
       await this.driver.navigate().refresh();
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        this.wait
+      );
     });
 
     it('import form appears in "accounts" after password entered', async function () {
@@ -85,16 +82,14 @@ describe('Tabs manipulation', function () {
         )
         .click();
 
-      expect(
-        await this.driver.wait(
-          until.elementLocated(
-            By.css(
-              '[data-testid="importForm"] [data-testid="createNewAccountBtn"]'
-            )
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementLocated(
+          By.css(
+            '[data-testid="importForm"] [data-testid="createNewAccountBtn"]'
+          )
+        ),
+        this.wait
+      );
     });
   });
 
@@ -104,56 +99,37 @@ describe('Tabs manipulation', function () {
     });
 
     it('"add account" button appears in "popup" when password entered', async function () {
-      expect(
-        await this.driver.wait(
-          until.elementIsVisible(
-            this.driver.wait(
-              until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
-              this.wait
-            )
-          ),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementIsVisible(
+          this.driver.wait(
+            until.elementLocated(By.css('[data-testid="addAccountBtn"]')),
+            this.wait
+          )
+        ),
+        this.wait
+      );
     });
 
     it('new "accounts" appears when click "add account" button in "popup"', async function () {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      tabKeeper = await this.driver.getWindowHandle();
       await this.driver
         .findElement(By.css('[data-testid="addAccountBtn"]'))
         .click();
+      [tabAccounts] = await waitForNewWindows(1);
 
-      const handles = await this.driver.getAllWindowHandles();
-      tabKeeper = handles[0];
-
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
-
-      for (const handle of await this.driver.getAllWindowHandles()) {
-        if (handle !== tabKeeper && handle !== this.serviceWorkerTab) {
-          tabAccounts = handle;
-          await this.driver.switchTo().window(handle);
-          await this.driver.navigate().refresh();
-          break;
-        }
-      }
-
-      expect(tabAccounts).not.to.be.empty;
+      await this.driver.switchTo().window(tabAccounts);
+      await this.driver.navigate().refresh();
     });
 
     it('no more tabs appears when click "add account" button in "popup" again', async function () {
       await this.driver.switchTo().window(tabKeeper);
       await this.driver.navigate().refresh();
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        this.wait
+      );
     });
 
     async function importAccountUntilSuccess(
@@ -214,12 +190,10 @@ describe('Tabs manipulation', function () {
         'waves private node seed with waves tokens'
       );
 
-      expect(
-        await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importSuccessForm"]')),
+        this.wait
+      );
     });
 
     it('import form displays after "add another account" button click', async function () {
@@ -230,12 +204,10 @@ describe('Tabs manipulation', function () {
         )
         .click();
 
-      expect(
-        await this.driver.wait(
-          until.elementLocated(By.css('[data-testid="importForm"]')),
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        until.elementLocated(By.css('[data-testid="importForm"]')),
+        this.wait
+      );
     });
 
     it('"finish" button closes "accounts" tab', async function () {
@@ -253,12 +225,10 @@ describe('Tabs manipulation', function () {
         .findElement(By.css('[data-testid="finishBtn"]'))
         .click();
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 2,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 2,
+        this.wait
+      );
     });
 
     it('"accounts" appears when add another account from "popup"', async function () {
@@ -266,12 +236,10 @@ describe('Tabs manipulation', function () {
 
       await Assets.addAccount.call(this);
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        this.wait
+      );
     });
 
     it('no more tabs appears when add another account from "popup" again', async function () {
@@ -279,12 +247,10 @@ describe('Tabs manipulation', function () {
 
       await Assets.addAccount.call(this);
 
-      expect(
-        await this.driver.wait(
-          async () => (await this.driver.getAllWindowHandles()).length === 3,
-          this.wait
-        )
-      ).not.to.be.throw;
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 3,
+        this.wait
+      );
     });
   });
 });
