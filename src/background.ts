@@ -33,7 +33,6 @@ import { verifyCustomData } from '@waves/waves-transactions';
 import { VaultController } from './controllers/VaultController';
 import { getTxVersions } from './wallets';
 import { TabsManager } from 'lib/tabsManager';
-import ExtensionStore from 'lib/localStore';
 import { UiState } from 'ui/reducers/updateState';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { NetworkName } from 'networks/types';
@@ -243,7 +242,7 @@ class BackgroundService extends EventEmitter {
     localStore,
     initLangCode,
   }: {
-    localStore: ExtensionStore;
+    localStore: LocalStore;
     initLangCode: string | null | undefined;
   }) {
     super();
