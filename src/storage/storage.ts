@@ -5,7 +5,6 @@ import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import { extension } from 'lib/extension';
 import { createStreamSink } from 'lib/createStreamSink';
-import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 import type ObservableStore from 'obs-store';
 import { NftInfo } from 'nfts';
 import {
@@ -24,25 +23,9 @@ import { BalancesItem } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
+import { MIGRATIONS } from './migrations';
 
 const CURRENT_MIGRATION_VERSION = 2;
-
-const CONTROLLERS = [
-  'AssetInfoController',
-  'CurrentAccountController',
-  'IdentityController',
-  'IdleController',
-  'MessageController',
-  'NetworkController',
-  'NotificationsController',
-  'PermissionsController',
-  'PreferencesController',
-  'RemoteConfigController',
-  'StatisticsController',
-  'TrashController',
-  'UiStateController',
-  'VaultController',
-];
 
 export async function backupStorage() {
   const { backup, WalletController } = await extension.storage.local.get([
@@ -334,19 +317,12 @@ export class ExtensionStorage {
       const version = (migrationVersion as number) || 0;
 
       if (version < CURRENT_MIGRATION_VERSION) {
-        const migrations = [
-          this._migrateFlatState.bind(this),
-          this._migrateRemoveCurrentNetworkAccounts.bind(this),
-        ];
         for (let i = version; i < CURRENT_MIGRATION_VERSION; i++) {
-          await migrations[i]();
+          await MIGRATIONS[i].migrate();
         }
       } else if (version > CURRENT_MIGRATION_VERSION) {
         for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-          const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
-          if (reverseMigrate) {
-            await reverseMigrate.bind(this)();
-          }
+          await MIGRATIONS[i - 1].rollback();
         }
       }
 
@@ -356,36 +332,6 @@ export class ExtensionStorage {
     } catch (err) {
       Sentry.captureException(err);
     }
-  }
-
-  private async _migrateFlatState() {
-    const storageState = extension.storage.local;
-
-    // this should potentially fix FILE_ERROR_NO_SPACE error
-    await this._remove(storageState, ['AssetInfoController']);
-
-    const state = await this._get(storageState);
-    const migrateFields = CONTROLLERS.filter(controller => state[controller]);
-
-    if (migrateFields.length === 0) {
-      return;
-    }
-
-    await this._set(
-      storageState,
-      migrateFields.reduce(
-        (acc, field) => ({
-          ...acc,
-          ...(state[field] as Record<string, unknown>),
-        }),
-        {}
-      )
-    );
-    await this._remove(storageState, migrateFields);
-  }
-
-  private async _migrateRemoveCurrentNetworkAccounts() {
-    await this._remove(extension.storage.local, ['currentNetworkAccounts']);
   }
 
   private async _remove(
