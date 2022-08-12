@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { compareAccountsByLastUsed } from 'preferences/utils';
 import ObservableStore from 'obs-store';
 import EventEmitter from 'events';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { NetworkController } from './network';
 import { IdleOptions } from 'preferences/types';
 import { WalletAccount } from 'wallets/types';

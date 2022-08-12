@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
-import LocalStore, { backup, StoreLocalState } from 'lib/localStore';
+import LocalStore, { backup, StoreLocalState } from './storage/storage';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';

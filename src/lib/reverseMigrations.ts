@@ -1,4 +1,4 @@
-import ExtensionStore, { StoreLocalState } from 'lib/localStore';
+import ExtensionStore, { StoreLocalState } from '../storage/storage';
 
 async function reverseMigrateFlatState(this: ExtensionStore) {
   const CONTROLLERS_STATE = {

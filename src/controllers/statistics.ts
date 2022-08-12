@@ -6,7 +6,7 @@ import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
 import { NetworkController } from './network';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { MessageStoreItem } from 'messages/types';
 
 interface StatistictsEvent {

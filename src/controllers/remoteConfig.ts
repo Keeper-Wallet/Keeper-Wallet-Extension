@@ -18,7 +18,7 @@ import {
 } from '../constants';
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { IdentityConfig } from './IdentityController';
 import { NetworkName } from 'networks/types';
 

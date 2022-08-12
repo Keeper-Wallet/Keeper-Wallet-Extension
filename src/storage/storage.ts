@@ -17,7 +17,7 @@ import {
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
-import { Tab } from './tabsManager';
+import { Tab } from '../lib/tabsManager';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';

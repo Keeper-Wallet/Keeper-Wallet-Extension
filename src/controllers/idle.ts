@@ -1,5 +1,5 @@
 import { extension } from 'lib/extension';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { IdleOptions } from 'preferences/types';
 import { PreferencesController } from './preferences';

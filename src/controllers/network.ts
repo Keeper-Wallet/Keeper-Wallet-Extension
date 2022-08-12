@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { RemoteConfigController } from './remoteConfig';

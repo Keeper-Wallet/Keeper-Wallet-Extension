@@ -4,7 +4,7 @@ import { uniq } from 'ramda';
 import { allowMatcher } from '../constants';
 import { ERRORS } from '../lib/keeperError';
 import { RemoteConfigController } from './remoteConfig';
-import ExtensionStore, { StoreLocalState } from 'lib/localStore';
+import ExtensionStore, { StoreLocalState } from '../storage/storage';
 import { PreferencesController } from './preferences';
 import { IdentityController } from './IdentityController';
 import { IMoneyLike } from 'ui/utils/converters';

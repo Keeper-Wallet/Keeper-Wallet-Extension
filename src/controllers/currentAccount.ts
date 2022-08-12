@@ -1,7 +1,7 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { NftInfoController } from './NftInfoController';
 import { WalletController } from './wallet';

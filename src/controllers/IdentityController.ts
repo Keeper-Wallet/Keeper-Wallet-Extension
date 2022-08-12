@@ -11,7 +11,7 @@ import ObservableStore from 'obs-store';
 import LocalStore, {
   StoreLocalState,
   StoreSessionState,
-} from '../lib/localStore';
+} from '../storage/storage';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import { PreferencesController } from './preferences';
 import { NetworkController } from './network';

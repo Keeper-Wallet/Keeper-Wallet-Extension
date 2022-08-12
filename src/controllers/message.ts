@@ -23,7 +23,7 @@ import {
 import { convertFromSa, getHash, makeBytes } from '../transactions/utils';
 import { getMoney, IMoneyLike } from '../ui/utils/converters';
 import { getTxVersions } from '../wallets';
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import { WalletController } from './wallet';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';

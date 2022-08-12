@@ -1,4 +1,4 @@
-import ExtensionStore from 'lib/localStore';
+import ExtensionStore from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
 

@@ -6,7 +6,7 @@ import { KEEPERWALLET_DEBUG } from '../../constants';
 import type { __BackgroundUiApiDirect } from 'background';
 import { UiState } from 'ui/reducers/updateState';
 import { IMoneyLike } from 'ui/utils/converters';
-import type { StoreLocalState } from 'lib/localStore';
+import type { StoreLocalState } from '../../storage/storage';
 import { NetworkName } from 'networks/types';
 import { AssetDetail } from 'assets/types';
 import { MessageInputOfType } from 'messages/types';

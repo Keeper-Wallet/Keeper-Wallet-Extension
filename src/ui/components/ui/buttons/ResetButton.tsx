@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './ResetButton.module.css';
 import { useTranslation } from 'react-i18next';
-import { reset } from 'lib/localStore';
+import { reset } from '../../../../storage/storage';
 import { Button, Modal } from 'ui/components/ui';
 
 interface Props {
