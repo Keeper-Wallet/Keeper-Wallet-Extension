@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.10.1",
+  "version": "2.10.2",
   "browserslist": [
     "supports es6-module and > 0.5%",
     "not dead",
