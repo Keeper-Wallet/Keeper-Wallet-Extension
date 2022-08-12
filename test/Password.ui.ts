@@ -33,6 +33,7 @@ describe('Password management', () => {
       [tabAccounts] = await waitForNewWindows(1);
 
       await this.driver.switchTo().window(tabAccounts);
+      await this.driver.navigate().refresh();
 
       await this.driver
         .wait(
