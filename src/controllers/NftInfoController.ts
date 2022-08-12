@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { fetchAllNfts } from 'nfts/utils';
-import ExtensionStore from '../storage/storage';
+import { ExtensionStore } from '../storage/storage';
 import { NetworkController } from './network';
 import { NetworkName } from 'networks/types';
 

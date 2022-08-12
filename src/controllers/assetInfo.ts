@@ -1,6 +1,6 @@
 import { AssetDetail } from 'assets/types';
 import { extension } from 'lib/extension';
-import ExtensionStore, { StorageLocalState } from '../storage/storage';
+import { ExtensionStore, StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { NetworkController } from './network';

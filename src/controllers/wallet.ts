@@ -2,7 +2,7 @@ import ObservableStore from 'obs-store';
 import { seedUtils } from '@waves/waves-transactions';
 import { createWallet } from 'wallets';
 import { EventEmitter } from 'events';
-import ExtensionStore from '../storage/storage';
+import { ExtensionStore } from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
 import { TrashController } from './trash';

@@ -8,7 +8,8 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
-import LocalStore, {
+import {
+  ExtensionStore as LocalStore,
   StorageLocalState,
   StorageSessionState,
 } from '../storage/storage';

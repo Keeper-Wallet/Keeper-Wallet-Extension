@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
-import LocalStore, {
+import {
+  ExtensionStore as LocalStore,
   backupStorage,
   StorageLocalState,
 } from './storage/storage';

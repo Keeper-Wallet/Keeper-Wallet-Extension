@@ -1,5 +1,5 @@
 import { extension } from 'lib/extension';
-import LocalStore from '../storage/storage';
+import { ExtensionStore as LocalStore } from '../storage/storage';
 import ObservableStore from 'obs-store';
 
 export interface Tab {

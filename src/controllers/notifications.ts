@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import log from 'loglevel';
 import EventEmitter from 'events';
 import { ERRORS } from '../lib/keeperError';
-import ExtensionStore from '../storage/storage';
+import { ExtensionStore } from '../storage/storage';
 import { RemoteConfigController } from './remoteConfig';
 import { PermissionsController } from './permissions';
 import { NotificationsStoreItem } from 'notifications/types';

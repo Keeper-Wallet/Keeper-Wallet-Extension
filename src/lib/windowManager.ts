@@ -1,6 +1,6 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
-import ExtensionStore from '../storage/storage';
+import { ExtensionStore } from '../storage/storage';
 
 const height = 622;
 const width = 357;

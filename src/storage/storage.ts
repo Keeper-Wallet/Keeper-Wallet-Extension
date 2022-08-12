@@ -146,7 +146,7 @@ export interface StorageSessionState {
   password?: string | null | undefined;
 }
 
-export default class ExtensionStore {
+export class ExtensionStore {
   private _state: Partial<StorageLocalState> | undefined;
   private _initState: StorageLocalState | undefined;
   private _initSession: StorageSessionState | undefined;

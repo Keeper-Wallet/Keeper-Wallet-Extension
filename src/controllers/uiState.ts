@@ -1,4 +1,4 @@
-import ExtensionStore from '../storage/storage';
+import { ExtensionStore } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { UiState } from 'ui/reducers/updateState';
 

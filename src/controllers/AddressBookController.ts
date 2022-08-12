@@ -1,5 +1,5 @@
 import ObservableStore from 'obs-store';
-import LocalStore from '../storage/storage';
+import { ExtensionStore as LocalStore } from '../storage/storage';
 import {
   fromEthereumToWavesAddress,
   isEthereumAddress,
