@@ -148,6 +148,7 @@ describe('Signature', function () {
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await rejectMessage.call(this);
       await closeMessage.call(this);
@@ -162,6 +163,7 @@ describe('Signature', function () {
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await this.driver
         .wait(
@@ -195,6 +197,7 @@ describe('Signature', function () {
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await approveMessage.call(this);
       await closeMessage.call(this);
@@ -222,6 +225,7 @@ describe('Signature', function () {
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await rejectMessage.call(this);
       await closeMessage.call(this);
@@ -243,6 +247,7 @@ describe('Signature', function () {
       });
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await approveMessage.call(this);
       await closeMessage.call(this);
@@ -308,6 +313,7 @@ describe('Signature', function () {
       );
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await rejectMessage.call(this);
       await closeMessage.call(this);
@@ -341,6 +347,7 @@ describe('Signature', function () {
       );
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
 
       await approveMessage.call(this);
       await closeMessage.call(this);
@@ -377,6 +384,7 @@ describe('Signature', function () {
       }, tx);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     function setTxVersion(
@@ -2097,6 +2105,7 @@ describe('Signature', function () {
       await this.driver.executeScript(script, tx);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     before(async function () {
@@ -2272,6 +2281,7 @@ describe('Signature', function () {
       );
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     before(async function () {
@@ -2525,6 +2535,7 @@ describe('Signature', function () {
       }, data);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     before(async function () {
