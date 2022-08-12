@@ -57,8 +57,7 @@ export class CurrentAccountController {
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateBalances') {
         this.updateBalances();
       }

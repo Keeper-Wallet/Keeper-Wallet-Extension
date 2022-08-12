@@ -90,8 +90,7 @@ export class RemoteConfigController extends EventEmitter {
     this._fetchFeeConfig();
     this._fetchNftConfig();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateConfig':
           this._getConfig();

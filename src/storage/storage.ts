@@ -17,7 +17,6 @@ import {
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
-import { Tab } from '../lib/tabsManager';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';
@@ -126,12 +125,12 @@ export interface StorageLocalState {
   nftConfig: NftConfig;
   nfts: Record<string, NftInfo>;
   notifications: NotificationsStoreItem[];
-  notificationWindowId: string | undefined;
+  notificationWindowId: number | undefined;
   origins: Record<string, PermissionValue[]>;
   selectedAccount: PreferencesAccount | undefined;
   status: number;
   suspiciousAssets: string[];
-  tabs: Record<string, Tab>;
+  tabs: Partial<Record<string, chrome.tabs.Tab>>;
   uiState: UiState;
   usdPrices: Record<string, string>;
   userId: string | undefined;
@@ -292,13 +291,12 @@ export class ExtensionStorage {
   }
 
   private _get(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    storageState: any,
+    storageState: chrome.storage.StorageArea,
     keys?: string | string[]
   ): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      storageState.get(keys, (result: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      storageState.get(keys!, result => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -310,8 +308,7 @@ export class ExtensionStorage {
   }
 
   private _set(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    storageState: any,
+    storageState: chrome.storage.StorageArea,
     state: Record<string, unknown>
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -392,7 +389,7 @@ export class ExtensionStorage {
   }
 
   private async _remove(
-    storageState: browser.storage.StorageArea,
+    storageState: chrome.storage.StorageArea,
     keys: string | string[]
   ) {
     const state = this._state;

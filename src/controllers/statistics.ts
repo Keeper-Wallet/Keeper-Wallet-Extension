@@ -59,8 +59,7 @@ export class StatisticsController {
     this.sendInstallEvent();
     this.sendIdleEvent();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'idleEvent') {
         this.sendIdleEvent();
       }

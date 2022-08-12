@@ -97,49 +97,43 @@ Sentry.init({
   },
 });
 
-extension.runtime.onConnect.addListener(
-  async (remotePort: browser.runtime.Port) => {
-    const bgService = await bgPromise;
-    const portStream = new PortStream(remotePort);
+extension.runtime.onConnect.addListener(async remotePort => {
+  const bgService = await bgPromise;
+  const portStream = new PortStream(remotePort);
 
-    if (remotePort.name === 'contentscript') {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const origin = new URL(remotePort.sender!.url!).hostname;
-      bgService.setupPageConnection(portStream, origin);
-    } else {
-      bgService.setupUiConnection(portStream);
-    }
-  }
-);
-
-extension.runtime.onConnectExternal.addListener(
-  async (remotePort: browser.runtime.Port) => {
-    const bgService = await bgPromise;
-    const portStream = new PortStream(remotePort);
+  if (remotePort.name === 'contentscript') {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const origin = new URL(remotePort.sender!.url!).hostname;
     bgService.setupPageConnection(portStream, origin);
+  } else {
+    bgService.setupUiConnection(portStream);
   }
-);
+});
+
+extension.runtime.onConnectExternal.addListener(async remotePort => {
+  const bgService = await bgPromise;
+  const portStream = new PortStream(remotePort);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const origin = new URL(remotePort.sender!.url!).hostname;
+  bgService.setupPageConnection(portStream, origin);
+});
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
   await backupStorage();
   await extension.runtime.reload();
 });
 
-extension.runtime.onInstalled.addListener(
-  async (details: browser.runtime._OnInstalledDetails) => {
-    const bgService = await bgPromise;
+extension.runtime.onInstalled.addListener(async details => {
+  const bgService = await bgPromise;
 
-    if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
-      bgService.messageController.clearUnusedMessages();
-      bgService.assetInfoController.addTickersForExistingAssets();
-      bgService.vaultController.migrate();
-      bgService.addressBookController.migrate();
-      bgService.extensionStorage.clear();
-    }
+  if (details.reason === extension.runtime.OnInstalledReason.UPDATE) {
+    bgService.messageController.clearUnusedMessages();
+    bgService.assetInfoController.addTickersForExistingAssets();
+    bgService.vaultController.migrate();
+    bgService.addressBookController.migrate();
+    bgService.extensionStorage.clear();
   }
-);
+});
 
 async function setupBackgroundService() {
   const extensionStorage = new ExtensionStorage();

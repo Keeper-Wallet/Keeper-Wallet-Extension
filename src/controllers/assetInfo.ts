@@ -259,8 +259,7 @@ export class AssetInfoController {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();

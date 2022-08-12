@@ -2,13 +2,6 @@ import { extension } from 'lib/extension';
 import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 
-export interface Tab {
-  active: boolean;
-  id: number;
-  url: string;
-  autoDiscardable: boolean;
-}
-
 export class TabsManager {
   private store;
 
@@ -23,24 +16,26 @@ export class TabsManager {
     const { tabs } = this.store.getState();
 
     const currentTab = tabs[key];
-    const tabProps = { active: true } as Tab;
+    const tabProps: chrome.tabs.UpdateProperties = { active: true };
     if (url != currentTab?.url) {
       tabProps.url = url;
     }
 
     return new Promise<void>((resolve, reject) => {
       try {
-        extension.tabs.get(currentTab?.id, (tab: Tab) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+        extension.tabs.get(currentTab?.id!, tab => {
           if (!tab) {
             reject(new Error("Tab doesn't exists"));
           }
         });
-        extension.tabs.update(currentTab.id, tabProps, () => resolve());
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        extension.tabs.update(currentTab!.id!, tabProps, () => resolve());
       } catch (err) {
         reject(err);
       }
     }).catch(() =>
-      extension.tabs.create({ url: url }, (tab: Tab) => {
+      extension.tabs.create({ url: url }, tab => {
         this.store.updateState({ tabs: { ...tabs, [key]: { ...tab, url } } });
       })
     );

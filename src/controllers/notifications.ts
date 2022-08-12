@@ -44,8 +44,7 @@ export class NotificationsController extends EventEmitter {
 
     this.deleteAllByTime();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'deleteMessages') {
         this.deleteAllByTime();
       }

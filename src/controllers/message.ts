@@ -139,8 +139,7 @@ export class MessageController extends EventEmitter {
 
     this.rejectAllByTime();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'rejectMessages') {
         this.rejectAllByTime();
       }
