@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
-import LocalStore, { backup, StoreLocalState } from './storage/storage';
+import LocalStore, { backupStorage, StoreLocalState } from './storage/storage';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
 import { KEEPERWALLET_DEBUG, MSG_STATUSES } from './constants';
 import { AssetInfoController } from './controllers/assetInfo';
@@ -119,7 +119,7 @@ extension.runtime.onConnectExternal.addListener(
 );
 
 extension.runtime.onUpdateAvailable.addListener(async () => {
-  await backup();
+  await backupStorage();
   await extension.runtime.reload();
 });
 
