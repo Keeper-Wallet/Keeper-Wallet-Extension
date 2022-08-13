@@ -1,4 +1,4 @@
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { PreferencesAccount } from 'preferences/types';
 
@@ -12,9 +12,11 @@ export interface TrashItem {
 export class TrashController {
   private store;
 
-  constructor({ localStore }: { localStore: ExtensionStore }) {
-    this.store = new ObservableStore(localStore.getInitState({ data: [] }));
-    localStore.subscribe(this.store);
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
+    this.store = new ObservableStore(
+      extensionStorage.getInitState({ data: [] })
+    );
+    extensionStorage.subscribe(this.store);
   }
 
   getData() {

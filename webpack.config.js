@@ -141,20 +141,7 @@ module.exports = (_, { mode }) => {
             },
           ],
         },
-      ].concat(
-        isProduction
-          ? []
-          : [
-              {
-                enforce: 'pre',
-                test: /\.js$/,
-                exclude: [
-                  /node_modules\/(@waves\/(data-entities|money-like-to-node|node-api-js|ts-lib-crypto))/,
-                ],
-                use: 'source-map-loader',
-              },
-            ]
-      ),
+      ],
     },
     plugins: [
       new webpack.ProvidePlugin({

@@ -5,7 +5,6 @@ import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import { extension } from 'lib/extension';
 import { createStreamSink } from 'lib/createStreamSink';
-import { REVERSE_MIGRATIONS } from 'lib/reverseMigrations';
 import type ObservableStore from 'obs-store';
 import { NftInfo } from 'nfts';
 import {
@@ -17,7 +16,6 @@ import {
 } from '../constants';
 import { TrashItem } from 'controllers/trash';
 import { UiState } from 'ui/reducers/updateState';
-import { Tab } from './tabsManager';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';
@@ -25,27 +23,11 @@ import { BalancesItem } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
+import { MIGRATIONS } from './migrations';
 
 const CURRENT_MIGRATION_VERSION = 2;
 
-const CONTROLLERS = [
-  'AssetInfoController',
-  'CurrentAccountController',
-  'IdentityController',
-  'IdleController',
-  'MessageController',
-  'NetworkController',
-  'NotificationsController',
-  'PermissionsController',
-  'PreferencesController',
-  'RemoteConfigController',
-  'StatisticsController',
-  'TrashController',
-  'UiStateController',
-  'VaultController',
-];
-
-export async function backup() {
+export async function backupStorage() {
   const { backup, WalletController } = await extension.storage.local.get([
     'backup',
     'WalletController',
@@ -75,7 +57,7 @@ const SAFE_FIELDS = new Set([
   'userId',
 ]);
 
-export async function reset() {
+export async function resetStorage() {
   const state = await extension.storage.local.get();
   await extension.storage.local.remove(
     Object.keys(state).reduce<string[]>(
@@ -86,7 +68,7 @@ export async function reset() {
   await extension.runtime.reload();
 }
 
-export interface StoreLocalState {
+export interface StorageLocalState {
   accounts: PreferencesAccount[];
   addresses: Record<string, string>;
   assetLogos: Record<string, string>;
@@ -126,12 +108,12 @@ export interface StoreLocalState {
   nftConfig: NftConfig;
   nfts: Record<string, NftInfo>;
   notifications: NotificationsStoreItem[];
-  notificationWindowId: string | undefined;
+  notificationWindowId: number | undefined;
   origins: Record<string, PermissionValue[]>;
   selectedAccount: PreferencesAccount | undefined;
   status: number;
   suspiciousAssets: string[];
-  tabs: Record<string, Tab>;
+  tabs: Partial<Record<string, chrome.tabs.Tab>>;
   uiState: UiState;
   usdPrices: Record<string, string>;
   userId: string | undefined;
@@ -141,15 +123,15 @@ export interface StoreLocalState {
   whitelist: string[];
 }
 
-export interface StoreSessionState {
+export interface StorageSessionState {
   memo?: Record<string, string | null>;
   password?: string | null | undefined;
 }
 
-export default class ExtensionStore {
-  private _state: Partial<StoreLocalState> | undefined;
-  private _initState: StoreLocalState | undefined;
-  private _initSession: StoreSessionState | undefined;
+export class ExtensionStorage {
+  private _state: Partial<StorageLocalState> | undefined;
+  private _initState: StorageLocalState | undefined;
+  private _initSession: StorageSessionState | undefined;
 
   async create() {
     await this._migrate();
@@ -164,12 +146,12 @@ export default class ExtensionStore {
   }
 
   getInitState<
-    K extends keyof StoreLocalState,
-    F extends keyof StoreLocalState
+    K extends keyof StorageLocalState,
+    F extends keyof StorageLocalState
   >(
-    defaults: Pick<StoreLocalState, K> | StoreLocalState,
-    forced?: Pick<StoreLocalState, F> | StoreLocalState
-  ): Pick<StoreLocalState, K> {
+    defaults: Pick<StorageLocalState, K> | StorageLocalState,
+    forced?: Pick<StorageLocalState, F> | StorageLocalState
+  ): Pick<StorageLocalState, K> {
     const defaultsInitState = (Object.keys(defaults) as K[]).reduce(
       (acc, key) =>
         Object.prototype.hasOwnProperty.call(this._initState, key)
@@ -194,7 +176,7 @@ export default class ExtensionStore {
 
     const keysToRemove =
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (Object.keys(this._initState!) as Array<keyof StoreLocalState>).reduce<
+      (Object.keys(this._initState!) as Array<keyof StorageLocalState>).reduce<
         string[]
       >(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -222,7 +204,7 @@ export default class ExtensionStore {
                 [key]: value === undefined ? null : value,
               }),
               {}
-            ) as StoreLocalState
+            ) as StorageLocalState
           );
         } catch (err) {
           // log error so we dont break the pipeline
@@ -235,9 +217,9 @@ export default class ExtensionStore {
     );
   }
 
-  getState<K extends keyof StoreLocalState>(
+  getState<K extends keyof StorageLocalState>(
     keys?: K | K[]
-  ): Pick<StoreLocalState, K> {
+  ): Pick<StorageLocalState, K> {
     if (!keys) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this._state as any;
@@ -257,9 +239,9 @@ export default class ExtensionStore {
     ) as any;
   }
 
-  async get<K extends keyof StoreLocalState>(
+  async get<K extends keyof StorageLocalState>(
     keys?: K | K[]
-  ): Promise<Pick<StoreLocalState, K>> {
+  ): Promise<Pick<StorageLocalState, K>> {
     const storageState = extension.storage.local;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (await this._get(storageState, keys)) as any;
@@ -267,7 +249,7 @@ export default class ExtensionStore {
 
   private async getSession(
     keys?: string | string[]
-  ): Promise<StoreSessionState> {
+  ): Promise<StorageSessionState> {
     const storageState = extension.storage.session;
 
     if (!storageState) return {};
@@ -275,14 +257,14 @@ export default class ExtensionStore {
     return await this._get(storageState, keys);
   }
 
-  async set(state: StoreLocalState) {
+  async set(state: StorageLocalState) {
     const storageState = extension.storage.local;
     this._state = { ...this._state, ...state };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return this._set(storageState, state as any);
   }
 
-  async setSession(state: StoreSessionState) {
+  async setSession(state: StorageSessionState) {
     const storageState = extension.storage.session;
 
     if (!storageState) return;
@@ -292,13 +274,12 @@ export default class ExtensionStore {
   }
 
   private _get(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    storageState: any,
+    storageState: chrome.storage.StorageArea,
     keys?: string | string[]
   ): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      storageState.get(keys, (result: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      storageState.get(keys!, result => {
         const err = extension.runtime.lastError;
         if (err) {
           reject(err);
@@ -310,8 +291,7 @@ export default class ExtensionStore {
   }
 
   private _set(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    storageState: any,
+    storageState: chrome.storage.StorageArea,
     state: Record<string, unknown>
   ): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -337,19 +317,12 @@ export default class ExtensionStore {
       const version = (migrationVersion as number) || 0;
 
       if (version < CURRENT_MIGRATION_VERSION) {
-        const migrations = [
-          this._migrateFlatState.bind(this),
-          this._migrateRemoveCurrentNetworkAccounts.bind(this),
-        ];
         for (let i = version; i < CURRENT_MIGRATION_VERSION; i++) {
-          await migrations[i]();
+          await MIGRATIONS[i].migrate();
         }
       } else if (version > CURRENT_MIGRATION_VERSION) {
         for (let i = version; i > CURRENT_MIGRATION_VERSION; i--) {
-          const reverseMigrate = REVERSE_MIGRATIONS[i - 1];
-          if (reverseMigrate) {
-            await reverseMigrate.bind(this)();
-          }
+          await MIGRATIONS[i - 1].rollback();
         }
       }
 
@@ -361,38 +334,8 @@ export default class ExtensionStore {
     }
   }
 
-  private async _migrateFlatState() {
-    const storageState = extension.storage.local;
-
-    // this should potentially fix FILE_ERROR_NO_SPACE error
-    await this._remove(storageState, ['AssetInfoController']);
-
-    const state = await this._get(storageState);
-    const migrateFields = CONTROLLERS.filter(controller => state[controller]);
-
-    if (migrateFields.length === 0) {
-      return;
-    }
-
-    await this._set(
-      storageState,
-      migrateFields.reduce(
-        (acc, field) => ({
-          ...acc,
-          ...(state[field] as Record<string, unknown>),
-        }),
-        {}
-      )
-    );
-    await this._remove(storageState, migrateFields);
-  }
-
-  private async _migrateRemoveCurrentNetworkAccounts() {
-    await this._remove(extension.storage.local, ['currentNetworkAccounts']);
-  }
-
   private async _remove(
-    storageState: browser.storage.StorageArea,
+    storageState: chrome.storage.StorageArea,
     keys: string | string[]
   ) {
     const state = this._state;

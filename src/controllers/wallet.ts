@@ -2,7 +2,7 @@ import ObservableStore from 'obs-store';
 import { seedUtils } from '@waves/waves-transactions';
 import { createWallet } from 'wallets';
 import { EventEmitter } from 'events';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { NetworkController } from './network';
 import { TrashController } from './trash';
@@ -49,7 +49,7 @@ export class WalletController extends EventEmitter {
   private identity;
 
   constructor({
-    localStore,
+    extensionStorage,
     assetInfo,
     getNetworks,
     getNetworkCode,
@@ -57,7 +57,7 @@ export class WalletController extends EventEmitter {
     trash,
     identity,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     assetInfo: AssetInfoController['assetInfo'];
     getNetworks: NetworkController['getNetworks'];
     getNetworkCode: NetworkController['getNetworkCode'];
@@ -68,14 +68,14 @@ export class WalletController extends EventEmitter {
     super();
 
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         WalletController: { vault: undefined },
       })
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
-    this.password = localStore.getInitSession().password;
-    this._setSession = localStore.setSession.bind(localStore);
+    this.password = extensionStorage.getInitSession().password;
+    this._setSession = extensionStorage.setSession.bind(extensionStorage);
 
     this.wallets = [];
     this.assetInfo = assetInfo;

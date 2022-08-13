@@ -1,27 +1,22 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
-import ExtensionStore from './localStore';
+import { ExtensionStorage } from '../storage/storage';
 
 const height = 622;
 const width = 357;
 
-interface ExtensionWindow {
-  id: string;
-  type: string;
-}
-
 export class WindowManager {
   private store;
 
-  constructor({ localStore }: { localStore: ExtensionStore }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         notificationWindowId: undefined,
         inShowMode: undefined,
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
   }
 
   async showWindow() {
@@ -35,7 +30,8 @@ export class WindowManager {
     const notificationWindow = await this._getNotificationWindow();
 
     if (notificationWindow) {
-      extension.windows.update(notificationWindow.id, { focused: true });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      extension.windows.update(notificationWindow.id!, { focused: true });
     } else {
       // create new notification popup
       await new Promise<void>(resolve => {
@@ -47,8 +43,8 @@ export class WindowManager {
             width,
             height,
           },
-          (window: { id: string }) => {
-            this.store.updateState({ notificationWindowId: window.id });
+          window => {
+            this.store.updateState({ notificationWindowId: window?.id });
             resolve();
           }
         );
@@ -61,22 +57,24 @@ export class WindowManager {
   async resizeWindow(width: number, height: number) {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow) {
-      await extension.windows.update(notificationWindow.id, { width, height });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      await extension.windows.update(notificationWindow.id!, { width, height });
     }
   }
 
   async closeWindow() {
     const notificationWindow = await this._getNotificationWindow();
     if (notificationWindow) {
-      extension.windows.remove(notificationWindow.id, console.error);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      extension.windows.remove(notificationWindow.id!, console.error);
       this.store.updateState({ notificationWindowId: undefined });
     }
   }
 
   async _getNotificationWindow() {
     // get all extension windows
-    const windows = await new Promise<ExtensionWindow[]>(resolve =>
-      extension.windows.getAll({}, (windows: ExtensionWindow[]) => {
+    const windows = await new Promise<chrome.windows.Window[]>(resolve =>
+      extension.windows.getAll({}, windows => {
         resolve(windows || []);
       })
     );

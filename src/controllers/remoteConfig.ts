@@ -18,7 +18,7 @@ import {
 } from '../constants';
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import { IdentityConfig } from './IdentityController';
 import { NetworkName } from 'networks/types';
 
@@ -60,11 +60,11 @@ type NetworkConfig = Record<string, NetworkConfigItem>;
 export class RemoteConfigController extends EventEmitter {
   store;
 
-  constructor({ localStore }: { localStore: ExtensionStore }) {
+  constructor({ extensionStorage }: { extensionStorage: ExtensionStorage }) {
     super();
 
     this.store = new ObservableStore(
-      localStore.getInitState({
+      extensionStorage.getInitState({
         blacklist: [],
         whitelist: [],
         config: {
@@ -82,7 +82,7 @@ export class RemoteConfigController extends EventEmitter {
       })
     );
 
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this._getConfig();
     this._getIgnoreErrorsConfig();
@@ -90,8 +90,7 @@ export class RemoteConfigController extends EventEmitter {
     this._fetchFeeConfig();
     this._fetchNftConfig();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateConfig':
           this._getConfig();
