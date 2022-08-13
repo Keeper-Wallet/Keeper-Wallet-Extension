@@ -55,30 +55,30 @@ async function startUi() {
 
   const updateState = createUpdateState(store);
 
-  const onChanged =
-    extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(
-    async (changes: Record<string, browser.storage.StorageChange>) => {
-      const stateChanges: Partial<Record<string, unknown>> &
-        Partial<BackgroundGetStateResult> = await backgroundService.getState([
-        'initialized',
-        'locked',
-        ...('currentNetwork' in changes ? (['assets'] as const) : []), // assets change when the network changes
-      ]);
-
-      for (const key in changes) {
-        stateChanges[key] = changes[key].newValue;
-      }
-
-      updateState(stateChanges);
+  extension.storage.onChanged.addListener(async (changes, area) => {
+    if (area !== 'local') {
+      return;
     }
-  );
+
+    const stateChanges: Partial<Record<string, unknown>> &
+      Partial<BackgroundGetStateResult> = await backgroundService.getState([
+      'initialized',
+      'locked',
+      ...('currentNetwork' in changes ? (['assets'] as const) : []), // assets change when the network changes
+    ]);
+
+    for (const key in changes) {
+      stateChanges[key] = changes[key].newValue;
+    }
+
+    updateState(stateChanges);
+  });
 
   const emitterApi = {
     closePopupWindow: async () => {
-      const popup = (
-        extension.extension.getViews({ type: 'popup' }) as Window[]
-      ).find(w => w.location.pathname === '/popup.html');
+      const popup = extension.extension
+        .getViews({ type: 'popup' })
+        .find(w => w.location.pathname === '/popup.html');
 
       if (popup) {
         popup.close();

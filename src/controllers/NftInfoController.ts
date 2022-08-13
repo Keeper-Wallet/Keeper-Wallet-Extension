@@ -1,6 +1,6 @@
 import ObservableStore from 'obs-store';
 import { fetchAllNfts } from 'nfts/utils';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import { NetworkController } from './network';
 import { NetworkName } from 'networks/types';
 
@@ -10,17 +10,17 @@ export class NftInfoController {
   private getNode;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNetwork,
     getNode,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     getNetwork: NetworkController['getNetwork'];
     getNode: NetworkController['getNode'];
   }) {
-    const initState = localStore.getInitState({ nfts: {} });
+    const initState = extensionStorage.getInitState({ nfts: {} });
     this.store = new ObservableStore(initState);
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
     this.getNode = getNode;

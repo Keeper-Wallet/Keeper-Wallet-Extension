@@ -17,7 +17,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: ['@typescript-eslint', 'prettier', 'import', 'react', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'import', 'react', 'react-hooks'],
   settings: {
     react: {
       version: 'detect',
@@ -29,7 +29,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:prettier/recommended',
     'prettier',
   ],
   rules: {
