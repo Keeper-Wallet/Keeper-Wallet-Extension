@@ -6,8 +6,8 @@ import { extension } from 'lib/extension';
 import { ERRORS } from 'lib/keeperError';
 import { PortStream } from 'lib/portStream';
 import {
-  ExtensionStorage,
   backupStorage,
+  ExtensionStorage,
   StorageLocalState,
 } from './storage/storage';
 import { getFirstLangCode } from 'lib/getFirstLangCode';
@@ -193,6 +193,9 @@ async function setupBackgroundService() {
   backgroundService.on('Show tab', async (url, name) => {
     backgroundService.emit('closePopupWindow');
     return tabsManager.getOrCreate(url, name);
+  });
+  backgroundService.on('Close current tab', async () => {
+    return tabsManager.closeCurrentTab();
   });
 
   return backgroundService;
@@ -663,8 +666,13 @@ class BackgroundService extends EventEmitter {
       resizeNotificationWindow: async (width: number, height: number) =>
         this.emit('Resize notification', width, height),
 
-      showTab: async (url: string, name: string) =>
-        this.emit('Show tab', url, name),
+      showTab: async (url: string, name: string) => {
+        this.emit('Show tab', url, name);
+      },
+
+      closeCurrentTab: async () => {
+        this.emit('Close current tab');
+      },
 
       // origin settings
       allowOrigin: async (origin: string) => {

@@ -253,8 +253,20 @@ class Background {
       await this.initPromise;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       await this._connect!();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (await this.background!.showTab(url, name)) as any;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return await this.background!.showTab(url, name);
+    } catch (err) {
+      throw new Error(prepareErrorMessage(err));
+    }
+  }
+
+  async closeCurrentTab(): Promise<void> {
+    try {
+      await this.initPromise;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      await this._connect!();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return await this.background!.closeCurrentTab();
     } catch (err) {
       throw new Error(prepareErrorMessage(err));
     }
