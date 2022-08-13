@@ -1,7 +1,7 @@
 import { extension } from 'lib/extension';
 import ObservableStore from 'obs-store';
 import { BigNumber } from '@waves/bignumber';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { NftInfoController } from './NftInfoController';
 import { WalletController } from './wallet';
@@ -26,7 +26,7 @@ export class CurrentAccountController {
   private isLocked;
 
   constructor({
-    localStore,
+    extensionStorage,
     assetInfoController,
     nftInfoController,
     getAccounts,
@@ -35,7 +35,7 @@ export class CurrentAccountController {
     getSelectedAccount,
     isLocked,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
     nftInfoController: NftInfoController;
     getAccounts: WalletController['getAccounts'];
@@ -44,8 +44,10 @@ export class CurrentAccountController {
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
   }) {
-    this.store = new ObservableStore(localStore.getInitState({ balances: {} }));
-    localStore.subscribe(this.store);
+    this.store = new ObservableStore(
+      extensionStorage.getInitState({ balances: {} })
+    );
+    extensionStorage.subscribe(this.store);
 
     this.assetInfoController = assetInfoController;
     this.nftInfoController = nftInfoController;
@@ -55,8 +57,7 @@ export class CurrentAccountController {
     this.getSelectedAccount = getSelectedAccount;
     this.isLocked = isLocked;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'updateBalances') {
         this.updateBalances();
       }

@@ -6,7 +6,7 @@ import { extension } from 'lib/extension';
 import { detect } from '../lib/detectBrowser';
 import { KEEPERWALLET_ENV } from '../constants';
 import { NetworkController } from './network';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import { MessageStoreItem } from 'messages/types';
 
 interface StatistictsEvent {
@@ -34,13 +34,13 @@ export class StatisticsController {
   private browser;
 
   constructor({
-    localStore,
+    extensionStorage,
     networkController,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     networkController: NetworkController;
   }) {
-    const initState = localStore.getInitState({
+    const initState = extensionStorage.getInitState({
       lastIdleKeeper: undefined,
       lastInstallKeeper: undefined,
       lastOpenKeeper: undefined,
@@ -50,7 +50,7 @@ export class StatisticsController {
     const userId = initState.userId || StatisticsController.createUserId();
     Sentry.setUser({ id: userId });
     this.store = new ObservableStore({ ...initState, userId });
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.networkController = networkController;
     this.version = extension.runtime.getManifest().version;
@@ -59,8 +59,7 @@ export class StatisticsController {
     this.sendInstallEvent();
     this.sendIdleEvent();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'idleEvent') {
         this.sendIdleEvent();
       }

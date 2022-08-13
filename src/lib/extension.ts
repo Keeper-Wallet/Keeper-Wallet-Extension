@@ -28,75 +28,98 @@ const hasChrome = typeof chrome !== 'undefined';
 const hasWindow = typeof window !== 'undefined';
 const hasBrowser = typeof browser !== 'undefined';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function Extension(this: any) {
-  const _this = this;
+class Extension {
+  action!: typeof chrome.action;
+  alarms!: typeof chrome.alarms;
+  api: unknown;
+  bookmarks!: typeof chrome.bookmarks;
+  browserAction!: typeof chrome.browserAction;
+  commands!: typeof chrome.commands;
+  contextMenus!: typeof chrome.contextMenus;
+  cookies!: typeof chrome.cookies;
+  downloads!: typeof chrome.downloads;
+  events: unknown;
+  extension!: typeof chrome.extension;
+  extensionTypes: unknown;
+  history!: typeof chrome.history;
+  i18n!: typeof chrome.i18n;
+  idle!: typeof chrome.idle;
+  notifications!: typeof chrome.notifications;
+  pageAction!: typeof chrome.pageAction;
+  runtime!: typeof chrome.runtime;
+  storage!: typeof chrome.storage;
+  tabs!: typeof chrome.tabs;
+  webNavigation!: typeof chrome.webNavigation;
+  webRequest!: typeof chrome.webRequest;
+  windows!: typeof chrome.windows;
 
-  apis.forEach(function (api) {
-    _this[api] = null;
+  constructor() {
+    const _this = this;
 
-    if (hasChrome) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((chrome as any)[api]) {
+    apis.forEach(function (api) {
+      if (hasChrome) {
+        try {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          _this[api] = (chrome as any)[api];
+          if ((chrome as any)[api]) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            _this[api] = (chrome as any)[api];
+          }
+        } catch (e) {
+          // do nothing
         }
-      } catch (e) {
-        // do nothing
       }
-    }
 
-    if (hasWindow) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((window as any)[api]) {
+      if (hasWindow) {
+        try {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          _this[api] = (window as any)[api];
+          if ((window as any)[api]) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            _this[api] = (window as any)[api];
+          }
+        } catch (e) {
+          // do nothing
         }
-      } catch (e) {
-        // do nothing
       }
-    }
+
+      if (hasBrowser) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((browser as any)[api]) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            _this[api] = (browser as any)[api];
+          }
+        } catch (e) {
+          // do nothing
+        }
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          _this.api = (browser.extension as any)[api];
+        } catch (e) {
+          // do nothing
+        }
+      }
+    });
 
     if (hasBrowser) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((browser as any)[api]) {
+        if (browser && browser.runtime) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          _this[api] = (browser as any)[api];
+          this.runtime = browser.runtime as any;
         }
       } catch (e) {
         // do nothing
       }
+
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _this.api = (browser.extension as any)[api];
+        if (browser && browser.browserAction) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          this.browserAction = browser.browserAction as any;
+        }
       } catch (e) {
         // do nothing
       }
-    }
-  });
-
-  if (hasBrowser) {
-    try {
-      if (browser && browser.runtime) {
-        this.runtime = browser.runtime;
-      }
-    } catch (e) {
-      // do nothing
-    }
-
-    try {
-      if (browser && browser.browserAction) {
-        this.browserAction = browser.browserAction;
-      }
-    } catch (e) {
-      // do nothing
     }
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 export const extension = new Extension();

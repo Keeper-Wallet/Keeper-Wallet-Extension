@@ -1,5 +1,5 @@
 import { extension } from 'lib/extension';
-import ExtensionStore from 'lib/localStore';
+import { ExtensionStorage } from '../storage/storage';
 import ObservableStore from 'obs-store';
 import { IdleOptions } from 'preferences/types';
 import { PreferencesController } from './preferences';
@@ -15,11 +15,11 @@ export class IdleController {
   private lastUpdateIdle;
 
   constructor({
-    localStore,
+    extensionStorage,
     preferencesController,
     vaultController,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     preferencesController: PreferencesController;
     vaultController: VaultController;
   }) {
@@ -36,14 +36,13 @@ export class IdleController {
     this.preferencesController = preferencesController;
     this.vaultController = vaultController;
     this.store = new ObservableStore(
-      localStore.getInitState({ lastUpdateIdle: Date.now() })
+      extensionStorage.getInitState({ lastUpdateIdle: Date.now() })
     );
     this.lastUpdateIdle = this.store.getState().lastUpdateIdle;
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
     this.start();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       if (name === 'idle') {
         this.start();
       }

@@ -1,6 +1,6 @@
 import { AssetDetail } from 'assets/types';
 import { extension } from 'lib/extension';
-import ExtensionStore, { StoreLocalState } from 'lib/localStore';
+import { ExtensionStorage, StorageLocalState } from '../storage/storage';
 import { NetworkName } from 'networks/types';
 import ObservableStore from 'obs-store';
 import { NetworkController } from './network';
@@ -200,15 +200,15 @@ export class AssetInfoController {
   private getNetwork;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNode,
     getNetwork,
   }: {
-    localStore: ExtensionStore;
+    extensionStorage: ExtensionStorage;
     getNode: NetworkController['getNode'];
     getNetwork: NetworkController['getNetwork'];
   }) {
-    const initState = localStore.getInitState({
+    const initState = extensionStorage.getInitState({
       assets: {
         [NetworkName.Mainnet]: {
           WAVES,
@@ -229,7 +229,7 @@ export class AssetInfoController {
       assetTickers: defaultAssetTickers,
     });
     this.store = new ObservableStore(initState);
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNode = getNode;
     this.getNetwork = getNetwork;
@@ -259,8 +259,7 @@ export class AssetInfoController {
       periodInMinutes: INFO_PERIOD_IN_MINUTES,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extension.alarms.onAlarm.addListener(({ name }: any) => {
+    extension.alarms.onAlarm.addListener(({ name }) => {
       switch (name) {
         case 'updateSuspiciousAssets':
           this.updateSuspiciousAssets();
@@ -540,8 +539,8 @@ export class AssetInfoController {
               assetTickers: { ...acc.assetTickers, [id]: ticker },
             }),
             {} as {
-              assetLogos: StoreLocalState['assetLogos'];
-              assetTickers: StoreLocalState['assetTickers'];
+              assetLogos: StorageLocalState['assetLogos'];
+              assetTickers: StorageLocalState['assetTickers'];
             }
           )
         );

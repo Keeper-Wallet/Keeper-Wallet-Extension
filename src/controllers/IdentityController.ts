@@ -8,10 +8,11 @@ import {
 } from 'amazon-cognito-identity-js';
 import { libs, seedUtils } from '@waves/waves-transactions';
 import ObservableStore from 'obs-store';
-import LocalStore, {
-  StoreLocalState,
-  StoreSessionState,
-} from '../lib/localStore';
+import {
+  ExtensionStorage,
+  StorageLocalState,
+  StorageSessionState,
+} from '../storage/storage';
 import { DEFAULT_IDENTITY_CONFIG } from '../constants';
 import { PreferencesController } from './preferences';
 import { NetworkController } from './network';
@@ -80,7 +81,7 @@ export type IdentityConfig = {
   };
 };
 
-type IdentityState = Pick<StoreLocalState, 'cognitoSessions'>;
+type IdentityState = Pick<StorageLocalState, 'cognitoSessions'>;
 
 class IdentityStorage
   extends ObservableStore<IdentityState>
@@ -92,7 +93,7 @@ class IdentityStorage
 
   constructor(
     initState: IdentityState,
-    initSession: StoreSessionState,
+    initSession: StorageSessionState,
     setSession: (session: Record<string, unknown>) => void
   ) {
     super(initState);
@@ -216,22 +217,22 @@ export class IdentityController implements IdentityApi {
   private store;
 
   constructor({
-    localStore,
+    extensionStorage,
     getNetwork,
     getSelectedAccount,
     getIdentityConfig,
   }: {
-    localStore: LocalStore;
+    extensionStorage: ExtensionStorage;
     getNetwork: NetworkController['getNetwork'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     getIdentityConfig: RemoteConfigController['getIdentityConfig'];
   }) {
     this.store = new IdentityStorage(
-      localStore.getInitState({ cognitoSessions: undefined }),
-      localStore.getInitSession(),
-      localStore.setSession.bind(localStore)
+      extensionStorage.getInitState({ cognitoSessions: undefined }),
+      extensionStorage.getInitSession(),
+      extensionStorage.setSession.bind(extensionStorage)
     );
-    localStore.subscribe(this.store);
+    extensionStorage.subscribe(this.store);
 
     this.getNetwork = getNetwork;
     this.getSelectedAccount = getSelectedAccount;

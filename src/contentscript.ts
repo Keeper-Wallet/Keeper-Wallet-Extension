@@ -25,9 +25,7 @@ function setupConnection() {
     target: 'waves_keeper_page',
   });
 
-  const onChanged =
-    extension.storage.local.onChanged || extension.storage.onChanged;
-  onChanged.addListener(() => {
+  extension.storage.onChanged.addListener(() => {
     pageStream.write({ name: 'updatePublicState' });
   });
 
@@ -37,7 +35,7 @@ function setupConnection() {
 
     pageStream.pipe(pluginStream).pipe(pageStream);
 
-    const onDisconnect = (port: browser.runtime.Port) => {
+    const onDisconnect = (port: chrome.runtime.Port) => {
       port.onDisconnect.removeListener(onDisconnect);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
