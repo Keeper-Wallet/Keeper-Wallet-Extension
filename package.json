@@ -111,7 +111,7 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "@waves/ledger": "^4.0.0",
-    "@waves/waveskeeper-types": "^0.2.4",
+    "@waves/waveskeeper-types": "^0.2.5",
     "babel-loader": "^8.2.5",
     "browserslist": "^4.21.2",
     "chai": "^4.3.4",
