@@ -60,57 +60,57 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   } = current;
   const extId = await basePage.getItemFromLocalStorage(EXT_ID);
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
-  await I.waitForElement(
-    accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
-    clockUnit.SECONDS * 30
-  );
-  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
-  );
-  await I.waitForElement(
-    assetPage.SELECTORS.WAVES_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
-  await I.waitForElement(
-    modalPage.SELECTORS.KEEPER_TABS.NFT,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
-  await I.see(emptyNftMessage);
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
-  await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
-  await I.see(emptyHistoryMessage);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
-  await I.waitForElement(
-    assetPage.SELECTORS.WAVES_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
+  // await I.waitForElement(
+  //   accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
+  // );
+  // await I.waitForElement(
+  //   assetPage.SELECTORS.WAVES_ASSET,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.KEEPER_TABS.NFT,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  // await I.see(emptyNftMessage);
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
+  // await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
+  // await I.see(emptyHistoryMessage);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  // await I.waitForElement(
+  //   assetPage.SELECTORS.WAVES_ASSET,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
   await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Testnet'));
   await I.waitForElement(
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL'),
@@ -218,57 +218,57 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1);
   await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2);
   await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3);
-  await I.waitForElement(
-    accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
-    clockUnit.SECONDS * 30
-  );
-  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
-  await I.waitForElement(
-    assetPage.SELECTORS.WAVES_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
-  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
-  await I.waitForElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(
-    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
-  );
-  await I.waitForElement(
-    assetPage.SELECTORS.WAVES_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
-  await I.waitForElement(
-    modalPage.SELECTORS.KEEPER_TABS.NFT,
-    clockUnit.SECONDS * 30
-  );
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
-  await I.see(emptyNftMessage);
-  await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
-  await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
-  await I.see(emptyHistoryMessage);
+  // await I.waitForElement(
+  //   accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  // await I.waitForElement(
+  //   assetPage.SELECTORS.WAVES_ASSET,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
+  // await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(
+  //   modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
+  // );
+  // await I.waitForElement(
+  //   assetPage.SELECTORS.WAVES_ASSET,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  // await I.waitForElement(
+  //   modalPage.SELECTORS.KEEPER_TABS.NFT,
+  //   clockUnit.SECONDS * 30
+  // );
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  // await I.see(emptyNftMessage);
+  // await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
+  // await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
+  // await I.see(emptyHistoryMessage);
   await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Testnet'));
   await I.waitForElement(
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_SEED'),
