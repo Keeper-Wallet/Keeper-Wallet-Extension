@@ -2,7 +2,7 @@ import { SeedsPhrases } from '../../interfaces/SeedsPhrase.interface';
 
 export const SeedObjects: SeedsPhrases[] = [
   {
-    phrase: process.env.SEED,
+    phrase: '',
     networkType: 'MAINNET_SEED',
     address: '3P9Y5t4wPpbKe8cmwocm4cezkkQ2W9emMdP',
   },
