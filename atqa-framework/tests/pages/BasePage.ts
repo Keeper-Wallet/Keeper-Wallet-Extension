@@ -7,7 +7,8 @@ const { I } = inject();
 export class BasePage {
   BROWSER_URLS = {
     CHROMIUM: (id: string) => ({
-      POPUP_URI: `chrome-extension://${id}/popup.html`,
+      POPUP_HTML: `chrome-extension://${id}/popup.html`,
+      ACCOUNTS_HTML: `chrome-extension://${id}/accounts.html`,
     }),
     GECKO: (id: string) => ({
       POPUP_URI: `moz-extension://${id}/popup.html`,
@@ -21,6 +22,9 @@ export class BasePage {
     CHROMIUM_EXTENSION_VALUE_BUTTON: { id: 'extensions-value-btn' },
     CHROMIUM_EXTENSIONS_LIST: { xpath: '(//div[@class="stat-value"])[5]' },
     CHROMIUM: {
+      UPDATE_EXTENSION_BUTTON: {
+        shadow: ['extensions-manager', 'extensions-toolbar', '#updateNow'],
+      },
       DETAILS_BUTTON: {
         shadow: [
           'extensions-manager',
@@ -39,10 +43,30 @@ export class BasePage {
       EXTENSION_MENU_BUTTON: {
         xpath: '(//button[@aria-label= "Extensions menu"])[2]',
       },
+      UPDATE_EXTENSION_BUTTON: '#update-button',
     },
     FIREFOX: {
       MANIFEST_EMAIL_TEXT: 'support@wavesplatform.com',
     },
+  };
+
+  //TODO: Fix any type
+  getItemFromLocalStorage = async (keyName: string): Promise<any> => {
+    return I.executeScript(key => {
+      return window.localStorage.getItem(key);
+    }, `data-qa:${keyName}`);
+  };
+
+  setItemToLocalStorage = async (
+    keyName: string,
+    keyValue: string
+  ): Promise<void> => {
+    await I.executeScript(
+      ([key, value]) => {
+        window.localStorage.setItem(key, value);
+      },
+      [`data-qa:${keyName}`, keyValue]
+    );
   };
 
   //TODO: Make it workable and init as main method for getId (now the elements on the system page can't be found for some reason)

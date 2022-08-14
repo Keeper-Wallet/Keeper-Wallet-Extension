@@ -1,10 +1,12 @@
+import fs from 'fs-extra';
+import path from 'path';
+
 import { BasePage } from '../tests/pages/BasePage';
 import { ExtensionInitPage } from '../tests/pages/ExtensionInitPage';
 import { Locator } from '../interfaces/Locator.interface';
 import { AccountPage } from '../tests/pages/AccountPage';
 import { ClockUnit } from './clockUnit';
-import fs from 'fs-extra';
-import path from 'path';
+import { DEFAULT_PASSWORD } from '../testData/res/constants';
 
 const extensionInitPage = new ExtensionInitPage();
 const basePage = new BasePage();
@@ -15,7 +17,7 @@ const { I } = inject();
 const args = process.env.BROWSER_INIT_NAME;
 
 export class ExtensionInitHandler {
-  //TODO: get the file through the resource provider
+  // TODO: get the file through the resource provider
   public installAddOnHelper = async (path: string): Promise<void> => {
     I.useWebDriverTo('Install Gecko AddOn', async ({ browser }) => {
       const extension = await fs.readFile(path);
@@ -33,32 +35,35 @@ export class ExtensionInitHandler {
     switch (args) {
       case 'chrome': {
         const extId = await basePage.getExtensionId(chromiumExtensionId);
-        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_URI);
+        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
         I.waitForElement(
           accountPage.SELECTORS.GET_STARTED_BUTTON,
           clockUnit.SECONDS * 30
         );
         I.closeCurrentTab();
+        await basePage.setItemToLocalStorage('chromeId', extId);
         break;
       }
       case 'opera': {
         const extId = await basePage.getExtensionId(chromiumExtensionId);
-        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_URI);
+        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
         I.waitForElement(
           accountPage.SELECTORS.GET_STARTED_BUTTON,
           clockUnit.SECONDS * 30
         );
         I.switchToNextTab(2);
+        await basePage.setItemToLocalStorage('operaId', extId);
         break;
       }
       case 'MicrosoftEdge': {
         const extId = await basePage.getExtensionId(edgeExtensionId);
-        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_URI);
+        I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
         I.waitForElement(
           accountPage.SELECTORS.GET_STARTED_BUTTON,
           clockUnit.SECONDS * 30
         );
         I.closeCurrentTab();
+        await basePage.setItemToLocalStorage('edgeId', extId);
         break;
       }
       case 'firefox': {
@@ -78,7 +83,33 @@ export class ExtensionInitHandler {
           clockUnit.SECONDS * 30
         );
         I.closeCurrentTab();
+        await basePage.setItemToLocalStorage('firefoxId', extId);
       }
     }
+  };
+  initAccountScreen = async (): Promise<void> => {
+    I.waitForElement(
+      accountPage.SELECTORS.GET_STARTED_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.GET_STARTED_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CREATE_PASSWORD,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(
+      accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CREATE_PASSWORD,
+      DEFAULT_PASSWORD
+    );
+    I.waitForElement(
+      accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONFIRM_PASSWORD
+    );
+    I.fillField(
+      accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONFIRM_PASSWORD,
+      DEFAULT_PASSWORD
+    );
+    I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_TERMS_CHECKBOX);
+    I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_CONDITIONS);
+    I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONTINUE_BUTTON);
   };
 }

@@ -4,6 +4,7 @@
 declare namespace CodeceptJS {
   interface SupportObject {
     I: I;
+    current: any;
   }
   interface Methods extends WebDriver {}
   interface CustomLocators {
