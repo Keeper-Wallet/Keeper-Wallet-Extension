@@ -49,12 +49,12 @@ const initData = new DataTable([
 ]);
 initData.add(['@opera', 'operaId', 'opera_dir_update', updateButtonChromium]);
 initData.add([
-  '@chrome',
+  '@debug',
   'chromeId',
   'chrome_dir_update',
   updateButtonChromium,
 ]);
-initData.add(['@debug', 'edgeId', 'edge_dir_update', updateButtonEdge]);
+initData.add(['@edge', 'edgeId', 'edge_dir_update', updateButtonEdge]);
 
 Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   const {
