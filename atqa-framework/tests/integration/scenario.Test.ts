@@ -1,84 +1,335 @@
+import { TABS_MOCK_MESSAGE } from '../../testData/res/constants';
 import { ClockUnit } from '../../utils/clockUnit';
-// import { BasePage } from '../pages/BasePage';
+import { BasePage } from '../pages/BasePage';
 import { ExtensionInitHandler } from '../../utils/ExtensionInitHandler';
 import { AccountPage } from '../pages/AccountPage';
 import { ResourcesProvider } from '../../testData/res/ResourcesProvider';
 import { copyDir } from '../../utils/copyDirHandler';
+import { DEFAULT_PASSWORD } from '../../testData/res/constants';
+import { AccountSeeder } from '../../utils/AccountSeeder';
+import { AssetPage } from '../pages/AssetPage';
+import { ModalPage } from '../pages/ModalPage';
+import { Locator } from '../../interfaces/Locator.interface';
 
-// const basePage = new BasePage();
+const basePage = new BasePage();
 const clockUnit = new ClockUnit();
 const extensionInitHandler = new ExtensionInitHandler();
 const accountPage = new AccountPage();
 const resourcesProvider = new ResourcesProvider();
+const accountSeeder = new AccountSeeder();
+const assetPage = new AssetPage();
+const modalPage = new ModalPage();
 
 const { I } = inject();
+
+const emptyHistoryMessage = TABS_MOCK_MESSAGE.emptyHistory;
+const emptyNftMessage = TABS_MOCK_MESSAGE.emptyNft;
+const nftExistMessage = TABS_MOCK_MESSAGE.nftExist;
 
 Feature('Initial Test');
 
 Background(async () => {
-  return extensionInitHandler.extensionInit();
+  await extensionInitHandler.extensionInit();
+  await extensionInitHandler.initAccountScreen();
+  await accountSeeder.populateEmbeddedSeed();
+  await accountSeeder.populateEmbeddedEmail();
 });
 
-Scenario('Init scenario', async () => {
-  //I.wait(clockUnit.MINUTES * 30);
-  I.waitForEnabled(
-    accountPage.SELECTORS.GET_STARTED_BUTTON,
+const updateButtonEdge: Locator =
+  basePage.BROWSER_SELECTORS.EDGE.UPDATE_EXTENSION_BUTTON;
+const updateButtonChromium: Locator =
+  basePage.BROWSER_SELECTORS.CHROMIUM.UPDATE_EXTENSION_BUTTON;
+
+const initData = new DataTable([
+  'executionTag',
+  'extensionTag',
+  'updateDir',
+  'locator',
+  // 'initDir',
+]);
+initData.add(['@opera', 'operaId', 'opera_dir_update', updateButtonChromium]);
+initData.add([
+  '@chrome',
+  'chromeId',
+  'chrome_dir_update',
+  updateButtonChromium,
+]);
+initData.add(['@debug', 'edgeId', 'edge_dir_update', updateButtonEdge]);
+
+Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
+  const {
+    extensionTag: EXT_ID,
+    updateDir: UPDATE_DIR,
+    locator: UPDATE_BUTTON_SELECTOR,
+    // initDir: INIT_DIR,
+  } = current;
+  const extId = await basePage.getItemFromLocalStorage(EXT_ID);
+  await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
+  await I.waitForElement(
+    accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
     clockUnit.SECONDS * 30
   );
-  I.click(accountPage.SELECTORS.GET_STARTED_BUTTON);
-  I.waitForElement(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CREATE_PASSWORD,
+  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
     clockUnit.SECONDS * 30
   );
-  I.fillField(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CREATE_PASSWORD,
-    '12345678'
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
   );
-  I.waitForElement(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONFIRM_PASSWORD
-  );
-  I.fillField(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONFIRM_PASSWORD,
-    '12345678'
-  );
-  I.waitForElement(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_TERMS_CHECKBOX,
+  await I.waitForElement(
+    assetPage.SELECTORS.WAVES_ASSET,
     clockUnit.SECONDS * 30
   );
-  I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_TERMS_CHECKBOX);
-  I.waitForElement(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_CONDITIONS,
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_TABS.NFT,
     clockUnit.SECONDS * 30
   );
-  I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_CONDITIONS);
-  I.waitForElement(
-    accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONTINUE_BUTTON,
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  await I.see(emptyNftMessage);
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
+  await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
+  await I.see(emptyHistoryMessage);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
     clockUnit.SECONDS * 30
   );
-  I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONTINUE_BUTTON);
-  // I.waitForElement(
-  //   accountPage.SELECTORS.ACCOUNTS.ADD_ACCOUNT_BUTTON,
-  //   clockUnit.SECONDS * 30
+  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.waitForElement(
+    assetPage.SELECTORS.WAVES_ASSET,
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
+  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Testnet'));
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL'),
+    clockUnit.SECONDS * 30
+  );
+  // I.wait(clockUnit.MINUTES * 2);
+  await I.waitForVisible(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_TABS.NFT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP,
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP
+  );
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_SEED'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_SEED'));
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_1);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_2);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_3);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_4);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_5);
+  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Stagenet'));
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED')
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3);
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  await I.see(nftExistMessage);
+  await I.click(modalPage.SELECTORS.SETTINGS_BUTTON);
+  await I.waitForElement(
+    modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON);
+  // await I.openNewTab();
+  // await I.switchToNextTab(2);
+  await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
+  const updateChrome = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
+  await copyDir(updateChrome);
+  await I.wait(clockUnit.SECONDS * 5);
+  await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
+  // await I.seeElement(
+  //   basePage.BROWSER_SELECTORS.CHROMIUM.UPDATE_EXTENSION_BUTTON
   // );
-  // I.click(accountPage.SELECTORS.ACCOUNTS.ADD_ACCOUNT_BUTTON);
-  I.waitForElement(
-    accountPage.SELECTORS.ACCOUNTS.ADD_KEYSTORE_BUTTON,
+  await I.forceClick(UPDATE_BUTTON_SELECTOR);
+  await I.wait(clockUnit.SECONDS * 5);
+  await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
     clockUnit.SECONDS * 30
   );
-  I.click(accountPage.SELECTORS.ACCOUNTS.ADD_KEYSTORE_BUTTON);
-  I.waitForElement(
-    accountPage.SELECTORS.ACCOUNTS.KEYSTORE_FILE_INPUT,
+  await I.fillField(
+    modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
+    DEFAULT_PASSWORD
+  );
+  await I.click(modalPage.SELECTORS.SUBMIT_KEEPER_PASSWORD);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED'),
     clockUnit.SECONDS * 30
   );
-  I.attachFile(
-    accountPage.SELECTORS.ACCOUNTS.KEYSTORE_FILE_INPUT,
-    '/testData/res/data/keystore-wkeeper-2206221602.json'
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED')
   );
-  I.wait(clockUnit.MINUTES * 2);
+  await I.waitForText(nftExistMessage);
+  await I.see(nftExistMessage);
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2);
+  await I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3);
+  await I.waitForElement(
+    accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'),
+    clockUnit.SECONDS * 30
+  );
+  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Mainnet'));
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_SEED'));
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.waitForElement(
+    assetPage.SELECTORS.WAVES_ASSET,
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
+  await I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('MAINNET_EMAIL')
+  );
+  await I.waitForElement(
+    assetPage.SELECTORS.WAVES_ASSET,
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_TABS.NFT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  await I.see(emptyNftMessage);
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
+  await I.waitForText(emptyHistoryMessage, clockUnit.SECONDS * 30);
+  await I.see(emptyHistoryMessage);
+  await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Testnet'));
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_SEED'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_SEED'));
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.WAVES_ASSET);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_1);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_2);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_3);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_4);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_5);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.ACCOUNTS.FIRST_ACCOUNT);
+  await I.waitForElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL'),
+    clockUnit.SECONDS * 30
+  );
+  // I.wait(clockUnit.MINUTES * 2);
+  await I.waitForVisible(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL'),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+  await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_TABS.NFT,
+    clockUnit.SECONDS * 30
+  );
+  await I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP,
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP
+  );
 });
 
-Scenario('debugScenario @debug', async () => {
-  const updateChrome = await resourcesProvider.prepareUpdateDir('chrome_dir_update');
-  copyDir(updateChrome);
+Scenario('debugScenario @ignore', async () => {
+  const updateChrome = await resourcesProvider.prepareUpdateDir(
+    'chrome_dir_update'
+  );
+  await copyDir(updateChrome);
   // I.wait(clockUnit.MINUTES * 2);
 });
