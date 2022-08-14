@@ -21,6 +21,8 @@ exports.config = {
       desiredCapabilities: (() => {
         return browserInit.initCaps();
       })(),
+      waitForTimeout: 40000,
+      timeout: 40000,
     },
   },
   jest: {},
@@ -28,8 +30,8 @@ exports.config = {
   teardown: null,
   tests: './tests/**/*.Test.ts',
   gherkin: {
-    features: './*/features/**/*.feature',
-    steps: './*/*steps/**/*.*s',
+    features: './*/*/features/**/*.feature',
+    steps: './*/*/*steps/**/*.*s',
   },
   plugins: {
     customLocator: {
