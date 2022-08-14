@@ -6,10 +6,12 @@
     "report:open": "allure serve output",
     "report:remove": "rm -rf output/*",
     "remove:extension": "rm -rf extension/*",
+    "build:extension": "cd .. npm run dist",
+    "init:folders": "mkdir buffer/ && mkdir extension/",
+    "copy:dist": "cd .. && cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/buffer/",
     "run:tests": "yarn report:remove ; codeceptjs run -c codecept.conf.js run-workers 3",
     "run:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose",
     "run:tag": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@debug)'",
-    "debug:command": "cd .. && ls -l && npm run dist && ls -l",
     "lint:typescript": "tsc --noEmit"
   },
   "dependencies": {
@@ -17,14 +19,17 @@
     "@types/fs-extra": "^9.0.13",
     "@wdio/types": "^7.20.3",
     "codeceptjs": "^3.3.4",
+    "dayjs": "^1.11.4",
+    "dotenv-safe": "^8.2.0",
     "firefox-profile": "^4.2.2",
     "fs-extra": "^10.1.0",
     "ts-node": "^10.8.2",
     "typescript": "^4.7.4",
     "webdriverio": "^7.20.7",
-    "dotenv-safe": "^8.2.0"
+    "http-status": "^1.5.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.4.0",
     "@wdio/firefox-profile-service": "^5.21.0",
     "@wdio/selenium-standalone-service": "^7.20.7"
   }

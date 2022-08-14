@@ -35,7 +35,7 @@ const initBrowser = class BrowserCaps {
           'goog:chromeOptions': {
             args: [
               '--load-extension=/home/selenium/chrome',
-              '--start-fullscreen',
+              // '--start-fullscreen',
             ],
           },
         });
