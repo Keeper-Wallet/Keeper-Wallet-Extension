@@ -147,6 +147,7 @@ jobs:
           BROWSER_INIT_NAME: chrome
           BROWSER_VERSION: 102.0
           SELENIUM_PORT: 4444
+          SEED: ${{ secrets.TEST_USER }}
 
       - name: Save report output
         uses: actions/upload-artifact@v3

@@ -87,6 +87,7 @@ export class ExtensionInitHandler {
       }
     }
   };
+
   initAccountScreen = async (): Promise<void> => {
     I.waitForElement(
       accountPage.SELECTORS.GET_STARTED_BUTTON,

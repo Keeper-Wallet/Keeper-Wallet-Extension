@@ -7,7 +7,8 @@
 /builds
 #atqa-framework
 /atqa-framework/output
-/atqa-framework/extension/*
+/atqa-framework/extension/
+/atqa-framework/buffer/
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml

@@ -2,7 +2,7 @@ import { SeedsPhrases } from '../../interfaces/SeedsPhrase.interface';
 
 export const SeedObjects: SeedsPhrases[] = [
   {
-    phrase: '',
+    phrase: process.env.SEED,
     networkType: 'MAINNET_SEED',
     address: '3P9Y5t4wPpbKe8cmwocm4cezkkQ2W9emMdP',
   },
@@ -17,5 +17,11 @@ export const SeedObjects: SeedsPhrases[] = [
       'bench frequent strategy drum wealth paddle velvet wheel alcohol such loud neither brain cargo cousin',
     networkType: 'STAGENET_SEED',
     address: '3MX1Wx6xgVr2wddS1eZmMKD6ZLWTc1mCmPH',
+  },
+  {
+    phrase:
+        'chuckle together drill physical eagle story strong visa battle boss member dog derive animal chunk',
+    networkType: 'TESTNET_SEED_1',
+    address: '3MyofUDW8BPUKj6D9LGieoPekAvjckALxxy',
   },
 ];
