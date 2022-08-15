@@ -21,7 +21,7 @@ export class AccountSeeder {
     const accountSeedNameTestnet = dataGenerator.accountName('TESTNET_SEED');
     const accountSeedNameMainnet = dataGenerator.accountName('MAINNET_SEED');
 
-    // TODO: rewrite this madness with builders and implement services to prepare data
+    // TODO: rewrite this madness with builders and implement services to prepare data objects
     const seeds = [stagenetSeed, testnetSeed, mainnetSeed];
     const network = ['Stagenet', 'Testnet', 'Mainnet'];
     const accountName = [
@@ -78,7 +78,42 @@ export class AccountSeeder {
     }
   };
 
-  populateEmbeddedEmail = async (): Promise<void> => {
+    populateCustomSeed = async (seedType: string): Promise<void> => {
+      const customSeed = resourcesProvider.getCustomSeed(seedType);
+      const accountSeedNameTestnet = dataGenerator.accountName('CUSTOM_SEED');
+
+      I.waitForElement(
+          accountPage.SELECTORS.SEED_ACCOUNTS.IMPORT_SEED,
+          clockUnit.SECONDS * 30
+      );
+      I.click(accountPage.SELECTORS.SEED_ACCOUNTS.IMPORT_SEED);
+      I.waitForElement(
+          accountPage.SELECTORS.SEED_ACCOUNTS.SEED_PHRASE_INPUT,
+          clockUnit.SECONDS * 30
+      );
+      I.fillField(
+          accountPage.SELECTORS.SEED_ACCOUNTS.SEED_PHRASE_INPUT,
+          customSeed.phrase as string
+      );
+      I.seeTextEquals(customSeed.address, accountPage.SELECTORS.ACCOUNT_ADDRESS);
+      I.waitForElement(
+          accountPage.SELECTORS.CONTINUE_BUTTON,
+          clockUnit.SECONDS * 30
+      );
+      I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+      I.waitForElement(
+          accountPage.SELECTORS.ACCOUNT_NAME_INPUT,
+          clockUnit.SECONDS * 30
+      );
+      I.fillField(accountPage.SELECTORS.ACCOUNT_NAME_INPUT, accountSeedNameTestnet);
+      I.waitForElement(
+          accountPage.SELECTORS.CONTINUE_BUTTON,
+          clockUnit.SECONDS * 30
+      );
+      I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+    };
+
+    populateEmbeddedEmail = async (): Promise<void> => {
     const userTestnet = userProvider.getTestNetUser();
     const userMainnet = userProvider.getMainNetUser();
 
