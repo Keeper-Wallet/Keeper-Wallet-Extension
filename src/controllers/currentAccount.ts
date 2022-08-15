@@ -86,13 +86,105 @@ export class CurrentAccountController {
     });
   }
 
-  getByUrl(url: string) {
-    let accept = 'application/json;';
-    if (url.match(/^(assets|transactions)/))
-      accept += 'large-significand-format=string';
-    return fetch(new URL(url, this.getNode()).toString(), {
-      headers: { accept },
-    }).then(resp => resp.json());
+  async #fetchWavesBalance(address: string) {
+    const url = new URL(`addresses/balance/details/${address}`, this.getNode());
+
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json; large-significand-format=string',
+      },
+    });
+
+    const json = (await response.json()) as {
+      available: string;
+      regular: string;
+    };
+
+    return json;
+  }
+
+  async #fetchAssetsBalance(address: string) {
+    const url = new URL(`assets/balance/${address}`, this.getNode());
+
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json; large-significand-format=string',
+      },
+    });
+
+    const json = (await response.json()) as {
+      address: string;
+      balances: Array<{
+        assetId: string;
+        balance: string;
+        minSponsoredAssetFee: string | null;
+        sponsorBalance: string;
+      }>;
+    };
+
+    return json;
+  }
+
+  async #fetchNfts(address: string) {
+    const url = new URL(
+      `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
+      this.getNode()
+    );
+
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json; large-significand-format=string',
+      },
+    });
+
+    const json = (await response.json()) as Array<{
+      assetId: string;
+      decimals: number;
+      description: string;
+      issueHeight: number;
+      issuer: string;
+      issuerPublicKey: string;
+      issueTimestamp: number;
+      minSponsoredAssetFee: string | null;
+      name: string;
+      originTransactionId: string;
+      quantity: string;
+      reissuable: boolean;
+      scripted: boolean;
+    }>;
+
+    return json;
+  }
+
+  async #fetchAliases(address: string) {
+    const url = new URL(`alias/by-address/${address}`, this.getNode());
+
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json',
+      },
+    });
+
+    const json = (await response.json()) as unknown[];
+
+    return json;
+  }
+
+  async #fetchTxHistory(address: string) {
+    const url = new URL(
+      `transactions/address/${address}/limit/${MAX_TX_HISTORY_ITEMS}`,
+      this.getNode()
+    );
+
+    const response = await fetch(url, {
+      headers: {
+        accept: 'application/json; large-significand-format=string',
+      },
+    });
+
+    const json = (await response.json()) as [TransactionFromNode[]];
+
+    return json;
   }
 
   getAccountBalance() {
@@ -123,47 +215,17 @@ export class CurrentAccountController {
           const isActiveAddress = address === activeAccount.address;
 
           const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
-            (await Promise.all(
-              [
-                `addresses/balance/details/${address}`,
-                ...(isActiveAddress
-                  ? [
-                      `assets/balance/${address}`,
-                      `assets/nft/${address}/limit/${MAX_NFT_ITEMS}`,
-                      `alias/by-address/${address}`,
-                      `transactions/address/${address}/limit/${MAX_TX_HISTORY_ITEMS}`,
-                    ]
-                  : []),
-              ].map(url => this.getByUrl(url))
-            )) as [
-              { available: string; regular: string },
-              {
-                address: string;
-                balances: Array<{
-                  assetId: string;
-                  balance: string;
-                  minSponsoredAssetFee: string | null;
-                  sponsorBalance: string;
-                }>;
-              },
-              Array<{
-                assetId: string;
-                decimals: number;
-                description: string;
-                issueHeight: number;
-                issuer: string;
-                issuerPublicKey: string;
-                issueTimestamp: number;
-                minSponsoredAssetFee: string | null;
-                name: string;
-                originTransactionId: string;
-                quantity: string;
-                reissuable: boolean;
-                scripted: boolean;
-              }>,
-              unknown[],
-              [TransactionFromNode[]]
-            ];
+            await Promise.all([
+              this.#fetchWavesBalance(address),
+              ...(isActiveAddress
+                ? ([
+                    this.#fetchAssetsBalance(address),
+                    this.#fetchNfts(address),
+                    this.#fetchAliases(address),
+                    this.#fetchTxHistory(address),
+                  ] as const)
+                : []),
+            ]);
 
           if (isActiveAddress) {
             const assets = this.assetInfoController.getAssets();
