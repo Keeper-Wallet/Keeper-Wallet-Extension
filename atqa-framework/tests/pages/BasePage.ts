@@ -38,6 +38,9 @@ export class BasePage {
       },
     },
     EDGE: {
+      SERVICE_WORKER_RESTART_BUTTON: {
+        css: '[aria-label="Turn on Keeper Wallet"]',
+      },
       DETAILS_BUTTON: { xpath: '//span[contains(text(),"Details")]' },
       DEV_MODE_TOGGLE: { css: '#developer-mode' },
       EXTENSION_MENU_BUTTON: {

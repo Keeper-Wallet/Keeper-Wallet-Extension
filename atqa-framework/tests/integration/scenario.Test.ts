@@ -10,6 +10,7 @@ import { AccountSeeder } from '../../utils/AccountSeeder';
 import { AssetPage } from '../pages/AssetPage';
 import { ModalPage } from '../pages/ModalPage';
 import { Locator } from '../../interfaces/Locator.interface';
+import { ExtensionInitPage } from '../pages/ExtensionInitPage';
 
 const basePage = new BasePage();
 const clockUnit = new ClockUnit();
@@ -19,6 +20,7 @@ const resourcesProvider = new ResourcesProvider();
 const accountSeeder = new AccountSeeder();
 const assetPage = new AssetPage();
 const modalPage = new ModalPage();
+const extensionInitPage = new ExtensionInitPage();
 
 const { I } = inject();
 
@@ -225,10 +227,9 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
   const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
   await copyDir(updateDir);
-  await I.wait(clockUnit.SECONDS * 5);
   await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
   await I.forceClick(UPDATE_BUTTON_SELECTOR);
-  await I.wait(clockUnit.SECONDS * 5);
+  await extensionInitHandler.restartServiceWorker();
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
   await I.waitForElement(
     modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -543,10 +544,9 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5);
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
-    await I.wait(clockUnit.SECONDS * 5);
+    await extensionInitHandler.restartServiceWorker();
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -699,7 +699,7 @@ Data(initData).Scenario(
 );
 
 Data(initData).Scenario(
-  'Update keeper during the account seeding',
+  'Update keeper during the account seeding @ignore',
   async ({ current }) => {
     const {
       extensionTag: EXT_ID,
@@ -865,10 +865,9 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5);
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
-    await I.wait(clockUnit.SECONDS * 5);
+    await extensionInitHandler.restartServiceWorker();
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -884,7 +883,6 @@ Data(initData).Scenario(
       clockUnit.SECONDS * 30
     );
     await I.forceClick(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
-    await I.wait(clockUnit.SECONDS * 5);
     await I.waitForElement(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_AT_POSITION(1),
       clockUnit.SECONDS * 30
