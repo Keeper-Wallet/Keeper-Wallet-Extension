@@ -20,7 +20,7 @@ export const SeedObjects: SeedsPhrases[] = [
   },
   {
     phrase:
-        'chuckle together drill physical eagle story strong visa battle boss member dog derive animal chunk',
+      'chuckle together drill physical eagle story strong visa battle boss member dog derive animal chunk',
     networkType: 'TESTNET_SEED_1',
     address: '3MyofUDW8BPUKj6D9LGieoPekAvjckALxxy',
   },
