@@ -205,167 +205,131 @@ export class CurrentAccountController {
 
     if (this.isLocked() || accounts.length < 1 || !activeAccount) return;
 
-    const state = this.store.getState();
-    const oldBalances = collectBalances(state);
+    const { address } = activeAccount;
 
-    const data = await Promise.all(
-      accounts.map(async (account): Promise<[string, BalancesItem] | null> => {
-        try {
-          const address = account.address;
-          const isActiveAddress = address === activeAccount.address;
+    const [wavesBalance, myAssets, myNfts, aliases, txHistory] =
+      await Promise.all([
+        this.#fetchWavesBalance(address),
+        this.#fetchAssetsBalance(address),
+        this.#fetchNfts(address),
+        this.#fetchAliases(address),
+        this.#fetchTxHistory(address),
+      ]);
 
-          const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
-            await Promise.all([
-              this.#fetchWavesBalance(address),
-              ...(isActiveAddress
-                ? ([
-                    this.#fetchAssetsBalance(address),
-                    this.#fetchNfts(address),
-                    this.#fetchAliases(address),
-                    this.#fetchTxHistory(address),
-                  ] as const)
-                : []),
-            ]);
+    const assets = this.assetInfoController.getAssets();
 
-          if (isActiveAddress) {
-            const assets = this.assetInfoController.getAssets();
-            const assetExists = (assetId: string) => !!assets[assetId];
-            const isMaxAgeExceeded = (assetId: string) =>
-              this.assetInfoController.isMaxAgeExceeded(
-                assets[assetId] && assets[assetId].lastUpdated
-              );
+    const assetExists = (assetId: string) => !!assets[assetId];
 
-            const isSponsorshipUpdated = (balanceAsset: {
-              assetId: string;
-              minSponsoredAssetFee: string | null;
-            }) =>
-              balanceAsset.minSponsoredAssetFee !==
-              assets[balanceAsset.assetId].minSponsoredFee;
+    const isMaxAgeExceeded = (assetId: string) =>
+      this.assetInfoController.isMaxAgeExceeded(
+        assets[assetId] && assets[assetId].lastUpdated
+      );
 
-            const fetchAssetIds = (
-              myAssets.balances.filter(
-                info =>
-                  !assetExists(info.assetId) ||
-                  isSponsorshipUpdated(info) ||
-                  isMaxAgeExceeded(info.assetId)
-              ) as Array<{ assetId: string }>
-            )
-              .concat(
-                myNfts.filter(
-                  info =>
-                    !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId)
-                )
-              )
-              .map(info => info.assetId)
-              .concat(
-                txHistory[0]
-                  .reduce<string[]>(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (ids, tx: any) => [
-                      ...ids,
-                      tx.assetId,
-                      ...(tx.order1
-                        ? [
-                            tx.order1.assetPair.amountAsset,
-                            tx.order1.assetPair.priceAsset,
-                          ]
-                        : []),
-                      ...(tx.payment
-                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          tx.payment.map((x: any) => x.assetId)
-                        : []),
-                      ...(tx.stateChanges
-                        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          tx.stateChanges.transfers.map((x: any) => x.asset)
-                        : []),
-                    ],
-                    []
-                  )
-                  .filter(
-                    assetId =>
-                      !!assetId &&
-                      !assetExists(assetId) &&
-                      isMaxAgeExceeded(assetId)
-                  )
-              );
+    const isSponsorshipUpdated = (balanceAsset: {
+      assetId: string;
+      minSponsoredAssetFee: string | null;
+    }) =>
+      balanceAsset.minSponsoredAssetFee !==
+      assets[balanceAsset.assetId].minSponsoredFee;
 
-            await this.assetInfoController.updateAssets(fetchAssetIds);
-            await this.nftInfoController.updateNfts(myNfts);
-          }
-
-          const available = new BigNumber(wavesBalances.available);
-          const regular = new BigNumber(wavesBalances.regular);
-          const leasedOut = regular.sub(available);
-
-          return [
-            address,
-            {
-              ...(isActiveAddress
-                ? {
-                    aliases: aliases,
-                    txHistory: txHistory[0],
-                    assets: myAssets.balances.reduce<
-                      Record<string, AssetBalance>
-                    >(
-                      (assets, info) => {
-                        assets[info.assetId] = {
-                          minSponsoredAssetFee: info.minSponsoredAssetFee,
-                          sponsorBalance: info.sponsorBalance,
-                          balance: info.balance,
-                        };
-                        return assets;
-                      },
-                      {
-                        WAVES: {
-                          minSponsoredAssetFee: '100000',
-                          sponsorBalance: wavesBalances.available,
-                          balance: wavesBalances.available,
-                        },
-                      }
-                    ),
-                    nfts: myNfts.map(nft => ({
-                      id: nft.assetId,
-                      name: nft.name,
-                      precision: nft.decimals,
-                      description: nft.description,
-                      height: nft.issueHeight,
-                      timestamp: new Date(
-                        nft.issueTimestamp
-                      ).toJSON() as unknown as Date, // todo fixme please
-                      sender: nft.issuer,
-                      quantity: nft.quantity,
-                      reissuable: nft.reissuable,
-                      hasScript: nft.scripted,
-                      displayName: nft.name,
-                      minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
-                      originTransactionId: nft.originTransactionId,
-                      issuer: nft.issuer,
-                    })),
-                  }
-                : oldBalances[address]),
-              available: available.toString(),
-              leasedOut: leasedOut.toString(),
-              network: currentNetwork,
-            },
-          ];
-        } catch (e) {
-          return null;
-        }
-      })
-    );
-
-    this.store.updateState(
-      Object.fromEntries(
-        Object.entries({
-          ...oldBalances,
-          ...Object.fromEntries(
-            data.filter(
-              (entry): entry is Exclude<typeof entry, undefined | null> =>
-                entry != null
-            )
-          ),
-        }).map(([address, balance]) => [`balance_${address}`, balance])
+    const fetchAssetIds = (
+      myAssets.balances.filter(
+        info =>
+          !assetExists(info.assetId) ||
+          isSponsorshipUpdated(info) ||
+          isMaxAgeExceeded(info.assetId)
+      ) as Array<{ assetId: string }>
+    )
+      .concat(
+        myNfts.filter(
+          info => !assetExists(info.assetId) || isMaxAgeExceeded(info.assetId)
+        )
       )
-    );
+      .map(info => info.assetId)
+      .concat(
+        txHistory[0]
+          .reduce<string[]>(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (ids, tx: any) => [
+              ...ids,
+              tx.assetId,
+              ...(tx.order1
+                ? [
+                    tx.order1.assetPair.amountAsset,
+                    tx.order1.assetPair.priceAsset,
+                  ]
+                : []),
+              ...(tx.payment
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  tx.payment.map((x: any) => x.assetId)
+                : []),
+              ...(tx.stateChanges
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  tx.stateChanges.transfers.map((x: any) => x.asset)
+                : []),
+            ],
+            []
+          )
+          .filter(
+            assetId =>
+              !!assetId && !assetExists(assetId) && isMaxAgeExceeded(assetId)
+          )
+      );
+
+    await Promise.all([
+      this.assetInfoController.updateAssets(fetchAssetIds),
+      this.nftInfoController.updateNfts(myNfts),
+    ]);
+
+    const available = new BigNumber(wavesBalance.available);
+    const regular = new BigNumber(wavesBalance.regular);
+    const leasedOut = regular.sub(available);
+
+    const balance: BalancesItem = {
+      aliases: aliases,
+      available: available.toString(),
+      leasedOut: leasedOut.toString(),
+      network: currentNetwork,
+      txHistory: txHistory[0],
+
+      assets: myAssets.balances.reduce<Record<string, AssetBalance>>(
+        (assets, info) => {
+          assets[info.assetId] = {
+            minSponsoredAssetFee: info.minSponsoredAssetFee,
+            sponsorBalance: info.sponsorBalance,
+            balance: info.balance,
+          };
+          return assets;
+        },
+        {
+          WAVES: {
+            minSponsoredAssetFee: '100000',
+            sponsorBalance: wavesBalance.available,
+            balance: wavesBalance.available,
+          },
+        }
+      ),
+
+      nfts: myNfts.map(nft => ({
+        id: nft.assetId,
+        name: nft.name,
+        precision: nft.decimals,
+        description: nft.description,
+        height: nft.issueHeight,
+        timestamp: new Date(nft.issueTimestamp).toJSON() as unknown as Date,
+        sender: nft.issuer,
+        quantity: nft.quantity,
+        reissuable: nft.reissuable,
+        hasScript: nft.scripted,
+        displayName: nft.name,
+        minSponsoredFee: nft.minSponsoredAssetFee ?? undefined,
+        originTransactionId: nft.originTransactionId,
+        issuer: nft.issuer,
+      })),
+    };
+
+    this.store.updateState({
+      [`balance_${address}`]: balance,
+    });
   }
 }
