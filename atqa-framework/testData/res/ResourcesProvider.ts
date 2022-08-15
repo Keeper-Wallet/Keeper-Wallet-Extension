@@ -65,6 +65,14 @@ export class ResourcesProvider {
     };
   };
 
+  getCustomSeed = (seedType: string): SeedsPhrases => {
+    const seed = this.getSeed(seedType);
+    return {
+      address: seed.address,
+      phrase: seed.phrase,
+    };
+  };
+
   getKeystore = async (file: string): Promise<UploadFile> => {
     return this.getFileResource(file);
   };

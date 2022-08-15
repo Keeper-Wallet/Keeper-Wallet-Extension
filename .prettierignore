@@ -1,2 +1,4 @@
 /dist
+/atqa-framework/extension
+/atqa-framework/buffer
 /src/_sentryHelpersReplacement.js

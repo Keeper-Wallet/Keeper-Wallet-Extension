@@ -15,7 +15,7 @@ export class BasePage {
     }),
     CHROME_SYSTEM: 'chrome://system/',
     CHROMIUM_EXTENSIONS_PAGE: 'chrome://extensions/',
-    FIREFOX_EXTENSIONS_PAGE: 'about:debugging#/runtime/this-firefox',
+    FIREFOX_EXTENSIONS_PAGE: '#/runtime/this-about:debuggingfirefox',
   };
 
   public BROWSER_SELECTORS = {
