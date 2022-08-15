@@ -113,4 +113,40 @@ export class ExtensionInitHandler {
     I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.ACCEPT_CONDITIONS);
     I.click(accountPage.SELECTORS.CREATE_PASSWORD_INPUT.CONTINUE_BUTTON);
   };
+
+  restartServiceWorker = async (): Promise<void> => {
+    const detailsButtonSelector: Locator =
+      basePage.BROWSER_SELECTORS.CHROMIUM.DETAILS_BUTTON;
+    const restartWorkerButton: Locator =
+      extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON;
+    const edgeRestartWorkerButton: Locator =
+      basePage.BROWSER_SELECTORS.EDGE.SERVICE_WORKER_RESTART_BUTTON;
+    const workerActiveStatus: Locator =
+      extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_ACTIVE;
+    const workerInactiveStatus: Locator =
+      extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_INACTIVE;
+    const edgeWorkerActiveStatus: Locator =
+      extensionInitPage.SELECTORS.EDGE.SERVICE_WORKER_ACTIVE;
+
+    switch (args) {
+      case 'MicrosoftEdge': {
+        I.waitForElement(edgeRestartWorkerButton, clockUnit.SECONDS * 30);
+        I.click(edgeRestartWorkerButton);
+        I.waitForDetached(edgeWorkerActiveStatus, clockUnit.SECONDS * 30);
+        I.dontSeeElement(edgeWorkerActiveStatus);
+        I.click(edgeRestartWorkerButton);
+        I.seeElement(edgeWorkerActiveStatus);
+        break;
+      }
+    }
+    I.waitForElement(detailsButtonSelector, clockUnit.SECONDS * 30);
+    I.click(detailsButtonSelector);
+    I.waitForElement(restartWorkerButton, clockUnit.SECONDS * 30);
+    I.click(restartWorkerButton);
+    I.waitForElement(workerInactiveStatus, clockUnit.SECONDS * 30);
+    I.seeTextEquals('No active views', workerInactiveStatus);
+    I.click(restartWorkerButton);
+    I.waitForElement(workerActiveStatus, clockUnit.SECONDS * 30);
+    I.seeElement(workerActiveStatus);
+  };
 }
