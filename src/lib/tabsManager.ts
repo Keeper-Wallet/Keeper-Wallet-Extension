@@ -40,4 +40,13 @@ export class TabsManager {
       })
     );
   }
+
+  async closeCurrentTab() {
+    extension.tabs.query(
+      { active: true, lastFocusedWindow: true },
+      tab =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        tab[0] && extension.tabs.remove([tab[0].id!])
+    );
+  }
 }
