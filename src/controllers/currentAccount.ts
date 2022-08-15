@@ -111,7 +111,7 @@ export class CurrentAccountController {
     );
     const activeAccount = this.getSelectedAccount();
 
-    if (this.isLocked() || accounts.length < 1) return;
+    if (this.isLocked() || accounts.length < 1 || !activeAccount) return;
 
     const state = this.store.getState();
     const oldBalances = collectBalances(state);
@@ -120,8 +120,7 @@ export class CurrentAccountController {
       accounts.map(async (account): Promise<[string, BalancesItem] | null> => {
         try {
           const address = account.address;
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const isActiveAddress = address === activeAccount!.address;
+          const isActiveAddress = address === activeAccount.address;
 
           const [wavesBalances, myAssets, myNfts, aliases, txHistory] =
             (await Promise.all(
