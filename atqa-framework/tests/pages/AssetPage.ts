@@ -1,5 +1,5 @@
 import { BasePage } from './BasePage';
-import {Locator} from "../../interfaces/Locator.interface";
+import { Locator } from '../../interfaces/Locator.interface';
 
 export class AssetPage extends BasePage {
   SELECTORS = {
