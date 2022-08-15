@@ -160,9 +160,12 @@ export function SwapForm({
 
   const feeAsset = new Asset(assets[feeAssetId]);
 
-  const fromAssetBalance = getAssetBalance(fromAsset, accountBalance);
-  const toAssetBalance = getAssetBalance(toAsset, accountBalance);
-  const feeAssetBalance = getAssetBalance(feeAsset, accountBalance);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const fromAssetBalance = getAssetBalance(fromAsset, accountBalance!);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const toAssetBalance = getAssetBalance(toAsset, accountBalance!);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const feeAssetBalance = getAssetBalance(feeAsset, accountBalance!);
 
   const [fromAmountValue, setFromAmountValue] = React.useState('');
   const fromAmountTokens = new BigNumber(fromAmountValue || '0');
@@ -318,7 +321,7 @@ export function SwapForm({
   }, [swapClient, swapParams, t, toAsset]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const sponsoredAssetFee = accountBalance.assets![feeAssetId]
+  const sponsoredAssetFee = accountBalance!.assets![feeAssetId]
     ? convertFeeToAsset(wavesFee, feeAsset, feeConfig)
     : null;
 
@@ -488,7 +491,7 @@ export function SwapForm({
         >
           <AssetAmountInput
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            assetBalances={accountBalance.assets!}
+            assetBalances={accountBalance!.assets!}
             assetOptions={fromSwappableAssets}
             balance={fromAssetBalance}
             label={t('swap.fromInputLabel')}
@@ -506,7 +509,7 @@ export function SwapForm({
               if (
                 feeAssetId === fromAssetId &&
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                accountBalance.assets![feeAssetId]
+                accountBalance!.assets![feeAssetId]
               ) {
                 const fee = convertFeeToAsset(
                   wavesFee,
@@ -575,7 +578,7 @@ export function SwapForm({
             <div className={styles.toAmountSelect}>
               <AssetSelect
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                assetBalances={accountBalance.assets!}
+                assetBalances={accountBalance!.assets!}
                 network={currentNetwork}
                 options={toSwappableAssets}
                 value={toAssetId}

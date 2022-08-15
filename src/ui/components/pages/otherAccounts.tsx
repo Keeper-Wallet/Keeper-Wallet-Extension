@@ -46,11 +46,12 @@ export function OtherAccountsPage({ setTab }: PageComponentProps) {
   if (assetInfo) {
     const asset = new Asset(assetInfo);
 
-    Object.entries<{ available: string; leasedOut: string }>(balances).forEach(
-      ([key, { available }]) => {
-        balancesMoney[key] = new Money(available, asset);
-      }
-    );
+    Object.entries(balances).forEach(([key, balance]) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { available } = balance!;
+
+      balancesMoney[key] = new Money(available, asset);
+    });
   }
 
   return (

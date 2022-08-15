@@ -50,6 +50,8 @@ import {
 } from 'messages/types';
 import { CreateWalletInput } from 'wallets/types';
 import pump from 'pump';
+import { collectBalances } from 'balances/utils';
+import { BalancesItem } from 'balances/types';
 
 log.setDefaultLevel(KEEPERWALLET_DEBUG ? 'debug' : 'warn');
 
@@ -417,8 +419,8 @@ class BackgroundService extends EventEmitter {
         this.networkController
       ),
       getNode: this.networkController.getNode.bind(this.networkController),
-      getAccounts: this.walletController.getAccounts.bind(
-        this.walletController
+      getAccounts: this.preferencesController.getAccounts.bind(
+        this.preferencesController
       ),
       getSelectedAccount: this.preferencesController.getSelectedAccount.bind(
         this.preferencesController
@@ -1164,7 +1166,9 @@ class BackgroundService extends EventEmitter {
   }
 
   _publicState(originReq: string) {
-    let account = null;
+    let account:
+      | (PreferencesAccount & { balance: BalancesItem | number })
+      | null = null;
 
     let msg: Array<{
       id: MessageStoreItem['id'];
@@ -1177,17 +1181,13 @@ class BackgroundService extends EventEmitter {
       PERMISSIONS.APPROVED
     );
 
-    const { selectedAccount, balances, messages, initialized, locked } =
-      this.getState([
-        'selectedAccount',
-        'balances',
-        'messages',
-        'initialized',
-        'locked',
-      ]);
+    const state = this.getState();
+
+    const { selectedAccount, messages, initialized, locked } = state;
 
     if (selectedAccount && canIUse) {
       const address = selectedAccount.address;
+      const balances = collectBalances(state);
 
       account = {
         ...selectedAccount,

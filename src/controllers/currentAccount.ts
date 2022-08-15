@@ -4,12 +4,12 @@ import { BigNumber } from '@waves/bignumber';
 import { ExtensionStorage } from '../storage/storage';
 import { AssetInfoController } from './assetInfo';
 import { NftInfoController } from './NftInfoController';
-import { WalletController } from './wallet';
 import { NetworkController } from './network';
 import { PreferencesController } from './preferences';
 import { VaultController } from './VaultController';
 import { TransactionFromNode } from '@waves/ts-types';
 import { AssetBalance, BalancesItem } from 'balances/types';
+import { collectBalances } from 'balances/utils';
 
 export const MAX_TX_HISTORY_ITEMS = 101;
 export const MAX_NFT_ITEMS = 1000;
@@ -38,15 +38,30 @@ export class CurrentAccountController {
     extensionStorage: ExtensionStorage;
     assetInfoController: AssetInfoController;
     nftInfoController: NftInfoController;
-    getAccounts: WalletController['getAccounts'];
+    getAccounts: PreferencesController['getAccounts'];
     getNetwork: NetworkController['getNetwork'];
     getNode: NetworkController['getNode'];
     getSelectedAccount: PreferencesController['getSelectedAccount'];
     isLocked: VaultController['isLocked'];
   }) {
-    this.store = new ObservableStore(
-      extensionStorage.getInitState({ balances: {} })
+    const defaults: Partial<Record<string, BalancesItem>> = Object.fromEntries(
+      getAccounts().map(acc => [`balance_${acc.address}`, undefined])
     );
+
+    const initState = extensionStorage.getInitState(defaults);
+
+    const emptyKeys = Object.entries(initState)
+      .filter(([, value]) => value == null)
+      .map(([key]) => key);
+
+    extensionStorage.removeState(emptyKeys);
+
+    emptyKeys.forEach(key => {
+      delete initState[key];
+    });
+
+    this.store = new ObservableStore(initState);
+
     extensionStorage.subscribe(this.store);
 
     this.assetInfoController = assetInfoController;
@@ -82,9 +97,11 @@ export class CurrentAccountController {
 
   getAccountBalance() {
     const activeAccount = this.getSelectedAccount();
+    const state = this.store.getState();
+    const balances = collectBalances(state);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.store.getState().balances[activeAccount!.address];
+    return balances[activeAccount!.address];
   }
 
   async updateBalances() {
@@ -96,7 +113,9 @@ export class CurrentAccountController {
 
     if (this.isLocked() || accounts.length < 1) return;
 
-    const oldBalances = this.store.getState().balances;
+    const state = this.store.getState();
+    const oldBalances = collectBalances(state);
+
     const data = await Promise.all(
       accounts.map(async (account): Promise<[string, BalancesItem] | null> => {
         try {
@@ -274,17 +293,18 @@ export class CurrentAccountController {
       })
     );
 
-    this.store.updateState({
-      balances: Object.assign(
-        {},
-        oldBalances,
-        Object.fromEntries<BalancesItem>(
-          data.filter(
-            (entry): entry is Exclude<typeof entry, undefined | null> =>
-              entry != null
-          )
-        )
-      ),
-    });
+    this.store.updateState(
+      Object.fromEntries(
+        Object.entries({
+          ...oldBalances,
+          ...Object.fromEntries(
+            data.filter(
+              (entry): entry is Exclude<typeof entry, undefined | null> =>
+                entry != null
+            )
+          ),
+        }).map(([address, balance]) => [`balance_${address}`, balance])
+      )
+    );
   }
 }

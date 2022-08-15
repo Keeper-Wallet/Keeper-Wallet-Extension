@@ -26,7 +26,7 @@ interface StateProps {
   activeMessage: MessageStoreItem | null;
   assets: Record<string, AssetDetail>;
   autoClickProtection?: boolean;
-  balance: BalancesItem;
+  balance: BalancesItem | undefined;
   messages: MessageStoreItem[];
   notifications: unknown[];
   selectedAccount: Partial<PreferencesAccount>;

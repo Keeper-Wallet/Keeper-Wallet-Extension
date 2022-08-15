@@ -121,7 +121,53 @@ const removeCurrentNetworkAccounts: Migration = {
   },
 };
 
+const flattenBalances: Migration = {
+  migrate: async () => {
+    const { balances } = await extension.storage.local.get('balances');
+
+    await extension.storage.local.remove('balances');
+
+    await extension.storage.local.set(
+      Object.fromEntries(
+        Object.entries(balances).map(([address, balance]) => {
+          return [`balance_${address}`, balance];
+        })
+      )
+    );
+  },
+
+  rollback: async () => {
+    const state = await extension.storage.local.get();
+
+    const balances = Object.fromEntries(
+      Object.entries(state)
+        .map(([key, value]) => {
+          const match = key.match(/^balance_(.*)$/);
+
+          if (!match) {
+            return null;
+          }
+
+          const [, address] = match;
+
+          return [address, value];
+        })
+        .filter(
+          (entry): entry is Exclude<typeof entry, null | undefined> =>
+            entry != null
+        )
+    );
+
+    await extension.storage.local.remove(
+      Object.keys(state).filter(key => key.startsWith('balance_'))
+    );
+
+    await extension.storage.local.set({ balances });
+  },
+};
+
 export const MIGRATIONS: Migration[] = [
   flatState,
   removeCurrentNetworkAccounts,
+  flattenBalances,
 ];
