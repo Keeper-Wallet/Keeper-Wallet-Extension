@@ -11,7 +11,7 @@ export class ModalPage extends BasePage {
     SETTINGS_MENU: {
       ARROW_BACK_BUTTON: { css: '.arrow-back-icon' },
       CLOSE_SETTING_MENU: { css: '.close-icon' },
-      GENERAL_SETTINGS: { xpath: '//div[contains(text(),"General")]'},
+      GENERAL_SETTINGS: { xpath: '//div[contains(text(),"General")]' },
       SET_TIMEOUT: (timeout: string): Locator => ({
         xpath: `//div[contains(text(),'${timeout}')]`,
       }),
