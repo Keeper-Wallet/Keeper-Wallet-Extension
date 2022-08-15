@@ -13,7 +13,7 @@ exports.config = {
       host: 'localhost',
       protocol: 'http',
       port: 4444,
-      restart: false,
+      restart: true,
       keepCookies: false,
       keepBrowserState: false,
       url: 'https://localhost/',

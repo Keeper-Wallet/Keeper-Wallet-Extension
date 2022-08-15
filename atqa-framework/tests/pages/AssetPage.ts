@@ -1,8 +1,14 @@
 import { BasePage } from './BasePage';
+import {Locator} from "../../interfaces/Locator.interface";
 
 export class AssetPage extends BasePage {
   SELECTORS = {
     WAVES_ASSET: '$WAVES',
+    WAVES_AMOUNT: (value: number): Locator => ({
+      xpath: `//div[@data-testid="WAVES"]//div[2]//div[1]//span[1][text()="${value}"]`,
+    }),
+    WAVES_MORE_BUTTON:
+      '[data-testid="WAVES"] > div:nth-of-type(2) > [data-testid="moreBtn"]',
     BACK_TO_NFT_BUTTON: { xpath: "//div[contains(text(),'Back to NFTs')]" },
     SEND_BUTTON: '$sendBtn',
     WAVES_FAVORITE_ICON: {
