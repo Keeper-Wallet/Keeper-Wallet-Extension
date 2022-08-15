@@ -6,6 +6,7 @@ import { Button } from '../ui';
 import { PAGES } from '../../pageConfig';
 import { useAccountsSelector, useAppDispatch } from 'accounts/store';
 import { setTab } from 'ui/actions';
+import background from 'ui/services/Background';
 
 export function ImportSuccessAddressBook() {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ export function ImportSuccessAddressBook() {
           className={styles.button}
           type="submit"
           view="submit"
-          onClick={() => window.close()}
+          onClick={() => background.closeCurrentTab()}
         >
           {t('import.finish')}
         </Button>
@@ -76,7 +77,7 @@ export function ImportSuccess() {
           className={styles.button}
           type="submit"
           view="submit"
-          onClick={() => window.close()}
+          onClick={() => background.closeCurrentTab()}
         >
           {t('import.finish')}
         </Button>
