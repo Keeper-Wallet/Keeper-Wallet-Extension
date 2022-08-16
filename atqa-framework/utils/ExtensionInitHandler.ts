@@ -136,6 +136,7 @@ export class ExtensionInitHandler {
         I.waitForElement(edgeWorkerTitle, clockUnit.SECONDS * 30);
         I.click(edgeRestartWorkerButton);
         I.dontSeeElementInDOM(edgeWorkerTitle);
+        I.wait(clockUnit.SECONDS * 2); //debug wait
         I.click(edgeRestartWorkerButton);
         I.waitForElement(edgeWorkerActiveStatus, clockUnit.SECONDS * 30);
         I.seeElementInDOM(edgeWorkerTitle);
