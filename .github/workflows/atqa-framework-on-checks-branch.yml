@@ -149,10 +149,10 @@ jobs:
           SELENIUM_PORT: 4444
           SEED: ${{ secrets.TEST_USER }}
 
-      - name: Save report output
+      - name: Save chrome report output
         uses: actions/upload-artifact@v3
         with:
-          name: report-output
+          name: chrome-report-output
           path: ./atqa-framework/output/
 
       - name: Run opera
@@ -167,14 +167,27 @@ jobs:
           SELENIUM_PORT: 4444
           SEED: ${{ secrets.TEST_USER }}
 
-      - name: Run MicrosoftEdge
-        working-directory: ./atqa-framework
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=8192"
-          curl http://localhost:4444/status
-          yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@edge)'
-        env:
-          BROWSER_INIT_NAME: MicrosoftEdge
-          BROWSER_VERSION: 103.0
-          SELENIUM_PORT: 4444
-          SEED: ${{ secrets.TEST_USER }}
+      - name: Save opera report output
+        uses: actions/upload-artifact@v3
+        with:
+          name: opera-report-output
+          path: ./atqa-framework/output/
+#Ignore edge utill version will be fixed
+
+#      - name: Run MicrosoftEdge
+#        working-directory: ./atqa-framework
+#        run: |
+#          export NODE_OPTIONS="--max-old-space-size=8192"
+#          curl http://localhost:4444/status
+#          yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?!.*@edgeIgnore)(?=.*@edge)'
+#        env:
+#          BROWSER_INIT_NAME: MicrosoftEdge
+#          BROWSER_VERSION: 103.0
+#          SELENIUM_PORT: 4444
+#          SEED: ${{ secrets.TEST_USER }}
+#
+#      - name: Save edge report output
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: edge-report-output
+#          path: ./atqa-framework/output/

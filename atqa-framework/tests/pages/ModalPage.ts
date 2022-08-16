@@ -3,6 +3,9 @@ import { Locator } from '../../interfaces/Locator.interface';
 
 export class ModalPage extends BasePage {
   SELECTORS = {
+    KEEPER_CURRENT_VERSION: (currentVersion: string): Locator => ({
+      xpath: `//div[@data-testid='currentVersion' and normalize-space()='v ${currentVersion}']`,
+    }),
     KEEPER_PASSWORD_INPUT: '#loginPassword',
     SUBMIT_KEEPER_PASSWORD: '#loginEnter',
     SETTINGS_BUTTON: {
