@@ -165,7 +165,7 @@ export class CurrentAccountController {
       },
     });
 
-    const json = (await response.json()) as unknown[];
+    const json = (await response.json()) as string[];
 
     return json;
   }

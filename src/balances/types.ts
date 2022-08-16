@@ -9,7 +9,7 @@ export interface AssetBalance {
 }
 
 export interface BalancesItem {
-  aliases?: unknown[];
+  aliases?: string[];
   assets?: Record<string, AssetBalance>;
   available: string;
   leasedOut: string;
