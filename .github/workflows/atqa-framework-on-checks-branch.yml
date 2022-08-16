@@ -61,19 +61,15 @@ jobs:
 
       - name: Prepare extension bins for uploading
         run: |
-#          mkdir ./atqa-framework/extension
-#          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
           mkdir ./extension
           cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./extension/
-
 
       - name: Save extension artifacts
         uses: actions/upload-artifact@v3
         with:
           name: extension-init-bins
-#          path: ./atqa-framework/extension/
+          #          path: ./atqa-framework/extension/
           path: ./extension/
-
 
         #Set up current branch
 
