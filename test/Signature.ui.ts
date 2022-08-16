@@ -281,10 +281,6 @@ describe('Signature', function () {
   describe('Matcher request', function () {
     const timestamp = Date.now();
 
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
-
     it('Rejected', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
@@ -393,10 +389,6 @@ describe('Signature', function () {
     ) {
       return { ...tx, data: { ...tx.data, version } };
     }
-
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
 
     describe('Issue', function () {
       before(async function () {
@@ -2108,10 +2100,6 @@ describe('Signature', function () {
       await this.driver.navigate().refresh();
     }
 
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
-
     describe('Create', function () {
       it('Rejected', async function () {
         await performSignOrder.call(this, createOrder, CREATE_ORDER);
@@ -2283,10 +2271,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
     }
-
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
 
     it('Rejected', async function () {
       await performSignTransactionPackage.call(
@@ -2537,10 +2521,6 @@ describe('Signature', function () {
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
     }
-
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
 
     describe('Version 1', function () {
       it('Rejected', async function () {
