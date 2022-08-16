@@ -46,7 +46,7 @@ export class BasePage {
       EXTENSION_MENU_BUTTON: {
         xpath: '(//button[@aria-label= "Extensions menu"])[2]',
       },
-      UPDATE_EXTENSION_BUTTON: '#update-button',
+      UPDATE_EXTENSION_BUTTON: { xpath: '//span[contains(text(),"Reload")]' },
     },
     FIREFOX: {
       MANIFEST_EMAIL_TEXT: 'support@wavesplatform.com',
