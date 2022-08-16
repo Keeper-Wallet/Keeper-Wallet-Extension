@@ -11,6 +11,7 @@ import { AssetPage } from '../pages/AssetPage';
 import { ModalPage } from '../pages/ModalPage';
 import { Locator } from '../../interfaces/Locator.interface';
 import { ExtensionInitPage } from '../pages/ExtensionInitPage';
+import extensionVersion from '../../../package.json';
 
 const basePage = new BasePage();
 const clockUnit = new ClockUnit();
@@ -42,12 +43,18 @@ const updateButtonEdge: Locator =
   basePage.BROWSER_SELECTORS.EDGE.UPDATE_EXTENSION_BUTTON;
 const updateButtonChromium: Locator =
   basePage.BROWSER_SELECTORS.CHROMIUM.UPDATE_EXTENSION_BUTTON;
+const operaVersion: Locator =
+  extensionInitPage.SELECTORS.OPERA.EXTENSION_VERSION;
+const edgeVersion: Locator = extensionInitPage.SELECTORS.EDGE.EXTENSION_VERSION;
+const chromeVersion: Locator =
+  extensionInitPage.SELECTORS.CHROMIUM.EXTENSION_VERSION;
 
 const initData = new DataTable([
   'executionTag',
   'extensionTag',
   'updateDir',
-  'locator',
+  'buttonLocator',
+  'versionLocator',
   'initDir',
 ]);
 initData.add([
@@ -55,6 +62,7 @@ initData.add([
   'operaId',
   'opera_dir_update',
   updateButtonChromium,
+  operaVersion,
   'opera_dir_init',
 ]);
 initData.add([
@@ -62,6 +70,7 @@ initData.add([
   'chromeId',
   'chrome_dir_update',
   updateButtonChromium,
+  chromeVersion,
   'chrome_dir_init',
 ]);
 initData.add([
@@ -69,6 +78,7 @@ initData.add([
   'edgeId',
   'edge_dir_update',
   updateButtonEdge,
+  edgeVersion,
   'edge_dir_init',
 ]);
 
@@ -76,7 +86,8 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   const {
     extensionTag: EXT_ID,
     updateDir: UPDATE_DIR,
-    locator: UPDATE_BUTTON_SELECTOR,
+    buttonLocator: UPDATE_BUTTON_SELECTOR,
+    versionLocator: KEEPER_VERSION,
     initDir: INIT_DIR,
   } = current;
   const extId = await basePage.getItemFromLocalStorage(EXT_ID);
@@ -227,9 +238,11 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
   const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
   await copyDir(updateDir);
-  await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
+  await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and dockerawait I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
   await I.forceClick(UPDATE_BUTTON_SELECTOR);
   await extensionInitHandler.restartServiceWorker();
+  await I.waitForElement(KEEPER_VERSION, clockUnit.SECONDS * 30);
+  await I.seeTextEquals(extensionVersion.version, KEEPER_VERSION);
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
   await I.waitForElement(
     modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -240,6 +253,13 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
     DEFAULT_PASSWORD
   );
   await I.click(modalPage.SELECTORS.SUBMIT_KEEPER_PASSWORD);
+  await I.waitForElement(
+    modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version),
+    clockUnit.SECONDS * 30
+  );
+  await I.seeElement(
+    modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version)
+  );
   await I.waitForElement(
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED'),
     clockUnit.SECONDS * 30
@@ -364,7 +384,8 @@ Data(initData).Scenario(
     const {
       extensionTag: EXT_ID,
       updateDir: UPDATE_DIR,
-      locator: UPDATE_BUTTON_SELECTOR,
+      buttonLocator: UPDATE_BUTTON_SELECTOR,
+      versionLocator: KEEPER_VERSION,
       initDir: INIT_DIR,
     } = current;
     const extId = await basePage.getItemFromLocalStorage(EXT_ID);
@@ -544,9 +565,12 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
+    await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and docker
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();
+    await I.waitForElement(KEEPER_VERSION, clockUnit.SECONDS * 30);
+    await I.seeTextEquals(extensionVersion.version, KEEPER_VERSION);
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -573,6 +597,13 @@ Data(initData).Scenario(
       clockUnit.SECONDS * 30
     );
     await I.seeElement(assetPage.SELECTORS.WAVES_AMOUNT(16));
+    await I.waitForElement(
+      modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version),
+      clockUnit.SECONDS * 30
+    );
+    await I.seeElement(
+      modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version)
+    );
     await I.waitForElement(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('STAGENET_SEED'),
       clockUnit.SECONDS * 30
@@ -699,12 +730,13 @@ Data(initData).Scenario(
 );
 
 Data(initData).Scenario(
-  'Update keeper during the account seeding @ignore',
+  'Update keeper during the account seeding',
   async ({ current }) => {
     const {
       extensionTag: EXT_ID,
       updateDir: UPDATE_DIR,
-      locator: UPDATE_BUTTON_SELECTOR,
+      buttonLocator: UPDATE_BUTTON_SELECTOR,
+      versionLocator: KEEPER_VERSION,
       initDir: INIT_DIR,
     } = current;
     const extId = await basePage.getItemFromLocalStorage(EXT_ID);
@@ -865,9 +897,12 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
+    await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and docker
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();
+    await I.waitForElement(KEEPER_VERSION, clockUnit.SECONDS * 30);
+    await I.seeTextEquals(extensionVersion.version, KEEPER_VERSION);
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM(extId).POPUP_HTML);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_PASSWORD_INPUT,
@@ -879,15 +914,12 @@ Data(initData).Scenario(
     );
     await I.click(modalPage.SELECTORS.SUBMIT_KEEPER_PASSWORD);
     await I.waitForElement(
-      modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON,
+      modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version),
       clockUnit.SECONDS * 30
     );
-    await I.forceClick(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
-    await I.waitForElement(
-      modalPage.SELECTORS.ACCOUNTS.ACCOUNT_AT_POSITION(1),
-      clockUnit.SECONDS * 30
+    await I.seeElement(
+      modalPage.SELECTORS.KEEPER_CURRENT_VERSION(extensionVersion.version)
     );
-    await I.click(modalPage.SELECTORS.ACCOUNTS.ACCOUNT_AT_POSITION(1));
     await I.waitForElement(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('CUSTOM_SEED'),
       clockUnit.SECONDS * 30

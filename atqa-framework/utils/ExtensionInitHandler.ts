@@ -138,19 +138,7 @@ export class ExtensionInitHandler {
         I.seeElement(edgeWorkerActiveStatus);
         break;
       }
-      case 'opera': {
-        I.waitForElement(detailsButtonSelector, clockUnit.SECONDS * 30);
-        I.click(detailsButtonSelector);
-        I.waitForElement(restartWorkerButton, clockUnit.SECONDS * 30);
-        I.click(restartWorkerButton);
-        I.waitForElement(workerInactiveStatus, clockUnit.SECONDS * 30);
-        I.seeTextEquals('No active views', workerInactiveStatus);
-        I.click(restartWorkerButton);
-        I.waitForElement(workerActiveStatus, clockUnit.SECONDS * 30);
-        I.seeElement(workerActiveStatus);
-        break;
-      }
-      case 'chrome': {
+      default: {
         I.waitForElement(detailsButtonSelector, clockUnit.SECONDS * 30);
         I.click(detailsButtonSelector);
         I.waitForElement(restartWorkerButton, clockUnit.SECONDS * 30);
