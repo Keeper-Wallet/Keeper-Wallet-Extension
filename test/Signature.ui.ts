@@ -107,6 +107,45 @@ describe('Signature', function () {
     await App.resetVault.call(this);
   });
 
+  async function checkOrigin(this: mocha.Context, expectedOrigin: string) {
+    const originEl = await this.driver.wait(
+      until.elementLocated(By.css('[class^="transactions-originAddress"]')),
+      this.wait
+    );
+
+    const origin = await originEl.getText();
+
+    expect(origin).to.equal(expectedOrigin);
+  }
+
+  async function checkAccountName(
+    this: mocha.Context,
+    expectedAccountName: string
+  ) {
+    const accountNameEl = await this.driver.wait(
+      until.elementLocated(By.css('[class^="wallet-accountName"]')),
+      this.wait
+    );
+
+    const accountName = await accountNameEl.getText();
+
+    expect(accountName).to.equal(expectedAccountName);
+  }
+
+  async function checkNetworkName(
+    this: mocha.Context,
+    expectedNetworkName: string
+  ) {
+    const networkNameEl = await this.driver.wait(
+      until.elementLocated(By.css('[class^="transactions-originNetwork"]')),
+      this.wait
+    );
+
+    const networkName = await networkNameEl.getText();
+
+    expect(networkName).to.equal(expectedNetworkName);
+  }
+
   async function approveMessage(this: mocha.Context, wait = this.wait) {
     await this.driver
       .wait(until.elementLocated(By.css('#approve')), wait)
@@ -139,28 +178,63 @@ describe('Signature', function () {
   }
 
   describe('Permission request from origin', function () {
+    async function triggerPermissionRequest(this: mocha.Context) {
+      await this.driver.executeScript(() => {
+        KeeperWallet.initialPromise
+          .then(api => api.publicState())
+          .then(
+            result => {
+              window.result = JSON.stringify(['RESOLVED', result]);
+            },
+            err => {
+              window.result = JSON.stringify(['REJECTED', err]);
+            }
+          );
+      });
+    }
+
+    async function getPermissionRequestResult(this: mocha.Context) {
+      return JSON.parse(
+        await this.driver.executeScript<string>(() => {
+          const { result } = window;
+          delete window.result;
+          return result;
+        })
+      );
+    }
+
     it('Rejected', async function () {
       await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.publicState());
-      });
+      await triggerPermissionRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
 
+      await checkOrigin.call(this, CUSTOMLIST[0]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
       await rejectMessage.call(this);
       await closeMessage.call(this);
+
+      const [status, result] = await getPermissionRequestResult.call(this);
+
+      expect(status).to.equal('REJECTED');
+
+      expect(result).to.deep.equal({
+        message: 'User denied message',
+        data: 'rejected',
+        code: '10',
+      });
     });
 
     it('Reject forever', async function () {
       await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.publicState());
-      });
+      await triggerPermissionRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
@@ -168,9 +242,7 @@ describe('Signature', function () {
       await this.driver
         .wait(
           until.elementLocated(
-            By.xpath(
-              "//button[contains(@class, 'dropdownButton-dropdownButton')]"
-            )
+            By.css('[class^="dropdownButton-dropdownButton"]')
           ),
           this.wait
         )
@@ -186,21 +258,75 @@ describe('Signature', function () {
       );
 
       await closeMessage.call(this);
+
+      const [status, result] = await getPermissionRequestResult.call(this);
+
+      expect(status).to.equal('REJECTED');
+
+      expect(result).to.deep.equal({
+        message: 'User denied message',
+        data: 'rejected_forever',
+        code: '10',
+      });
     });
 
     it('Approved', async function () {
       await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise.then(api => api.publicState());
-      });
+      await triggerPermissionRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
 
       await approveMessage.call(this);
       await closeMessage.call(this);
+
+      const [status, result] = await getPermissionRequestResult.call(this);
+
+      expect(status).to.equal('RESOLVED');
+      expect(result.initialized).to.equal(true);
+      expect(typeof result.version).to.equal('string');
+      expect(result.messages).to.have.length(1);
+      expect(typeof result.messages[0].id).to.equal('string');
+      expect(result.messages[0].status).to.equal('signed');
+
+      expect(result.account).to.deep.contain({
+        address: '3MsX9C2MzzxE4ySF5aYcJoaiPfkyxZMg4cW',
+        name: 'rich',
+        network: 'testnet',
+        networkCode: 'T',
+        publicKey: 'AXbaBkJNocyrVpwqTzD4TpUY8fQ6eeRto9k1m2bNCzXV',
+        type: 'seed',
+      });
+
+      expect(result.network).to.deep.contain({
+        code: 'T',
+        server: 'https://nodes-testnet.wavesnodes.com/',
+        matcher: 'https://matcher-testnet.waves.exchange/',
+      });
+
+      expect(result.txVersion).to.deep.contain({
+        '3': [3, 2],
+        '4': [3, 2],
+        '5': [3, 2],
+        '6': [3, 2],
+        '8': [3, 2],
+        '9': [3, 2],
+        '10': [3, 2],
+        '11': [2, 1],
+        '12': [2, 1],
+        '13': [2, 1],
+        '14': [2, 1],
+        '15': [2, 1],
+        '16': [2, 1],
+        '17': [1],
+        '18': [1],
+        '1000': [1],
+        '1001': [1],
+        '1002': [3, 2, 1],
+        '1003': [1, 0],
+      });
     });
   });
 
