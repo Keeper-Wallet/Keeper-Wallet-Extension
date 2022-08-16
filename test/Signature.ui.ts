@@ -489,16 +489,26 @@ describe('Signature', function () {
           .then(api => api.signTransaction(tx))
           .then(
             result => {
-              window.result = result;
+              window.result = JSON.stringify(['RESOLVED', result]);
             },
-            () => {
-              window.result = null;
+            err => {
+              window.result = JSON.stringify(['REJECTED', err]);
             }
           );
       }, tx);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
+    }
+
+    async function getSignTransactionResult(this: mocha.Context) {
+      return JSON.parse(
+        await this.driver.executeScript<string>(() => {
+          const { result } = window;
+          delete window.result;
+          return result;
+        })
+      );
     }
 
     function setTxVersion(
@@ -525,9 +535,11 @@ describe('Signature', function () {
 
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -573,9 +585,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -619,9 +633,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -665,9 +681,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -717,9 +735,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -762,9 +782,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -807,9 +829,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -850,9 +874,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -893,9 +919,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -936,9 +964,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -978,9 +1008,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1020,9 +1052,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1066,9 +1100,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1108,9 +1144,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1150,9 +1188,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1192,9 +1232,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1234,9 +1276,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1275,9 +1319,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1316,9 +1362,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1361,9 +1409,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1405,9 +1455,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1459,9 +1511,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1505,9 +1559,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1551,9 +1607,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1592,9 +1650,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1637,9 +1697,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1682,9 +1744,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1724,9 +1788,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1765,9 +1831,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1807,9 +1875,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1850,9 +1920,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1892,9 +1964,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1944,9 +2018,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -1986,9 +2062,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -2042,9 +2120,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -2095,9 +2175,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
@@ -2139,9 +2221,11 @@ describe('Signature', function () {
         await approveMessage.call(this);
         await closeMessage.call(this);
 
-        const approveResult = await this.driver.executeScript(
-          () => window.result
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
         );
+
+        expect(status).to.equal('RESOLVED');
 
         const parsedApproveResult = parse(approveResult);
 
