@@ -49,6 +49,7 @@ export class ExtensionInitPage extends BasePage {
       },
     },
     EDGE: {
+      WORKER_TITLE: { xpath: '//p[text()="Inspect views"]' },
       EXTENSION_ID: {
         css: '[role=main] > div > div:nth-of-type(2) > div > div:nth-of-type(6) > div > p:nth-of-type(2) > span',
       },

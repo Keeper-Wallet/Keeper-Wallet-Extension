@@ -152,7 +152,7 @@ jobs:
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
-          yarn codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@chrome)'
+          yarn codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@chrome)'
         env:
           BROWSER_INIT_NAME: chrome
           BROWSER_VERSION: 102.0
@@ -170,7 +170,7 @@ jobs:
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
-          yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@opera)'
+          yarn  codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@opera)'
         env:
           BROWSER_INIT_NAME: opera
           BROWSER_VERSION: 88.0
@@ -188,7 +188,7 @@ jobs:
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
-          yarn  codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@edge)'
+          yarn  codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@edge)'
         env:
           BROWSER_INIT_NAME: MicrosoftEdge
           BROWSER_VERSION: 103.0

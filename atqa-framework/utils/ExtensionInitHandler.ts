@@ -127,15 +127,18 @@ export class ExtensionInitHandler {
       extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_INACTIVE;
     const edgeWorkerActiveStatus: Locator =
       extensionInitPage.SELECTORS.EDGE.SERVICE_WORKER_ACTIVE;
+    const edgeWorkerTitle: Locator =
+      extensionInitPage.SELECTORS.EDGE.WORKER_TITLE;
 
     switch (args) {
       case 'MicrosoftEdge': {
         I.waitForElement(edgeRestartWorkerButton, clockUnit.SECONDS * 30);
+        I.waitForElement(edgeWorkerTitle, clockUnit.SECONDS * 30);
         I.click(edgeRestartWorkerButton);
-        I.waitForDetached(edgeWorkerActiveStatus, clockUnit.SECONDS * 30);
-        I.dontSeeElement(edgeWorkerActiveStatus);
+        I.dontSeeElementInDOM(edgeWorkerTitle);
         I.click(edgeRestartWorkerButton);
-        I.seeElement(edgeWorkerActiveStatus);
+        I.waitForElement(edgeWorkerActiveStatus, clockUnit.SECONDS * 30);
+        I.seeElementInDOM(edgeWorkerTitle);
         break;
       }
       default: {
