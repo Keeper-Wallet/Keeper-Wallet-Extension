@@ -4,6 +4,7 @@ import asStream from 'obs-store/lib/asStream';
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import { extension } from 'lib/extension';
+import * as browser from 'webextension-polyfill';
 import { createStreamSink } from 'lib/createStreamSink';
 import type ObservableStore from 'obs-store';
 import { NftInfo } from 'nfts';
@@ -27,18 +28,18 @@ import { MIGRATIONS } from './migrations';
 const CURRENT_MIGRATION_VERSION = 3;
 
 export async function backupStorage() {
-  const { backup, WalletController } = await extension.storage.local.get([
+  const { backup, WalletController } = await browser.storage.local.get([
     'backup',
     'WalletController',
   ]);
 
   if (WalletController?.vault) {
-    await extension.storage.local.set({
+    await browser.storage.local.set({
       backup: {
         ...backup,
         [WalletController.vault]: {
           timestamp: Date.now(),
-          version: extension.runtime.getManifest().version,
+          version: browser.runtime.getManifest().version,
         },
       },
     });
@@ -57,14 +58,14 @@ const SAFE_FIELDS = new Set([
 ]);
 
 export async function resetStorage() {
-  const state = await extension.storage.local.get();
-  await extension.storage.local.remove(
+  const state = await browser.storage.local.get();
+  await browser.storage.local.remove(
     Object.keys(state).reduce<string[]>(
       (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
       []
     )
   );
-  await extension.runtime.reload();
+  browser.runtime.reload();
 }
 
 export interface StorageLocalState {
