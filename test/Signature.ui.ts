@@ -348,7 +348,11 @@ describe('Signature', function () {
 
     async function getAuthRequestResult(this: mocha.Context) {
       return JSON.parse(
-        await this.driver.executeScript<string>(() => window.result)
+        await this.driver.executeScript<string>(() => {
+          const { result } = window;
+          delete window.result;
+          return result;
+        })
       );
     }
 
@@ -415,8 +419,7 @@ describe('Signature', function () {
   describe('Matcher request', function () {
     const timestamp = Date.now();
 
-    it('Rejected', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    async function triggerMatcherRequest(this: mocha.Context) {
       await this.driver.executeScript(
         (senderPublicKey: string, timestamp: number) => {
           KeeperWallet.initialPromise
@@ -431,50 +434,56 @@ describe('Signature', function () {
             )
             .then(
               result => {
-                window.result = result;
+                window.result = JSON.stringify(['RESOLVED', result]);
               },
-              () => {
-                window.result = null;
+              err => {
+                window.result = JSON.stringify(['REJECTED', err]);
               }
             );
         },
         senderPublicKey,
         timestamp
       );
+    }
+
+    async function getMatcherRequestResult(this: mocha.Context) {
+      return JSON.parse(
+        await this.driver.executeScript<string>(() => {
+          const { result } = window;
+          delete window.result;
+          return result;
+        })
+      );
+    }
+
+    it('Rejected', async function () {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await triggerMatcherRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
 
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
       await rejectMessage.call(this);
       await closeMessage.call(this);
+
+      const [status, result] = await getMatcherRequestResult.call(this);
+
+      expect(status).to.equal('REJECTED');
+
+      expect(result).to.deep.equal({
+        code: '10',
+        data: 'rejected',
+        message: 'User denied message',
+      });
     });
 
     it('Approved', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver.executeScript(
-        (senderPublicKey: string, timestamp: number) => {
-          KeeperWallet.initialPromise
-            .then(api =>
-              api.signRequest({
-                type: 1001,
-                data: {
-                  senderPublicKey,
-                  timestamp,
-                },
-              })
-            )
-            .then(
-              result => {
-                window.result = result;
-              },
-              () => {
-                window.result = null;
-              }
-            );
-        },
-        senderPublicKey,
-        timestamp
-      );
+      await triggerMatcherRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
@@ -482,16 +491,16 @@ describe('Signature', function () {
       await approveMessage.call(this);
       await closeMessage.call(this);
 
-      const approveResult = await this.driver.executeScript<string>(
-        () => window.result
-      );
+      const [status, result] = await getMatcherRequestResult.call(this);
+
+      expect(status).to.equal('RESOLVED');
 
       const bytes = concat(
         serializePrimitives.BASE58_STRING(senderPublicKey),
         serializePrimitives.LONG(timestamp)
       );
 
-      expect(verifySignature(senderPublicKey, bytes, approveResult)).to.be.true;
+      expect(verifySignature(senderPublicKey, bytes, result)).to.be.true;
     });
   });
 
