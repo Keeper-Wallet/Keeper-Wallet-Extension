@@ -1,4 +1,4 @@
-import { extension } from '../lib/extension';
+import * as browser from 'webextension-polyfill';
 
 interface Migration {
   migrate: () => Promise<void>;
@@ -8,12 +8,12 @@ interface Migration {
 const flatState: Migration = {
   migrate: async () => {
     // this should potentially fix FILE_ERROR_NO_SPACE error
-    await extension.storage.local.remove([
+    await browser.storage.local.remove([
       'AssetInfoController',
       'CurrentAccountController',
     ]);
 
-    const state = await extension.storage.local.get();
+    const state = await browser.storage.local.get();
 
     const CONTROLLERS = [
       'AssetInfoController',
@@ -38,7 +38,7 @@ const flatState: Migration = {
       return;
     }
 
-    await extension.storage.local.set(
+    await browser.storage.local.set(
       migrateFields.reduce(
         (acc, field) => ({
           ...acc,
@@ -48,7 +48,7 @@ const flatState: Migration = {
       )
     );
 
-    await extension.storage.local.remove(migrateFields);
+    await browser.storage.local.remove(migrateFields);
   },
 
   rollback: async () => {
@@ -92,9 +92,9 @@ const flatState: Migration = {
       VaultController: ['locked', 'initialized'],
     };
 
-    const state = await extension.storage.local.get();
+    const state = await browser.storage.local.get();
 
-    await extension.storage.local.set(
+    await browser.storage.local.set(
       Object.entries(CONTROLLERS_STATE).reduce(
         (acc, [controller, fields]) => ({
           ...acc,
@@ -114,14 +114,64 @@ const flatState: Migration = {
 
 const removeCurrentNetworkAccounts: Migration = {
   migrate: async () => {
-    await extension.storage.local.remove(['currentNetworkAccounts']);
+    await browser.storage.local.remove(['currentNetworkAccounts']);
   },
   rollback: async () => {
     // noop, they're restored on unlock
   },
 };
 
+const flattenBalances: Migration = {
+  migrate: async () => {
+    const { balances } = await browser.storage.local.get('balances');
+
+    if (!balances) {
+      return;
+    }
+
+    await browser.storage.local.remove('balances');
+
+    await browser.storage.local.set(
+      Object.fromEntries(
+        Object.entries(balances).map(([address, balance]) => {
+          return [`balance_${address}`, balance];
+        })
+      )
+    );
+  },
+
+  rollback: async () => {
+    const state = await browser.storage.local.get();
+
+    const balances = Object.fromEntries(
+      Object.entries(state)
+        .map(([key, value]) => {
+          const match = key.match(/^balance_(.*)$/);
+
+          if (!match) {
+            return null;
+          }
+
+          const [, address] = match;
+
+          return [address, value];
+        })
+        .filter(
+          (entry): entry is Exclude<typeof entry, null | undefined> =>
+            entry != null
+        )
+    );
+
+    await browser.storage.local.remove(
+      Object.keys(state).filter(key => key.startsWith('balance_'))
+    );
+
+    await browser.storage.local.set({ balances });
+  },
+};
+
 export const MIGRATIONS: Migration[] = [
   flatState,
   removeCurrentNetworkAccounts,
+  flattenBalances,
 ];

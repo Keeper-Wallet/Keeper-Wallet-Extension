@@ -165,7 +165,7 @@ export type UiAction =
     }
   | {
       type: typeof ACTION.UPDATE_BALANCES;
-      payload: Record<string, BalancesItem>;
+      payload: Partial<Record<string, BalancesItem>>;
       meta?: never;
     }
   | {

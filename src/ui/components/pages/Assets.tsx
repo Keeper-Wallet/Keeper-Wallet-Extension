@@ -66,7 +66,7 @@ export function Assets({ setTab }: PageComponentProps) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const amountInUsd = balances[address!]?.assets
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Object.entries(balances[address!].assets).reduce(
+      Object.entries(balances[address!]!.assets!).reduce(
         (acc, [id, { balance }]) => {
           if (assets[id] && usdPrices[id]) {
             const tokens = new Money(
