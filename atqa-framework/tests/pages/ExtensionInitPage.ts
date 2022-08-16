@@ -3,6 +3,13 @@ import { BasePage } from './BasePage';
 export class ExtensionInitPage extends BasePage {
   SELECTORS = {
     CHROMIUM: {
+      EXTENSION_VERSION: {
+        shadow: [
+          'extensions-manager',
+          'extensions-detail-view',
+          '#container > div > div:nth-of-type(6) > div:nth-of-type(2)',
+        ],
+      },
       EXTENSION_ID: {
         shadow: [
           'extensions-manager',
@@ -32,6 +39,15 @@ export class ExtensionInitPage extends BasePage {
         ],
       },
     },
+    OPERA: {
+      EXTENSION_VERSION: {
+        shadow: [
+          'extensions-manager',
+          'extensions-detail-view',
+          '#container > div > div:nth-of-type(7) > div:nth-of-type(2)',
+        ],
+      },
+    },
     EDGE: {
       EXTENSION_ID: {
         css: '[role=main] > div > div:nth-of-type(2) > div > div:nth-of-type(6) > div > p:nth-of-type(2) > span',
@@ -39,6 +55,7 @@ export class ExtensionInitPage extends BasePage {
       SERVICE_WORKER_ACTIVE: {
         xpath: '//span[contains(text(),"service worker")]',
       },
+      EXTENSION_VERSION: { xpath: '//div//p[2]' },
     },
     FIREFOX: {
       EXTENSION_ID: { xpath: '(//dl/div[contains(., "UUID")]/dd)[1]' },

@@ -1,4 +1,4 @@
-import { UploadFile } from '../../interfaces/UploadFile.interface';
+import { File } from '../../interfaces/File.interface';
 import { Folder } from '../../interfaces/Folder.interface';
 import { SeedsPhrases } from '../../interfaces/SeedsPhrase.interface';
 import { ResourcesObjects } from './resourcesObjects';
@@ -11,7 +11,7 @@ export class ResourcesProvider {
   private getFolderResources = [...ExtensionFolders];
   private getSeedResource = [...SeedObjects];
 
-  private getFileResource = (resourceType: string): UploadFile => {
+  private getFileResource = (resourceType: string): File => {
     const initFile = this.getFileResources.find(
       file => file.type === resourceType
     );
@@ -73,8 +73,16 @@ export class ResourcesProvider {
     };
   };
 
-  getKeystore = async (file: string): Promise<UploadFile> => {
+  getKeystore = async (file: string): Promise<File> => {
     return this.getFileResource(file);
+  };
+
+  getManifestFile = async (fileType: string): Promise<File> => {
+    const manifest = this.getFileResource(fileType);
+    const srcPath = path.join(__dirname, '..', '..', manifest.path);
+    return {
+      path: srcPath,
+    };
   };
 
   prepareInitDir = async (dirType: string): Promise<Folder> => {

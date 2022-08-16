@@ -3,6 +3,7 @@ import { AccountPage } from '../tests/pages/AccountPage';
 import { ResourcesProvider } from '../testData/res/ResourcesProvider';
 import { DataGenerator } from './DataGenerator';
 import { UserProvider } from '../testData/UserProvider';
+import { TABS_MOCK_MESSAGE } from './../testData/res/constants';
 
 const { I } = inject();
 
@@ -11,6 +12,9 @@ const accountPage = new AccountPage();
 const resourcesProvider = new ResourcesProvider();
 const dataGenerator = new DataGenerator();
 const userProvider = new UserProvider();
+
+const successAccountMessage = TABS_MOCK_MESSAGE.importSuccessAccount;
+const successTabCloseMessage = TABS_MOCK_MESSAGE.importSuccessTabClose;
 
 export class AccountSeeder {
   populateEmbeddedSeed = async (): Promise<void> => {
@@ -114,6 +118,13 @@ export class AccountSeeder {
       clockUnit.SECONDS * 30
     );
     I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.FINISH_ACCOUNT_CREATION,
+      clockUnit.SECONDS * 30
+    );
+    I.seeElement(accountPage.SELECTORS.FINISH_ACCOUNT_CREATION);
+    I.waitForText(successAccountMessage, clockUnit.SECONDS * 30);
+    I.waitForText(successTabCloseMessage, clockUnit.SECONDS * 30);
   };
 
   populateEmbeddedEmail = async (): Promise<void> => {
