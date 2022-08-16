@@ -331,46 +331,57 @@ describe('Signature', function () {
   });
 
   describe('Authentication request from origin', function () {
-    before(async function () {
-      await this.driver.get(`https://${WHITELIST[3]}`);
-    });
-
-    it('Rejected', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+    async function triggerAuthRequest(this: mocha.Context) {
       await this.driver.executeScript(() => {
         KeeperWallet.initialPromise
           .then(api => api.auth({ data: 'generated auth data' }))
           .then(
             result => {
-              window.result = JSON.stringify(result);
+              window.result = JSON.stringify(['RESOLVED', result]);
             },
-            () => {
-              window.result = null;
+            err => {
+              window.result = JSON.stringify(['REJECTED', err]);
             }
           );
       });
+    }
+
+    async function getAuthRequestResult(this: mocha.Context) {
+      return JSON.parse(
+        await this.driver.executeScript<string>(() => window.result)
+      );
+    }
+
+    it('Rejected', async function () {
+      await this.driver.get(`https://${WHITELIST[3]}`);
+
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
+      await triggerAuthRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
 
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
+
       await rejectMessage.call(this);
       await closeMessage.call(this);
+
+      const [status, result] = await getAuthRequestResult.call(this);
+
+      expect(status).to.equal('REJECTED');
+
+      expect(result).to.deep.equal({
+        code: '10',
+        data: 'rejected',
+        message: 'User denied message',
+      });
     });
 
     it('Approved', async function () {
       const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await this.driver.executeScript(() => {
-        KeeperWallet.initialPromise
-          .then(api => api.auth({ data: 'generated auth data' }))
-          .then(
-            result => {
-              window.result = JSON.stringify(result);
-            },
-            () => {
-              window.result = null;
-            }
-          );
-      });
+      await triggerAuthRequest.call(this);
       [messageWindow] = await waitForNewWindows(1);
       await this.driver.switchTo().window(messageWindow);
       await this.driver.navigate().refresh();
@@ -378,11 +389,9 @@ describe('Signature', function () {
       await approveMessage.call(this);
       await closeMessage.call(this);
 
-      const approveResult = await this.driver.executeScript<string>(
-        () => window.result
-      );
+      const [status, result] = await getAuthRequestResult.call(this);
 
-      const parsedApproveResult = JSON.parse(approveResult);
+      expect(status).to.equal('RESOLVED');
 
       const expectedApproveResult = {
         host: WHITELIST[3],
@@ -396,11 +405,10 @@ describe('Signature', function () {
         data: 'generated auth data',
       });
 
-      expect(parsedApproveResult).to.deep.contain(expectedApproveResult);
+      expect(result).to.deep.contain(expectedApproveResult);
 
-      expect(
-        verifySignature(senderPublicKey, bytes, parsedApproveResult.signature)
-      ).to.be.true;
+      expect(verifySignature(senderPublicKey, bytes, result.signature)).to.be
+        .true;
     });
   });
 
