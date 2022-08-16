@@ -125,6 +125,10 @@ const flattenBalances: Migration = {
   migrate: async () => {
     const { balances } = await extension.storage.local.get('balances');
 
+    if (!balances) {
+      return;
+    }
+
     await extension.storage.local.remove('balances');
 
     await extension.storage.local.set(
