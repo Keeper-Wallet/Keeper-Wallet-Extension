@@ -1,4 +1,5 @@
 import { AssetDetail } from 'assets/types';
+import { collectBalances } from 'balances/utils';
 import { MessageStoreItem } from 'messages/types';
 import { NetworkName } from 'networks/types';
 import { equals } from 'ramda';
@@ -225,11 +226,14 @@ export function createUpdateState(store: UiStore) {
       });
     }
 
-    const balances = getParam(state.balances, {});
-    if (balances && !equals(balances, currentState.balances)) {
+    const balances = collectBalances(state);
+    if (Object.keys(balances).length !== 0) {
       store.dispatch({
         type: ACTION.UPDATE_BALANCES,
-        payload: balances,
+        payload: {
+          ...currentState.balances,
+          ...balances,
+        },
       });
     }
 

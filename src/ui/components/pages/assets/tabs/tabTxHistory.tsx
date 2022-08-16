@@ -27,7 +27,7 @@ const Row = ({
 }: {
   data: {
     historyWithGroups: Array<TransactionFromNode | { groupName: string }>;
-    hasMore: boolean;
+    hasMore: boolean | undefined;
     hasFilters: string | number | boolean | undefined;
     historyLink: string;
   };

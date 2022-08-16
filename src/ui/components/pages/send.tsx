@@ -67,7 +67,8 @@ export function Send() {
 
   const currentBalance = currentAsset
     ? Money.fromCoins(
-        !isNft ? assetBalances[currentAsset.id]?.balance : 1,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        !isNft ? assetBalances![currentAsset.id]?.balance : 1,
         new Asset(currentAsset as AssetDetail)
       )
     : null;

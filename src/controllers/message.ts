@@ -888,7 +888,7 @@ export class MessageController extends EventEmitter {
     if (
       !isEnoughBalanceForFeeAndSpendingAmounts({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        assetBalance: balance.assets[feeMoney!.asset.id],
+        assetBalance: balance!.assets![feeMoney!.asset.id],
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fee: feeMoney!,
         spendingAmounts,

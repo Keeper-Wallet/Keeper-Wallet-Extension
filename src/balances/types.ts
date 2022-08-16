@@ -9,11 +9,11 @@ export interface AssetBalance {
 }
 
 export interface BalancesItem {
-  aliases: unknown[];
-  assets: Record<string, AssetBalance>;
+  aliases?: string[];
+  assets?: Record<string, AssetBalance>;
   available: string;
   leasedOut: string;
   network: NetworkName;
-  nfts: AssetDetail[];
-  txHistory: TransactionFromNode[];
+  nfts?: AssetDetail[];
+  txHistory?: TransactionFromNode[];
 }

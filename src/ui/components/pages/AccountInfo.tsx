@@ -14,10 +14,11 @@ import { NotificationsState } from 'ui/reducers/localState';
 import { PreferencesAccount } from 'preferences/types';
 import { NetworkName } from 'networks/types';
 import { AssetDetail } from 'assets/types';
+import { BalancesItem } from 'balances/types';
 
 interface StateProps {
   assets: Record<string, AssetDetail>;
-  balances: Record<string, { available: string; leasedOut: string }>;
+  balances: Partial<Record<string, BalancesItem>>;
   currentNetwork: NetworkName;
   customCodes: Partial<Record<NetworkName, string | null>>;
   network: NetworkName;
@@ -74,16 +75,14 @@ class AccountInfoComponent extends React.Component<Props, State> {
     const balancesMoney: Record<string, Money> = {};
     const leaseMoney: Record<string, Money> = {};
 
-    Object.entries<{ available: string; leasedOut: string }>(balances).forEach(
-      ([key, balance]) => {
-        if (!balance) {
-          return null;
-        }
-
-        balancesMoney[key] = new Money(balance.available, assetInstance);
-        leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+    Object.entries(balances).forEach(([key, balance]) => {
+      if (!balance) {
+        return null;
       }
-    );
+
+      balancesMoney[key] = new Money(balance.available, assetInstance);
+      leaseMoney[key] = new Money(balance.leasedOut, assetInstance);
+    });
 
     const { changeName: changeNameNotify } = props.notifications;
     const balance = balancesMoney[selectedAccount?.address];

@@ -37,6 +37,12 @@ export class PreferencesController extends EventEmitter {
     this.getNetwork = getNetwork;
   }
 
+  getAccounts() {
+    const { accounts } = this.store.getState();
+
+    return accounts;
+  }
+
   getSelectedAccount() {
     return this.store.getState().selectedAccount;
   }

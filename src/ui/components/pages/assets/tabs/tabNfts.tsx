@@ -92,14 +92,17 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
           {term ? (
             <>
               <div className="margin-min">
-                {myNfts?.length > MAX_NFT_ITEMS - 1 ? (
-                  <Trans
-                    i18nKey="assets.notFoundMaxNFTs"
-                    values={{ count: MAX_NFT_ITEMS }}
-                  />
-                ) : (
-                  t('assets.notFoundNFTs')
-                )}
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+                  myNfts?.length! > MAX_NFT_ITEMS - 1 ? (
+                    <Trans
+                      i18nKey="assets.notFoundMaxNFTs"
+                      values={{ count: MAX_NFT_ITEMS }}
+                    />
+                  ) : (
+                    t('assets.notFoundNFTs')
+                  )
+                }
               </div>
               <p className="blue link" onClick={() => setFilters(null)}>
                 {t('assets.resetFilters')}
@@ -119,7 +122,8 @@ export function TabNfts({ nextTab }: { nextTab: (tab: string) => void }) {
             nextTab(PAGES.NFT_COLLECTION);
           }}
           renderMore={() =>
-            myNfts?.length > MAX_NFT_ITEMS - 1 && (
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            myNfts?.length! > MAX_NFT_ITEMS - 1 && (
               <div className={cn(styles.nftListMore, 'basic500')}>
                 <div className="margin-min">
                   {term ? (

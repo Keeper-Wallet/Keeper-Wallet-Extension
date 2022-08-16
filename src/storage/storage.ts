@@ -4,6 +4,7 @@ import asStream from 'obs-store/lib/asStream';
 import * as Sentry from '@sentry/react';
 import log from 'loglevel';
 import { extension } from 'lib/extension';
+import * as browser from 'webextension-polyfill';
 import { createStreamSink } from 'lib/createStreamSink';
 import type ObservableStore from 'obs-store';
 import { NftInfo } from 'nfts';
@@ -19,27 +20,26 @@ import { UiState } from 'ui/reducers/updateState';
 import { IdleOptions, PreferencesAccount } from 'preferences/types';
 import { NotificationsStoreItem } from 'notifications/types';
 import { PermissionValue } from 'permissions/types';
-import { BalancesItem } from 'balances/types';
 import { NetworkName } from 'networks/types';
 import { MessageStoreItem } from 'messages/types';
 import { AssetDetail } from 'assets/types';
 import { MIGRATIONS } from './migrations';
 
-const CURRENT_MIGRATION_VERSION = 2;
+const CURRENT_MIGRATION_VERSION = 3;
 
 export async function backupStorage() {
-  const { backup, WalletController } = await extension.storage.local.get([
+  const { backup, WalletController } = await browser.storage.local.get([
     'backup',
     'WalletController',
   ]);
 
   if (WalletController?.vault) {
-    await extension.storage.local.set({
+    await browser.storage.local.set({
       backup: {
         ...backup,
         [WalletController.vault]: {
           timestamp: Date.now(),
-          version: extension.runtime.getManifest().version,
+          version: browser.runtime.getManifest().version,
         },
       },
     });
@@ -58,14 +58,14 @@ const SAFE_FIELDS = new Set([
 ]);
 
 export async function resetStorage() {
-  const state = await extension.storage.local.get();
-  await extension.storage.local.remove(
+  const state = await browser.storage.local.get();
+  await browser.storage.local.remove(
     Object.keys(state).reduce<string[]>(
       (acc, key) => (SAFE_FIELDS.has(key) ? acc : [...acc, key]),
       []
     )
   );
-  await extension.runtime.reload();
+  browser.runtime.reload();
 }
 
 export interface StorageLocalState {
@@ -75,7 +75,6 @@ export interface StorageLocalState {
   assets: Record<NetworkName, Record<string, AssetDetail>>;
   assetTickers: Record<string, string>;
   backup: string;
-  balances: Record<string, BalancesItem>;
   blacklist: string[];
   config: {
     networks: typeof DEFAULT_CONFIG.NETWORKS;
@@ -151,12 +150,17 @@ export class ExtensionStorage {
   >(
     defaults: Pick<StorageLocalState, K> | StorageLocalState,
     forced?: Pick<StorageLocalState, F> | StorageLocalState
-  ): Pick<StorageLocalState, K> {
-    const defaultsInitState = (Object.keys(defaults) as K[]).reduce(
+  ): Pick<StorageLocalState, K>;
+  getInitState<T extends Record<string, unknown>>(defaults: T, forced?: T): T;
+  getInitState(
+    defaults: Record<string, unknown>,
+    forced?: Record<string, unknown>
+  ) {
+    const defaultsInitState = Object.keys(defaults).reduce(
       (acc, key) =>
         Object.prototype.hasOwnProperty.call(this._initState, key)
-          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            { ...acc, [key]: this._initState![key] }
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            { ...acc, [key]: (this._initState as any)[key] }
           : acc,
       {}
     );
@@ -273,6 +277,24 @@ export class ExtensionStorage {
     return this._set(storageState, state as any);
   }
 
+  removeState(keys: string | string[]) {
+    const state = this._state;
+
+    if (state) {
+      if (typeof keys === 'string') {
+        if (keys in state) {
+          delete state[keys as keyof typeof state];
+        }
+      } else {
+        keys.forEach(key => {
+          if (key in state) {
+            delete state[key as keyof typeof state];
+          }
+        });
+      }
+    }
+  }
+
   private _get(
     storageState: chrome.storage.StorageArea,
     keys?: string | string[]
@@ -338,22 +360,7 @@ export class ExtensionStorage {
     storageState: chrome.storage.StorageArea,
     keys: string | string[]
   ) {
-    const state = this._state;
-
-    if (state) {
-      if (typeof keys === 'string') {
-        if (keys in state) {
-          delete state[keys as keyof typeof state];
-        }
-      } else {
-        keys.forEach(key => {
-          if (key in state) {
-            delete state[key as keyof typeof state];
-          }
-        });
-      }
-    }
-
+    this.removeState(keys);
     await storageState.remove(keys);
   }
 }

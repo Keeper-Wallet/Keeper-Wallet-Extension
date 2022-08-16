@@ -55,7 +55,7 @@ export function TxFee({ message: messageProp }: Props) {
   ) {
     feeOptions = feeOptions.concat({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      assetBalance: balance.assets[fee!.asset.id],
+      assetBalance: balance!.assets![fee!.asset.id],
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       money: fee!,
     });

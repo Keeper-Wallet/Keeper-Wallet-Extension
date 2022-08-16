@@ -40,7 +40,7 @@ export function getFeeOptions({
   usdPrices,
 }: {
   assets: Record<string, AssetDetail>;
-  balance: BalancesItem;
+  balance: BalancesItem | undefined;
   feeConfig: FeeConfig;
   initialFee: Money;
   txType: number;
@@ -53,7 +53,7 @@ export function getFeeOptions({
   );
 
   return SPONSORED_FEE_TX_TYPES.includes(txType)
-    ? Object.entries(balance.assets || {})
+    ? Object.entries(balance?.assets || {})
         .map(([assetId, assetBalance]) => ({
           assetBalance,
           money: convertFeeToAsset(
