@@ -28,6 +28,15 @@ jobs:
       #        with:
       #          ref: '${{ steps.currentTag.outputs.VALUE }}'
 
+      - name: Find previous Git tag
+        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+        id: prevTag
+
+      - name: Get sources for current tag
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ steps.prevTag.outputs.VALUE }}'
+
       - name: Read .nvmrc for keeper-wallet
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
         id: nvm_keeper
@@ -52,16 +61,21 @@ jobs:
 
       - name: Prepare extension bins for uploading
         run: |
-          mkdir ./atqa-framework/extension
-          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
+#          mkdir ./atqa-framework/extension
+#          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./atqa-framework/extension/
+          mkdir ./extension
+          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./extension/
+
 
       - name: Save extension artifacts
         uses: actions/upload-artifact@v3
         with:
           name: extension-init-bins
-          path: ./atqa-framework/extension/
+#          path: ./atqa-framework/extension/
+          path: ./extension/
 
-      #Set up current branch
+
+        #Set up current branch
 
       - name: Get Current branch source
         uses: actions/checkout@v3
