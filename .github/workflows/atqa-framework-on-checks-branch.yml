@@ -28,17 +28,6 @@ jobs:
       #        with:
       #          ref: '${{ steps.currentTag.outputs.VALUE }}'
 
-      #Check previous tag until framework will be merged and tagged at master branch
-
-      - name: Find previous Git tag
-        run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
-        id: prevTag
-
-      - name: Get sources for previous tag
-        uses: actions/checkout@v3
-        with:
-          ref: '${{ steps.prevTag.outputs.VALUE }}'
-
       - name: Read .nvmrc for keeper-wallet
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
         id: nvm_keeper
