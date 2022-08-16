@@ -178,7 +178,8 @@ describe('Signature', function () {
   }
 
   describe('Permission request from origin', function () {
-    async function triggerPermissionRequest(this: mocha.Context) {
+    async function performPermissionRequest(this: mocha.Context) {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
         KeeperWallet.initialPromise
           .then(api => api.publicState())
@@ -191,6 +192,9 @@ describe('Signature', function () {
             }
           );
       });
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     async function getPermissionRequestResult(this: mocha.Context) {
@@ -206,16 +210,10 @@ describe('Signature', function () {
     it('Rejected', async function () {
       await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerPermissionRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performPermissionRequest.call(this);
       await checkOrigin.call(this, CUSTOMLIST[0]);
       await checkAccountName.call(this, 'rich');
       await checkNetworkName.call(this, 'Testnet');
-
       await rejectMessage.call(this);
       await closeMessage.call(this);
 
@@ -233,11 +231,7 @@ describe('Signature', function () {
     it('Reject forever', async function () {
       await this.driver.get(`https://${CUSTOMLIST[1]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerPermissionRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
+      await performPermissionRequest.call(this);
 
       await this.driver
         .wait(
@@ -273,12 +267,7 @@ describe('Signature', function () {
     it('Approved', async function () {
       await this.driver.get(`https://${CUSTOMLIST[0]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerPermissionRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performPermissionRequest.call(this);
       await approveMessage.call(this);
       await closeMessage.call(this);
 
@@ -331,7 +320,8 @@ describe('Signature', function () {
   });
 
   describe('Authentication request from origin', function () {
-    async function triggerAuthRequest(this: mocha.Context) {
+    async function performAuthRequest(this: mocha.Context) {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(() => {
         KeeperWallet.initialPromise
           .then(api => api.auth({ data: 'generated auth data' }))
@@ -344,6 +334,9 @@ describe('Signature', function () {
             }
           );
       });
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     async function getAuthRequestResult(this: mocha.Context) {
@@ -359,16 +352,10 @@ describe('Signature', function () {
     it('Rejected', async function () {
       await this.driver.get(`https://${WHITELIST[3]}`);
 
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerAuthRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performAuthRequest.call(this);
       await checkOrigin.call(this, WHITELIST[3]);
       await checkAccountName.call(this, 'rich');
       await checkNetworkName.call(this, 'Testnet');
-
       await rejectMessage.call(this);
       await closeMessage.call(this);
 
@@ -384,12 +371,7 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerAuthRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performAuthRequest.call(this);
       await approveMessage.call(this);
       await closeMessage.call(this);
 
@@ -419,7 +401,8 @@ describe('Signature', function () {
   describe('Matcher request', function () {
     const timestamp = Date.now();
 
-    async function triggerMatcherRequest(this: mocha.Context) {
+    async function performMatcherRequest(this: mocha.Context) {
+      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
       await this.driver.executeScript(
         (senderPublicKey: string, timestamp: number) => {
           KeeperWallet.initialPromise
@@ -444,6 +427,9 @@ describe('Signature', function () {
         senderPublicKey,
         timestamp
       );
+      [messageWindow] = await waitForNewWindows(1);
+      await this.driver.switchTo().window(messageWindow);
+      await this.driver.navigate().refresh();
     }
 
     async function getMatcherRequestResult(this: mocha.Context) {
@@ -457,16 +443,10 @@ describe('Signature', function () {
     }
 
     it('Rejected', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerMatcherRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performMatcherRequest.call(this);
       await checkOrigin.call(this, WHITELIST[3]);
       await checkAccountName.call(this, 'rich');
       await checkNetworkName.call(this, 'Testnet');
-
       await rejectMessage.call(this);
       await closeMessage.call(this);
 
@@ -482,12 +462,7 @@ describe('Signature', function () {
     });
 
     it('Approved', async function () {
-      const { waitForNewWindows } = await Windows.captureNewWindows.call(this);
-      await triggerMatcherRequest.call(this);
-      [messageWindow] = await waitForNewWindows(1);
-      await this.driver.switchTo().window(messageWindow);
-      await this.driver.navigate().refresh();
-
+      await performMatcherRequest.call(this);
       await approveMessage.call(this);
       await closeMessage.call(this);
 
