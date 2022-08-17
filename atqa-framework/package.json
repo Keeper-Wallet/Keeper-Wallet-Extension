@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "eslint": "eslint . --ext .ts --ext .js",
+    "eslint-fix": "eslint . --ext .ts --ext .js --fix",
+    "lint:typescript": "tsc --noEmit",
     "report:open": "allure serve output",
     "report:remove": "rm -rf output/*",
     "remove:extension": "rm -rf extension/*",
@@ -14,8 +17,7 @@
     "run:chrome:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@chrome)'",
     "run:opera:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@opera)'",
     "run:edge:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose --tests --grep '^(?!.*@ignore)(?=.*@edge)'",
-    "run:gerk": "yarn report:remove ; codeceptjs run  --features --plugins allure --grep '^(?!.*@ignore)(?=.*@debug)'",
-    "lint:typescript": "tsc --noEmit"
+    "run:gerk": "yarn report:remove ; codeceptjs run  --features --plugins allure --grep '^(?!.*@ignore)(?=.*@debug)'"
   },
   "dependencies": {
     "@codeceptjs/helper": "^2.0.1",
@@ -26,14 +28,34 @@
     "dotenv-safe": "^8.2.0",
     "firefox-profile": "^4.2.2",
     "fs-extra": "^10.1.0",
+    "http-status": "^1.5.2",
     "ts-node": "^10.8.2",
     "typescript": "^4.7.4",
     "webdriverio": "^7.20.7",
-    "http-status": "^1.5.2"
+    "@faker-js/faker": "^7.4.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.4.0",
     "@wdio/firefox-profile-service": "^5.21.0",
-    "@wdio/selenium-standalone-service": "^7.20.7"
+    "@wdio/selenium-standalone-service": "^7.20.7",
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-codeceptjs": "^1.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "prettier-eslint": "^12.0.0",
+    "gherkin-lint": "4.2.2",
+    "pre-commit": "^1.2.2",
+    "husky": "^4.2.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn eslint"
+    }
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }

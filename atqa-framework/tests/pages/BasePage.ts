@@ -1,16 +1,17 @@
 import { ClockUnit } from '../../utils/clockUnit';
 import { Locator } from '../../interfaces/Locator.interface';
+import { Url } from '../../interfaces/Url.interface';
 
 const clockUnit = new ClockUnit();
 const { I } = inject();
 
 export class BasePage {
   BROWSER_URLS = {
-    CHROMIUM: (id: string) => ({
+    CHROMIUM: (id: string): Url => ({
       POPUP_HTML: `chrome-extension://${id}/popup.html`,
       ACCOUNTS_HTML: `chrome-extension://${id}/accounts.html`,
     }),
-    GECKO: (id: string) => ({
+    GECKO: (id: string): Url => ({
       POPUP_URI: `moz-extension://${id}/popup.html`,
     }),
     CHROME_SYSTEM: 'chrome://system/',
@@ -53,9 +54,10 @@ export class BasePage {
     },
   };
 
-  //TODO: Fix any type
+  // TODO: Fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getItemFromLocalStorage = async (keyName: string): Promise<any> => {
-    return I.executeScript(key => {
+    return I.executeScript((key) => {
       return window.localStorage.getItem(key);
     }, `data-qa:${keyName}`);
   };
@@ -72,7 +74,7 @@ export class BasePage {
     );
   };
 
-  //TODO: Make it workable and init as main method for getId (now the elements on the system page can't be found for some reason)
+  // TODO: Make it workable and init as main method for getId
   getChromeExtensionId = async (): Promise<string> => {
     I.amOnPage(this.BROWSER_URLS.CHROME_SYSTEM);
     I.seeElement({
@@ -82,13 +84,13 @@ export class BasePage {
     const extList = await I.grabTextFrom({
       xpath: '//*[@id="extensions-value"]',
     });
-    console.log(extList);
+    console.info(extList);
     let goo = '';
     let [id, name] = '';
     for (goo of extList.split('\n')) {
       [id, name] = goo.split(' : ');
       if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
-        console.log(id, 'EXT ID');
+        console.info(id, 'EXT ID');
       }
     }
     return id;
@@ -109,6 +111,7 @@ export class BasePage {
       this.BROWSER_URLS.FIREFOX_EXTENSIONS_PAGE;
     const firefoxManifestEmail: Locator =
       this.BROWSER_SELECTORS.FIREFOX.MANIFEST_EMAIL_TEXT;
+
     switch (process.env.BROWSER_INIT_NAME) {
       case 'opera':
         I.amOnPage(chromiumExtensionPage);
@@ -137,8 +140,10 @@ export class BasePage {
       case 'firefox':
         I.amOnPage(firefoxExtensionPage);
         I.waitForText(firefoxManifestEmail, clockUnit.SECONDS * 30);
+        break;
+      default:
     }
     I.waitForElement(element);
-    return await I.grabTextFrom(element);
+    return I.grabTextFrom(element);
   };
 }

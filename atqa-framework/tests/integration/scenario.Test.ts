@@ -1,11 +1,13 @@
-import { TABS_MOCK_MESSAGE } from '../../testData/res/constants';
+import {
+  TABS_MOCK_MESSAGE,
+  DEFAULT_PASSWORD,
+} from '../../testData/res/constants';
 import { ClockUnit } from '../../utils/clockUnit';
 import { BasePage } from '../pages/BasePage';
 import { ExtensionInitHandler } from '../../utils/ExtensionInitHandler';
 import { AccountPage } from '../pages/AccountPage';
 import { ResourcesProvider } from '../../testData/res/ResourcesProvider';
 import { copyDir } from '../../utils/copyDir';
-import { DEFAULT_PASSWORD } from '../../testData/res/constants';
 import { AccountSeeder } from '../../utils/AccountSeeder';
 import { AssetPage } from '../pages/AssetPage';
 import { ModalPage } from '../pages/ModalPage';
@@ -178,7 +180,15 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
   );
   await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+    clockUnit.SECONDS * 30
+  );
   await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+    clockUnit.SECONDS * 30
+  );
   await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
   await I.waitForElement(
     modalPage.SELECTORS.KEEPER_TABS.NFT,
@@ -238,7 +248,7 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
   const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
   await copyDir(updateDir);
-  await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
+  await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem
   await I.forceClick(UPDATE_BUTTON_SELECTOR);
   await extensionInitHandler.restartServiceWorker();
   await I.waitForElement(KEEPER_VERSION, clockUnit.SECONDS * 30);
@@ -360,7 +370,15 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
   );
   await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+    clockUnit.SECONDS * 30
+  );
   await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+  await I.waitForElement(
+    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+    clockUnit.SECONDS * 30
+  );
   await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
   await I.waitForElement(
     modalPage.SELECTORS.KEEPER_TABS.NFT,
@@ -478,7 +496,15 @@ Data(initData).Scenario(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
     );
     await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_TABS.NFT,
@@ -565,7 +591,7 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
+    await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();
@@ -710,7 +736,15 @@ Data(initData).Scenario(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
     );
     await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_TABS.NFT,
@@ -829,7 +863,15 @@ Data(initData).Scenario(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
     );
     await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_TABS.NFT,
@@ -897,7 +939,7 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
+    await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();
@@ -973,7 +1015,15 @@ Data(initData).Scenario(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE('TESTNET_EMAIL')
     );
     await I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
+    await I.waitForElement(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
+      clockUnit.SECONDS * 30
+    );
     await I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
     await I.waitForElement(
       modalPage.SELECTORS.KEEPER_TABS.NFT,

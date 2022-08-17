@@ -7,8 +7,8 @@ export const copyDir = async (dir: Folder): Promise<void> => {
       overwrite: true,
       recursive: true,
     });
-    console.log('Dir has been copied');
+    console.info('Dir has been copied');
   } catch (err) {
-    console.log(`${err} has found`);
+    console.info(`${err} has found`);
   }
 };

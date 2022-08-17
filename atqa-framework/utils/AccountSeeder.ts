@@ -3,7 +3,7 @@ import { AccountPage } from '../tests/pages/AccountPage';
 import { ResourcesProvider } from '../testData/res/ResourcesProvider';
 import { DataGenerator } from './DataGenerator';
 import { UserProvider } from '../testData/UserProvider';
-import { TABS_MOCK_MESSAGE } from './../testData/res/constants';
+import { TABS_MOCK_MESSAGE } from '../testData/res/constants';
 
 const { I } = inject();
 
@@ -34,7 +34,7 @@ export class AccountSeeder {
       accountSeedNameMainnet,
     ];
 
-    for (let i = 0; i < seeds.length; i++) {
+    for (let i = 0; i < seeds.length; i += 1) {
       I.waitForElement(
         accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON,
         clockUnit.SECONDS * 30
@@ -139,7 +139,7 @@ export class AccountSeeder {
     const network = ['Mainnet', 'Testnet'];
     const accountName = [accountEmailNameMainnet, accountEmailNameTestnet];
 
-    for (let i = 0; i < emailUsers.length; i++) {
+    for (let i = 0; i < emailUsers.length; i += 1) {
       I.waitForElement(
         accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON,
         clockUnit.SECONDS * 30

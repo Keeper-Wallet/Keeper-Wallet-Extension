@@ -1,0 +1,70 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "import",
+    "codeceptjs"
+  ],
+  "env": {
+    "node": true,
+    "codeceptjs/codeceptjs": true
+  },
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier",
+    "prettier/@typescript-eslint",
+    "plugin:codeceptjs/recommended"
+  ],
+  "parserOptions": {
+    "project": ["tsconfig.json"]
+  },
+  "rules": {
+    "prettier/prettier": ["error", { "singleQuote": true }],
+    "no-var": "error",
+    "semi": "error",
+    "indent": "error",
+    "no-multi-spaces": "error",
+    "space-in-parens": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "error",
+    "no-use-before-define": "error",
+    "codeceptjs/no-actor-in-scenario": 2,
+    "codeceptjs/no-pause-in-scenario": "ERROR",
+    "codeceptjs/no-exclusive-tests": "ERROR",
+    "codeceptjs/no-skipped-tests": "ERROR",
+    "no-console": ["error", { "allow": ["info", "warn", "error"] }],
+    "max-len": ["error", { "code": 128 }],
+    "no-restricted-syntax": ["error", "WithStatement", "BinaryExpression[operator='in']"],
+    "import/prefer-default-export": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "rules": {
+        "codeceptjs/no-actor-in-scenario": "off"
+      },
+      "files": ["*.Test.ts"]
+    },
+    {
+      "files": ["*Users.ts"],
+      "rules": {
+        "max-len": "off"
+      }
+    }
+  ],
+  "globals": {
+    "Given": true,
+    "When": true,
+    "Then": true,
+    "Fail": true
+  }
+}

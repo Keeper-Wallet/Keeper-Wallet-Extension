@@ -1,19 +1,21 @@
+import path from 'path';
 import { File } from '../../interfaces/File.interface';
 import { Folder } from '../../interfaces/Folder.interface';
 import { SeedsPhrases } from '../../interfaces/SeedsPhrase.interface';
 import { ResourcesObjects } from './resourcesObjects';
 import { ExtensionFolders } from './folderObjects';
 import { SeedObjects } from './SeedsObjects';
-import path from 'path';
 
 export class ResourcesProvider {
   private getFileResources = [...ResourcesObjects];
+
   private getFolderResources = [...ExtensionFolders];
+
   private getSeedResource = [...SeedObjects];
 
   private getFileResource = (resourceType: string): File => {
     const initFile = this.getFileResources.find(
-      file => file.type === resourceType
+      (file) => file.type === resourceType
     );
     if (initFile === undefined) {
       throw new Error(`The ${initFile} is undefined`);
@@ -23,7 +25,7 @@ export class ResourcesProvider {
 
   private getFolderResource = (folderType: string): Folder => {
     const initResource = this.getFolderResources.find(
-      folder => folder.type === folderType
+      (folder) => folder.type === folderType
     );
     if (initResource === undefined) {
       throw new Error(`The ${initResource} is undefined`);
@@ -33,7 +35,7 @@ export class ResourcesProvider {
 
   private getSeed = (seedType: string): SeedsPhrases => {
     const initResource = this.getSeedResource.find(
-      seed => seed.networkType === seedType
+      (seed) => seed.networkType === seedType
     );
     if (initResource === undefined) {
       throw new Error(`The ${initResource} is undefined`);
