@@ -7,7 +7,7 @@
     "report:remove": "rm -rf output/*",
     "remove:extension": "rm -rf extension/*",
     "build:extension": "cd .. && npm run dist",
-    "init:folders": "mkdir buffer/ && mkdir extension/",
+    "init:folders": "mkdir buffer && mkdir extension",
     "copy:buffer:extension": "cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/",
     "run:tests": "yarn report:remove ; codeceptjs run -c codecept.conf.js run-workers 3",
     "run:debug": "yarn report:remove ; codeceptjs run -c codecept.conf.js --debug --steps --verbose",

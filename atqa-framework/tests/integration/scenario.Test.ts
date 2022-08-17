@@ -4,7 +4,7 @@ import { BasePage } from '../pages/BasePage';
 import { ExtensionInitHandler } from '../../utils/ExtensionInitHandler';
 import { AccountPage } from '../pages/AccountPage';
 import { ResourcesProvider } from '../../testData/res/ResourcesProvider';
-import { copyDir } from '../../utils/copyDirHandler';
+import { copyDir } from '../../utils/copyDir';
 import { DEFAULT_PASSWORD } from '../../testData/res/constants';
 import { AccountSeeder } from '../../utils/AccountSeeder';
 import { AssetPage } from '../pages/AssetPage';
@@ -238,7 +238,7 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
   await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
   const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
   await copyDir(updateDir);
-  await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and dockerawait I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
+  await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
   await I.forceClick(UPDATE_BUTTON_SELECTOR);
   await extensionInitHandler.restartServiceWorker();
   await I.waitForElement(KEEPER_VERSION, clockUnit.SECONDS * 30);
@@ -565,7 +565,7 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and docker
+    await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();
@@ -897,7 +897,7 @@ Data(initData).Scenario(
     await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
-    await I.wait(clockUnit.SECONDS * 5); //TODO: find out the way how to check file indexing in browser and docker
+    await I.wait(clockUnit.SECONDS * 5); //TODO: find the way how to check that files has been indexed in filesystem
     await I.waitForElement(UPDATE_BUTTON_SELECTOR, clockUnit.SECONDS * 30);
     await I.forceClick(UPDATE_BUTTON_SELECTOR);
     await extensionInitHandler.restartServiceWorker();

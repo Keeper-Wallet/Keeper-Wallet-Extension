@@ -18,9 +18,7 @@ exports.config = {
       keepBrowserState: false,
       url: 'https://localhost/',
       browser: process.env.BROWSER_INIT_NAME,
-      desiredCapabilities: (() => {
-        return browserInit.initCaps();
-      })(),
+      desiredCapabilities: browserInit.initCaps(),
       waitForTimeout: 40000,
       timeout: 40000,
     },

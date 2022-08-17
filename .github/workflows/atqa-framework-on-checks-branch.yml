@@ -32,7 +32,7 @@ jobs:
         run: echo ::set-output name=VALUE::$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
         id: prevTag
 
-      - name: Get sources for current tag
+      - name: Get sources for previous Git tag
         uses: actions/checkout@v3
         with:
           ref: '${{ steps.prevTag.outputs.VALUE }}'
@@ -52,12 +52,8 @@ jobs:
       - name: Create empty config.json
         run: echo '{}' > config.json
 
-      #Build master with tags
-
-      - name: Build
+      - name: Build master with tags
         run: yarn run dist
-
-      #Copy master with tag bins to buffer folder
 
       - name: Prepare extension bins for uploading
         run: |
@@ -68,10 +64,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: extension-init-bins
-          #          path: ./atqa-framework/extension/
           path: ./extension/
-
-        #Set up current branch
 
       - name: Get Current branch source
         uses: actions/checkout@v3
@@ -88,15 +81,8 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Create empty config.json
-        run: echo '{}' > config.json
-
-      #Build extension for current branch
-
-      - name: Build
+      - name: Build extension for current branch
         run: yarn run dist
-
-      #Set up atqa-framework
 
       - name: Prepare nvm for atqa-folder
         working-directory: ./atqa-framework
@@ -112,8 +98,6 @@ jobs:
         working-directory: ./atqa-framework
         run: yarn --frozen-lockfile
 
-        #Setting up Selenoid
-
       - name: Setting up Selenoid ecosystem
         working-directory: ./atqa-framework
         run: docker compose up -d
@@ -124,8 +108,6 @@ jobs:
           docker pull selenoid/vnc_opera:88.0
           docker pull selenoid/vnc_chrome:102.0
           docker pull browsers/edge:103.0
-
-      #init DotEnv and start tests
 
       - name: Init buffer and extension init folders
         working-directory: ./atqa-framework
@@ -150,7 +132,6 @@ jobs:
       - name: Run chrome
         working-directory: ./atqa-framework
         run: |
-          export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
           yarn codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@chrome)'
         env:
@@ -158,6 +139,7 @@ jobs:
           BROWSER_VERSION: 102.0
           SELENIUM_PORT: 4444
           SEED: ${{ secrets.TEST_USER }}
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Save chrome report output
         uses: actions/upload-artifact@v3
@@ -168,7 +150,6 @@ jobs:
       - name: Run opera
         working-directory: ./atqa-framework
         run: |
-          export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
           yarn  codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@opera)'
         env:
@@ -176,6 +157,7 @@ jobs:
           BROWSER_VERSION: 88.0
           SELENIUM_PORT: 4444
           SEED: ${{ secrets.TEST_USER }}
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Save opera report output
         uses: actions/upload-artifact@v3
@@ -186,7 +168,6 @@ jobs:
       - name: Run MicrosoftEdge
         working-directory: ./atqa-framework
         run: |
-          export NODE_OPTIONS="--max-old-space-size=8192"
           curl http://localhost:4444/status
           yarn  codeceptjs run -c codecept.conf.js --steps --tests --grep '^(?!.*@ignore)(?=.*@edge)'
         env:
@@ -194,6 +175,7 @@ jobs:
           BROWSER_VERSION: 103.0
           SELENIUM_PORT: 4444
           SEED: ${{ secrets.TEST_USER }}
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Save edge report output
         uses: actions/upload-artifact@v3

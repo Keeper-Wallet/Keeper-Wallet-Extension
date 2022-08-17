@@ -6,11 +6,11 @@ export class UserProvider {
   private getUsers = [...emailUsers];
 
   getUser = (userType: string): EmailUser => {
-    const fundedUser = this.getUsers.find(user => user.type === userType);
-    if (fundedUser === undefined) {
+    const targetUser = this.getUsers.find(user => user.type === userType);
+    if (targetUser === undefined) {
       throw new Error(`The user "${userType}" is undefined`);
     }
-    return fundedUser;
+    return targetUser;
   };
 
   getTestNetUser = (): EmailUser => {
