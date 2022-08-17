@@ -525,14 +525,71 @@ describe('Signature', function () {
 
       it('Rejected', async function () {
         await performSignTransaction.call(this, ISSUE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueType"]'))
+            .getText()
+        ).to.equal('Issue Smart Token');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueAmount"]'))
+            .getText()
+        ).to.equal('92233720368.54775807 ShortToken');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDescription"]'))
+            .getText()
+        ).to.equal(ISSUE.data.description);
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDecimals"]'))
+            .getText()
+        ).to.equal(String(ISSUE.data.precision));
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueReissuable"]'))
+            .getText()
+        ).to.equal('Reissuable');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[class^="script-codeScript"]'))
+            .getText()
+        ).to.equal('base64:BQbtKNoM');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="txFee"]'))
+            .getText()
+        ).to.equal('1.004 WAVES');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
+
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
+        );
+
+        expect(status).to.equal('REJECTED');
+
+        expect(approveResult).to.deep.equal({
+          code: '10',
+          data: 'rejected',
+          message: 'User denied message',
+        });
       });
 
       it('Approved', async function () {
         await performSignTransaction.call(this, ISSUE);
         await approveMessage.call(this);
-
         await closeMessage.call(this);
 
         const [status, approveResult] = await getSignTransactionResult.call(
@@ -576,8 +633,60 @@ describe('Signature', function () {
     describe('Issue without script', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, ISSUE_WITHOUT_SCRIPT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueType"]'))
+            .getText()
+        ).to.equal('Issue Token');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueAmount"]'))
+            .getText()
+        ).to.equal('92233720368.54775807 ShortToken');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDescription"]'))
+            .getText()
+        ).to.equal(ISSUE.data.description);
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDecimals"]'))
+            .getText()
+        ).to.equal(String(ISSUE.data.precision));
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueReissuable"]'))
+            .getText()
+        ).to.equal('Reissuable');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="txFee"]'))
+            .getText()
+        ).to.equal('1.004 WAVES');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
+
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
+        );
+
+        expect(status).to.equal('REJECTED');
+
+        expect(approveResult).to.deep.equal({
+          code: '10',
+          data: 'rejected',
+          message: 'User denied message',
+        });
       });
 
       it('Approved', async function () {
@@ -624,8 +733,66 @@ describe('Signature', function () {
     describe('Issue with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(ISSUE, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueType"]'))
+            .getText()
+        ).to.equal('Issue Smart Token');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueAmount"]'))
+            .getText()
+        ).to.equal('92233720368.54775807 ShortToken');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDescription"]'))
+            .getText()
+        ).to.equal(ISSUE.data.description);
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueDecimals"]'))
+            .getText()
+        ).to.equal(String(ISSUE.data.precision));
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="issueReissuable"]'))
+            .getText()
+        ).to.equal('Reissuable');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[class^="script-codeScript"]'))
+            .getText()
+        ).to.equal('base64:BQbtKNoM');
+
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="txFee"]'))
+            .getText()
+        ).to.equal('1.004 WAVES');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
+
+        const [status, approveResult] = await getSignTransactionResult.call(
+          this
+        );
+
+        expect(status).to.equal('REJECTED');
+
+        expect(approveResult).to.deep.equal({
+          code: '10',
+          data: 'rejected',
+          message: 'User denied message',
+        });
       });
 
       it('Approved', async function () {

@@ -30,7 +30,7 @@ class IssueCardComponent extends React.PureComponent<
             <TxIcon txType={messageType} />
           </div>
           <div>
-            <div className="basic500 body3 margin-min">
+            <div className="basic500 body3 margin-min" data-testid="issueType">
               {isNFT
                 ? !tx.script
                   ? t('transactions.issueNFT')
@@ -41,6 +41,7 @@ class IssueCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="issueAmount"
                 split={true}
                 showAsset={true}
                 balance={amount}
@@ -56,7 +57,9 @@ class IssueCardComponent extends React.PureComponent<
               <div className="tx-title tag1 basic500">
                 {t('transactions.description')}
               </div>
-              <div className={styles.txValue}>{tx.description}</div>
+              <div className={styles.txValue} data-testid="issueDescription">
+                {tx.description}
+              </div>
             </div>
           )}
 
@@ -65,7 +68,9 @@ class IssueCardComponent extends React.PureComponent<
               <div className="tx-title tag1 basic500">
                 {t('transactions.decimalPoints')}
               </div>
-              <div className={styles.txValue}>{decimals}</div>
+              <div className={styles.txValue} data-testid="issueDecimals">
+                {decimals}
+              </div>
             </div>
           )}
 
@@ -74,7 +79,7 @@ class IssueCardComponent extends React.PureComponent<
               <div className="tx-title tag1 basic500">
                 {t('transactions.issueType')}
               </div>
-              <div className={styles.txValue}>
+              <div className={styles.txValue} data-testid="issueReissuable">
                 {t(
                   tx.reissuable
                     ? 'transactions.reissuable'

@@ -62,7 +62,7 @@ export function TxFee({ message: messageProp }: Props) {
   }
 
   return (
-    <div>
+    <div data-testid="txFee">
       {feeOptions.length <= 1 ? (
         <Balance isShortFormat={true} balance={fee} showAsset={true} />
       ) : (
