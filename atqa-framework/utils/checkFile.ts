@@ -8,9 +8,9 @@ export const checkFile = async (file: File): Promise<void> => {
   setTimeout(() => {
     try {
       fs.existsSync(file.path);
-      console.log(`File is exist in init folder`);
+      console.info(`File is exist in init folder`);
     } catch (err) {
-      console.log(`${err} is found`);
+      console.info(`${err} is found`);
     }
   }, clockUnit.SECONDS * 30);
 };

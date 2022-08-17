@@ -1,9 +1,6 @@
 require('ts-node/register');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv-safe').config();
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const BrowserCaps = require('./browserCaps');
-const browserInit = new BrowserCaps();
 
 exports.config = {
   name: 'waves',
@@ -18,7 +15,7 @@ exports.config = {
       keepBrowserState: false,
       url: 'https://localhost/',
       browser: process.env.BROWSER_INIT_NAME,
-      desiredCapabilities: browserInit.initCaps(),
+      desiredCapabilities: BrowserCaps.initCaps(),
       waitForTimeout: 40000,
       timeout: 40000,
     },

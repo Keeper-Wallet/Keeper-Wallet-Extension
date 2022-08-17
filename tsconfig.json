@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "test/**/*", "types/**/*", "atqa-framework/**/*"],
+  "include": ["src/**/*", "test/**/*", "types/**/*"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",

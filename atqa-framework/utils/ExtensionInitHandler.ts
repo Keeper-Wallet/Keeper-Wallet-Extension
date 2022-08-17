@@ -18,9 +18,9 @@ const args = process.env.BROWSER_INIT_NAME;
 
 export class ExtensionInitHandler {
   // TODO: get the file through the resource provider
-  public installAddOnHelper = async (path: string): Promise<void> => {
+  public installAddOnHelper = async (extensionPath: string): Promise<void> => {
     I.useWebDriverTo('Install Gecko AddOn', async ({ browser }) => {
-      const extension = await fs.readFile(path);
+      const extension = await fs.readFile(extensionPath);
       browser.installAddOn(extension.toString('base64'), true);
     });
   };
@@ -84,7 +84,9 @@ export class ExtensionInitHandler {
         );
         I.closeCurrentTab();
         await basePage.setItemToLocalStorage('firefoxId', extId);
+        break;
       }
+      default:
     }
   };
 
@@ -136,7 +138,7 @@ export class ExtensionInitHandler {
         I.waitForElement(edgeWorkerTitle, clockUnit.SECONDS * 30);
         I.click(edgeRestartWorkerButton);
         I.dontSeeElementInDOM(edgeWorkerTitle);
-        I.wait(clockUnit.SECONDS * 2); //debug wait
+        I.wait(clockUnit.SECONDS * 2); // debug wait
         I.click(edgeRestartWorkerButton);
         I.waitForElement(edgeWorkerActiveStatus, clockUnit.SECONDS * 30);
         I.seeElementInDOM(edgeWorkerTitle);

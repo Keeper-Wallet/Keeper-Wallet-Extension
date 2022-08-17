@@ -1,5 +1,5 @@
 const initBrowser = class BrowserCaps {
-  initCaps() {
+  static initCaps() {
     let capabilities = {
       selenoidOptions: {
         enableVNC: true,
@@ -11,34 +11,37 @@ const initBrowser = class BrowserCaps {
     };
     switch (process.env.BROWSER_INIT_NAME) {
       case 'MicrosoftEdge':
-        capabilities = Object.assign({}, capabilities, {
+        capabilities = {
+          ...capabilities,
           'ms:edgeOptions': {
             args: [
               '--load-extension=/home/selenium/edge',
               '--start-fullscreen',
             ],
           },
-        });
+        };
         break;
       case 'opera':
-        capabilities = Object.assign({}, capabilities, {
+        capabilities = {
+          ...capabilities,
           'goog:chromeOptions': {
             args: [
               '--load-extension=/home/selenium/opera',
               // '--start-fullscreen',
             ],
           },
-        });
+        };
         break;
       case 'chrome':
-        capabilities = Object.assign({}, capabilities, {
+        capabilities = {
+          ...capabilities,
           'goog:chromeOptions': {
             args: [
               '--load-extension=/home/selenium/chrome',
               // '--start-fullscreen',
             ],
           },
-        });
+        };
         break;
       case 'firefox':
         return capabilities;
