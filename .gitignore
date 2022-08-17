@@ -5,10 +5,10 @@
 
 /dist*
 /builds
-#atqa-framework
+#atqa-framework stuff for local runs
 /atqa-framework/output
-/atqa-framework/extension/
-/atqa-framework/buffer/
+/atqa-framework/extension
+/atqa-framework/buffer
 /atqa-framework/browsers.bckp.json
 # User-specific stuff
 .idea/**/workspace.xml
