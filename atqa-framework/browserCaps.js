@@ -43,7 +43,9 @@ const initBrowser = class BrowserCaps {
       case 'firefox':
         return capabilities;
       default:
-          throw new Error(`BROWSER_INIT_NAME has an invalid value: ${process.env.BROWSER_INIT_NAME}}`);
+        throw new Error(
+          `BROWSER_INIT_NAME has an invalid value: ${process.env.BROWSER_INIT_NAME}}`
+        );
     }
     return capabilities;
   }
