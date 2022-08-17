@@ -78,6 +78,9 @@ jobs:
         with:
           node-version: '${{ steps.nvm_keeper_v2.outputs.NODE_VERSION }}'
 
+      - name: Create empty config.json
+        run: echo '{}' > config.json
+
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
