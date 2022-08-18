@@ -1,4 +1,4 @@
-const initBrowser = class BrowserCaps {
+module.exports = class BrowserCaps {
   static initCaps() {
     let capabilities = {
       selenoidOptions: {
@@ -53,5 +53,3 @@ const initBrowser = class BrowserCaps {
     return capabilities;
   }
 };
-
-module.exports = initBrowser;
