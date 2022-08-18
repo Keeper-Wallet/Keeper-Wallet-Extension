@@ -74,28 +74,6 @@ export class BasePage {
     );
   };
 
-  // TODO: Make it workable and init as main method for getId
-  getChromeExtensionId = async (): Promise<string> => {
-    I.amOnPage(this.BROWSER_URLS.CHROME_SYSTEM);
-    I.seeElement({
-      xpath: '//*[@id="extensions-value"]',
-    });
-    I.wait(clockUnit.SECONDS * 10);
-    const extList = await I.grabTextFrom({
-      xpath: '//*[@id="extensions-value"]',
-    });
-    console.info(extList);
-    let goo = '';
-    let [id, name] = '';
-    for (goo of extList.split('\n')) {
-      [id, name] = goo.split(' : ');
-      if (name.toLowerCase() === 'Keeper Wallet'.toLowerCase()) {
-        console.info(id, 'EXT ID');
-      }
-    }
-    return id;
-  };
-
   getExtensionId = async (element: Locator): Promise<string> => {
     const devModeSelector: Locator =
       this.BROWSER_SELECTORS.CHROMIUM.DEV_MODE_TOGGLE;
