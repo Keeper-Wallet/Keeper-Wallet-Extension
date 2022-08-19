@@ -35,7 +35,6 @@ const rejectedMessage = TABS_MOCK_MESSAGE.transactionReject;
 Feature('Initial Test');
 
 Background(async () => {
-  await extensionInitHandler.extensionInit();
   await extensionInitHandler.initAccountScreen();
   await accountSeeder.populateEmbeddedSeed();
   await accountSeeder.populateEmbeddedEmail();
@@ -245,7 +244,7 @@ Data(initData).Scenario('Update unlogged keeper', async ({ current }) => {
     clockUnit.SECONDS * 30
   );
   await I.click(modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON);
-  await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
+  await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS);
   const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
   await copyDir(updateDir);
   await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem
@@ -588,7 +587,7 @@ Data(initData).Scenario(
       clockUnit.SECONDS * 30
     );
     await I.seeElement(modalPage.SELECTORS.TRANSACTION_MODAL.AMOUNT_VALUE(10));
-    await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
+    await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
     await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem
@@ -936,7 +935,7 @@ Data(initData).Scenario(
     );
     await I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE('Testnet'));
     await accountSeeder.populateCustomSeed('TESTNET_SEED_1');
-    await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS_PAGE);
+    await I.amOnPage(basePage.BROWSER_URLS.CHROMIUM_EXTENSIONS);
     const updateDir = await resourcesProvider.prepareUpdateDir(UPDATE_DIR);
     await copyDir(updateDir);
     await I.wait(clockUnit.SECONDS * 5); // TODO: find the way how to check that files has been indexed in filesystem

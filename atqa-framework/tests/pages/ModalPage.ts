@@ -33,12 +33,9 @@ export class ModalPage extends BasePage {
       ACCOUNT_TYPE: (prefix: string): Locator => ({
         xpath: `//div[contains(text(),'${prefix}')]`,
       }),
-      ACCOUNT_AT_POSITION: (index = 0): Locator => {
-        const position = index + 1;
-        return {
-          xpath: `//div[@data-testid="accountCard"][${position}]`,
-        };
-      },
+      ACCOUNT_AT_POSITION: (position = 1): Locator => ({
+        xpath: `//div[@data-testid="accountCard"][${position}]`,
+      }),
     },
     TRANSACTION_MODAL: {
       RECIPIENT_AMOUNT_FIELD: '$recipientInput',
