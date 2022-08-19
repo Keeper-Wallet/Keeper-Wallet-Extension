@@ -13,7 +13,7 @@ exports.config = {
       restart: true,
       keepCookies: false,
       keepBrowserState: false,
-      url: 'https://localhost/',
+      url: 'chrome-extension:/',
       browser: process.env.BROWSER_INIT_NAME,
       desiredCapabilities: BrowserCaps.initCaps(),
       waitForTimeout: 40000,
