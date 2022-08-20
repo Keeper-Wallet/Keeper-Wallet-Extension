@@ -1,7 +1,4 @@
-import { ClockUnit } from '../../utils/clockUnit';
 import { Locator } from '../../interfaces/Locator.interface';
-
-const clockUnit = new ClockUnit();
 
 export interface IterableConstant {
   [key: string]: string;

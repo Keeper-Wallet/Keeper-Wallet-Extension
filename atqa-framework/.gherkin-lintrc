@@ -1,0 +1,31 @@
+{
+  "allowed-tags": [
+    "on",
+    {
+      "tags": [
+        "@ignore",
+        "@smoke",
+        "@regression",
+        "@sanity",
+        "@opera",
+        "@chrome",
+        "@edge",
+        "firefox"
+      ],
+      "patterns": [
+        "@C\\d+",
+        "@Epic:\\w+",
+        "@issue:.+$"
+      ]
+    }
+  ],
+  "file-name": ["on", {"style": "PascalCase"}],
+  "no-files-without-scenarios" : "on",
+  "no-unnamed-features": "on",
+  "no-unnamed-scenarios": "on",
+  "no-dupe-scenario-names": ["on", "in-feature"],
+  "new-line-at-eof": ["on", "yes"],
+  "no-scenario-outlines-without-examples": "on",
+  "no-empty-background": "on",
+  "max-scenarios-per-file": ["on", {"maxScenarios": 50, "countOutlineExamples": false}]
+}
