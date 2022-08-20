@@ -136,7 +136,7 @@ jobs:
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --feature --grep '^(?!.*@ignore)(?=.*@chrome)'
+          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@chrome)'
         env:
           BROWSER_INIT_NAME: chrome
           BROWSER_VERSION: 102.0
@@ -155,7 +155,7 @@ jobs:
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --feature --grep '^(?!.*@ignore)(?=.*@opera)'
+          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@opera)'
         env:
           BROWSER_INIT_NAME: opera
           BROWSER_VERSION: 88.0
@@ -174,7 +174,7 @@ jobs:
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --feature --grep '^(?!.*@ignore)(?=.*@edge)'
+          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@edge)'
         env:
           BROWSER_INIT_NAME: MicrosoftEdge
           BROWSER_VERSION: 103.0
