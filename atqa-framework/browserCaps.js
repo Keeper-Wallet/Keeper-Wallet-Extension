@@ -20,7 +20,7 @@ module.exports = class BrowserCaps {
             ],
           },
         };
-        break;
+        return capabilities;
       case 'opera':
         capabilities = {
           ...capabilities,
@@ -31,7 +31,7 @@ module.exports = class BrowserCaps {
             ],
           },
         };
-        break;
+        return capabilities;
       case 'chrome':
         capabilities = {
           ...capabilities,
@@ -42,7 +42,7 @@ module.exports = class BrowserCaps {
             ],
           },
         };
-        break;
+        return capabilities;
       case 'firefox':
         return capabilities;
       default:
@@ -50,6 +50,5 @@ module.exports = class BrowserCaps {
           `BROWSER_INIT_NAME has an invalid value: ${process.env.BROWSER_INIT_NAME}}`
         );
     }
-    return capabilities;
   }
 };

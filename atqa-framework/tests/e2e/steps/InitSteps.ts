@@ -6,19 +6,19 @@ import { AccountPage } from '../../pages/AccountPage';
 import { ClockUnit } from '../../../utils/clockUnit';
 import { installAddOnHelper } from '../../../utils/installGeckoAddon';
 import { copyDir } from '../../../utils/copyDir';
-import { AccountSeeder } from '../../../utils/AccountSeeder';
 import { ResourcesProvider } from '../../../testData/res/ResourcesProvider';
 import { DEFAULT_PASSWORD } from '../../../testData/res/constants';
 import extensionVersion from '../../../../package.json';
 import { DataGenerator } from '../../../utils/DataGenerator';
+import { UserProvider } from '../../../testData/UserProvider';
 
 const extensionInitPage = new ExtensionInitPage();
 const basePage = new BasePage();
 const accountPage = new AccountPage();
 const clockUnit = new ClockUnit();
-const accountSeeder = new AccountSeeder();
 const resourcesProvider = new ResourcesProvider();
 const dataGenerator = new DataGenerator();
+const userProvider = new UserProvider();
 
 const { I } = inject();
 
@@ -85,9 +85,9 @@ Given(
 
 Given(
   /^I on the '(CHROMIUM_EXTENSIONS|FIREFOX_EXTENSIONS|CHROME_SYSTEM)' page$/,
-  async (pageType: string) => {
+  (pageType: string) => {
     const iterablePageUrls: IterableConstant = basePage.BROWSER_URLS;
-    await I.amOnPage(iterablePageUrls[pageType]);
+    I.amOnPage(iterablePageUrls[pageType]);
   }
 );
 
@@ -193,12 +193,144 @@ When('I click on the Update Chromium extension button', () => {
   I.forceClick(basePage.BROWSER_SELECTORS.CHROMIUM.UPDATE_EXTENSION_BUTTON);
 });
 
-When('I populate Embedded Seeds', async () => {
-  await accountSeeder.populateEmbeddedSeed();
+When('I click on the Update Edge extension button', () => {
+  I.waitForElement(
+    basePage.BROWSER_SELECTORS.EDGE.UPDATE_EXTENSION_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  I.forceClick(basePage.BROWSER_SELECTORS.EDGE.UPDATE_EXTENSION_BUTTON);
 });
 
-When('I populate Embedded Emails', async () => {
-  await accountSeeder.populateEmbeddedEmail();
+When('I populate Embedded Seeds', () => {
+  const stagenetSeed = resourcesProvider.getStageNetSeed();
+  const testnetSeed = resourcesProvider.getTestNetSeed();
+  const mainnetSeed = resourcesProvider.getMainNetSeed();
+  const accountSeedNameStagenet = dataGenerator.accountName('STAGENET_SEED');
+  const accountSeedNameTestnet = dataGenerator.accountName('TESTNET_SEED');
+  const accountSeedNameMainnet = dataGenerator.accountName('MAINNET_SEED');
+
+  // TODO: rewrite this madness with builders and implement services to prepare data objects
+  const seeds = [stagenetSeed, testnetSeed, mainnetSeed];
+  const network = ['Stagenet', 'Testnet', 'Mainnet'];
+  const accountName = [
+    accountSeedNameStagenet,
+    accountSeedNameTestnet,
+    accountSeedNameMainnet,
+  ];
+
+  for (let i = 0; i < seeds.length; i += 1) {
+    I.waitForElement(
+      accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.NETWORK.NETWORK_TYPE(network[i]),
+      clockUnit.SECONDS * 30
+    );
+    I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE(network[i]));
+    I.waitForElement(
+      accountPage.SELECTORS.SEED_ACCOUNTS.IMPORT_SEED,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.SEED_ACCOUNTS.IMPORT_SEED);
+    I.waitForElement(
+      accountPage.SELECTORS.SEED_ACCOUNTS.SEED_PHRASE_INPUT,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(
+      accountPage.SELECTORS.SEED_ACCOUNTS.SEED_PHRASE_INPUT,
+      seeds[i].phrase as string
+    );
+    I.seeTextEquals(seeds[i].address, accountPage.SELECTORS.ACCOUNT_ADDRESS);
+    I.waitForElement(
+      accountPage.SELECTORS.CONTINUE_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.ACCOUNT_NAME_INPUT,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(accountPage.SELECTORS.ACCOUNT_NAME_INPUT, accountName[i]);
+    I.waitForElement(
+      accountPage.SELECTORS.CONTINUE_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.ADD_ANOTHER_ACCOUNT,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.ADD_ANOTHER_ACCOUNT);
+  }
+});
+
+When('I populate Embedded Emails', () => {
+  const userTestnet = userProvider.getTestNetUser();
+  const userMainnet = userProvider.getMainNetUser();
+
+  const accountEmailNameTestnet = dataGenerator.accountName('TESTNET_EMAIL');
+  const accountEmailNameMainnet = dataGenerator.accountName('MAINNET_EMAIL');
+
+  // TODO: Forgive me God for this code but I didn't have time to think
+  const emailUsers = [userMainnet, userTestnet];
+  const network = ['Mainnet', 'Testnet'];
+  const accountName = [accountEmailNameMainnet, accountEmailNameTestnet];
+
+  for (let i = 0; i < emailUsers.length; i += 1) {
+    I.waitForElement(
+      accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.NETWORK.NETWORK_TYPE(network[i]),
+      clockUnit.SECONDS * 30
+    );
+    I.forceClick(accountPage.SELECTORS.NETWORK.NETWORK_TYPE(network[i]));
+    I.waitForElement(
+      accountPage.SELECTORS.EMAIL_ACCOUNTS.IMPORT_EMAIL,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.EMAIL_ACCOUNTS.IMPORT_EMAIL);
+    I.waitForElement(
+      accountPage.SELECTORS.EMAIL_ACCOUNTS.INPUT_ACCOUNT_EMAIL,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(
+      accountPage.SELECTORS.EMAIL_ACCOUNTS.INPUT_ACCOUNT_EMAIL,
+      emailUsers[i].email
+    );
+    I.waitForElement(
+      accountPage.SELECTORS.ACCOUNT_PASSWORD_INPUT,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(
+      accountPage.SELECTORS.ACCOUNT_PASSWORD_INPUT,
+      emailUsers[i].password
+    );
+    I.waitForElement(
+      accountPage.SELECTORS.SUBMIT_ACCOUNT_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.SUBMIT_ACCOUNT_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.ACCOUNT_NAME_INPUT,
+      clockUnit.SECONDS * 30
+    );
+    I.fillField(accountPage.SELECTORS.ACCOUNT_NAME_INPUT, accountName[i]);
+    I.waitForElement(
+      accountPage.SELECTORS.CONTINUE_BUTTON,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.CONTINUE_BUTTON);
+    I.waitForElement(
+      accountPage.SELECTORS.ADD_ANOTHER_ACCOUNT,
+      clockUnit.SECONDS * 30
+    );
+    I.click(accountPage.SELECTORS.ADD_ANOTHER_ACCOUNT);
+  }
 });
 
 When(
@@ -280,7 +412,6 @@ When('I Click on the Extension details button in Edge', () => {
 When(
   /^I initialize '([^']+)' folder and update extension on the latest version$/,
   async (dirType: string) => {
-    await console.info('Prepare for update');
     const extDir = await resourcesProvider.prepareUpdateDir(dirType);
     await copyDir(extDir);
   }

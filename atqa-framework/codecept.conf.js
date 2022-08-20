@@ -13,7 +13,7 @@ exports.config = {
       restart: true,
       keepCookies: false,
       keepBrowserState: false,
-      url: 'chrome-extension:/',
+      url: process.env.EXTENSION_URL,
       browser: process.env.BROWSER_INIT_NAME,
       desiredCapabilities: BrowserCaps.initCaps(),
       waitForTimeout: 40000,

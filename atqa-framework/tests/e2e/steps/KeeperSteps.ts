@@ -1,31 +1,18 @@
-import { BasePage, IterableConstant } from '../../pages/BasePage';
-import { ExtensionInitPage } from '../../pages/ExtensionInitPage';
+import { BasePage } from '../../pages/BasePage';
 import { AccountPage } from '../../pages/AccountPage';
 import { ClockUnit } from '../../../utils/clockUnit';
-import { AccountSeeder } from '../../../utils/AccountSeeder';
 import { ResourcesProvider } from '../../../testData/res/ResourcesProvider';
 import { ModalPage } from '../../pages/ModalPage';
 import { AssetPage } from '../../pages/AssetPage';
 import extensionVersion from '../../../../package.json';
-import {
-  DEFAULT_PASSWORD,
-  TABS_MOCK_MESSAGE,
-} from '../../../testData/res/constants';
-import { Locator } from '../../../interfaces/Locator.interface';
+import { DEFAULT_PASSWORD } from '../../../testData/res/constants';
 
-const extensionInitPage = new ExtensionInitPage();
 const basePage = new BasePage();
 const accountPage = new AccountPage();
 const clockUnit = new ClockUnit();
-const accountSeeder = new AccountSeeder();
 const resourcesProvider = new ResourcesProvider();
 const modalPage = new ModalPage();
 const assetPage = new AssetPage();
-
-const emptyHistoryMessage = TABS_MOCK_MESSAGE.emptyHistory;
-const emptyNftMessage = TABS_MOCK_MESSAGE.emptyNft;
-const nftExistMessage = TABS_MOCK_MESSAGE.nftExist;
-const rejectedMessage = TABS_MOCK_MESSAGE.transactionReject;
 
 const { I } = inject();
 
@@ -67,6 +54,19 @@ When('I click on the ASSETS tab', () => {
     clockUnit.SECONDS * 30
   );
   I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
+});
+
+When('I click on the More button', () => {
+  I.waitForElement(
+    assetPage.SELECTORS.WAVES_MORE_BUTTON,
+    clockUnit.SECONDS * 30
+  );
+  I.moveCursorTo(assetPage.SELECTORS.WAVES_MORE_BUTTON);
+});
+
+When('I click on the Send asset button', () => {
+  I.waitForElement(assetPage.SELECTORS.SEND_BUTTON, clockUnit.SECONDS * 30);
+  I.click(assetPage.SELECTORS.SEND_BUTTON);
 });
 
 When('I click on Back Settings button', () => {
@@ -127,12 +127,53 @@ When(/^I set Keeper timeout for '([^']+)'$/, (timeoutDuration: string) => {
   I.click(modalPage.SELECTORS.SETTINGS_MENU.SET_TIMEOUT(timeoutDuration));
 });
 
-When('I click on the LogOut button', async () => {
+When(/^I fill amount '(\d+)' for Embedded Stagenet seed$/, (amount: number) => {
+  I.waitForElement(
+    modalPage.SELECTORS.TRANSACTION_MODAL.RECIPIENT_AMOUNT_FIELD,
+    clockUnit.SECONDS * 30
+  );
+  const seedUser = resourcesProvider.getStageNetSeed();
+  I.fillField(
+    modalPage.SELECTORS.TRANSACTION_MODAL.RECIPIENT_AMOUNT_FIELD,
+    seedUser.address
+  );
+  I.waitForElement(
+    modalPage.SELECTORS.TRANSACTION_MODAL.AMOUNT_INPUT,
+    clockUnit.SECONDS * 30
+  );
+  I.fillField(modalPage.SELECTORS.TRANSACTION_MODAL.AMOUNT_INPUT, amount);
+});
+
+When('I click on the LogOut button', () => {
   I.waitForElement(
     modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON,
     clockUnit.SECONDS * 30
   );
   I.click(modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON);
+});
+
+When('I click on the Transfer amount button', () => {
+  I.waitForElement(
+    modalPage.SELECTORS.TRANSACTION_MODAL.SUBMIT_TRANSFER_AMOUNT,
+    clockUnit.SECONDS * 30
+  );
+  I.click(modalPage.SELECTORS.TRANSACTION_MODAL.SUBMIT_TRANSFER_AMOUNT);
+});
+
+When('I click on the Reject transaction button', () => {
+  I.waitForElement(
+    modalPage.SELECTORS.TRANSACTION_MODAL.REJECT_TRANSACTION,
+    clockUnit.SECONDS * 30
+  );
+  I.click(modalPage.SELECTORS.TRANSACTION_MODAL.REJECT_TRANSACTION);
+});
+
+When('I close Transaction modal window', () => {
+  I.waitForElement(
+    modalPage.SELECTORS.TRANSACTION_MODAL.CLOSE_TRANSACTION_WINDOW,
+    clockUnit.SECONDS * 30
+  );
+  I.click(modalPage.SELECTORS.TRANSACTION_MODAL.CLOSE_TRANSACTION_WINDOW);
 });
 
 Then('I click on the Choose Account button', () => {
@@ -156,6 +197,26 @@ Then(
   async (accountType: string, availability: string) => {
     await basePage.checkElementAvailability(
       modalPage.SELECTORS.ACCOUNTS.ACCOUNT_TYPE(accountType),
+      availability
+    );
+  }
+);
+
+Then(
+  /^The amount is equal to '(\d+)' and '(not available|available)' on the transfer modal page$/,
+  async (amount: number, availability: string) => {
+    await basePage.checkElementAvailability(
+      modalPage.SELECTORS.TRANSACTION_MODAL.AMOUNT_VALUE(amount),
+      availability
+    );
+  }
+);
+
+Then(
+  /^The WAVES amount is equal to '(\d+)' and '(not available|available)' on the asset page$/,
+  async (amount: number, availability: string) => {
+    await basePage.checkElementAvailability(
+      assetPage.SELECTORS.WAVES_AMOUNT(amount),
       availability
     );
   }
