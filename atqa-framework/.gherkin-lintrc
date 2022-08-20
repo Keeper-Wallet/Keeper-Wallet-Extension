@@ -10,7 +10,7 @@
         "@opera",
         "@chrome",
         "@edge",
-        "firefox"
+        "@firefox"
       ],
       "patterns": [
         "@C\\d+",

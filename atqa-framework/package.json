@@ -12,7 +12,7 @@
     "build:extension": "cd .. && npm run dist",
     "init:folders": "mkdir buffer && mkdir extension",
     "copy:buffer:extension": "cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/",
-    "e2e:test": "yarn report:remove ; codeceptjs run --feature --grep '^(?!.*@ignore)'",
+    "e2e:test": "yarn report:remove ; codeceptjs run --features --steps --grep '^(?!.*@ignore)'",
     "e2e:test:opera": "yarn e2e:test --grep '^(?!.*@ignore)(?=.*@opera)'",
     "e2e:test:edge": "yarn e2e:test --grep '^(?!.*@ignore)(?=.*@edge)'",
     "e2e:test:chrome": "yarn e2e:test --grep '^(?!.*@ignore)(?=.*@chrome)'",
