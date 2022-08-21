@@ -11,7 +11,7 @@
     "remove:extension": "rm -rf extension/*",
     "build:extension": "cd .. && npm run dist",
     "init:folders": "mkdir buffer && mkdir extension",
-    "copy:buffer:extension": "cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/",
+    "copy:buffer:extension": "cp -Rv ./buffer/chrome ./buffer/opera ./buffer/edge ./extension/",
     "e2e:test": "yarn report:remove ; codeceptjs run --features --steps --grep '^(?!.*@ignore)'",
     "e2e:test:opera": "yarn e2e:test --grep '^(?!.*@ignore)(?=.*@opera)'",
     "e2e:test:edge": "yarn e2e:test --grep '^(?!.*@ignore)(?=.*@edge)'",
@@ -31,7 +31,8 @@
     "ts-node": "^10.8.2",
     "typescript": "^4.7.4",
     "webdriverio": "^7.20.7",
-    "@faker-js/faker": "^7.4.0"
+    "@faker-js/faker": "^7.4.0",
+    "expect": "^26.6.2"
   },
   "devDependencies": {
     "@wdio/firefox-profile-service": "^5.21.0",
