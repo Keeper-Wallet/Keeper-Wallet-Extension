@@ -1,4 +1,5 @@
 import path from 'path';
+import expect from 'expect';
 
 import { BasePage, IterableConstant } from '../../pages/BasePage';
 import { ExtensionInitPage } from '../../pages/ExtensionInitPage';
@@ -6,6 +7,11 @@ import { AccountPage } from '../../pages/AccountPage';
 import { ClockUnit } from '../../../utils/clockUnit';
 import { installAddOnHelper } from '../../../utils/installGeckoAddon';
 import { copyDir } from '../../../utils/copyDir';
+import {
+  getChromeExtensionVersion,
+  getOperaExtensionVersion,
+  getEdgeExtensionVersion,
+} from '../../../utils/grabExtensionVersion';
 import { ResourcesProvider } from '../../../testData/res/ResourcesProvider';
 import { DEFAULT_PASSWORD } from '../../../testData/res/constants';
 import extensionVersion from '../../../../package.json';
@@ -34,30 +40,6 @@ Given('I prepare Opera extension', async () => {
   I.switchToNextTab(2);
 });
 
-Given('I prepare Chrome extension', async () => {
-  const extId = await basePage.getItemFromLocalStorage('chromeId');
-  const popup = basePage.BROWSER_URLS.POPUP;
-  const extensionWelcomePage = extId.concat(popup);
-  await I.amOnPage(extensionWelcomePage);
-  I.waitForElement(
-    accountPage.SELECTORS.GET_STARTED_BUTTON,
-    clockUnit.SECONDS * 30
-  );
-  I.closeCurrentTab();
-});
-
-Given('I prepare Edge extension', async () => {
-  const extId = await basePage.getItemFromLocalStorage('edgeId');
-  const popup = basePage.BROWSER_URLS.POPUP;
-  const extensionWelcomePage = extId.concat(popup);
-  await I.amOnPage(extensionWelcomePage);
-  I.waitForElement(
-    accountPage.SELECTORS.GET_STARTED_BUTTON,
-    clockUnit.SECONDS * 30
-  );
-  I.closeCurrentTab();
-});
-
 Given('I prepare Firefox extension', async () => {
   await installAddOnHelper(
     path.join(__dirname, '..', '..', 'dist', 'keeper-wallet-2.9.0-firefox.xpi')
@@ -77,6 +59,7 @@ Given(
   /^I on the '(POPUP|ACCOUNTS)' page for id '([^']+)'$/,
   async (pageType: string, browserId: string) => {
     const extId = await basePage.getItemFromLocalStorage(browserId);
+    console.info(extId);
     const iterablePageUrls: IterableConstant = basePage.BROWSER_URLS;
     const targetPage = extId.concat(iterablePageUrls[pageType]);
     I.amOnPage(targetPage);
@@ -93,24 +76,17 @@ Given(
 
 When(/^I restart (?:Opera|Chrome) extension$/, () => {
   I.waitForElement(
-    basePage.BROWSER_SELECTORS.CHROMIUM.DETAILS_BUTTON,
-    clockUnit.SECONDS * 30
-  );
-  I.click(basePage.BROWSER_SELECTORS.CHROMIUM.DETAILS_BUTTON);
-  I.waitForElement(
     extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON,
     clockUnit.SECONDS * 30
   );
-  I.click(extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON);
-  I.waitForElement(
-    extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_INACTIVE,
-    clockUnit.SECONDS * 30
+  I.forceClick(
+    extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON
   );
-  I.seeTextEquals(
-    'No active views',
-    extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_INACTIVE
+  I.wait(clockUnit.SECONDS * 2);
+  I.forceClick(
+    extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON
   );
-  I.click(extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_RESTART_BUTTON);
+  I.wait(clockUnit.SECONDS * 2);
   I.waitForElement(
     extensionInitPage.SELECTORS.CHROMIUM.SERVICE_WORKER_ACTIVE,
     clockUnit.SECONDS * 30
@@ -145,6 +121,16 @@ When('I click on the Get Started button', () => {
   );
   I.click(accountPage.SELECTORS.GET_STARTED_BUTTON);
 });
+
+Then(
+  /^The Get started button is '(available|not available)' in the modal page$/,
+  async (availability: string) => {
+    await basePage.checkElementAvailability(
+      accountPage.SELECTORS.GET_STARTED_BUTTON,
+      availability
+    );
+  }
+);
 
 When('I fill password fields', () => {
   I.waitForElement(
@@ -412,8 +398,9 @@ When('I Click on the Extension details button in Edge', () => {
 When(
   /^I initialize '([^']+)' folder and update extension on the latest version$/,
   async (dirType: string) => {
-    const extDir = await resourcesProvider.prepareUpdateDir(dirType);
+    const extDir = resourcesProvider.prepareUpdateDir(dirType);
     await copyDir(extDir);
+    await I.wait(clockUnit.SECONDS * 5);
   }
 );
 
@@ -422,13 +409,11 @@ When(
   async (dirType: string) => {
     const extDir = await resourcesProvider.prepareInitDir(dirType);
     await copyDir(extDir);
-    await I.wait(clockUnit.SECONDS * 5);
-    // TODO: find the way how to check that files has been indexed in filesystem
   }
 );
 
 When(
-  /^I grab and set '(?:Chrome|Opera)' extension id to local storage with tag '([^']+)'$/,
+  /^I grab and set (?:Chrome|Opera) extension id to local storage with tag '([^']+)'$/,
   async (idTag: string) => {
     I.waitForElement(
       extensionInitPage.SELECTORS.CHROMIUM.EXTENSION_ID,
@@ -470,38 +455,41 @@ When(
   }
 );
 
-Then(/^I see Keeper version in Opera is equal to latest$/, () => {
-  const extVersion = extensionVersion.version;
-  I.waitForElement(
-    extensionInitPage.SELECTORS.OPERA.EXTENSION_VERSION,
-    clockUnit.SECONDS * 30
-  );
-  I.seeTextEquals(
-    extVersion,
-    extensionInitPage.SELECTORS.OPERA.EXTENSION_VERSION
-  );
-});
+Then(
+  /^I see Keeper version in Opera is '(equal|not equal)' to latest$/,
+  async (versionEquality: string) => {
+    const extVersion = extensionVersion.version;
+    const browserVersion = await getOperaExtensionVersion();
+    if (versionEquality === 'equal') {
+      expect(extVersion).toEqual(browserVersion);
+    } else {
+      expect(extVersion).not.toEqual(browserVersion);
+    }
+  }
+);
 
-Then(/^I see Keeper version in Chrome is equal to latest$/, () => {
-  const extVersion = extensionVersion.version;
-  I.waitForElement(
-    extensionInitPage.SELECTORS.CHROMIUM.EXTENSION_VERSION,
-    clockUnit.SECONDS * 30
-  );
-  I.seeTextEquals(
-    extVersion,
-    extensionInitPage.SELECTORS.CHROMIUM.EXTENSION_VERSION
-  );
-});
+Then(
+  /^I see Keeper version in Chrome is '(equal|not equal)' to latest$/,
+  async (versionEquality: string) => {
+    const extVersion = extensionVersion.version;
+    const browserVersion = await getChromeExtensionVersion();
+    if (versionEquality === 'equal') {
+      expect(extVersion).toEqual(browserVersion);
+    } else {
+      expect(extVersion).not.toEqual(browserVersion);
+    }
+  }
+);
 
-Then(/^I see Keeper version in Edge is equal to latest$/, () => {
-  const extVersion = extensionVersion.version;
-  I.waitForElement(
-    extensionInitPage.SELECTORS.EDGE.EXTENSION_VERSION,
-    clockUnit.SECONDS * 30
-  );
-  I.seeTextEquals(
-    extVersion,
-    extensionInitPage.SELECTORS.EDGE.EXTENSION_VERSION
-  );
-});
+Then(
+  /^I see Keeper version in Edge is '(equal|not equal)' to latest$/,
+  async (versionEquality: string) => {
+    const extVersion = extensionVersion.version;
+    const browserVersion = await getEdgeExtensionVersion();
+    if (versionEquality === 'equal') {
+      expect(extVersion).toEqual(browserVersion);
+    } else {
+      expect(extVersion).not.toEqual(browserVersion);
+    }
+  }
+);

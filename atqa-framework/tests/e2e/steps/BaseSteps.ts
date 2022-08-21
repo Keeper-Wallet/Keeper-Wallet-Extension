@@ -5,5 +5,5 @@ const { I } = inject();
 
 When('DEBUG PAUSE', async () => {
   I.wait(clockUnit.MINUTES * 60);
-  await console.info('=======DEBUG PAUSE=======');
+  console.info('=======DEBUG PAUSE=======');
 });

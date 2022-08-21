@@ -1,4 +1,6 @@
 import path from 'path';
+import fs from 'fs-extra';
+
 import { File } from '../../interfaces/File.interface';
 import { Folder } from '../../interfaces/Folder.interface';
 import { SeedsPhrases } from '../../interfaces/SeedsPhrase.interface';
@@ -81,13 +83,15 @@ export class ResourcesProvider {
 
   getManifestFile = async (fileType: string): Promise<File> => {
     const manifest = this.getFileResource(fileType);
-    const srcPath = path.join(__dirname, '..', '..', manifest.path);
+    const srcPath = path.basename(manifest.path);
+    const buffer = await fs.readFile(manifest.path);
     return {
       path: srcPath,
+      buffer,
     };
   };
 
-  prepareInitDir = async (dirType: string): Promise<Folder> => {
+  prepareInitDir = (dirType: string): Folder => {
     const dir = this.getFolderResource(dirType);
     const srcPath = path.join(__dirname, '..', '..', dir.sourcePath);
     const dstPath = path.join(__dirname, '..', '..', dir.destinationPath);
@@ -97,7 +101,7 @@ export class ResourcesProvider {
     };
   };
 
-  prepareUpdateDir = async (dirType: string): Promise<Folder> => {
+  prepareUpdateDir = (dirType: string): Folder => {
     const dir = this.getFolderResource(dirType);
     const srcPath = path.join(__dirname, '..', '..', '..', dir.sourcePath);
     const dstPath = path.join(__dirname, '..', '..', dir.destinationPath);

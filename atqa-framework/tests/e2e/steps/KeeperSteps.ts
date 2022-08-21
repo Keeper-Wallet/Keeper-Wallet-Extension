@@ -152,6 +152,14 @@ When('I click on the LogOut button', () => {
   I.click(modalPage.SELECTORS.SETTINGS_MENU.LOG_OUT_BUTTON);
 });
 
+When('I close current tab', () => {
+  I.closeCurrentTab();
+});
+
+When(/^I switch to tab on position '(\d+)'$/, (tabIndex: number) => {
+  I.switchToNextTab(tabIndex);
+});
+
 When('I click on the Transfer amount button', () => {
   I.waitForElement(
     modalPage.SELECTORS.TRANSACTION_MODAL.SUBMIT_TRANSFER_AMOUNT,
@@ -184,7 +192,7 @@ Then('I click on the Choose Account button', () => {
   I.click(modalPage.SELECTORS.ACCOUNTS.CHOOSE_ACCOUNT_BUTTON);
 });
 
-Then(/^I choose account at position '([^']+)'$/, (index: number) => {
+Then(/^I choose account at position '(\d+)'$/, (index: number) => {
   I.waitForElement(
     modalPage.SELECTORS.ACCOUNTS.ACCOUNT_AT_POSITION(index),
     clockUnit.SECONDS * 30

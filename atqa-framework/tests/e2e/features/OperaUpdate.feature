@@ -5,7 +5,7 @@ Feature: Check keeping accounts after extension update in Opera browser
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I Click on the Enable Developer mode button in Opera
     And I Click on the Extension details button in Opera
-    And I grab and set 'Opera' extension id to local storage with tag 'operaId'
+    And I grab and set Opera extension id to local storage with tag 'operaId'
     When I Click on the Enable Developer mode button in Opera
     And I prepare Opera extension
     And I click on the Get Started button
@@ -17,7 +17,7 @@ Feature: Check keeping accounts after extension update in Opera browser
     And I on the 'CHROMIUM_EXTENSIONS' page
     And I Click on the Enable Developer mode button in Opera
     And I Click on the Extension details button in Opera
-    And I grab and set 'Opera' extension id to local storage with tag 'operaId'
+    And I grab and set Opera extension id to local storage with tag 'operaId'
     And I on the 'POPUP' page for id 'operaId'
     And I click on the Settings button
     And I click on the General Settings button
@@ -60,10 +60,12 @@ Feature: Check keeping accounts after extension update in Opera browser
     When I click on the Settings button
     And I click on the LogOut button
     And I on the 'CHROMIUM_EXTENSIONS' page
-    And I initialize 'opera_dir_update' folder and update extension on the latest version
+    When I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'not equal' to latest
+    When I initialize 'opera_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Opera extension
-    Then I see Keeper version in Opera is equal to latest
+    Then I see Keeper version in Opera is 'equal' to latest
     When I on the 'POPUP' page for id 'operaId'
     And I fill default password
     And I submit default password
@@ -98,12 +100,15 @@ Feature: Check keeping accounts after extension update in Opera browser
     Then I see assets for Embedded Testnet email is exist
     When I click on the NFT tab
     Then I see NFTs for Embedded Testnet Email is exist
-    When I initialize 'opera_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'equal' to latest
+    Given I initialize 'opera_dir_init' folder and update extension on the previous version
 
   Scenario: Update keeper during the account seeding
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I Click on the Extension details button in Opera
-    And I grab and set 'Opera' extension id to local storage with tag 'operaId'
+    And I grab and set Opera extension id to local storage with tag 'operaId'
     And I on the 'ACCOUNTS' page for id 'operaId'
     When I click on the Choose network button
     And I choose 'Testnet' network
@@ -112,10 +117,12 @@ Feature: Check keeping accounts after extension update in Opera browser
     And I see 'Your accounts are ready to use' message
     And I see 'You can now close this tab and continue using the extension or add more accounts.' message
     When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'not equal' to latest
     And I initialize 'opera_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Opera extension
-    Then I see Keeper version in Opera is equal to latest
+    Then I see Keeper version in Opera is 'equal' to latest
     When I on the 'POPUP' page for id 'operaId'
     And I fill default password
     And I submit default password
@@ -149,7 +156,10 @@ Feature: Check keeping accounts after extension update in Opera browser
     Then I see 'You don't have any NFT yet' message
     When I click on the HISTORY tab
     Then I see 'There's nothing to show yet' message
-    When I initialize 'opera_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'equal' to latest
+    Given I initialize 'opera_dir_init' folder and update extension on the previous version
 
   Scenario: Update Keeper with active transaction
     When I click on the ASSETS tab
@@ -159,10 +169,12 @@ Feature: Check keeping accounts after extension update in Opera browser
     And I click on the Transfer amount button
     Then The amount is equal to '10' and 'available' on the transfer modal page
     When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'not equal' to latest
     And I initialize 'opera_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Opera extension
-    Then I see Keeper version in Opera is equal to latest
+    Then I see Keeper version in Opera is 'equal' to latest
     When I on the 'POPUP' page for id 'operaId'
     And I fill default password
     And I submit default password
@@ -199,5 +211,8 @@ Feature: Check keeping accounts after extension update in Opera browser
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
     When I click on the ASSETS tab
     Then I see assets for Embedded Testnet email is exist
-    When I initialize 'opera_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Opera
+    Then I see Keeper version in Opera is 'equal' to latest
+    Given I initialize 'opera_dir_init' folder and update extension on the previous version
 

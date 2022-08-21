@@ -7,7 +7,9 @@ Feature: Check keeping accounts after extension update in Edge browser
     And I Click on the Extension details button in Edge
     And I grab and set Edge extension id to local storage with tag 'edgeId'
     When I Click on the Enable Developer mode button in Edge
-    And I prepare Edge extension
+    And I on the 'POPUP' page for id 'edgeId'
+    Then The Get started button is 'available' in the modal page
+    When I close current tab
     And I click on the Get Started button
     And I fill password fields
     And I accept terms
@@ -60,10 +62,11 @@ Feature: Check keeping accounts after extension update in Edge browser
     When I click on the Settings button
     And I click on the LogOut button
     And I on the 'CHROMIUM_EXTENSIONS' page
-    And I initialize 'edge_dir_update' folder and update extension on the latest version
+    Then I see Keeper version in Edge is 'not equal' to latest
+    When I initialize 'edge_dir_update' folder and update extension on the latest version
     And I click on the Update Edge extension button
     And I restart Edge extension
-    Then I see Keeper version in Edge is equal to latest
+    Then I see Keeper version in Edge is 'equal' to latest
     When I on the 'POPUP' page for id 'edgeId'
     And I fill default password
     And I submit default password
@@ -98,6 +101,8 @@ Feature: Check keeping accounts after extension update in Edge browser
     Then I see assets for Embedded Testnet email is exist
     When I click on the NFT tab
     Then I see NFTs for Embedded Testnet Email is exist
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    Then I see Keeper version in Edge is 'equal' to latest
     When I initialize 'edge_dir_init' folder and update extension on the previous version
 
   Scenario: Update keeper during the account seeding
@@ -111,11 +116,12 @@ Feature: Check keeping accounts after extension update in Edge browser
     Then The Finish button is 'available' on the Import page
     And I see 'Your accounts are ready to use' message
     And I see 'You can now close this tab and continue using the extension or add more accounts.' message
-    When I on the 'CHROMIUM_EXTENSIONS' page
-    And I initialize 'edge_dir_update' folder and update extension on the latest version
+    And I on the 'CHROMIUM_EXTENSIONS' page
+    Then I see Keeper version in Edge is 'not equal' to latest
+    When I initialize 'edge_dir_update' folder and update extension on the latest version
     And I click on the Update Edge extension button
     And I restart Edge extension
-    Then I see Keeper version in Edge is equal to latest
+    Then I see Keeper version in Edge is 'equal' to latest
     When I on the 'POPUP' page for id 'edgeId'
     And I fill default password
     And I submit default password
@@ -149,6 +155,8 @@ Feature: Check keeping accounts after extension update in Edge browser
     Then I see 'You don't have any NFT yet' message
     When I click on the HISTORY tab
     Then I see 'There's nothing to show yet' message
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    Then I see Keeper version in Edge is 'equal' to latest
     When I initialize 'edge_dir_init' folder and update extension on the previous version
 
   Scenario: Update Keeper with active transaction
@@ -158,11 +166,12 @@ Feature: Check keeping accounts after extension update in Edge browser
     And I fill amount '10' for Embedded Stagenet seed
     And I click on the Transfer amount button
     Then The amount is equal to '10' and 'available' on the transfer modal page
-    When I on the 'CHROMIUM_EXTENSIONS' page
-    And I initialize 'edge_dir_update' folder and update extension on the latest version
+    And I on the 'CHROMIUM_EXTENSIONS' page
+    Then I see Keeper version in Edge is 'not equal' to latest
+    When I initialize 'edge_dir_update' folder and update extension on the latest version
     And I click on the Update Edge extension button
     And I restart Edge extension
-    Then I see Keeper version in Edge is equal to latest
+    Then I see Keeper version in Edge is 'equal' to latest
     When I on the 'POPUP' page for id 'edgeId'
     And I fill default password
     And I submit default password
@@ -199,4 +208,6 @@ Feature: Check keeping accounts after extension update in Edge browser
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
     When I click on the ASSETS tab
     Then I see assets for Embedded Testnet email is exist
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    Then I see Keeper version in Edge is 'equal' to latest
     When I initialize 'edge_dir_init' folder and update extension on the previous version

@@ -5,21 +5,23 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I Click on the Enable Developer mode button in Chrome
     And I Click on the Extension details button in Chrome
-    And I grab and set 'Chrome' extension id to local storage with tag 'chromeId'
+    And I grab and set Chrome extension id to local storage with tag 'chromeId'
     When I Click on the Enable Developer mode button in Chrome
-    And I prepare Chrome extension
+    And I on the 'POPUP' page for id 'chromeId'
+    Then The Get started button is 'available' in the modal page
+    When I close current tab
     And I click on the Get Started button
     And I fill password fields
     And I accept terms
     And I click on the Continue button
     And I populate Embedded Seeds
     And I populate Embedded Emails
-    And I on the 'CHROMIUM_EXTENSIONS' page
-    And I Click on the Enable Developer mode button in Chrome
+    Given I on the 'CHROMIUM_EXTENSIONS' page
+    When I Click on the Enable Developer mode button in Chrome
     And I Click on the Extension details button in Chrome
-    And I grab and set 'Chrome' extension id to local storage with tag 'chromeId'
-    And I on the 'POPUP' page for id 'chromeId'
-    And I click on the Settings button
+    And I grab and set Chrome extension id to local storage with tag 'chromeId'
+    Given I on the 'POPUP' page for id 'chromeId'
+    When I click on the Settings button
     And I click on the General Settings button
     And I set Keeper timeout for '1 hour'
     And I click on Back Settings button
@@ -57,20 +59,22 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then I see 'My NFTs' message
 
   Scenario: Update un-logged Keeper
-    When I click on the Settings button
+    Given I click on the Settings button
     And I click on the LogOut button
     And I on the 'CHROMIUM_EXTENSIONS' page
-    And I initialize 'chrome_dir_update' folder and update extension on the latest version
+    When I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'not equal' to latest
+    When I initialize 'chrome_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Chrome extension
-    Then I see Keeper version in Chrome is equal to latest
-    When I on the 'POPUP' page for id 'chromeId'
+    Then I see Keeper version in Chrome is 'equal' to latest
+    Given I on the 'POPUP' page for id 'chromeId'
     And I fill default password
     And I submit default password
     Then The latest Keeper version 'available' in the modal page
     And The account 'STAGENET_SEED' is 'available' on the asset tab
     And I see 'My NFTs' message
-    When I click on the ASSETS tab
+    And I click on the ASSETS tab
     Then I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Stagenet Seed is exist
     When I choose 'Mainnet' network
@@ -98,12 +102,15 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then I see assets for Embedded Testnet email is exist
     When I click on the NFT tab
     Then I see NFTs for Embedded Testnet Email is exist
-    When I initialize 'chrome_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'equal' to latest
+    Given I initialize 'chrome_dir_init' folder and update extension on the previous version
 
   Scenario: Update keeper during the account seeding
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I Click on the Extension details button in Chrome
-    And I grab and set 'Chrome' extension id to local storage with tag 'chromeId'
+    And I grab and set Chrome extension id to local storage with tag 'chromeId'
     And I on the 'ACCOUNTS' page for id 'chromeId'
     When I click on the Choose network button
     And I choose 'Testnet' network
@@ -112,10 +119,12 @@ Feature: Check keeping accounts after extension update in Chrome browser
     And I see 'Your accounts are ready to use' message
     And I see 'You can now close this tab and continue using the extension or add more accounts.' message
     When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'not equal' to latest
     And I initialize 'chrome_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Chrome extension
-    Then I see Keeper version in Chrome is equal to latest
+    Then I see Keeper version in Chrome is 'equal' to latest
     When I on the 'POPUP' page for id 'chromeId'
     And I fill default password
     And I submit default password
@@ -149,7 +158,10 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then I see 'You don't have any NFT yet' message
     When I click on the HISTORY tab
     Then I see 'There's nothing to show yet' message
-    When I initialize 'chrome_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'equal' to latest
+    Given I initialize 'chrome_dir_init' folder and update extension on the previous version
 
   Scenario: Update Keeper with active transaction
     When I click on the ASSETS tab
@@ -159,10 +171,12 @@ Feature: Check keeping accounts after extension update in Chrome browser
     And I click on the Transfer amount button
     Then The amount is equal to '10' and 'available' on the transfer modal page
     When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'not equal' to latest
     And I initialize 'chrome_dir_update' folder and update extension on the latest version
     And I click on the Update Chromium extension button
     And I restart Chrome extension
-    Then I see Keeper version in Chrome is equal to latest
+    Then I see Keeper version in Chrome is 'equal' to latest
     When I on the 'POPUP' page for id 'chromeId'
     And I fill default password
     And I submit default password
@@ -199,5 +213,8 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
     When I click on the ASSETS tab
     Then I see assets for Embedded Testnet email is exist
-    When I initialize 'chrome_dir_init' folder and update extension on the previous version
+    When I on the 'CHROMIUM_EXTENSIONS' page
+    And I Click on the Extension details button in Chrome
+    Then I see Keeper version in Chrome is 'equal' to latest
+    Given I initialize 'chrome_dir_init' folder and update extension on the previous version
 
