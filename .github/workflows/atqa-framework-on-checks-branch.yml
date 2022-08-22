@@ -101,6 +101,10 @@ jobs:
         working-directory: ./atqa-framework
         run: yarn --frozen-lockfile
 
+      - name: Init browsers.json config
+        working-directory: ./atqa-framework
+        run: cp browsers.example.json browsers.json
+
       - name: Setting up Selenoid ecosystem
         working-directory: ./atqa-framework
         run: docker compose up -d

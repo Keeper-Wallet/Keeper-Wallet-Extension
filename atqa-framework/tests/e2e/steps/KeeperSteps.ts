@@ -27,9 +27,9 @@ When(
   }
 );
 
-When('I click on the NFT tab', () => {
-  I.waitForElement(modalPage.SELECTORS.KEEPER_TABS.NFT, clockUnit.SECONDS * 30);
-  I.click(modalPage.SELECTORS.KEEPER_TABS.NFT);
+When(/^I click on the '(NFTs|Assets|History)' tab$/, (tab: string) => {
+  I.waitForElement(modalPage.SELECTORS.KEEPER_TAB(tab), clockUnit.SECONDS * 30);
+  I.click(modalPage.SELECTORS.KEEPER_TAB(tab));
 });
 
 When('I click on the Choose network button', () => {
@@ -38,22 +38,6 @@ When('I click on the Choose network button', () => {
     clockUnit.SECONDS * 30
   );
   I.click(accountPage.SELECTORS.NETWORK.CHOOSE_NETWORK_BUTTON);
-});
-
-When('I click on the HISTORY tab', () => {
-  I.waitForElement(
-    modalPage.SELECTORS.KEEPER_TABS.HISTORY,
-    clockUnit.SECONDS * 30
-  );
-  I.click(modalPage.SELECTORS.KEEPER_TABS.HISTORY);
-});
-
-When('I click on the ASSETS tab', () => {
-  I.waitForElement(
-    modalPage.SELECTORS.KEEPER_TABS.ASSETS,
-    clockUnit.SECONDS * 30
-  );
-  I.click(modalPage.SELECTORS.KEEPER_TABS.ASSETS);
 });
 
 When('I click on the More button', () => {
@@ -245,6 +229,8 @@ Then(/^I see '([^"]+)' message$/, (message: string) => {
   I.see(message);
 });
 
+
+
 Then('I see assets for Embedded Mainnet Seed is exist', () => {
   I.waitForElement(
     assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET,
@@ -351,6 +337,16 @@ Then(
   async (availability: string) => {
     await basePage.checkElementAvailability(
       accountPage.SELECTORS.FINISH_ACCOUNT_CREATION,
+      availability
+    );
+  }
+);
+
+Then(
+  /^The NFTs group is '(available|not available)' on the NFT tab$/,
+  async (availability: string) => {
+    await basePage.checkElementAvailability(
+      assetPage.SELECTORS.NFT_GROUP,
       availability
     );
   }

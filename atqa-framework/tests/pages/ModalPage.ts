@@ -21,11 +21,9 @@ export class ModalPage extends BasePage {
       OPEN_TIMEOUT_MENU: { xpath: '//div[contains(text(),"Browser timeout")]' },
       LOG_OUT_BUTTON: { xpath: '//span[contains(text(),"Log out")]' },
     },
-    KEEPER_TABS: {
-      NFT: { xpath: '//li[contains(text(),"NFTs")]' },
-      ASSETS: { xpath: '//li[contains(text(),"Assets")]' },
-      HISTORY: { xpath: '//li[contains(text(),"History")]' },
-    },
+    KEEPER_TAB: (tabName: string): Locator => ({
+      xpath: `//li[contains(text(),'${tabName}')]`,
+    }),
     ACCOUNTS: {
       ADD_NEW_ACCOUNT_BUTTON: '$addAccountButton',
       CHOOSE_ACCOUNT_BUTTON: '$otherAccountsButton',
