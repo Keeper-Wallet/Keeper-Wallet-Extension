@@ -1,7 +1,7 @@
 @edge
 Feature: Check keeping accounts after extension update in Edge browser
 
-  Background: Prepare and check data sets for checking extension
+  Background: Initialize and verify test data
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I Click on the Enable Developer mode button in Edge
     And I Click on the Extension details button in Edge
