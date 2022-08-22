@@ -229,8 +229,6 @@ Then(/^I see '([^"]+)' message$/, (message: string) => {
   I.see(message);
 });
 
-
-
 Then('I see assets for Embedded Mainnet Seed is exist', () => {
   I.waitForElement(
     assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET,
