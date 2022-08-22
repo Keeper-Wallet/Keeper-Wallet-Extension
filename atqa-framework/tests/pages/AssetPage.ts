@@ -3,6 +3,11 @@ import { Locator } from '../../interfaces/Locator.interface';
 
 export class AssetPage extends BasePage {
   SELECTORS = {
+    NFT_GROUP: {
+      css:
+        '[data-testid="assetsForm"] > div:nth-of-type(2) > div > div:nth-of-type(2) >' +
+        ' div > div > div > div > div > div > div > div:nth-of-type(1)',
+    },
     WAVES_ASSET: '$WAVES',
     WAVES_AMOUNT: (value: number): Locator => ({
       xpath: `//div[@data-testid="WAVES"]//div[2]//div[1]//span[1][text()="${value}"]`,

@@ -29,34 +29,34 @@ Feature: Check keeping accounts after extension update in Edge browser
     And I choose 'Mainnet' network
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
     And I see WAVES asset is 'available' on the asset page
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see 'You don't have any NFT yet' message
-    When I click on the HISTORY tab
+    When I click on the 'History' tab
     Then I see 'There's nothing to show yet' message
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
     And I see assets for Embedded Mainnet Seed is exist
     When I choose 'Testnet' network
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see assets for Embedded Testnet email is exist
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see NFTs for Embedded Testnet Email is exist
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'TESTNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Testnet Seed is exist
     When I choose 'Stagenet' network
     Then The account 'STAGENET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see Assets for Embedded Stagenet Seed is exist
-    When I click on the NFT tab
-    Then I see 'My NFTs' message
+    When I click on the 'NFTs' tab
+    Then The NFTs group is 'available' on the NFT tab
 
   Scenario: Update un-logged Keeper
     When I click on the Settings button
@@ -72,34 +72,34 @@ Feature: Check keeping accounts after extension update in Edge browser
     And I submit default password
     Then The latest Keeper version 'available' in the modal page
     And The account 'STAGENET_SEED' is 'available' on the asset tab
-    And I see 'My NFTs' message
-    When I click on the ASSETS tab
+    And The NFTs group is 'available' on the NFT tab
+    When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Stagenet Seed is exist
     When I choose 'Mainnet' network
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
     And I see assets for Embedded Mainnet Seed is exist
     And I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
     And I see WAVES asset is 'available' on the asset page
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see 'You don't have any NFT yet' message
-    When I click on the HISTORY tab
+    When I click on the 'History' tab
     Then I see 'There's nothing to show yet' message
     When I choose 'Testnet' network
     Then The account 'TESTNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Testnet Seed is exist
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see assets for Embedded Testnet email is exist
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see NFTs for Embedded Testnet Email is exist
     When I on the 'CHROMIUM_EXTENSIONS' page
     Then I see Keeper version in Edge is 'equal' to latest
@@ -130,37 +130,37 @@ Feature: Check keeping accounts after extension update in Edge browser
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'TESTNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Testnet Seed is exist
     When I click on the Choose Account button
     And I choose account at position '2'
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see assets for Embedded Testnet email is exist
     When I choose 'Stagenet' network
     Then The account 'STAGENET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see Assets for Embedded Stagenet Seed is exist
     When I choose 'Mainnet' network
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
     And I see assets for Embedded Mainnet Seed is exist
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
     And I see WAVES asset is 'available' on the asset page
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see 'You don't have any NFT yet' message
-    When I click on the HISTORY tab
+    When I click on the 'History' tab
     Then I see 'There's nothing to show yet' message
     When I on the 'CHROMIUM_EXTENSIONS' page
     Then I see Keeper version in Edge is 'equal' to latest
     When I initialize 'edge_dir_init' folder and update extension on the previous version
 
   Scenario: Update Keeper with active transaction
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     And I click on the More button
     And I click on the Send asset button
     And I fill amount '10' for Embedded Stagenet seed
@@ -183,30 +183,30 @@ Feature: Check keeping accounts after extension update in Edge browser
     And The latest Keeper version 'available' in the modal page
     And The account 'STAGENET_SEED' is 'available' on the asset tab
     And I see Assets for Embedded Stagenet Seed is exist
-    When I click on the NFT tab
-    Then I see 'My NFTs' message
+    When I click on the 'NFTs' tab
+    Then The NFTs group is 'available' on the NFT tab
     When I choose 'Mainnet' network
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
     And I see assets for Embedded Mainnet Seed is exist
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
     And I see WAVES asset is 'available' on the asset page
-    When I click on the NFT tab
+    When I click on the 'NFTs' tab
     Then I see 'You don't have any NFT yet' message
-    When I click on the HISTORY tab
+    When I click on the 'History' tab
     Then I see 'There's nothing to show yet' message
     When I choose 'Testnet' network
     Then The account 'TESTNET_SEED' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
     And I see Assets for Embedded Testnet Seed is exist
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
-    When I click on the ASSETS tab
+    When I click on the 'Assets' tab
     Then I see assets for Embedded Testnet email is exist
     When I on the 'CHROMIUM_EXTENSIONS' page
     Then I see Keeper version in Edge is 'equal' to latest

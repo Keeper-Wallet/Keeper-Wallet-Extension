@@ -369,7 +369,7 @@ When('I Click on the Enable Developer mode button in Edge', () => {
 });
 
 When(
-  /^I Click on the Enable Developer mode button in (?:Chrome|Opera)$/,
+  /^I click on the Enable Developer mode button in (?:Chrome|Opera)$/,
   () => {
     I.waitForElement(
       basePage.BROWSER_SELECTORS.CHROMIUM.DEV_MODE_TOGGLE,
@@ -379,7 +379,7 @@ When(
   }
 );
 
-When(/^I Click on the Extension details button in (?:Chrome|Opera)$/, () => {
+When(/^I click on the Extension details button in (?:Chrome|Opera)$/, () => {
   I.waitForElement(
     basePage.BROWSER_SELECTORS.CHROMIUM.DETAILS_BUTTON,
     clockUnit.SECONDS * 30
