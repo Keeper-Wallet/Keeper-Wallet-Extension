@@ -9,7 +9,7 @@
 /atqa-framework/output
 /atqa-framework/extension
 /atqa-framework/buffer
-/atqa-framework/browsers.json
+browsers.json
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
