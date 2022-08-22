@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "eslint": "eslint . --ext .ts --ext .js ; gherkin-lint",
+    "eslint-check": "eslint . --ext .ts --ext .js ; gherkin-lint",
     "eslint-fix": "eslint . --ext .ts --ext .js --fix",
     "lint:typescript": "tsc --noEmit",
     "report:open": "allure serve output",
