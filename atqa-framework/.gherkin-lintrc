@@ -6,7 +6,6 @@
         "@ignore",
         "@smoke",
         "@regression",
-        "@sanity",
         "@opera",
         "@chrome",
         "@edge",
