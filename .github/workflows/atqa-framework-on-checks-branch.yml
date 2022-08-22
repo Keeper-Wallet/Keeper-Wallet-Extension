@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  update-tests:
+  keep-accounts-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Get sources with full history

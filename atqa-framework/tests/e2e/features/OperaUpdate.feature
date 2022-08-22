@@ -1,7 +1,7 @@
 @opera
 Feature: Check keeping accounts after extension update in Opera browser
 
-  Background: Prepare and check data sets for checking extension
+  Background: Initialize and verify test data
     Given I on the 'CHROMIUM_EXTENSIONS' page
     When I click on the Enable Developer mode button in Opera
     And I click on the Extension details button in Opera
