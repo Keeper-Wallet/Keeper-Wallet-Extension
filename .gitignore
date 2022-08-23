@@ -5,7 +5,6 @@
 
 /dist*
 /builds
-#atqa-framework stuff for local runs
 /atqa-framework/output
 /atqa-framework/extension
 /atqa-framework/buffer
