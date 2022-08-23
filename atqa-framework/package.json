@@ -9,7 +9,7 @@
     "report:open": "allure serve output",
     "report:remove": "rm -rf output/*",
     "remove:extension": "rm -rf extension/*",
-    "build:extension": "cd .. && npm run dist",
+    "build:extension": "cd .. && yarn run dist",
     "init:folders": "mkdir buffer extension",
     "copy:buffer:extension": "cp -Rv ./buffer/chrome ./buffer/opera ./buffer/edge ./extension/",
     "e2e:test": "yarn report:remove ; codeceptjs run --features --steps --grep '^(?!.*@ignore)'",

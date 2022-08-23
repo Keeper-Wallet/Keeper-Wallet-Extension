@@ -54,6 +54,8 @@ jobs:
 
       - name: Get Current branch source
         uses: actions/checkout@v3
+        with:
+          clean: false
 
       - name: Copy dist with tag to buffer folder
         run: |
