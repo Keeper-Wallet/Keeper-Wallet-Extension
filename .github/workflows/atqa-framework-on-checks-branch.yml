@@ -52,19 +52,13 @@ jobs:
       - name: Build master with tags
         run: yarn run dist
 
-      - name: Prepare extension bins for uploading
-        run: |
-          mkdir ./extension
-          cp -Rv ./dist/opera ./dist/chrome ./dist/edge ./extension/
-
-      - name: Save extension artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: extension-init-bins
-          path: ./extension/
-
       - name: Get Current branch source
         uses: actions/checkout@v3
+
+      - name: Copy dist with tag to buffer folder
+        run: |
+          sudo mkdir -m 777 buffer/
+          mv dist/{chrome,edge,opera} atqa-framework/buffer
 
       - name: Read .nvmrc for keeper-wallet
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
@@ -74,9 +68,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '${{ steps.nvm_keeper_v2.outputs.NODE_VERSION }}'
-
-      - name: Create empty config.json
-        run: echo '{}' > config.json
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
@@ -117,31 +108,15 @@ jobs:
           docker pull selenoid/vnc_chrome:102.0
           docker pull browsers/edge:103.0
 
-      - name: Init buffer and extension init folders
-        working-directory: ./atqa-framework
-        run: |
-          sudo mkdir -m 777 buffer/
-          sudo mkdir -m 777 extension/
-
-      - name: Change permission for output folder
-        working-directory: ./atqa-framework
-        run: sudo chmod -R 777 output/
-
-      - name: Download extension bins to buffer folder
-        uses: actions/download-artifact@v3
-        with:
-          name: extension-init-bins
-          path: ./atqa-framework/buffer
-
       - name: Copy extension bins from buffer to init folder
         working-directory: ./atqa-framework
-        run: cp -Rv ./buffer/opera ./buffer/chrome ./buffer/edge ./extension/
+        run: cp -Rv buffer/ extension/
 
       - name: Run chrome
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@chrome)'
+          yarn run e2e:test:chrome
         env:
           BROWSER_INIT_NAME: chrome
           BROWSER_VERSION: 102.0
@@ -160,7 +135,7 @@ jobs:
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@opera)'
+          yarn run e2e:test:opera
         env:
           BROWSER_INIT_NAME: opera
           BROWSER_VERSION: 88.0
@@ -179,7 +154,7 @@ jobs:
         working-directory: ./atqa-framework
         run: |
           curl http://localhost:4444/status
-          yarn codeceptjs run --features --steps --grep '^(?!.*@ignore)(?=.*@edge)'
+          yarn run e2e:test:edge
         env:
           BROWSER_INIT_NAME: MicrosoftEdge
           BROWSER_VERSION: 103.0
