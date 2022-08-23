@@ -57,7 +57,7 @@ jobs:
 
       - name: Copy dist with tag to buffer folder
         run: |
-          sudo mkdir -m 777 buffer/
+          sudo mkdir -m 777 atqa-framework/buffer
           mv dist/{chrome,edge,opera} atqa-framework/buffer
 
       - name: Read .nvmrc for keeper-wallet
