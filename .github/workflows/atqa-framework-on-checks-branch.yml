@@ -1,5 +1,4 @@
-name: 'Run update keeper tests'
-
+name: Run keep accounts tests
 on:
   push:
     branches:
