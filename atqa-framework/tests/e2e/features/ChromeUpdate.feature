@@ -38,7 +38,7 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
     When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
-    And I see assets for Embedded Mainnet Seed is exist
+    And The assets of embedded Mainnet seed is 'available' on the Assets tab
     When I choose 'Testnet' network
     Then The account 'TESTNET_EMAIL' is 'available' on the asset tab
     When I click on the 'Assets' tab
@@ -81,7 +81,7 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
     When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
-    And I see assets for Embedded Mainnet Seed is exist
+    And The assets of embedded Mainnet seed is 'available' on the Assets tab
     And I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
@@ -149,7 +149,7 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
     When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
-    And I see assets for Embedded Mainnet Seed is exist
+    And The assets of embedded Mainnet seed is 'available' on the Assets tab
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab
@@ -194,7 +194,7 @@ Feature: Check keeping accounts after extension update in Chrome browser
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
     When I click on the 'Assets' tab
     And I see WAVES asset is 'available' on the asset page
-    And I see assets for Embedded Mainnet Seed is exist
+    And The assets of embedded Mainnet seed is 'available' on the Assets tab
     When I click on the Choose Account button
     And I choose account at position '1'
     Then The account 'MAINNET_EMAIL' is 'available' on the asset tab

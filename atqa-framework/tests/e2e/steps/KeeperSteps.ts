@@ -6,6 +6,7 @@ import { ModalPage } from '../../pages/ModalPage';
 import { AssetPage } from '../../pages/AssetPage';
 import extensionVersion from '../../../../package.json';
 import { DEFAULT_PASSWORD } from '../../../testData/res/constants';
+import { Locator } from '../../../interfaces/Locator.interface';
 
 const basePage = new BasePage();
 const accountPage = new AccountPage();
@@ -229,95 +230,73 @@ Then(/^I see '([^"]+)' message$/, (message: string) => {
   I.see(message);
 });
 
-Then('I see assets for Embedded Mainnet Seed is exist', () => {
-  I.waitForElement(
-    assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET);
-  I.waitForElement(
-    assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET);
-  I.waitForElement(
-    assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET);
-  I.waitForElement(
-    assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET);
-});
+Then(
+  /^The assets of embedded Mainnet seed is '(available|not available)' on the Assets tab$/,
+  async (availability: string) => {
+    const btcAsset: Locator =
+      assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.BTC_ASSET;
+    const crvAsset: Locator =
+      assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.CRV_ASSET;
+    const eggAsset: Locator =
+      assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.EGG_ASSET;
+    const ethAsset: Locator =
+      assetPage.SELECTORS.MAINNET_SEED_ACCOUNT.ETH_ASSET;
 
-Then('I see assets for Embedded Testnet email is exist', () => {
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1);
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2);
-});
+    const arr = [btcAsset, crvAsset, eggAsset, ethAsset];
 
-Then('I see NFTs for Embedded Testnet Email is exist', () => {
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP);
-});
+    for await (const value of arr) {
+      await basePage.checkElementAvailability(value, availability);
+    }
+  }
+);
 
-Then('I see Assets for Embedded Testnet Seed is exist', () => {
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_1,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_1);
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_2,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_2);
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_3,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_3);
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_4,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_4);
-  I.waitForElement(
-    assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_5,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_5);
-});
+Then(
+  /^The assets of embedded Testnet email is '(available|not available)' on the Assets tab$/,
+  async (availability: string) => {
+    const assetOne: Locator =
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_1;
+    const assetTwo: Locator =
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.ASSET_EMAIL_2;
 
-Then('I see Assets for Embedded Stagenet Seed is exist', () => {
-  I.waitForElement(
-    assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1);
-  I.waitForElement(
-    assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2);
-  I.waitForElement(
-    assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3,
-    clockUnit.SECONDS * 30
-  );
-  I.seeElement(assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3);
-});
+    const arr = [assetOne, assetTwo];
+
+    for await (const value of arr) {
+      await basePage.checkElementAvailability(value, availability);
+    }
+  }
+);
+
+Then(
+  /^The NFTs for Embedded Testnet Email is '(available|not available)' on the NFT tab$/,
+  async (availability: string) => {
+    await basePage.checkElementAvailability(
+      assetPage.SELECTORS.TESTNET_EMAIL_ACCOUNT.NFT_ASSETS.NFT_GROUP,
+      availability
+    );
+  }
+);
+
+Then(
+  /^The assets of embedded Testnet seed is '(available|not available)' on the Assets tab$/,
+  async (availability: string) => {
+    const assetOne: Locator =
+      assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_1;
+    const assetTwo: Locator =
+      assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_2;
+    const assetThree: Locator =
+      assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_3;
+    const assetFour: Locator =
+      assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_4;
+    const assetFive: Locator =
+      assetPage.SELECTORS.TESTNET_SEED_ACCOUNT.ASSET_TST_5;
+
+    const arr = [assetOne, assetTwo, assetThree, assetFour, assetFive];
+
+    for await (const value of arr) {
+      await basePage.checkElementAvailability(value, availability);
+    }
+  }
+);
 
 Then(
   /^The latest Keeper version '(available|not available)' in the modal page$/,
@@ -337,6 +316,24 @@ Then(
       accountPage.SELECTORS.FINISH_ACCOUNT_CREATION,
       availability
     );
+  }
+);
+
+Then(
+  /^The assets of embedded Stagenet seed is '(available|not available)' on the Assets tab$/,
+  async (availability: string) => {
+    const assetOne: Locator =
+      assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_1;
+    const assetTwo: Locator =
+      assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_2;
+    const assetThree: Locator =
+      assetPage.SELECTORS.STAGENET_SEED_ACCOUNT.ASSET_STG_3;
+
+    const arr = [assetOne, assetTwo, assetThree];
+
+    for await (const value of arr) {
+      await basePage.checkElementAvailability(value, availability);
+    }
   }
 );
 

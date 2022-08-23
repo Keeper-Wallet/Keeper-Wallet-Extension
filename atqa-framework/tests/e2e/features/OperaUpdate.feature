@@ -74,7 +74,8 @@ Feature: Check keeping accounts after extension update in Opera browser
     And The NFTs group is 'available' on the NFT tab
     When I click on the 'Assets' tab
     Then I see WAVES asset is 'available' on the asset page
-    And I see Assets for Embedded Stagenet Seed is exist
+#    And I see Assets for Embedded Stagenet Seed is exist
+    And The assets of embedded Stagenet seed is 'available' on the Assets tab
     When I choose 'Mainnet' network
     Then The account 'MAINNET_SEED' is 'available' on the asset tab
     When I click on the 'Assets' tab
