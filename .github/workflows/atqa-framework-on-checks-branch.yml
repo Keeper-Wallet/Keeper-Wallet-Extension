@@ -89,10 +89,6 @@ jobs:
         run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
         id: nvm_atqa_framework
 
-      - name: Check eslint and gherkin
-        working-directory: ./atqa-framework
-        run: yarn run eslint-check
-
       - name: Setup NodeJS for atqa-framework
         uses: actions/setup-node@v2
         with:
@@ -101,6 +97,10 @@ jobs:
       - name: Install dependencies
         working-directory: ./atqa-framework
         run: yarn --frozen-lockfile
+
+      - name: Check eslint and gherkin
+        working-directory: ./atqa-framework
+        run: yarn run eslint-check
 
       - name: Init browsers.json config
         working-directory: ./atqa-framework
