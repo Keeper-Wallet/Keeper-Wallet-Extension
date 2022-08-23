@@ -112,7 +112,9 @@ jobs:
 
       - name: Copy extension bins from buffer to init folder
         working-directory: ./atqa-framework
-        run: cp -Rv buffer/ extension/
+        run: |
+          cp -Rv buffer/ extension/
+          sudo chmod -R 777 extension/ output/
 
       - name: Run chrome
         working-directory: ./atqa-framework
