@@ -3178,11 +3178,58 @@ describe('Signature', function () {
     });
 
     describe('UpdateAssetInfo', function () {
+      async function checkAssetId(this: mocha.Context, assetId: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="updateAssetInfoAssetId"]'))
+            .getText()
+        ).to.equal(assetId);
+      }
+
+      async function checkAssetName(this: mocha.Context, assetName: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="updateAssetInfoAssetName"]'))
+            .getText()
+        ).to.equal(assetName);
+      }
+
+      async function checkAssetDescription(
+        this: mocha.Context,
+        description: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(
+              By.css('[data-testid="updateAssetInfoAssetDescription"]')
+            )
+            .getText()
+        ).to.equal(description);
+      }
+
+      async function checkFee(this: mocha.Context, fee: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="updateAssetInfoFee"]'))
+            .getText()
+        ).to.equal(fee);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, UPDATE_ASSET_INFO);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkAssetId.call(this, UPDATE_ASSET_INFO.data.assetId);
+        await checkAssetName.call(this, UPDATE_ASSET_INFO.data.name);
+
+        await checkAssetDescription.call(
+          this,
+          UPDATE_ASSET_INFO.data.description
+        );
+
+        await checkFee.call(this, '0.001 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
