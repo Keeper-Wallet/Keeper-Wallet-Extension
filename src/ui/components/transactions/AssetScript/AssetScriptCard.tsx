@@ -35,7 +35,7 @@ class AssetScriptCardComponent extends React.PureComponent<
                 {t('transactions.assetScriptTransaction')}
               </div>
               <h1 className="headline1">
-                <Asset assetId={tx.assetId} />
+                <Asset assetId={tx.assetId} data-testid="setAssetScriptAsset" />
               </h1>
             </div>
           </div>

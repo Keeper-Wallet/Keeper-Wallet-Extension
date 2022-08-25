@@ -2741,11 +2741,32 @@ describe('Signature', function () {
     });
 
     describe('SetAssetScript', function () {
+      async function checkAssetName(this: mocha.Context, asset: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="setAssetScriptAsset"]'))
+            .getText()
+        ).to.equal(asset);
+      }
+
+      async function checkScript(this: mocha.Context, script: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="contentScript"]'))
+            .getText()
+        ).to.equal(script);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, SET_ASSET_SCRIPT);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkAssetName.call(this, 'NonScriptToken');
+        await checkScript.call(this, 'base64:BQbtKNoM');
+
+        await checkTxFee.call(this, '1.004 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2798,6 +2819,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkAssetName.call(this, 'NonScriptToken');
+          await checkScript.call(this, 'base64:BQbtKNoM');
+
+          await checkTxFee.call(this, '1.004 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
