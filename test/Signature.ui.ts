@@ -3322,11 +3322,78 @@ describe('Signature', function () {
     }
 
     describe('Create', function () {
+      async function checkCreateOrderTitle(this: mocha.Context, title: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderTitle"]'))
+            .getText()
+        ).to.equal(title);
+      }
+
+      async function checkCreateOrderTitleAmount(
+        this: mocha.Context,
+        amount: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderTitleAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkCreateOrderTitlePrice(
+        this: mocha.Context,
+        price: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderTitlePrice"]'))
+            .getText()
+        ).to.equal(price);
+      }
+
+      async function checkCreateOrderPrice(this: mocha.Context, price: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderPrice"]'))
+            .getText()
+        ).to.equal(price);
+      }
+
+      async function checkCreateOrderMatcherPublicKey(
+        this: mocha.Context,
+        matcherPublicKey: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderMatcherPublicKey"]'))
+            .getText()
+        ).to.equal(matcherPublicKey);
+      }
+
+      async function checkCreateOrderFee(this: mocha.Context, fee: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="createOrderFee"]'))
+            .getText()
+        ).to.equal(fee);
+      }
+
       it('Rejected', async function () {
         await performSignOrder.call(this, createOrder, CREATE_ORDER);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkCreateOrderTitle.call(this, 'Sell: WAVES/NonScriptToken');
+        await checkCreateOrderTitleAmount.call(this, '-100.00000000 WAVES');
+        await checkCreateOrderTitlePrice.call(this, '+0 NonScriptToken');
+        await checkCreateOrderPrice.call(this, '0 NonScriptToken');
+        await checkCreateOrderMatcherPublicKey.call(
+          this,
+          CREATE_ORDER.data.matcherPublicKey
+        );
+        await checkCreateOrderFee.call(this, '0.03 WAVES');
 
         await rejectMessage.call(this, 60 * 1000);
         await closeMessage.call(this);
@@ -3382,6 +3449,16 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkCreateOrderTitle.call(this, 'Buy: Tether USD/USD-Nea272c');
+          await checkCreateOrderTitleAmount.call(this, '+1.000000 Tether USD');
+          await checkCreateOrderTitlePrice.call(this, '-1.014002 USD-Nea272c');
+          await checkCreateOrderPrice.call(this, '1.014002 USD-Nea272c');
+          await checkCreateOrderMatcherPublicKey.call(
+            this,
+            CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION.data.matcherPublicKey
+          );
+          await checkCreateOrderFee.call(this, '0.04077612 TXW-DEVa4f6df');
 
           await rejectMessage.call(this, 60 * 1000);
           await closeMessage.call(this);

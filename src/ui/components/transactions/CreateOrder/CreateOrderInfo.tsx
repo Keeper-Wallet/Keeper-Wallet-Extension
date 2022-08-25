@@ -25,7 +25,12 @@ class CreateOrderInfoComponent extends React.PureComponent<
         <div className={styles.txRow}>
           <div className="tx-title tag1 basic500">{t('transactions.fee')}</div>
           <div className={styles.txValue}>
-            <Balance isShortFormat={true} balance={fee} showAsset={true} />
+            <Balance
+              data-testid="createOrderFee"
+              isShortFormat={true}
+              balance={fee}
+              showAsset={true}
+            />
           </div>
         </div>
 
