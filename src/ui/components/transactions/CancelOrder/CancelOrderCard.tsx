@@ -38,7 +38,7 @@ class CancelOrderCardComponent extends React.PureComponent<
             <div className="tx-title tag1 basic500">
               {t('transactions.orderId')}
             </div>
-            <div className={styles.txValue}>
+            <div className={styles.txValue} data-testid="cancelOrderOrderId">
               {this.props.message?.data?.data?.id}
             </div>
           </div>

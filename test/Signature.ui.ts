@@ -3522,11 +3522,21 @@ describe('Signature', function () {
     });
 
     describe('Cancel', function () {
+      async function checkOrderId(this: mocha.Context, orderId: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="cancelOrderOrderId"]'))
+            .getText()
+        ).to.equal(orderId);
+      }
+
       it('Rejected', async function () {
         await performSignOrder.call(this, cancelOrder, CANCEL_ORDER);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkOrderId.call(this, CANCEL_ORDER.data.id);
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
