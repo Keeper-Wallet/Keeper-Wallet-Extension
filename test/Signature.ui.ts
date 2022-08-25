@@ -521,6 +521,66 @@ describe('Signature', function () {
       return { ...tx, data: { ...tx.data, version } };
     }
 
+    async function checkTxFee(this: mocha.Context, fee: string) {
+      expect(
+        await this.driver.findElement(By.css('[data-testid="txFee"]')).getText()
+      ).to.equal(fee);
+    }
+
+    async function checkIssueType(this: mocha.Context, type: string) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="issueType"]'))
+          .getText()
+      ).to.equal(type);
+    }
+
+    async function checkIssueAmount(this: mocha.Context, amount: string) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="issueAmount"]'))
+          .getText()
+      ).to.equal(amount);
+    }
+
+    async function checkIssueDescription(
+      this: mocha.Context,
+      description: string
+    ) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="issueDescription"]'))
+          .getText()
+      ).to.equal(description);
+    }
+
+    async function checkIssueDecimals(this: mocha.Context, decimals: number) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="issueDecimals"]'))
+          .getText()
+      ).to.equal(String(decimals));
+    }
+
+    async function checkIssueReissuable(
+      this: mocha.Context,
+      reissuableText: string
+    ) {
+      expect(
+        await this.driver
+          .findElement(By.css('[data-testid="issueReissuable"]'))
+          .getText()
+      ).to.equal(reissuableText);
+    }
+
+    async function checkIssueScript(this: mocha.Context, script: string) {
+      expect(
+        await this.driver
+          .findElement(By.css('[class^="script-codeScript"]'))
+          .getText()
+      ).to.equal(script);
+    }
+
     describe('Issue', function () {
       before(async function () {
         await App.restartServiceWorker.call(this);
@@ -532,47 +592,14 @@ describe('Signature', function () {
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueType"]'))
-            .getText()
-        ).to.equal('Issue Smart Token');
+        await checkIssueType.call(this, 'Issue Smart Token');
+        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
+        await checkIssueDescription.call(this, ISSUE.data.description);
+        await checkIssueDecimals.call(this, ISSUE.data.precision);
+        await checkIssueReissuable.call(this, 'Reissuable');
+        await checkIssueScript.call(this, 'base64:BQbtKNoM');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueAmount"]'))
-            .getText()
-        ).to.equal('92233720368.54775807 ShortToken');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDescription"]'))
-            .getText()
-        ).to.equal(ISSUE.data.description);
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDecimals"]'))
-            .getText()
-        ).to.equal(String(ISSUE.data.precision));
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueReissuable"]'))
-            .getText()
-        ).to.equal('Reissuable');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[class^="script-codeScript"]'))
-            .getText()
-        ).to.equal('base64:BQbtKNoM');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="txFee"]'))
-            .getText()
-        ).to.equal('1.004 WAVES');
+        await checkTxFee.call(this, '1.004 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -640,41 +667,13 @@ describe('Signature', function () {
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueType"]'))
-            .getText()
-        ).to.equal('Issue Token');
+        await checkIssueType.call(this, 'Issue Token');
+        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
+        await checkIssueDescription.call(this, ISSUE.data.description);
+        await checkIssueDecimals.call(this, ISSUE.data.precision);
+        await checkIssueReissuable.call(this, 'Reissuable');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueAmount"]'))
-            .getText()
-        ).to.equal('92233720368.54775807 ShortToken');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDescription"]'))
-            .getText()
-        ).to.equal(ISSUE.data.description);
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDecimals"]'))
-            .getText()
-        ).to.equal(String(ISSUE.data.precision));
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueReissuable"]'))
-            .getText()
-        ).to.equal('Reissuable');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="txFee"]'))
-            .getText()
-        ).to.equal('1.004 WAVES');
+        await checkTxFee.call(this, '1.004 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -740,47 +739,14 @@ describe('Signature', function () {
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueType"]'))
-            .getText()
-        ).to.equal('Issue Smart Token');
+        await checkIssueType.call(this, 'Issue Smart Token');
+        await checkIssueAmount.call(this, '92233720368.54775807 ShortToken');
+        await checkIssueDescription.call(this, ISSUE.data.description);
+        await checkIssueDecimals.call(this, ISSUE.data.precision);
+        await checkIssueReissuable.call(this, 'Reissuable');
+        await checkIssueScript.call(this, 'base64:BQbtKNoM');
 
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueAmount"]'))
-            .getText()
-        ).to.equal('92233720368.54775807 ShortToken');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDescription"]'))
-            .getText()
-        ).to.equal(ISSUE.data.description);
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueDecimals"]'))
-            .getText()
-        ).to.equal(String(ISSUE.data.precision));
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="issueReissuable"]'))
-            .getText()
-        ).to.equal('Reissuable');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[class^="script-codeScript"]'))
-            .getText()
-        ).to.equal('base64:BQbtKNoM');
-
-        expect(
-          await this.driver
-            .findElement(By.css('[data-testid="txFee"]'))
-            .getText()
-        ).to.equal('1.004 WAVES');
+        await checkTxFee.call(this, '1.004 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
