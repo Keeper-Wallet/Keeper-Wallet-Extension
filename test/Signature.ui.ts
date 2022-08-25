@@ -1897,11 +1897,81 @@ describe('Signature', function () {
     });
 
     describe('MassTransfer', function () {
+      async function checkMassTransferAmount(
+        this: mocha.Context,
+        amount: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="massTransferAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkMassTransferItems(
+        this: mocha.Context,
+        items: Array<{ recipient: string; amount: string }>
+      ) {
+        const itemElements = await this.driver.findElements(
+          By.css('[data-testid="massTransferItem"]')
+        );
+
+        const actualItems = await Promise.all(
+          itemElements.map(async itemEl => {
+            const [recipient, amount] = await Promise.all([
+              itemEl
+                .findElement(
+                  By.css('[data-testid="massTransferItemRecipient"]')
+                )
+                .getText(),
+              itemEl
+                .findElement(By.css('[data-testid="massTransferItemAmount"]'))
+                .getText(),
+            ]);
+
+            return {
+              recipient,
+              amount,
+            };
+          })
+        );
+
+        expect(actualItems).to.deep.equal(items);
+      }
+
+      async function checkMassTransferAttachment(
+        this: mocha.Context,
+        attachment: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="massTransferAttachment"]'))
+            .getText()
+        ).to.equal(attachment);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, MASS_TRANSFER);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkMassTransferAmount.call(this, '-2 NonScriptToken');
+
+        await checkMassTransferItems.call(this, [
+          {
+            recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
+            amount: '1',
+          },
+          {
+            recipient: 'alias:T:merry',
+            amount: '1',
+          },
+        ]);
+
+        await checkMassTransferAttachment.call(this, 'base64:BQbtKNoM');
+
+        await checkTxFee.call(this, '0.006 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1957,6 +2027,21 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkMassTransferAmount.call(this, '-2 NonScriptToken');
+
+          await checkMassTransferItems.call(this, [
+            {
+              recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
+              amount: '1',
+            },
+            {
+              recipient: 'alias:T:merry',
+              amount: '1',
+            },
+          ]);
+
+          await checkTxFee.call(this, '0.006 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -2020,6 +2105,23 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkMassTransferAmount.call(this, '-2 NonScriptToken');
+
+          await checkMassTransferItems.call(this, [
+            {
+              recipient: '3N5HNJz5otiU...BVv5HhYLdhiD',
+              amount: '1',
+            },
+            {
+              recipient: 'alias:T:merry',
+              amount: '1',
+            },
+          ]);
+
+          await checkMassTransferAttachment.call(this, 'base64:BQbtKNoM');
+
+          await checkTxFee.call(this, '0.006 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
