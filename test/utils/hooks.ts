@@ -11,8 +11,6 @@ import {
 import { App } from './actions';
 
 declare global {
-  const KeeperWallet: WavesKeeper.TWavesKeeperApi;
-
   interface Window {
     result: unknown;
     approveResult: unknown;

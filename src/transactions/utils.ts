@@ -6,8 +6,6 @@ import {
   blake2b,
   concat,
   stringToBytes,
-  TRawStringIn,
-  TRawStringInDiscriminator,
 } from '@waves/ts-lib-crypto';
 import { TRANSACTION_TYPE } from '@waves/ts-types';
 import {
@@ -43,12 +41,10 @@ import { getTxVersions } from 'wallets';
 import { InvokeScriptCallArgument } from '@waves/ts-types/dist/src/parts';
 import { PreferencesAccount } from 'preferences/types';
 
-type RawStringIn = Exclude<TRawStringIn, TRawStringInDiscriminator>;
+type RawStringIn = string | number[];
 
 function fromRawIn(val: RawStringIn): Uint8Array {
   if (typeof val === 'string') return stringToBytes(val);
-
-  if (val instanceof Uint8Array) return val;
 
   return Uint8Array.from(val);
 }
