@@ -2177,11 +2177,69 @@ describe('Signature', function () {
     });
 
     describe('Data', function () {
+      async function checkDataEntries(
+        this: mocha.Context,
+        entries: Array<{ key: string; type: string; value: string }>
+      ) {
+        const dataRows = await this.driver.findElements(
+          By.css('[data-testid="dataRow"]')
+        );
+
+        const actualItems = await Promise.all(
+          dataRows.map(async entryEl => {
+            const [key, type, value] = await Promise.all([
+              entryEl
+                .findElement(By.css('[data-testid="dataRowKey"]'))
+                .getText(),
+              entryEl
+                .findElement(By.css('[data-testid="dataRowType"]'))
+                .getText(),
+              entryEl
+                .findElement(By.css('[data-testid="dataRowValue"]'))
+                .getText(),
+            ]);
+
+            return {
+              key,
+              type,
+              value,
+            };
+          })
+        );
+
+        expect(actualItems).to.deep.equal(entries);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, DATA);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkDataEntries.call(this, [
+          {
+            key: 'stringValue',
+            type: 'string',
+            value: 'Lorem ipsum dolor sit amet',
+          },
+          {
+            key: 'longMaxValue',
+            type: 'integer',
+            value: '9223372036854775807',
+          },
+          {
+            key: 'flagValue',
+            type: 'boolean',
+            value: 'true',
+          },
+          {
+            key: 'base64',
+            type: 'binary',
+            value: 'base64:BQbtKNoM',
+          },
+        ]);
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2228,6 +2286,31 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkDataEntries.call(this, [
+            {
+              key: 'stringValue',
+              type: 'string',
+              value: 'Lorem ipsum dolor sit amet',
+            },
+            {
+              key: 'longMaxValue',
+              type: 'integer',
+              value: '9223372036854775807',
+            },
+            {
+              key: 'flagValue',
+              type: 'boolean',
+              value: 'true',
+            },
+            {
+              key: 'base64',
+              type: 'binary',
+              value: 'base64:BQbtKNoM',
+            },
+          ]);
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
