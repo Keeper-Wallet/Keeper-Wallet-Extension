@@ -1032,11 +1032,35 @@ describe('Signature', function () {
     });
 
     describe('Reissue', function () {
+      async function checkReissueAmount(this: mocha.Context, amount: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="reissueAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkReissueReissuable(
+        this: mocha.Context,
+        reissuableText: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="reissueReissuable"]'))
+            .getText()
+        ).to.equal(reissuableText);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, REISSUE);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkReissueAmount.call(this, '+123456790 NonScriptToken');
+        await checkReissueReissuable.call(this, 'Reissuable');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1085,6 +1109,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkReissueAmount.call(this, '+123456790 NonScriptToken');
+          await checkReissueReissuable.call(this, 'Reissuable');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -1138,6 +1167,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkReissueAmount.call(this, '+123456790 NonScriptToken');
+          await checkReissueReissuable.call(this, 'Reissuable');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
