@@ -1640,11 +1640,38 @@ describe('Signature', function () {
     });
 
     describe('Cancel lease', function () {
+      async function checkCancelLeaseAmount(
+        this: mocha.Context,
+        amount: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="cancelLeaseAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkCancelLeaseRecipient(
+        this: mocha.Context,
+        recipient: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="cancelLeaseRecipient"]'))
+            .getText()
+        ).to.equal(recipient);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, CANCEL_LEASE);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkCancelLeaseAmount.call(this, '0.00000001 WAVES');
+        await checkCancelLeaseRecipient.call(this, 'alias:T:merry');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1694,6 +1721,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkCancelLeaseAmount.call(this, '0.00000001 WAVES');
+          await checkCancelLeaseRecipient.call(this, 'alias:T:merry');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);

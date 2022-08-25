@@ -40,6 +40,7 @@ class CancelLeaseCardComponent extends React.PureComponent<
             </div>
             <h1 className="headline1">
               <Balance
+                data-testid="cancelLeaseAmount"
                 split={true}
                 showAsset={true}
                 balance={amount}
@@ -56,7 +57,11 @@ class CancelLeaseCardComponent extends React.PureComponent<
                 {t('transactions.recipient')}
               </div>
               <div className={styles.txValue}>
-                <AddressRecipient recipient={recipient} chainId={tx.chainId} />
+                <AddressRecipient
+                  recipient={recipient}
+                  chainId={tx.chainId}
+                  testid="cancelLeaseRecipient"
+                />
               </div>
             </div>
           </div>
