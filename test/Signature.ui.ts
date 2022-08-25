@@ -808,6 +808,10 @@ describe('Signature', function () {
     describe('Transfer', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, TRANSFER);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -862,6 +866,10 @@ describe('Signature', function () {
     describe('Transfer without attachment', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, TRANSFER_WITHOUT_ATTACHMENT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -909,6 +917,10 @@ describe('Signature', function () {
     describe('Transfer with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(TRANSFER, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -956,6 +968,10 @@ describe('Signature', function () {
     describe('Reissue', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, REISSUE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1001,6 +1017,10 @@ describe('Signature', function () {
     describe('Reissue with money-like', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, REISSUE_WITH_MONEY_LIKE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1046,6 +1066,10 @@ describe('Signature', function () {
     describe('Reissue with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(REISSUE, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1091,6 +1115,10 @@ describe('Signature', function () {
     describe('Burn', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, BURN);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1135,6 +1163,10 @@ describe('Signature', function () {
     describe('Burn with quantity instead of amount', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, BURN_WITH_QUANTITY);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1179,6 +1211,10 @@ describe('Signature', function () {
     describe('Burn with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(BURN, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1227,6 +1263,10 @@ describe('Signature', function () {
 
       it('Rejected', async function () {
         await performSignTransaction.call(this, LEASE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1271,6 +1311,10 @@ describe('Signature', function () {
     describe('Lease with alias', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, LEASE_WITH_ALIAS);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1315,6 +1359,10 @@ describe('Signature', function () {
     describe('Lease with money-like', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, LEASE_WITH_MONEY_LIKE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1359,6 +1407,10 @@ describe('Signature', function () {
     describe('Lease with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(LEASE, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1403,6 +1455,10 @@ describe('Signature', function () {
     describe('Cancel lease', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, CANCEL_LEASE);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1446,6 +1502,10 @@ describe('Signature', function () {
     describe('Cancel lease with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(CANCEL_LEASE, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1489,6 +1549,10 @@ describe('Signature', function () {
     describe('Alias', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, ALIAS);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1536,6 +1600,10 @@ describe('Signature', function () {
     describe('Alias with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(ALIAS, 2));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1582,6 +1650,10 @@ describe('Signature', function () {
     describe('MassTransfer', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, MASS_TRANSFER);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1633,6 +1705,10 @@ describe('Signature', function () {
           this,
           MASS_TRANSFER_WITHOUT_ATTACHMENT
         );
+
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -1686,6 +1762,10 @@ describe('Signature', function () {
     describe('MassTransfer with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(MASS_TRANSFER, 1));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1734,6 +1814,10 @@ describe('Signature', function () {
     describe('Data', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, DATA);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1777,6 +1861,10 @@ describe('Signature', function () {
     describe('Data with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(DATA, 1));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1824,6 +1912,10 @@ describe('Signature', function () {
 
       it('Rejected', async function () {
         await performSignTransaction.call(this, SET_SCRIPT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1871,6 +1963,10 @@ describe('Signature', function () {
     describe('SetScript without script', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, SET_SCRIPT_WITHOUT_SCRIPT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1915,6 +2011,10 @@ describe('Signature', function () {
     describe('SetScript with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(SET_SCRIPT, 1));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -1958,6 +2058,10 @@ describe('Signature', function () {
     describe('Sponsorship', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, SPONSORSHIP);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2002,6 +2106,10 @@ describe('Signature', function () {
     describe('Sponsorship removal', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, SPONSORSHIP_REMOVAL);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2047,6 +2155,10 @@ describe('Signature', function () {
     describe('Sponsorship with legacy serialization', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, setTxVersion(SPONSORSHIP, 1));
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2091,6 +2203,10 @@ describe('Signature', function () {
     describe('SetAssetScript', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, SET_ASSET_SCRIPT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2140,6 +2256,9 @@ describe('Signature', function () {
           this,
           setTxVersion(SET_ASSET_SCRIPT, 1)
         );
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2189,6 +2308,10 @@ describe('Signature', function () {
     describe('InvokeScript', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, INVOKE_SCRIPT);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2247,6 +2370,10 @@ describe('Signature', function () {
     describe('InvokeScript without call', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, INVOKE_SCRIPT_WITHOUT_CALL);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2296,6 +2423,9 @@ describe('Signature', function () {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setTxVersion(INVOKE_SCRIPT as any, 1)
         );
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2348,6 +2478,10 @@ describe('Signature', function () {
     describe('UpdateAssetInfo', function () {
       it('Rejected', async function () {
         await performSignTransaction.call(this, UPDATE_ASSET_INFO);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2441,6 +2575,10 @@ describe('Signature', function () {
     describe('Create', function () {
       it('Rejected', async function () {
         await performSignOrder.call(this, createOrder, CREATE_ORDER);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this, 60 * 1000);
         await closeMessage.call(this);
       });
@@ -2493,6 +2631,9 @@ describe('Signature', function () {
           createOrder,
           CREATE_ORDER_WITH_PRICE_PRECISION_CONVERSION
         );
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
 
         await rejectMessage.call(this, 60 * 1000);
         await closeMessage.call(this);
@@ -2551,6 +2692,10 @@ describe('Signature', function () {
     describe('Cancel', function () {
       it('Rejected', async function () {
         await performSignOrder.call(this, cancelOrder, CANCEL_ORDER);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2617,6 +2762,9 @@ describe('Signature', function () {
         PACKAGE as any,
         'Test package'
       );
+      await checkOrigin.call(this, WHITELIST[3]);
+      await checkAccountName.call(this, 'rich');
+      await checkNetworkName.call(this, 'Testnet');
 
       await rejectMessage.call(this);
       await closeMessage.call(this);
@@ -2863,6 +3011,10 @@ describe('Signature', function () {
     describe('Version 1', function () {
       it('Rejected', async function () {
         await performSignCustomData.call(this, CUSTOM_DATA_V1);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
@@ -2900,6 +3052,10 @@ describe('Signature', function () {
     describe('Version 2', function () {
       it('Rejected', async function () {
         await performSignCustomData.call(this, CUSTOM_DATA_V2);
+        await checkOrigin.call(this, WHITELIST[3]);
+        await checkAccountName.call(this, 'rich');
+        await checkNetworkName.call(this, 'Testnet');
+
         await rejectMessage.call(this);
         await closeMessage.call(this);
       });
