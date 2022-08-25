@@ -2546,11 +2546,43 @@ describe('Signature', function () {
     });
 
     describe('Sponsorship', function () {
+      async function checkSponsorshipTitle(this: mocha.Context, title: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="sponsorshipTitle"]'))
+            .getText()
+        ).to.equal(title);
+      }
+
+      async function checkSponsorshipAmount(
+        this: mocha.Context,
+        amount: string
+      ) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="sponsorshipAmount"]'))
+            .getText()
+        ).to.equal(amount);
+      }
+
+      async function checkSponsorshipAsset(this: mocha.Context, asset: string) {
+        expect(
+          await this.driver
+            .findElement(By.css('[data-testid="sponsorshipAsset"]'))
+            .getText()
+        ).to.equal(asset);
+      }
+
       it('Rejected', async function () {
         await performSignTransaction.call(this, SPONSORSHIP);
         await checkOrigin.call(this, WHITELIST[3]);
         await checkAccountName.call(this, 'rich');
         await checkNetworkName.call(this, 'Testnet');
+
+        await checkSponsorshipTitle.call(this, 'Set Sponsorship');
+        await checkSponsorshipAmount.call(this, '123456790 NonScriptToken');
+
+        await checkTxFee.call(this, '0.005 WAVES');
 
         await rejectMessage.call(this);
         await closeMessage.call(this);
@@ -2598,6 +2630,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkSponsorshipTitle.call(this, 'Disable Sponsorship');
+          await checkSponsorshipAsset.call(this, 'WAVES');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
@@ -2651,6 +2688,11 @@ describe('Signature', function () {
           await checkOrigin.call(this, WHITELIST[3]);
           await checkAccountName.call(this, 'rich');
           await checkNetworkName.call(this, 'Testnet');
+
+          await checkSponsorshipTitle.call(this, 'Set Sponsorship');
+          await checkSponsorshipAmount.call(this, '123456790 NonScriptToken');
+
+          await checkTxFee.call(this, '0.005 WAVES');
 
           await rejectMessage.call(this);
           await closeMessage.call(this);
